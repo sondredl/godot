@@ -31,7 +31,14 @@
 #ifndef GROUP_SETTINGS_EDITOR_H
 #define GROUP_SETTINGS_EDITOR_H
 
+#include "core/input/input_enums.h"
+#include "core/object/object.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/button.h"
 #include "scene/gui/dialogs.h"
+#include "scene/main/node.h"
 
 class CheckBox;
 class EditorFileSystemDirectory;

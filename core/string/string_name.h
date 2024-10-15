@@ -172,12 +172,11 @@ public:
 				}
 				return is_str_less(l_cname, r._data->name.ptr());
 
-			} else {
-				if (r_cname) {
-					return is_str_less(l._data->name.ptr(), r_cname);
-				}
-				return is_str_less(l._data->name.ptr(), r._data->name.ptr());
 			}
+			if (r_cname) {
+				return is_str_less(l._data->name.ptr(), r_cname);
+			}
+			return is_str_less(l._data->name.ptr(), r._data->name.ptr());
 		}
 	};
 

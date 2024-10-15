@@ -293,7 +293,7 @@ public:
 						{ 1, 2, 3 },
 					};
 
-					for (auto k : triangle_order) {
+					for (const auto *k : triangle_order) {
 						Triangle t = Triangle(simplex->points[k[0]], simplex->points[k[1]], simplex->points[k[2]]);
 						uint32_t *p = triangles_inserted.lookup_ptr(t);
 						if (p) {

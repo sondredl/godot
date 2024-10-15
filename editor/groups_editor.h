@@ -31,7 +31,17 @@
 #ifndef GROUPS_EDITOR_H
 #define GROUPS_EDITOR_H
 
+#include "core/input/input_enums.h"
+#include "core/input/input_event.h"
+#include "core/math/vector2.h"
+#include "core/object/object.h"
+#include "core/object/object_id.h"
+#include "core/object/ref_counted.h"
+#include "core/string/ustring.h"
+#include "scene/gui/box_container.h"
 #include "scene/gui/dialogs.h"
+#include "scene/main/node.h"
+#include "scene/main/scene_tree.h"
 
 class Button;
 class CheckBox;

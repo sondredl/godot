@@ -31,7 +31,14 @@
 #ifndef INPUT_EVENT_CONFIGURATION_DIALOG_H
 #define INPUT_EVENT_CONFIGURATION_DIALOG_H
 
+#include "core/input/input_event.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/string/ustring.h"
+#include "scene/gui/box_container.h"
 #include "scene/gui/dialogs.h"
+#include "scene/gui/label.h"
+#include "scene/resources/texture.h"
 
 class OptionButton;
 class Tree;

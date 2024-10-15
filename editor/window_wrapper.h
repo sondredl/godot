@@ -31,9 +31,16 @@
 #ifndef WINDOW_WRAPPER_H
 #define WINDOW_WRAPPER_H
 
+#include "core/input/input_event.h"
+#include "core/input/shortcut.h"
 #include "core/math/rect2.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "scene/gui/button.h"
+#include "scene/gui/control.h"
 #include "scene/gui/margin_container.h"
-#include "scene/gui/menu_button.h"
+#include "scene/gui/popup.h"
+#include "scene/main/node.h"
 
 class Window;
 class HBoxContainer;

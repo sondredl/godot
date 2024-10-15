@@ -188,7 +188,7 @@ private:
 			return pos;
 		}
 		if (num_elements + 1 > MAX_OCCUPANCY * capacity) {
-			ERR_FAIL_COND_V_MSG(capacity_index + 1 == HASH_TABLE_SIZE_MAX, -1, "Hash table maximum capacity reached, aborting insertion.");
+			(capacity_index + 1 == HASH_TABLE_SIZE_MAX, -1, "Hash table maximum capacity reached, aborting insertion.");
 			_resize_and_rehash(capacity_index + 1);
 		}
 

@@ -31,7 +31,12 @@
 #ifndef RENAME_DIALOG_H
 #define RENAME_DIALOG_H
 
+#include "core/error/error_macros.h"
+#include "core/object/object.h"
+#include "core/string/ustring.h"
+#include "core/variant/array.h"
 #include "modules/modules_enabled.gen.h" // For regex.
+#include "scene/main/node.h"
 #ifdef MODULE_REGEX_ENABLED
 
 #include "editor/gui/scene_tree_editor.h"

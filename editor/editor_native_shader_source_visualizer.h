@@ -31,6 +31,9 @@
 #ifndef EDITOR_NATIVE_SHADER_SOURCE_VISUALIZER_H
 #define EDITOR_NATIVE_SHADER_SOURCE_VISUALIZER_H
 
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/templates/rid.h"
 #include "scene/gui/dialogs.h"
 #include "scene/gui/tab_container.h"
 #include "scene/resources/syntax_highlighter.h"

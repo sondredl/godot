@@ -31,9 +31,14 @@
 #ifndef EDITOR_UNDO_REDO_MANAGER_H
 #define EDITOR_UNDO_REDO_MANAGER_H
 
-#include "core/object/class_db.h"
 #include "core/object/object.h"
 #include "core/object/undo_redo.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/variant/binder_common.h"
+#include "core/variant/callable.h"
+#include "core/variant/variant.h"
+#include <cstdint>
 
 class EditorUndoRedoManager : public Object {
 	GDCLASS(EditorUndoRedoManager, Object);

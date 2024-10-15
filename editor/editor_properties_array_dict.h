@@ -31,9 +31,7 @@
 #ifndef EDITOR_PROPERTIES_ARRAY_DICT_H
 #define EDITOR_PROPERTIES_ARRAY_DICT_H
 
-#include "editor/editor_inspector.h"
-#include "editor/editor_locale_dialog.h"
-#include "editor/filesystem_dock.h"
+#include "core/object/object.h"
 
 class Button;
 class EditorSpinSlider;

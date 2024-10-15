@@ -31,15 +31,23 @@
 #ifndef EDITOR_LOG_H
 #define EDITOR_LOG_H
 
+#include "core/error/error_macros.h"
+#include "core/math/color.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
 #include "core/os/thread.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/binder_common.h"
+#include "core/variant/callable.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
-#include "scene/gui/label.h"
 #include "scene/gui/line_edit.h"
-#include "scene/gui/panel_container.h"
 #include "scene/gui/rich_text_label.h"
-#include "scene/gui/texture_button.h"
-#include "scene/gui/texture_rect.h"
+#include "scene/main/timer.h"
+#include "scene/resources/texture.h"
+#include "scene/scene_string_names.h"
 
 class UndoRedo;
 

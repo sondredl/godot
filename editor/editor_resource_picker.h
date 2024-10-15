@@ -31,7 +31,24 @@
 #ifndef EDITOR_RESOURCE_PICKER_H
 #define EDITOR_RESOURCE_PICKER_H
 
+#include "core/input/input_event.h"
+#include "core/io/resource.h"
+#include "core/math/vector2.h"
+#include "core/math/vector2i.h"
+#include "core/object/gdvirtual.gen.inc"
+#include "core/object/object.h"
+#include "core/object/object_id.h"
+#include "core/object/ref_counted.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 #include "scene/gui/box_container.h"
+#include "scene/gui/control.h"
+#include "scene/main/node.h"
+#include "scene/resources/material.h"
+#include "scene/resources/texture.h"
+#include <cstdint>
 
 class Button;
 class ConfirmationDialog;

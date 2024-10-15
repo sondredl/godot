@@ -31,8 +31,15 @@
 #ifndef FIND_IN_FILES_H
 #define FIND_IN_FILES_H
 
-#include "core/templates/hash_map.h"
+#include "core/math/rect2.h"
+#include "core/object/object.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/variant.h"
+#include "scene/gui/control.h"
 #include "scene/gui/dialogs.h"
+#include "scene/gui/label.h"
+#include "scene/main/node.h"
 
 // Performs the actual search
 class FindInFiles : public Node {

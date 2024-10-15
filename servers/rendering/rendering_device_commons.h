@@ -380,7 +380,8 @@ public:
 			}
 			if (width != b.width) {
 				return false;
-			} else if (height != b.height) {
+			}
+			if (height != b.height) {
 				return false;
 			} else if (depth != b.depth) {
 				return false;

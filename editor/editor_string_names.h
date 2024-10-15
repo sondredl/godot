@@ -31,7 +31,9 @@
 #ifndef EDITOR_STRING_NAMES_H
 #define EDITOR_STRING_NAMES_H
 
+#include "core/os/memory.h"
 #include "core/string/string_name.h"
+#include "core/typedefs.h"
 
 class EditorStringNames {
 	static EditorStringNames *singleton;

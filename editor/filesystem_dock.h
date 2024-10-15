@@ -31,17 +31,8 @@
 #ifndef FILESYSTEM_DOCK_H
 #define FILESYSTEM_DOCK_H
 
-#include "editor/dependency_editor.h"
-#include "editor/editor_file_system.h"
-#include "editor/file_info.h"
-#include "editor/plugins/script_editor_plugin.h"
-#include "editor/script_create_dialog.h"
-#include "scene/gui/box_container.h"
-#include "scene/gui/control.h"
-#include "scene/gui/dialogs.h"
-#include "scene/gui/menu_button.h"
-#include "scene/gui/split_container.h"
-#include "scene/gui/tree.h"
+#include "core/object/object.h"
+#include "core/variant/binder_common.h"
 
 class CreateDialog;
 class EditorDirDialog;

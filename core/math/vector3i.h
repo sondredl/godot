@@ -291,9 +291,8 @@ bool Vector3i::operator<(const Vector3i &p_v) const {
 		}
 		return y < p_v.y;
 
-	} else {
-		return x < p_v.x;
 	}
+	return x < p_v.x;
 }
 
 bool Vector3i::operator>(const Vector3i &p_v) const {
@@ -303,9 +302,8 @@ bool Vector3i::operator>(const Vector3i &p_v) const {
 		}
 		return y > p_v.y;
 
-	} else {
-		return x > p_v.x;
 	}
+	return x > p_v.x;
 }
 
 bool Vector3i::operator<=(const Vector3i &p_v) const {
@@ -315,9 +313,8 @@ bool Vector3i::operator<=(const Vector3i &p_v) const {
 		}
 		return y < p_v.y;
 
-	} else {
-		return x < p_v.x;
 	}
+	return x < p_v.x;
 }
 
 bool Vector3i::operator>=(const Vector3i &p_v) const {
@@ -327,9 +324,8 @@ bool Vector3i::operator>=(const Vector3i &p_v) const {
 		}
 		return y > p_v.y;
 
-	} else {
-		return x > p_v.x;
 	}
+	return x > p_v.x;
 }
 
 void Vector3i::zero() {

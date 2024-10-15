@@ -31,7 +31,6 @@
 #ifndef EDITOR_PATHS_H
 #define EDITOR_PATHS_H
 
-#include "core/object/class_db.h"
 #include "core/object/object.h"
 #include "core/string/ustring.h"
 

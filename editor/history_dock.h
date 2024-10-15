@@ -31,6 +31,7 @@
 #ifndef HISTORY_DOCK_H
 #define HISTORY_DOCK_H
 
+#include "core/object/object.h"
 #include "scene/gui/box_container.h"
 
 class CheckBox;

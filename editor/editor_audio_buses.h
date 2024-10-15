@@ -31,6 +31,15 @@
 #ifndef EDITOR_AUDIO_BUSES_H
 #define EDITOR_AUDIO_BUSES_H
 
+#include "core/input/input_enums.h"
+#include "core/input/input_event.h"
+#include "core/math/color.h"
+#include "core/math/vector2.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/string/ustring.h"
+#include "core/typedefs.h"
+#include "core/variant/variant.h"
 #include "editor/plugins/editor_plugin.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
@@ -43,8 +52,10 @@
 #include "scene/gui/scroll_container.h"
 #include "scene/gui/slider.h"
 #include "scene/gui/texture_progress_bar.h"
-#include "scene/gui/texture_rect.h"
 #include "scene/gui/tree.h"
+#include "scene/main/timer.h"
+#include "scene/resources/font.h"
+#include "scene/resources/texture.h"
 
 class EditorAudioBuses;
 class EditorFileDialog;

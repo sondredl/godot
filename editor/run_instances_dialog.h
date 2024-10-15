@@ -31,6 +31,11 @@
 #ifndef RUN_INSTANCES_DIALOG_H
 #define RUN_INSTANCES_DIALOG_H
 
+#include "core/object/object.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/typed_array.h"
 #include "scene/gui/dialogs.h"
 
 class CheckBox;

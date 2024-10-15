@@ -32,8 +32,8 @@
 #define POT_GENERATOR_H
 
 #include "core/io/file_access.h"
-#include "core/templates/hash_map.h"
-#include "core/templates/hash_set.h"
+#include "core/object/ref_counted.h"
+#include "core/string/ustring.h"
 
 //#define DEBUG_POT
 

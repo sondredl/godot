@@ -31,8 +31,19 @@
 #ifndef EDITOR_SETTINGS_DIALOG_H
 #define EDITOR_SETTINGS_DIALOG_H
 
+#include "core/input/input_enums.h"
+#include "core/input/input_event.h"
+#include "core/math/vector2.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/string/ustring.h"
+#include "core/variant/array.h"
+#include "core/variant/variant.h"
 #include "editor/action_map_editor.h"
+#include "scene/gui/control.h"
 #include "scene/gui/dialogs.h"
+#include "scene/gui/label.h"
+#include "scene/main/timer.h"
 
 class CheckButton;
 class PanelContainer;

@@ -31,6 +31,9 @@
 #ifndef EDITOR_SECTIONED_INSPECTOR_H
 #define EDITOR_SECTIONED_INSPECTOR_H
 
+#include "core/object/object.h"
+#include "core/object/object_id.h"
+#include "core/string/ustring.h"
 #include "scene/gui/split_container.h"
 
 class CheckButton;

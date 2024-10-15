@@ -31,8 +31,21 @@
 #ifndef EDITOR_DATA_H
 #define EDITOR_DATA_H
 
-#include "core/templates/list.h"
+#include "core/io/resource.h"
+#include "core/object/object.h"
+#include "core/object/object_id.h"
+#include "core/object/ref_counted.h"
+#include "core/object/script_instance.h"
+#include "core/string/node_path.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/callable.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/typed_array.h"
+#include "core/variant/variant.h"
 #include "scene/resources/texture.h"
+#include <cstdint>
 
 class ConfigFile;
 class EditorPlugin;

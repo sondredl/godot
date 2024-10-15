@@ -31,13 +31,13 @@
 #ifndef EDITOR_ABOUT_H
 #define EDITOR_ABOUT_H
 
+#include "core/object/object.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
 #include "scene/gui/dialogs.h"
 #include "scene/gui/item_list.h"
 #include "scene/gui/rich_text_label.h"
 #include "scene/gui/scroll_container.h"
-#include "scene/gui/separator.h"
-#include "scene/gui/split_container.h"
-#include "scene/gui/tab_container.h"
 #include "scene/gui/texture_rect.h"
 #include "scene/gui/tree.h"
 

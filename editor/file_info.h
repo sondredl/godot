@@ -31,7 +31,9 @@
 #ifndef FILE_INFO_H
 #define FILE_INFO_H
 
-#include "core/variant/variant.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
 
 enum class FileSortOption {
 	FILE_SORT_NAME = 0,

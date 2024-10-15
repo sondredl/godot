@@ -31,6 +31,9 @@
 #ifndef SURFACE_UPGRADE_TOOL_H
 #define SURFACE_UPGRADE_TOOL_H
 
+#include "core/object/object.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
 #include "scene/gui/dialogs.h"
 
 class EditorFileSystemDirectory;

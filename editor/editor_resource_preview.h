@@ -31,10 +31,24 @@
 #ifndef EDITOR_RESOURCE_PREVIEW_H
 #define EDITOR_RESOURCE_PREVIEW_H
 
+#include "core/io/file_access.h"
+#include "core/io/resource.h"
+#include "core/math/vector2.h"
+#include "core/math/vector2i.h"
+#include "core/object/gdvirtual.gen.inc"
+#include "core/object/object.h"
+#include "core/object/object_id.h"
+#include "core/object/ref_counted.h"
 #include "core/os/semaphore.h"
 #include "core/os/thread.h"
+#include "core/string/string_name.h"
+#include "core/templates/rid.h"
 #include "core/templates/safe_refcount.h"
+#include "core/templates/vector.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 #include "scene/main/node.h"
+#include <cstdint>
 
 class ImageTexture;
 class Texture2D;

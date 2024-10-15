@@ -31,10 +31,32 @@
 #ifndef EDITOR_INSPECTOR_H
 #define EDITOR_INSPECTOR_H
 
+#include "core/input/input_event.h"
+#include "core/io/resource.h"
+#include "core/math/color.h"
+#include "core/math/rect2.h"
+#include "core/math/vector2.h"
+#include "core/object/gdvirtual.gen.inc"
+#include "core/object/object.h"
+#include "core/object/object_id.h"
+#include "core/object/ref_counted.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
+#include "core/variant/type_info.h"
+#include "core/variant/variant.h"
 #include "editor/add_metadata_dialog.h"
 #include "editor_property_name_processor.h"
 #include "scene/gui/box_container.h"
+#include "scene/gui/container.h"
+#include "scene/gui/control.h"
+#include "scene/gui/label.h"
 #include "scene/gui/scroll_container.h"
+#include "scene/main/node.h"
+#include "scene/main/timer.h"
+#include "scene/resources/texture.h"
+#include <cstdint>
 
 class AcceptDialog;
 class Button;

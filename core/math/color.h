@@ -291,9 +291,9 @@ bool Color::operator<(const Color &p_color) const {
 			}
 			return (b < p_color.b);
 
-		} else {
-			return g < p_color.g;
 		}
+		return g < p_color.g;
+
 	} else {
 		return r < p_color.r;
 	}

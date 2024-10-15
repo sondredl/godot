@@ -31,6 +31,9 @@
 #ifndef EDITOR_PROPERTY_NAME_PROCESSOR_H
 #define EDITOR_PROPERTY_NAME_PROCESSOR_H
 
+#include "core/object/object.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
 #include "scene/main/node.h"
 
 class EditorPropertyNameProcessor : public Node {

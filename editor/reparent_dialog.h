@@ -31,6 +31,7 @@
 #ifndef REPARENT_DIALOG_H
 #define REPARENT_DIALOG_H
 
+#include "core/object/object.h"
 #include "scene/gui/dialogs.h"
 
 class CheckBox;

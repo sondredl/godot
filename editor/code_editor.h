@@ -31,14 +31,27 @@
 #ifndef CODE_EDITOR_H
 #define CODE_EDITOR_H
 
+#include "core/input/input_event.h"
+#include "core/math/color.h"
+#include "core/math/vector2i.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/object/script_language.h"
+#include "core/string/ustring.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
 #include "scene/gui/check_box.h"
 #include "scene/gui/code_edit.h"
+#include "scene/gui/control.h"
 #include "scene/gui/dialogs.h"
 #include "scene/gui/label.h"
 #include "scene/gui/line_edit.h"
+#include "scene/gui/texture_button.h"
 #include "scene/main/timer.h"
+#include "scene/resources/texture.h"
+#include <cstdint>
 
 class MenuButton;
 

@@ -341,11 +341,10 @@ public:
 		if (d <= 0.0F) {
 			return p_segment[0]; // Before first point.
 		}
-		if (d >= 1.0f) {
+		if (d >= 1.0F) {
 			return p_segment[1]; // After first point.
-		} else {
-			return p_segment[0] + n * d; // Inside.
 		}
+		return p_segment[0] + n * d; // Inside.
 	}
 
 	static Vector3 get_closest_point_to_segment_uncapped(const Vector3 &p_point, const Vector3 *p_segment) {

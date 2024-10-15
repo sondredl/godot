@@ -32,7 +32,12 @@
 #define DOC_TOOLS_H
 
 #include "core/doc_data.h"
-#include "core/templates/rb_set.h"
+#include "core/error/error_list.h"
+#include "core/io/xml_parser.h"
+#include "core/object/ref_counted.h"
+#include "core/string/ustring.h"
+#include "core/variant/type_info.h"
+#include <cstdint>
 
 class DocTools {
 public:

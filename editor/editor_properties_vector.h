@@ -31,6 +31,10 @@
 #ifndef EDITOR_PROPERTIES_VECTOR_H
 #define EDITOR_PROPERTIES_VECTOR_H
 
+#include "core/object/object.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/variant.h"
 #include "editor/editor_inspector.h"
 
 class EditorSpinSlider;

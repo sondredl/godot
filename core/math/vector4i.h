@@ -304,9 +304,9 @@ bool Vector4i::operator<(const Vector4i &p_v) const {
 			}
 			return z < p_v.z;
 
-		} else {
-			return y < p_v.y;
 		}
+		return y < p_v.y;
+
 	} else {
 		return x < p_v.x;
 	}
@@ -320,9 +320,9 @@ bool Vector4i::operator>(const Vector4i &p_v) const {
 			}
 			return z > p_v.z;
 
-		} else {
-			return y > p_v.y;
 		}
+		return y > p_v.y;
+
 	} else {
 		return x > p_v.x;
 	}
@@ -336,9 +336,9 @@ bool Vector4i::operator<=(const Vector4i &p_v) const {
 			}
 			return z < p_v.z;
 
-		} else {
-			return y < p_v.y;
 		}
+		return y < p_v.y;
+
 	} else {
 		return x < p_v.x;
 	}
@@ -352,9 +352,9 @@ bool Vector4i::operator>=(const Vector4i &p_v) const {
 			}
 			return z > p_v.z;
 
-		} else {
-			return y > p_v.y;
 		}
+		return y > p_v.y;
+
 	} else {
 		return x > p_v.x;
 	}

@@ -31,7 +31,29 @@
 #ifndef EDITOR_PROPERTIES_H
 #define EDITOR_PROPERTIES_H
 
+#include "core/input/input_event.h"
+#include "core/io/resource.h"
+#include "core/math/color.h"
+#include "core/math/projection.h"
+#include "core/math/rect2.h"
+#include "core/math/transform_3d.h"
+#include "core/math/vector2.h"
+#include "core/math/vector3.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/string/node_path.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/type_info.h"
+#include "core/variant/variant.h"
 #include "editor/editor_inspector.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/control.h"
+#include "scene/gui/label.h"
+#include "scene/main/node.h"
+#include <cstdint>
 
 class CheckBox;
 class ColorPickerButton;

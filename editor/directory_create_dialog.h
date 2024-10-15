@@ -31,6 +31,9 @@
 #ifndef DIRECTORY_CREATE_DIALOG_H
 #define DIRECTORY_CREATE_DIALOG_H
 
+#include "core/object/object.h"
+#include "core/string/ustring.h"
+#include "core/variant/callable.h"
 #include "scene/gui/dialogs.h"
 
 class EditorValidationPanel;

@@ -541,7 +541,8 @@ _FORCE_INLINE_ bool is_str_less(const L *l_ptr, const R *r_ptr) {
 		}
 		if (l == 0) {
 			return true;
-		} else if (r == 0) {
+		}
+		if (r == 0) {
 			return false;
 		} else if (l < r) {
 			return true;

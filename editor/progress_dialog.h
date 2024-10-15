@@ -31,11 +31,16 @@
 #ifndef PROGRESS_DIALOG_H
 #define PROGRESS_DIALOG_H
 
+#include "core/object/object.h"
+#include "core/os/thread_safe.h"
+#include "core/string/ustring.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
 #include "scene/gui/label.h"
 #include "scene/gui/popup.h"
 #include "scene/gui/progress_bar.h"
+#include "scene/main/window.h"
+#include <cstdint>
 
 class BackgroundProgress : public HBoxContainer {
 	GDCLASS(BackgroundProgress, HBoxContainer);

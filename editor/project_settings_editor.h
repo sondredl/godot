@@ -32,6 +32,12 @@
 #define PROJECT_SETTINGS_EDITOR_H
 
 #include "core/config/project_settings.h"
+#include "core/input/input_event.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/string/ustring.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 #include "editor/action_map_editor.h"
 #include "editor/editor_autoload_settings.h"
 #include "editor/editor_data.h"
@@ -41,7 +47,12 @@
 #include "editor/localization_editor.h"
 #include "editor/plugins/editor_plugin_settings.h"
 #include "editor/shader_globals_editor.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/option_button.h"
+#include "scene/gui/panel_container.h"
 #include "scene/gui/tab_container.h"
+#include "scene/gui/texture_rect.h"
+#include "scene/main/timer.h"
 
 class FileSystemDock;
 

@@ -31,11 +31,12 @@
 #ifndef EDITOR_VCS_INTERFACE_H
 #define EDITOR_VCS_INTERFACE_H
 
-#include "core/object/class_db.h"
-#include "core/object/gdvirtual.gen.inc"
+#include "core/object/object.h"
 #include "core/string/ustring.h"
-#include "core/variant/type_info.h"
+#include "core/variant/binder_common.h"
+#include "core/variant/dictionary.h"
 #include "core/variant/typed_array.h"
+#include <cstdint>
 
 class EditorVCSInterface : public Object {
 	GDCLASS(EditorVCSInterface, Object)

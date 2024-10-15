@@ -31,8 +31,21 @@
 #ifndef PROJECT_MANAGER_H
 #define PROJECT_MANAGER_H
 
+#include "core/input/input_event.h"
+#include "core/math/vector2.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/string/ustring.h"
+#include "core/variant/variant.h"
+#include "scene/gui/base_button.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/button.h"
+#include "scene/gui/control.h"
 #include "scene/gui/dialogs.h"
-#include "scene/gui/scroll_container.h"
+#include "scene/gui/label.h"
+#include "scene/gui/panel.h"
+#include "scene/resources/texture.h"
+#include "scene/resources/theme.h"
 
 class CheckBox;
 class EditorAbout;

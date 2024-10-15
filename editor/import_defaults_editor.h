@@ -31,6 +31,7 @@
 #ifndef IMPORT_DEFAULTS_EDITOR_H
 #define IMPORT_DEFAULTS_EDITOR_H
 
+#include "core/object/object.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
 #include "scene/gui/option_button.h"

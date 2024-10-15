@@ -31,14 +31,22 @@
 #ifndef EDITOR_FILE_SYSTEM_H
 #define EDITOR_FILE_SYSTEM_H
 
+#include "core/error/error_list.h"
 #include "core/io/dir_access.h"
+#include "core/io/resource.h"
 #include "core/io/resource_importer.h"
 #include "core/io/resource_loader.h"
+#include "core/io/resource_uid.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
 #include "core/os/thread.h"
 #include "core/os/thread_safe.h"
-#include "core/templates/hash_set.h"
+#include "core/string/string_name.h"
 #include "core/templates/safe_refcount.h"
+#include "core/templates/vector.h"
+#include "core/variant/variant.h"
 #include "scene/main/node.h"
+#include <cstdint>
 
 class FileAccess;
 

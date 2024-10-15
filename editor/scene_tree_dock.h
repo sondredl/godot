@@ -31,10 +31,31 @@
 #ifndef SCENE_TREE_DOCK_H
 #define SCENE_TREE_DOCK_H
 
+#include "core/input/input_event.h"
+#include "core/io/resource.h"
+#include "core/math/vector2.h"
+#include "core/object/object.h"
+#include "core/object/object_id.h"
+#include "core/object/ref_counted.h"
+#include "core/object/script_language.h"
+#include "core/string/node_path.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
+#include "core/variant/variant.h"
 #include "editor/gui/scene_tree_editor.h"
 #include "editor/script_create_dialog.h"
 #include "scene/gui/box_container.h"
-#include "scene/resources/animation.h"
+#include "scene/gui/button.h"
+#include "scene/gui/control.h"
+#include "scene/gui/dialogs.h"
+#include "scene/gui/label.h"
+#include "scene/gui/popup_menu.h"
+#include "scene/gui/tree.h"
+#include "scene/main/node.h"
+#include "scene/resources/material.h"
+#include "scene/resources/shader.h"
 
 class CheckBox;
 class EditorData;

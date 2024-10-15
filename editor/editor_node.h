@@ -31,11 +31,38 @@
 #ifndef EDITOR_NODE_H
 #define EDITOR_NODE_H
 
+#include "core/error/error_list.h"
+#include "core/error/error_macros.h"
+#include "core/input/input_event.h"
+#include "core/io/resource.h"
+#include "core/math/color.h"
+#include "core/math/transform_2d.h"
+#include "core/math/transform_3d.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
 #include "core/object/script_language.h"
+#include "core/os/os.h"
+#include "core/os/thread.h"
+#include "core/string/node_path.h"
+#include "core/string/print_string.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
 #include "core/templates/safe_refcount.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
+#include "core/variant/callable.h"
+#include "core/variant/dictionary.h"
 #include "editor/editor_data.h"
 #include "editor/editor_folding.h"
 #include "editor/plugins/editor_plugin.h"
+#include "scene/3d/camera_3d.h"
+#include "scene/gui/control.h"
+#include "scene/main/node.h"
+#include "scene/main/timer.h"
+#include "scene/resources/texture.h"
+#include "scene/resources/theme.h"
+#include "servers/display_server.h"
+#include <cstdint>
 
 typedef void (*EditorNodeInitCallback)();
 typedef void (*EditorPluginInitializeCallback)();

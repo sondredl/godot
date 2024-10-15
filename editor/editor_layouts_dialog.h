@@ -31,6 +31,10 @@
 #ifndef EDITOR_LAYOUTS_DIALOG_H
 #define EDITOR_LAYOUTS_DIALOG_H
 
+#include "core/input/input_event.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "scene/gui/box_container.h"
 #include "scene/gui/dialogs.h"
 
 class LineEdit;

@@ -465,7 +465,7 @@ public:
 			if (likely(p_from <= p_to)) {
 				return p_s <= p_from ? 0.0F : 1.0F;
 			}
-			return p_s <= p_to ? 1.0f : 0.0f;
+			return p_s <= p_to ? 1.0F : 0.0F;
 		}
 		float s = CLAMP((p_s - p_from) / (p_to - p_from), 0.0F, 1.0F);
 		return s * s * (3.0F - 2.0F * s);

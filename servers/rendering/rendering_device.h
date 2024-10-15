@@ -316,7 +316,8 @@ public:
 			}
 			if (swizzle_r != p_other.swizzle_r) {
 				return false;
-			} else if (swizzle_g != p_other.swizzle_g) {
+			}
+			if (swizzle_g != p_other.swizzle_g) {
 				return false;
 			} else if (swizzle_b != p_other.swizzle_b) {
 				return false;
@@ -554,9 +555,9 @@ private:
 							}
 							return final_depth_action < p_key.final_depth_action;
 
-						} else {
-							return initial_depth_action < p_key.initial_depth_action;
 						}
+						return initial_depth_action < p_key.initial_depth_action;
+
 					} else {
 						return final_color_action < p_key.final_color_action;
 					}

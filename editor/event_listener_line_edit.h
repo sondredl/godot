@@ -31,6 +31,10 @@
 #ifndef EVENT_LISTENER_LINE_EDIT_H
 #define EVENT_LISTENER_LINE_EDIT_H
 
+#include "core/input/input_event.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/string/ustring.h"
 #include "scene/gui/line_edit.h"
 
 enum InputType {

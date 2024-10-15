@@ -31,9 +31,16 @@
 #ifndef DEPENDENCY_EDITOR_H
 #define DEPENDENCY_EDITOR_H
 
+#include "core/input/input_enums.h"
+#include "core/math/vector2.h"
+#include "core/object/object.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "scene/gui/button.h"
 #include "scene/gui/dialogs.h"
 #include "scene/gui/item_list.h"
-#include "scene/gui/tab_container.h"
+#include "scene/gui/label.h"
+#include "scene/gui/popup_menu.h"
 #include "scene/gui/tree.h"
 
 class EditorFileDialog;

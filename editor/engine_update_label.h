@@ -31,6 +31,10 @@
 #ifndef ENGINE_UPDATE_LABEL_H
 #define ENGINE_UPDATE_LABEL_H
 
+#include "core/math/color.h"
+#include "core/object/object.h"
+#include "core/string/ustring.h"
+#include "core/variant/variant.h"
 #include "scene/gui/link_button.h"
 
 class HTTPRequest;

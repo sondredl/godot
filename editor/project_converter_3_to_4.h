@@ -55,7 +55,6 @@ public:
 #else // Has regex.
 
 #include "core/string/ustring.h"
-#include "core/templates/local_vector.h"
 #include "core/templates/vector.h"
 
 struct SourceLine {

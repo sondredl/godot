@@ -31,7 +31,18 @@
 #ifndef ACTION_MAP_EDITOR_H
 #define ACTION_MAP_EDITOR_H
 
+#include "core/input/input_enums.h"
+#include "core/input/input_event.h"
+#include "core/math/vector2.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 #include "scene/gui/control.h"
+#include "scene/resources/texture.h"
 
 class Button;
 class HBoxContainer;

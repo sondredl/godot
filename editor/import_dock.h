@@ -32,11 +32,16 @@
 #define IMPORT_DOCK_H
 
 #include "core/io/config_file.h"
-#include "core/io/resource_importer.h"
-#include "editor/editor_file_system.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
 #include "editor/editor_inspector.h"
 #include "scene/gui/box_container.h"
+#include "scene/gui/control.h"
 #include "scene/gui/dialogs.h"
+#include "scene/gui/label.h"
 #include "scene/gui/menu_button.h"
 #include "scene/gui/option_button.h"
 #include "scene/gui/popup_menu.h"

@@ -31,8 +31,19 @@
 #ifndef EDITOR_DOCK_MANAGER_H
 #define EDITOR_DOCK_MANAGER_H
 
+#include "core/input/input_event.h"
+#include "core/math/rect2.h"
+#include "core/math/rect2i.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/dictionary.h"
 #include "scene/gui/popup.h"
 #include "scene/gui/split_container.h"
+#include "scene/main/node.h"
+#include "scene/resources/texture.h"
 
 class Button;
 class ConfigFile;

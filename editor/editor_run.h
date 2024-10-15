@@ -31,7 +31,9 @@
 #ifndef EDITOR_RUN_H
 #define EDITOR_RUN_H
 
+#include "core/error/error_list.h"
 #include "core/os/os.h"
+#include "core/string/ustring.h"
 
 class EditorRun {
 public:

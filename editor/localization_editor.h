@@ -31,6 +31,10 @@
 #ifndef LOCALIZATION_EDITOR_H
 #define LOCALIZATION_EDITOR_H
 
+#include "core/input/input_enums.h"
+#include "core/object/object.h"
+#include "core/string/ustring.h"
+#include "core/variant/variant.h"
 #include "editor/editor_locale_dialog.h"
 #include "scene/gui/check_box.h"
 #include "scene/gui/tree.h"

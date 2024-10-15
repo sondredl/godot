@@ -31,6 +31,10 @@
 #ifndef EDITOR_MAIN_SCREEN_H
 #define EDITOR_MAIN_SCREEN_H
 
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
 #include "scene/gui/panel_container.h"
 
 class Button;

@@ -31,6 +31,14 @@
 #ifndef PROPERTY_SELECTOR_H
 #define PROPERTY_SELECTOR_H
 
+#include "core/input/input_event.h"
+#include "core/object/object.h"
+#include "core/object/object_id.h"
+#include "core/object/ref_counted.h"
+#include "core/object/script_instance.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/variant.h"
 #include "scene/gui/dialogs.h"
 
 class EditorHelpBit;

@@ -31,6 +31,12 @@
 #ifndef EDITOR_FOLDING_H
 #define EDITOR_FOLDING_H
 
+#include "core/io/resource.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
 #include "scene/main/node.h"
 
 class EditorFolding {

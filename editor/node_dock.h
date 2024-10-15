@@ -31,7 +31,10 @@
 #ifndef NODE_DOCK_H
 #define NODE_DOCK_H
 
+#include "core/object/object.h"
 #include "groups_editor.h"
+#include "scene/gui/box_container.h"
+#include "scene/main/node.h"
 
 class ConnectionsDock;
 

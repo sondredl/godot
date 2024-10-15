@@ -31,6 +31,8 @@
 #ifndef EDITOR_RUN_NATIVE_H
 #define EDITOR_RUN_NATIVE_H
 
+#include "core/error/error_list.h"
+#include "core/object/object.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/dialogs.h"
 #include "scene/gui/menu_button.h"

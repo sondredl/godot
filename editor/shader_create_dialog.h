@@ -31,13 +31,14 @@
 #ifndef SHADER_CREATE_DIALOG_H
 #define SHADER_CREATE_DIALOG_H
 
-#include "editor/editor_settings.h"
+#include "core/object/object.h"
+#include "core/string/ustring.h"
+#include "scene/gui/button.h"
 #include "scene/gui/check_box.h"
 #include "scene/gui/dialogs.h"
 #include "scene/gui/grid_container.h"
 #include "scene/gui/line_edit.h"
 #include "scene/gui/option_button.h"
-#include "scene/gui/panel_container.h"
 
 class EditorFileDialog;
 class EditorValidationPanel;
