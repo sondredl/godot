@@ -37,14 +37,14 @@ namespace NavigationDefaults3D {
 
 // To find the polygons edges the vertices are displaced in a grid where
 // each cell has the following cell_size and cell_height.
-constexpr float navmesh_cell_size{ 0.25f }; // Must match ProjectSettings default 3D cell_size and NavigationMesh cell_size.
-constexpr float navmesh_cell_height{ 0.25f }; // Must match ProjectSettings default 3D cell_height and NavigationMesh cell_height.
+constexpr float navmesh_cell_size{ 0.25F }; // Must match ProjectSettings default 3D cell_size and NavigationMesh cell_size.
+constexpr float navmesh_cell_height{ 0.25F }; // Must match ProjectSettings default 3D cell_height and NavigationMesh cell_height.
 constexpr auto navmesh_cell_size_hint{ "0.001,100,0.001,or_greater" };
 
 // Map.
 
-constexpr float edge_connection_margin{ 0.25f };
-constexpr float link_connection_radius{ 1.0f };
+constexpr float edge_connection_margin{ 0.25F };
+constexpr float link_connection_radius{ 1.0F };
 
 } //namespace NavigationDefaults3D
 
@@ -53,13 +53,13 @@ namespace NavigationDefaults2D {
 // Rasterization.
 
 // Same as in 3D but larger since 1px is treated as 1m.
-constexpr float navmesh_cell_size{ 1.0f }; // Must match ProjectSettings default 2D cell_size.
+constexpr float navmesh_cell_size{ 1.0F }; // Must match ProjectSettings default 2D cell_size.
 constexpr auto navmesh_cell_size_hint{ "0.001,100,0.001,or_greater" };
 
 // Map.
 
-constexpr float edge_connection_margin{ 1.0f };
-constexpr float link_connection_radius{ 4.0f };
+constexpr float edge_connection_margin{ 1.0F };
+constexpr float link_connection_radius{ 4.0F };
 
 } //namespace NavigationDefaults2D
 

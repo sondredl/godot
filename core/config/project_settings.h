@@ -145,7 +145,6 @@ protected:
 
 	void _add_builtin_input_map();
 
-protected:
 	static void _bind_methods();
 
 public:
@@ -190,7 +189,7 @@ public:
 	Error save();
 	void set_custom_property_info(const PropertyInfo &p_info);
 	const HashMap<StringName, PropertyInfo> &get_custom_property_info() const;
-	uint64_t get_last_saved_time() { return last_save_time; }
+	uint64_t get_last_saved_time() const { return last_save_time; }
 
 	List<String> get_input_presets() const { return input_presets; }
 
@@ -220,12 +219,12 @@ public:
 	void load_scene_groups_cache();
 
 #ifdef TOOLS_ENABLED
-	virtual void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
+	void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
 #endif
 
 	ProjectSettings();
-	ProjectSettings(const String &p_path);
-	~ProjectSettings();
+	explicit ProjectSettings(const String &p_path);
+	~ProjectSettings() override;
 };
 
 // Not a macro any longer.

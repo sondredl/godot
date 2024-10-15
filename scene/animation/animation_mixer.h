@@ -197,7 +197,7 @@ protected:
 		TrackCacheTransform() {
 			type = Animation::TYPE_POSITION_3D;
 		}
-		~TrackCacheTransform() {}
+		~TrackCacheTransform() override {}
 	};
 
 	struct RootMotionCache {
@@ -218,7 +218,7 @@ protected:
 				shape_index(p_other.shape_index) {}
 
 		TrackCacheBlendShape() { type = Animation::TYPE_BLEND_SHAPE; }
-		~TrackCacheBlendShape() {}
+		~TrackCacheBlendShape() override {}
 	};
 
 	struct TrackCacheValue : public TrackCache {
@@ -248,7 +248,7 @@ protected:
 				element_size(p_other.element_size) {}
 
 		TrackCacheValue() { type = Animation::TYPE_VALUE; }
-		~TrackCacheValue() {
+		~TrackCacheValue() override {
 			// Clear ref to avoid leaking.
 			init_value = Variant();
 			value = Variant();
@@ -257,7 +257,7 @@ protected:
 
 	struct TrackCacheMethod : public TrackCache {
 		TrackCacheMethod() { type = Animation::TYPE_METHOD; }
-		~TrackCacheMethod() {}
+		~TrackCacheMethod() override {}
 	};
 
 	// Audio stream information for each audio stream placed on the track.
@@ -295,7 +295,7 @@ protected:
 		TrackCacheAudio() {
 			type = Animation::TYPE_AUDIO;
 		}
-		~TrackCacheAudio() {}
+		~TrackCacheAudio() override {}
 	};
 
 	struct TrackCacheAnimation : public TrackCache {
@@ -304,7 +304,7 @@ protected:
 		TrackCacheAnimation() {
 			type = Animation::TYPE_ANIMATION;
 		}
-		~TrackCacheAnimation() {}
+		~TrackCacheAnimation() override {}
 	};
 
 	RootMotionCache root_motion_cache;
@@ -344,7 +344,7 @@ protected:
 	virtual void _validate_property(PropertyInfo &p_property) const;
 
 #ifdef TOOLS_ENABLED
-	virtual void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
+	void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
 #endif
 
 	static void _bind_methods();
@@ -479,7 +479,7 @@ public:
 #endif // TOOLS_ENABLED
 
 	AnimationMixer();
-	~AnimationMixer();
+	~AnimationMixer() override;
 };
 
 class AnimatedValuesBackup : public RefCounted {
@@ -494,7 +494,7 @@ public:
 
 	AnimationMixer::TrackCache *get_cache_copy(AnimationMixer::TrackCache *p_cache) const;
 
-	~AnimatedValuesBackup() { clear_data(); }
+	~AnimatedValuesBackup() override { clear_data(); }
 };
 
 VARIANT_ENUM_CAST(AnimationMixer::AnimationCallbackModeProcess);

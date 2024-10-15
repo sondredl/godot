@@ -72,12 +72,12 @@ public:
 	static String find_extension_library(const String &p_path, Ref<ConfigFile> p_config, std::function<bool(String)> p_has_feature, PackedStringArray *r_tags = nullptr);
 	static Vector<SharedObject> find_extension_dependencies(const String &p_path, Ref<ConfigFile> p_config, std::function<bool(String)> p_has_feature);
 
-	virtual Error open_library(const String &p_path) override;
-	virtual Error initialize(GDExtensionInterfaceGetProcAddress p_get_proc_address, const Ref<GDExtension> &p_extension, GDExtensionInitialization *r_initialization) override;
-	virtual void close_library() override;
-	virtual bool is_library_open() const override;
-	virtual bool has_library_changed() const override;
-	virtual bool library_exists() const override;
+	Error open_library(const String &p_path) override;
+	Error initialize(GDExtensionInterfaceGetProcAddress p_get_proc_address, const Ref<GDExtension> &p_extension, GDExtensionInitialization *r_initialization) override;
+	void close_library() override;
+	bool is_library_open() const override;
+	bool has_library_changed() const override;
+	bool library_exists() const override;
 
 	Error parse_gdextension_file(const String &p_path);
 };

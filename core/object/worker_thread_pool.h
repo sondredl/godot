@@ -194,7 +194,7 @@ private:
 		C *instance;
 		M method;
 		U userdata;
-		virtual void callback() override {
+		void callback() override {
 			(instance->*method)(userdata);
 		}
 	};
@@ -204,7 +204,7 @@ private:
 		C *instance;
 		M method;
 		U userdata;
-		virtual void callback_indexed(uint32_t p_index) override {
+		void callback_indexed(uint32_t p_index) override {
 			(instance->*method)(p_index, userdata);
 		}
 	};
@@ -280,7 +280,7 @@ public:
 	void exit_languages_threads();
 	void finish();
 	WorkerThreadPool();
-	~WorkerThreadPool();
+	~WorkerThreadPool() override;
 };
 
 #endif // WORKER_THREAD_POOL_H

@@ -42,13 +42,13 @@ template <typename T>
 class TypedArray : public Array {
 public:
 	_FORCE_INLINE_ void operator=(const Array &p_array) {
-		ERR_FAIL_COND_MSG(!is_same_typed(p_array), "Cannot assign an array with a different element type.");
+		(!is_same_typed(p_array), "Cannot assign an array with a different element type.");
 		_ref(p_array);
 	}
-	_FORCE_INLINE_ TypedArray(const Variant &p_variant) :
+	_FORCE_INLINE_ explicit TypedArray(const Variant &p_variant) :
 			TypedArray(Array(p_variant)) {
 	}
-	_FORCE_INLINE_ TypedArray(const Array &p_array) {
+	_FORCE_INLINE_ explicit TypedArray(const Array &p_array) {
 		set_typed(Variant::OBJECT, T::get_class_static(), Variant());
 		if (is_same_typed(p_array)) {
 			_ref(p_array);
@@ -100,55 +100,10 @@ struct VariantInternalAccessor<const TypedArray<T> &> {
 
 // All Variant::OBJECT types are intentionally omitted from this list because they are handled by
 // the unspecialized TypedArray definition.
-MAKE_TYPED_ARRAY(bool, Variant::BOOL)
-MAKE_TYPED_ARRAY(uint8_t, Variant::INT)
-MAKE_TYPED_ARRAY(int8_t, Variant::INT)
-MAKE_TYPED_ARRAY(uint16_t, Variant::INT)
-MAKE_TYPED_ARRAY(int16_t, Variant::INT)
-MAKE_TYPED_ARRAY(uint32_t, Variant::INT)
-MAKE_TYPED_ARRAY(int32_t, Variant::INT)
-MAKE_TYPED_ARRAY(uint64_t, Variant::INT)
-MAKE_TYPED_ARRAY(int64_t, Variant::INT)
-MAKE_TYPED_ARRAY(float, Variant::FLOAT)
-MAKE_TYPED_ARRAY(double, Variant::FLOAT)
-MAKE_TYPED_ARRAY(String, Variant::STRING)
-MAKE_TYPED_ARRAY(Vector2, Variant::VECTOR2)
-MAKE_TYPED_ARRAY(Vector2i, Variant::VECTOR2I)
-MAKE_TYPED_ARRAY(Rect2, Variant::RECT2)
-MAKE_TYPED_ARRAY(Rect2i, Variant::RECT2I)
-MAKE_TYPED_ARRAY(Vector3, Variant::VECTOR3)
-MAKE_TYPED_ARRAY(Vector3i, Variant::VECTOR3I)
-MAKE_TYPED_ARRAY(Transform2D, Variant::TRANSFORM2D)
-MAKE_TYPED_ARRAY(Vector4, Variant::VECTOR4)
-MAKE_TYPED_ARRAY(Vector4i, Variant::VECTOR4I)
-MAKE_TYPED_ARRAY(Plane, Variant::PLANE)
-MAKE_TYPED_ARRAY(Quaternion, Variant::QUATERNION)
-MAKE_TYPED_ARRAY(AABB, Variant::AABB)
-MAKE_TYPED_ARRAY(Basis, Variant::BASIS)
-MAKE_TYPED_ARRAY(Transform3D, Variant::TRANSFORM3D)
-MAKE_TYPED_ARRAY(Projection, Variant::PROJECTION)
-MAKE_TYPED_ARRAY(Color, Variant::COLOR)
-MAKE_TYPED_ARRAY(StringName, Variant::STRING_NAME)
-MAKE_TYPED_ARRAY(NodePath, Variant::NODE_PATH)
-MAKE_TYPED_ARRAY(RID, Variant::RID)
-MAKE_TYPED_ARRAY(Callable, Variant::CALLABLE)
-MAKE_TYPED_ARRAY(Signal, Variant::SIGNAL)
-MAKE_TYPED_ARRAY(Dictionary, Variant::DICTIONARY)
-MAKE_TYPED_ARRAY(Array, Variant::ARRAY)
-MAKE_TYPED_ARRAY(PackedByteArray, Variant::PACKED_BYTE_ARRAY)
-MAKE_TYPED_ARRAY(PackedInt32Array, Variant::PACKED_INT32_ARRAY)
-MAKE_TYPED_ARRAY(PackedInt64Array, Variant::PACKED_INT64_ARRAY)
-MAKE_TYPED_ARRAY(PackedFloat32Array, Variant::PACKED_FLOAT32_ARRAY)
-MAKE_TYPED_ARRAY(PackedFloat64Array, Variant::PACKED_FLOAT64_ARRAY)
-MAKE_TYPED_ARRAY(PackedStringArray, Variant::PACKED_STRING_ARRAY)
-MAKE_TYPED_ARRAY(PackedVector2Array, Variant::PACKED_VECTOR2_ARRAY)
-MAKE_TYPED_ARRAY(PackedVector3Array, Variant::PACKED_VECTOR3_ARRAY)
-MAKE_TYPED_ARRAY(PackedColorArray, Variant::PACKED_COLOR_ARRAY)
-MAKE_TYPED_ARRAY(PackedVector4Array, Variant::PACKED_VECTOR4_ARRAY)
-MAKE_TYPED_ARRAY(IPAddress, Variant::STRING)
+(bool, Variant::BOOL)(uint8_t, Variant::INT)(int8_t, Variant::INT)(uint16_t, Variant::INT)(int16_t, Variant::INT)(uint32_t, Variant::INT)(int32_t, Variant::INT)(uint64_t, Variant::INT)(int64_t, Variant::INT)(float, Variant::FLOAT)(double, Variant::FLOAT)(String, Variant::STRING)(Vector2, Variant::VECTOR2)(Vector2i, Variant::VECTOR2I)(Rect2, Variant::RECT2)(Rect2i, Variant::RECT2I)(Vector3, Variant::VECTOR3)(Vector3i, Variant::VECTOR3I)(Transform2D, Variant::TRANSFORM2D)(Vector4, Variant::VECTOR4)(Vector4i, Variant::VECTOR4I)(Plane, Variant::PLANE)(Quaternion, Variant::QUATERNION)(AABB, Variant::AABB)(Basis, Variant::BASIS)(Transform3D, Variant::TRANSFORM3D)(Projection, Variant::PROJECTION)(Color, Variant::COLOR)(StringName, Variant::STRING_NAME)(NodePath, Variant::NODE_PATH)(RID, Variant::RID)(Callable, Variant::CALLABLE)(Signal, Variant::SIGNAL)(Dictionary, Variant::DICTIONARY)(Array, Variant::ARRAY)(PackedByteArray, Variant::PACKED_BYTE_ARRAY)(PackedInt32Array, Variant::PACKED_INT32_ARRAY)(PackedInt64Array, Variant::PACKED_INT64_ARRAY)(PackedFloat32Array, Variant::PACKED_FLOAT32_ARRAY)(PackedFloat64Array, Variant::PACKED_FLOAT64_ARRAY)(PackedStringArray, Variant::PACKED_STRING_ARRAY)(PackedVector2Array, Variant::PACKED_VECTOR2_ARRAY)(PackedVector3Array, Variant::PACKED_VECTOR3_ARRAY)(PackedColorArray, Variant::PACKED_COLOR_ARRAY)(PackedVector4Array, Variant::PACKED_VECTOR4_ARRAY)(IPAddress, Variant::STRING)
 
-template <typename T>
-struct PtrToArg<TypedArray<T>> {
+		template <typename T>
+		struct PtrToArg<TypedArray<T>> {
 	_FORCE_INLINE_ static TypedArray<T> convert(const void *p_ptr) {
 		return TypedArray<T>(*reinterpret_cast<const Array *>(p_ptr));
 	}

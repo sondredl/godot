@@ -193,7 +193,7 @@ private:
 	Color debug_collisions_color;
 	Color debug_collision_contact_color;
 	Color debug_paths_color;
-	float debug_paths_width = 1.0f;
+	float debug_paths_width = 1.0F;
 	Ref<ArrayMesh> debug_contact_mesh;
 	Ref<Material> debug_paths_material;
 	Ref<Material> collision_material;
@@ -320,15 +320,15 @@ public:
 
 	void flush_transform_notifications();
 
-	virtual void initialize() override;
+	void initialize() override;
 
-	virtual void iteration_prepare() override;
+	void iteration_prepare() override;
 
-	virtual bool physics_process(double p_time) override;
-	virtual void iteration_end() override;
-	virtual bool process(double p_time) override;
+	bool physics_process(double p_time) override;
+	void iteration_end() override;
+	bool process(double p_time) override;
 
-	virtual void finalize() override;
+	void finalize() override;
 
 	bool is_auto_accept_quit() const;
 	void set_auto_accept_quit(bool p_enable);
@@ -380,7 +380,7 @@ public:
 	Ref<Material> get_debug_collision_material();
 	Ref<ArrayMesh> get_debug_contact_mesh();
 
-	int get_collision_debug_contact_count() { return collision_debug_contacts; }
+	int get_collision_debug_contact_count() const { return collision_debug_contacts; }
 
 	int64_t get_frame() const;
 
@@ -440,7 +440,7 @@ public:
 #endif
 
 	SceneTree();
-	~SceneTree();
+	~SceneTree() override;
 };
 
 VARIANT_ENUM_CAST(SceneTree::GroupCallFlags);

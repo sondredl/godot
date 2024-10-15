@@ -70,9 +70,9 @@ protected:
 	virtual Node *_convert_particles() = 0;
 
 public:
-	virtual void edit(Object *p_object) override;
-	virtual bool handles(Object *p_object) const override;
-	virtual void make_visible(bool p_visible) override;
+	void edit(Object *p_object) override;
+	bool handles(Object *p_object) const override;
+	void make_visible(bool p_visible) override;
 
 	ParticlesEditorPlugin();
 };
@@ -100,8 +100,8 @@ protected:
 	CheckBox *emission_colors = nullptr;
 	String source_emission_file;
 
-	virtual void _menu_callback(int p_idx) override;
-	virtual void _add_menu_options(PopupMenu *p_menu) override;
+	void _menu_callback(int p_idx) override;
+	void _add_menu_options(PopupMenu *p_menu) override;
 
 	void _file_selected(const String &p_file);
 	void _get_base_emission_mask(PackedVector2Array &r_valid_positions, PackedVector2Array &r_valid_normals, PackedByteArray &r_valid_colors, Vector2i &r_image_size);
@@ -176,8 +176,8 @@ class Particles3DEditorPlugin : public ParticlesEditorPlugin {
 protected:
 	Vector<Face3> geometry;
 
-	virtual void _menu_callback(int p_idx) override;
-	virtual void _add_menu_options(PopupMenu *p_menu) override;
+	void _menu_callback(int p_idx) override;
+	void _add_menu_options(PopupMenu *p_menu) override;
 
 	bool _generate(Vector<Vector3> &r_points, Vector<Vector3> &r_normals);
 	virtual bool _can_generate_points() const = 0;

@@ -90,7 +90,7 @@ class EditorAudioBus : public PanelContainer {
 	bool is_master;
 	mutable bool hovering_drop = false;
 
-	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+	_input(const Ref<InputEvent> &p_event) override;
 	void _effects_gui_input(Ref<InputEvent> p_event);
 	void _bus_popup_pressed(int p_option);
 
@@ -112,9 +112,9 @@ class EditorAudioBus : public PanelContainer {
 	void _effect_rmb(const Vector2 &p_pos, MouseButton p_button);
 	void _update_visible_channels();
 
-	virtual Variant get_drag_data(const Point2 &p_point) override;
-	virtual bool can_drop_data(const Point2 &p_point, const Variant &p_data) const override;
-	virtual void drop_data(const Point2 &p_point, const Variant &p_data) override;
+	get_drag_data(const Point2 &p_point) override;
+	_drop_data(const Point2 &p_point, const Variant &p_data) const override;
+	p_data(const Point2 &p_point, const Variant &p_data) override;
 
 	Variant get_drag_data_fw(const Point2 &p_point, Control *p_from);
 	bool can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const;
@@ -132,14 +132,14 @@ public:
 	void update_bus();
 	void update_send();
 
-	EditorAudioBus(EditorAudioBuses *p_buses = nullptr, bool p_is_master = false);
+	explicit explicit EditorAudioBus(EditorAudioBuses *p_buses = nullptr, bool p_is_master = false);
 };
 
 class EditorAudioBusDrop : public Control {
 	GDCLASS(EditorAudioBusDrop, Control);
 
-	virtual bool can_drop_data(const Point2 &p_point, const Variant &p_data) const override;
-	virtual void drop_data(const Point2 &p_point, const Variant &p_data) override;
+	_drop_data(const Point2 &p_point, const Variant &p_data) const override;
+	p_data(const Point2 &p_point, const Variant &p_data) override;
 
 	mutable bool hovering_drop = false;
 
@@ -249,16 +249,16 @@ private:
 	} theme_cache;
 
 public:
-	const float line_length = 5.0f;
-	const float label_space = 2.0f;
-	const float btm_padding = 9.0f;
-	const float top_padding = 5.0f;
+	const float line_length = 5.0F;
+	const float label_space = 2.0F;
+	const float btm_padding = 9.0F;
+	const float top_padding = 5.0F;
 
 	void add_notch(float p_normalized_offset, float p_db_value, bool p_render_value = false);
 	Size2 get_minimum_size() const override;
 
 private:
-	virtual void _update_theme_item_cache() override;
+	date_theme_item_cache() override;
 
 	static void _bind_methods();
 	void _notification(int p_what);
@@ -274,14 +274,14 @@ class AudioBusesEditorPlugin : public EditorPlugin {
 	EditorAudioBuses *audio_bus_editor = nullptr;
 
 public:
-	virtual String get_name() const override { return "SampleLibrary"; }
+	et_name() const override { return "SampleLibrary"; }
 	bool has_main_screen() const override { return false; }
-	virtual void edit(Object *p_node) override;
-	virtual bool handles(Object *p_node) const override;
-	virtual void make_visible(bool p_visible) override;
+	t(Object *p_node) override;
+	dles(Object *p_node) const override;
+	e_visible(bool p_visible) override;
 
-	AudioBusesEditorPlugin(EditorAudioBuses *p_node);
-	~AudioBusesEditorPlugin();
+	explicit explicit AudioBusesEditorPlugin(EditorAudioBuses *p_node);
+	~AudioBusesEditorPlugin() override override;
 };
 
 #endif // EDITOR_AUDIO_BUSES_H

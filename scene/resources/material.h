@@ -82,14 +82,14 @@ public:
 	void set_render_priority(int p_priority);
 	int get_render_priority() const;
 
-	virtual RID get_rid() const override;
+	RID get_rid() const override;
 	virtual RID get_shader_rid() const;
 	virtual Shader::Mode get_shader_mode() const;
 
 	virtual Ref<Resource> create_placeholder() const;
 
 	Material();
-	virtual ~Material();
+	~Material() override;
 };
 
 class ShaderMaterial : public Material {
@@ -113,8 +113,8 @@ protected:
 	void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
 #endif
 
-	virtual bool _can_do_next_pass() const override;
-	virtual bool _can_use_render_priority() const override;
+	bool _can_do_next_pass() const override;
+	bool _can_use_render_priority() const override;
 
 	void _shader_changed();
 	void _check_material_rid() const;
@@ -126,13 +126,13 @@ public:
 	void set_shader_parameter(const StringName &p_param, const Variant &p_value);
 	Variant get_shader_parameter(const StringName &p_param) const;
 
-	virtual Shader::Mode get_shader_mode() const override;
+	Shader::Mode get_shader_mode() const override;
 
-	virtual RID get_rid() const override;
-	virtual RID get_shader_rid() const override;
+	RID get_rid() const override;
+	RID get_shader_rid() const override;
 
 	ShaderMaterial();
-	~ShaderMaterial();
+	~ShaderMaterial() override;
 };
 
 class StandardMaterial3D;
@@ -480,34 +480,34 @@ private:
 	HashMap<StringName, Variant> pending_params;
 
 	Color albedo;
-	float specular = 0.0f;
-	float metallic = 0.0f;
-	float roughness = 0.0f;
+	float specular = 0.0F;
+	float metallic = 0.0F;
+	float roughness = 0.0F;
 	Color emission;
-	float emission_energy_multiplier = 1.0f;
-	float emission_intensity = 1000.0f; // In nits, equivalent to indoor lighting.
-	float normal_scale = 0.0f;
-	float rim = 0.0f;
-	float rim_tint = 0.0f;
-	float clearcoat = 0.0f;
-	float clearcoat_roughness = 0.0f;
-	float anisotropy = 0.0f;
-	float heightmap_scale = 0.0f;
-	float subsurface_scattering_strength = 0.0f;
-	float transmittance_amount = 0.0f;
+	float emission_energy_multiplier = 1.0F;
+	float emission_intensity = 1000.0F; // In nits, equivalent to indoor lighting.
+	float normal_scale = 0.0F;
+	float rim = 0.0F;
+	float rim_tint = 0.0F;
+	float clearcoat = 0.0F;
+	float clearcoat_roughness = 0.0F;
+	float anisotropy = 0.0F;
+	float heightmap_scale = 0.0F;
+	float subsurface_scattering_strength = 0.0F;
+	float transmittance_amount = 0.0F;
 	Color transmittance_color;
-	float transmittance_depth = 0.0f;
-	float transmittance_boost = 0.0f;
+	float transmittance_depth = 0.0F;
+	float transmittance_boost = 0.0F;
 
 	Color backlight;
-	float refraction = 0.0f;
-	float point_size = 0.0f;
-	float alpha_scissor_threshold = 0.0f;
-	float alpha_hash_scale = 0.0f;
-	float alpha_antialiasing_edge = 0.0f;
+	float refraction = 0.0F;
+	float point_size = 0.0F;
+	float alpha_scissor_threshold = 0.0F;
+	float alpha_hash_scale = 0.0F;
+	float alpha_antialiasing_edge = 0.0F;
 	bool grow_enabled = false;
-	float ao_light_affect = 0.0f;
-	float grow = 0.0f;
+	float ao_light_affect = 0.0F;
+	float grow = 0.0F;
 	int particles_anim_h_frames = 0;
 	int particles_anim_v_frames = 0;
 	bool particles_anim_loop = false;
@@ -518,11 +518,11 @@ private:
 
 	Vector3 uv1_scale;
 	Vector3 uv1_offset;
-	float uv1_triplanar_sharpness = 0.0f;
+	float uv1_triplanar_sharpness = 0.0F;
 
 	Vector3 uv2_scale;
 	Vector3 uv2_offset;
-	float uv2_triplanar_sharpness = 0.0f;
+	float uv2_triplanar_sharpness = 0.0F;
 
 	DetailUV detail_uv = DETAIL_UV_1;
 
@@ -533,14 +533,14 @@ private:
 	bool heightmap_parallax_flip_binormal = false;
 
 	bool proximity_fade_enabled = false;
-	float proximity_fade_distance = 0.0f;
+	float proximity_fade_distance = 0.0F;
 
-	float msdf_pixel_range = 4.f;
-	float msdf_outline_size = 0.f;
+	float msdf_pixel_range = 4.F;
+	float msdf_outline_size = 0.F;
 
 	DistanceFadeMode distance_fade = DISTANCE_FADE_DISABLED;
-	float distance_fade_max_distance = 0.0f;
-	float distance_fade_min_distance = 0.0f;
+	float distance_fade_max_distance = 0.0F;
+	float distance_fade_min_distance = 0.0F;
 
 	BlendMode blend_mode = BLEND_MODE_MIX;
 	BlendMode detail_blend_mode = BLEND_MODE_MIX;
@@ -570,8 +570,8 @@ private:
 protected:
 	static void _bind_methods();
 	void _validate_property(PropertyInfo &p_property) const;
-	virtual bool _can_do_next_pass() const override { return true; }
-	virtual bool _can_use_render_priority() const override { return true; }
+	bool _can_do_next_pass() const override { return true; }
+	bool _can_use_render_priority() const override { return true; }
 
 public:
 	void set_albedo(const Color &p_albedo);
@@ -783,13 +783,13 @@ public:
 
 	static Ref<Material> get_material_for_2d(bool p_shaded, Transparency p_transparency, bool p_double_sided, bool p_billboard = false, bool p_billboard_y = false, bool p_msdf = false, bool p_no_depth = false, bool p_fixed_size = false, TextureFilter p_filter = TEXTURE_FILTER_LINEAR_WITH_MIPMAPS, AlphaAntiAliasing p_alpha_antialiasing_mode = ALPHA_ANTIALIASING_OFF, RID *r_shader_rid = nullptr);
 
-	virtual RID get_rid() const override;
-	virtual RID get_shader_rid() const override;
+	RID get_rid() const override;
+	RID get_shader_rid() const override;
 
-	virtual Shader::Mode get_shader_mode() const override;
+	Shader::Mode get_shader_mode() const override;
 
-	BaseMaterial3D(bool p_orm);
-	virtual ~BaseMaterial3D();
+	explicit BaseMaterial3D(bool p_orm);
+	~BaseMaterial3D() override;
 };
 
 VARIANT_ENUM_CAST(BaseMaterial3D::TextureParam)
@@ -833,8 +833,8 @@ public:
 class PlaceholderMaterial : public Material {
 	GDCLASS(PlaceholderMaterial, Material)
 public:
-	virtual RID get_shader_rid() const override { return RID(); }
-	virtual Shader::Mode get_shader_mode() const override { return Shader::MODE_CANVAS_ITEM; }
+	RID get_shader_rid() const override { return {}; }
+	Shader::Mode get_shader_mode() const override { return Shader::MODE_CANVAS_ITEM; }
 };
 
 //////////////////////

@@ -42,7 +42,7 @@ class MultiMeshInstance3D : public GeometryInstance3D {
 	void _refresh_interpolated();
 
 protected:
-	virtual void _physics_interpolated_changed() override;
+	void _physics_interpolated_changed() override;
 	static void _bind_methods();
 	void _notification(int p_what);
 
@@ -52,10 +52,10 @@ public:
 
 	Array get_meshes() const;
 
-	virtual AABB get_aabb() const override;
+	AABB get_aabb() const override;
 
 	MultiMeshInstance3D();
-	~MultiMeshInstance3D();
+	~MultiMeshInstance3D() override;
 };
 
 #endif // MULTIMESH_INSTANCE_3D_H

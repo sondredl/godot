@@ -90,8 +90,8 @@ public:
 	const uint8_t *get_ipv6() const;
 	void set_ipv6(const uint8_t *p_buf);
 
-	operator String() const;
-	IPAddress(const String &p_string);
+	explicit operator String() const;
+	explicit IPAddress(const String &p_string);
 	IPAddress(uint32_t p_a, uint32_t p_b, uint32_t p_c, uint32_t p_d, bool is_v6 = false);
 	IPAddress() { clear(); }
 };

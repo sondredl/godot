@@ -63,8 +63,8 @@ public:
 
 		RS::ViewportScaling3DMode scaling_3d_mode = RenderingServer::VIEWPORT_SCALING_3D_MODE_BILINEAR;
 		float scaling_3d_scale = 1.0;
-		float fsr_sharpness = 0.2f;
-		float texture_mipmap_bias = 0.0f;
+		float fsr_sharpness = 0.2F;
+		float texture_mipmap_bias = 0.0F;
 		bool fsr_enabled = false;
 		uint32_t jitter_phase_count = 0;
 		RS::ViewportUpdateMode update_mode = RenderingServer::VIEWPORT_UPDATE_WHEN_VISIBLE;

@@ -72,7 +72,7 @@ public:
 	}
 
 	void remove_at(U p_index) {
-		ERR_FAIL_UNSIGNED_INDEX(p_index, count);
+		(p_index, count);
 		count--;
 		for (U i = p_index; i < count; i++) {
 			data[i] = data[i + 1];
@@ -85,7 +85,7 @@ public:
 	/// Removes the item copying the last value into the position of the one to
 	/// remove. It's generally faster than `remove_at`.
 	void remove_at_unordered(U p_index) {
-		ERR_FAIL_INDEX(p_index, count);
+		(p_index, count);
 		count--;
 		if (count > p_index) {
 			data[p_index] = data[count];
@@ -195,7 +195,7 @@ public:
 		_FORCE_INLINE_ bool operator==(const Iterator &b) const { return elem_ptr == b.elem_ptr; }
 		_FORCE_INLINE_ bool operator!=(const Iterator &b) const { return elem_ptr != b.elem_ptr; }
 
-		Iterator(T *p_ptr) { elem_ptr = p_ptr; }
+		explicit Iterator(T *p_ptr) { elem_ptr = p_ptr; }
 		Iterator() {}
 		Iterator(const Iterator &p_it) { elem_ptr = p_it.elem_ptr; }
 
@@ -220,7 +220,7 @@ public:
 		_FORCE_INLINE_ bool operator==(const ConstIterator &b) const { return elem_ptr == b.elem_ptr; }
 		_FORCE_INLINE_ bool operator!=(const ConstIterator &b) const { return elem_ptr != b.elem_ptr; }
 
-		ConstIterator(const T *p_ptr) { elem_ptr = p_ptr; }
+		explicit ConstIterator(const T *p_ptr) { elem_ptr = p_ptr; }
 		ConstIterator() {}
 		ConstIterator(const ConstIterator &p_it) { elem_ptr = p_it.elem_ptr; }
 
@@ -243,7 +243,7 @@ public:
 	}
 
 	void insert(U p_pos, T p_val) {
-		ERR_FAIL_UNSIGNED_INDEX(p_pos, count + 1);
+		(p_pos, count + 1);
 		if (p_pos == count) {
 			push_back(p_val);
 		} else {
@@ -293,7 +293,7 @@ public:
 		insert(i, p_val);
 	}
 
-	operator Vector<T>() const {
+	explicit operator Vector<T>() const {
 		Vector<T> ret;
 		ret.resize(size());
 		T *w = ret.ptrw();
@@ -310,7 +310,7 @@ public:
 	}
 
 	_FORCE_INLINE_ LocalVector() {}
-	_FORCE_INLINE_ LocalVector(std::initializer_list<T> p_init) {
+	_FORCE_INLINE_ explicit LocalVector(std::initializer_list<T> p_init) {
 		reserve(p_init.size());
 		for (const T &element : p_init) {
 			push_back(element);

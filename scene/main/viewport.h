@@ -71,25 +71,25 @@ class ViewportTexture : public Texture2D {
 protected:
 	static void _bind_methods();
 
-	virtual void reset_local_to_scene() override;
+	void reset_local_to_scene() override;
 
 public:
 	void set_viewport_path_in_scene(const NodePath &p_path);
 	NodePath get_viewport_path_in_scene() const;
 
-	virtual void setup_local_to_scene() override;
+	void setup_local_to_scene() override;
 
-	virtual int get_width() const override;
-	virtual int get_height() const override;
-	virtual Size2 get_size() const override;
-	virtual RID get_rid() const override;
+	int get_width() const override;
+	int get_height() const override;
+	Size2 get_size() const override;
+	RID get_rid() const override;
 
-	virtual bool has_alpha() const override;
+	bool has_alpha() const override;
 
-	virtual Ref<Image> get_image() const override;
+	Ref<Image> get_image() const override;
 
 	ViewportTexture();
-	~ViewportTexture();
+	~ViewportTexture() override;
 };
 
 class Viewport : public Node {
@@ -301,8 +301,8 @@ private:
 
 	Scaling3DMode scaling_3d_mode = SCALING_3D_MODE_BILINEAR;
 	float scaling_3d_scale = 1.0;
-	float fsr_sharpness = 0.2f;
-	float texture_mipmap_bias = 0.0f;
+	float fsr_sharpness = 0.2F;
+	float texture_mipmap_bias = 0.0F;
 	bool use_debanding = false;
 	float mesh_lod_threshold = 1.0;
 	bool use_occlusion_culling = false;
@@ -672,7 +672,7 @@ public:
 
 	Transform2D get_screen_transform() const;
 	virtual Transform2D get_screen_transform_internal(bool p_absolute_position = false) const;
-	virtual Transform2D get_popup_base_transform() const { return Transform2D(); }
+	virtual Transform2D get_popup_base_transform() const { return {}; }
 	virtual Viewport *get_section_root_viewport() const { return nullptr; }
 	virtual bool is_attached_in_viewport() const { return false; }
 	virtual bool is_sub_viewport() const { return false; }
@@ -736,7 +736,7 @@ private:
 		real_t z_far = 0.0;
 		RID rid;
 
-		operator bool() const {
+		explicit operator bool() const {
 			return rid != RID();
 		}
 	} camera_3d_override;
@@ -785,7 +785,7 @@ public:
 #endif // _3D_DISABLED
 
 	Viewport();
-	~Viewport();
+	~Viewport() override;
 };
 
 class SubViewport : public Viewport {
@@ -815,7 +815,7 @@ private:
 
 protected:
 	static void _bind_methods();
-	virtual DisplayServer::WindowID get_window_id() const override;
+	DisplayServer::WindowID get_window_id() const override;
 	void _notification(int p_what);
 
 public:
@@ -835,15 +835,15 @@ public:
 	void set_clear_mode(ClearMode p_mode);
 	ClearMode get_clear_mode() const;
 
-	virtual Transform2D get_screen_transform_internal(bool p_absolute_position = false) const override;
-	virtual Transform2D get_popup_base_transform() const override;
-	virtual Viewport *get_section_root_viewport() const override;
-	virtual bool is_attached_in_viewport() const override;
-	virtual bool is_sub_viewport() const override { return true; }
+	Transform2D get_screen_transform_internal(bool p_absolute_position = false) const override;
+	Transform2D get_popup_base_transform() const override;
+	Viewport *get_section_root_viewport() const override;
+	bool is_attached_in_viewport() const override;
+	bool is_sub_viewport() const override { return true; }
 
 	void _validate_property(PropertyInfo &p_property) const;
 	SubViewport();
-	~SubViewport();
+	~SubViewport() override;
 };
 VARIANT_ENUM_CAST(Viewport::Scaling3DMode);
 VARIANT_ENUM_CAST(SubViewport::UpdateMode);

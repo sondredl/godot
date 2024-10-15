@@ -149,7 +149,7 @@ struct [[nodiscard]] Basis {
 	Basis slerp(const Basis &p_to, real_t p_weight) const;
 	void rotate_sh(real_t *p_values);
 
-	operator String() const;
+	explicit operator String() const;
 
 	/* create / set */
 
@@ -172,7 +172,7 @@ struct [[nodiscard]] Basis {
 
 	_FORCE_INLINE_ Vector3 get_column(int p_index) const {
 		// Get actual basis axis column (we store transposed as rows for performance).
-		return Vector3(rows[0][p_index], rows[1][p_index], rows[2][p_index]);
+		return { rows[0][p_index], rows[1][p_index], rows[2][p_index] };
 	}
 
 	_FORCE_INLINE_ void set_column(int p_index, const Vector3 &p_value) {
@@ -183,7 +183,7 @@ struct [[nodiscard]] Basis {
 	}
 
 	_FORCE_INLINE_ Vector3 get_main_diagonal() const {
-		return Vector3(rows[0][0], rows[1][1], rows[2][2]);
+		return { rows[0][0], rows[1][1], rows[2][2] };
 	}
 
 	_FORCE_INLINE_ void set_zero() {
@@ -193,16 +193,17 @@ struct [[nodiscard]] Basis {
 	}
 
 	_FORCE_INLINE_ Basis transpose_xform(const Basis &p_m) const {
-		return Basis(
-				rows[0].x * p_m[0].x + rows[1].x * p_m[1].x + rows[2].x * p_m[2].x,
-				rows[0].x * p_m[0].y + rows[1].x * p_m[1].y + rows[2].x * p_m[2].y,
-				rows[0].x * p_m[0].z + rows[1].x * p_m[1].z + rows[2].x * p_m[2].z,
-				rows[0].y * p_m[0].x + rows[1].y * p_m[1].x + rows[2].y * p_m[2].x,
-				rows[0].y * p_m[0].y + rows[1].y * p_m[1].y + rows[2].y * p_m[2].y,
-				rows[0].y * p_m[0].z + rows[1].y * p_m[1].z + rows[2].y * p_m[2].z,
-				rows[0].z * p_m[0].x + rows[1].z * p_m[1].x + rows[2].z * p_m[2].x,
-				rows[0].z * p_m[0].y + rows[1].z * p_m[1].y + rows[2].z * p_m[2].y,
-				rows[0].z * p_m[0].z + rows[1].z * p_m[1].z + rows[2].z * p_m[2].z);
+		return {
+			rows[0].x * p_m[0].x + rows[1].x * p_m[1].x + rows[2].x * p_m[2].x,
+			rows[0].x * p_m[0].y + rows[1].x * p_m[1].y + rows[2].x * p_m[2].y,
+			rows[0].x * p_m[0].z + rows[1].x * p_m[1].z + rows[2].x * p_m[2].z,
+			rows[0].y * p_m[0].x + rows[1].y * p_m[1].x + rows[2].y * p_m[2].x,
+			rows[0].y * p_m[0].y + rows[1].y * p_m[1].y + rows[2].y * p_m[2].y,
+			rows[0].y * p_m[0].z + rows[1].y * p_m[1].z + rows[2].y * p_m[2].z,
+			rows[0].z * p_m[0].x + rows[1].z * p_m[1].x + rows[2].z * p_m[2].x,
+			rows[0].z * p_m[0].y + rows[1].z * p_m[1].y + rows[2].z * p_m[2].y,
+			rows[0].z * p_m[0].z + rows[1].z * p_m[1].z + rows[2].z * p_m[2].z
+		};
 	}
 	Basis(real_t p_xx, real_t p_xy, real_t p_xz, real_t p_yx, real_t p_yy, real_t p_yz, real_t p_zx, real_t p_zy, real_t p_zz) {
 		set(p_xx, p_xy, p_xz, p_yx, p_yy, p_yz, p_zx, p_zy, p_zz);
@@ -219,11 +220,11 @@ struct [[nodiscard]] Basis {
 #endif
 	Basis diagonalize();
 
-	operator Quaternion() const { return get_quaternion(); }
+	explicit operator Quaternion() const { return get_quaternion(); }
 
 	static Basis looking_at(const Vector3 &p_target, const Vector3 &p_up = Vector3(0, 1, 0), bool p_use_model_front = false);
 
-	Basis(const Quaternion &p_quaternion) { set_quaternion(p_quaternion); };
+	explicit Basis(const Quaternion &p_quaternion) { set_quaternion(p_quaternion); };
 	Basis(const Quaternion &p_quaternion, const Vector3 &p_scale) { set_quaternion_scale(p_quaternion, p_scale); }
 
 	Basis(const Vector3 &p_axis, real_t p_angle) { set_axis_angle(p_axis, p_angle); }
@@ -249,10 +250,11 @@ _FORCE_INLINE_ void Basis::operator*=(const Basis &p_matrix) {
 }
 
 _FORCE_INLINE_ Basis Basis::operator*(const Basis &p_matrix) const {
-	return Basis(
-			p_matrix.tdotx(rows[0]), p_matrix.tdoty(rows[0]), p_matrix.tdotz(rows[0]),
-			p_matrix.tdotx(rows[1]), p_matrix.tdoty(rows[1]), p_matrix.tdotz(rows[1]),
-			p_matrix.tdotx(rows[2]), p_matrix.tdoty(rows[2]), p_matrix.tdotz(rows[2]));
+	return {
+		p_matrix.tdotx(rows[0]), p_matrix.tdoty(rows[0]), p_matrix.tdotz(rows[0]),
+		p_matrix.tdotx(rows[1]), p_matrix.tdoty(rows[1]), p_matrix.tdotz(rows[1]),
+		p_matrix.tdotx(rows[2]), p_matrix.tdoty(rows[2]), p_matrix.tdotz(rows[2])
+	};
 }
 
 _FORCE_INLINE_ void Basis::operator+=(const Basis &p_matrix) {
@@ -304,17 +306,19 @@ _FORCE_INLINE_ Basis Basis::operator/(real_t p_val) const {
 }
 
 Vector3 Basis::xform(const Vector3 &p_vector) const {
-	return Vector3(
-			rows[0].dot(p_vector),
-			rows[1].dot(p_vector),
-			rows[2].dot(p_vector));
+	return {
+		rows[0].dot(p_vector),
+		rows[1].dot(p_vector),
+		rows[2].dot(p_vector)
+	};
 }
 
 Vector3 Basis::xform_inv(const Vector3 &p_vector) const {
-	return Vector3(
-			(rows[0][0] * p_vector.x) + (rows[1][0] * p_vector.y) + (rows[2][0] * p_vector.z),
-			(rows[0][1] * p_vector.x) + (rows[1][1] * p_vector.y) + (rows[2][1] * p_vector.z),
-			(rows[0][2] * p_vector.x) + (rows[1][2] * p_vector.y) + (rows[2][2] * p_vector.z));
+	return {
+		(rows[0][0] * p_vector.x) + (rows[1][0] * p_vector.y) + (rows[2][0] * p_vector.z),
+		(rows[0][1] * p_vector.x) + (rows[1][1] * p_vector.y) + (rows[2][1] * p_vector.z),
+		(rows[0][2] * p_vector.x) + (rows[1][2] * p_vector.y) + (rows[2][2] * p_vector.z)
+	};
 }
 
 real_t Basis::determinant() const {

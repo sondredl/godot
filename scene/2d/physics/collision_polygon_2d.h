@@ -60,15 +60,14 @@ protected:
 
 	void _update_in_shape_owner(bool p_xform_only = false);
 
-protected:
 	void _notification(int p_what);
 	static void _bind_methods();
 
 public:
 #ifdef TOOLS_ENABLED
-	virtual Rect2 _edit_get_rect() const override;
-	virtual bool _edit_use_rect() const override;
-	virtual bool _edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const override;
+	Rect2 _edit_get_rect() const override;
+	bool _edit_use_rect() const override;
+	bool _edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const override;
 #endif
 
 	void set_build_mode(BuildMode p_mode);

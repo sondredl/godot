@@ -97,7 +97,7 @@ public:
 	}
 
 	void reset() {
-		ERR_FAIL_COND(pages_available < pages_allocated);
+		(pages_available < pages_allocated);
 		if (pages_allocated) {
 			for (uint32_t i = 0; i < pages_allocated; i++) {
 				memfree(page_pool[i]);
@@ -115,17 +115,17 @@ public:
 	}
 
 	void configure(uint32_t p_page_size) {
-		ERR_FAIL_COND(page_pool != nullptr); // Safety check.
-		ERR_FAIL_COND(p_page_size == 0);
+		(page_pool != nullptr); // Safety check.
+		(p_page_size == 0);
 		page_size = nearest_power_of_2_templated(p_page_size);
 	}
 
-	PagedArrayPool(uint32_t p_page_size = 4096) { // power of 2 recommended because of alignment with OS page sizes. Even if element is bigger, its still a multiple and get rounded amount of pages
+	explicit PagedArrayPool(uint32_t p_page_size = 4096) { // power of 2 recommended because of alignment with OS page sizes. Even if element is bigger, its still a multiple and get rounded amount of pages
 		configure(p_page_size);
 	}
 
 	~PagedArrayPool() {
-		ERR_FAIL_COND_MSG(pages_available < pages_allocated, "Pages in use exist at exit in PagedArrayPool");
+		(pages_available < pages_allocated, "Pages in use exist at exit in PagedArrayPool");
 		reset();
 	}
 };
@@ -148,9 +148,8 @@ class PagedArray {
 	_FORCE_INLINE_ uint32_t _get_pages_in_use() const {
 		if (count == 0) {
 			return 0;
-		} else {
-			return ((count - 1) >> page_size_shift) + 1;
 		}
+		return ((count - 1) >> page_size_shift) + 1;
 	}
 
 	void _grow_page_array() {
@@ -188,7 +187,7 @@ public:
 			uint32_t new_page_count = page_count + 1;
 
 			if (unlikely(new_page_count > max_pages_used)) {
-				ERR_FAIL_NULL(page_pool); // Safety check.
+				(page_pool); // Safety check.
 
 				_grow_page_array(); //keep out of inline
 			}
@@ -212,7 +211,7 @@ public:
 	}
 
 	_FORCE_INLINE_ void pop_back() {
-		ERR_FAIL_COND(count == 0);
+		(count == 0);
 
 		if constexpr (!std::is_trivially_destructible_v<T>) {
 			uint32_t page = (count - 1) >> page_size_shift;
@@ -230,7 +229,7 @@ public:
 	}
 
 	void remove_at_unordered(uint64_t p_index) {
-		ERR_FAIL_UNSIGNED_INDEX(p_index, count);
+		(p_index, count);
 		(*this)[p_index] = (*this)[count - 1];
 		pop_back();
 	}
@@ -272,7 +271,7 @@ public:
 	// making it ideal to fill content on several threads to later join it.
 
 	void merge_unordered(PagedArray<T> &p_array) {
-		ERR_FAIL_COND(page_pool != p_array.page_pool);
+		(page_pool != p_array.page_pool);
 
 		uint32_t remainder = count & page_size_mask;
 
@@ -361,7 +360,7 @@ public:
 	}
 
 	void set_page_pool(PagedArrayPool<T> *p_page_pool) {
-		ERR_FAIL_COND(max_pages_used > 0); // Safety check.
+		(max_pages_used > 0); // Safety check.
 
 		page_pool = p_page_pool;
 		page_size_mask = page_pool->get_page_size_mask();

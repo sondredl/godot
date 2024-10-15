@@ -112,13 +112,9 @@ class DependencyRemoveDialog : public ConfirmationDialog {
 		bool operator<(const RemovedDependency &p_other) const {
 			if (dependency_folder.is_empty() != p_other.dependency_folder.is_empty()) {
 				return p_other.dependency_folder.is_empty();
-			} else {
-				return dependency < p_other.dependency;
 			}
-		}
-	};
-
-	void _find_files_in_removed_folder(EditorFileSystemDirectory *efsd, const String &p_folder);
+			return dependency < p_other.dependency;
+		_find_files_in_removed_folder(EditorFileSystemDirectory *efsd, const String &p_folder);
 	void _find_all_removed_dependencies(EditorFileSystemDirectory *efsd, Vector<RemovedDependency> &p_removed);
 	void _find_localization_remaps_of_removed_files(Vector<RemovedDependency> &p_removed);
 	void _build_removed_dependency_tree(const Vector<RemovedDependency> &p_removed);
@@ -148,7 +144,7 @@ private:
 	Label *text = nullptr;
 	Tree *files = nullptr;
 	void ok_pressed() override;
-	void custom_action(const String &) override;
+	void custom_action(const String & /*unused*/ /*unused*/) override;
 
 public:
 	void show(Mode p_mode, const String &p_for_file, const Vector<String> &report);

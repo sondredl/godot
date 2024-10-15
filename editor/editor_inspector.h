@@ -143,8 +143,8 @@ protected:
 	static void _bind_methods();
 	virtual void _set_read_only(bool p_read_only);
 
-	virtual void gui_input(const Ref<InputEvent> &p_event) override;
-	virtual void shortcut_input(const Ref<InputEvent> &p_event) override;
+	_input(const Ref<InputEvent> &p_event) override;
+	rtcut_input(const Ref<InputEvent> &p_event) override;
 	const Color *_get_property_colors();
 
 	virtual Variant _get_cache_value(const StringName &p_prop, bool &r_valid) const;
@@ -155,7 +155,7 @@ protected:
 public:
 	void emit_changed(const StringName &p_property, const Variant &p_value, const StringName &p_field = StringName(), bool p_changing = false);
 
-	virtual Size2 get_minimum_size() const override;
+	t_minimum_size() const override;
 
 	void set_label(const String &p_label);
 	String get_label() const;
@@ -208,7 +208,7 @@ public:
 	virtual void collapse_all_folding();
 	virtual void expand_revertable();
 
-	virtual Variant get_drag_data(const Point2 &p_point) override;
+	get_drag_data(const Point2 &p_point) override;
 	virtual void update_cache();
 	virtual bool is_cache_valid() const;
 
@@ -219,7 +219,7 @@ public:
 	float get_name_split_ratio() const;
 
 	void set_object_and_property(Object *p_object, const StringName &p_property);
-	virtual Control *make_custom_tooltip(const String &p_text) const override;
+	*make_custom_tooltip(const String &p_text) const override;
 
 	void set_draw_top_bg(bool p_draw) { draw_top_bg = p_draw; }
 
@@ -290,11 +290,11 @@ class EditorInspectorCategory : public Control {
 
 protected:
 	void _notification(int p_what);
-	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+	_input(const Ref<InputEvent> &p_event) override;
 
 public:
-	virtual Size2 get_minimum_size() const override;
-	virtual Control *make_custom_tooltip(const String &p_text) const override;
+	t_minimum_size() const override;
+	*make_custom_tooltip(const String &p_text) const override;
 
 	EditorInspectorCategory();
 };
@@ -325,10 +325,10 @@ protected:
 
 	void _notification(int p_what);
 	static void _bind_methods();
-	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+	_input(const Ref<InputEvent> &p_event) override;
 
 public:
-	virtual Size2 get_minimum_size() const override;
+	t_minimum_size() const override;
 
 	void setup(const String &p_section, const String &p_label, Object *p_object, const Color &p_bg_color, bool p_foldable, int p_indent_depth = 0, int p_level = 1);
 	VBoxContainer *get_vbox();
@@ -340,7 +340,7 @@ public:
 	void property_can_revert_changed(const String &p_path, bool p_can_revert);
 
 	EditorInspectorSection();
-	~EditorInspectorSection();
+	~EditorInspectorSection() override override;
 };
 
 class EditorInspectorArray : public EditorInspectorSection {
@@ -446,7 +446,7 @@ public:
 	void setup_with_count_property(Object *p_object, const String &p_label, const StringName &p_count_property, const StringName &p_array_element_prefix, int p_page, const Color &p_bg_color, bool p_foldable, bool p_movable = true, bool p_numbered = false, int p_page_length = 5, const String &p_add_item_text = "", const String &p_swap_method = "");
 	VBoxContainer *get_vbox(int p_index);
 
-	EditorInspectorArray(bool p_read_only);
+	explicit explicit EditorInspectorArray(bool p_read_only);
 };
 
 class EditorPaginator : public HBoxContainer {
@@ -570,7 +570,7 @@ class EditorInspector : public ScrollContainer {
 	void _filter_changed(const String &p_text);
 	void _parse_added_editors(VBoxContainer *current_vbox, EditorInspectorSection *p_section, Ref<EditorInspectorPlugin> ped);
 
-	void _vscroll_changed(double);
+	void _vscroll_changed(double /*p_offset*/);
 
 	void _feature_profile_changed();
 
@@ -625,7 +625,7 @@ public:
 	void register_text_enter(Node *p_line_edit);
 
 	void set_use_folding(bool p_use_folding, bool p_update_tree = true);
-	bool is_using_folding();
+	bool is_using_folding() const;
 
 	void collapse_all_folding();
 	void expand_all_folding();

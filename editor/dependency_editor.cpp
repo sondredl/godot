@@ -31,14 +31,33 @@
 #include "dependency_editor.h"
 
 #include "core/config/project_settings.h"
-#include "core/io/file_access.h"
+#include "core/error/error_macros.h"
+#include "core/input/input_enums.h"
+#include "core/io/dir_access.h"
+#include "core/io/resource.h"
 #include "core/io/resource_loader.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
+#include "core/string/print_string.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/variant.h"
 #include "editor/editor_file_system.h"
 #include "editor/editor_node.h"
 #include "editor/editor_settings.h"
 #include "editor/gui/editor_file_dialog.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/button.h"
+#include "scene/gui/label.h"
 #include "scene/gui/margin_container.h"
+#include "scene/gui/tree.h"
+#include "scene/resources/texture.h"
+#include "scene/scene_string_names.h"
 
 void DependencyEditor::_searched(const String &p_path) {
 	HashMap<String, String> dep_rename;
@@ -414,7 +433,7 @@ void DependencyRemoveDialog::_find_files_in_removed_folder(EditorFileSystemDirec
 	}
 	for (int i = 0; i < efsd->get_file_count(); i++) {
 		String file = efsd->get_file_path(i);
-		ERR_FAIL_COND(all_remove_files.has(file)); //We are deleting a directory which is contained in a directory we are deleting...
+		(all_remove_files.has(file)); //We are deleting a directory which is contained in a directory we are deleting...
 		all_remove_files[file] = p_folder; //Point the file to the ancestor directory we are deleting so we know what to parent it under in the tree.
 	}
 }
@@ -716,7 +735,7 @@ void DependencyErrorDialog::ok_pressed() {
 	}
 }
 
-void DependencyErrorDialog::custom_action(const String &) {
+void DependencyErrorDialog::custom_action(const String & /*unused*/) {
 	EditorNode::get_singleton()->fix_dependencies(for_file);
 }
 

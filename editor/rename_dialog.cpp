@@ -30,16 +30,35 @@
 
 #include "rename_dialog.h"
 
+#include "core/error/error_macros.h"
+#include "core/math/color.h"
+#include "core/math/vector2.h"
+#include "core/math/vector2i.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/undo_redo.h"
+#include "core/os/memory.h"
+#include "core/string/node_path.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/pair.h"
+#include "core/variant/array.h"
+#include "editor/editor_data.h"
+#include "editor/gui/scene_tree_editor.h"
 #include "modules/modules_enabled.gen.h" // For regex.
+#include "scene/gui/box_container.h"
+#include "scene/gui/line_edit.h"
+#include "scene/main/node.h"
+#include "scene/main/scene_tree.h"
+#include "scene/scene_string_names.h"
+#include "servers/text_server.h"
 #ifdef MODULE_REGEX_ENABLED
 
-#include "core/string/print_string.h"
 #include "editor/editor_node.h"
-#include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/editor_undo_redo_manager.h"
 #include "editor/plugins/script_editor_plugin.h"
-#include "editor/themes/editor_scale.h"
 #include "modules/regex/regex.h"
 #include "scene/gui/check_box.h"
 #include "scene/gui/check_button.h"
@@ -369,7 +388,7 @@ void RenameDialog::_post_popup() {
 	preview_node = nullptr;
 
 	Array selected_node_list = editor_selection->get_selected_nodes();
-	ERR_FAIL_COND(selected_node_list.is_empty());
+	(selected_node_list.is_empty());
 
 	preview_node = Object::cast_to<Node>(selected_node_list[0]);
 
@@ -470,7 +489,7 @@ String RenameDialog::_substitute(const String &subject, const Node *node, int co
 }
 
 void RenameDialog::_error_handler(void *p_self, const char *p_func, const char *p_file, int p_line, const char *p_error, const char *p_errorexp, bool p_editor_notify, ErrorHandlerType p_type) {
-	RenameDialog *self = (RenameDialog *)p_self;
+	auto *self = (RenameDialog *)p_self;
 	String source_file = String::utf8(p_file);
 
 	// Only show first error that is related to "regex"

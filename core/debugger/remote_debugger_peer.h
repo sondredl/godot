@@ -89,8 +89,8 @@ public:
 	void poll() override;
 	void close() override;
 
-	RemoteDebuggerPeerTCP(Ref<StreamPeerTCP> p_stream = Ref<StreamPeerTCP>());
-	~RemoteDebuggerPeerTCP();
+	explicit RemoteDebuggerPeerTCP(Ref<StreamPeerTCP> p_stream = Ref<StreamPeerTCP>());
+	~RemoteDebuggerPeerTCP() override;
 };
 
 #endif // REMOTE_DEBUGGER_PEER_H

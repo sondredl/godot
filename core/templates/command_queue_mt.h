@@ -296,7 +296,9 @@
 		_wait_for_sync(mlock);                                                        \
 	}
 
-#define MAX_CMD_PARAMS 15
+enum {
+	MAX_CMD_PARAMS = 15
+};
 
 class CommandQueueMT {
 	struct CommandBase {
@@ -306,7 +308,7 @@ class CommandQueueMT {
 	};
 
 	struct SyncCommand : public CommandBase {
-		virtual void call() override {}
+		void call() override {}
 		SyncCommand() {
 			sync = true;
 		}
@@ -435,7 +437,7 @@ public:
 	}
 
 	void wait_and_flush() {
-		ERR_FAIL_COND(pump_task_id == WorkerThreadPool::INVALID_TASK_ID);
+		(pump_task_id == WorkerThreadPool::INVALID_TASK_ID);
 		WorkerThreadPool::get_singleton()->wait_for_task_completion(pump_task_id);
 		_flush();
 	}

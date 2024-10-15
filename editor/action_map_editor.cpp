@@ -30,14 +30,32 @@
 
 #include "editor/action_map_editor.h"
 
+#include "core/error/error_macros.h"
+#include "core/input/input_enums.h"
+#include "core/input/input_event.h"
+#include "core/math/color.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/event_listener_line_edit.h"
 #include "editor/input_event_configuration_dialog.h"
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/check_button.h"
+#include "scene/gui/control.h"
+#include "scene/gui/label.h"
 #include "scene/gui/separator.h"
 #include "scene/gui/tree.h"
+#include "scene/scene_string_names.h"
 
 static bool _is_action_name_valid(const String &p_name) {
 	const char32_t *cstr = p_name.get_data();
@@ -155,7 +173,7 @@ void ActionMapEditor::_tree_button_pressed(Object *p_item, int p_column, int p_i
 		return;
 	}
 
-	ItemButton option = (ItemButton)p_id;
+	auto option = (ItemButton)p_id;
 
 	TreeItem *item = Object::cast_to<TreeItem>(p_item);
 	if (!item) {
@@ -201,7 +219,7 @@ void ActionMapEditor::_tree_button_pressed(Object *p_item, int p_column, int p_i
 			emit_signal(SNAME("action_edited"), action_name, action);
 		} break;
 		case ActionMapEditor::BUTTON_REVERT_ACTION: {
-			ERR_FAIL_COND_MSG(!item->has_meta("__action_initial"), "Tree Item for action which can be reverted is expected to have meta value with initial value of action.");
+			(!item->has_meta("__action_initial"), "Tree Item for action which can be reverted is expected to have meta value with initial value of action.");
 
 			Dictionary action = item->get_meta("__action_initial").duplicate();
 			String action_name = item->get_meta("__name");
@@ -234,7 +252,7 @@ void ActionMapEditor::set_show_builtin_actions(bool p_show) {
 	}
 }
 
-void ActionMapEditor::_search_term_updated(const String &) {
+void ActionMapEditor::_search_term_updated(const String & /*unused*/) {
 	update_action_list();
 }
 
@@ -247,13 +265,13 @@ void ActionMapEditor::_search_by_event(const Ref<InputEvent> &p_event) {
 Variant ActionMapEditor::get_drag_data_fw(const Point2 &p_point, Control *p_from) {
 	TreeItem *selected = action_tree->get_selected();
 	if (!selected) {
-		return Variant();
+		return {};
 	}
 
 	String name = selected->get_text(0);
 	Label *label = memnew(Label(name));
 	label->set_theme_type_variation("HeaderSmall");
-	label->set_modulate(Color(1, 1, 1, 1.0f));
+	label->set_modulate(Color(1, 1, 1, 1.0F));
 	label->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED);
 	action_tree->set_drag_preview(label);
 
@@ -334,7 +352,8 @@ void ActionMapEditor::drop_data_fw(const Point2 &p_point, const Variant &p_data,
 			// If you come across the current index, just skip it, as it has been moved.
 			if (i == current_index) {
 				continue;
-			} else if (i == target_index) {
+			}
+			if (i == target_index) {
 				// We are at the target index. If drop above, add selected event there first, then target, so moved event goes on top.
 				if (drop_above) {
 					new_events.push_back(events[current_index]);

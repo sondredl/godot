@@ -138,7 +138,7 @@ public:
 	void set_current(Node *p_node);
 
 	GroupsEditor();
-	~GroupsEditor();
+	~GroupsEditor() override override;
 };
 
 #endif // GROUPS_EDITOR_H

@@ -80,18 +80,18 @@ public:
 protected:
 	float cell_size = NavigationDefaults3D::navmesh_cell_size;
 	float cell_height = NavigationDefaults3D::navmesh_cell_height;
-	float border_size = 0.0f;
-	float agent_height = 1.5f;
-	float agent_radius = 0.5f;
-	float agent_max_climb = 0.25f;
-	float agent_max_slope = 45.0f;
-	float region_min_size = 2.0f;
-	float region_merge_size = 20.0f;
-	float edge_max_length = 0.0f;
-	float edge_max_error = 1.3f;
-	float vertices_per_polygon = 6.0f;
-	float detail_sample_distance = 6.0f;
-	float detail_sample_max_error = 1.0f;
+	float border_size = 0.0F;
+	float agent_height = 1.5F;
+	float agent_radius = 0.5F;
+	float agent_max_climb = 0.25F;
+	float agent_max_slope = 45.0F;
+	float region_min_size = 2.0F;
+	float region_merge_size = 20.0F;
+	float edge_max_length = 0.0F;
+	float edge_max_error = 1.3F;
+	float vertices_per_polygon = 6.0F;
+	float detail_sample_distance = 6.0F;
+	float detail_sample_max_error = 1.0F;
 
 	SamplePartitionType partition_type = SAMPLE_PARTITION_WATERSHED;
 	ParsedGeometryType parsed_geometry_type = PARSED_GEOMETRY_BOTH;
@@ -205,7 +205,7 @@ public:
 #endif // DEBUG_ENABLED
 
 	NavigationMesh() {}
-	~NavigationMesh() {}
+	~NavigationMesh() override {}
 };
 
 VARIANT_ENUM_CAST(NavigationMesh::SamplePartitionType);

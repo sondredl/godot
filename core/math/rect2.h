@@ -49,7 +49,7 @@ struct [[nodiscard]] Rect2 {
 
 	real_t get_area() const { return size.width * size.height; }
 
-	_FORCE_INLINE_ Vector2 get_center() const { return position + (size * 0.5f); }
+	_FORCE_INLINE_ Vector2 get_center() const { return position + (size * 0.5F); }
 
 	inline bool intersects(const Rect2 &p_rect, bool p_include_borders = false) const {
 #ifdef MATH_CHECKS
@@ -120,9 +120,8 @@ struct [[nodiscard]] Rect2 {
 
 		if (inside) {
 			return 0;
-		} else {
-			return dist;
 		}
+		return dist;
 	}
 
 	bool intersects_transformed(const Transform2D &p_xform, const Rect2 &p_rect) const;
@@ -141,7 +140,7 @@ struct [[nodiscard]] Rect2 {
 	}
 
 	_FORCE_INLINE_ bool has_area() const {
-		return size.x > 0.0f && size.y > 0.0f;
+		return size.x > 0.0F && size.y > 0.0F;
 	}
 
 	// Returns the intersection between two Rect2s or an empty Rect2 if there is no intersection.
@@ -149,7 +148,7 @@ struct [[nodiscard]] Rect2 {
 		Rect2 new_rect = p_rect;
 
 		if (!intersects(new_rect)) {
-			return Rect2();
+			return {};
 		}
 
 		new_rect.position = p_rect.position.max(position);
@@ -287,10 +286,10 @@ struct [[nodiscard]] Rect2 {
 
 	Vector2 get_support(const Vector2 &p_direction) const {
 		Vector2 support = position;
-		if (p_direction.x > 0.0f) {
+		if (p_direction.x > 0.0F) {
 			support.x += size.x;
 		}
-		if (p_direction.y > 0.0f) {
+		if (p_direction.y > 0.0F) {
 			support.y += size.y;
 		}
 		return support;
@@ -310,14 +309,14 @@ struct [[nodiscard]] Rect2 {
 
 			Vector2 r = (b - a);
 			const real_t l = r.length();
-			if (l == 0.0f) {
+			if (l == 0.0F) {
 				continue;
 			}
 
 			// Check inside.
 			Vector2 tg = r.orthogonal();
 			const real_t s = tg.dot(center) - tg.dot(a);
-			if (s < 0.0f) {
+			if (s < 0.0F) {
 				side_plus++;
 			} else {
 				side_minus++;
@@ -325,7 +324,7 @@ struct [[nodiscard]] Rect2 {
 
 			// Check ray box.
 			r /= l;
-			Vector2 ir(1.0f / r.x, 1.0f / r.y);
+			Vector2 ir(1.0F / r.x, 1.0F / r.y);
 
 			// lb is the corner of AABB with minimal coordinates - left bottom, rt is maximal corner
 			// r.org is origin of ray
@@ -345,9 +344,8 @@ struct [[nodiscard]] Rect2 {
 
 		if (side_plus * side_minus == 0) {
 			return true; // All inside.
-		} else {
-			return false;
 		}
+		return false;
 	}
 
 	_FORCE_INLINE_ void set_end(const Vector2 &p_end) {
@@ -358,8 +356,8 @@ struct [[nodiscard]] Rect2 {
 		return position + size;
 	}
 
-	operator String() const;
-	operator Rect2i() const;
+	explicit operator String() const;
+	explicit operator Rect2i() const;
 
 	Rect2() {}
 	Rect2(real_t p_x, real_t p_y, real_t p_width, real_t p_height) :

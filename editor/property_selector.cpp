@@ -30,11 +30,25 @@
 
 #include "property_selector.h"
 
+#include "core/error/error_macros.h"
+#include "core/input/input_event.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/object/script_language.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/callable.h"
+#include "core/variant/variant.h"
 #include "editor/editor_help.h"
 #include "editor/editor_node.h"
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/line_edit.h"
 #include "scene/gui/tree.h"
+#include "scene/scene_string_names.h"
 
 void PropertySelector::_text_changed(const String &p_newtext) {
 	_update_search();
@@ -529,7 +543,7 @@ void PropertySelector::select_method_from_base_type(const String &p_base, const 
 }
 
 void PropertySelector::select_method_from_script(const Ref<Script> &p_script, const String &p_current) {
-	ERR_FAIL_COND(p_script.is_null());
+	(p_script.is_null());
 	base_type = p_script->get_instance_base_type();
 	selected = p_current;
 	type = Variant::NIL;
@@ -545,7 +559,7 @@ void PropertySelector::select_method_from_script(const Ref<Script> &p_script, co
 }
 
 void PropertySelector::select_method_from_basic_type(Variant::Type p_type, const String &p_current) {
-	ERR_FAIL_COND(p_type == Variant::NIL);
+	(p_type == Variant::NIL);
 	base_type = "";
 	selected = p_current;
 	type = p_type;
@@ -597,7 +611,7 @@ void PropertySelector::select_property_from_base_type(const String &p_base, cons
 }
 
 void PropertySelector::select_property_from_script(const Ref<Script> &p_script, const String &p_current) {
-	ERR_FAIL_COND(p_script.is_null());
+	(p_script.is_null());
 
 	base_type = p_script->get_instance_base_type();
 	selected = p_current;
@@ -614,7 +628,7 @@ void PropertySelector::select_property_from_script(const Ref<Script> &p_script, 
 }
 
 void PropertySelector::select_property_from_basic_type(Variant::Type p_type, const String &p_current) {
-	ERR_FAIL_COND(p_type == Variant::NIL);
+	(p_type == Variant::NIL);
 	base_type = "";
 	selected = p_current;
 	type = p_type;

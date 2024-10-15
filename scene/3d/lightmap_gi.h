@@ -112,9 +112,9 @@ public:
 	void set_lightmap_textures(const TypedArray<TextureLayered> &p_data);
 	TypedArray<TextureLayered> get_lightmap_textures() const;
 
-	virtual RID get_rid() const override;
+	RID get_rid() const override;
 	LightmapGIData();
-	~LightmapGIData();
+	~LightmapGIData() override;
 };
 
 class LightmapGI : public VisualInstance3D {
@@ -161,7 +161,7 @@ public:
 private:
 	BakeQuality bake_quality = BAKE_QUALITY_MEDIUM;
 	bool use_denoiser = true;
-	float denoiser_strength = 0.1f;
+	float denoiser_strength = 0.1F;
 	int denoiser_range = 10;
 	int bounces = 3;
 	float bounce_indirect_energy = 1.0;
@@ -234,9 +234,9 @@ private:
 		uint32_t size = 0;
 		GenProbesOctree *children[8] = { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
 		~GenProbesOctree() {
-			for (int i = 0; i < 8; i++) {
-				if (children[i] != nullptr) {
-					memdelete(children[i]);
+			for (auto &i : children) {
+				if (i != nullptr) {
+					memdelete(i);
 				}
 			}
 		}
@@ -312,7 +312,7 @@ public:
 
 	BakeError bake(Node *p_from_node, String p_image_data_path = "", Lightmapper::BakeStepFunc p_bake_step = nullptr, void *p_bake_userdata = nullptr);
 
-	virtual PackedStringArray get_configuration_warnings() const override;
+	PackedStringArray get_configuration_warnings() const override;
 
 	LightmapGI();
 };

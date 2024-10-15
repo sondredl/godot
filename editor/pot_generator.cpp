@@ -31,8 +31,12 @@
 #include "pot_generator.h"
 
 #include "core/config/project_settings.h"
+#include "core/error/error_list.h"
 #include "core/error/error_macros.h"
-#include "editor/editor_translation.h"
+#include "core/io/file_access.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
+#include "core/templates/vector.h"
 #include "editor/editor_translation_parser.h"
 
 POTGenerator *POTGenerator::singleton = nullptr;

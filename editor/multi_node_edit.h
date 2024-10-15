@@ -42,7 +42,7 @@ class MultiNodeEdit : public RefCounted {
 		PropertyInfo info;
 	};
 
-	bool _set_impl(const StringName &p_name, const Variant &p_value, const String &p_field);
+	bool _set_impl(const StringName &p_name, const Variant &p_value, const String &p_field) const;
 
 protected:
 	static void _bind_methods();

@@ -50,7 +50,7 @@ public:
 	int get_reference_count() const;
 
 	RefCounted();
-	~RefCounted() {}
+	~RefCounted() override {}
 };
 
 template <typename T>
@@ -120,7 +120,7 @@ public:
 		return reference;
 	}
 
-	operator Variant() const {
+	explicit operator Variant() const {
 		return Variant(reference);
 	}
 
@@ -161,15 +161,15 @@ public:
 	}
 
 	template <typename T_Other>
-	Ref(const Ref<T_Other> &p_from) {
+	explicit Ref(const Ref<T_Other> &p_from) {
 		this->operator=(p_from);
 	}
 
-	Ref(T *p_from) {
+	explicit Ref(T *p_from) {
 		this->operator=(p_from);
 	}
 
-	Ref(const Variant &p_from) {
+	explicit Ref(const Variant &p_from) {
 		this->operator=(p_from);
 	}
 

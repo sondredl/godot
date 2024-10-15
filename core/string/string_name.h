@@ -95,10 +95,10 @@ class StringName {
 	static inline bool debug_stringname = false;
 #endif
 
-	StringName(_Data *p_data) { _data = p_data; }
+	explicit StringName(_Data *p_data) { _data = p_data; }
 
 public:
-	operator const void *() const { return (_data && (_data->cname || !_data->name.is_empty())) ? (void *)1 : nullptr; }
+	explicit operator const void *() const { return (_data && (_data->cname || !_data->name.is_empty())) ? (void *)1 : nullptr; }
 
 	bool operator==(const String &p_name) const;
 	bool operator==(const char *p_name) const;
@@ -115,9 +115,8 @@ public:
 		}
 		if (_data->cname != nullptr) {
 			return (char32_t)_data->cname[0] == (char32_t)UNIQUE_NODE_PREFIX[0];
-		} else {
-			return (char32_t)_data->name[0] == (char32_t)UNIQUE_NODE_PREFIX[0];
 		}
+		return (char32_t)_data->name[0] == (char32_t)UNIQUE_NODE_PREFIX[0];
 	}
 	_FORCE_INLINE_ bool operator<(const StringName &p_name) const {
 		return _data < p_name._data;
@@ -139,25 +138,23 @@ public:
 	_FORCE_INLINE_ uint32_t hash() const {
 		if (_data) {
 			return _data->hash;
-		} else {
-			return get_empty_hash();
 		}
+		return get_empty_hash();
 	}
 	_FORCE_INLINE_ const void *data_unique_pointer() const {
 		return (void *)_data;
 	}
 	bool operator!=(const StringName &p_name) const;
 
-	_FORCE_INLINE_ operator String() const {
+	_FORCE_INLINE_ explicit operator String() const {
 		if (_data) {
 			if (_data->cname) {
-				return String(_data->cname);
-			} else {
-				return _data->name;
+				return { _data->cname };
 			}
+			return _data->name;
 		}
 
-		return String();
+		return {};
 	}
 
 	static StringName search(const char *p_name);
@@ -172,24 +169,23 @@ public:
 			if (l_cname) {
 				if (r_cname) {
 					return is_str_less(l_cname, r_cname);
-				} else {
-					return is_str_less(l_cname, r._data->name.ptr());
 				}
+				return is_str_less(l_cname, r._data->name.ptr());
+
 			} else {
 				if (r_cname) {
 					return is_str_less(l._data->name.ptr(), r_cname);
-				} else {
-					return is_str_less(l._data->name.ptr(), r._data->name.ptr());
 				}
+				return is_str_less(l._data->name.ptr(), r._data->name.ptr());
 			}
 		}
 	};
 
 	StringName &operator=(const StringName &p_name);
-	StringName(const char *p_name, bool p_static = false);
+	explicit StringName(const char *p_name, bool p_static = false);
 	StringName(const StringName &p_name);
-	StringName(const String &p_name, bool p_static = false);
-	StringName(const StaticCString &p_static_string, bool p_static = false);
+	explicit StringName(const String &p_name, bool p_static = false);
+	explicit StringName(const StaticCString &p_static_string, bool p_static = false);
 	StringName() {}
 
 	static void assign_static_unique_class_name(StringName *ptr, const char *p_name);

@@ -106,7 +106,7 @@ private:
 		float glow_hdr_bleed_threshold = 1.0;
 		float glow_hdr_luminance_cap = 12.0;
 		float glow_hdr_bleed_scale = 2.0;
-		float glow_map_strength = 0.0f; // 1.0f in GLES3 ??
+		float glow_map_strength = 0.0F; // 1.0f in GLES3 ??
 		RID glow_map;
 
 		// SSR
@@ -148,9 +148,9 @@ private:
 
 		// Adjustments
 		bool adjustments_enabled = false;
-		float adjustments_brightness = 1.0f;
-		float adjustments_contrast = 1.0f;
-		float adjustments_saturation = 1.0f;
+		float adjustments_brightness = 1.0F;
+		float adjustments_contrast = 1.0F;
+		float adjustments_saturation = 1.0F;
 		bool use_1d_color_correction = false;
 		RID color_correction;
 	};

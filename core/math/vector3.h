@@ -183,8 +183,8 @@ struct [[nodiscard]] Vector3 {
 	_FORCE_INLINE_ bool operator>(const Vector3 &p_v) const;
 	_FORCE_INLINE_ bool operator>=(const Vector3 &p_v) const;
 
-	operator String() const;
-	operator Vector3i() const;
+	explicit operator String() const;
+	explicit operator Vector3i() const;
 
 	_FORCE_INLINE_ Vector3() {}
 	_FORCE_INLINE_ Vector3(real_t p_x, real_t p_y, real_t p_z) {
@@ -208,7 +208,7 @@ real_t Vector3::dot(const Vector3 &p_with) const {
 }
 
 Vector3 Vector3::abs() const {
-	return Vector3(Math::abs(x), Math::abs(y), Math::abs(z));
+	return { Math::abs(x), Math::abs(y), Math::abs(z) };
 }
 
 Vector3 Vector3::sign() const {
@@ -216,15 +216,15 @@ Vector3 Vector3::sign() const {
 }
 
 Vector3 Vector3::floor() const {
-	return Vector3(Math::floor(x), Math::floor(y), Math::floor(z));
+	return { Math::floor(x), Math::floor(y), Math::floor(z) };
 }
 
 Vector3 Vector3::ceil() const {
-	return Vector3(Math::ceil(x), Math::ceil(y), Math::ceil(z));
+	return { Math::ceil(x), Math::ceil(y), Math::ceil(z) };
 }
 
 Vector3 Vector3::round() const {
-	return Vector3(Math::round(x), Math::round(y), Math::round(z));
+	return { Math::round(x), Math::round(y), Math::round(z) };
 }
 
 Vector3 Vector3::lerp(const Vector3 &p_to, real_t p_weight) const {
@@ -240,13 +240,13 @@ Vector3 Vector3::slerp(const Vector3 &p_to, real_t p_weight) const {
 	// the internals of some methods for efficiency (mainly, checking length).
 	real_t start_length_sq = length_squared();
 	real_t end_length_sq = p_to.length_squared();
-	if (unlikely(start_length_sq == 0.0f || end_length_sq == 0.0f)) {
+	if (unlikely(start_length_sq == 0.0F || end_length_sq == 0.0F)) {
 		// Zero length vectors have no angle, so the best we can do is either lerp or throw an error.
 		return lerp(p_to, p_weight);
 	}
 	Vector3 axis = cross(p_to);
 	real_t axis_length_sq = axis.length_squared();
-	if (unlikely(axis_length_sq == 0.0f)) {
+	if (unlikely(axis_length_sq == 0.0F)) {
 		// Colinear vectors have no rotation axis or angle between them, so the best we can do is lerp.
 		return lerp(p_to, p_weight);
 	}
@@ -298,11 +298,11 @@ real_t Vector3::distance_squared_to(const Vector3 &p_to) const {
 }
 
 Vector3 Vector3::posmod(real_t p_mod) const {
-	return Vector3(Math::fposmod(x, p_mod), Math::fposmod(y, p_mod), Math::fposmod(z, p_mod));
+	return { Math::fposmod(x, p_mod), Math::fposmod(y, p_mod), Math::fposmod(z, p_mod) };
 }
 
 Vector3 Vector3::posmodv(const Vector3 &p_modv) const {
-	return Vector3(Math::fposmod(x, p_modv.x), Math::fposmod(y, p_modv.y), Math::fposmod(z, p_modv.z));
+	return { Math::fposmod(x, p_modv.x), Math::fposmod(y, p_modv.y), Math::fposmod(z, p_modv.z) };
 }
 
 Vector3 Vector3::project(const Vector3 &p_to) const {
@@ -336,7 +336,7 @@ Vector3 &Vector3::operator+=(const Vector3 &p_v) {
 }
 
 Vector3 Vector3::operator+(const Vector3 &p_v) const {
-	return Vector3(x + p_v.x, y + p_v.y, z + p_v.z);
+	return { x + p_v.x, y + p_v.y, z + p_v.z };
 }
 
 Vector3 &Vector3::operator-=(const Vector3 &p_v) {
@@ -347,7 +347,7 @@ Vector3 &Vector3::operator-=(const Vector3 &p_v) {
 }
 
 Vector3 Vector3::operator-(const Vector3 &p_v) const {
-	return Vector3(x - p_v.x, y - p_v.y, z - p_v.z);
+	return { x - p_v.x, y - p_v.y, z - p_v.z };
 }
 
 Vector3 &Vector3::operator*=(const Vector3 &p_v) {
@@ -358,7 +358,7 @@ Vector3 &Vector3::operator*=(const Vector3 &p_v) {
 }
 
 Vector3 Vector3::operator*(const Vector3 &p_v) const {
-	return Vector3(x * p_v.x, y * p_v.y, z * p_v.z);
+	return { x * p_v.x, y * p_v.y, z * p_v.z };
 }
 
 Vector3 &Vector3::operator/=(const Vector3 &p_v) {
@@ -369,7 +369,7 @@ Vector3 &Vector3::operator/=(const Vector3 &p_v) {
 }
 
 Vector3 Vector3::operator/(const Vector3 &p_v) const {
-	return Vector3(x / p_v.x, y / p_v.y, z / p_v.z);
+	return { x / p_v.x, y / p_v.y, z / p_v.z };
 }
 
 Vector3 &Vector3::operator*=(real_t p_scalar) {
@@ -399,7 +399,7 @@ _FORCE_INLINE_ Vector3 operator*(int64_t p_scalar, const Vector3 &p_vec) {
 }
 
 Vector3 Vector3::operator*(real_t p_scalar) const {
-	return Vector3(x * p_scalar, y * p_scalar, z * p_scalar);
+	return { x * p_scalar, y * p_scalar, z * p_scalar };
 }
 
 Vector3 &Vector3::operator/=(real_t p_scalar) {
@@ -410,11 +410,11 @@ Vector3 &Vector3::operator/=(real_t p_scalar) {
 }
 
 Vector3 Vector3::operator/(real_t p_scalar) const {
-	return Vector3(x / p_scalar, y / p_scalar, z / p_scalar);
+	return { x / p_scalar, y / p_scalar, z / p_scalar };
 }
 
 Vector3 Vector3::operator-() const {
-	return Vector3(-x, -y, -z);
+	return { -x, -y, -z };
 }
 
 bool Vector3::operator==(const Vector3 &p_v) const {
@@ -513,7 +513,7 @@ bool Vector3::is_normalized() const {
 }
 
 Vector3 Vector3::inverse() const {
-	return Vector3(1.0f / x, 1.0f / y, 1.0f / z);
+	return { 1.0F / x, 1.0F / y, 1.0F / z };
 }
 
 void Vector3::zero() {
@@ -523,7 +523,7 @@ void Vector3::zero() {
 // slide returns the component of the vector along the given plane, specified by its normal vector.
 Vector3 Vector3::slide(const Vector3 &p_normal) const {
 #ifdef MATH_CHECKS
-	ERR_FAIL_COND_V_MSG(!p_normal.is_normalized(), Vector3(), "The normal Vector3 " + p_normal.operator String() + " must be normalized.");
+	(!p_normal.is_normalized(), Vector3(), "The normal Vector3 " + p_normal.operator String() + " must be normalized.");
 #endif
 	return *this - p_normal * dot(p_normal);
 }
@@ -534,9 +534,9 @@ Vector3 Vector3::bounce(const Vector3 &p_normal) const {
 
 Vector3 Vector3::reflect(const Vector3 &p_normal) const {
 #ifdef MATH_CHECKS
-	ERR_FAIL_COND_V_MSG(!p_normal.is_normalized(), Vector3(), "The normal Vector3 " + p_normal.operator String() + " must be normalized.");
+	(!p_normal.is_normalized(), Vector3(), "The normal Vector3 " + p_normal.operator String() + " must be normalized.");
 #endif
-	return 2.0f * p_normal * dot(p_normal) - *this;
+	return 2.0F * p_normal * dot(p_normal) - *this;
 }
 
 #endif // VECTOR3_H

@@ -126,7 +126,7 @@ public:
 	};
 
 protected:
-	virtual void _update_theme_item_cache() override;
+	void _update_theme_item_cache() override;
 
 	void _notification(int p_what);
 	static void _bind_methods();
@@ -173,7 +173,7 @@ private:
 		int line = 0;
 		RID rid;
 
-		void _clear_children() {
+		void _clear_children() const {
 			RichTextLabel *owner_rtl = Object::cast_to<RichTextLabel>(ObjectDB::get_instance(owner));
 			while (subitems.size()) {
 				Item *subitem = subitems.front()->get();
@@ -241,7 +241,7 @@ private:
 		Variant key;
 		String tooltip;
 		ItemImage() { type = ITEM_IMAGE; }
-		~ItemImage() {
+		~ItemImage() override {
 			if (image.is_valid()) {
 				RichTextLabel *owner_rtl = Object::cast_to<RichTextLabel>(ObjectDB::get_instance(owner));
 				if (owner_rtl) {
@@ -360,13 +360,13 @@ private:
 	};
 
 	struct ItemFX : public Item {
-		double elapsed_time = 0.f;
+		double elapsed_time = 0.F;
 		bool connected = true;
 	};
 
 	struct ItemShake : public ItemFX {
 		int strength = 0;
-		float rate = 0.0f;
+		float rate = 0.0F;
 		uint64_t _current_rng = 0;
 		uint64_t _previous_rng = 0;
 		Vector2 prev_off;
@@ -378,45 +378,45 @@ private:
 			_current_rng = Math::rand();
 		}
 
-		uint64_t offset_random(int p_index) {
+		uint64_t offset_random(int p_index) const {
 			return (_current_rng >> (p_index % 64)) |
 					(_current_rng << (64 - (p_index % 64)));
 		}
 
-		uint64_t offset_previous_random(int p_index) {
+		uint64_t offset_previous_random(int p_index) const {
 			return (_previous_rng >> (p_index % 64)) |
 					(_previous_rng << (64 - (p_index % 64)));
 		}
 	};
 
 	struct ItemWave : public ItemFX {
-		float frequency = 1.0f;
-		float amplitude = 1.0f;
+		float frequency = 1.0F;
+		float amplitude = 1.0F;
 		Vector2 prev_off;
 
 		ItemWave() { type = ITEM_WAVE; }
 	};
 
 	struct ItemTornado : public ItemFX {
-		float radius = 1.0f;
-		float frequency = 1.0f;
+		float radius = 1.0F;
+		float frequency = 1.0F;
 		Vector2 prev_off;
 
 		ItemTornado() { type = ITEM_TORNADO; }
 	};
 
 	struct ItemRainbow : public ItemFX {
-		float saturation = 0.8f;
-		float value = 0.8f;
-		float frequency = 1.0f;
+		float saturation = 0.8F;
+		float value = 0.8F;
+		float frequency = 1.0F;
 
 		ItemRainbow() { type = ITEM_RAINBOW; }
 	};
 
 	struct ItemPulse : public ItemFX {
 		Color color = Color(1.0, 1.0, 1.0, 0.25);
-		float frequency = 1.0f;
-		float ease = -2.0f;
+		float frequency = 1.0F;
+		float ease = -2.0F;
 
 		ItemPulse() { type = ITEM_PULSE; }
 	};
@@ -437,7 +437,7 @@ private:
 
 		ItemCustomFX();
 
-		virtual ~ItemCustomFX();
+		~ItemCustomFX() override;
 	};
 
 	struct ItemContext : public Item {
@@ -601,8 +601,8 @@ private:
 
 	_FORCE_INLINE_ float _calculate_line_vertical_offset(const Line &line) const;
 
-	virtual void gui_input(const Ref<InputEvent> &p_event) override;
-	virtual String get_tooltip(const Point2 &p_pos) const override;
+	void gui_input(const Ref<InputEvent> &p_event) override;
+	String get_tooltip(const Point2 &p_pos) const override;
 	Item *_get_next_item(Item *p_item, bool p_free = false) const;
 	Item *_get_prev_item(Item *p_item, bool p_free = false) const;
 
@@ -770,8 +770,8 @@ public:
 
 	VScrollBar *get_v_scroll_bar() { return vscroll; }
 
-	virtual CursorShape get_cursor_shape(const Point2 &p_pos) const override;
-	virtual Variant get_drag_data(const Point2 &p_point) override;
+	CursorShape get_cursor_shape(const Point2 &p_pos) const override;
+	Variant get_drag_data(const Point2 &p_point) override;
 
 	void set_selection_enabled(bool p_enabled);
 	bool is_selection_enabled() const;
@@ -855,10 +855,10 @@ public:
 
 	void install_effect(const Variant effect);
 
-	virtual Size2 get_minimum_size() const override;
+	Size2 get_minimum_size() const override;
 
-	RichTextLabel(const String &p_text = String());
-	~RichTextLabel();
+	explicit RichTextLabel(const String &p_text = String());
+	~RichTextLabel() override;
 };
 
 VARIANT_ENUM_CAST(RichTextLabel::ListType);

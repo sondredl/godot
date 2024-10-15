@@ -92,7 +92,7 @@ struct [[nodiscard]] Rect2i {
 		Rect2i new_rect = p_rect;
 
 		if (!intersects(new_rect)) {
-			return Rect2i();
+			return {};
 		}
 
 		new_rect.position = p_rect.position.max(position);
@@ -224,8 +224,8 @@ struct [[nodiscard]] Rect2i {
 		return position + size;
 	}
 
-	operator String() const;
-	operator Rect2() const;
+	explicit operator String() const;
+	explicit operator Rect2() const;
 
 	Rect2i() {}
 	Rect2i(int p_x, int p_y, int p_width, int p_height) :

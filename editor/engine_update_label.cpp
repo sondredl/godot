@@ -30,14 +30,22 @@
 
 #include "engine_update_label.h"
 
+#include "core/config/engine.h"
+#include "core/error/error_list.h"
 #include "core/io/json.h"
-#include "core/os/time.h"
+#include "core/math/color.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/object.h"
+#include "core/os/memory.h"
+#include "core/string/ustring.h"
+#include "core/variant/array.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
-#include "editor/themes/editor_scale.h"
-#include "scene/gui/box_container.h"
-#include "scene/gui/button.h"
 #include "scene/main/http_request.h"
+#include "scene/scene_string_names.h"
+#include <cstdint>
 
 bool EngineUpdateLabel::_can_check_updates() const {
 	return int(EDITOR_GET("network/connection/network_mode")) == EditorSettings::NETWORK_ONLINE &&
@@ -177,9 +185,8 @@ void EngineUpdateLabel::_set_status(UpdateStatus p_status) {
 		// Hide the label to prevent unnecessary distraction.
 		hide();
 		return;
-	} else {
-		show();
 	}
+	show();
 
 	switch (status) {
 		case UpdateStatus::OFFLINE: {

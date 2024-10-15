@@ -54,7 +54,7 @@ class DirectoryCreateDialog;
 class EditorResourceTooltipPlugin;
 
 class FileSystemTree : public Tree {
-	virtual Control *make_custom_tooltip(const String &p_text) const;
+	*make_custom_tooltip(const String &p_text) const override override;
 };
 
 class FileSystemList : public ItemList {
@@ -65,7 +65,7 @@ class FileSystemList : public ItemList {
 	Popup *popup_editor = nullptr;
 	LineEdit *line_editor = nullptr;
 
-	virtual Control *make_custom_tooltip(const String &p_text) const override;
+	*make_custom_tooltip(const String &p_text) const override;
 	void _line_editor_submit(const String &p_text);
 	void _text_editor_popup_modal_close();
 
@@ -336,7 +336,7 @@ private:
 
 	void _preview_invalidated(const String &p_path);
 	void _file_list_thumbnail_done(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, const Variant &p_udata);
-	void _tree_thumbnail_done(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, const Variant &p_udata);
+	void _tree_thumbnail_done(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, const Variant &p_udata) const;
 
 	void _update_display_mode(bool p_force = false);
 
@@ -354,8 +354,7 @@ private:
 	bool _can_dock_horizontal() const;
 	void _set_dock_horizontal(bool p_enable);
 
-private:
-	static FileSystemDock *singleton;
+	leSystemDock *singleton;
 
 public:
 	static FileSystemDock *get_singleton() { return singleton; }
@@ -414,7 +413,7 @@ public:
 	void load_layout_from_config(Ref<ConfigFile> p_layout, const String &p_section);
 
 	FileSystemDock();
-	~FileSystemDock();
+	~FileSystemDock() override override;
 };
 
 VARIANT_ENUM_CAST(FileSystemDock::Overwrite);

@@ -78,7 +78,7 @@ public:
 	String class_name;
 	List<SceneDebuggerProperty> properties;
 
-	SceneDebuggerObject(ObjectID p_id);
+	explicit SceneDebuggerObject(ObjectID p_id);
 	SceneDebuggerObject() {}
 
 	void serialize(Array &r_arr, int p_max_size = 1 << 20);
@@ -101,7 +101,7 @@ public:
 			VIEW_VISIBLE_IN_TREE = 1 << 3,
 		};
 
-		RemoteNode(int p_child, const String &p_name, const String &p_type, ObjectID p_id, const String p_scene_file_path, int p_view_flags) {
+		RemoteNode(int p_child, const String &p_name, const String &p_type, ObjectID p_id, const String &p_scene_file_path, int p_view_flags) {
 			child_count = p_child;
 			name = p_name;
 			type_name = p_type;
@@ -118,7 +118,7 @@ public:
 
 	void serialize(Array &r_arr);
 	void deserialize(const Array &p_arr);
-	SceneDebuggerTree(Node *p_root);
+	explicit SceneDebuggerTree(Node *p_root);
 	SceneDebuggerTree() {}
 };
 

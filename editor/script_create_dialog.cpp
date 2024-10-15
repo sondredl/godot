@@ -31,20 +31,42 @@
 #include "script_create_dialog.h"
 
 #include "core/config/project_settings.h"
+#include "core/error/error_list.h"
+#include "core/error/error_macros.h"
+#include "core/io/dir_access.h"
 #include "core/io/file_access.h"
+#include "core/io/resource.h"
+#include "core/io/resource_loader.h"
 #include "core/io/resource_saver.h"
-#include "core/string/string_builder.h"
+#include "core/math/math_defs.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/object/script_language.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 #include "editor/create_dialog.h"
+#include "editor/editor_data.h"
 #include "editor/editor_file_system.h"
 #include "editor/editor_node.h"
-#include "editor/editor_paths.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/gui/editor_file_dialog.h"
 #include "editor/gui/editor_validation_panel.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/check_box.h"
 #include "scene/gui/grid_container.h"
 #include "scene/gui/line_edit.h"
+#include "scene/resources/texture.h"
+#include "scene/scene_string_names.h"
+#include "servers/text_server.h"
 
 static String _get_parent_class_of_script(const String &p_path) {
 	if (!ResourceLoader::exists(p_path, "Script")) {
@@ -52,7 +74,7 @@ static String _get_parent_class_of_script(const String &p_path) {
 	}
 
 	Ref<Script> script = ResourceLoader::load(p_path, "Script");
-	ERR_FAIL_COND_V(script.is_null(), "Object");
+	(script.is_null(), "Object");
 
 	String class_name;
 	Ref<Script> base = script->get_base_script();
@@ -91,7 +113,7 @@ static Vector<String> _get_hierarchy(const String &p_class_name) {
 			hierarchy.push_back(class_name);
 
 			Ref<Script> script = EditorNode::get_editor_data().script_class_load_script(class_name);
-			ERR_BREAK(script.is_null());
+			(script.is_null());
 			class_name = _get_parent_class_of_script(script->get_path());
 			continue;
 		}
@@ -160,7 +182,7 @@ void ScriptCreateDialog::_path_hbox_sorted() {
 	}
 }
 
-bool ScriptCreateDialog::_can_be_built_in() {
+bool ScriptCreateDialog::_can_be_built_in() const {
 	return (supports_built_in && built_in_enabled);
 }
 
@@ -243,7 +265,8 @@ String ScriptCreateDialog::_validate_path(const String &p_path, bool p_file_must
 		Ref<DirAccess> da = DirAccess::create(DirAccess::ACCESS_RESOURCES);
 		if (da->dir_exists(p)) {
 			return TTR("A directory with the same name exists.");
-		} else if (p_file_must_exist && !da->file_exists(p)) {
+		}
+		if (p_file_must_exist && !da->file_exists(p)) {
 			return TTR("File does not exist.");
 		}
 	}
@@ -339,7 +362,7 @@ void ScriptCreateDialog::_create_new() {
 	if (!parent_name->get_text().is_quoted() && !ClassDB::class_exists(parent_class) && !ScriptServer::is_global_class(parent_class)) {
 		// If base is a custom type, replace with script path instead.
 		const EditorData::CustomType *type = EditorNode::get_editor_data().get_custom_type_by_name(parent_class);
-		ERR_FAIL_NULL(type);
+		(type);
 		parent_class = "\"" + type->script->get_path() + "\"";
 	}
 
@@ -693,7 +716,7 @@ ScriptLanguage::ScriptTemplate ScriptCreateDialog::_get_current_template() const
 			}
 		}
 	}
-	return ScriptLanguage::ScriptTemplate();
+	return {};
 }
 
 Vector<ScriptLanguage::ScriptTemplate> ScriptCreateDialog::_get_user_templates(const ScriptLanguage *p_language, const StringName &p_object, const String &p_dir, const ScriptLanguage::TemplateLocation &p_origin) const {

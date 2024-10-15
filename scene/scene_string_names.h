@@ -46,7 +46,7 @@ class SceneStringNames {
 		singleton = nullptr;
 	}
 
-	SceneStringNames();
+	SceneStringNames() = delete;
 
 public:
 	_FORCE_INLINE_ static SceneStringNames *get_singleton() { return singleton; }

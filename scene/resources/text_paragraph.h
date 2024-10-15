@@ -154,9 +154,9 @@ public:
 
 	Mutex &get_mutex() const { return _thread_safe_; };
 
-	TextParagraph(const String &p_text, const Ref<Font> &p_font, int p_font_size, const String &p_language = "", float p_width = -1.f, TextServer::Direction p_direction = TextServer::DIRECTION_AUTO, TextServer::Orientation p_orientation = TextServer::ORIENTATION_HORIZONTAL);
+	TextParagraph(const String &p_text, const Ref<Font> &p_font, int p_font_size, const String &p_language = "", float p_width = -1.F, TextServer::Direction p_direction = TextServer::DIRECTION_AUTO, TextServer::Orientation p_orientation = TextServer::ORIENTATION_HORIZONTAL);
 	TextParagraph();
-	~TextParagraph();
+	~TextParagraph() override;
 };
 
 #endif // TEXT_PARAGRAPH_H

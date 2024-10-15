@@ -56,10 +56,10 @@ protected:
 	bool _property_can_revert(const StringName &p_name) const { return property_helper.property_can_revert(p_name); }
 	bool _property_get_revert(const StringName &p_name, Variant &r_property) const { return property_helper.property_get_revert(p_name, r_property); }
 	static void _bind_methods();
-	virtual void shortcut_input(const Ref<InputEvent> &p_event) override;
+	void shortcut_input(const Ref<InputEvent> &p_event) override;
 
 public:
-	virtual void pressed() override;
+	void pressed() override;
 
 	PopupMenu *get_popup() const;
 	void show_popup();
@@ -71,8 +71,8 @@ public:
 	void set_item_count(int p_count);
 	int get_item_count() const;
 
-	MenuButton(const String &p_text = String());
-	~MenuButton();
+	explicit MenuButton(const String &p_text = String());
+	~MenuButton() override;
 };
 
 #endif // MENU_BUTTON_H

@@ -30,20 +30,38 @@
 
 #include "editor_log.h"
 
+#include "core/error/error_macros.h"
+#include "core/io/config_file.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/message_queue.h"
+#include "core/object/ref_counted.h"
 #include "core/object/undo_redo.h"
 #include "core/os/keyboard.h"
+#include "core/os/memory.h"
+#include "core/os/os.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/typedefs.h"
 #include "core/version.h"
 #include "editor/editor_node.h"
 #include "editor/editor_paths.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/themes/editor_scale.h"
-#include "scene/gui/center_container.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/button.h"
+#include "scene/gui/line_edit.h"
 #include "scene/gui/separator.h"
+#include "scene/main/timer.h"
 #include "scene/resources/font.h"
+#include "scene/resources/texture.h"
+#include "scene/scene_string_names.h"
+#include "servers/display_server.h"
 
 void EditorLog::_error_handler(void *p_self, const char *p_func, const char *p_file, int p_line, const char *p_error, const char *p_errorexp, bool p_editor_notify, ErrorHandlerType p_type) {
-	EditorLog *self = static_cast<EditorLog *>(p_self);
+	auto *self = static_cast<EditorLog *>(p_self);
 
 	String err_str;
 	if (p_errorexp && p_errorexp[0]) {
@@ -264,7 +282,7 @@ void EditorLog::register_undo_redo(UndoRedo *p_undo_redo) {
 }
 
 void EditorLog::_undo_redo_cbk(void *p_self, const String &p_name) {
-	EditorLog *self = static_cast<EditorLog *>(p_self);
+	auto *self = static_cast<EditorLog *>(p_self);
 	self->add_message(p_name, EditorLog::MSG_TYPE_EDITOR);
 }
 

@@ -290,23 +290,23 @@ public:
 	enum BreadcrumbMarker {
 		NONE = 0,
 		// Environment
-		REFLECTION_PROBES = 1u << 16u,
-		SKY_PASS = 2u << 16u,
+		REFLECTION_PROBES = 1U << 16U,
+		SKY_PASS = 2U << 16U,
 		// Light mapping
-		LIGHTMAPPER_PASS = 3u << 16u,
+		LIGHTMAPPER_PASS = 3U << 16U,
 		// Shadows
-		SHADOW_PASS_DIRECTIONAL = 4u << 16u,
-		SHADOW_PASS_CUBE = 5u << 16u,
+		SHADOW_PASS_DIRECTIONAL = 4U << 16U,
+		SHADOW_PASS_CUBE = 5U << 16U,
 		// Geometry passes
-		OPAQUE_PASS = 6u << 16u,
-		ALPHA_PASS = 7u << 16u,
-		TRANSPARENT_PASS = 8u << 16u,
+		OPAQUE_PASS = 6U << 16U,
+		ALPHA_PASS = 7U << 16U,
+		TRANSPARENT_PASS = 8U << 16U,
 		// Screen effects
-		POST_PROCESSING_PASS = 9u << 16u,
-		BLIT_PASS = 10u << 16u,
-		UI_PASS = 11u << 16u,
+		POST_PROCESSING_PASS = 9U << 16U,
+		BLIT_PASS = 10U << 16U,
+		UI_PASS = 11U << 16U,
 		// Other
-		DEBUG_PASS = 12u << 16u,
+		DEBUG_PASS = 12U << 16U,
 	};
 
 	enum CompareOperator {
@@ -377,7 +377,8 @@ public:
 		bool operator==(const TextureFormat &b) const {
 			if (format != b.format) {
 				return false;
-			} else if (width != b.width) {
+			}
+			if (width != b.width) {
 				return false;
 			} else if (height != b.height) {
 				return false;
@@ -455,12 +456,12 @@ public:
 		SamplerRepeatMode repeat_u = SAMPLER_REPEAT_MODE_CLAMP_TO_EDGE;
 		SamplerRepeatMode repeat_v = SAMPLER_REPEAT_MODE_CLAMP_TO_EDGE;
 		SamplerRepeatMode repeat_w = SAMPLER_REPEAT_MODE_CLAMP_TO_EDGE;
-		float lod_bias = 0.0f;
+		float lod_bias = 0.0F;
 		bool use_anisotropy = false;
-		float anisotropy_max = 1.0f;
+		float anisotropy_max = 1.0F;
 		bool enable_compare = false;
 		CompareOperator compare_op = COMPARE_OP_ALWAYS;
-		float min_lod = 0.0f;
+		float min_lod = 0.0F;
 		float max_lod = 1e20; // Something very large should do.
 		SamplerBorderColor border_color = SAMPLER_BORDER_COLOR_FLOAT_OPAQUE_BLACK;
 		bool unnormalized_uvw = false;
@@ -661,17 +662,17 @@ public:
 		PolygonCullMode cull_mode = POLYGON_CULL_DISABLED;
 		PolygonFrontFace front_face = POLYGON_FRONT_FACE_CLOCKWISE;
 		bool depth_bias_enabled = false;
-		float depth_bias_constant_factor = 0.0f;
-		float depth_bias_clamp = 0.0f;
-		float depth_bias_slope_factor = 0.0f;
-		float line_width = 1.0f;
+		float depth_bias_constant_factor = 0.0F;
+		float depth_bias_clamp = 0.0F;
+		float depth_bias_slope_factor = 0.0F;
+		float line_width = 1.0F;
 		uint32_t patch_control_points = 1;
 	};
 
 	struct PipelineMultisampleState {
 		TextureSamples sample_count = TEXTURE_SAMPLES_1;
 		bool enable_sample_shading = false;
-		float min_sample_shading = 0.0f;
+		float min_sample_shading = 0.0F;
 		Vector<uint32_t> sample_mask;
 		bool enable_alpha_to_coverage = false;
 		bool enable_alpha_to_one = false;

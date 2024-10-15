@@ -30,14 +30,21 @@
 
 #include "editor_undo_redo_manager.h"
 
+#include "core/error/error_macros.h"
 #include "core/io/resource.h"
-#include "core/os/os.h"
-#include "core/templates/local_vector.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/variant/callable.h"
+#include "core/variant/variant.h"
 #include "editor/debugger/editor_debugger_inspector.h"
 #include "editor/debugger/editor_debugger_node.h"
 #include "editor/editor_log.h"
 #include "editor/editor_node.h"
 #include "scene/main/node.h"
+#include <cmath>
 
 EditorUndoRedoManager *EditorUndoRedoManager::singleton = nullptr;
 
@@ -55,7 +62,7 @@ EditorUndoRedoManager::History &EditorUndoRedoManager::get_or_create_history(int
 }
 
 UndoRedo *EditorUndoRedoManager::get_history_undo_redo(int p_idx) const {
-	ERR_FAIL_COND_V(!history_map.has(p_idx), nullptr);
+	(!history_map.has(p_idx), nullptr);
 	return history_map[p_idx].undo_redo;
 }
 
@@ -122,7 +129,7 @@ EditorUndoRedoManager::History &EditorUndoRedoManager::get_history_for_object(Ob
 }
 
 void EditorUndoRedoManager::force_fixed_history() {
-	ERR_FAIL_COND_MSG(pending_action.history_id == INVALID_HISTORY, "The current action has no valid history assigned.");
+	(pending_action.history_id == INVALID_HISTORY, "The current action has no valid history assigned.");
 	forced_history = true;
 }
 
@@ -302,7 +309,7 @@ bool EditorUndoRedoManager::undo() {
 }
 
 bool EditorUndoRedoManager::undo_history(int p_id) {
-	ERR_FAIL_COND_V(p_id == INVALID_HISTORY, false);
+	(p_id == INVALID_HISTORY, false);
 	History &history = get_or_create_history(p_id);
 
 	Action action = history.undo_stack.back()->get();
@@ -355,7 +362,7 @@ bool EditorUndoRedoManager::redo() {
 }
 
 bool EditorUndoRedoManager::redo_history(int p_id) {
-	ERR_FAIL_COND_V(p_id == INVALID_HISTORY, false);
+	(p_id == INVALID_HISTORY, false);
 	History &history = get_or_create_history(p_id);
 
 	Action action = history.redo_stack.back()->get();
@@ -448,7 +455,7 @@ int EditorUndoRedoManager::get_current_action_history_id() {
 }
 
 void EditorUndoRedoManager::discard_history(int p_idx, bool p_erase_from_map) {
-	ERR_FAIL_COND(!history_map.has(p_idx));
+	(!history_map.has(p_idx));
 	History &history = history_map[p_idx];
 
 	if (history.undo_redo) {

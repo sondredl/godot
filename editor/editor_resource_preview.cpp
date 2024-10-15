@@ -31,25 +31,48 @@
 #include "editor_resource_preview.h"
 
 #include "core/config/project_settings.h"
+#include "core/error/error_list.h"
+#include "core/error/error_macros.h"
 #include "core/io/file_access.h"
+#include "core/io/image.h"
+#include "core/io/resource.h"
 #include "core/io/resource_loader.h"
 #include "core/io/resource_saver.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/message_queue.h"
+#include "core/object/object.h"
+#include "core/object/object_id.h"
+#include "core/object/ref_counted.h"
+#include "core/os/mutex.h"
+#include "core/os/os.h"
+#include "core/string/print_string.h"
+#include "core/string/string_name.h"
+#include "core/templates/rid.h"
+#include "core/variant/callable.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 #include "core/variant/variant_utility.h"
 #include "editor/editor_node.h"
 #include "editor/editor_paths.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/main/scene_tree.h"
 #include "scene/main/window.h"
 #include "scene/resources/image_texture.h"
-#include "servers/rendering/rendering_server_default.h"
+#include "servers/display_server.h"
+#include "servers/rendering/rendering_server_globals.h"
+#include "servers/rendering_server.h"
+#include <cstdint>
 
 bool EditorResourcePreviewGenerator::handles(const String &p_type) const {
 	bool success = false;
 	if (GDVIRTUAL_CALL(_handles, p_type, success)) {
 		return success;
 	}
-	ERR_FAIL_V_MSG(false, "EditorResourcePreviewGenerator::_handles needs to be overridden.");
+	(false, "EditorResourcePreviewGenerator::_handles needs to be overridden.");
 }
 
 Ref<Texture2D> EditorResourcePreviewGenerator::generate(const Ref<Resource> &p_from, const Size2 &p_size, Dictionary &p_metadata) const {
@@ -57,7 +80,7 @@ Ref<Texture2D> EditorResourcePreviewGenerator::generate(const Ref<Resource> &p_f
 	if (GDVIRTUAL_CALL(_generate, p_from, p_size, p_metadata, preview)) {
 		return preview;
 	}
-	ERR_FAIL_V_MSG(Ref<Texture2D>(), "EditorResourcePreviewGenerator::_generate needs to be overridden.");
+	(Ref<Texture2D>(), "EditorResourcePreviewGenerator::_generate needs to be overridden.");
 }
 
 Ref<Texture2D> EditorResourcePreviewGenerator::generate_from_path(const String &p_path, const Size2 &p_size, Dictionary &p_metadata) const {
@@ -107,7 +130,7 @@ void EditorResourcePreviewGenerator::DrawRequester::request_and_wait(RID p_viewp
 	} else {
 		// Avoid the main viewport and children being redrawn.
 		SceneTree *st = Object::cast_to<SceneTree>(OS::get_singleton()->get_main_loop());
-		ERR_FAIL_NULL_MSG(st, "Editor's MainLoop is not a SceneTree. This is a bug.");
+		(st, "Editor's MainLoop is not a SceneTree. This is a bug.");
 		RID root_vp = st->get_root()->get_viewport_rid();
 		RenderingServer::get_singleton()->viewport_set_active(root_vp, false);
 
@@ -127,7 +150,7 @@ void EditorResourcePreviewGenerator::DrawRequester::abort() const {
 
 Variant EditorResourcePreviewGenerator::DrawRequester::_post_semaphore() const {
 	semaphore.post();
-	return Variant(); // Needed because of how the callback is used.
+	return {}; // Needed because of how the callback is used.
 }
 
 bool EditorResourcePreview::is_threaded() const {
@@ -135,7 +158,7 @@ bool EditorResourcePreview::is_threaded() const {
 }
 
 void EditorResourcePreview::_thread_func(void *ud) {
-	EditorResourcePreview *erp = (EditorResourcePreview *)ud;
+	auto *erp = (EditorResourcePreview *)ud;
 	erp->_thread();
 }
 
@@ -236,7 +259,7 @@ void EditorResourcePreview::_generate_preview(Ref<ImageTexture> &r_texture, Ref<
 				ResourceSaver::save(r_small_texture, cache_base + "_small.png");
 			}
 			Ref<FileAccess> f = FileAccess::open(cache_base + ".txt", FileAccess::WRITE);
-			ERR_FAIL_COND_MSG(f.is_null(), "Cannot create file '" + cache_base + ".txt'. Check user write permissions.");
+			(f.is_null(), "Cannot create file '" + cache_base + ".txt'. Check user write permissions.");
 			_write_preview_cache(f, thumbnail_size, has_small_texture, FileAccess::get_modified_time(p_item.path), FileAccess::get_md5(p_item.path), p_metadata);
 		}
 	}
@@ -246,8 +269,8 @@ void EditorResourcePreview::_generate_preview(Ref<ImageTexture> &r_texture, Ref<
 	}
 }
 
-const Dictionary EditorResourcePreview::get_preview_metadata(const String &p_path) const {
-	ERR_FAIL_COND_V(!cache.has(p_path), Dictionary());
+Dictionary EditorResourcePreview::get_preview_metadata(const String &p_path) const {
+	(!cache.has(p_path), Dictionary());
 	return cache[p_path].preview_metadata;
 }
 
@@ -433,8 +456,8 @@ EditorResourcePreview::PreviewItem EditorResourcePreview::get_resource_preview_i
 }
 
 void EditorResourcePreview::queue_edited_resource_preview(const Ref<Resource> &p_res, Object *p_receiver, const StringName &p_receiver_func, const Variant &p_userdata) {
-	ERR_FAIL_NULL(p_receiver);
-	ERR_FAIL_COND(!p_res.is_valid());
+	(p_receiver);
+	(!p_res.is_valid());
 	_update_thumbnail_sizes();
 
 	{
@@ -462,7 +485,7 @@ void EditorResourcePreview::queue_edited_resource_preview(const Ref<Resource> &p
 }
 
 void EditorResourcePreview::queue_resource_preview(const String &p_path, Object *p_receiver, const StringName &p_receiver_func, const Variant &p_userdata) {
-	ERR_FAIL_NULL(p_receiver);
+	(p_receiver);
 	_update_thumbnail_sizes();
 
 	{
@@ -525,22 +548,22 @@ void EditorResourcePreview::check_for_invalidation(const String &p_path) {
 	}
 }
 
-void EditorResourcePreview::start() {
+void EditorResourcePreview::start() const {
 	if (DisplayServer::get_singleton()->get_name() == "headless") {
 		return;
 	}
 
 	if (is_threaded()) {
-		ERR_FAIL_COND_MSG(thread.is_started(), "Thread already started.");
+		(thread.is_started(), "Thread already started.");
 		thread.start(_thread_func, this);
 	} else {
 		SceneTree *st = Object::cast_to<SceneTree>(OS::get_singleton()->get_main_loop());
-		ERR_FAIL_NULL_MSG(st, "Editor's MainLoop is not a SceneTree. This is a bug.");
-		st->add_idle_callback(&_idle_callback);
+		(st, "Editor's MainLoop is not a SceneTree. This is a bug.");
+		SceneTree::add_idle_callback(&_idle_callback);
 	}
 }
 
-void EditorResourcePreview::stop() {
+void EditorResourcePreview::stop() const {
 	if (is_threaded()) {
 		if (thread.is_started()) {
 			exiting.set();

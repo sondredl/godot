@@ -74,7 +74,7 @@ public:
 		if (r_valid) {
 			*r_valid = false;
 		}
-		return String();
+		return {};
 	}
 
 	//this is used by script languages that keep a reference counter of their own

@@ -124,13 +124,13 @@ public:
 
 	void operator=(const Callable &p_callable);
 
-	operator String() const;
+	explicit operator String() const;
 
 	static Callable create(const Variant &p_variant, const StringName &p_method);
 
 	Callable(const Object *p_object, const StringName &p_method);
 	Callable(ObjectID p_object, const StringName &p_method);
-	Callable(CallableCustom *p_custom);
+	explicit Callable(CallableCustom *p_custom);
 	Callable(const Callable &p_callable);
 	Callable() {}
 	~Callable();
@@ -186,7 +186,7 @@ public:
 	bool operator!=(const Signal &p_signal) const;
 	bool operator<(const Signal &p_signal) const;
 
-	operator String() const;
+	explicit operator String() const;
 
 	Error emit(const Variant **p_arguments, int p_argcount) const;
 	Error connect(const Callable &p_callable, uint32_t p_flags = 0);

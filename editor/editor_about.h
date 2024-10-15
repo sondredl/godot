@@ -65,7 +65,7 @@ protected:
 
 public:
 	EditorAbout();
-	~EditorAbout();
+	~EditorAbout() override override;
 };
 
 #endif // EDITOR_ABOUT_H

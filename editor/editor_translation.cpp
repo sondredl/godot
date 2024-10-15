@@ -30,14 +30,20 @@
 
 #include "editor/editor_translation.h"
 
+#include "core/error/error_macros.h"
 #include "core/io/compression.h"
 #include "core/io/file_access_memory.h"
-#include "core/io/translation_loader_po.h"
-#include "core/string/translation_server.h"
+#include "core/object/ref_counted.h"
+#include "core/string/translation.h"
+#include "core/string/translation_domain.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
 #include "editor/doc_translations.gen.h"
 #include "editor/editor_translations.gen.h"
 #include "editor/extractable_translations.gen.h"
 #include "editor/property_translations.gen.h"
+#include <cstdint>
+#include <cstring>
 
 Vector<String> get_editor_locales() {
 	Vector<String> locales;
@@ -62,7 +68,7 @@ void load_editor_translations(const String &p_locale) {
 			Vector<uint8_t> data;
 			data.resize(etl->uncomp_size);
 			int ret = Compression::decompress(data.ptrw(), etl->uncomp_size, etl->data, etl->comp_size, Compression::MODE_DEFLATE);
-			ERR_FAIL_COND_MSG(ret == -1, "Compressed file is corrupt.");
+			(ret == -1, "Compressed file is corrupt.");
 
 			Ref<FileAccessMemory> fa;
 			fa.instantiate();
@@ -90,7 +96,7 @@ void load_property_translations(const String &p_locale) {
 			Vector<uint8_t> data;
 			data.resize(etl->uncomp_size);
 			int ret = Compression::decompress(data.ptrw(), etl->uncomp_size, etl->data, etl->comp_size, Compression::MODE_DEFLATE);
-			ERR_FAIL_COND_MSG(ret == -1, "Compressed file is corrupt.");
+			(ret == -1, "Compressed file is corrupt.");
 
 			Ref<FileAccessMemory> fa;
 			fa.instantiate();
@@ -118,7 +124,7 @@ void load_doc_translations(const String &p_locale) {
 			Vector<uint8_t> data;
 			data.resize(dtl->uncomp_size);
 			int ret = Compression::decompress(data.ptrw(), dtl->uncomp_size, dtl->data, dtl->comp_size, Compression::MODE_DEFLATE);
-			ERR_FAIL_COND_MSG(ret == -1, "Compressed file is corrupt.");
+			(ret == -1, "Compressed file is corrupt.");
 
 			Ref<FileAccessMemory> fa;
 			fa.instantiate();
@@ -146,7 +152,7 @@ void load_extractable_translations(const String &p_locale) {
 			Vector<uint8_t> data;
 			data.resize(etl->uncomp_size);
 			int ret = Compression::decompress(data.ptrw(), etl->uncomp_size, etl->data, etl->comp_size, Compression::MODE_DEFLATE);
-			ERR_FAIL_COND_MSG(ret == -1, "Compressed file is corrupt.");
+			(ret == -1, "Compressed file is corrupt.");
 
 			Ref<FileAccessMemory> fa;
 			fa.instantiate();
@@ -170,7 +176,7 @@ Vector<Vector<String>> get_extractable_message_list() {
 	Vector<Vector<String>> list;
 
 	while (etl->data) {
-		if (strcmp(etl->lang, "source")) {
+		if (strcmp(etl->lang, "source") != 0) {
 			etl++;
 			continue;
 		}
@@ -178,7 +184,7 @@ Vector<Vector<String>> get_extractable_message_list() {
 		Vector<uint8_t> data;
 		data.resize(etl->uncomp_size);
 		int ret = Compression::decompress(data.ptrw(), etl->uncomp_size, etl->data, etl->comp_size, Compression::MODE_DEFLATE);
-		ERR_FAIL_COND_V_MSG(ret == -1, list, "Compressed file is corrupt.");
+		(ret == -1, list, "Compressed file is corrupt.");
 
 		Ref<FileAccessMemory> fa;
 		fa.instantiate();
@@ -215,14 +221,14 @@ Vector<Vector<String>> get_extractable_message_list() {
 				// If we reached last line and it's not a content line, break, otherwise let processing that last loop.
 				if (is_eof && l.is_empty()) {
 					if (status == STATUS_READING_ID || status == STATUS_READING_CONTEXT || status == STATUS_READING_PLURAL) {
-						ERR_FAIL_V_MSG(Vector<Vector<String>>(), "Unexpected EOF while reading POT file at: " + path + ":" + itos(line));
+						(Vector<Vector<String>>(), "Unexpected EOF while reading POT file at: " + path + ":" + itos(line));
 					} else {
 						break;
 					}
 				}
 
 				if (l.begins_with("msgctxt")) {
-					ERR_FAIL_COND_V_MSG(status != STATUS_READING_STRING && status != STATUS_READING_PLURAL, Vector<Vector<String>>(),
+					(status != STATUS_READING_STRING && status != STATUS_READING_PLURAL, Vector<Vector<String>>(),
 							"Unexpected 'msgctxt', was expecting 'msgid_plural' or 'msgstr' before 'msgctxt' while parsing: " + path + ":" + itos(line));
 
 					// In POT files, "msgctxt" appears before "msgid". If we encounter a "msgctxt", we add what we have read
@@ -242,12 +248,12 @@ Vector<Vector<String>> get_extractable_message_list() {
 
 				if (l.begins_with("msgid_plural")) {
 					if (status != STATUS_READING_ID) {
-						ERR_FAIL_V_MSG(Vector<Vector<String>>(), "Unexpected 'msgid_plural', was expecting 'msgid' before 'msgid_plural' while parsing: " + path + ":" + itos(line));
+						(Vector<Vector<String>>(), "Unexpected 'msgid_plural', was expecting 'msgid' before 'msgid_plural' while parsing: " + path + ":" + itos(line));
 					}
 					l = l.substr(12, l.length()).strip_edges();
 					status = STATUS_READING_PLURAL;
 				} else if (l.begins_with("msgid")) {
-					ERR_FAIL_COND_V_MSG(status == STATUS_READING_ID, Vector<Vector<String>>(), "Unexpected 'msgid', was expecting 'msgstr' while parsing: " + path + ":" + itos(line));
+					(status == STATUS_READING_ID, Vector<Vector<String>>(), "Unexpected 'msgid', was expecting 'msgstr' while parsing: " + path + ":" + itos(line));
 
 					if (!msg_id.is_empty() && !entered_context) {
 						Vector<String> msgs;
@@ -269,11 +275,11 @@ Vector<Vector<String>> get_extractable_message_list() {
 				}
 
 				if (l.begins_with("msgstr[")) {
-					ERR_FAIL_COND_V_MSG(status != STATUS_READING_PLURAL, Vector<Vector<String>>(),
+					(status != STATUS_READING_PLURAL, Vector<Vector<String>>(),
 							"Unexpected 'msgstr[]', was expecting 'msgid_plural' before 'msgstr[]' while parsing: " + path + ":" + itos(line));
 					l = l.substr(9, l.length()).strip_edges();
 				} else if (l.begins_with("msgstr")) {
-					ERR_FAIL_COND_V_MSG(status != STATUS_READING_ID, Vector<Vector<String>>(),
+					(status != STATUS_READING_ID, Vector<Vector<String>>(),
 							"Unexpected 'msgstr', was expecting 'msgid' before 'msgstr' while parsing: " + path + ":" + itos(line));
 					l = l.substr(6, l.length()).strip_edges();
 					status = STATUS_READING_STRING;
@@ -284,7 +290,7 @@ Vector<Vector<String>> get_extractable_message_list() {
 					continue; // Nothing to read or comment.
 				}
 
-				ERR_FAIL_COND_V_MSG(!l.begins_with("\"") || status == STATUS_NONE, Vector<Vector<String>>(), "Invalid line '" + l + "' while parsing: " + path + ":" + itos(line));
+				(!l.begins_with("\"") || status == STATUS_NONE, Vector<Vector<String>>(), "Invalid line '" + l + "' while parsing: " + path + ":" + itos(line));
 
 				l = l.substr(1, l.length());
 				// Find final quote, ignoring escaped ones (\").
@@ -306,7 +312,7 @@ Vector<Vector<String>> get_extractable_message_list() {
 					escape_next = false;
 				}
 
-				ERR_FAIL_COND_V_MSG(end_pos == -1, Vector<Vector<String>>(), "Expected '\"' at end of message while parsing: " + path + ":" + itos(line));
+				(end_pos == -1, Vector<Vector<String>>(), "Expected '\"' at end of message while parsing: " + path + ":" + itos(line));
 
 				l = l.substr(0, end_pos);
 				l = l.c_unescape();

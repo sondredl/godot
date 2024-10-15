@@ -30,26 +30,65 @@
 
 #include "editor_help.h"
 
+#include "core/config/engine.h"
 #include "core/config/project_settings.h"
 #include "core/core_constants.h"
+#include "core/core_string_names.h"
+#include "core/doc_data.h"
+#include "core/error/error_list.h"
+#include "core/error/error_macros.h"
 #include "core/extension/gdextension.h"
 #include "core/input/input.h"
+#include "core/input/input_event.h"
+#include "core/io/file_access.h"
+#include "core/io/resource.h"
+#include "core/io/resource_loader.h"
+#include "core/io/resource_saver.h"
+#include "core/math/color.h"
+#include "core/math/math_defs.h"
+#include "core/math/rect2.h"
+#include "core/math/rect2i.h"
+#include "core/math/vector2.h"
+#include "core/math/vector2i.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
 #include "core/object/script_language.h"
 #include "core/os/keyboard.h"
+#include "core/os/memory.h"
+#include "core/os/os.h"
+#include "core/string/print_string.h"
 #include "core/string/string_builder.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/pair.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 #include "core/version_generated.gen.h"
 #include "editor/doc_data_compressed.gen.h"
+#include "editor/doc_tools.h"
 #include "editor/editor_main_screen.h"
 #include "editor/editor_node.h"
 #include "editor/editor_paths.h"
-#include "editor/editor_property_name_processor.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/plugins/script_editor_plugin.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/gui/label.h"
 #include "scene/gui/line_edit.h"
 
 #include "modules/modules_enabled.gen.h" // For gdscript, mono.
+#include "scene/gui/text_edit.h"
+#include "scene/gui/texture_button.h"
+#include "scene/main/timer.h"
+#include "scene/resources/font.h"
+#include "scene/resources/style_box.h"
+#include "scene/resources/texture.h"
+#include "scene/scene_string_names.h"
+#include <cstdint>
 
 // For syntax highlighting.
 #ifdef MODULE_GDSCRIPT_ENABLED
@@ -2368,7 +2407,8 @@ void EditorHelp::_help_callback(const String &p_topic) {
 				if (iter->value.has(name)) {
 					line = iter->value[name];
 					break;
-				} else if (iter == enum_values_line.last()) {
+				}
+				if (iter == enum_values_line.last()) {
 					break;
 				} else {
 					++iter;
@@ -3055,8 +3095,8 @@ void EditorHelp::go_to_class(const String &p_class) {
 
 void EditorHelp::update_doc() {
 	_wait_for_thread();
-	ERR_FAIL_COND(!doc->class_list.has(edited_class));
-	ERR_FAIL_COND(!doc->class_list[edited_class].is_script_doc);
+	(!doc->class_list.has(edited_class));
+	(!doc->class_list[edited_class].is_script_doc);
 	_update_doc();
 }
 
@@ -3687,7 +3727,7 @@ void EditorHelpBit::_notification(int p_what) {
 
 void EditorHelpBit::parse_symbol(const String &p_symbol) {
 	const PackedStringArray slices = p_symbol.split("|", true, 2);
-	ERR_FAIL_COND_MSG(slices.size() < 3, "Invalid doc id. The expected format is 'item_type|class_name|item_name'.");
+	(slices.size() < 3, "Invalid doc id. The expected format is 'item_type|class_name|item_name'.");
 
 	const String &item_type = slices[0];
 	const String &class_name = slices[1];
@@ -3724,7 +3764,7 @@ void EditorHelpBit::parse_symbol(const String &p_symbol) {
 		visible_type = TTR("Theme Property:");
 		help_data = _get_theme_item_help_data(class_name, item_name);
 	} else {
-		ERR_FAIL_MSG("Invalid tooltip type '" + item_type + "'. Valid types are 'class', 'property', 'internal_property', 'method', 'signal', and 'theme_item'.");
+		("Invalid tooltip type '" + item_type + "'. Valid types are 'class', 'property', 'internal_property', 'method', 'signal', and 'theme_item'.");
 	}
 
 	symbol_class_name = class_name;
@@ -3764,7 +3804,7 @@ void EditorHelpBit::set_description(const String &p_text) {
 }
 
 void EditorHelpBit::set_content_height_limits(float p_min, float p_max) {
-	ERR_FAIL_COND(p_min > p_max);
+	(p_min > p_max);
 	content_min_height = p_min;
 	content_max_height = p_max;
 
@@ -3864,7 +3904,7 @@ void EditorHelpBitTooltip::_input_from_window(const Ref<InputEvent> &p_event) {
 }
 
 void EditorHelpBitTooltip::show_tooltip(EditorHelpBit *p_help_bit, Control *p_target) {
-	ERR_FAIL_NULL(p_help_bit);
+	(p_help_bit);
 	EditorHelpBitTooltip *tooltip = memnew(EditorHelpBitTooltip(p_target));
 	p_help_bit->connect("request_hide", callable_mp(tooltip, &EditorHelpBitTooltip::_safe_queue_free));
 	tooltip->add_child(p_help_bit);
@@ -3922,7 +3962,7 @@ EditorHelpBitTooltip::EditorHelpBitTooltip(Control *p_target) {
 	timer->connect("timeout", callable_mp(this, &EditorHelpBitTooltip::_safe_queue_free));
 	add_child(timer);
 
-	ERR_FAIL_NULL(p_target);
+	(p_target);
 	p_target->connect(SceneStringName(mouse_exited), callable_mp(this, &EditorHelpBitTooltip::_start_timer));
 	p_target->connect(SceneStringName(gui_input), callable_mp(this, &EditorHelpBitTooltip::_target_gui_input));
 }
@@ -3933,12 +3973,12 @@ EditorHelpBitTooltip::EditorHelpBitTooltip(Control *p_target) {
 EditorHelpHighlighter *EditorHelpHighlighter::singleton = nullptr;
 
 void EditorHelpHighlighter::create_singleton() {
-	ERR_FAIL_COND(singleton != nullptr);
+	(singleton != nullptr);
 	singleton = memnew(EditorHelpHighlighter);
 }
 
 void EditorHelpHighlighter::free_singleton() {
-	ERR_FAIL_NULL(singleton);
+	(singleton);
 	memdelete(singleton);
 	singleton = nullptr;
 }
@@ -3989,7 +4029,7 @@ EditorHelpHighlighter::HighlightData EditorHelpHighlighter::_get_highlight_data(
 		int prev_column = -1;
 		while ((key = dict.next(key)) != nullptr) {
 			const int column = *key;
-			ERR_FAIL_COND_V(column <= prev_column, HighlightData());
+			(column <= prev_column, HighlightData());
 			prev_column = column;
 
 			const Color color = dict[*key].operator Dictionary().get("color", Color());
@@ -4009,7 +4049,7 @@ EditorHelpHighlighter::HighlightData EditorHelpHighlighter::_get_highlight_data(
 }
 
 void EditorHelpHighlighter::highlight(RichTextLabel *p_rich_text_label, Language p_language, const String &p_source, bool p_use_cache) {
-	ERR_FAIL_NULL(p_rich_text_label);
+	(p_rich_text_label);
 
 	const HighlightData highlight_data = _get_highlight_data(p_language, p_source, p_use_cache);
 
@@ -4241,7 +4281,7 @@ void FindBar::_hide_bar() {
 }
 
 void FindBar::unhandled_input(const Ref<InputEvent> &p_event) {
-	ERR_FAIL_COND(p_event.is_null());
+	(p_event.is_null());
 
 	Ref<InputEventKey> k = p_event;
 	if (k.is_valid() && k->is_action_pressed(SNAME("ui_cancel"), false, true)) {

@@ -297,7 +297,7 @@ struct VariantCasterAndValidate<const T &> {
 #endif // DEBUG_METHODS_ENABLED
 
 template <typename T, typename... P, size_t... Is>
-void call_with_variant_args_helper(T *p_instance, void (T::*p_method)(P...), const Variant **p_args, Callable::CallError &r_error, IndexSequence<Is...>) {
+void call_with_variant_args_helper(T *p_instance, void (T::*p_method)(P...), const Variant **p_args, Callable::CallError &r_error, IndexSequence<Is...> /*unused*/) {
 	r_error.error = Callable::CallError::CALL_OK;
 
 #ifdef DEBUG_METHODS_ENABLED
@@ -309,7 +309,7 @@ void call_with_variant_args_helper(T *p_instance, void (T::*p_method)(P...), con
 }
 
 template <typename T, typename... P, size_t... Is>
-void call_with_variant_argsc_helper(T *p_instance, void (T::*p_method)(P...) const, const Variant **p_args, Callable::CallError &r_error, IndexSequence<Is...>) {
+void call_with_variant_argsc_helper(T *p_instance, void (T::*p_method)(P...) const, const Variant **p_args, Callable::CallError &r_error, IndexSequence<Is...> /*unused*/) {
 	r_error.error = Callable::CallError::CALL_OK;
 
 #ifdef DEBUG_METHODS_ENABLED
@@ -321,82 +321,82 @@ void call_with_variant_argsc_helper(T *p_instance, void (T::*p_method)(P...) con
 }
 
 template <typename T, typename... P, size_t... Is>
-void call_with_ptr_args_helper(T *p_instance, void (T::*p_method)(P...), const void **p_args, IndexSequence<Is...>) {
+void call_with_ptr_args_helper(T *p_instance, void (T::*p_method)(P...), const void **p_args, IndexSequence<Is...> /*unused*/) {
 	(p_instance->*p_method)(PtrToArg<P>::convert(p_args[Is])...);
 }
 
 template <typename T, typename... P, size_t... Is>
-void call_with_ptr_argsc_helper(T *p_instance, void (T::*p_method)(P...) const, const void **p_args, IndexSequence<Is...>) {
+void call_with_ptr_argsc_helper(T *p_instance, void (T::*p_method)(P...) const, const void **p_args, IndexSequence<Is...> /*unused*/) {
 	(p_instance->*p_method)(PtrToArg<P>::convert(p_args[Is])...);
 }
 
 template <typename T, typename R, typename... P, size_t... Is>
-void call_with_ptr_args_ret_helper(T *p_instance, R (T::*p_method)(P...), const void **p_args, void *r_ret, IndexSequence<Is...>) {
+void call_with_ptr_args_ret_helper(T *p_instance, R (T::*p_method)(P...), const void **p_args, void *r_ret, IndexSequence<Is...> /*unused*/) {
 	PtrToArg<R>::encode((p_instance->*p_method)(PtrToArg<P>::convert(p_args[Is])...), r_ret);
 }
 
 template <typename T, typename R, typename... P, size_t... Is>
-void call_with_ptr_args_retc_helper(T *p_instance, R (T::*p_method)(P...) const, const void **p_args, void *r_ret, IndexSequence<Is...>) {
+void call_with_ptr_args_retc_helper(T *p_instance, R (T::*p_method)(P...) const, const void **p_args, void *r_ret, IndexSequence<Is...> /*unused*/) {
 	PtrToArg<R>::encode((p_instance->*p_method)(PtrToArg<P>::convert(p_args[Is])...), r_ret);
 }
 
 template <typename T, typename... P, size_t... Is>
-void call_with_ptr_args_static_helper(T *p_instance, void (*p_method)(T *, P...), const void **p_args, IndexSequence<Is...>) {
+void call_with_ptr_args_static_helper(T *p_instance, void (*p_method)(T *, P...), const void **p_args, IndexSequence<Is...> /*unused*/) {
 	p_method(p_instance, PtrToArg<P>::convert(p_args[Is])...);
 }
 
 template <typename T, typename R, typename... P, size_t... Is>
-void call_with_ptr_args_static_retc_helper(T *p_instance, R (*p_method)(T *, P...), const void **p_args, void *r_ret, IndexSequence<Is...>) {
+void call_with_ptr_args_static_retc_helper(T *p_instance, R (*p_method)(T *, P...), const void **p_args, void *r_ret, IndexSequence<Is...> /*unused*/) {
 	PtrToArg<R>::encode(p_method(p_instance, PtrToArg<P>::convert(p_args[Is])...), r_ret);
 }
 
 template <typename R, typename... P, size_t... Is>
-void call_with_ptr_args_static_method_ret_helper(R (*p_method)(P...), const void **p_args, void *r_ret, IndexSequence<Is...>) {
+void call_with_ptr_args_static_method_ret_helper(R (*p_method)(P...), const void **p_args, void *r_ret, IndexSequence<Is...> /*unused*/) {
 	PtrToArg<R>::encode(p_method(PtrToArg<P>::convert(p_args[Is])...), r_ret);
 }
 
 template <typename... P, size_t... Is>
-void call_with_ptr_args_static_method_helper(void (*p_method)(P...), const void **p_args, IndexSequence<Is...>) {
+void call_with_ptr_args_static_method_helper(void (*p_method)(P...), const void **p_args, IndexSequence<Is...> /*unused*/) {
 	p_method(PtrToArg<P>::convert(p_args[Is])...);
 }
 
 template <typename T, typename... P, size_t... Is>
-void call_with_validated_variant_args_helper(T *p_instance, void (T::*p_method)(P...), const Variant **p_args, IndexSequence<Is...>) {
+void call_with_validated_variant_args_helper(T *p_instance, void (T::*p_method)(P...), const Variant **p_args, IndexSequence<Is...> /*unused*/) {
 	(p_instance->*p_method)((VariantInternalAccessor<GetSimpleTypeT<P>>::get(p_args[Is]))...);
 }
 
 template <typename T, typename... P, size_t... Is>
-void call_with_validated_variant_argsc_helper(T *p_instance, void (T::*p_method)(P...) const, const Variant **p_args, IndexSequence<Is...>) {
+void call_with_validated_variant_argsc_helper(T *p_instance, void (T::*p_method)(P...) const, const Variant **p_args, IndexSequence<Is...> /*unused*/) {
 	(p_instance->*p_method)((VariantInternalAccessor<GetSimpleTypeT<P>>::get(p_args[Is]))...);
 }
 
 template <typename T, typename R, typename... P, size_t... Is>
-void call_with_validated_variant_args_ret_helper(T *p_instance, R (T::*p_method)(P...), const Variant **p_args, Variant *r_ret, IndexSequence<Is...>) {
+void call_with_validated_variant_args_ret_helper(T *p_instance, R (T::*p_method)(P...), const Variant **p_args, Variant *r_ret, IndexSequence<Is...> /*unused*/) {
 	VariantInternalAccessor<GetSimpleTypeT<R>>::set(r_ret, (p_instance->*p_method)((VariantInternalAccessor<GetSimpleTypeT<P>>::get(p_args[Is]))...));
 }
 
 template <typename T, typename R, typename... P, size_t... Is>
-void call_with_validated_variant_args_retc_helper(T *p_instance, R (T::*p_method)(P...) const, const Variant **p_args, Variant *r_ret, IndexSequence<Is...>) {
+void call_with_validated_variant_args_retc_helper(T *p_instance, R (T::*p_method)(P...) const, const Variant **p_args, Variant *r_ret, IndexSequence<Is...> /*unused*/) {
 	VariantInternalAccessor<GetSimpleTypeT<R>>::set(r_ret, (p_instance->*p_method)((VariantInternalAccessor<GetSimpleTypeT<P>>::get(p_args[Is]))...));
 }
 
 template <typename T, typename R, typename... P, size_t... Is>
-void call_with_validated_variant_args_static_retc_helper(T *p_instance, R (*p_method)(T *, P...), const Variant **p_args, Variant *r_ret, IndexSequence<Is...>) {
+void call_with_validated_variant_args_static_retc_helper(T *p_instance, R (*p_method)(T *, P...), const Variant **p_args, Variant *r_ret, IndexSequence<Is...> /*unused*/) {
 	VariantInternalAccessor<GetSimpleTypeT<R>>::set(r_ret, p_method(p_instance, (VariantInternalAccessor<GetSimpleTypeT<P>>::get(p_args[Is]))...));
 }
 
 template <typename T, typename... P, size_t... Is>
-void call_with_validated_variant_args_static_helper(T *p_instance, void (*p_method)(T *, P...), const Variant **p_args, IndexSequence<Is...>) {
+void call_with_validated_variant_args_static_helper(T *p_instance, void (*p_method)(T *, P...), const Variant **p_args, IndexSequence<Is...> /*unused*/) {
 	p_method(p_instance, (VariantInternalAccessor<GetSimpleTypeT<P>>::get(p_args[Is]))...);
 }
 
 template <typename R, typename... P, size_t... Is>
-void call_with_validated_variant_args_static_method_ret_helper(R (*p_method)(P...), const Variant **p_args, Variant *r_ret, IndexSequence<Is...>) {
+void call_with_validated_variant_args_static_method_ret_helper(R (*p_method)(P...), const Variant **p_args, Variant *r_ret, IndexSequence<Is...> /*unused*/) {
 	VariantInternalAccessor<GetSimpleTypeT<R>>::set(r_ret, p_method((VariantInternalAccessor<GetSimpleTypeT<P>>::get(p_args[Is]))...));
 }
 
 template <typename... P, size_t... Is>
-void call_with_validated_variant_args_static_method_helper(void (*p_method)(P...), const Variant **p_args, IndexSequence<Is...>) {
+void call_with_validated_variant_args_static_method_helper(void (*p_method)(P...), const Variant **p_args, IndexSequence<Is...> /*unused*/) {
 	p_method((VariantInternalAccessor<GetSimpleTypeT<P>>::get(p_args[Is]))...);
 }
 
@@ -749,7 +749,7 @@ GodotTypeInfo::Metadata call_get_argument_metadata(int p_arg) {
 //////////////////////
 
 template <typename T, typename R, typename... P, size_t... Is>
-void call_with_variant_args_ret_helper(T *p_instance, R (T::*p_method)(P...), const Variant **p_args, Variant &r_ret, Callable::CallError &r_error, IndexSequence<Is...>) {
+void call_with_variant_args_ret_helper(T *p_instance, R (T::*p_method)(P...), const Variant **p_args, Variant &r_ret, Callable::CallError &r_error, IndexSequence<Is...> /*unused*/) {
 	r_error.error = Callable::CallError::CALL_OK;
 
 #ifdef DEBUG_METHODS_ENABLED
@@ -760,7 +760,7 @@ void call_with_variant_args_ret_helper(T *p_instance, R (T::*p_method)(P...), co
 }
 
 template <typename R, typename... P, size_t... Is>
-void call_with_variant_args_static_ret(R (*p_method)(P...), const Variant **p_args, Variant &r_ret, Callable::CallError &r_error, IndexSequence<Is...>) {
+void call_with_variant_args_static_ret(R (*p_method)(P...), const Variant **p_args, Variant &r_ret, Callable::CallError &r_error, IndexSequence<Is...> /*unused*/) {
 	r_error.error = Callable::CallError::CALL_OK;
 
 #ifdef DEBUG_METHODS_ENABLED
@@ -771,7 +771,7 @@ void call_with_variant_args_static_ret(R (*p_method)(P...), const Variant **p_ar
 }
 
 template <typename... P, size_t... Is>
-void call_with_variant_args_static(void (*p_method)(P...), const Variant **p_args, Callable::CallError &r_error, IndexSequence<Is...>) {
+void call_with_variant_args_static(void (*p_method)(P...), const Variant **p_args, Callable::CallError &r_error, IndexSequence<Is...> /*unused*/) {
 	r_error.error = Callable::CallError::CALL_OK;
 
 #ifdef DEBUG_METHODS_ENABLED
@@ -800,7 +800,7 @@ void call_with_variant_args_ret(T *p_instance, R (T::*p_method)(P...), const Var
 }
 
 template <typename T, typename R, typename... P, size_t... Is>
-void call_with_variant_args_retc_helper(T *p_instance, R (T::*p_method)(P...) const, const Variant **p_args, Variant &r_ret, Callable::CallError &r_error, IndexSequence<Is...>) {
+void call_with_variant_args_retc_helper(T *p_instance, R (T::*p_method)(P...) const, const Variant **p_args, Variant &r_ret, Callable::CallError &r_error, IndexSequence<Is...> /*unused*/) {
 	r_error.error = Callable::CallError::CALL_OK;
 
 #ifdef DEBUG_METHODS_ENABLED
@@ -866,7 +866,7 @@ void call_with_variant_args_retc(T *p_instance, R (T::*p_method)(P...) const, co
 }
 
 template <typename T, typename R, typename... P, size_t... Is>
-void call_with_variant_args_retc_static_helper(T *p_instance, R (*p_method)(T *, P...), const Variant **p_args, Variant &r_ret, Callable::CallError &r_error, IndexSequence<Is...>) {
+void call_with_variant_args_retc_static_helper(T *p_instance, R (*p_method)(T *, P...), const Variant **p_args, Variant &r_ret, Callable::CallError &r_error, IndexSequence<Is...> /*unused*/) {
 	r_error.error = Callable::CallError::CALL_OK;
 
 #ifdef DEBUG_METHODS_ENABLED
@@ -912,7 +912,7 @@ void call_with_variant_args_retc_static_helper_dv(T *p_instance, R (*p_method)(T
 }
 
 template <typename T, typename... P, size_t... Is>
-void call_with_variant_args_static_helper(T *p_instance, void (*p_method)(T *, P...), const Variant **p_args, Callable::CallError &r_error, IndexSequence<Is...>) {
+void call_with_variant_args_static_helper(T *p_instance, void (*p_method)(T *, P...), const Variant **p_args, Callable::CallError &r_error, IndexSequence<Is...> /*unused*/) {
 	r_error.error = Callable::CallError::CALL_OK;
 
 #ifdef DEBUG_METHODS_ENABLED

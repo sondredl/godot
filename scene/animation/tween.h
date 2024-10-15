@@ -138,7 +138,7 @@ protected:
 	static void _bind_methods();
 
 public:
-	virtual String to_string() override;
+	String to_string() override;
 
 	Ref<PropertyTweener> tween_property(const Object *p_target, const NodePath &p_property, Variant p_to, double p_duration);
 	Ref<IntervalTweener> tween_interval(double p_time);
@@ -183,7 +183,7 @@ public:
 	double get_total_time() const;
 
 	Tween();
-	Tween(bool p_valid);
+	explicit Tween(bool p_valid);
 };
 
 VARIANT_ENUM_CAST(Tween::TweenPauseMode);
@@ -241,7 +241,7 @@ public:
 	void start() override;
 	bool step(double &r_delta) override;
 
-	IntervalTweener(double p_time);
+	explicit IntervalTweener(double p_time);
 	IntervalTweener();
 
 private:
@@ -257,7 +257,7 @@ public:
 	void start() override;
 	bool step(double &r_delta) override;
 
-	CallbackTweener(const Callable &p_callback);
+	explicit CallbackTweener(const Callable &p_callback);
 	CallbackTweener();
 
 protected:

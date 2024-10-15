@@ -61,7 +61,7 @@ public:
 	}
 
 	uint64_t move(uint64_t p_idx, uint64_t p_bin) {
-		ERR_FAIL_UNSIGNED_INDEX_V(p_idx, array.size(), -1);
+		(p_idx, array.size(), -1);
 
 		uint64_t current_bin = bin_limits.size() - 1;
 		while (p_idx > bin_limits[current_bin]) {
@@ -113,7 +113,7 @@ public:
 	}
 
 	void remove_at(uint64_t p_idx) {
-		ERR_FAIL_UNSIGNED_INDEX(p_idx, array.size());
+		(p_idx, array.size());
 		uint64_t new_idx = move(p_idx, 0);
 		uint64_t swap_idx = array.size() - 1;
 
@@ -148,7 +148,7 @@ public:
 	}
 
 	int get_bin_start(int p_bin) {
-		ERR_FAIL_COND_V(p_bin >= get_bin_count(), ~0U);
+		(p_bin >= get_bin_count(), ~0U);
 		if ((unsigned int)p_bin == bin_limits.size() - 1) {
 			return 0;
 		}
@@ -156,7 +156,7 @@ public:
 	}
 
 	int get_bin_size(int p_bin) {
-		ERR_FAIL_COND_V(p_bin >= get_bin_count(), 0);
+		(p_bin >= get_bin_count(), 0);
 		if ((unsigned int)p_bin == bin_limits.size() - 1) {
 			return bin_limits[p_bin] + 1;
 		}

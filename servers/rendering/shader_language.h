@@ -390,7 +390,7 @@ public:
 		virtual bool is_indexed() const { return false; }
 		virtual Vector<Scalar> get_values() const { return Vector<Scalar>(); }
 
-		Node(Type t) :
+		explicit Node(Type t) :
 				type(t) {}
 		virtual ~Node() {}
 	};
@@ -414,11 +414,11 @@ public:
 		Vector<Node *> arguments;
 		Vector<Scalar> values;
 
-		virtual DataType get_datatype() const override { return return_cache; }
-		virtual String get_datatype_name() const override { return String(struct_name); }
-		virtual int get_array_size() const override { return return_array_size; }
-		virtual bool is_indexed() const override { return op == OP_INDEX; }
-		virtual Vector<Scalar> get_values() const override { return values; }
+		DataType get_datatype() const override { return return_cache; }
+		String get_datatype_name() const override { return String(struct_name); }
+		int get_array_size() const override { return return_array_size; }
+		bool is_indexed() const override { return op == OP_INDEX; }
+		Vector<Scalar> get_values() const override { return values; }
 
 		OperatorNode() :
 				Node(NODE_TYPE_OPERATOR) {}
@@ -432,8 +432,8 @@ public:
 		bool is_const = false;
 		bool is_local = false;
 
-		virtual DataType get_datatype() const override { return datatype_cache; }
-		virtual String get_datatype_name() const override { return String(struct_name); }
+		DataType get_datatype() const override { return datatype_cache; }
+		String get_datatype_name() const override { return String(struct_name); }
 
 		VariableNode() :
 				Node(NODE_TYPE_VARIABLE) {}
@@ -454,7 +454,7 @@ public:
 		};
 		Vector<Declaration> declarations;
 
-		virtual DataType get_datatype() const override { return datatype; }
+		DataType get_datatype() const override { return datatype; }
 
 		VariableDeclarationNode() :
 				Node(NODE_TYPE_VARIABLE_DECLARATION) {}
@@ -471,10 +471,10 @@ public:
 		int array_size = 0;
 		bool is_local = false;
 
-		virtual DataType get_datatype() const override { return call_expression ? call_expression->get_datatype() : datatype_cache; }
-		virtual String get_datatype_name() const override { return call_expression ? call_expression->get_datatype_name() : String(struct_name); }
-		virtual int get_array_size() const override { return (index_expression || call_expression) ? 0 : array_size; }
-		virtual bool is_indexed() const override { return index_expression != nullptr; }
+		DataType get_datatype() const override { return call_expression ? call_expression->get_datatype() : datatype_cache; }
+		String get_datatype_name() const override { return call_expression ? call_expression->get_datatype_name() : String(struct_name); }
+		int get_array_size() const override { return (index_expression || call_expression) ? 0 : array_size; }
+		bool is_indexed() const override { return index_expression != nullptr; }
 
 		ArrayNode() :
 				Node(NODE_TYPE_ARRAY) {}
@@ -485,9 +485,9 @@ public:
 		String struct_name;
 		Vector<Node *> initializer;
 
-		virtual DataType get_datatype() const override { return datatype; }
-		virtual String get_datatype_name() const override { return struct_name; }
-		virtual int get_array_size() const override { return initializer.size(); }
+		DataType get_datatype() const override { return datatype; }
+		String get_datatype_name() const override { return struct_name; }
+		int get_array_size() const override { return initializer.size(); }
 
 		ArrayConstructNode() :
 				Node(NODE_TYPE_ARRAY_CONSTRUCT) {}
@@ -501,10 +501,10 @@ public:
 		Vector<Scalar> values;
 		Vector<VariableDeclarationNode::Declaration> array_declarations;
 
-		virtual DataType get_datatype() const override { return datatype; }
-		virtual String get_datatype_name() const override { return struct_name; }
-		virtual int get_array_size() const override { return array_size; }
-		virtual Vector<Scalar> get_values() const override {
+		DataType get_datatype() const override { return datatype; }
+		String get_datatype_name() const override { return struct_name; }
+		int get_array_size() const override { return array_size; }
+		Vector<Scalar> get_values() const override {
 			return values;
 		}
 
@@ -578,10 +578,10 @@ public:
 		Node *call_expression = nullptr;
 		bool has_swizzling_duplicates = false;
 
-		virtual DataType get_datatype() const override { return call_expression ? call_expression->get_datatype() : datatype; }
-		virtual String get_datatype_name() const override { return call_expression ? call_expression->get_datatype_name() : String(struct_name); }
-		virtual int get_array_size() const override { return (index_expression || call_expression) ? 0 : array_size; }
-		virtual bool is_indexed() const override { return index_expression != nullptr || call_expression != nullptr; }
+		DataType get_datatype() const override { return call_expression ? call_expression->get_datatype() : datatype; }
+		String get_datatype_name() const override { return call_expression ? call_expression->get_datatype_name() : String(struct_name); }
+		int get_array_size() const override { return (index_expression || call_expression) ? 0 : array_size; }
+		bool is_indexed() const override { return index_expression != nullptr || call_expression != nullptr; }
 
 		MemberNode() :
 				Node(NODE_TYPE_MEMBER) {}
@@ -689,9 +689,9 @@ public:
 			}
 
 			Uniform() {
-				hint_range[0] = 0.0f;
-				hint_range[1] = 1.0f;
-				hint_range[2] = 0.001f;
+				hint_range[0] = 0.0F;
+				hint_range[1] = 1.0F;
+				hint_range[2] = 0.001F;
 			}
 		};
 
@@ -740,9 +740,9 @@ public:
 		BlockNode *body = nullptr;
 		bool can_discard = false;
 
-		virtual DataType get_datatype() const override { return return_type; }
-		virtual String get_datatype_name() const override { return String(return_struct_name); }
-		virtual int get_array_size() const override { return return_array_size; }
+		DataType get_datatype() const override { return return_type; }
+		String get_datatype_name() const override { return String(return_struct_name); }
+		int get_array_size() const override { return return_array_size; }
 
 		FunctionNode() :
 				Node(NODE_TYPE_FUNCTION) {}
@@ -841,7 +841,7 @@ public:
 
 		BuiltInInfo() {}
 
-		BuiltInInfo(DataType p_type, bool p_constant = false) :
+		explicit BuiltInInfo(DataType p_type, bool p_constant = false) :
 				type(p_type),
 				constant(p_constant) {}
 	};
@@ -851,7 +851,7 @@ public:
 			StringName name;
 			DataType type;
 
-			Argument(const StringName &p_name = StringName(), DataType p_type = TYPE_VOID) {
+			explicit Argument(const StringName &p_name = StringName(), DataType p_type = TYPE_VOID) {
 				name = p_name;
 				type = p_type;
 			}
@@ -867,7 +867,7 @@ public:
 
 		ModeInfo() {}
 
-		ModeInfo(const StringName &p_name) :
+		explicit ModeInfo(const StringName &p_name) :
 				name(p_name) {
 		}
 
@@ -975,7 +975,7 @@ private:
 	struct Usage {
 		int decl_line;
 		bool used = false;
-		Usage(int p_decl_line = -1) {
+		explicit Usage(int p_decl_line = -1) {
 			decl_line = p_decl_line;
 		}
 	};
@@ -1022,7 +1022,7 @@ private:
 
 	VaryingFunctionNames varying_function_names;
 
-	TkPos _get_tkpos() {
+	TkPos _get_tkpos() const {
 		TkPos tkp;
 		tkp.char_idx = char_idx;
 		tkp.tk_line = tk_line;
@@ -1049,7 +1049,7 @@ private:
 		_set_error(vformat(RTR("Expected a '%s'."), p_what));
 	}
 
-	void _set_expected_error(const String &p_first, const String p_second) {
+	void _set_expected_error(const String &p_first, const String &p_second) {
 		_set_error(vformat(RTR("Expected a '%s' or '%s'."), p_first, p_second));
 	}
 

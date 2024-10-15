@@ -50,7 +50,7 @@ public:
 	Ref<AudioStream> stream;
 	Ref<AudioStreamPlayback> stream_playback;
 
-	float offset = 0.0f;
+	float offset = 0.0F;
 	float pitch_scale = 1.0;
 	Vector<AudioFrame> volume_vector;
 	StringName bus;
@@ -117,7 +117,7 @@ public:
 	virtual void set_sample_playback(const Ref<AudioSamplePlayback> &p_playback) {}
 
 	AudioStreamPlayback();
-	~AudioStreamPlayback();
+	~AudioStreamPlayback() override;
 };
 
 class AudioStreamPlaybackResampled : public AudioStreamPlayback {
@@ -147,7 +147,7 @@ protected:
 	static void _bind_methods();
 
 public:
-	virtual int mix(AudioFrame *p_buffer, float p_rate_scale, int p_frames) override;
+	int mix(AudioFrame *p_buffer, float p_rate_scale, int p_frames) override;
 
 	AudioStreamPlaybackResampled() { mix_offset = 0; }
 };
@@ -197,7 +197,7 @@ public:
 	struct Parameter {
 		PropertyInfo property;
 		Variant default_value;
-		Parameter(const PropertyInfo &p_info = PropertyInfo(), const Variant &p_default_value = Variant()) {
+		explicit Parameter(const PropertyInfo &p_info = PropertyInfo(), const Variant &p_default_value = Variant()) {
 			property = p_info;
 			default_value = p_default_value;
 		}
@@ -222,12 +222,12 @@ class AudioStreamMicrophone : public AudioStream {
 	HashSet<AudioStreamPlaybackMicrophone *> playbacks;
 
 public:
-	virtual Ref<AudioStreamPlayback> instantiate_playback() override;
-	virtual String get_stream_name() const override;
+	Ref<AudioStreamPlayback> instantiate_playback() override;
+	String get_stream_name() const override;
 
-	virtual double get_length() const override; //if supported, otherwise return 0
+	double get_length() const override; //if supported, otherwise return 0
 
-	virtual bool is_monophonic() const override;
+	bool is_monophonic() const override;
 };
 
 class AudioStreamPlaybackMicrophone : public AudioStreamPlaybackResampled {
@@ -240,24 +240,24 @@ class AudioStreamPlaybackMicrophone : public AudioStreamPlaybackResampled {
 	Ref<AudioStreamMicrophone> microphone;
 
 protected:
-	virtual int _mix_internal(AudioFrame *p_buffer, int p_frames) override;
-	virtual float get_stream_sampling_rate() override;
-	virtual double get_playback_position() const override;
+	int _mix_internal(AudioFrame *p_buffer, int p_frames) override;
+	float get_stream_sampling_rate() override;
+	double get_playback_position() const override;
 
 public:
-	virtual int mix(AudioFrame *p_buffer, float p_rate_scale, int p_frames) override;
+	int mix(AudioFrame *p_buffer, float p_rate_scale, int p_frames) override;
 
-	virtual void start(double p_from_pos = 0.0) override;
-	virtual void stop() override;
-	virtual bool is_playing() const override;
+	void start(double p_from_pos = 0.0) override;
+	void stop() override;
+	bool is_playing() const override;
 
-	virtual int get_loop_count() const override; //times it looped
+	int get_loop_count() const override; //times it looped
 
-	virtual void seek(double p_time) override;
+	void seek(double p_time) override;
 
-	virtual void tag_used_streams() override;
+	void tag_used_streams() override;
 
-	~AudioStreamPlaybackMicrophone();
+	~AudioStreamPlaybackMicrophone() override;
 	AudioStreamPlaybackMicrophone();
 };
 
@@ -288,8 +288,8 @@ private:
 
 	HashSet<AudioStreamPlaybackRandomizer *> playbacks;
 	Vector<PoolEntry> audio_stream_pool;
-	float random_pitch_scale = 1.0f;
-	float random_volume_offset_db = 0.0f;
+	float random_pitch_scale = 1.0F;
+	float random_volume_offset_db = 0.0F;
 
 	Ref<AudioStreamPlayback> instance_playback_random();
 	Ref<AudioStreamPlayback> instance_playback_no_repeats();
@@ -329,13 +329,13 @@ public:
 	void set_playback_mode(PlaybackMode p_playback_mode);
 	PlaybackMode get_playback_mode() const;
 
-	virtual Ref<AudioStreamPlayback> instantiate_playback() override;
-	virtual String get_stream_name() const override;
+	Ref<AudioStreamPlayback> instantiate_playback() override;
+	String get_stream_name() const override;
 
-	virtual double get_length() const override; //if supported, otherwise return 0
-	virtual bool is_monophonic() const override;
+	double get_length() const override; //if supported, otherwise return 0
+	bool is_monophonic() const override;
 
-	virtual bool is_meta_stream() const override { return true; }
+	bool is_meta_stream() const override { return true; }
 
 	AudioStreamRandomizer();
 };
@@ -352,20 +352,20 @@ class AudioStreamPlaybackRandomizer : public AudioStreamPlayback {
 	float volume_scale;
 
 public:
-	virtual void start(double p_from_pos = 0.0) override;
-	virtual void stop() override;
-	virtual bool is_playing() const override;
+	void start(double p_from_pos = 0.0) override;
+	void stop() override;
+	bool is_playing() const override;
 
-	virtual int get_loop_count() const override; //times it looped
+	int get_loop_count() const override; //times it looped
 
-	virtual double get_playback_position() const override;
-	virtual void seek(double p_time) override;
+	double get_playback_position() const override;
+	void seek(double p_time) override;
 
-	virtual int mix(AudioFrame *p_buffer, float p_rate_scale, int p_frames) override;
+	int mix(AudioFrame *p_buffer, float p_rate_scale, int p_frames) override;
 
-	virtual void tag_used_streams() override;
+	void tag_used_streams() override;
 
-	~AudioStreamPlaybackRandomizer();
+	~AudioStreamPlaybackRandomizer() override;
 };
 
 VARIANT_ENUM_CAST(AudioStreamRandomizer::PlaybackMode);

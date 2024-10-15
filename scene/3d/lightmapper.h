@@ -73,12 +73,12 @@ public:
 		 *  has to be smaller than far. */
 		_FORCE_INLINE_ Ray(const Vector3 &p_org,
 				const Vector3 &p_dir,
-				float p_tnear = 0.0f,
+				float p_tnear = 0.0F,
 				float p_tfar = INFINITY) :
 				org(p_org),
 				tnear(p_tnear),
 				dir(p_dir),
-				time(0.0f),
+				time(0.0F),
 				tfar(p_tfar),
 				mask(-1),
 				u(0.0),

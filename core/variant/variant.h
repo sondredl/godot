@@ -201,9 +201,8 @@ private:
 		_FORCE_INLINE_ PackedArrayRefBase *reference() {
 			if (refcount.ref()) {
 				return this;
-			} else {
-				return nullptr;
 			}
+			return nullptr;
 		}
 		static _FORCE_INLINE_ PackedArrayRefBase *reference_from(PackedArrayRefBase *p_base, PackedArrayRefBase *p_from) {
 			if (p_base == p_from) {
@@ -215,9 +214,8 @@ private:
 					memdelete(p_base);
 				}
 				return p_from;
-			} else {
-				return p_base; //keep, could not reference new
 			}
+			return p_base; //keep, could not reference new
 		}
 		static _FORCE_INLINE_ void destroy(PackedArrayRefBase *p_array) {
 			if (p_array->refcount.unref()) {
@@ -244,7 +242,7 @@ private:
 			return &const_cast<PackedArrayRef<T> *>(static_cast<const PackedArrayRef<T> *>(p_base))->array;
 		}
 
-		_FORCE_INLINE_ PackedArrayRef(const Vector<T> &p_from) {
+		_FORCE_INLINE_ explicit PackedArrayRef(const Vector<T> &p_from) {
 			array = p_from;
 			refcount.init();
 		}
@@ -346,8 +344,8 @@ private:
 	// Avoid accidental conversion. If you reached this point, it's because you most likely forgot to dereference
 	// a Variant pointer (so add * like this: *variant_pointer).
 
-	Variant(const Variant *) {}
-	Variant(const Variant **) {}
+	explicit Variant(const Variant * /*unused*/) {}
+	explicit Variant(const Variant ** /*unused*/) {}
 
 public:
 	_FORCE_INLINE_ Type get_type() const {
@@ -378,135 +376,135 @@ public:
 	Variant &operator[](const Variant &p_key) = delete;
 	const Variant &operator[](const Variant &p_key) const = delete;
 
-	operator bool() const;
-	operator int64_t() const;
-	operator int32_t() const;
-	operator int16_t() const;
-	operator int8_t() const;
-	operator uint64_t() const;
-	operator uint32_t() const;
-	operator uint16_t() const;
-	operator uint8_t() const;
+	explicit operator bool() const;
+	explicit operator int64_t() const;
+	explicit operator int32_t() const;
+	explicit operator int16_t() const;
+	explicit operator int8_t() const;
+	explicit operator uint64_t() const;
+	explicit operator uint32_t() const;
+	explicit operator uint16_t() const;
+	explicit operator uint8_t() const;
 
-	operator ObjectID() const;
+	explicit operator ObjectID() const;
 
-	operator char32_t() const;
-	operator float() const;
-	operator double() const;
-	operator String() const;
-	operator StringName() const;
-	operator Vector2() const;
-	operator Vector2i() const;
-	operator Rect2() const;
-	operator Rect2i() const;
-	operator Vector3() const;
-	operator Vector3i() const;
-	operator Vector4() const;
-	operator Vector4i() const;
-	operator Plane() const;
-	operator ::AABB() const;
-	operator Quaternion() const;
-	operator Basis() const;
-	operator Transform2D() const;
-	operator Transform3D() const;
-	operator Projection() const;
+	explicit operator char32_t() const;
+	explicit operator float() const;
+	explicit operator double() const;
+	explicit operator String() const;
+	explicit operator StringName() const;
+	explicit operator Vector2() const;
+	explicit operator Vector2i() const;
+	explicit operator Rect2() const;
+	explicit operator Rect2i() const;
+	explicit operator Vector3() const;
+	explicit operator Vector3i() const;
+	explicit operator Vector4() const;
+	explicit operator Vector4i() const;
+	explicit operator Plane() const;
+	explicit operator ::AABB() const;
+	explicit operator Quaternion() const;
+	explicit operator Basis() const;
+	explicit operator Transform2D() const;
+	explicit operator Transform3D() const;
+	explicit operator Projection() const;
 
-	operator Color() const;
-	operator NodePath() const;
-	operator ::RID() const;
+	explicit operator Color() const;
+	explicit operator NodePath() const;
+	explicit operator ::RID() const;
 
-	operator Object *() const;
+	explicit operator Object *() const;
 
-	operator Callable() const;
-	operator Signal() const;
+	explicit operator Callable() const;
+	explicit operator Signal() const;
 
-	operator Dictionary() const;
-	operator Array() const;
+	explicit operator Dictionary() const;
+	explicit operator Array() const;
 
-	operator PackedByteArray() const;
-	operator PackedInt32Array() const;
-	operator PackedInt64Array() const;
-	operator PackedFloat32Array() const;
-	operator PackedFloat64Array() const;
-	operator PackedStringArray() const;
-	operator PackedVector3Array() const;
-	operator PackedVector2Array() const;
-	operator PackedColorArray() const;
-	operator PackedVector4Array() const;
+	explicit explicit operator PackedByteArray() const;
+	explicit explicit operator PackedInt32Array() const;
+	explicit explicit operator PackedInt64Array() const;
+	explicit operator PackedFloat32Array() const;
+	explicit operator PackedFloat64Array() const;
+	explicit operator PackedStringArray() const;
+	explicit operator PackedVector3Array() const;
+	explicit operator PackedVector2Array() const;
+	explicit operator PackedColorArray() const;
+	explicit operator PackedVector4Array() const;
 
-	operator Vector<::RID>() const;
-	operator Vector<Plane>() const;
-	operator Vector<Face3>() const;
-	operator Vector<Variant>() const;
-	operator Vector<StringName>() const;
+	explicit operator Vector<::RID>() const;
+	explicit operator Vector<Plane>() const;
+	explicit operator Vector<Face3>() const;
+	explicit operator Vector<Variant>() const;
+	explicit operator Vector<StringName>() const;
 
 	// some core type enums to convert to
-	operator Side() const;
-	operator Orientation() const;
+	explicit operator Side() const;
+	explicit operator Orientation() const;
 
-	operator IPAddress() const;
+	explicit operator IPAddress() const;
 
 	Object *get_validated_object() const;
 	Object *get_validated_object_with_check(bool &r_previously_freed) const;
 
-	Variant(bool p_bool);
-	Variant(int64_t p_int64);
-	Variant(int32_t p_int32);
-	Variant(int16_t p_int16);
-	Variant(int8_t p_int8);
-	Variant(uint64_t p_uint64);
-	Variant(uint32_t p_uint32);
-	Variant(uint16_t p_uint16);
-	Variant(uint8_t p_uint8);
-	Variant(float p_float);
-	Variant(double p_double);
-	Variant(const ObjectID &p_id);
-	Variant(const String &p_string);
-	Variant(const StringName &p_string);
-	Variant(const char *const p_cstring);
-	Variant(const char32_t *p_wstring);
-	Variant(const Vector2 &p_vector2);
-	Variant(const Vector2i &p_vector2i);
-	Variant(const Rect2 &p_rect2);
-	Variant(const Rect2i &p_rect2i);
-	Variant(const Vector3 &p_vector3);
-	Variant(const Vector3i &p_vector3i);
-	Variant(const Vector4 &p_vector4);
-	Variant(const Vector4i &p_vector4i);
-	Variant(const Plane &p_plane);
-	Variant(const ::AABB &p_aabb);
-	Variant(const Quaternion &p_quat);
-	Variant(const Basis &p_matrix);
-	Variant(const Transform2D &p_transform);
-	Variant(const Transform3D &p_transform);
-	Variant(const Projection &p_projection);
-	Variant(const Color &p_color);
-	Variant(const NodePath &p_node_path);
-	Variant(const ::RID &p_rid);
-	Variant(const Object *p_object);
-	Variant(const Callable &p_callable);
-	Variant(const Signal &p_signal);
-	Variant(const Dictionary &p_dictionary);
+	explicit Variant(bool p_bool);
+	explicit Variant(int64_t p_int64);
+	explicit Variant(int32_t p_int32);
+	explicit Variant(int16_t p_int16);
+	explicit Variant(int8_t p_int8);
+	explicit Variant(uint64_t p_uint64);
+	explicit Variant(uint32_t p_uint32);
+	explicit Variant(uint16_t p_uint16);
+	explicit Variant(uint8_t p_uint8);
+	explicit Variant(float p_float);
+	explicit Variant(double p_double);
+	explicit Variant(const ObjectID &p_id);
+	explicit Variant(const String &p_string);
+	explicit Variant(const StringName &p_string);
+	explicit Variant(const char *const p_cstring);
+	explicit Variant(const char32_t *p_wstring);
+	explicit Variant(const Vector2 &p_vector2);
+	explicit Variant(const Vector2i &p_vector2i);
+	explicit Variant(const Rect2 &p_rect2);
+	explicit Variant(const Rect2i &p_rect2i);
+	explicit Variant(const Vector3 &p_vector3);
+	explicit Variant(const Vector3i &p_vector3i);
+	explicit Variant(const Vector4 &p_vector4);
+	explicit Variant(const Vector4i &p_vector4i);
+	explicit Variant(const Plane &p_plane);
+	explicit Variant(const ::AABB &p_aabb);
+	explicit Variant(const Quaternion &p_quat);
+	explicit Variant(const Basis &p_matrix);
+	explicit Variant(const Transform2D &p_transform);
+	explicit Variant(const Transform3D &p_transform);
+	explicit Variant(const Projection &p_projection);
+	explicit Variant(const Color &p_color);
+	explicit Variant(const NodePath &p_node_path);
+	explicit Variant(const ::RID &p_rid);
+	explicit Variant(const Object *p_object);
+	explicit Variant(const Callable &p_callable);
+	explicit Variant(const Signal &p_signal);
+	explicit Variant(const Dictionary &p_dictionary);
 
-	Variant(const Array &p_array);
-	Variant(const PackedByteArray &p_byte_array);
-	Variant(const PackedInt32Array &p_int32_array);
-	Variant(const PackedInt64Array &p_int64_array);
-	Variant(const PackedFloat32Array &p_float32_array);
-	Variant(const PackedFloat64Array &p_float64_array);
-	Variant(const PackedStringArray &p_string_array);
-	Variant(const PackedVector2Array &p_vector2_array);
-	Variant(const PackedVector3Array &p_vector3_array);
-	Variant(const PackedColorArray &p_color_array);
-	Variant(const PackedVector4Array &p_vector4_array);
+	explicit Variant(const Array &p_array);
+	explicit Variant(const PackedByteArray &p_byte_array);
+	explicit Variant(const PackedInt32Array &p_int32_array);
+	explicit Variant(const PackedInt64Array &p_int64_array);
+	explicit Variant(const PackedFloat32Array &p_float32_array);
+	explicit Variant(const PackedFloat64Array &p_float64_array);
+	explicit Variant(const PackedStringArray &p_string_array);
+	explicit Variant(const PackedVector2Array &p_vector2_array);
+	explicit Variant(const PackedVector3Array &p_vector3_array);
+	explicit Variant(const PackedColorArray &p_color_array);
+	explicit Variant(const PackedVector4Array &p_vector4_array);
 
-	Variant(const Vector<::RID> &p_array); // helper
-	Variant(const Vector<Plane> &p_array); // helper
-	Variant(const Vector<Face3> &p_face_array);
-	Variant(const Vector<Variant> &p_array);
-	Variant(const Vector<StringName> &p_array);
+	explicit Variant(const Vector<::RID> &p_array); // helper
+	explicit Variant(const Vector<Plane> &p_array); // helper
+	explicit Variant(const Vector<Face3> &p_face_array);
+	explicit Variant(const Vector<Variant> &p_array);
+	explicit Variant(const Vector<StringName> &p_array);
 
-	Variant(const IPAddress &p_address);
+	explicit Variant(const IPAddress &p_address);
 
 #define VARIANT_ENUM_CLASS_CONSTRUCTOR(m_enum) \
 	Variant(m_enum p_value) :                  \
@@ -515,51 +513,45 @@ public:
 	}
 
 	// Only enum classes that need to be bound need this to be defined.
-	VARIANT_ENUM_CLASS_CONSTRUCTOR(EulerOrder)
-	VARIANT_ENUM_CLASS_CONSTRUCTOR(JoyAxis)
-	VARIANT_ENUM_CLASS_CONSTRUCTOR(JoyButton)
-	VARIANT_ENUM_CLASS_CONSTRUCTOR(Key)
-	VARIANT_ENUM_CLASS_CONSTRUCTOR(KeyLocation)
-	VARIANT_ENUM_CLASS_CONSTRUCTOR(MIDIMessage)
-	VARIANT_ENUM_CLASS_CONSTRUCTOR(MouseButton)
+	explicit VARIANT_ENUM_CLASS_CONSTRUCTOR(EulerOrder) explicit VARIANT_ENUM_CLASS_CONSTRUCTOR(JoyAxis) explicit VARIANT_ENUM_CLASS_CONSTRUCTOR(JoyButton) explicit VARIANT_ENUM_CLASS_CONSTRUCTOR(Key) explicit VARIANT_ENUM_CLASS_CONSTRUCTOR(KeyLocation) explicit VARIANT_ENUM_CLASS_CONSTRUCTOR(MIDIMessage) explicit VARIANT_ENUM_CLASS_CONSTRUCTOR(MouseButton)
 
 #undef VARIANT_ENUM_CLASS_CONSTRUCTOR
 
-	// If this changes the table in variant_op must be updated
-	enum Operator {
-		//comparison
-		OP_EQUAL,
-		OP_NOT_EQUAL,
-		OP_LESS,
-		OP_LESS_EQUAL,
-		OP_GREATER,
-		OP_GREATER_EQUAL,
-		//mathematic
-		OP_ADD,
-		OP_SUBTRACT,
-		OP_MULTIPLY,
-		OP_DIVIDE,
-		OP_NEGATE,
-		OP_POSITIVE,
-		OP_MODULE,
-		OP_POWER,
-		//bitwise
-		OP_SHIFT_LEFT,
-		OP_SHIFT_RIGHT,
-		OP_BIT_AND,
-		OP_BIT_OR,
-		OP_BIT_XOR,
-		OP_BIT_NEGATE,
-		//logic
-		OP_AND,
-		OP_OR,
-		OP_XOR,
-		OP_NOT,
-		//containment
-		OP_IN,
-		OP_MAX
+			// If this changes the table in variant_op must be updated
+			enum Operator {
+				//comparison
+				OP_EQUAL,
+				OP_NOT_EQUAL,
+				OP_LESS,
+				OP_LESS_EQUAL,
+				OP_GREATER,
+				OP_GREATER_EQUAL,
+				//mathematic
+				OP_ADD,
+				OP_SUBTRACT,
+				OP_MULTIPLY,
+				OP_DIVIDE,
+				OP_NEGATE,
+				OP_POSITIVE,
+				OP_MODULE,
+				OP_POWER,
+				//bitwise
+				OP_SHIFT_LEFT,
+				OP_SHIFT_RIGHT,
+				OP_BIT_AND,
+				OP_BIT_OR,
+				OP_BIT_XOR,
+				OP_BIT_NEGATE,
+				//logic
+				OP_AND,
+				OP_OR,
+				OP_XOR,
+				OP_NOT,
+				//containment
+				OP_IN,
+				OP_MAX
 
-	};
+			};
 
 	static String get_operator_name(Operator p_op);
 	static void evaluate(const Operator &p_op, const Variant &p_a, const Variant &p_b, Variant &r_ret, bool &r_valid);
@@ -814,8 +806,7 @@ public:
 	static void unregister_types();
 
 	Variant(const Variant &p_variant);
-	_FORCE_INLINE_ Variant() :
-			type(NIL) {}
+	_FORCE_INLINE_ Variant() {}
 	_FORCE_INLINE_ ~Variant() {
 		clear();
 	}
@@ -874,7 +865,7 @@ String vformat(const String &p_text, const VarArgs... p_args) {
 	bool error = false;
 	String fmt = p_text.sprintf(args_array, &error);
 
-	ERR_FAIL_COND_V_MSG(error, String(), String("Formatting error in string \"") + p_text + "\": " + fmt + ".");
+	(error, String(), String("Formatting error in string \"") + p_text + "\": " + fmt + ".");
 
 	return fmt;
 }

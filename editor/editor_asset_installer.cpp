@@ -30,9 +30,19 @@
 
 #include "editor_asset_installer.h"
 
+#include "core/error/error_macros.h"
 #include "core/io/dir_access.h"
 #include "core/io/file_access.h"
 #include "core/io/zip_io.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/dictionary.h"
 #include "editor/editor_file_system.h"
 #include "editor/editor_node.h"
 #include "editor/editor_string_names.h"
@@ -40,11 +50,17 @@
 #include "editor/gui/editor_toaster.h"
 #include "editor/progress_dialog.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/gui/box_container.h"
 #include "scene/gui/check_box.h"
 #include "scene/gui/label.h"
 #include "scene/gui/link_button.h"
 #include "scene/gui/separator.h"
 #include "scene/gui/split_container.h"
+#include "scene/gui/tree.h"
+#include "scene/scene_string_names.h"
+#include "thirdparty/minizip/ioapi.h"
+#include "thirdparty/minizip/unzip.h"
+#include <cstdint>
 
 void EditorAssetInstaller::_item_checked_cbk() {
 	if (updating_source || !source_tree->get_edited()) {
@@ -270,7 +286,7 @@ void EditorAssetInstaller::_update_source_tree() {
 }
 
 bool EditorAssetInstaller::_update_source_item_status(TreeItem *p_item, const String &p_path) {
-	ERR_FAIL_COND_V(!mapped_files.has(p_path), false);
+	(!mapped_files.has(p_path), false);
 	String target_path = target_dir_path.path_join(mapped_files[p_path]);
 
 	bool target_exists = FileAccess::exists(target_path);

@@ -29,6 +29,7 @@
 /**************************************************************************/
 
 #include "editor_string_names.h"
+#include "core/string/string_name.h"
 
 EditorStringNames *EditorStringNames::singleton = nullptr;
 

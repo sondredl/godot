@@ -63,15 +63,15 @@ public:
 
 	struct StreamFile : public Stream {
 	protected:
-		virtual uint32_t _read_buffer(char32_t *p_buffer, uint32_t p_num_chars) override;
-		virtual bool _is_eof() const override;
+		uint32_t _read_buffer(char32_t *p_buffer, uint32_t p_num_chars) override;
+		bool _is_eof() const override;
 
 	public:
 		Ref<FileAccess> f;
 
-		virtual bool is_utf8() const override;
+		bool is_utf8() const override;
 
-		StreamFile(bool p_readahead_enabled = true) { readahead_enabled = p_readahead_enabled; }
+		explicit StreamFile(bool p_readahead_enabled = true) { readahead_enabled = p_readahead_enabled; }
 	};
 
 	struct StreamString : public Stream {
@@ -81,12 +81,12 @@ public:
 		int pos = 0;
 
 	protected:
-		virtual uint32_t _read_buffer(char32_t *p_buffer, uint32_t p_num_chars) override;
-		virtual bool _is_eof() const override;
+		uint32_t _read_buffer(char32_t *p_buffer, uint32_t p_num_chars) override;
+		bool _is_eof() const override;
 
 	public:
-		virtual bool is_utf8() const override;
-		StreamString(bool p_readahead_enabled = true) { readahead_enabled = p_readahead_enabled; }
+		bool is_utf8() const override;
+		explicit StreamString(bool p_readahead_enabled = true) { readahead_enabled = p_readahead_enabled; }
 	};
 
 	typedef Error (*ParseResourceFunc)(void *p_self, Stream *p_stream, Ref<Resource> &r_res, int &line, String &r_err_str);

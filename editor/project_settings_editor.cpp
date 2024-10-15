@@ -31,14 +31,44 @@
 #include "project_settings_editor.h"
 
 #include "core/config/project_settings.h"
+#include "core/error/error_macros.h"
+#include "core/input/input_event.h"
+#include "core/math/rect2.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
+#include "core/variant/callable.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
+#include "editor/action_map_editor.h"
+#include "editor/editor_autoload_settings.h"
+#include "editor/editor_data.h"
 #include "editor/editor_inspector.h"
 #include "editor/editor_node.h"
+#include "editor/editor_sectioned_inspector.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/editor_undo_redo_manager.h"
 #include "editor/export/editor_export.h"
+#include "editor/group_settings_editor.h"
+#include "editor/import_defaults_editor.h"
+#include "editor/localization_editor.h"
+#include "editor/plugins/editor_plugin_settings.h"
+#include "editor/shader_globals_editor.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/gui/box_container.h"
 #include "scene/gui/check_button.h"
+#include "scene/gui/label.h"
+#include "scene/gui/tab_container.h"
+#include "scene/main/timer.h"
+#include "scene/resources/texture.h"
+#include "scene/scene_string_names.h"
 #include "servers/movie_writer/movie_writer.h"
 
 ProjectSettingsEditor *ProjectSettingsEditor::singleton = nullptr;
@@ -385,12 +415,12 @@ void ProjectSettingsEditor::_editor_restart_close() {
 void ProjectSettingsEditor::_action_added(const String &p_name) {
 	String name = "input/" + p_name;
 
-	ERR_FAIL_COND_MSG(ProjectSettings::get_singleton()->has_setting(name),
+	(ProjectSettings::get_singleton()->has_setting(name),
 			"An action with this name already exists.");
 
 	Dictionary action;
 	action["events"] = Array();
-	action["deadzone"] = 0.2f;
+	action["deadzone"] = 0.2F;
 
 	EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 	undo_redo->create_action(TTR("Add Input Action"));
@@ -452,7 +482,7 @@ void ProjectSettingsEditor::_action_renamed(const String &p_old_name, const Stri
 	const String old_property_name = "input/" + p_old_name;
 	const String new_property_name = "input/" + p_new_name;
 
-	ERR_FAIL_COND_MSG(ProjectSettings::get_singleton()->has_setting(new_property_name),
+	(ProjectSettings::get_singleton()->has_setting(new_property_name),
 			"An action with this name already exists.");
 
 	int order = ProjectSettings::get_singleton()->get_order(old_property_name);

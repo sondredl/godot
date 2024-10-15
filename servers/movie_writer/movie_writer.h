@@ -42,8 +42,8 @@ class MovieWriter : public Object {
 	uint64_t mix_rate = 0;
 	uint32_t audio_channels = 0;
 
-	float cpu_time = 0.0f;
-	float gpu_time = 0.0f;
+	float cpu_time = 0.0F;
+	float gpu_time = 0.0F;
 
 	String project_name;
 

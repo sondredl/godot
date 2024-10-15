@@ -51,7 +51,7 @@ public:
 		RID debug_texture;
 		Ref<Image> debug_image;
 		PackedByteArray debug_data;
-		float debug_tex_range = 0.0f;
+		float debug_tex_range = 0.0F;
 
 		uint64_t occlusion_frame = 0;
 		Size2i occlusion_buffer_size;
@@ -72,13 +72,12 @@ public:
 				return false;
 			}
 
-			float min_depth = -closest_point_view.z * 0.95f;
+			float min_depth = -closest_point_view.z * 0.95F;
 
 			Vector2 rect_min = Vector2(FLT_MAX, FLT_MAX);
 			Vector2 rect_max = Vector2(FLT_MIN, FLT_MIN);
 
-			for (int j = 0; j < 8; j++) {
-				const Vector3 &c = RendererSceneOcclusionCull::HZBuffer::corners[j];
+			for (auto c : RendererSceneOcclusionCull::HZBuffer::corners) {
 				Vector3 nc = Vector3(1, 1, 1) - c;
 				Vector3 corner = Vector3(p_bounds[0] * c.x + p_bounds[3] * nc.x, p_bounds[1] * c.y + p_bounds[4] * nc.y, p_bounds[2] * c.z + p_bounds[5] * nc.z);
 				Vector3 view = p_cam_inv_transform.xform(corner);
@@ -88,12 +87,12 @@ public:
 
 				float w = projected.d;
 				if (w < 1.0) {
-					rect_min = Vector2(0.0f, 0.0f);
-					rect_max = Vector2(1.0f, 1.0f);
+					rect_min = Vector2(0.0F, 0.0F);
+					rect_max = Vector2(1.0F, 1.0F);
 					break;
 				}
 
-				Vector2 normalized = Vector2(projected.normal.x / w * 0.5f + 0.5f, projected.normal.y / w * 0.5f + 0.5f);
+				Vector2 normalized = Vector2(projected.normal.x / w * 0.5F + 0.5F, projected.normal.y / w * 0.5F + 0.5F);
 				rect_min = rect_min.min(normalized);
 				rect_max = rect_max.max(normalized);
 			}
@@ -202,7 +201,7 @@ public:
 	}
 
 	virtual bool is_occluder(RID p_rid) { return false; }
-	virtual RID occluder_allocate() { return RID(); }
+	virtual RID occluder_allocate() { return {}; }
 	virtual void occluder_initialize(RID p_occluder) {}
 	virtual void free_occluder(RID p_occluder) { _print_warning(); }
 	virtual void occluder_set_mesh(RID p_occluder, const PackedVector3Array &p_vertices, const PackedInt32Array &p_indices) { _print_warning(); }
@@ -223,7 +222,7 @@ public:
 
 	virtual RID buffer_get_debug_texture(RID p_buffer) {
 		_print_warning();
-		return RID();
+		return {};
 	}
 
 	virtual void set_build_quality(RS::ViewportOcclusionCullingBuildQuality p_quality) {}

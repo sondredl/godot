@@ -56,9 +56,9 @@ public:
 	};
 
 #ifdef TOOLS_ENABLED
-	virtual Rect2 _edit_get_rect() const override;
-	virtual bool _edit_use_rect() const override;
-	virtual bool _edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const override;
+	Rect2 _edit_get_rect() const override;
+	bool _edit_use_rect() const override;
+	bool _edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const override;
 #endif
 
 	Line2D();
@@ -125,7 +125,6 @@ private:
 	void _gradient_changed();
 	void _curve_changed();
 
-private:
 	Vector<Vector2> _points;
 	LineJointMode _joint_mode = LINE_JOINT_SHARP;
 	LineCapMode _begin_cap_mode = LINE_CAP_NONE;
@@ -137,7 +136,7 @@ private:
 	Ref<Gradient> _gradient;
 	Ref<Texture2D> _texture;
 	LineTextureMode _texture_mode = LINE_TEXTURE_NONE;
-	float _sharp_limit = 2.f;
+	float _sharp_limit = 2.F;
 	int _round_precision = 8;
 	bool _antialiased = false;
 };

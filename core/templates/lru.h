@@ -95,10 +95,9 @@ public:
 		Element *e = _map.getptr(p_key);
 		if (!e) {
 			return nullptr;
-		} else {
-			_list.move_to_front(*e);
-			return &(*e)->get().data;
 		}
+		_list.move_to_front(*e);
+		return &(*e)->get().data;
 	}
 
 	_FORCE_INLINE_ size_t get_capacity() const { return capacity; }
@@ -119,7 +118,7 @@ public:
 		capacity = 64;
 	}
 
-	LRUCache(int p_capacity) {
+	explicit LRUCache(int p_capacity) {
 		capacity = p_capacity;
 	}
 };

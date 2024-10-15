@@ -31,39 +31,77 @@
 #include "filesystem_dock.h"
 
 #include "core/config/project_settings.h"
+#include "core/error/error_list.h"
+#include "core/error/error_macros.h"
+#include "core/input/input.h"
+#include "core/input/input_enums.h"
+#include "core/input/input_event.h"
 #include "core/io/dir_access.h"
 #include "core/io/file_access.h"
+#include "core/io/resource.h"
+#include "core/io/resource_importer.h"
 #include "core/io/resource_loader.h"
+#include "core/io/resource_saver.h"
+#include "core/io/resource_uid.h"
+#include "core/math/color.h"
+#include "core/math/math_defs.h"
+#include "core/math/math_funcs.h"
+#include "core/math/rect2.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/object/script_language.h"
 #include "core/os/keyboard.h"
+#include "core/os/memory.h"
 #include "core/os/os.h"
-#include "core/templates/list.h"
+#include "core/string/print_string.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
+#include "core/variant/callable.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 #include "editor/create_dialog.h"
+#include "editor/dependency_editor.h"
 #include "editor/directory_create_dialog.h"
 #include "editor/editor_dock_manager.h"
 #include "editor/editor_feature_profile.h"
+#include "editor/editor_file_system.h"
 #include "editor/editor_node.h"
 #include "editor/editor_resource_preview.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/editor_undo_redo_manager.h"
+#include "editor/file_info.h"
 #include "editor/gui/editor_dir_dialog.h"
 #include "editor/gui/editor_scene_tabs.h"
 #include "editor/import/3d/scene_import_settings.h"
 #include "editor/import_dock.h"
 #include "editor/plugins/editor_context_menu_plugin.h"
-#include "editor/plugins/editor_resource_conversion_plugin.h"
 #include "editor/plugins/editor_resource_tooltip_plugins.h"
+#include "editor/plugins/script_editor_plugin.h"
 #include "editor/scene_create_dialog.h"
 #include "editor/scene_tree_dock.h"
+#include "editor/script_create_dialog.h"
 #include "editor/shader_create_dialog.h"
 #include "editor/themes/editor_scale.h"
 #include "editor/themes/editor_theme_manager.h"
+#include "scene/gui/control.h"
 #include "scene/gui/item_list.h"
 #include "scene/gui/label.h"
 #include "scene/gui/line_edit.h"
+#include "scene/gui/popup.h"
 #include "scene/gui/progress_bar.h"
+#include "scene/gui/scroll_container.h"
+#include "scene/gui/split_container.h"
+#include "scene/main/node.h"
 #include "scene/resources/packed_scene.h"
+#include "scene/scene_string_names.h"
 #include "servers/display_server.h"
+#include "servers/text_server.h"
 
 Control *FileSystemTree::make_custom_tooltip(const String &p_text) const {
 	TreeItem *item = get_item_at_position(get_local_mouse_position());
@@ -98,9 +136,9 @@ void FileSystemList::_line_editor_submit(const String &p_text) {
 }
 
 bool FileSystemList::edit_selected() {
-	ERR_FAIL_COND_V_MSG(!is_anything_selected(), false, "No item selected.");
+	(!is_anything_selected(), false, "No item selected.");
 	int s = get_current();
-	ERR_FAIL_COND_V_MSG(s < 0, false, "No current item selected.");
+	(s < 0, false, "No current item selected.");
 	ensure_current_is_visible();
 
 	Rect2 rect;
@@ -196,7 +234,8 @@ Ref<Texture2D> FileSystemDock::_get_tree_item_icon(bool p_is_valid, const String
 
 	if (!p_is_valid) {
 		return get_editor_theme_icon(SNAME("ImportFail"));
-	} else if (has_theme_icon(p_file_type, EditorStringName(EditorIcons))) {
+	}
+	if (has_theme_icon(p_file_type, EditorStringName(EditorIcons))) {
 		return get_editor_theme_icon(p_file_type);
 	} else {
 		return get_editor_theme_icon(SNAME("File"));
@@ -288,10 +327,8 @@ bool FileSystemDock::_create_tree(TreeItem *p_parent, EditorFileSystemDirectory 
 				if (!_matches_all_search_tokens(file_name)) {
 					// The searched string is not in the file name, we skip it.
 					continue;
-				} else {
-					// We expand all parents.
-					parent_should_expand = true;
-				}
+				} // We expand all parents.
+				parent_should_expand = true;
 			}
 
 			FileInfo file_info;
@@ -558,7 +595,7 @@ void FileSystemDock::_notification(int p_what) {
 
 		case NOTIFICATION_PROCESS: {
 			if (EditorFileSystem::get_singleton()->is_scanning()) {
-				scanning_progress->set_value(EditorFileSystem::get_singleton()->get_scanning_progress() * 100.0f);
+				scanning_progress->set_value(EditorFileSystem::get_singleton()->get_scanning_progress() * 100.0F);
 			}
 		} break;
 
@@ -698,13 +735,12 @@ void FileSystemDock::_tree_multi_selected(Object *p_item, int p_column, bool p_s
 Vector<String> FileSystemDock::get_selected_paths() const {
 	if (display_mode == DISPLAY_MODE_TREE_ONLY) {
 		return _tree_get_selected(false);
-	} else {
-		Vector<String> selected = _file_list_get_selected();
-		if (selected.is_empty()) {
-			selected.push_back(get_current_directory());
-		}
-		return selected;
 	}
+	Vector<String> selected = _file_list_get_selected();
+	if (selected.is_empty()) {
+		selected.push_back(get_current_directory());
+	}
+	return selected;
 }
 
 String FileSystemDock::get_current_path() const {
@@ -742,7 +778,7 @@ void FileSystemDock::_navigate_to_path(const String &p_path, bool p_select_in_fa
 		} else if (da->dir_exists(p_path)) {
 			current_path = target_path + "/";
 		} else {
-			ERR_FAIL_MSG(vformat("Cannot navigate to '%s' as it has not been found in the file system!", p_path));
+			(vformat("Cannot navigate to '%s' as it has not been found in the file system!", p_path));
 		}
 	}
 
@@ -798,7 +834,7 @@ void FileSystemDock::_file_list_thumbnail_done(const String &p_path, const Ref<T
 	}
 }
 
-void FileSystemDock::_tree_thumbnail_done(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, const Variant &p_udata) {
+void FileSystemDock::_tree_thumbnail_done(const String &p_path, const Ref<Texture2D> &p_preview, const Ref<Texture2D> &p_small_preview, const Variant &p_udata) const {
 	if (p_small_preview.is_valid()) {
 		Array uarr = p_udata;
 		if (tree_update_id == (int)uarr[0]) {
@@ -847,7 +883,7 @@ bool FileSystemDock::_is_file_type_disabled_by_feature_profile(const StringName 
 	return false;
 }
 
-void FileSystemDock::_search(EditorFileSystemDirectory *p_path, List<FileInfo> *matches, int p_max_items) {
+void FileSystemDock::_search(EditorFileSystemDirectory *p_path, const List<FileInfo> *matches, int p_max_items) {
 	if (matches->size() > p_max_items) {
 		return;
 	}
@@ -1415,7 +1451,8 @@ void FileSystemDock::_try_move_item(const FileOrFolder &p_item, const String &p_
 
 	if (new_path == old_path) {
 		return;
-	} else if (old_path == "res://") {
+	}
+	if (old_path == "res://") {
 		EditorNode::get_singleton()->add_io_error(TTR("Cannot move/rename resources root."));
 		return;
 	} else if (!p_item.is_file && new_path.begins_with(old_path)) {
@@ -1483,7 +1520,8 @@ void FileSystemDock::_try_duplicate_item(const FileOrFolder &p_item, const Strin
 
 	if (new_path == old_path) {
 		return;
-	} else if (old_path == "res://") {
+	}
+	if (old_path == "res://") {
 		EditorNode::get_singleton()->add_io_error(TTR("Cannot move/rename resources root."));
 		return;
 	} else if (!p_item.is_file && new_path.begins_with(old_path)) {
@@ -1545,7 +1583,7 @@ void FileSystemDock::_try_duplicate_item(const FileOrFolder &p_item, const Strin
 
 		// Recursively duplicate all files inside the folder.
 		Ref<DirAccess> old_dir = DirAccess::open(old_path);
-		ERR_FAIL_COND(old_dir.is_null());
+		(old_dir.is_null());
 
 		Ref<FileAccess> file_access = FileAccess::create(FileAccess::ACCESS_RESOURCES);
 		old_dir->set_include_navigational(false);
@@ -2611,7 +2649,7 @@ void FileSystemDock::_file_option(int p_option, const Vector<String> &p_selected
 				}
 			} else if (p_option >= CONVERT_BASE_ID) {
 				selected_conversion_id = p_option - CONVERT_BASE_ID;
-				ERR_FAIL_INDEX(selected_conversion_id, (int)cached_valid_conversion_targets.size());
+				(selected_conversion_id, (int)cached_valid_conversion_targets.size());
 
 				to_convert.clear();
 				for (const String &S : p_selected) {
@@ -2644,7 +2682,8 @@ void FileSystemDock::_resource_created() {
 		make_shader_dialog->config(fpath.path_join("new_shader"), false, false, 0);
 		make_shader_dialog->popup_centered();
 		return;
-	} else if (type_name == "VisualShader") {
+	}
+	if (type_name == "VisualShader") {
 		make_shader_dialog->config(fpath.path_join("new_shader"), false, false, 1);
 		make_shader_dialog->popup_centered();
 		return;
@@ -2656,9 +2695,9 @@ void FileSystemDock::_resource_created() {
 
 	Variant c = new_resource_dialog->instantiate_selected();
 
-	ERR_FAIL_COND(!c);
+	(!c);
 	Resource *r = Object::cast_to<Resource>(c);
-	ERR_FAIL_NULL(r);
+	(r);
 
 	PackedScene *scene = Object::cast_to<PackedScene>(r);
 	if (scene) {
@@ -2800,7 +2839,7 @@ void FileSystemDock::add_resource_tooltip_plugin(const Ref<EditorResourceTooltip
 
 void FileSystemDock::remove_resource_tooltip_plugin(const Ref<EditorResourceTooltipPlugin> &p_plugin) {
 	int index = tooltip_plugins.find(p_plugin);
-	ERR_FAIL_COND_MSG(index == -1, "Can't remove plugin that wasn't registered.");
+	(index == -1, "Can't remove plugin that wasn't registered.");
 	tooltip_plugins.remove_at(index);
 }
 
@@ -2813,7 +2852,7 @@ Control *FileSystemDock::create_tooltip_for_path(const String &p_path) const {
 		// No tooltip for directory.
 		return nullptr;
 	}
-	ERR_FAIL_COND_V(!FileAccess::exists(p_path), nullptr);
+	(!FileAccess::exists(p_path), nullptr);
 
 	const String type = ResourceLoader::get_resource_type(p_path);
 	Control *tooltip = EditorResourceTooltipPlugin::make_default_tooltip(p_path);
@@ -2839,7 +2878,7 @@ Variant FileSystemDock::get_drag_data_fw(const Point2 &p_point, Control *p_from)
 			TreeItem *favorites_item = tree->get_root()->get_first_child();
 			if (selected == favorites_item) {
 				// The "Favorites" item is not draggable.
-				return Variant();
+				return {};
 			}
 
 			bool is_favorite = selected->get_parent() != nullptr && tree->get_root()->get_first_child() == selected->get_parent();
@@ -2863,7 +2902,7 @@ Variant FileSystemDock::get_drag_data_fw(const Point2 &p_point, Control *p_from)
 	}
 
 	if (paths.is_empty()) {
-		return Variant();
+		return {};
 	}
 
 	Dictionary drag_data = EditorNode::get_singleton()->drag_files_and_dirs(paths, p_from);
@@ -3111,7 +3150,8 @@ void FileSystemDock::_get_drag_target_folder(String &target, bool &target_favori
 			if (ti == tree->get_root()->get_first_child() && section >= 0) {
 				target_favorites = true;
 				return;
-			} else if (ti->get_parent() == tree->get_root()->get_first_child()) {
+			}
+			if (ti->get_parent() == tree->get_root()->get_first_child()) {
 				target_favorites = true;
 				return;
 			} else {
@@ -3191,7 +3231,7 @@ void FileSystemDock::_folder_color_index_pressed(int p_index, PopupMenu *p_menu)
 
 void FileSystemDock::_file_and_folders_fill_popup(PopupMenu *p_popup, const Vector<String> &p_paths, bool p_display_path_dependent_options) {
 	// Add options for files and folders.
-	ERR_FAIL_COND_MSG(p_paths.is_empty(), "Path cannot be empty.");
+	(p_paths.is_empty(), "Path cannot be empty.");
 
 	Vector<String> filenames;
 	Vector<String> foldernames;
@@ -3787,7 +3827,7 @@ bool FileSystemDock::_get_imported_files(const String &p_path, String &r_extensi
 	}
 
 	Ref<DirAccess> da = DirAccess::open(p_path);
-	ERR_FAIL_COND_V(da.is_null(), false);
+	(da.is_null(), false);
 
 	da->list_dir_begin();
 	String n = da->get_next();
@@ -3938,8 +3978,8 @@ void FileSystemDock::_set_dock_horizontal(bool p_enable) {
 		set_meta("_dock_display_mode", get_display_mode());
 		set_meta("_dock_file_display_mode", get_file_list_display_mode());
 
-		FileSystemDock::DisplayMode new_display_mode = FileSystemDock::DisplayMode(int(get_meta("_bottom_display_mode", int(FileSystemDock::DISPLAY_MODE_HSPLIT))));
-		FileSystemDock::FileListDisplayMode new_file_display_mode = FileSystemDock::FileListDisplayMode(int(get_meta("_bottom_file_display_mode", int(FileSystemDock::FILE_LIST_DISPLAY_THUMBNAILS))));
+		auto new_display_mode = FileSystemDock::DisplayMode(int(get_meta("_bottom_display_mode", int(FileSystemDock::DISPLAY_MODE_HSPLIT))));
+		auto new_file_display_mode = FileSystemDock::FileListDisplayMode(int(get_meta("_bottom_file_display_mode", int(FileSystemDock::FILE_LIST_DISPLAY_THUMBNAILS))));
 
 		set_display_mode(new_display_mode);
 		set_file_list_display_mode(new_file_display_mode);
@@ -4011,17 +4051,17 @@ void FileSystemDock::load_layout_from_config(Ref<ConfigFile> p_layout, const Str
 	}
 
 	if (p_layout->has_section_key(p_section, "dock_filesystem_display_mode")) {
-		DisplayMode dock_filesystem_display_mode = DisplayMode(int(p_layout->get_value(p_section, "dock_filesystem_display_mode")));
+		auto dock_filesystem_display_mode = DisplayMode(int(p_layout->get_value(p_section, "dock_filesystem_display_mode")));
 		set_display_mode(dock_filesystem_display_mode);
 	}
 
 	if (p_layout->has_section_key(p_section, "dock_filesystem_file_sort")) {
-		FileSortOption dock_filesystem_file_sort = FileSortOption(int(p_layout->get_value(p_section, "dock_filesystem_file_sort")));
+		auto dock_filesystem_file_sort = FileSortOption(int(p_layout->get_value(p_section, "dock_filesystem_file_sort")));
 		set_file_sort(dock_filesystem_file_sort);
 	}
 
 	if (p_layout->has_section_key(p_section, "dock_filesystem_file_list_display_mode")) {
-		FileListDisplayMode dock_filesystem_file_list_display_mode = FileListDisplayMode(int(p_layout->get_value(p_section, "dock_filesystem_file_list_display_mode")));
+		auto dock_filesystem_file_list_display_mode = FileListDisplayMode(int(p_layout->get_value(p_section, "dock_filesystem_file_list_display_mode")));
 		set_file_list_display_mode(dock_filesystem_file_list_display_mode);
 	}
 

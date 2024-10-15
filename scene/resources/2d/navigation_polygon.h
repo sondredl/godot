@@ -52,7 +52,7 @@ class NavigationPolygon : public Resource {
 	Ref<NavigationMesh> navigation_mesh;
 
 	real_t cell_size = NavigationDefaults2D::navmesh_cell_size;
-	real_t border_size = 0.0f;
+	real_t border_size = 0.0F;
 
 	Rect2 baking_rect;
 	Vector2 baking_rect_offset;
@@ -92,7 +92,7 @@ public:
 		SOURCE_GEOMETRY_MAX
 	};
 
-	real_t agent_radius = 10.0f;
+	real_t agent_radius = 10.0F;
 
 	SamplePartitionType partition_type = SAMPLE_PARTITION_CONVEX_PARTITION;
 	ParsedGeometryType parsed_geometry_type = PARSED_GEOMETRY_BOTH;
@@ -169,7 +169,7 @@ public:
 	void get_data(Vector<Vector2> &r_vertices, Vector<Vector<int>> &r_polygons, Vector<Vector<Vector2>> &r_outlines);
 
 	NavigationPolygon() {}
-	~NavigationPolygon() {}
+	~NavigationPolygon() override {}
 };
 
 VARIANT_ENUM_CAST(NavigationPolygon::SamplePartitionType);

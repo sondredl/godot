@@ -44,11 +44,11 @@ static inline float undenormalize(volatile float f) {
 
 	// original: return (v.i & 0x7f800000) == 0 ? 0.0f : f;
 	// version from Tim Blechmann:
-	return (v.i & 0x7f800000) < 0x08000000 ? 0.0f : f;
+	return (v.i & 0x7f800000) < 0x08000000 ? 0.0F : f;
 }
 
-static const float AUDIO_PEAK_OFFSET = 0.0000000001f;
-static const float AUDIO_MIN_PEAK_DB = -200.0f; // linear_to_db(AUDIO_PEAK_OFFSET)
+static const float AUDIO_PEAK_OFFSET = 0.0000000001F;
+static const float AUDIO_MIN_PEAK_DB = -200.0F; // linear_to_db(AUDIO_PEAK_OFFSET)
 
 struct AudioFrame {
 	// Left and right samples.
@@ -75,15 +75,15 @@ struct AudioFrame {
 		return levels[p_idx];
 	}
 
-	_ALWAYS_INLINE_ AudioFrame operator+(const AudioFrame &p_frame) const { return AudioFrame(left + p_frame.left, right + p_frame.right); }
-	_ALWAYS_INLINE_ AudioFrame operator-(const AudioFrame &p_frame) const { return AudioFrame(left - p_frame.left, right - p_frame.right); }
-	_ALWAYS_INLINE_ AudioFrame operator*(const AudioFrame &p_frame) const { return AudioFrame(left * p_frame.left, right * p_frame.right); }
-	_ALWAYS_INLINE_ AudioFrame operator/(const AudioFrame &p_frame) const { return AudioFrame(left / p_frame.left, right / p_frame.right); }
+	_ALWAYS_INLINE_ AudioFrame operator+(const AudioFrame &p_frame) const { return { left + p_frame.left, right + p_frame.right }; }
+	_ALWAYS_INLINE_ AudioFrame operator-(const AudioFrame &p_frame) const { return { left - p_frame.left, right - p_frame.right }; }
+	_ALWAYS_INLINE_ AudioFrame operator*(const AudioFrame &p_frame) const { return { left * p_frame.left, right * p_frame.right }; }
+	_ALWAYS_INLINE_ AudioFrame operator/(const AudioFrame &p_frame) const { return { left / p_frame.left, right / p_frame.right }; }
 
-	_ALWAYS_INLINE_ AudioFrame operator+(float p_sample) const { return AudioFrame(left + p_sample, right + p_sample); }
-	_ALWAYS_INLINE_ AudioFrame operator-(float p_sample) const { return AudioFrame(left - p_sample, right - p_sample); }
-	_ALWAYS_INLINE_ AudioFrame operator*(float p_sample) const { return AudioFrame(left * p_sample, right * p_sample); }
-	_ALWAYS_INLINE_ AudioFrame operator/(float p_sample) const { return AudioFrame(left / p_sample, right / p_sample); }
+	_ALWAYS_INLINE_ AudioFrame operator+(float p_sample) const { return { left + p_sample, right + p_sample }; }
+	_ALWAYS_INLINE_ AudioFrame operator-(float p_sample) const { return { left - p_sample, right - p_sample }; }
+	_ALWAYS_INLINE_ AudioFrame operator*(float p_sample) const { return { left * p_sample, right * p_sample }; }
+	_ALWAYS_INLINE_ AudioFrame operator/(float p_sample) const { return { left / p_sample, right / p_sample }; }
 
 	_ALWAYS_INLINE_ void operator+=(const AudioFrame &p_frame) {
 		left += p_frame.left;
@@ -147,11 +147,11 @@ struct AudioFrame {
 		right = p_frame.right;
 	}
 
-	_ALWAYS_INLINE_ operator Vector2() const {
-		return Vector2(left, right);
+	_ALWAYS_INLINE_ explicit operator Vector2() const {
+		return { left, right };
 	}
 
-	_ALWAYS_INLINE_ AudioFrame(const Vector2 &p_v2) {
+	_ALWAYS_INLINE_ explicit AudioFrame(const Vector2 &p_v2) {
 		left = p_v2.x;
 		right = p_v2.y;
 	}
@@ -159,15 +159,15 @@ struct AudioFrame {
 };
 
 _ALWAYS_INLINE_ AudioFrame operator*(float p_scalar, const AudioFrame &p_frame) {
-	return AudioFrame(p_frame.left * p_scalar, p_frame.right * p_scalar);
+	return { p_frame.left * p_scalar, p_frame.right * p_scalar };
 }
 
 _ALWAYS_INLINE_ AudioFrame operator*(int32_t p_scalar, const AudioFrame &p_frame) {
-	return AudioFrame(p_frame.left * p_scalar, p_frame.right * p_scalar);
+	return { p_frame.left * p_scalar, p_frame.right * p_scalar };
 }
 
 _ALWAYS_INLINE_ AudioFrame operator*(int64_t p_scalar, const AudioFrame &p_frame) {
-	return AudioFrame(p_frame.left * p_scalar, p_frame.right * p_scalar);
+	return { p_frame.left * p_scalar, p_frame.right * p_scalar };
 }
 
 #endif // AUDIO_FRAME_H

@@ -71,16 +71,16 @@ class AcceptDialog : public Window {
 	void _parent_focused();
 
 protected:
-	virtual Size2 _get_contents_minimum_size() const override;
-	virtual void _input_from_window(const Ref<InputEvent> &p_event) override;
-	virtual void _post_popup() override;
+	Size2 _get_contents_minimum_size() const override;
+	void _input_from_window(const Ref<InputEvent> &p_event) override;
+	void _post_popup() override;
 
 	void _notification(int p_what);
 	static void _bind_methods();
 
 	virtual void ok_pressed() {}
 	virtual void cancel_pressed() {}
-	virtual void custom_action(const String &) {}
+	virtual void custom_action(const String & /*unused*/) {}
 
 	// Not private since used by derived classes signal.
 	void _text_submitted(const String &p_text);
@@ -121,7 +121,7 @@ public:
 	String get_ok_button_text() const;
 
 	AcceptDialog();
-	~AcceptDialog();
+	~AcceptDialog() override;
 };
 
 class ConfirmationDialog : public AcceptDialog {

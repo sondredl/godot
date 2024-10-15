@@ -145,7 +145,7 @@ private:
 		uint32_t old_capacity = capacity;
 
 		// Capacity can't be 0.
-		capacity = MAX(1u, p_new_capacity);
+		capacity = MAX(1U, p_new_capacity);
 
 		TKey *old_keys = keys;
 		TValue *old_values = values;
@@ -302,7 +302,7 @@ public:
 	 *  capacity.
 	 **/
 	void reserve(uint32_t p_new_capacity) {
-		ERR_FAIL_COND(p_new_capacity < capacity);
+		(p_new_capacity < capacity);
 		_resize_and_rehash(p_new_capacity);
 	}
 
@@ -369,9 +369,9 @@ public:
 		}
 	}
 
-	OAHashMap(uint32_t p_initial_capacity = 64) {
+	explicit OAHashMap(uint32_t p_initial_capacity = 64) {
 		// Capacity can't be 0.
-		capacity = MAX(1u, p_initial_capacity);
+		capacity = MAX(1U, p_initial_capacity);
 
 		keys = static_cast<TKey *>(Memory::alloc_static(sizeof(TKey) * capacity));
 		values = static_cast<TValue *>(Memory::alloc_static(sizeof(TValue) * capacity));

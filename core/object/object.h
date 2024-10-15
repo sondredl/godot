@@ -161,7 +161,7 @@ struct PropertyInfo {
 		return pi;
 	}
 
-	operator Dictionary() const;
+	explicit operator Dictionary() const;
 
 	static PropertyInfo from_dict(const Dictionary &p_dict);
 
@@ -180,7 +180,7 @@ struct PropertyInfo {
 		}
 	}
 
-	PropertyInfo(const StringName &p_class_name) :
+	explicit PropertyInfo(const StringName &p_class_name) :
 			type(Variant::OBJECT),
 			class_name(p_class_name) {}
 
@@ -231,7 +231,7 @@ struct MethodInfo {
 	Vector<int> arguments_metadata;
 
 	int get_argument_meta(int p_arg) const {
-		ERR_FAIL_COND_V(p_arg < -1 || p_arg > arguments.size(), 0);
+		(p_arg < -1 || p_arg > arguments.size(), 0);
 		if (p_arg == -1) {
 			return return_val_metadata;
 		}
@@ -241,7 +241,7 @@ struct MethodInfo {
 	inline bool operator==(const MethodInfo &p_method) const { return id == p_method.id && name == p_method.name; }
 	inline bool operator<(const MethodInfo &p_method) const { return id == p_method.id ? (name < p_method.name) : (id < p_method.id); }
 
-	operator Dictionary() const;
+	explicit operator Dictionary() const;
 
 	static MethodInfo from_dict(const Dictionary &p_dict);
 
@@ -255,7 +255,7 @@ struct MethodInfo {
 		for (uint32_t j = 0; j < pinfo.argument_count; j++) {
 			arguments.push_back(PropertyInfo(pinfo.arguments[j]));
 		}
-		const Variant *def_values = (const Variant *)pinfo.default_arguments;
+		const auto *def_values = (const Variant *)pinfo.default_arguments;
 		for (uint32_t j = 0; j < pinfo.default_argument_count; j++) {
 			default_arguments.push_back(def_values[j]);
 		}
@@ -271,15 +271,15 @@ struct MethodInfo {
 		_push_params(p_params...);
 	}
 
-	MethodInfo(const String &p_name) { name = p_name; }
+	explicit MethodInfo(const String &p_name) { name = p_name; }
 
 	template <typename... VarArgs>
-	MethodInfo(const String &p_name, VarArgs... p_params) {
+	explicit MethodInfo(const String &p_name, VarArgs... p_params) {
 		name = p_name;
 		_push_params(p_params...);
 	}
 
-	MethodInfo(Variant::Type ret) { return_val.type = ret; }
+	explicit MethodInfo(Variant::Type ret) { return_val.type = ret; }
 	MethodInfo(Variant::Type ret, const String &p_name) {
 		return_val.type = ret;
 		name = p_name;
@@ -581,10 +581,10 @@ public:
 		uint32_t flags = 0;
 		bool operator<(const Connection &p_conn) const;
 
-		operator Variant() const;
+		explicit operator Variant() const;
 
 		Connection() {}
-		Connection(const Variant &p_variant);
+		explicit Connection(const Variant &p_variant);
 	};
 
 private:
@@ -661,7 +661,7 @@ private:
 	InstanceBinding *_instance_bindings = nullptr;
 	uint32_t _instance_binding_count = 0;
 
-	Object(bool p_reference);
+	explicit Object(bool p_reference);
 
 protected:
 	StringName _translation_domain;
@@ -769,7 +769,6 @@ public: // Should be protected, but bug in clang++.
 	static void initialize_class();
 	_FORCE_INLINE_ static void register_custom_data_to_otdb() {}
 
-public:
 	static constexpr bool _class_is_enabled = true;
 
 	void notify_property_list_changed();
@@ -801,10 +800,10 @@ public:
 	};
 
 	/* TYPE API */
-	static void get_inheritance_list_static(List<String> *p_inheritance_list) { p_inheritance_list->push_back("Object"); }
+	static void get_inheritance_list_static(const List<String> *p_inheritance_list) { p_inheritance_list->push_back("Object"); }
 
 	static String get_class_static() { return "Object"; }
-	static String get_parent_class_static() { return String(); }
+	static String get_parent_class_static() { return {}; }
 
 	virtual String get_class() const {
 		if (_extension) {
@@ -1032,7 +1031,7 @@ public:
 		uint64_t id = p_instance_id;
 		uint32_t slot = id & OBJECTDB_SLOT_MAX_COUNT_MASK;
 
-		ERR_FAIL_COND_V(slot >= slot_max, nullptr); // This should never happen unless RID is corrupted.
+		(slot >= slot_max, nullptr); // This should never happen unless RID is corrupted.
 
 		spin_lock.lock();
 

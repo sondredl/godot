@@ -30,6 +30,20 @@
 
 #include "groups_editor.h"
 
+#include "core/config/project_settings.h"
+#include "core/input/input_enums.h"
+#include "core/input/input_event.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/object_id.h"
+#include "core/object/ref_counted.h"
+#include "core/os/keyboard.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/variant/variant.h"
 #include "editor/editor_node.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
@@ -42,7 +56,11 @@
 #include "scene/gui/check_button.h"
 #include "scene/gui/grid_container.h"
 #include "scene/gui/label.h"
+#include "scene/main/node.h"
+#include "scene/main/scene_tree.h"
 #include "scene/resources/packed_scene.h"
+#include "scene/scene_string_names.h"
+#include "servers/display_server.h"
 
 static bool can_edit(Node *p_node, const String &p_group) {
 	Node *n = p_node;

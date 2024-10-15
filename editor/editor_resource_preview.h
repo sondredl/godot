@@ -137,7 +137,7 @@ public:
 	// p_preview will be null if there was an error
 	void queue_resource_preview(const String &p_path, Object *p_receiver, const StringName &p_receiver_func, const Variant &p_userdata);
 	void queue_edited_resource_preview(const Ref<Resource> &p_res, Object *p_receiver, const StringName &p_receiver_func, const Variant &p_userdata);
-	const Dictionary get_preview_metadata(const String &p_path) const;
+	Dictionary get_preview_metadata(const String &p_path) const;
 
 	PreviewItem get_resource_preview_if_available(const String &p_path);
 
@@ -145,12 +145,12 @@ public:
 	void remove_preview_generator(const Ref<EditorResourcePreviewGenerator> &p_generator);
 	void check_for_invalidation(const String &p_path);
 
-	void start();
-	void stop();
+	void start() const;
+	void stop() const;
 	bool is_threaded() const;
 
 	EditorResourcePreview();
-	~EditorResourcePreview();
+	~EditorResourcePreview() override override;
 };
 
 #endif // EDITOR_RESOURCE_PREVIEW_H

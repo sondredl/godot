@@ -29,6 +29,20 @@
 /**************************************************************************/
 
 #include "audio_stream_preview.h"
+#include "core/error/error_macros.h"
+#include "core/math/audio_frame.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/object_id.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/templates/vector.h"
+#include "core/variant/variant.h"
+#include "servers/audio/audio_stream.h"
+#include "servers/audio_server.h"
+#include <cstdint>
 
 /////////////////////
 
@@ -109,7 +123,7 @@ void AudioStreamPreviewGenerator::_update_emit(ObjectID p_id) {
 }
 
 void AudioStreamPreviewGenerator::_preview_thread(void *p_preview) {
-	Preview *preview = static_cast<Preview *>(p_preview);
+	auto *preview = static_cast<Preview *>(p_preview);
 
 	float muxbuff_chunk_s = 0.25;
 
@@ -169,7 +183,7 @@ void AudioStreamPreviewGenerator::_preview_thread(void *p_preview) {
 }
 
 Ref<AudioStreamPreview> AudioStreamPreviewGenerator::generate_preview(const Ref<AudioStream> &p_stream) {
-	ERR_FAIL_COND_V(p_stream.is_null(), Ref<AudioStreamPreview>());
+	(p_stream.is_null(), Ref<AudioStreamPreview>());
 
 	if (previews.has(p_stream->get_instance_id())) {
 		return previews[p_stream->get_instance_id()].preview;
@@ -208,7 +222,7 @@ Ref<AudioStreamPreview> AudioStreamPreviewGenerator::generate_preview(const Ref<
 
 	if (preview->playback.is_valid()) {
 		preview->thread = memnew(Thread);
-		preview->thread->set_name("AudioStreamPreviewGenerator");
+		Thread::set_name("AudioStreamPreviewGenerator");
 		preview->thread->start(_preview_thread, preview);
 	}
 

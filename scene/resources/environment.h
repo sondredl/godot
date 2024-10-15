@@ -171,7 +171,7 @@ private:
 	float glow_hdr_bleed_threshold = 1.0;
 	float glow_hdr_bleed_scale = 2.0;
 	float glow_hdr_luminance_cap = 12.0;
-	float glow_map_strength = 0.8f;
+	float glow_map_strength = 0.8F;
 	Ref<Texture> glow_map;
 	void _update_glow();
 
@@ -230,7 +230,7 @@ protected:
 #endif
 
 public:
-	virtual RID get_rid() const override;
+	RID get_rid() const override;
 
 	// Background
 	void set_background(BGMode p_bg);
@@ -443,7 +443,7 @@ public:
 	Ref<Texture> get_adjustment_color_correction() const;
 
 	Environment();
-	~Environment();
+	~Environment() override;
 };
 
 VARIANT_ENUM_CAST(Environment::BGMode)

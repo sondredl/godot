@@ -88,7 +88,7 @@ public:
 	bool ensure_extensions_loaded(const HashSet<String> &p_extensions);
 
 	GDExtensionManager();
-	~GDExtensionManager();
+	~GDExtensionManager() override;
 };
 
 VARIANT_ENUM_CAST(GDExtensionManager::LoadStatus)

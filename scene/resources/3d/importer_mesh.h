@@ -56,7 +56,7 @@ class ImporterMesh : public Resource {
 		Vector<BlendShape> blend_shape_data;
 		struct LOD {
 			Vector<int> indices;
-			float distance = 0.0f;
+			float distance = 0.0F;
 		};
 		Vector<LOD> lods;
 		Ref<Material> material;

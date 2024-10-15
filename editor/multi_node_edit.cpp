@@ -30,15 +30,23 @@
 
 #include "multi_node_edit.h"
 
-#include "core/math/math_fieldwise.h"
+#include "core/error/error_macros.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/undo_redo.h"
+#include "core/string/node_path.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/variant/variant.h"
 #include "editor/editor_node.h"
 #include "editor/editor_undo_redo_manager.h"
+#include "scene/main/node.h"
 
 bool MultiNodeEdit::_set(const StringName &p_name, const Variant &p_value) {
 	return _set_impl(p_name, p_value, "");
 }
 
-bool MultiNodeEdit::_set_impl(const StringName &p_name, const Variant &p_value, const String &p_field) {
+bool MultiNodeEdit::_set_impl(const StringName &p_name, const Variant &p_value, const String &p_field) const {
 	Node *es = EditorNode::get_singleton()->get_edited_scene();
 	if (!es) {
 		return false;
@@ -120,7 +128,7 @@ bool MultiNodeEdit::_get(const StringName &p_name, Variant &r_ret) const {
 	return false;
 }
 
-void MultiNodeEdit::_get_property_list(List<PropertyInfo> *p_list) const {
+void MultiNodeEdit::_get_property_list(const List<PropertyInfo> *p_list) const {
 	HashMap<String, PLData> usage;
 
 	Node *es = EditorNode::get_singleton()->get_edited_scene();
@@ -228,7 +236,7 @@ int MultiNodeEdit::get_node_count() const {
 }
 
 NodePath MultiNodeEdit::get_node(int p_index) const {
-	ERR_FAIL_INDEX_V(p_index, get_node_count(), NodePath());
+	(p_index, get_node_count(), NodePath());
 	return nodes[p_index];
 }
 

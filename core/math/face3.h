@@ -77,7 +77,7 @@ struct [[nodiscard]] Face3 {
 
 	bool intersects_aabb(const AABB &p_aabb) const;
 	_FORCE_INLINE_ bool intersects_aabb2(const AABB &p_aabb) const;
-	operator String() const;
+	explicit operator String() const;
 
 	inline Face3() {}
 	inline Face3(const Vector3 &p_v1, const Vector3 &p_v2, const Vector3 &p_v3) {
@@ -90,7 +90,7 @@ struct [[nodiscard]] Face3 {
 bool Face3::intersects_aabb2(const AABB &p_aabb) const {
 	Vector3 perp = (vertex[0] - vertex[2]).cross(vertex[0] - vertex[1]);
 
-	Vector3 half_extents = p_aabb.size * 0.5f;
+	Vector3 half_extents = p_aabb.size * 0.5F;
 	Vector3 ofs = p_aabb.position + half_extents;
 
 	Vector3 sup = Vector3(
@@ -135,7 +135,8 @@ bool Face3::intersects_aabb2(const AABB &p_aabb) const {
 	};
 
 	for (int i = 0; i < 12; i++) {
-		Vector3 from, to;
+		Vector3 from;
+		Vector3 to;
 		switch (i) {
 			case 0: {
 				from = Vector3(p_aabb.position.x + p_aabb.size.x, p_aabb.position.y, p_aabb.position.z);
@@ -196,12 +197,10 @@ bool Face3::intersects_aabb2(const AABB &p_aabb) const {
 		}
 
 		Vector3 e1 = from - to;
-		for (int j = 0; j < 3; j++) {
-			Vector3 e2 = edge_norms[j];
-
+		for (auto e2 : edge_norms) {
 			Vector3 axis = vec3_cross(e1, e2);
 
-			if (axis.length_squared() < 0.0001f) {
+			if (axis.length_squared() < 0.0001F) {
 				continue; // coplanar
 			}
 			//axis.normalize();
@@ -217,9 +216,10 @@ bool Face3::intersects_aabb2(const AABB &p_aabb) const {
 				SWAP(maxB, minB);
 			}
 
-			real_t minT = 1e20, maxT = -1e20;
-			for (int k = 0; k < 3; k++) {
-				real_t vert_d = axis.dot(vertex[k]);
+			real_t minT = 1e20;
+			real_t maxT = -1e20;
+			for (auto k : vertex) {
+				real_t vert_d = axis.dot(k);
 
 				if (vert_d > maxT) {
 					maxT = vert_d;

@@ -198,16 +198,16 @@ public:
 			if (p_dict.has("arguments")) {
 				arguments = p_dict["arguments"];
 			}
-			for (int i = 0; i < arguments.size(); i++) {
-				doc.arguments.push_back(ArgumentDoc::from_dict(arguments[i]));
+			for (const auto &argument : arguments) {
+				doc.arguments.push_back(ArgumentDoc::from_dict(argument));
 			}
 
 			Array errors_returned;
 			if (p_dict.has("errors_returned")) {
 				errors_returned = p_dict["errors_returned"];
 			}
-			for (int i = 0; i < errors_returned.size(); i++) {
-				doc.errors_returned.push_back(errors_returned[i]);
+			for (auto &i : errors_returned) {
+				doc.errors_returned.push_back(i);
 			}
 
 			if (p_dict.has("keywords")) {
@@ -750,48 +750,48 @@ public:
 			if (p_dict.has("tutorials")) {
 				tutorials = p_dict["tutorials"];
 			}
-			for (int i = 0; i < tutorials.size(); i++) {
-				doc.tutorials.push_back(TutorialDoc::from_dict(tutorials[i]));
+			for (const auto &tutorial : tutorials) {
+				doc.tutorials.push_back(TutorialDoc::from_dict(tutorial));
 			}
 
 			Array constructors;
 			if (p_dict.has("constructors")) {
 				constructors = p_dict["constructors"];
 			}
-			for (int i = 0; i < constructors.size(); i++) {
-				doc.constructors.push_back(MethodDoc::from_dict(constructors[i]));
+			for (const auto &constructor : constructors) {
+				doc.constructors.push_back(MethodDoc::from_dict(constructor));
 			}
 
 			Array methods;
 			if (p_dict.has("methods")) {
 				methods = p_dict["methods"];
 			}
-			for (int i = 0; i < methods.size(); i++) {
-				doc.methods.push_back(MethodDoc::from_dict(methods[i]));
+			for (const auto &method : methods) {
+				doc.methods.push_back(MethodDoc::from_dict(method));
 			}
 
 			Array operators;
 			if (p_dict.has("operators")) {
 				operators = p_dict["operators"];
 			}
-			for (int i = 0; i < operators.size(); i++) {
-				doc.operators.push_back(MethodDoc::from_dict(operators[i]));
+			for (const auto &i : operators) {
+				doc.operators.push_back(MethodDoc::from_dict(i));
 			}
 
 			Array signals;
 			if (p_dict.has("signals")) {
 				signals = p_dict["signals"];
 			}
-			for (int i = 0; i < signals.size(); i++) {
-				doc.signals.push_back(MethodDoc::from_dict(signals[i]));
+			for (const auto &signal : signals) {
+				doc.signals.push_back(MethodDoc::from_dict(signal));
 			}
 
 			Array constants;
 			if (p_dict.has("constants")) {
 				constants = p_dict["constants"];
 			}
-			for (int i = 0; i < constants.size(); i++) {
-				doc.constants.push_back(ConstantDoc::from_dict(constants[i]));
+			for (const auto &constant : constants) {
+				doc.constants.push_back(ConstantDoc::from_dict(constant));
 			}
 
 			Dictionary enums;
@@ -806,24 +806,24 @@ public:
 			if (p_dict.has("properties")) {
 				properties = p_dict["properties"];
 			}
-			for (int i = 0; i < properties.size(); i++) {
-				doc.properties.push_back(PropertyDoc::from_dict(properties[i]));
+			for (const auto &propertie : properties) {
+				doc.properties.push_back(PropertyDoc::from_dict(propertie));
 			}
 
 			Array annotations;
 			if (p_dict.has("annotations")) {
 				annotations = p_dict["annotations"];
 			}
-			for (int i = 0; i < annotations.size(); i++) {
-				doc.annotations.push_back(MethodDoc::from_dict(annotations[i]));
+			for (const auto &annotation : annotations) {
+				doc.annotations.push_back(MethodDoc::from_dict(annotation));
 			}
 
 			Array theme_properties;
 			if (p_dict.has("theme_properties")) {
 				theme_properties = p_dict["theme_properties"];
 			}
-			for (int i = 0; i < theme_properties.size(); i++) {
-				doc.theme_properties.push_back(ThemeItemDoc::from_dict(theme_properties[i]));
+			for (const auto &theme_propertie : theme_properties) {
+				doc.theme_properties.push_back(ThemeItemDoc::from_dict(theme_propertie));
 			}
 
 #ifndef DISABLE_DEPRECATED

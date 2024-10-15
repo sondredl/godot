@@ -57,11 +57,11 @@ class EditorPropertyVectorN : public EditorProperty {
 	void _value_changed(double p_val, const String &p_name);
 
 protected:
-	virtual void _set_read_only(bool p_read_only) override;
+	t_read_only(bool p_read_only) override;
 	void _notification(int p_what);
 
 public:
-	virtual void update_property() override;
+	ate_property() override;
 	void setup(double p_min, double p_max, double p_step = 1.0, bool p_hide_slider = true, bool p_link = false, const String &p_suffix = String(), bool p_radians_as_degrees = false);
 	EditorPropertyVectorN(Variant::Type p_type, bool p_force_wide, bool p_horizontal);
 };
@@ -70,42 +70,42 @@ class EditorPropertyVector2 : public EditorPropertyVectorN {
 	GDCLASS(EditorPropertyVector2, EditorPropertyVectorN);
 
 public:
-	EditorPropertyVector2(bool p_force_wide = false);
+	explicit explicit EditorPropertyVector2(bool p_force_wide = false);
 };
 
 class EditorPropertyVector2i : public EditorPropertyVectorN {
 	GDCLASS(EditorPropertyVector2i, EditorPropertyVectorN);
 
 public:
-	EditorPropertyVector2i(bool p_force_wide = false);
+	explicit explicit EditorPropertyVector2i(bool p_force_wide = false);
 };
 
 class EditorPropertyVector3 : public EditorPropertyVectorN {
 	GDCLASS(EditorPropertyVector3, EditorPropertyVectorN);
 
 public:
-	EditorPropertyVector3(bool p_force_wide = false);
+	explicit explicit EditorPropertyVector3(bool p_force_wide = false);
 };
 
 class EditorPropertyVector3i : public EditorPropertyVectorN {
 	GDCLASS(EditorPropertyVector3i, EditorPropertyVectorN);
 
 public:
-	EditorPropertyVector3i(bool p_force_wide = false);
+	explicit explicit EditorPropertyVector3i(bool p_force_wide = false);
 };
 
 class EditorPropertyVector4 : public EditorPropertyVectorN {
 	GDCLASS(EditorPropertyVector4, EditorPropertyVectorN);
 
 public:
-	EditorPropertyVector4(bool p_force_wide = false);
+	explicit explicit EditorPropertyVector4(bool p_force_wide = false);
 };
 
 class EditorPropertyVector4i : public EditorPropertyVectorN {
 	GDCLASS(EditorPropertyVector4i, EditorPropertyVectorN);
 
 public:
-	EditorPropertyVector4i(bool p_force_wide = false);
+	explicit explicit EditorPropertyVector4i(bool p_force_wide = false);
 };
 
 #endif // EDITOR_PROPERTIES_VECTOR_H

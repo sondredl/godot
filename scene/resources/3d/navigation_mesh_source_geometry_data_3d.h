@@ -107,7 +107,7 @@ public:
 	AABB get_bounds();
 
 	NavigationMeshSourceGeometryData3D() {}
-	~NavigationMeshSourceGeometryData3D() { clear(); }
+	~NavigationMeshSourceGeometryData3D() override { clear(); }
 };
 
 #endif // NAVIGATION_MESH_SOURCE_GEOMETRY_DATA_3D_H

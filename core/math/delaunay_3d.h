@@ -143,8 +143,8 @@ class Delaunay3D {
 		R128 determinant = row1_x * (row2_y * row3_z - row3_y * row2_z) - row2_x * (row1_y * row3_z - row3_y * row1_z) + row3_x * (row1_y * row2_z - row2_y * row1_z);
 
 		// Compute the volume of the tetrahedron, and precompute a scalar quantity for reuse in the formula.
-		R128 volume = determinant / R128(6.f);
-		R128 i12volume = R128(1.f) / (volume * R128(12.f));
+		R128 volume = determinant / R128(6.F);
+		R128 i12volume = R128(1.F) / (volume * R128(12.F));
 
 		R128 center_x = v0_x + i12volume * ((row2_y * row3_z - row3_y * row2_z) * sq_lenght1 - (row1_y * row3_z - row3_y * row1_z) * sq_lenght2 + (row1_y * row2_z - row2_y * row1_z) * sq_lenght3);
 		R128 center_y = v0_y + i12volume * (-(row2_x * row3_z - row3_x * row2_z) * sq_lenght1 + (row1_x * row3_z - row3_x * row1_z) * sq_lenght2 - (row1_x * row2_z - row2_x * row1_z) * sq_lenght3);
@@ -202,7 +202,7 @@ public:
 
 	static Vector<OutputSimplex> tetrahedralize(const Vector<Vector3> &p_points) {
 		uint32_t point_count = p_points.size();
-		Vector3 *points = (Vector3 *)memalloc(sizeof(Vector3) * (point_count + 4));
+		auto *points = (Vector3 *)memalloc(sizeof(Vector3) * (point_count + 4));
 		const Vector3 *src_points = p_points.ptr();
 		Vector3 proportions;
 
@@ -293,8 +293,8 @@ public:
 						{ 1, 2, 3 },
 					};
 
-					for (uint32_t k = 0; k < 4; k++) {
-						Triangle t = Triangle(simplex->points[triangle_order[k][0]], simplex->points[triangle_order[k][1]], simplex->points[triangle_order[k][2]]);
+					for (auto k : triangle_order) {
+						Triangle t = Triangle(simplex->points[k[0]], simplex->points[k[1]], simplex->points[k[2]]);
 						uint32_t *p = triangles_inserted.lookup_ptr(t);
 						if (p) {
 							// This Delaunay implementation uses the Bowyer-Watson algorithm.

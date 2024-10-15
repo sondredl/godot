@@ -30,9 +30,19 @@
 
 #include "node_dock.h"
 
+#include "core/math/math_defs.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
 #include "editor/connections_dialog.h"
-#include "editor/editor_node.h"
+#include "editor/groups_editor.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/gui/box_container.h"
+#include "scene/main/node.h"
+#include "scene/scene_string_names.h"
+#include "servers/text_server.h"
 
 void NodeDock::show_groups() {
 	groups_button->set_pressed(true);

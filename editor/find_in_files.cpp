@@ -31,8 +31,27 @@
 #include "find_in_files.h"
 
 #include "core/config/project_settings.h"
+#include "core/error/error_list.h"
+#include "core/error/error_macros.h"
 #include "core/io/dir_access.h"
+#include "core/io/file_access.h"
+#include "core/math/color.h"
+#include "core/math/math_defs.h"
+#include "core/math/rect2.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
 #include "core/os/os.h"
+#include "core/string/char_utils.h"
+#include "core/string/print_string.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
+#include "core/variant/variant.h"
 #include "editor/editor_node.h"
 #include "editor/editor_string_names.h"
 #include "editor/themes/editor_scale.h"
@@ -45,6 +64,9 @@
 #include "scene/gui/line_edit.h"
 #include "scene/gui/progress_bar.h"
 #include "scene/gui/tree.h"
+#include "scene/resources/font.h"
+#include "scene/scene_string_names.h"
+#include <cstdint>
 
 const char *FindInFiles::SIGNAL_RESULT_FOUND = "result_found";
 
@@ -469,7 +491,7 @@ HashSet<String> FindInFilesDialog::get_filter() const {
 	// Could check the _filters_preferences but it might not have been generated yet.
 	HashSet<String> filters;
 	for (int i = 0; i < _filters_container->get_child_count(); ++i) {
-		CheckBox *cb = static_cast<CheckBox *>(_filters_container->get_child(i));
+		auto *cb = static_cast<CheckBox *>(_filters_container->get_child(i));
 		if (cb->is_pressed()) {
 			filters.insert(cb->get_text());
 		}
@@ -486,9 +508,9 @@ void FindInFilesDialog::_notification(int p_what) {
 					_filters_container->get_child(i)->queue_free();
 				}
 				Array exts = GLOBAL_GET("editor/script/search_in_file_extensions");
-				for (int i = 0; i < exts.size(); ++i) {
+				for (auto &ext : exts) {
 					CheckBox *cb = memnew(CheckBox);
-					cb->set_text(exts[i]);
+					cb->set_text(ext);
 					if (!_filters_preferences.has(exts[i])) {
 						_filters_preferences[exts[i]] = true;
 					}
@@ -506,7 +528,7 @@ void FindInFilesDialog::_on_folder_button_pressed() {
 
 void FindInFilesDialog::custom_action(const String &p_action) {
 	for (int i = 0; i < _filters_container->get_child_count(); ++i) {
-		CheckBox *cb = static_cast<CheckBox *>(_filters_container->get_child(i));
+		auto *cb = static_cast<CheckBox *>(_filters_container->get_child(i));
 		_filters_preferences[cb->get_text()] = cb->is_pressed();
 	}
 
@@ -520,8 +542,8 @@ void FindInFilesDialog::custom_action(const String &p_action) {
 }
 
 void FindInFilesDialog::_on_search_text_modified(const String &text) {
-	ERR_FAIL_NULL(_find_button);
-	ERR_FAIL_NULL(_replace_button);
+	(_find_button);
+	(_replace_button);
 
 	_find_button->set_disabled(get_search_text().is_empty());
 	_replace_button->set_disabled(get_search_text().is_empty());
@@ -945,7 +967,7 @@ void FindInFilesPanel::apply_replaces_in_file(const String &fpath, const Vector<
 	// however that means either losing changes or losing replaces.
 
 	Ref<FileAccess> f = FileAccess::open(fpath, FileAccess::READ);
-	ERR_FAIL_COND_MSG(f.is_null(), "Cannot open file from path '" + fpath + "'.");
+	(f.is_null(), "Cannot open file from path '" + fpath + "'.");
 
 	String buffer;
 	int current_line = 1;
@@ -991,7 +1013,7 @@ void FindInFilesPanel::apply_replaces_in_file(const String &fpath, const Vector<
 	// Now the modified contents are in the buffer, rewrite the file with our changes.
 
 	Error err = f->reopen(fpath, FileAccess::WRITE);
-	ERR_FAIL_COND_MSG(err != OK, "Cannot create file in path '" + fpath + "'.");
+	(err != OK, "Cannot create file in path '" + fpath + "'.");
 
 	f->store_string(buffer);
 }

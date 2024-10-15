@@ -62,23 +62,23 @@ class ResourceFormatImporter : public ResourceFormatLoader {
 
 public:
 	static ResourceFormatImporter *get_singleton() { return singleton; }
-	virtual Ref<Resource> load(const String &p_path, const String &p_original_path = "", Error *r_error = nullptr, bool p_use_sub_threads = false, float *r_progress = nullptr, CacheMode p_cache_mode = CACHE_MODE_REUSE) override;
+	Ref<Resource> load(const String &p_path, const String &p_original_path = "", Error *r_error = nullptr, bool p_use_sub_threads = false, float *r_progress = nullptr, CacheMode p_cache_mode = CACHE_MODE_REUSE) override;
 	Ref<Resource> load_internal(const String &p_path, Error *r_error, bool p_use_sub_threads, float *r_progress, CacheMode p_cache_mode, bool p_silence_errors);
-	virtual void get_recognized_extensions(List<String> *p_extensions) const override;
-	virtual void get_recognized_extensions_for_type(const String &p_type, List<String> *p_extensions) const override;
-	virtual bool recognize_path(const String &p_path, const String &p_for_type = String()) const override;
-	virtual bool handles_type(const String &p_type) const override;
-	virtual String get_resource_type(const String &p_path) const override;
-	virtual ResourceUID::ID get_resource_uid(const String &p_path) const override;
+	void get_recognized_extensions(List<String> *p_extensions) const override;
+	void get_recognized_extensions_for_type(const String &p_type, List<String> *p_extensions) const override;
+	bool recognize_path(const String &p_path, const String &p_for_type = String()) const override;
+	bool handles_type(const String &p_type) const override;
+	String get_resource_type(const String &p_path) const override;
+	ResourceUID::ID get_resource_uid(const String &p_path) const override;
 	virtual Variant get_resource_metadata(const String &p_path) const;
-	virtual bool is_import_valid(const String &p_path) const override;
-	virtual void get_dependencies(const String &p_path, List<String> *p_dependencies, bool p_add_types = false) override;
-	virtual bool is_imported(const String &p_path) const override { return recognize_path(p_path); }
-	virtual String get_import_group_file(const String &p_path) const override;
-	virtual void get_classes_used(const String &p_path, HashSet<StringName> *r_classes) override;
-	virtual bool exists(const String &p_path) const override;
+	bool is_import_valid(const String &p_path) const override;
+	void get_dependencies(const String &p_path, List<String> *p_dependencies, bool p_add_types = false) override;
+	bool is_imported(const String &p_path) const override { return recognize_path(p_path); }
+	String get_import_group_file(const String &p_path) const override;
+	void get_classes_used(const String &p_path, HashSet<StringName> *r_classes) override;
+	bool exists(const String &p_path) const override;
 
-	virtual int get_import_order(const String &p_path) const override;
+	int get_import_order(const String &p_path) const override;
 
 	Error get_import_order_threads_and_importer(const String &p_path, int &r_order, bool &r_can_threads, String &r_importer) const;
 
@@ -140,12 +140,12 @@ public:
 	virtual void show_advanced_options(const String &p_path) {}
 
 	virtual int get_preset_count() const { return 0; }
-	virtual String get_preset_name(int p_idx) const { return String(); }
+	virtual String get_preset_name(int p_idx) const { return {}; }
 
 	virtual void get_import_options(const String &p_path, List<ImportOption> *r_options, int p_preset = 0) const = 0;
 	virtual bool get_option_visibility(const String &p_path, const String &p_option, const HashMap<StringName, Variant> &p_options) const = 0;
 	virtual void handle_compatibility_options(HashMap<StringName, Variant> &p_import_params) const {}
-	virtual String get_option_group_file() const { return String(); }
+	virtual String get_option_group_file() const { return {}; }
 
 	virtual Error import(const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files = nullptr, Variant *r_metadata = nullptr) = 0;
 	virtual bool can_import_threaded() const { return true; }
@@ -154,7 +154,7 @@ public:
 
 	virtual Error import_group_file(const String &p_group_file, const HashMap<String, HashMap<StringName, Variant>> &p_source_file_options, const HashMap<String, String> &p_base_paths) { return ERR_UNAVAILABLE; }
 	virtual bool are_import_settings_valid(const String &p_path, const Dictionary &p_meta) const { return true; }
-	virtual String get_import_settings_string() const { return String(); }
+	virtual String get_import_settings_string() const { return {}; }
 };
 
 VARIANT_ENUM_CAST(ResourceImporter::ImportOrder);
@@ -163,7 +163,7 @@ class ResourceFormatImporterSaver : public ResourceFormatSaver {
 	GDCLASS(ResourceFormatImporterSaver, ResourceFormatSaver)
 
 public:
-	virtual Error set_uid(const String &p_path, ResourceUID::ID p_uid) override;
+	Error set_uid(const String &p_path, ResourceUID::ID p_uid) override;
 };
 
 #endif // RESOURCE_IMPORTER_H

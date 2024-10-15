@@ -40,20 +40,20 @@ class ProceduralSkyMaterial : public Material {
 private:
 	Color sky_top_color;
 	Color sky_horizon_color;
-	float sky_curve = 0.0f;
-	float sky_energy_multiplier = 0.0f;
+	float sky_curve = 0.0F;
+	float sky_energy_multiplier = 0.0F;
 	Ref<Texture2D> sky_cover;
 	Color sky_cover_modulate;
 
 	Color ground_bottom_color;
 	Color ground_horizon_color;
-	float ground_curve = 0.0f;
-	float ground_energy_multiplier = 0.0f;
+	float ground_curve = 0.0F;
+	float ground_energy_multiplier = 0.0F;
 
-	float sun_angle_max = 0.0f;
-	float sun_curve = 0.0f;
+	float sun_angle_max = 0.0F;
+	float sun_curve = 0.0F;
 	bool use_debanding = true;
-	float global_energy_multiplier = 1.0f;
+	float global_energy_multiplier = 1.0F;
 
 	static Mutex shader_mutex;
 	static RID shader_cache[2];
@@ -107,14 +107,14 @@ public:
 	void set_energy_multiplier(float p_multiplier);
 	float get_energy_multiplier() const;
 
-	virtual Shader::Mode get_shader_mode() const override;
-	virtual RID get_shader_rid() const override;
-	virtual RID get_rid() const override;
+	Shader::Mode get_shader_mode() const override;
+	RID get_shader_rid() const override;
+	RID get_rid() const override;
 
 	static void cleanup_shader();
 
 	ProceduralSkyMaterial();
-	~ProceduralSkyMaterial();
+	~ProceduralSkyMaterial() override;
 };
 
 //////////////////////////////////////////////////////
@@ -125,7 +125,7 @@ class PanoramaSkyMaterial : public Material {
 
 private:
 	Ref<Texture2D> panorama;
-	float energy_multiplier = 1.0f;
+	float energy_multiplier = 1.0F;
 
 	static Mutex shader_mutex;
 	static RID shader_cache[2];
@@ -147,14 +147,14 @@ public:
 	void set_energy_multiplier(float p_multiplier);
 	float get_energy_multiplier() const;
 
-	virtual Shader::Mode get_shader_mode() const override;
-	virtual RID get_shader_rid() const override;
-	virtual RID get_rid() const override;
+	Shader::Mode get_shader_mode() const override;
+	RID get_shader_rid() const override;
+	RID get_rid() const override;
 
 	static void cleanup_shader();
 
 	PanoramaSkyMaterial();
-	~PanoramaSkyMaterial();
+	~PanoramaSkyMaterial() override;
 };
 
 //////////////////////////////////////////////////////
@@ -167,15 +167,15 @@ private:
 	static Mutex shader_mutex;
 	static RID shader_cache[2];
 
-	float rayleigh = 0.0f;
+	float rayleigh = 0.0F;
 	Color rayleigh_color;
-	float mie = 0.0f;
-	float mie_eccentricity = 0.0f;
+	float mie = 0.0F;
+	float mie_eccentricity = 0.0F;
 	Color mie_color;
-	float turbidity = 0.0f;
-	float sun_disk_scale = 0.0f;
+	float turbidity = 0.0F;
+	float sun_disk_scale = 0.0F;
 	Color ground_color;
-	float energy_multiplier = 1.0f;
+	float energy_multiplier = 1.0F;
 	bool use_debanding = true;
 	Ref<Texture2D> night_sky;
 	static void _update_shader();
@@ -222,14 +222,14 @@ public:
 	void set_night_sky(const Ref<Texture2D> &p_night_sky);
 	Ref<Texture2D> get_night_sky() const;
 
-	virtual Shader::Mode get_shader_mode() const override;
-	virtual RID get_shader_rid() const override;
+	Shader::Mode get_shader_mode() const override;
+	RID get_shader_rid() const override;
 
 	static void cleanup_shader();
-	virtual RID get_rid() const override;
+	RID get_rid() const override;
 
 	PhysicalSkyMaterial();
-	~PhysicalSkyMaterial();
+	~PhysicalSkyMaterial() override;
 };
 
 #endif // SKY_MATERIAL_H

@@ -45,7 +45,7 @@ class VisualInstance3D : public Node3D {
 protected:
 	void _update_visibility();
 
-	virtual void _physics_interpolated_changed() override;
+	void _physics_interpolated_changed() override;
 	void set_instance_use_identity_transform(bool p_enable);
 
 	void _notification(int p_what);
@@ -80,7 +80,7 @@ public:
 	bool is_sorting_use_aabb_center() const;
 
 	VisualInstance3D();
-	~VisualInstance3D();
+	~VisualInstance3D() override;
 };
 
 class GeometryInstance3D : public VisualInstance3D {
@@ -125,7 +125,7 @@ private:
 	float visibility_range_end_margin = 0.0;
 	VisibilityRangeFadeMode visibility_range_fade_mode = VISIBILITY_RANGE_FADE_DISABLED;
 
-	float transparency = 0.0f;
+	float transparency = 0.0F;
 
 	float lod_bias = 1.0;
 
@@ -199,7 +199,7 @@ public:
 
 	PackedStringArray get_configuration_warnings() const override;
 	GeometryInstance3D();
-	virtual ~GeometryInstance3D();
+	~GeometryInstance3D() override;
 };
 
 VARIANT_ENUM_CAST(GeometryInstance3D::ShadowCastingSetting);

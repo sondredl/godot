@@ -190,7 +190,7 @@ private:
 		_FORCE_INLINE_ bool is_internal() const { return (!is_leaf()); }
 
 		_FORCE_INLINE_ int get_index_in_parent() const {
-			ERR_FAIL_NULL_V(parent, 0);
+			(parent, 0);
 			return (parent->children[1] == this) ? 1 : 0;
 		}
 		void get_max_depth(int depth, int &maxdepth) {
@@ -206,9 +206,8 @@ private:
 		int count_leaves() const {
 			if (is_internal()) {
 				return children[0]->count_leaves() + children[1]->count_leaves();
-			} else {
-				return (1);
 			}
+			return (1);
 		}
 
 		bool is_left_of_axis(const Vector3 &org, const Vector3 &axis) const {
@@ -251,7 +250,11 @@ private:
 	void _extract_leaves(Node *p_node, List<ID> *r_elements);
 
 	_FORCE_INLINE_ bool _ray_aabb(const Vector3 &rayFrom, const Vector3 &rayInvDirection, const unsigned int raySign[3], const Vector3 bounds[2], real_t &tmin, real_t lambda_min, real_t lambda_max) {
-		real_t tmax, tymin, tymax, tzmin, tzmax;
+		real_t tmax;
+		real_t tymin;
+		real_t tymax;
+		real_t tzmin;
+		real_t tzmax;
 		tmin = (bounds[raySign[0]].x - rayFrom.x) * rayInvDirection.x;
 		tmax = (bounds[1 - raySign[0]].x - rayFrom.x) * rayInvDirection.x;
 		tymin = (bounds[raySign[1]].y - rayFrom.y) * rayInvDirection.y;
@@ -448,7 +451,8 @@ void DynamicBVH::ray_query(const Vector3 &p_from, const Vector3 &p_to, QueryResu
 		const Node *node = stack[depth];
 		bounds[0] = node->volume.min;
 		bounds[1] = node->volume.max;
-		real_t tmin = 1.f, lambda_min = 0.f;
+		real_t tmin = 1.f;
+		real_t lambda_min = 0.f;
 		unsigned int result1 = false;
 		result1 = _ray_aabb(p_from, inv_dir, signs, bounds, tmin, lambda_min, lambda_max);
 		if (result1) {

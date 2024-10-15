@@ -41,6 +41,8 @@
 #include <float.h>
 #include <math.h>
 
+#include <cmath>
+
 class Math {
 	static RandomPCG default_rand;
 
@@ -62,7 +64,7 @@ public:
 	static _ALWAYS_INLINE_ double sinh(double p_x) { return ::sinh(p_x); }
 	static _ALWAYS_INLINE_ float sinh(float p_x) { return ::sinhf(p_x); }
 
-	static _ALWAYS_INLINE_ float sinc(float p_x) { return p_x == 0 ? 1 : ::sin(p_x) / p_x; }
+	static _ALWAYS_INLINE_ float sinc(float p_x) { return p_x == 0 ? 1 : std::sin(p_x) / p_x; }
 	static _ALWAYS_INLINE_ double sinc(double p_x) { return p_x == 0 ? 1 : ::sin(p_x) / p_x; }
 
 	static _ALWAYS_INLINE_ float sincn(float p_x) { return sinc((float)Math_PI * p_x); }
@@ -237,7 +239,7 @@ public:
 		if (((value < 0) && (p_y > 0)) || ((value > 0) && (p_y < 0))) {
 			value += p_y;
 		}
-		value += 0.0f;
+		value += 0.0F;
 		return value;
 	}
 	static _ALWAYS_INLINE_ float fposmodp(float p_x, float p_y) {
@@ -245,7 +247,7 @@ public:
 		if (value < 0) {
 			value += p_y;
 		}
-		value += 0.0f;
+		value += 0.0F;
 		return value;
 	}
 	static _ALWAYS_INLINE_ double fposmodp(double p_x, double p_y) {
@@ -258,7 +260,7 @@ public:
 	}
 
 	static _ALWAYS_INLINE_ int64_t posmod(int64_t p_x, int64_t p_y) {
-		ERR_FAIL_COND_V_MSG(p_y == 0, 0, "Division by zero in posmod is undefined. Returning 0 as fallback.");
+		(p_y == 0, 0, "Division by zero in posmod is undefined. Returning 0 as fallback.");
 		int64_t value = p_x % p_y;
 		if (((value < 0) && (p_y > 0)) || ((value > 0) && (p_y < 0))) {
 			value += p_y;
@@ -283,11 +285,11 @@ public:
 						(-p_pre + 3.0 * p_from - 3.0 * p_to + p_post) * (p_weight * p_weight * p_weight));
 	}
 	static _ALWAYS_INLINE_ float cubic_interpolate(float p_from, float p_to, float p_pre, float p_post, float p_weight) {
-		return 0.5f *
-				((p_from * 2.0f) +
+		return 0.5F *
+				((p_from * 2.0F) +
 						(-p_pre + p_to) * p_weight +
-						(2.0f * p_pre - 5.0f * p_from + 4.0f * p_to - p_post) * (p_weight * p_weight) +
-						(-p_pre + 3.0f * p_from - 3.0f * p_to + p_post) * (p_weight * p_weight * p_weight));
+						(2.0F * p_pre - 5.0F * p_from + 4.0F * p_to - p_post) * (p_weight * p_weight) +
+						(-p_pre + 3.0F * p_from - 3.0F * p_to + p_post) * (p_weight * p_weight * p_weight));
 	}
 
 	static _ALWAYS_INLINE_ double cubic_interpolate_angle(double p_from, double p_to, double p_pre, double p_post, double p_weight) {
@@ -309,13 +311,13 @@ public:
 		float from_rot = fmod(p_from, (float)Math_TAU);
 
 		float pre_diff = fmod(p_pre - from_rot, (float)Math_TAU);
-		float pre_rot = from_rot + fmod(2.0f * pre_diff, (float)Math_TAU) - pre_diff;
+		float pre_rot = from_rot + fmod(2.0F * pre_diff, (float)Math_TAU) - pre_diff;
 
 		float to_diff = fmod(p_to - from_rot, (float)Math_TAU);
-		float to_rot = from_rot + fmod(2.0f * to_diff, (float)Math_TAU) - to_diff;
+		float to_rot = from_rot + fmod(2.0F * to_diff, (float)Math_TAU) - to_diff;
 
 		float post_diff = fmod(p_post - to_rot, (float)Math_TAU);
-		float post_rot = to_rot + fmod(2.0f * post_diff, (float)Math_TAU) - post_diff;
+		float post_rot = to_rot + fmod(2.0F * post_diff, (float)Math_TAU) - post_diff;
 
 		return cubic_interpolate(from_rot, to_rot, pre_rot, post_rot, p_weight);
 	}
@@ -335,13 +337,13 @@ public:
 	static _ALWAYS_INLINE_ float cubic_interpolate_in_time(float p_from, float p_to, float p_pre, float p_post, float p_weight,
 			float p_to_t, float p_pre_t, float p_post_t) {
 		/* Barry-Goldman method */
-		float t = Math::lerp(0.0f, p_to_t, p_weight);
-		float a1 = Math::lerp(p_pre, p_from, p_pre_t == 0 ? 0.0f : (t - p_pre_t) / -p_pre_t);
-		float a2 = Math::lerp(p_from, p_to, p_to_t == 0 ? 0.5f : t / p_to_t);
-		float a3 = Math::lerp(p_to, p_post, p_post_t - p_to_t == 0 ? 1.0f : (t - p_to_t) / (p_post_t - p_to_t));
-		float b1 = Math::lerp(a1, a2, p_to_t - p_pre_t == 0 ? 0.0f : (t - p_pre_t) / (p_to_t - p_pre_t));
-		float b2 = Math::lerp(a2, a3, p_post_t == 0 ? 1.0f : t / p_post_t);
-		return Math::lerp(b1, b2, p_to_t == 0 ? 0.5f : t / p_to_t);
+		float t = Math::lerp(0.0F, p_to_t, p_weight);
+		float a1 = Math::lerp(p_pre, p_from, p_pre_t == 0 ? 0.0F : (t - p_pre_t) / -p_pre_t);
+		float a2 = Math::lerp(p_from, p_to, p_to_t == 0 ? 0.5F : t / p_to_t);
+		float a3 = Math::lerp(p_to, p_post, p_post_t - p_to_t == 0 ? 1.0F : (t - p_to_t) / (p_post_t - p_to_t));
+		float b1 = Math::lerp(a1, a2, p_to_t - p_pre_t == 0 ? 0.0F : (t - p_pre_t) / (p_to_t - p_pre_t));
+		float b2 = Math::lerp(a2, a3, p_post_t == 0 ? 1.0F : t / p_post_t);
+		return Math::lerp(b1, b2, p_to_t == 0 ? 0.5F : t / p_to_t);
 	}
 
 	static _ALWAYS_INLINE_ double cubic_interpolate_angle_in_time(double p_from, double p_to, double p_pre, double p_post, double p_weight,
@@ -365,13 +367,13 @@ public:
 		float from_rot = fmod(p_from, (float)Math_TAU);
 
 		float pre_diff = fmod(p_pre - from_rot, (float)Math_TAU);
-		float pre_rot = from_rot + fmod(2.0f * pre_diff, (float)Math_TAU) - pre_diff;
+		float pre_rot = from_rot + fmod(2.0F * pre_diff, (float)Math_TAU) - pre_diff;
 
 		float to_diff = fmod(p_to - from_rot, (float)Math_TAU);
-		float to_rot = from_rot + fmod(2.0f * to_diff, (float)Math_TAU) - to_diff;
+		float to_rot = from_rot + fmod(2.0F * to_diff, (float)Math_TAU) - to_diff;
 
 		float post_diff = fmod(p_post - to_rot, (float)Math_TAU);
-		float post_rot = to_rot + fmod(2.0f * post_diff, (float)Math_TAU) - post_diff;
+		float post_rot = to_rot + fmod(2.0F * post_diff, (float)Math_TAU) - post_diff;
 
 		return cubic_interpolate_in_time(from_rot, to_rot, pre_rot, post_rot, p_weight, p_to_t, p_pre_t, p_post_t);
 	}
@@ -389,13 +391,13 @@ public:
 
 	static _ALWAYS_INLINE_ float bezier_interpolate(float p_start, float p_control_1, float p_control_2, float p_end, float p_t) {
 		/* Formula from Wikipedia article on Bezier curves. */
-		float omt = (1.0f - p_t);
+		float omt = (1.0F - p_t);
 		float omt2 = omt * omt;
 		float omt3 = omt2 * omt;
 		float t2 = p_t * p_t;
 		float t3 = t2 * p_t;
 
-		return p_start * omt3 + p_control_1 * omt2 * p_t * 3.0f + p_control_2 * omt * t2 * 3.0f + p_end * t3;
+		return p_start * omt3 + p_control_1 * omt2 * p_t * 3.0F + p_control_2 * omt * t2 * 3.0F + p_end * t3;
 	}
 
 	static _ALWAYS_INLINE_ double bezier_derivative(double p_start, double p_control_1, double p_control_2, double p_end, double p_t) {
@@ -410,11 +412,11 @@ public:
 
 	static _ALWAYS_INLINE_ float bezier_derivative(float p_start, float p_control_1, float p_control_2, float p_end, float p_t) {
 		/* Formula from Wikipedia article on Bezier curves. */
-		float omt = (1.0f - p_t);
+		float omt = (1.0F - p_t);
 		float omt2 = omt * omt;
 		float t2 = p_t * p_t;
 
-		float d = (p_control_1 - p_start) * 3.0f * omt2 + (p_control_2 - p_control_1) * 6.0f * omt * p_t + (p_end - p_control_2) * 3.0f * t2;
+		float d = (p_control_1 - p_start) * 3.0F * omt2 + (p_control_2 - p_control_1) * 6.0F * omt * p_t + (p_end - p_control_2) * 3.0F * t2;
 		return d;
 	}
 
@@ -424,7 +426,7 @@ public:
 	}
 	static _ALWAYS_INLINE_ float angle_difference(float p_from, float p_to) {
 		float difference = fmod(p_to - p_from, (float)Math_TAU);
-		return fmod(2.0f * difference, (float)Math_TAU) - difference;
+		return fmod(2.0F * difference, (float)Math_TAU) - difference;
 	}
 
 	static _ALWAYS_INLINE_ double lerp_angle(double p_from, double p_to, double p_weight) {
@@ -452,9 +454,8 @@ public:
 		if (is_equal_approx(p_from, p_to)) {
 			if (likely(p_from <= p_to)) {
 				return p_s <= p_from ? 0.0 : 1.0;
-			} else {
-				return p_s <= p_to ? 1.0 : 0.0;
 			}
+			return p_s <= p_to ? 1.0 : 0.0;
 		}
 		double s = CLAMP((p_s - p_from) / (p_to - p_from), 0.0, 1.0);
 		return s * s * (3.0 - 2.0 * s);
@@ -462,13 +463,12 @@ public:
 	static _ALWAYS_INLINE_ float smoothstep(float p_from, float p_to, float p_s) {
 		if (is_equal_approx(p_from, p_to)) {
 			if (likely(p_from <= p_to)) {
-				return p_s <= p_from ? 0.0f : 1.0f;
-			} else {
-				return p_s <= p_to ? 1.0f : 0.0f;
+				return p_s <= p_from ? 0.0F : 1.0F;
 			}
+			return p_s <= p_to ? 1.0f : 0.0f;
 		}
-		float s = CLAMP((p_s - p_from) / (p_to - p_from), 0.0f, 1.0f);
-		return s * s * (3.0f - 2.0f * s);
+		float s = CLAMP((p_s - p_from) / (p_to - p_from), 0.0F, 1.0F);
+		return s * s * (3.0F - 2.0F * s);
 	}
 
 	static _ALWAYS_INLINE_ double move_toward(double p_from, double p_to, double p_delta) {
@@ -488,7 +488,7 @@ public:
 		float difference = Math::angle_difference(p_from, p_to);
 		float abs_difference = Math::abs(difference);
 		// When `p_delta < 0` move no further than to PI radians away from `p_to` (as PI is the max possible angle distance).
-		return p_from + CLAMP(p_delta, abs_difference - (float)Math_PI, abs_difference) * (difference >= 0.0f ? 1.0f : -1.0f);
+		return p_from + CLAMP(p_delta, abs_difference - (float)Math_PI, abs_difference) * (difference >= 0.0F ? 1.0F : -1.0F);
 	}
 
 	static _ALWAYS_INLINE_ double linear_to_db(double p_linear) {
@@ -542,7 +542,7 @@ public:
 		return value - floor(value);
 	}
 	static _ALWAYS_INLINE_ float pingpong(float value, float length) {
-		return (length != 0.0f) ? abs(fract((value - length) / (length * 2.0f)) * length * 2.0f - length) : 0.0f;
+		return (length != 0.0F) ? abs(fract((value - length) / (length * 2.0F)) * length * 2.0F - length) : 0.0F;
 	}
 	static _ALWAYS_INLINE_ double pingpong(double value, double length) {
 		return (length != 0.0) ? abs(fract((value - length) / (length * 2.0)) * length * 2.0 - length) : 0.0;
@@ -627,7 +627,7 @@ public:
 		} u;
 
 		u.f = g;
-		u.i &= 2147483647u;
+		u.i &= 2147483647U;
 		return u.f;
 	}
 
@@ -637,7 +637,7 @@ public:
 			uint64_t i;
 		} u;
 		u.d = g;
-		u.i &= (uint64_t)9223372036854775807ll;
+		u.i &= (uint64_t)9223372036854775807LL;
 		return u.d;
 	}
 
@@ -648,33 +648,36 @@ public:
 	}
 
 	static _ALWAYS_INLINE_ uint32_t halfbits_to_floatbits(uint16_t h) {
-		uint16_t h_exp, h_sig;
-		uint32_t f_sgn, f_exp, f_sig;
+		uint16_t h_exp;
+		uint16_t h_sig;
+		uint32_t f_sgn;
+		uint32_t f_exp;
+		uint32_t f_sig;
 
-		h_exp = (h & 0x7c00u);
-		f_sgn = ((uint32_t)h & 0x8000u) << 16;
+		h_exp = (h & 0x7c00U);
+		f_sgn = ((uint32_t)h & 0x8000U) << 16;
 		switch (h_exp) {
-			case 0x0000u: /* 0 or subnormal */
-				h_sig = (h & 0x03ffu);
+			case 0x0000U: /* 0 or subnormal */
+				h_sig = (h & 0x03ffU);
 				/* Signed zero */
 				if (h_sig == 0) {
 					return f_sgn;
 				}
 				/* Subnormal */
 				h_sig <<= 1;
-				while ((h_sig & 0x0400u) == 0) {
+				while ((h_sig & 0x0400U) == 0) {
 					h_sig <<= 1;
 					h_exp++;
 				}
 				f_exp = ((uint32_t)(127 - 15 - h_exp)) << 23;
-				f_sig = ((uint32_t)(h_sig & 0x03ffu)) << 13;
+				f_sig = ((uint32_t)(h_sig & 0x03ffU)) << 13;
 				return f_sgn + f_exp + f_sig;
-			case 0x7c00u: /* inf or NaN */
+			case 0x7c00U: /* inf or NaN */
 				/* All-ones exponent and a copy of the significand */
-				return f_sgn + 0x7f800000u + (((uint32_t)(h & 0x03ffu)) << 13);
+				return f_sgn + 0x7f800000U + (((uint32_t)(h & 0x03ffU)) << 13);
 			default: /* normalized */
 				/* Just need to adjust the exponent and shift */
-				return f_sgn + (((uint32_t)(h & 0x7fffu) + 0x1c000u) << 13);
+				return f_sgn + (((uint32_t)(h & 0x7fffU) + 0x1c000U) << 13);
 		}
 	}
 

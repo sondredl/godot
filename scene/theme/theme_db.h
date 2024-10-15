@@ -180,7 +180,7 @@ public:
 
 	static ThemeDB *get_singleton();
 	ThemeDB();
-	~ThemeDB();
+	~ThemeDB() override;
 };
 
 class ThemeContext : public Object {

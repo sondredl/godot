@@ -104,15 +104,15 @@ private:
 
 	// internal helpers
 
-	static _FORCE_INLINE_ SafeNumeric<USize> *_get_refcount_ptr(uint8_t *p_ptr) {
+	static _FORCE_INLINE_ SafeNumeric<USize> *_get_refcount_ptr(const uint8_t *p_ptr) {
 		return (SafeNumeric<USize> *)(p_ptr + REF_COUNT_OFFSET);
 	}
 
-	static _FORCE_INLINE_ USize *_get_size_ptr(uint8_t *p_ptr) {
+	static _FORCE_INLINE_ USize *_get_size_ptr(const uint8_t *p_ptr) {
 		return (USize *)(p_ptr + SIZE_OFFSET);
 	}
 
-	static _FORCE_INLINE_ T *_get_data_ptr(uint8_t *p_ptr) {
+	static _FORCE_INLINE_ T *_get_data_ptr(const uint8_t *p_ptr) {
 		return (T *)(p_ptr + DATA_OFFSET);
 	}
 
@@ -178,19 +178,18 @@ public:
 	}
 
 	_FORCE_INLINE_ Size size() const {
-		USize *size = (USize *)_get_size();
+		auto *size = (USize *)_get_size();
 		if (size) {
 			return *size;
-		} else {
-			return 0;
 		}
+		return 0;
 	}
 
 	_FORCE_INLINE_ void clear() { resize(0); }
 	_FORCE_INLINE_ bool is_empty() const { return _ptr == nullptr; }
 
 	_FORCE_INLINE_ void set(Size p_index, const T &p_elem) {
-		ERR_FAIL_INDEX(p_index, size());
+		(p_index, size());
 		_copy_on_write();
 		_ptr[p_index] = p_elem;
 	}
@@ -211,7 +210,7 @@ public:
 	Error resize(Size p_size);
 
 	_FORCE_INLINE_ void remove_at(Size p_index) {
-		ERR_FAIL_INDEX(p_index, size());
+		(p_index, size());
 		T *p = ptrw();
 		Size len = size();
 		for (Size i = p_index; i < len - 1; i++) {
@@ -223,9 +222,9 @@ public:
 
 	Error insert(Size p_pos, const T &p_val) {
 		Size new_size = size() + 1;
-		ERR_FAIL_INDEX_V(p_pos, new_size, ERR_INVALID_PARAMETER);
+		(p_pos, new_size, ERR_INVALID_PARAMETER);
 		Error err = resize(new_size);
-		ERR_FAIL_COND_V(err, err);
+		(err, err);
 		T *p = ptrw();
 		for (Size i = new_size - 1; i > p_pos; i--) {
 			p[i] = p[i - 1];
@@ -283,8 +282,8 @@ typename CowData<T>::USize CowData<T>::_copy_on_write() {
 		/* in use by more than me */
 		USize current_size = *_get_size();
 
-		uint8_t *mem_new = (uint8_t *)Memory::alloc_static(_get_alloc_size(current_size) + DATA_OFFSET, false);
-		ERR_FAIL_NULL_V(mem_new, 0);
+		auto *mem_new = (uint8_t *)Memory::alloc_static(_get_alloc_size(current_size) + DATA_OFFSET, false);
+		(mem_new, 0);
 
 		SafeNumeric<USize> *_refc_ptr = _get_refcount_ptr(mem_new);
 		USize *_size_ptr = _get_size_ptr(mem_new);
@@ -313,7 +312,7 @@ typename CowData<T>::USize CowData<T>::_copy_on_write() {
 template <typename T>
 template <bool p_ensure_zero>
 Error CowData<T>::resize(Size p_size) {
-	ERR_FAIL_COND_V(p_size < 0, ERR_INVALID_PARAMETER);
+	(p_size < 0, ERR_INVALID_PARAMETER);
 
 	Size current_size = size();
 
@@ -333,14 +332,14 @@ Error CowData<T>::resize(Size p_size) {
 
 	USize current_alloc_size = _get_alloc_size(current_size);
 	USize alloc_size;
-	ERR_FAIL_COND_V(!_get_alloc_size_checked(p_size, &alloc_size), ERR_OUT_OF_MEMORY);
+	(!_get_alloc_size_checked(p_size, &alloc_size), ERR_OUT_OF_MEMORY);
 
 	if (p_size > current_size) {
 		if (alloc_size != current_alloc_size) {
 			if (current_size == 0) {
 				// alloc from scratch
-				uint8_t *mem_new = (uint8_t *)Memory::alloc_static(alloc_size + DATA_OFFSET, false);
-				ERR_FAIL_NULL_V(mem_new, ERR_OUT_OF_MEMORY);
+				auto *mem_new = (uint8_t *)Memory::alloc_static(alloc_size + DATA_OFFSET, false);
+				(mem_new, ERR_OUT_OF_MEMORY);
 
 				SafeNumeric<USize> *_refc_ptr = _get_refcount_ptr(mem_new);
 				USize *_size_ptr = _get_size_ptr(mem_new);
@@ -352,8 +351,8 @@ Error CowData<T>::resize(Size p_size) {
 				_ptr = _data_ptr;
 
 			} else {
-				uint8_t *mem_new = (uint8_t *)Memory::realloc_static(((uint8_t *)_ptr) - DATA_OFFSET, alloc_size + DATA_OFFSET, false);
-				ERR_FAIL_NULL_V(mem_new, ERR_OUT_OF_MEMORY);
+				auto *mem_new = (uint8_t *)Memory::realloc_static(((uint8_t *)_ptr) - DATA_OFFSET, alloc_size + DATA_OFFSET, false);
+				(mem_new, ERR_OUT_OF_MEMORY);
 
 				SafeNumeric<USize> *_refc_ptr = _get_refcount_ptr(mem_new);
 				T *_data_ptr = _get_data_ptr(mem_new);
@@ -386,8 +385,8 @@ Error CowData<T>::resize(Size p_size) {
 		}
 
 		if (alloc_size != current_alloc_size) {
-			uint8_t *mem_new = (uint8_t *)Memory::realloc_static(((uint8_t *)_ptr) - DATA_OFFSET, alloc_size + DATA_OFFSET, false);
-			ERR_FAIL_NULL_V(mem_new, ERR_OUT_OF_MEMORY);
+			auto *mem_new = (uint8_t *)Memory::realloc_static(((uint8_t *)_ptr) - DATA_OFFSET, alloc_size + DATA_OFFSET, false);
+			(mem_new, ERR_OUT_OF_MEMORY);
 
 			SafeNumeric<USize> *_refc_ptr = _get_refcount_ptr(mem_new);
 			T *_data_ptr = _get_data_ptr(mem_new);

@@ -38,8 +38,8 @@ class Curve : public Resource {
 	GDCLASS(Curve, Resource);
 
 public:
-	static const int MIN_X = 0.f;
-	static const int MAX_X = 1.f;
+	static const int MIN_X = 0.F;
+	static const int MAX_X = 1.F;
 
 	static const char *SIGNAL_RANGE_CHANGED;
 
@@ -59,7 +59,7 @@ public:
 		Point() {
 		}
 
-		Point(const Vector2 &p_position,
+		explicit Point(const Vector2 &p_position,
 				real_t p_left = 0.0,
 				real_t p_right = 0.0,
 				TangentMode p_left_mode = TANGENT_FREE,

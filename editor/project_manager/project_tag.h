@@ -50,7 +50,7 @@ public:
 	void connect_button_to(const Callable &p_callable);
 	const String get_tag() const;
 
-	ProjectTag(const String &p_text, bool p_display_close = false);
+	explicit ProjectTag(const String &p_text, bool p_display_close = false);
 };
 
 #endif // PROJECT_TAG_H

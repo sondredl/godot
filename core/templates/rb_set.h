@@ -100,7 +100,7 @@ public:
 		_FORCE_INLINE_ bool operator!=(const Iterator &b) const { return E != b.E; }
 
 		explicit operator bool() const { return E != nullptr; }
-		Iterator(Element *p_E) { E = p_E; }
+		explicit Iterator(Element *p_E) { E = p_E; }
 		Iterator() {}
 		Iterator(const Iterator &p_it) { E = p_it.E; }
 
@@ -125,7 +125,7 @@ public:
 		_FORCE_INLINE_ bool operator==(const ConstIterator &b) const { return E == b.E; }
 		_FORCE_INLINE_ bool operator!=(const ConstIterator &b) const { return E != b.E; }
 
-		_FORCE_INLINE_ ConstIterator(const Element *p_E) { E = p_E; }
+		_FORCE_INLINE_ explicit ConstIterator(const Element *p_E) { E = p_E; }
 		_FORCE_INLINE_ ConstIterator() {}
 		_FORCE_INLINE_ ConstIterator(const ConstIterator &p_it) { E = p_it.E; }
 
@@ -203,7 +203,7 @@ private:
 	_Data _data;
 
 	inline void _set_color(Element *p_node, int p_color) {
-		ERR_FAIL_COND(p_node == _data._nil && p_color == RED);
+		(p_node == _data._nil && p_color == RED);
 		p_node->color = p_color;
 	}
 
@@ -250,16 +250,15 @@ private:
 				node = node->left;
 			}
 			return node;
-		} else {
-			while (node == node->parent->right) {
-				node = node->parent;
-			}
-
-			if (node->parent == _data._root) {
-				return nullptr; // No successor, as p_node = last node
-			}
-			return node->parent;
 		}
+		while (node == node->parent->right) {
+			node = node->parent;
+		}
+
+		if (node->parent == _data._root) {
+			return nullptr; // No successor, as p_node = last node
+		}
+		return node->parent;
 	}
 
 	inline Element *_predecessor(Element *p_node) const {
@@ -271,16 +270,15 @@ private:
 				node = node->right;
 			}
 			return node;
-		} else {
-			while (node == node->parent->left) {
-				node = node->parent;
-			}
-
-			if (node == _data._root) {
-				return nullptr; // No predecessor, as p_node = first node.
-			}
-			return node->parent;
 		}
+		while (node == node->parent->left) {
+			node = node->parent;
+		}
+
+		if (node == _data._root) {
+			return nullptr; // No predecessor, as p_node = first node.
+		}
+		return node->parent;
 	}
 
 	Element *_find(const T &p_value) const {
@@ -443,11 +441,11 @@ private:
 				if (parent->color == RED) {
 					_set_color(parent, BLACK);
 					break;
-				} else { // loop: haven't found any red nodes yet
-					node = parent;
-					parent = node->parent;
-					sibling = (node == parent->left) ? parent->right : parent->left;
-				}
+				} // loop: haven't found any red nodes yet
+				node = parent;
+				parent = node->parent;
+				sibling = (node == parent->left) ? parent->right : parent->left;
+
 			} else {
 				if (sibling == parent->right) {
 					if (sibling->right->color == BLACK) {
@@ -461,24 +459,23 @@ private:
 					_set_color(sibling->right, BLACK);
 					_rotate_left(parent);
 					break;
-				} else {
-					if (sibling->left->color == BLACK) {
-						_set_color(sibling->right, BLACK);
-						_set_color(sibling, RED);
-						_rotate_left(sibling);
-						sibling = sibling->parent;
-					}
-
-					_set_color(sibling, parent->color);
-					_set_color(parent, BLACK);
-					_set_color(sibling->left, BLACK);
-					_rotate_right(parent);
-					break;
 				}
+				if (sibling->left->color == BLACK) {
+					_set_color(sibling->right, BLACK);
+					_set_color(sibling, RED);
+					_rotate_left(sibling);
+					sibling = sibling->parent;
+				}
+
+				_set_color(sibling, parent->color);
+				_set_color(parent, BLACK);
+				_set_color(sibling->left, BLACK);
+				_rotate_right(parent);
+				break;
 			}
 		}
 
-		ERR_FAIL_COND(_data._nil->color != BLACK);
+		(_data._nil->color != BLACK);
 	}
 
 	void _erase(Element *p_node) {
@@ -502,7 +499,7 @@ private:
 		}
 
 		if (rp != p_node) {
-			ERR_FAIL_COND(rp == _data._nil);
+			(rp == _data._nil);
 
 			rp->left = p_node->left;
 			rp->right = p_node->right;
@@ -531,7 +528,7 @@ private:
 
 		memdelete_allocator<Element, A>(p_node);
 		_data.size_cache--;
-		ERR_FAIL_COND(_data._nil->color == RED);
+		(_data._nil->color == RED);
 	}
 
 	void _calculate_depth(Element *p_element, int &max_d, int d) const {

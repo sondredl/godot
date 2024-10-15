@@ -123,13 +123,13 @@ struct [[nodiscard]] Projection {
 	Vector4 xform(const Vector4 &p_vec4) const;
 	Vector4 xform_inv(const Vector4 &p_vec4) const;
 
-	operator String() const;
+	explicit operator String() const;
 
 	void scale_translate_to_fit(const AABB &p_aabb);
 	void add_jitter_offset(const Vector2 &p_offset);
 	void make_scale(const Vector3 &p_scale);
 	int get_pixels_per_meter(int p_for_pixel_width) const;
-	operator Transform3D() const;
+	explicit operator Transform3D() const;
 
 	void flip_y();
 
@@ -152,7 +152,7 @@ struct [[nodiscard]] Projection {
 
 	Projection();
 	Projection(const Vector4 &p_x, const Vector4 &p_y, const Vector4 &p_z, const Vector4 &p_w);
-	Projection(const Transform3D &p_transform);
+	explicit Projection(const Transform3D &p_transform);
 	~Projection();
 };
 

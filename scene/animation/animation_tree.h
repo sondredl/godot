@@ -34,7 +34,9 @@
 #include "animation_mixer.h"
 #include "scene/resources/animation.h"
 
-#define HUGE_LENGTH 31540000 // 31540000 seconds mean 1 year... is it too long? It must be longer than any Animation length and Transition xfade time to prevent time inversion for AnimationNodeStateMachine.
+enum {
+	HUGE_LENGTH = 31540000 // 31540000 seconds mean 1 year... is it too long? It must be longer than any Animation length and Transition xfade time to prevent time inversion for AnimationNodeStateMachine.
+};
 
 class AnimationNodeBlendTree;
 class AnimationNodeStartState;
@@ -77,7 +79,7 @@ public:
 		bool will_end = false; // For breaking loop, it is true when just looped.
 		bool is_infinity = false; // For unpredictable state machine's end.
 
-		bool is_looping() {
+		bool is_looping() const {
 			return loop_mode != Animation::LOOP_NONE;
 		}
 		double get_remain(bool p_break_loop = false) {
@@ -194,7 +196,7 @@ public:
 	virtual bool has_filter() const;
 
 #ifdef TOOLS_ENABLED
-	virtual void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
+	void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
 #endif
 
 	virtual Ref<AnimationNode> get_child_by_name(const StringName &p_name) const;
@@ -278,15 +280,15 @@ private:
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
 	void _get_property_list(List<PropertyInfo> *p_list) const;
-	virtual void _validate_property(PropertyInfo &p_property) const override;
+	void _validate_property(PropertyInfo &p_property) const override;
 	void _notification(int p_what);
 
 	static void _bind_methods();
 
-	virtual void _set_active(bool p_active) override;
+	void _set_active(bool p_active) override;
 
 	// Make animation instances.
-	virtual bool _blend_pre_process(double p_delta, int p_track_count, const HashMap<NodePath, int> &p_track_map) override;
+	bool _blend_pre_process(double p_delta, int p_track_count, const HashMap<NodePath, int> &p_track_map) override;
 
 #ifndef DISABLE_DEPRECATED
 	void _set_process_callback_bind_compat_80813(AnimationProcessCallback p_mode);
@@ -317,7 +319,7 @@ public:
 	uint64_t get_last_process_pass() const;
 
 	AnimationTree();
-	~AnimationTree();
+	~AnimationTree() override;
 };
 
 #ifndef DISABLE_DEPRECATED

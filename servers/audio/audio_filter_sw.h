@@ -36,11 +36,11 @@
 class AudioFilterSW {
 public:
 	struct Coeffs {
-		float a1 = 0.0f;
-		float a2 = 0.0f;
-		float b0 = 0.0f;
-		float b1 = 0.0f;
-		float b2 = 0.0f;
+		float a1 = 0.0F;
+		float a2 = 0.0F;
+		float b0 = 0.0F;
+		float b1 = 0.0F;
+		float b2 = 0.0F;
 	};
 
 	enum Mode {
@@ -58,10 +58,10 @@ public:
 		AudioFilterSW *filter = nullptr;
 		Coeffs coeffs;
 		// History.
-		float ha1 = 0.0f;
-		float ha2 = 0.0f;
-		float hb1 = 0.0f;
-		float hb2 = 0.0f;
+		float ha1 = 0.0F;
+		float ha2 = 0.0F;
+		float hb1 = 0.0F;
+		float hb2 = 0.0F;
 		Coeffs incr_coeffs;
 
 	public:
@@ -75,10 +75,10 @@ public:
 	};
 
 private:
-	float cutoff = 5000.0f;
-	float resonance = 0.5f;
-	float gain = 1.0f;
-	float sampling_rate = 44100.0f;
+	float cutoff = 5000.0F;
+	float resonance = 0.5F;
+	float gain = 1.0F;
+	float sampling_rate = 44100.0F;
 	int stages = 1;
 	Mode mode = LOWPASS;
 

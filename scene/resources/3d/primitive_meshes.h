@@ -82,21 +82,21 @@ protected:
 	void _on_settings_changed();
 
 public:
-	virtual int get_surface_count() const override;
-	virtual int surface_get_array_len(int p_idx) const override;
-	virtual int surface_get_array_index_len(int p_idx) const override;
-	virtual Array surface_get_arrays(int p_surface) const override;
-	virtual TypedArray<Array> surface_get_blend_shape_arrays(int p_surface) const override;
-	virtual Dictionary surface_get_lods(int p_surface) const override;
-	virtual BitField<ArrayFormat> surface_get_format(int p_idx) const override;
-	virtual Mesh::PrimitiveType surface_get_primitive_type(int p_idx) const override;
-	virtual void surface_set_material(int p_idx, const Ref<Material> &p_material) override;
-	virtual Ref<Material> surface_get_material(int p_idx) const override;
-	virtual int get_blend_shape_count() const override;
-	virtual StringName get_blend_shape_name(int p_index) const override;
-	virtual void set_blend_shape_name(int p_index, const StringName &p_name) override;
-	virtual AABB get_aabb() const override;
-	virtual RID get_rid() const override;
+	int get_surface_count() const override;
+	int surface_get_array_len(int p_idx) const override;
+	int surface_get_array_index_len(int p_idx) const override;
+	Array surface_get_arrays(int p_surface) const override;
+	TypedArray<Array> surface_get_blend_shape_arrays(int p_surface) const override;
+	Dictionary surface_get_lods(int p_surface) const override;
+	BitField<ArrayFormat> surface_get_format(int p_idx) const override;
+	Mesh::PrimitiveType surface_get_primitive_type(int p_idx) const override;
+	void surface_set_material(int p_idx, const Ref<Material> &p_material) override;
+	Ref<Material> surface_get_material(int p_idx) const override;
+	int get_blend_shape_count() const override;
+	StringName get_blend_shape_name(int p_index) const override;
+	void set_blend_shape_name(int p_index, const StringName &p_name) override;
+	AABB get_aabb() const override;
+	RID get_rid() const override;
 
 	void set_material(const Ref<Material> &p_material);
 	Ref<Material> get_material() const;
@@ -118,7 +118,7 @@ public:
 	void request_update();
 
 	PrimitiveMesh();
-	~PrimitiveMesh();
+	~PrimitiveMesh() override;
 };
 
 /**
@@ -135,9 +135,9 @@ private:
 
 protected:
 	static void _bind_methods();
-	virtual void _create_mesh_array(Array &p_arr) const override;
+	void _create_mesh_array(Array &p_arr) const override;
 
-	virtual void _update_lightmap_size() override;
+	void _update_lightmap_size() override;
 
 public:
 	static void create_mesh_array(Array &p_arr, float radius, float height, int radial_segments = 64, int rings = 8, bool p_add_uv2 = false, const float p_uv2_padding = 1.0);
@@ -171,9 +171,9 @@ private:
 
 protected:
 	static void _bind_methods();
-	virtual void _create_mesh_array(Array &p_arr) const override;
+	void _create_mesh_array(Array &p_arr) const override;
 
-	virtual void _update_lightmap_size() override;
+	void _update_lightmap_size() override;
 
 public:
 	static void create_mesh_array(Array &p_arr, Vector3 size, int subdivide_w = 0, int subdivide_h = 0, int subdivide_d = 0, bool p_add_uv2 = false, const float p_uv2_padding = 1.0);
@@ -211,9 +211,9 @@ private:
 
 protected:
 	static void _bind_methods();
-	virtual void _create_mesh_array(Array &p_arr) const override;
+	void _create_mesh_array(Array &p_arr) const override;
 
-	virtual void _update_lightmap_size() override;
+	void _update_lightmap_size() override;
 
 public:
 	static void create_mesh_array(Array &p_arr, float top_radius, float bottom_radius, float height, int radial_segments = 64, int rings = 4, bool cap_top = true, bool cap_bottom = true, bool p_add_uv2 = false, const float p_uv2_padding = 1.0);
@@ -264,9 +264,9 @@ private:
 
 protected:
 	static void _bind_methods();
-	virtual void _create_mesh_array(Array &p_arr) const override;
+	void _create_mesh_array(Array &p_arr) const override;
 
-	virtual void _update_lightmap_size() override;
+	void _update_lightmap_size() override;
 
 public:
 	void set_size(const Size2 &p_size);
@@ -317,9 +317,9 @@ private:
 
 protected:
 	static void _bind_methods();
-	virtual void _create_mesh_array(Array &p_arr) const override;
+	void _create_mesh_array(Array &p_arr) const override;
 
-	virtual void _update_lightmap_size() override;
+	void _update_lightmap_size() override;
 
 public:
 	void set_left_to_right(const float p_left_to_right);
@@ -355,9 +355,9 @@ private:
 
 protected:
 	static void _bind_methods();
-	virtual void _create_mesh_array(Array &p_arr) const override;
+	void _create_mesh_array(Array &p_arr) const override;
 
-	virtual void _update_lightmap_size() override;
+	void _update_lightmap_size() override;
 
 public:
 	static void create_mesh_array(Array &p_arr, float radius, float height, int radial_segments = 64, int rings = 32, bool is_hemisphere = false, bool p_add_uv2 = false, const float p_uv2_padding = 1.0);
@@ -394,9 +394,9 @@ private:
 
 protected:
 	static void _bind_methods();
-	virtual void _create_mesh_array(Array &p_arr) const override;
+	void _create_mesh_array(Array &p_arr) const override;
 
-	virtual void _update_lightmap_size() override;
+	void _update_lightmap_size() override;
 
 public:
 	void set_inner_radius(const float p_inner_radius);
@@ -422,7 +422,7 @@ class PointMesh : public PrimitiveMesh {
 	GDCLASS(PointMesh, PrimitiveMesh)
 
 protected:
-	virtual void _create_mesh_array(Array &p_arr) const override;
+	void _create_mesh_array(Array &p_arr) const override;
 
 public:
 	PointMesh();
@@ -446,7 +446,7 @@ private:
 
 protected:
 	static void _bind_methods();
-	virtual void _create_mesh_array(Array &p_arr) const override;
+	void _create_mesh_array(Array &p_arr) const override;
 
 public:
 	void set_radius(const float p_radius);
@@ -473,8 +473,8 @@ public:
 	void set_curve(const Ref<Curve> &p_curve);
 	Ref<Curve> get_curve() const;
 
-	virtual int get_builtin_bind_pose_count() const override;
-	virtual Transform3D get_builtin_bind_pose(int p_index) const override;
+	int get_builtin_bind_pose_count() const override;
+	Transform3D get_builtin_bind_pose(int p_index) const override;
 
 	TubeTrailMesh();
 };
@@ -502,7 +502,7 @@ private:
 
 protected:
 	static void _bind_methods();
-	virtual void _create_mesh_array(Array &p_arr) const override;
+	void _create_mesh_array(Array &p_arr) const override;
 
 public:
 	void set_shape(Shape p_shape);
@@ -523,8 +523,8 @@ public:
 	void set_curve(const Ref<Curve> &p_curve);
 	Ref<Curve> get_curve() const;
 
-	virtual int get_builtin_bind_pose_count() const override;
-	virtual Transform3D get_builtin_bind_pose(int p_index) const override;
+	int get_builtin_bind_pose_count() const override;
+	Transform3D get_builtin_bind_pose(int p_index) const override;
 
 	RibbonTrailMesh();
 };
@@ -599,7 +599,7 @@ private:
 	TextServer::AutowrapMode autowrap_mode = TextServer::AUTOWRAP_OFF;
 	BitField<TextServer::JustificationFlag> jst_flags = TextServer::JUSTIFICATION_WORD_BOUND | TextServer::JUSTIFICATION_KASHIDA | TextServer::JUSTIFICATION_SKIP_LAST_LINE | TextServer::JUSTIFICATION_DO_NOT_SKIP_SINGLE_LINE;
 	float width = 500.0;
-	float line_spacing = 0.f;
+	float line_spacing = 0.F;
 	Point2 lbl_offset;
 
 	HorizontalAlignment horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER;
@@ -626,13 +626,13 @@ protected:
 	static void _bind_methods();
 	void _notification(int p_what);
 
-	virtual void _create_mesh_array(Array &p_arr) const override;
+	void _create_mesh_array(Array &p_arr) const override;
 
 public:
 	GDVIRTUAL2RC(TypedArray<Vector3i>, _structured_text_parser, Array, String)
 
 	TextMesh();
-	~TextMesh();
+	~TextMesh() override;
 
 	void set_horizontal_alignment(HorizontalAlignment p_alignment);
 	HorizontalAlignment get_horizontal_alignment() const;

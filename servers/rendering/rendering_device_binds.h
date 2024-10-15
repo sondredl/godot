@@ -231,12 +231,12 @@ class RDShaderSource : public RefCounted {
 
 public:
 	void set_stage_source(RD::ShaderStage p_stage, const String &p_source) {
-		ERR_FAIL_INDEX(p_stage, RD::SHADER_STAGE_MAX);
+		(p_stage, RD::SHADER_STAGE_MAX);
 		source[p_stage] = p_source;
 	}
 
 	String get_stage_source(RD::ShaderStage p_stage) const {
-		ERR_FAIL_INDEX_V(p_stage, RD::SHADER_STAGE_MAX, String());
+		(p_stage, RD::SHADER_STAGE_MAX, String());
 		return source[p_stage];
 	}
 
@@ -275,12 +275,12 @@ class RDShaderSPIRV : public Resource {
 
 public:
 	void set_stage_bytecode(RD::ShaderStage p_stage, const Vector<uint8_t> &p_bytecode) {
-		ERR_FAIL_INDEX(p_stage, RD::SHADER_STAGE_MAX);
+		(p_stage, RD::SHADER_STAGE_MAX);
 		bytecode[p_stage] = p_bytecode;
 	}
 
 	Vector<uint8_t> get_stage_bytecode(RD::ShaderStage p_stage) const {
-		ERR_FAIL_INDEX_V(p_stage, RD::SHADER_STAGE_MAX, Vector<uint8_t>());
+		(p_stage, RD::SHADER_STAGE_MAX, Vector<uint8_t>());
 		return bytecode[p_stage];
 	}
 
@@ -298,12 +298,12 @@ public:
 	}
 
 	void set_stage_compile_error(RD::ShaderStage p_stage, const String &p_compile_error) {
-		ERR_FAIL_INDEX(p_stage, RD::SHADER_STAGE_MAX);
+		(p_stage, RD::SHADER_STAGE_MAX);
 		compile_error[p_stage] = p_compile_error;
 	}
 
 	String get_stage_compile_error(RD::ShaderStage p_stage) const {
-		ERR_FAIL_INDEX_V(p_stage, RD::SHADER_STAGE_MAX, String());
+		(p_stage, RD::SHADER_STAGE_MAX, String());
 		return compile_error[p_stage];
 	}
 
@@ -338,18 +338,18 @@ class RDShaderFile : public Resource {
 
 public:
 	void set_bytecode(const Ref<RDShaderSPIRV> &p_bytecode, const StringName &p_version = StringName()) {
-		ERR_FAIL_COND(p_bytecode.is_null());
+		(p_bytecode.is_null());
 		versions[p_version] = p_bytecode;
 		emit_changed();
 	}
 
 	Ref<RDShaderSPIRV> get_spirv(const StringName &p_version = StringName()) const {
-		ERR_FAIL_COND_V(!versions.has(p_version), Ref<RDShaderSPIRV>());
+		(!versions.has(p_version), Ref<RDShaderSPIRV>());
 		return versions[p_version];
 	}
 
 	Vector<RD::ShaderStageSPIRVData> get_spirv_stages(const StringName &p_version = StringName()) const {
-		ERR_FAIL_COND_V(!versions.has(p_version), Vector<RD::ShaderStageSPIRVData>());
+		(!versions.has(p_version), Vector<RD::ShaderStageSPIRVData>());
 		return versions[p_version]->get_stages();
 	}
 
@@ -464,9 +464,9 @@ public:
 protected:
 	void _set_ids(const TypedArray<RID> &p_ids) {
 		base.clear_ids();
-		for (int i = 0; i < p_ids.size(); i++) {
-			RID id = p_ids[i];
-			ERR_FAIL_COND(id.is_null());
+		for (const auto &p_id : p_ids) {
+			RID id = p_id;
+			(id.is_null());
 			base.append_id(id);
 		}
 	}
@@ -490,7 +490,7 @@ class RDPipelineSpecializationConstant : public RefCounted {
 
 public:
 	void set_value(const Variant &p_value) {
-		ERR_FAIL_COND(p_value.get_type() != Variant::BOOL && p_value.get_type() != Variant::INT && p_value.get_type() != Variant::FLOAT);
+		(p_value.get_type() != Variant::BOOL && p_value.get_type() != Variant::INT && p_value.get_type() != Variant::FLOAT);
 		value = p_value;
 	}
 	Variant get_value() const { return value; }

@@ -71,15 +71,15 @@ public:
 	_ALWAYS_INLINE_ uint32_t size() const { return _size; }
 
 	VectorView() = default;
-	VectorView(const T &p_ptr) :
+	explicit VectorView(const T &p_ptr) :
 			// With this one you can pass a single element very conveniently!
 			_ptr(&p_ptr),
 			_size(1) {}
 	VectorView(const T *p_ptr, uint32_t p_size) :
 			_ptr(p_ptr), _size(p_size) {}
-	VectorView(const Vector<T> &p_lv) :
+	explicit VectorView(const Vector<T> &p_lv) :
 			_ptr(p_lv.ptr()), _size(p_lv.size()) {}
-	VectorView(const LocalVector<T> &p_lv) :
+	explicit VectorView(const LocalVector<T> &p_lv) :
 			_ptr(p_lv.ptr()), _size(p_lv.size()) {}
 };
 
@@ -122,7 +122,7 @@ public:
 	struct ID {
 		size_t id = 0;
 		_ALWAYS_INLINE_ ID() = default;
-		_ALWAYS_INLINE_ ID(size_t p_id) :
+		_ALWAYS_INLINE_ explicit ID(size_t p_id) :
 				id(p_id) {}
 	};
 
@@ -163,7 +163,6 @@ public:
 	DEFINE_ID(Fence);
 	DEFINE_ID(Semaphore);
 
-public:
 	/*****************/
 	/**** GENERIC ****/
 	/*****************/
@@ -790,7 +789,7 @@ public:
 
 	/******************/
 
-	virtual ~RenderingDeviceDriver();
+	~RenderingDeviceDriver() override;
 };
 
 using RDD = RenderingDeviceDriver;

@@ -144,7 +144,7 @@ private:
 	bool is_root = false; // for tree root
 	Tree *tree = nullptr; // tree (for reference)
 
-	TreeItem(Tree *p_tree);
+	explicit TreeItem(Tree *p_tree);
 
 	void _changed_notify(int p_cell);
 	void _changed_notify();
@@ -192,9 +192,11 @@ protected:
 	static void _bind_methods();
 
 	// Bind helpers
-	Dictionary _get_range_config(int p_column) {
+	Dictionary _get_range_config(int p_column) const {
 		Dictionary d;
-		double min = 0.0, max = 0.0, step = 0.0;
+		double min = 0.0;
+		double max = 0.0;
+		double step = 0.0;
 		get_range_config(p_column, min, max, step);
 		d["min"] = min;
 		d["max"] = max;
@@ -404,7 +406,7 @@ public:
 
 	void call_recursive(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error);
 
-	~TreeItem();
+	~TreeItem() override;
 };
 
 VARIANT_ENUM_CAST(TreeItem::TreeCellMode);
@@ -703,18 +705,18 @@ private:
 	Rect2 _get_content_rect() const; // Considering the background stylebox and scrollbars.
 
 protected:
-	virtual void _update_theme_item_cache() override;
+	void _update_theme_item_cache() override;
 
 	void _notification(int p_what);
 	static void _bind_methods();
 
 public:
-	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+	void gui_input(const Ref<InputEvent> &p_event) override;
 
-	virtual String get_tooltip(const Point2 &p_pos) const override;
+	String get_tooltip(const Point2 &p_pos) const override;
 
-	virtual bool can_drop_data(const Point2 &p_point, const Variant &p_data) const override;
-	virtual Variant get_drag_data(const Point2 &p_point) override;
+	bool can_drop_data(const Point2 &p_point, const Variant &p_data) const override;
+	Variant get_drag_data(const Point2 &p_point) override;
 	TreeItem *get_item_at_position(const Point2 &p_pos) const;
 	int get_column_at_position(const Point2 &p_pos) const;
 	int get_drop_section_at_position(const Point2 &p_pos) const;
@@ -821,7 +823,7 @@ public:
 	Size2 get_minimum_size() const override;
 
 	Tree();
-	~Tree();
+	~Tree() override;
 };
 
 VARIANT_ENUM_CAST(Tree::SelectMode);

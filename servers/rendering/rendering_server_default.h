@@ -192,7 +192,7 @@ public:
 	FUNCRIDTEX1(texture_proxy, RID)
 
 	// Called directly, not through the command queue.
-	virtual RID texture_create_from_native_handle(TextureType p_type, Image::Format p_format, uint64_t p_native_handle, int p_width, int p_height, int p_depth, int p_layers = 1, TextureLayeredType p_layered_type = TEXTURE_LAYERED_2D_ARRAY) override {
+	RID texture_create_from_native_handle(TextureType p_type, Image::Format p_format, uint64_t p_native_handle, int p_width, int p_height, int p_depth, int p_layers = 1, TextureLayeredType p_layered_type = TEXTURE_LAYERED_2D_ARRAY) override {
 		return RSG::texture_storage->texture_create_from_native_handle(p_type, p_format, p_native_handle, p_width, p_height, p_depth, p_layers, p_layered_type);
 	}
 
@@ -245,7 +245,7 @@ public:
 
 	FUNCRIDSPLIT(shader)
 
-	virtual RID shader_create_from_code(const String &p_code, const String &p_path_hint = String()) override {
+	RID shader_create_from_code(const String &p_code, const String &p_path_hint = String()) override {
 		RID shader = RSG::material_storage->shader_allocate();
 		bool using_server_thread = Thread::get_caller_id() == server_thread;
 		if (using_server_thread || RSG::rasterizer->can_create_resources_async()) {
@@ -281,7 +281,7 @@ public:
 
 	FUNCRIDSPLIT(material)
 
-	virtual RID material_create_from_shader(RID p_next_pass, int p_render_priority, RID p_shader) override {
+	RID material_create_from_shader(RID p_next_pass, int p_render_priority, RID p_shader) override {
 		RID material = RSG::material_storage->material_allocate();
 		bool using_server_thread = Thread::get_caller_id() == server_thread;
 		if (using_server_thread || RSG::rasterizer->can_create_resources_async()) {
@@ -320,7 +320,7 @@ public:
 #define ServerName RendererMeshStorage
 #define server_name RSG::mesh_storage
 
-	virtual RID mesh_create_from_surfaces(const Vector<SurfaceData> &p_surfaces, int p_blend_shape_count = 0) override {
+	RID mesh_create_from_surfaces(const Vector<SurfaceData> &p_surfaces, int p_blend_shape_count = 0) override {
 		RID mesh = RSG::mesh_storage->mesh_allocate();
 
 		bool using_server_thread = Thread::get_caller_id() == server_thread;
@@ -1096,18 +1096,18 @@ public:
 #undef MAIN_THREAD_SYNC_WARN
 #endif
 
-	virtual uint64_t get_rendering_info(RenderingInfo p_info) override;
-	virtual RenderingDevice::DeviceType get_video_adapter_type() const override;
+	uint64_t get_rendering_info(RenderingInfo p_info) override;
+	RenderingDevice::DeviceType get_video_adapter_type() const override;
 
-	virtual void set_frame_profiling_enabled(bool p_enable) override;
-	virtual Vector<FrameProfileArea> get_frame_profile() override;
-	virtual uint64_t get_frame_profile_frame() override;
+	void set_frame_profiling_enabled(bool p_enable) override;
+	Vector<FrameProfileArea> get_frame_profile() override;
+	uint64_t get_frame_profile_frame() override;
 
-	virtual RID get_test_cube() override;
+	RID get_test_cube() override;
 
 	/* FREE */
 
-	virtual void free(RID p_rid) override {
+	void free(RID p_rid) override {
 		if (Thread::get_caller_id() == server_thread) {
 			command_queue.flush_if_pending();
 			_free(p_rid);
@@ -1118,25 +1118,25 @@ public:
 
 	/* INTERPOLATION */
 
-	virtual void set_physics_interpolation_enabled(bool p_enabled) override;
+	void set_physics_interpolation_enabled(bool p_enabled) override;
 
 	/* EVENT QUEUING */
 
-	virtual void request_frame_drawn_callback(const Callable &p_callable) override;
+	void request_frame_drawn_callback(const Callable &p_callable) override;
 
-	virtual void draw(bool p_swap_buffers, double frame_step) override;
-	virtual void sync() override;
-	virtual bool has_changed() const override;
-	virtual void init() override;
-	virtual void finish() override;
-	virtual void tick() override;
-	virtual void pre_draw(bool p_will_draw) override;
+	void draw(bool p_swap_buffers, double frame_step) override;
+	void sync() override;
+	bool has_changed() const override;
+	void init() override;
+	void finish() override;
+	void tick() override;
+	void pre_draw(bool p_will_draw) override;
 
-	virtual bool is_on_render_thread() override {
+	bool is_on_render_thread() override {
 		return Thread::get_caller_id() == server_thread;
 	}
 
-	virtual void call_on_render_thread(const Callable &p_callable) override {
+	void call_on_render_thread(const Callable &p_callable) override {
 		if (Thread::get_caller_id() == server_thread) {
 			command_queue.flush_if_pending();
 			p_callable.call();
@@ -1147,28 +1147,28 @@ public:
 
 	/* TESTING */
 
-	virtual double get_frame_setup_time_cpu() const override;
+	double get_frame_setup_time_cpu() const override;
 
-	virtual Color get_default_clear_color() override;
-	virtual void set_default_clear_color(const Color &p_color) override;
+	Color get_default_clear_color() override;
+	void set_default_clear_color(const Color &p_color) override;
 
 #ifndef DISABLE_DEPRECATED
-	virtual bool has_feature(Features p_feature) const override;
+	bool has_feature(Features p_feature) const override;
 #endif
 
-	virtual bool has_os_feature(const String &p_feature) const override;
-	virtual void set_debug_generate_wireframes(bool p_generate) override;
+	bool has_os_feature(const String &p_feature) const override;
+	void set_debug_generate_wireframes(bool p_generate) override;
 
-	virtual bool is_low_end() const override;
+	bool is_low_end() const override;
 
-	virtual void sdfgi_set_debug_probe_select(const Vector3 &p_position, const Vector3 &p_dir) override;
+	void sdfgi_set_debug_probe_select(const Vector3 &p_position, const Vector3 &p_dir) override;
 
-	virtual void set_print_gpu_profile(bool p_enable) override;
+	void set_print_gpu_profile(bool p_enable) override;
 
-	virtual Size2i get_maximum_viewport_size() const override;
+	Size2i get_maximum_viewport_size() const override;
 
-	RenderingServerDefault(bool p_create_thread = false);
-	~RenderingServerDefault();
+	explicit RenderingServerDefault(bool p_create_thread = false);
+	~RenderingServerDefault() override;
 };
 
 #endif // RENDERING_SERVER_DEFAULT_H

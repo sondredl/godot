@@ -172,7 +172,7 @@ public:
 			end += s;
 		}
 
-		ERR_FAIL_COND_V(begin > end, result);
+		(begin > end, result);
 
 		Size result_size = end - begin;
 		result.resize(result_size);
@@ -229,7 +229,7 @@ public:
 		_FORCE_INLINE_ bool operator==(const Iterator &b) const { return elem_ptr == b.elem_ptr; }
 		_FORCE_INLINE_ bool operator!=(const Iterator &b) const { return elem_ptr != b.elem_ptr; }
 
-		Iterator(T *p_ptr) { elem_ptr = p_ptr; }
+		explicit Iterator(T *p_ptr) { elem_ptr = p_ptr; }
 		Iterator() {}
 		Iterator(const Iterator &p_it) { elem_ptr = p_it.elem_ptr; }
 
@@ -254,7 +254,7 @@ public:
 		_FORCE_INLINE_ bool operator==(const ConstIterator &b) const { return elem_ptr == b.elem_ptr; }
 		_FORCE_INLINE_ bool operator!=(const ConstIterator &b) const { return elem_ptr != b.elem_ptr; }
 
-		ConstIterator(const T *p_ptr) { elem_ptr = p_ptr; }
+		explicit ConstIterator(const T *p_ptr) { elem_ptr = p_ptr; }
 		ConstIterator() {}
 		ConstIterator(const ConstIterator &p_it) { elem_ptr = p_it.elem_ptr; }
 
@@ -277,9 +277,9 @@ public:
 	}
 
 	_FORCE_INLINE_ Vector() {}
-	_FORCE_INLINE_ Vector(std::initializer_list<T> p_init) {
+	_FORCE_INLINE_ explicit Vector(std::initializer_list<T> p_init) {
 		Error err = _cowdata.resize(p_init.size());
-		ERR_FAIL_COND(err);
+		(err);
 
 		Size i = 0;
 		for (const T &element : p_init) {
@@ -315,7 +315,7 @@ void Vector<T>::append_array(const Vector<T> &p_other) {
 template <typename T>
 bool Vector<T>::push_back(T p_elem) {
 	Error err = resize(size() + 1);
-	ERR_FAIL_COND_V(err, true);
+	(err, true);
 	set(size() - 1, p_elem);
 
 	return false;

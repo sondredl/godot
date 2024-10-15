@@ -31,9 +31,30 @@
 #include "editor_audio_buses.h"
 
 #include "core/config/project_settings.h"
+#include "core/core_string_names.h"
+#include "core/error/error_list.h"
+#include "core/error/error_macros.h"
 #include "core/input/input.h"
+#include "core/input/input_enums.h"
+#include "core/input/input_event.h"
+#include "core/io/resource_loader.h"
 #include "core/io/resource_saver.h"
+#include "core/math/color.h"
+#include "core/math/math_defs.h"
+#include "core/math/math_funcs.h"
+#include "core/math/rect2.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/object/undo_redo.h"
 #include "core/os/keyboard.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 #include "editor/editor_command_palette.h"
 #include "editor/editor_node.h"
 #include "editor/editor_settings.h"
@@ -44,8 +65,19 @@
 #include "editor/gui/editor_file_dialog.h"
 #include "editor/themes/editor_scale.h"
 #include "editor/themes/editor_theme_manager.h"
+#include "scene/gui/control.h"
+#include "scene/gui/label.h"
+#include "scene/gui/scroll_container.h"
 #include "scene/gui/separator.h"
+#include "scene/gui/slider.h"
+#include "scene/gui/tree.h"
+#include "scene/main/timer.h"
 #include "scene/resources/font.h"
+#include "scene/resources/style_box.h"
+#include "scene/resources/style_box_flat.h"
+#include "scene/resources/texture.h"
+#include "scene/scene_string_names.h"
+#include "servers/audio/audio_effect.h"
 #include "servers/audio_server.h"
 
 void EditorAudioBus::_update_visible_channels() {
@@ -74,15 +106,15 @@ void EditorAudioBus::_notification(int p_what) {
 		case NOTIFICATION_ENTER_TREE:
 		case NOTIFICATION_THEME_CHANGED: {
 			Ref<Texture2D> active_bus_texture = get_editor_theme_icon(SNAME("BusVuActive"));
-			for (int i = 0; i < CHANNELS_MAX; i++) {
-				channel[i].vu_l->set_under_texture(active_bus_texture);
-				channel[i].vu_l->set_tint_under(Color(0.75, 0.75, 0.75));
-				channel[i].vu_l->set_progress_texture(active_bus_texture);
+			for (auto &i : channel) {
+				i.vu_l->set_under_texture(active_bus_texture);
+				i.vu_l->set_tint_under(Color(0.75, 0.75, 0.75));
+				i.vu_l->set_progress_texture(active_bus_texture);
 
-				channel[i].vu_r->set_under_texture(active_bus_texture);
-				channel[i].vu_r->set_tint_under(Color(0.75, 0.75, 0.75));
-				channel[i].vu_r->set_progress_texture(active_bus_texture);
-				channel[i].prev_active = true;
+				i.vu_r->set_under_texture(active_bus_texture);
+				i.vu_r->set_tint_under(Color(0.75, 0.75, 0.75));
+				i.vu_r->set_progress_texture(active_bus_texture);
+				i.prev_active = true;
 			}
 
 			disabled_vu = get_editor_theme_icon(SNAME("BusVuFrozen"));
@@ -183,10 +215,10 @@ void EditorAudioBus::_notification(int p_what) {
 		} break;
 
 		case NOTIFICATION_VISIBILITY_CHANGED: {
-			for (int i = 0; i < CHANNELS_MAX; i++) {
-				channel[i].peak_l = -100;
-				channel[i].peak_r = -100;
-				channel[i].prev_active = true;
+			for (auto &i : channel) {
+				i.peak_l = -100;
+				i.peak_r = -100;
+				i.prev_active = true;
 			}
 
 			set_process(is_visible_in_tree());
@@ -364,9 +396,10 @@ float EditorAudioBus::_normalized_volume_to_scaled_db(float normalized) {
 	 * The other two equations are hand-tuned linear tapers that intend to
 	 * try to ease the exponential equation in areas where it makes sense.*/
 
-	if (normalized > 0.6f) {
-		return 22.22f * normalized - 16.2f;
-	} else if (normalized < 0.05f) {
+	if (normalized > 0.6F) {
+		return 22.22F * normalized - 16.2F;
+	}
+	if (normalized < 0.05f) {
 		return 830.72 * normalized - 80.0f;
 	} else {
 		return 45.0f * Math::pow(normalized - 1.0, 3);
@@ -377,8 +410,9 @@ float EditorAudioBus::_scaled_db_to_normalized_volume(float db) {
 	/* Inversion of equations found in _normalized_volume_to_scaled_db.
 	 * IMPORTANT: If one function changes, the other much change to reflect it. */
 	if (db > -2.88) {
-		return (db + 16.2f) / 22.22f;
-	} else if (db < -38.602f) {
+		return (db + 16.2F) / 22.22F;
+	}
+	if (db < -38.602f) {
 		return (db + 80.00f) / 830.72f;
 	} else {
 		if (db < 0.0) {
@@ -420,8 +454,8 @@ void EditorAudioBus::_show_value(float slider_value) {
 	audio_value_preview_label->set_text(text);
 	const Vector2 slider_size = slider->get_size();
 	const Vector2 slider_position = slider->get_global_position();
-	const float vert_padding = 10.0f;
-	const Vector2 box_position = Vector2(slider_size.x, (slider_size.y - vert_padding) * (1.0f - slider->get_value()) - vert_padding);
+	const float vert_padding = 10.0F;
+	const Vector2 box_position = Vector2(slider_size.x, (slider_size.y - vert_padding) * (1.0F - slider->get_value()) - vert_padding);
 	audio_value_preview_box->set_position(slider_position + box_position);
 	audio_value_preview_box->set_size(audio_value_preview_label->get_size());
 	if (slider->has_focus() && !audio_value_preview_box->is_visible()) {
@@ -549,9 +583,9 @@ void EditorAudioBus::_effect_add(int p_which) {
 	StringName name = effect_options->get_item_metadata(p_which);
 
 	Object *fx = ClassDB::instantiate(name);
-	ERR_FAIL_NULL(fx);
+	(fx);
 	AudioEffect *afx = Object::cast_to<AudioEffect>(fx);
-	ERR_FAIL_NULL(afx);
+	(afx);
 	Ref<AudioEffect> afxr = Ref<AudioEffect>(afx);
 
 	afxr->set_name(effect_options->get_item_text(p_which));
@@ -566,7 +600,7 @@ void EditorAudioBus::_effect_add(int p_which) {
 }
 
 void EditorAudioBus::gui_input(const Ref<InputEvent> &p_event) {
-	ERR_FAIL_COND(p_event.is_null());
+	(p_event.is_null());
 
 	Ref<InputEventMouseButton> mb = p_event;
 	if (mb.is_valid() && mb->get_button_index() == MouseButton::RIGHT && mb->is_pressed()) {
@@ -601,7 +635,7 @@ void EditorAudioBus::_bus_popup_pressed(int p_option) {
 
 Variant EditorAudioBus::get_drag_data(const Point2 &p_point) {
 	if (get_index() == 0) {
-		return Variant();
+		return {};
 	}
 
 	Control *c = memnew(Control);
@@ -645,7 +679,7 @@ void EditorAudioBus::drop_data(const Point2 &p_point, const Variant &p_data) {
 Variant EditorAudioBus::get_drag_data_fw(const Point2 &p_point, Control *p_from) {
 	TreeItem *item = effects->get_item_at_position(p_point);
 	if (!item) {
-		return Variant();
+		return {};
 	}
 
 	Variant md = item->get_metadata(0);
@@ -663,7 +697,7 @@ Variant EditorAudioBus::get_drag_data_fw(const Point2 &p_point, Control *p_from)
 		return fxd;
 	}
 
-	return Variant();
+	return {};
 }
 
 bool EditorAudioBus::can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const {
@@ -891,7 +925,7 @@ EditorAudioBus::EditorAudioBus(EditorAudioBuses *p_buses, bool p_is_master) {
 	audioprev_hbc->add_child(audio_value_preview_label);
 
 	preview_timer = memnew(Timer);
-	preview_timer->set_wait_time(0.8f);
+	preview_timer->set_wait_time(0.8F);
 	preview_timer->set_one_shot(true);
 	add_child(preview_timer);
 
@@ -901,29 +935,29 @@ EditorAudioBus::EditorAudioBus(EditorAudioBuses *p_buses, bool p_is_master) {
 	hb->add_child(slider);
 
 	cc = 0;
-	for (int i = 0; i < CHANNELS_MAX; i++) {
-		channel[i].vu_l = memnew(TextureProgressBar);
-		channel[i].vu_l->set_fill_mode(TextureProgressBar::FILL_BOTTOM_TO_TOP);
-		hb->add_child(channel[i].vu_l);
-		channel[i].vu_l->set_min(-80);
-		channel[i].vu_l->set_max(24);
-		channel[i].vu_l->set_step(0.1);
+	for (auto &i : channel) {
+		i.vu_l = memnew(TextureProgressBar);
+		i.vu_l->set_fill_mode(TextureProgressBar::FILL_BOTTOM_TO_TOP);
+		hb->add_child(i.vu_l);
+		i.vu_l->set_min(-80);
+		i.vu_l->set_max(24);
+		i.vu_l->set_step(0.1);
 
-		channel[i].vu_r = memnew(TextureProgressBar);
-		channel[i].vu_r->set_fill_mode(TextureProgressBar::FILL_BOTTOM_TO_TOP);
-		hb->add_child(channel[i].vu_r);
-		channel[i].vu_r->set_min(-80);
-		channel[i].vu_r->set_max(24);
-		channel[i].vu_r->set_step(0.1);
+		i.vu_r = memnew(TextureProgressBar);
+		i.vu_r->set_fill_mode(TextureProgressBar::FILL_BOTTOM_TO_TOP);
+		hb->add_child(i.vu_r);
+		i.vu_r->set_min(-80);
+		i.vu_r->set_max(24);
+		i.vu_r->set_step(0.1);
 
-		channel[i].peak_l = 0.0f;
-		channel[i].peak_r = 0.0f;
+		i.peak_l = 0.0F;
+		i.peak_r = 0.0F;
 	}
 
 	EditorAudioMeterNotches *scale = memnew(EditorAudioMeterNotches);
 
-	for (float db = 6.0f; db >= -80.0f; db -= 6.0f) {
-		bool renderNotch = (db >= -6.0f || db == -24.0f || db == -72.0f);
+	for (float db = 6.0F; db >= -80.0F; db -= 6.0F) {
+		bool renderNotch = (db >= -6.0F || db == -24.0F || db == -72.0F);
 		scale->add_notch(_scaled_db_to_normalized_volume(db), db, renderNotch);
 	}
 	scale->set_mouse_filter(MOUSE_FILTER_PASS);
@@ -1187,7 +1221,7 @@ void EditorAudioBuses::_reset_bus_volume(Object *p_which) {
 
 	EditorUndoRedoManager *ur = EditorUndoRedoManager::get_singleton();
 	ur->create_action(TTR("Reset Bus Volume"));
-	ur->add_do_method(AudioServer::get_singleton(), "set_bus_volume_db", index, 0.f);
+	ur->add_do_method(AudioServer::get_singleton(), "set_bus_volume_db", index, 0.F);
 	ur->add_undo_method(AudioServer::get_singleton(), "set_bus_volume_db", index, AudioServer::get_singleton()->get_bus_volume_db(index));
 	ur->add_do_method(this, "_update_bus", index);
 	ur->add_undo_method(this, "_update_bus", index);
@@ -1447,7 +1481,7 @@ Size2 EditorAudioMeterNotches::get_minimum_size() const {
 	}
 	width += line_length + label_space;
 
-	return Size2(width, height);
+	return { width, height };
 }
 
 void EditorAudioMeterNotches::_update_theme_item_cache() {

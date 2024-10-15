@@ -87,7 +87,7 @@ public:
 	static Code get_code_from_name(const String &p_name);
 	static CodeFlags get_flags_from_codemap(const HashMap<Code, bool> &p_map);
 
-	ShaderWarning(Code p_code = WARNING_MAX, int p_line = -1, const StringName &p_subject = "", const Vector<Variant> &p_extra_args = Vector<Variant>());
+	explicit ShaderWarning(Code p_code = WARNING_MAX, int p_line = -1, const StringName &p_subject = "", const Vector<Variant> &p_extra_args = Vector<Variant>());
 };
 
 #endif // DEBUG_ENABLED

@@ -30,10 +30,15 @@
 
 #include "editor_translation_parser.h"
 
+#include "core/error/error_list.h"
 #include "core/error/error_macros.h"
-#include "core/io/file_access.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
 #include "core/object/script_language.h"
-#include "core/templates/hash_set.h"
+#include "core/os/memory.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
+#include "core/variant/typed_array.h"
 
 EditorTranslationParser *EditorTranslationParser::singleton = nullptr;
 
@@ -43,14 +48,14 @@ Error EditorTranslationParserPlugin::parse_file(const String &p_path, Vector<Str
 
 	if (GDVIRTUAL_CALL(_parse_file, p_path, ids, ids_ctx_plural)) {
 		// Add user's extracted translatable messages.
-		for (int i = 0; i < ids.size(); i++) {
-			r_ids->append(ids[i]);
+		for (auto &id : ids) {
+			r_ids->append(id);
 		}
 
 		// Add user's collected translatable messages with context or plurals.
-		for (int i = 0; i < ids_ctx_plural.size(); i++) {
-			Array arr = ids_ctx_plural[i];
-			ERR_FAIL_COND_V_MSG(arr.size() != 3, ERR_INVALID_DATA, "Array entries written into `msgids_context_plural` in `parse_file()` method should have the form [\"message\", \"context\", \"plural message\"]");
+		for (const auto &i : ids_ctx_plural) {
+			Array arr = i;
+			(arr.size() != 3, ERR_INVALID_DATA, "Array entries written into `msgids_context_plural` in `parse_file()` method should have the form [\"message\", \"context\", \"plural message\"]");
 
 			Vector<String> id_ctx_plural;
 			id_ctx_plural.push_back(arr[0]);
@@ -59,13 +64,12 @@ Error EditorTranslationParserPlugin::parse_file(const String &p_path, Vector<Str
 			r_ids_ctx_plural->append(id_ctx_plural);
 		}
 		return OK;
-	} else {
-		ERR_PRINT("Custom translation parser plugin's \"func parse_file(path, extracted_strings)\" is undefined.");
-		return ERR_UNAVAILABLE;
 	}
+	ERR_PRINT("Custom translation parser plugin's \"func parse_file(path, extracted_strings)\" is undefined.");
+	return ERR_UNAVAILABLE;
 }
 
-void EditorTranslationParserPlugin::get_recognized_extensions(List<String> *r_extensions) const {
+void EditorTranslationParserPlugin::get_recognized_extensions(const List<String> *r_extensions) const {
 	Vector<String> extensions;
 	if (GDVIRTUAL_CALL(_get_recognized_extensions, extensions)) {
 		for (int i = 0; i < extensions.size(); i++) {

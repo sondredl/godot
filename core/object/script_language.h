@@ -115,7 +115,7 @@ protected:
 	// Scripts are reloaded via the Script Editor when edited in Godot,
 	// the LSP server when edited in a connected external editor, or
 	// through EditorFileSystem::_update_script_documentation when updated directly on disk.
-	virtual bool editor_can_reload_from_file() override { return false; }
+	bool editor_can_reload_from_file() override { return false; }
 	void _notification(int p_what);
 	static void _bind_methods();
 
@@ -131,7 +131,7 @@ protected:
 	void _set_debugger_break_language();
 
 public:
-	virtual void reload_from_file() override;
+	void reload_from_file() override;
 
 	virtual bool can_instantiate() const = 0;
 
@@ -422,9 +422,9 @@ public:
 	virtual void frame();
 
 	virtual bool handles_global_class_type(const String &p_type) const { return false; }
-	virtual String get_global_class_name(const String &p_path, String *r_base_type = nullptr, String *r_icon_path = nullptr) const { return String(); }
+	virtual String get_global_class_name(const String &p_path, String *r_base_type = nullptr, String *r_icon_path = nullptr) const { return {}; }
 
-	virtual ~ScriptLanguage() {}
+	~ScriptLanguage() override {}
 };
 
 VARIANT_ENUM_CAST(ScriptLanguage::ScriptNameCasing);
@@ -440,45 +440,45 @@ class PlaceHolderScriptInstance : public ScriptInstance {
 	Ref<Script> script;
 
 public:
-	virtual bool set(const StringName &p_name, const Variant &p_value) override;
-	virtual bool get(const StringName &p_name, Variant &r_ret) const override;
-	virtual void get_property_list(List<PropertyInfo> *p_properties) const override;
-	virtual Variant::Type get_property_type(const StringName &p_name, bool *r_is_valid = nullptr) const override;
-	virtual void validate_property(PropertyInfo &p_property) const override {}
+	bool set(const StringName &p_name, const Variant &p_value) override;
+	bool get(const StringName &p_name, Variant &r_ret) const override;
+	void get_property_list(List<PropertyInfo> *p_properties) const override;
+	Variant::Type get_property_type(const StringName &p_name, bool *r_is_valid = nullptr) const override;
+	void validate_property(PropertyInfo &p_property) const override {}
 
-	virtual bool property_can_revert(const StringName &p_name) const override { return false; };
-	virtual bool property_get_revert(const StringName &p_name, Variant &r_ret) const override { return false; };
+	bool property_can_revert(const StringName &p_name) const override { return false; };
+	bool property_get_revert(const StringName &p_name, Variant &r_ret) const override { return false; };
 
-	virtual void get_method_list(List<MethodInfo> *p_list) const override;
-	virtual bool has_method(const StringName &p_method) const override;
+	void get_method_list(List<MethodInfo> *p_list) const override;
+	bool has_method(const StringName &p_method) const override;
 
-	virtual int get_method_argument_count(const StringName &p_method, bool *r_is_valid = nullptr) const override {
+	int get_method_argument_count(const StringName &p_method, bool *r_is_valid = nullptr) const override {
 		if (r_is_valid) {
 			*r_is_valid = false;
 		}
 		return 0;
 	}
 
-	virtual Variant callp(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override;
-	virtual void notification(int p_notification, bool p_reversed = false) override {}
+	Variant callp(const StringName &p_method, const Variant **p_args, int p_argcount, Callable::CallError &r_error) override;
+	void notification(int p_notification, bool p_reversed = false) override {}
 
-	virtual Ref<Script> get_script() const override { return script; }
+	Ref<Script> get_script() const override { return script; }
 
-	virtual ScriptLanguage *get_language() override { return language; }
+	ScriptLanguage *get_language() override { return language; }
 
 	Object *get_owner() override { return owner; }
 
 	void update(const List<PropertyInfo> &p_properties, const HashMap<StringName, Variant> &p_values); //likely changed in editor
 
-	virtual bool is_placeholder() const override { return true; }
+	bool is_placeholder() const override { return true; }
 
-	virtual void property_set_fallback(const StringName &p_name, const Variant &p_value, bool *r_valid = nullptr) override;
-	virtual Variant property_get_fallback(const StringName &p_name, bool *r_valid = nullptr) override;
+	void property_set_fallback(const StringName &p_name, const Variant &p_value, bool *r_valid = nullptr) override;
+	Variant property_get_fallback(const StringName &p_name, bool *r_valid = nullptr) override;
 
-	virtual const Variant get_rpc_config() const override { return Variant(); }
+	const Variant get_rpc_config() const override { return Variant(); }
 
 	PlaceHolderScriptInstance(ScriptLanguage *p_language, Ref<Script> p_script, Object *p_owner);
-	~PlaceHolderScriptInstance();
+	~PlaceHolderScriptInstance() override;
 };
 
 #endif // SCRIPT_LANGUAGE_H

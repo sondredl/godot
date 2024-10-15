@@ -49,7 +49,7 @@ class RingBuffer {
 
 public:
 	T read() {
-		ERR_FAIL_COND_V(space_left() < 1, T());
+		(space_left() < 1, T());
 		return data.ptr()[inc(read_pos, 1)];
 	}
 
@@ -142,7 +142,7 @@ public:
 	}
 
 	Error write(const T &p_v) {
-		ERR_FAIL_COND_V(space_left() < 1, FAILED);
+		(space_left() < 1, FAILED);
 		data.write[inc(write_pos, 1)] = p_v;
 		return OK;
 	}
@@ -211,7 +211,7 @@ public:
 		size_mask = mask;
 	}
 
-	RingBuffer(int p_power = 0) {
+	explicit RingBuffer(int p_power = 0) {
 		resize(p_power);
 	}
 	~RingBuffer() {}

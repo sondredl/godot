@@ -79,7 +79,7 @@ public:
 		return data->hash_cache;
 	}
 
-	operator String() const;
+	explicit operator String() const;
 	bool is_empty() const;
 
 	bool operator==(const NodePath &p_path) const;
@@ -92,7 +92,7 @@ public:
 	NodePath(const Vector<StringName> &p_path, bool p_absolute);
 	NodePath(const Vector<StringName> &p_path, const Vector<StringName> &p_subpath, bool p_absolute);
 	NodePath(const NodePath &p_path);
-	NodePath(const String &p_path);
+	explicit NodePath(const String &p_path);
 	NodePath() {}
 	~NodePath();
 };

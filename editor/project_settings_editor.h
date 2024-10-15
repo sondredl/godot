@@ -87,7 +87,7 @@ class ProjectSettingsEditor : public AcceptDialog {
 	void _feature_selected(int p_index);
 	void _select_type(Variant::Type p_type);
 
-	virtual void shortcut_input(const Ref<InputEvent> &p_event) override;
+	rtcut_input(const Ref<InputEvent> &p_event) override;
 
 	String _get_setting_name() const;
 	void _setting_edited(const String &p_name);
@@ -132,7 +132,7 @@ public:
 	void queue_save();
 	void connect_filesystem_dock_signals(FileSystemDock *p_fs_dock);
 
-	ProjectSettingsEditor(EditorData *p_data);
+	explicit explicit ProjectSettingsEditor(EditorData *p_data);
 };
 
 #endif // PROJECT_SETTINGS_EDITOR_H

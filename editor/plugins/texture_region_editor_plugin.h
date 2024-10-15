@@ -92,7 +92,7 @@ class TextureRegionEditor : public AcceptDialog {
 
 	Rect2 rect;
 	Rect2 rect_prev;
-	float prev_margin = 0.0f;
+	float prev_margin = 0.0F;
 	int edited_margin = -1;
 	HashMap<RID, List<Rect2>> cache_map;
 	List<Rect2> autoslice_cache;
@@ -165,8 +165,8 @@ class EditorInspectorPluginTextureRegion : public EditorInspectorPlugin {
 	void _region_edit(Object *p_object);
 
 public:
-	virtual bool can_handle(Object *p_object) override;
-	virtual bool parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const BitField<PropertyUsageFlags> p_usage, const bool p_wide) override;
+	bool can_handle(Object *p_object) override;
+	bool parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const BitField<PropertyUsageFlags> p_usage, const bool p_wide) override;
 
 	EditorInspectorPluginTextureRegion();
 };
@@ -175,7 +175,7 @@ class TextureRegionEditorPlugin : public EditorPlugin {
 	GDCLASS(TextureRegionEditorPlugin, EditorPlugin);
 
 public:
-	virtual String get_name() const override { return "TextureRegion"; }
+	String get_name() const override { return "TextureRegion"; }
 
 	TextureRegionEditorPlugin();
 };

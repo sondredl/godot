@@ -227,7 +227,7 @@ private:
 	void _window_drop_files(const Vector<String> &p_files);
 	void _rect_changed_callback(const Rect2i &p_callback);
 	void _event_callback(DisplayServer::WindowEvent p_event);
-	virtual bool _can_consume_input_events() const override;
+	bool _can_consume_input_events() const override;
 
 	bool mouse_in_window = false;
 	void _update_mouse_over(Vector2 p_pos) override;
@@ -238,7 +238,7 @@ private:
 	static int root_layout_direction;
 
 protected:
-	virtual Rect2i _popup_adjust_rect() const { return Rect2i(); }
+	virtual Rect2i _popup_adjust_rect() const { return {}; }
 	virtual void _post_popup() {}
 
 	virtual void _update_theme_item_cache();
@@ -252,8 +252,8 @@ protected:
 	void _get_property_list(List<PropertyInfo> *p_list) const;
 	void _validate_property(PropertyInfo &p_property) const;
 
-	virtual void add_child_notify(Node *p_child) override;
-	virtual void remove_child_notify(Node *p_child) override;
+	void add_child_notify(Node *p_child) override;
+	void remove_child_notify(Node *p_child) override;
 
 	GDVIRTUAL0RC(Vector2, _get_contents_minimum_size)
 
@@ -466,19 +466,19 @@ public:
 
 	//
 
-	virtual Transform2D get_final_transform() const override;
-	virtual Transform2D get_screen_transform_internal(bool p_absolute_position = false) const override;
-	virtual Transform2D get_popup_base_transform() const override;
-	virtual Viewport *get_section_root_viewport() const override;
-	virtual bool is_attached_in_viewport() const override;
+	Transform2D get_final_transform() const override;
+	Transform2D get_screen_transform_internal(bool p_absolute_position = false) const override;
+	Transform2D get_popup_base_transform() const override;
+	Viewport *get_section_root_viewport() const override;
+	bool is_attached_in_viewport() const override;
 
 	Rect2i get_parent_rect() const;
-	virtual DisplayServer::WindowID get_window_id() const override;
+	DisplayServer::WindowID get_window_id() const override;
 
 	virtual Size2 _get_contents_minimum_size() const;
 
 	Window();
-	~Window();
+	~Window() override;
 };
 
 VARIANT_ENUM_CAST(Window::Mode);

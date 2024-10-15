@@ -61,8 +61,8 @@ protected:
 	bool is_radio();
 
 public:
-	CheckBox(const String &p_text = String());
-	~CheckBox();
+	explicit CheckBox(const String &p_text = String());
+	~CheckBox() override;
 };
 
 #endif // CHECK_BOX_H

@@ -42,7 +42,7 @@ class Shape2D : public Resource {
 
 protected:
 	static void _bind_methods();
-	Shape2D(const RID &p_rid);
+	explicit Shape2D(const RID &p_rid);
 
 public:
 	virtual bool _edit_is_selected_on_click(const Point2 &p_point, double p_tolerance) const { return get_rect().has_point(p_point); }
@@ -57,14 +57,14 @@ public:
 	PackedVector2Array collide_and_get_contacts(const Transform2D &p_local_xform, const Ref<Shape2D> &p_shape, const Transform2D &p_shape_xform);
 
 	virtual void draw(const RID &p_to_rid, const Color &p_color) {}
-	virtual Rect2 get_rect() const { return Rect2(); }
+	virtual Rect2 get_rect() const { return {}; }
 	/// Returns the radius of a circle that fully enclose this shape
 	virtual real_t get_enclosing_radius() const = 0;
-	virtual RID get_rid() const override;
+	RID get_rid() const override;
 
 	static bool is_collision_outline_enabled();
 
-	~Shape2D();
+	~Shape2D() override;
 };
 
 #endif // SHAPE_2D_H

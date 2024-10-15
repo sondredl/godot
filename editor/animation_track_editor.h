@@ -77,15 +77,15 @@ public:
 	bool _hide_metadata_from_inspector() { return true; }
 	bool _dont_undo_redo() { return true; }
 
-	bool _is_read_only() { return animation_read_only; }
+	bool _is_read_only() const { return animation_read_only; }
 
 	void notify_change();
-	Node *get_root_path();
+	Node *get_root_path() const;
 	void set_use_fps(bool p_enable);
 
 protected:
 	static void _bind_methods();
-	void _fix_node_path(Variant &value);
+	void _fix_node_path(Variant &value) const;
 	void _update_obj(const Ref<Animation> &p_anim);
 	void _key_ofs_changed(const Ref<Animation> &p_anim, float from, float to);
 	bool _set(const StringName &p_name, const Variant &p_value);
@@ -115,10 +115,10 @@ public:
 	bool _hide_metadata_from_inspector() { return true; }
 	bool _dont_undo_redo() { return true; }
 
-	bool _is_read_only() { return animation_read_only; }
+	bool _is_read_only() const { return animation_read_only; }
 
 	void notify_change();
-	Node *get_root_path();
+	Node *get_root_path() const;
 	void set_use_fps(bool p_enable);
 
 protected:
@@ -147,7 +147,7 @@ public:
 	bool _hide_metadata_from_inspector() { return true; }
 	bool _dont_undo_redo() { return true; }
 
-	bool _is_read_only() { return animation_read_only; }
+	bool _is_read_only() const { return animation_read_only; }
 
 	float get_time() const;
 
@@ -174,7 +174,7 @@ public:
 	bool _hide_metadata_from_inspector() { return true; }
 	bool _dont_undo_redo() { return true; }
 
-	bool _is_read_only() { return animation_read_only; }
+	bool _is_read_only() const { return animation_read_only; }
 
 protected:
 	static void _bind_methods();
@@ -189,8 +189,8 @@ class AnimationTimelineEdit : public Range {
 	friend class AnimationBezierTrackEdit;
 	friend class AnimationTrackEditor;
 
-	static constexpr float SCROLL_ZOOM_FACTOR_IN = 1.02f; // Zoom factor per mouse scroll in the animation editor when zooming in. The closer to 1.0, the finer the control.
-	static constexpr float SCROLL_ZOOM_FACTOR_OUT = 0.98f; // Zoom factor when zooming out. Similar to SCROLL_ZOOM_FACTOR_IN but less than 1.0.
+	static constexpr float SCROLL_ZOOM_FACTOR_IN = 1.02F; // Zoom factor per mouse scroll in the animation editor when zooming in. The closer to 1.0, the finer the control.
+	static constexpr float SCROLL_ZOOM_FACTOR_OUT = 0.98F; // Zoom factor when zooming out. Similar to SCROLL_ZOOM_FACTOR_IN but less than 1.0.
 
 	Ref<Animation> animation;
 	bool read_only = false;
@@ -199,7 +199,7 @@ class AnimationTimelineEdit : public Range {
 	int name_limit = 0;
 	Range *zoom = nullptr;
 	Range *h_scroll = nullptr;
-	float play_position_pos = 0.0f;
+	float play_position_pos = 0.0F;
 
 	HBoxContainer *len_hb = nullptr;
 	EditorSpinSlider *length = nullptr;
@@ -210,7 +210,7 @@ class AnimationTimelineEdit : public Range {
 	Control *play_position = nullptr; //separate control used to draw so updates for only position changed are much faster
 	HScrollBar *hscroll = nullptr;
 
-	void _zoom_changed(double);
+	void _zoom_changed(double /*unused*/);
 	void _anim_length_changed(double p_new_len);
 	void _anim_loop_pressed();
 
@@ -226,15 +226,15 @@ class AnimationTimelineEdit : public Range {
 
 	bool dragging_timeline = false;
 	bool dragging_hsize = false;
-	float dragging_hsize_from = 0.0f;
-	float dragging_hsize_at = 0.0f;
+	float dragging_hsize_from = 0.0F;
+	float dragging_hsize_at = 0.0F;
 	double last_zoom_scale = 1.0;
 	double hscroll_on_zoom_buffer = -1.0;
 
 	Vector2 zoom_scroll_origin;
 	bool zoom_callback_occured = false;
 
-	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+	void gui_input(const Ref<InputEvent> &p_event) override;
 	void _track_added(int p_track);
 
 	float _get_zoom_scale(double p_zoom_value) const;
@@ -250,7 +250,7 @@ public:
 
 	float get_zoom_scale() const;
 
-	virtual Size2 get_minimum_size() const override;
+	Size2 get_minimum_size() const override;
 	void set_animation(const Ref<Animation> &p_animation, bool p_read_only);
 	void set_track_edit(AnimationTrackEdit *p_track_edit);
 	void set_zoom(Range *p_zoom);
@@ -268,7 +268,7 @@ public:
 
 	void set_hscroll(HScrollBar *p_hscroll);
 
-	virtual CursorShape get_cursor_shape(const Point2 &p_pos) const override;
+	CursorShape get_cursor_shape(const Point2 &p_pos) const override;
 
 	AnimationTimelineEdit();
 };
@@ -286,7 +286,7 @@ class AnimationMarkerEdit : public Control {
 
 	AnimationTimelineEdit *timeline = nullptr;
 	Control *play_position = nullptr; // Separate control used to draw so updates for only position changed are much faster.
-	float play_position_pos = 0.0f;
+	float play_position_pos = 0.0F;
 
 	HashSet<StringName> selection;
 
@@ -311,13 +311,13 @@ class AnimationMarkerEdit : public Control {
 	bool _try_select_at_ui_pos(const Point2 &p_pos, bool p_aggregate, bool p_deselectable);
 	bool _is_ui_pos_in_current_section(const Point2 &p_pos);
 
-	float insert_at_pos = 0.0f;
+	float insert_at_pos = 0.0F;
 	bool moving_selection_attempt = false;
 	bool moving_selection_effective = false;
-	float moving_selection_offset = 0.0f;
-	float moving_selection_pivot = 0.0f;
-	float moving_selection_mouse_begin_x = 0.0f;
-	float moving_selection_mouse_begin_y = 0.0f;
+	float moving_selection_offset = 0.0F;
+	float moving_selection_pivot = 0.0F;
+	float moving_selection_mouse_begin_x = 0.0F;
+	float moving_selection_mouse_begin_y = 0.0F;
 	StringName select_single_attempt;
 	bool moving_selection = false;
 	void _move_selection_begin();
@@ -368,10 +368,10 @@ protected:
 	static void _bind_methods();
 	void _notification(int p_what);
 
-	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+	void gui_input(const Ref<InputEvent> &p_event) override;
 
 public:
-	virtual String get_tooltip(const Point2 &p_pos) const override;
+	String get_tooltip(const Point2 &p_pos) const override;
 
 	virtual int get_key_height() const;
 	virtual Rect2 get_key_rect(float p_pixels_sec) const;
@@ -387,7 +387,7 @@ public:
 	bool is_moving_selection() const { return moving_selection; }
 	float get_moving_selection_offset() const { return moving_selection_offset; }
 	void set_animation(const Ref<Animation> &p_animation, bool p_read_only);
-	virtual Size2 get_minimum_size() const override;
+	Size2 get_minimum_size() const override;
 
 	void set_timeline(AnimationTimelineEdit *p_timeline);
 	void set_editor(AnimationTrackEditor *p_editor);
@@ -404,7 +404,7 @@ public:
 	void _clear_selection(bool p_update);
 
 	AnimationMarkerEdit();
-	~AnimationMarkerEdit();
+	~AnimationMarkerEdit() override;
 };
 
 class AnimationTrackEdit : public Control {
@@ -438,7 +438,7 @@ class AnimationTrackEdit : public Control {
 	LineEdit *path = nullptr;
 	Node *root = nullptr;
 	Control *play_position = nullptr; //separate control used to draw so updates for only position changed are much faster
-	float play_position_pos = 0.0f;
+	float play_position_pos = 0.0F;
 	NodePath node_path;
 
 	Ref<Animation> animation;
@@ -477,11 +477,11 @@ class AnimationTrackEdit : public Control {
 	Ref<Texture2D> _get_key_type_icon() const;
 
 	mutable int dropping_at = 0;
-	float insert_at_pos = 0.0f;
+	float insert_at_pos = 0.0F;
 	bool moving_selection_attempt = false;
 	bool moving_selection_effective = false;
-	float moving_selection_pivot = 0.0f;
-	float moving_selection_mouse_begin_x = 0.0f;
+	float moving_selection_pivot = 0.0F;
+	float moving_selection_mouse_begin_x = 0.0F;
 	int select_single_attempt = -1;
 	bool moving_selection = false;
 
@@ -492,14 +492,14 @@ protected:
 	static void _bind_methods();
 	void _notification(int p_what);
 
-	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+	void gui_input(const Ref<InputEvent> &p_event) override;
 
 public:
-	virtual Variant get_drag_data(const Point2 &p_point) override;
-	virtual bool can_drop_data(const Point2 &p_point, const Variant &p_data) const override;
-	virtual void drop_data(const Point2 &p_point, const Variant &p_data) override;
+	Variant get_drag_data(const Point2 &p_point) override;
+	bool can_drop_data(const Point2 &p_point, const Variant &p_data) const override;
+	void drop_data(const Point2 &p_point, const Variant &p_data) override;
 
-	virtual String get_tooltip(const Point2 &p_pos) const override;
+	String get_tooltip(const Point2 &p_pos) const override;
 
 	virtual int get_key_height() const;
 	virtual Rect2 get_key_rect(int p_index, float p_pixels_sec);
@@ -519,7 +519,7 @@ public:
 	AnimationTrackEditor *get_editor() const { return editor; }
 	NodePath get_path() const;
 	void set_animation_and_track(const Ref<Animation> &p_animation, int p_track, bool p_read_only);
-	virtual Size2 get_minimum_size() const override;
+	Size2 get_minimum_size() const override;
 
 	void set_timeline(AnimationTimelineEdit *p_timeline);
 	void set_editor(AnimationTrackEditor *p_editor);
@@ -563,11 +563,11 @@ class AnimationTrackEditGroup : public Control {
 protected:
 	void _notification(int p_what);
 
-	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+	void gui_input(const Ref<InputEvent> &p_event) override;
 
 public:
 	void set_type_and_name(const Ref<Texture2D> &p_type, const String &p_name, const NodePath &p_node);
-	virtual Size2 get_minimum_size() const override;
+	Size2 get_minimum_size() const override;
 	void set_timeline(AnimationTimelineEdit *p_timeline);
 	void set_root(Node *p_root);
 	void set_editor(AnimationTrackEditor *p_editor);
@@ -636,7 +636,7 @@ class AnimationTrackEditor : public VBoxContainer {
 	void _animation_track_remove_request(int p_track, Ref<Animation> p_from_animation);
 	void _track_grab_focus(int p_track);
 
-	void _update_scroll(double);
+	void _update_scroll(double /*unused*/);
 	void _update_step(double p_new_step);
 	void _update_length(double p_new_len);
 	void _dropped_track(int p_from_track, int p_to_track);
@@ -679,7 +679,7 @@ class AnimationTrackEditor : public VBoxContainer {
 		int normal;
 		int reset;
 
-		TrackIndices(const Animation *p_anim = nullptr, const Animation *p_reset_anim = nullptr) {
+		explicit TrackIndices(const Animation *p_anim = nullptr, const Animation *p_reset_anim = nullptr) {
 			normal = p_anim ? p_anim->get_track_count() : 0;
 			reset = p_reset_anim ? p_reset_anim->get_track_count() : 0;
 		}
@@ -699,9 +699,9 @@ class AnimationTrackEditor : public VBoxContainer {
 	void _pan_callback(Vector2 p_scroll_vec, Ref<InputEvent> p_event);
 	void _zoom_callback(float p_zoom_factor, Vector2 p_origin, Ref<InputEvent> p_event);
 
-	void _timeline_value_changed(double);
+	void _timeline_value_changed(double /*unused*/);
 
-	float insert_key_from_track_call_ofs = 0.0f;
+	float insert_key_from_track_call_ofs = 0.0F;
 	int insert_key_from_track_call_track = 0;
 	void _insert_key_from_track(float p_ofs, int p_track);
 	void _add_method_key(const String &p_method);
@@ -726,7 +726,7 @@ class AnimationTrackEditor : public VBoxContainer {
 	RBMap<SelectedKey, KeyInfo> selection;
 
 	bool moving_selection = false;
-	float moving_selection_offset = 0.0f;
+	float moving_selection_offset = 0.0F;
 	void _move_selection_begin();
 	void _move_selection(float p_offset);
 	void _move_selection_commit();
@@ -847,7 +847,7 @@ class AnimationTrackEditor : public VBoxContainer {
 	KeyClipboard key_clipboard;
 
 	void _set_key_clipboard(int p_top_track, float p_top_time, RBMap<SelectedKey, KeyInfo> &p_keymap);
-	void _insert_animation_key(NodePath p_path, const Variant &p_value);
+	void _insert_animation_key(const NodePath &p_path, const Variant &p_value);
 
 	void _pick_track_filter_text_changed(const String &p_newtext);
 	void _pick_track_select_recursive(TreeItem *p_item, const String &p_filter, Vector<Node *> &p_select_candidates);
@@ -949,7 +949,7 @@ public:
 
 	MenuButton *get_edit_menu();
 	AnimationTrackEditor();
-	~AnimationTrackEditor();
+	~AnimationTrackEditor() override;
 };
 
 // AnimationTrackKeyEditEditorPlugin
@@ -975,7 +975,7 @@ class AnimationTrackKeyEditEditor : public EditorProperty {
 
 public:
 	AnimationTrackKeyEditEditor(Ref<Animation> p_animation, int p_track, real_t p_key_ofs, bool p_use_fps);
-	~AnimationTrackKeyEditEditor();
+	~AnimationTrackKeyEditEditor() override;
 };
 
 // AnimationMarkerKeyEditEditorPlugin
@@ -994,7 +994,7 @@ class AnimationMarkerKeyEditEditor : public EditorProperty {
 
 public:
 	AnimationMarkerKeyEditEditor(Ref<Animation> p_animation, const StringName &p_name, bool p_use_fps);
-	~AnimationMarkerKeyEditEditor();
+	~AnimationMarkerKeyEditEditor() override;
 };
 
 #endif // ANIMATION_TRACK_EDITOR_H

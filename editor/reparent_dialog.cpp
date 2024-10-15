@@ -30,10 +30,17 @@
 
 #include "reparent_dialog.h"
 
-#include "core/string/print_string.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/variant/variant.h"
 #include "editor/gui/scene_tree_editor.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/check_box.h"
+#include "scene/scene_string_names.h"
 
 void ReparentDialog::_notification(int p_what) {
 	switch (p_what) {

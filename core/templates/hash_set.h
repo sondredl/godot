@@ -186,18 +186,17 @@ private:
 
 		if (exists) {
 			return pos;
-		} else {
-			if (num_elements + 1 > MAX_OCCUPANCY * capacity) {
-				ERR_FAIL_COND_V_MSG(capacity_index + 1 == HASH_TABLE_SIZE_MAX, -1, "Hash table maximum capacity reached, aborting insertion.");
-				_resize_and_rehash(capacity_index + 1);
-			}
-
-			uint32_t hash = _hash(p_key);
-			memnew_placement(&keys[num_elements], TKey(p_key));
-			_insert_with_hash(hash, num_elements);
-			num_elements++;
-			return num_elements - 1;
 		}
+		if (num_elements + 1 > MAX_OCCUPANCY * capacity) {
+			ERR_FAIL_COND_V_MSG(capacity_index + 1 == HASH_TABLE_SIZE_MAX, -1, "Hash table maximum capacity reached, aborting insertion.");
+			_resize_and_rehash(capacity_index + 1);
+		}
+
+		uint32_t hash = _hash(p_key);
+		memnew_placement(&keys[num_elements], TKey(p_key));
+		_insert_with_hash(hash, num_elements);
+		num_elements++;
+		return num_elements - 1;
 	}
 
 	void _init_from(const HashSet &p_other) {
@@ -301,7 +300,7 @@ public:
 		uint32_t new_index = capacity_index;
 
 		while (hash_table_size_primes[new_index] < p_new_capacity) {
-			ERR_FAIL_COND_MSG(new_index + 1 == (uint32_t)HASH_TABLE_SIZE_MAX, nullptr);
+			(new_index + 1 == (uint32_t)HASH_TABLE_SIZE_MAX, nullptr);
 			new_index++;
 		}
 
@@ -436,7 +435,7 @@ public:
 		_init_from(p_other);
 	}
 
-	HashSet(uint32_t p_initial_capacity) {
+	explicit HashSet(uint32_t p_initial_capacity) {
 		// Capacity can't be 0.
 		capacity_index = 0;
 		reserve(p_initial_capacity);

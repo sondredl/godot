@@ -31,6 +31,8 @@
 #ifndef DISPLAY_SERVER_H
 #define DISPLAY_SERVER_H
 
+#include <cmath>
+
 #include "core/input/input.h"
 #include "core/io/resource.h"
 #include "core/os/os.h"
@@ -220,8 +222,8 @@ public:
 		String text;
 		String voice;
 		int volume = 50;
-		float pitch = 1.f;
-		float rate = 1.f;
+		float pitch = 1.F;
+		float rate = 1.F;
 		int id = 0;
 	};
 
@@ -242,7 +244,7 @@ public:
 	virtual TypedArray<Dictionary> tts_get_voices() const;
 	virtual PackedStringArray tts_get_voices_for_language(const String &p_language) const;
 
-	virtual void tts_speak(const String &p_text, const String &p_voice, int p_volume = 50, float p_pitch = 1.f, float p_rate = 1.f, int p_utterance_id = 0, bool p_interrupt = false);
+	virtual void tts_speak(const String &p_text, const String &p_voice, int p_volume = 50, float p_pitch = 1.F, float p_rate = 1.F, int p_utterance_id = 0, bool p_interrupt = false);
 	virtual void tts_pause();
 	virtual void tts_resume();
 	virtual void tts_stop();
@@ -252,8 +254,8 @@ public:
 
 	virtual bool is_dark_mode_supported() const { return false; }
 	virtual bool is_dark_mode() const { return false; }
-	virtual Color get_accent_color() const { return Color(0, 0, 0, 0); }
-	virtual Color get_base_color() const { return Color(0, 0, 0, 0); }
+	virtual Color get_accent_color() const { return { 0, 0, 0, 0 }; }
+	virtual Color get_base_color() const { return { 0, 0, 0, 0 }; }
 	virtual void set_system_theme_change_callback(const Callable &p_callable) {}
 
 private:
@@ -289,7 +291,7 @@ public:
 	virtual void clipboard_set_primary(const String &p_text);
 	virtual String clipboard_get_primary() const;
 
-	virtual TypedArray<Rect2> get_display_cutouts() const { return TypedArray<Rect2>(); }
+	virtual TypedArray<Rect2> get_display_cutouts() const { return {}; }
 	virtual Rect2i get_display_safe_area() const { return screen_get_usable_rect(); }
 
 	enum {
@@ -332,15 +334,15 @@ public:
 	virtual int screen_get_dpi(int p_screen = SCREEN_OF_MAIN_WINDOW) const = 0;
 	virtual float screen_get_scale(int p_screen = SCREEN_OF_MAIN_WINDOW) const;
 	virtual float screen_get_max_scale() const {
-		float scale = 1.f;
+		float scale = 1.F;
 		int screen_count = get_screen_count();
 		for (int i = 0; i < screen_count; i++) {
-			scale = fmax(scale, screen_get_scale(i));
+			scale = std::fmax(scale, screen_get_scale(i));
 		}
 		return scale;
 	}
 	virtual float screen_get_refresh_rate(int p_screen = SCREEN_OF_MAIN_WINDOW) const = 0;
-	virtual Color screen_get_pixel(const Point2i &p_position) const { return Color(); }
+	virtual Color screen_get_pixel(const Point2i &p_position) const { return {}; }
 	virtual Ref<Image> screen_get_image(int p_screen = SCREEN_OF_MAIN_WINDOW) const { return Ref<Image>(); }
 	virtual bool is_touchscreen_available() const;
 
@@ -402,7 +404,7 @@ public:
 
 	virtual WindowID window_get_active_popup() const { return INVALID_WINDOW_ID; }
 	virtual void window_set_popup_safe_rect(WindowID p_window, const Rect2i &p_rect) {}
-	virtual Rect2i window_get_popup_safe_rect(WindowID p_window) const { return Rect2i(); }
+	virtual Rect2i window_get_popup_safe_rect(WindowID p_window) const { return {}; }
 
 	virtual int64_t window_get_native_handle(HandleType p_handle_type, WindowID p_window = MAIN_WINDOW_ID) const;
 
@@ -430,7 +432,7 @@ public:
 	virtual void window_set_drop_files_callback(const Callable &p_callable, WindowID p_window = MAIN_WINDOW_ID) = 0;
 
 	virtual void window_set_title(const String &p_title, WindowID p_window = MAIN_WINDOW_ID) = 0;
-	virtual Size2i window_get_title_size(const String &p_title, WindowID p_window = MAIN_WINDOW_ID) const { return Size2i(); }
+	virtual Size2i window_get_title_size(const String &p_title, WindowID p_window = MAIN_WINDOW_ID) const { return {}; }
 
 	virtual void window_set_mouse_passthrough(const Vector<Vector2> &p_region, WindowID p_window = MAIN_WINDOW_ID);
 
@@ -472,7 +474,7 @@ public:
 	virtual WindowID get_focused_window() const;
 
 	virtual void window_set_window_buttons_offset(const Vector2i &p_offset, WindowID p_window = MAIN_WINDOW_ID) {}
-	virtual Vector3i window_get_safe_title_margins(WindowID p_window = MAIN_WINDOW_ID) const { return Vector3i(); }
+	virtual Vector3i window_get_safe_title_margins(WindowID p_window = MAIN_WINDOW_ID) const { return {}; }
 
 	virtual bool window_can_draw(WindowID p_window = MAIN_WINDOW_ID) const = 0;
 
@@ -609,7 +611,7 @@ public:
 	static bool can_create_rendering_device();
 
 	DisplayServer();
-	~DisplayServer();
+	~DisplayServer() override;
 };
 
 VARIANT_ENUM_CAST(DisplayServer::WindowEvent)

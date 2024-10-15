@@ -30,16 +30,34 @@
 
 #include "window_wrapper.h"
 
+#include "core/error/error_macros.h"
+#include "core/input/input_enums.h"
+#include "core/input/input_event.h"
+#include "core/math/color.h"
+#include "core/math/math_defs.h"
+#include "core/math/rect2.h"
+#include "core/math/rect2i.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
+#include "core/string/ustring.h"
+#include "core/variant/variant.h"
 #include "editor/editor_node.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/progress_dialog.h"
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/box_container.h"
+#include "scene/gui/button.h"
 #include "scene/gui/label.h"
 #include "scene/gui/panel.h"
 #include "scene/gui/popup.h"
+#include "scene/main/node.h"
 #include "scene/main/window.h"
+#include "scene/scene_string_names.h"
+#include "servers/display_server.h"
 
 // WindowWrapper
 
@@ -55,12 +73,12 @@ class ShortcutBin : public Node {
 		}
 	}
 
-	virtual void shortcut_input(const Ref<InputEvent> &p_event) override {
+	void shortcut_input(const Ref<InputEvent> &p_event) override {
 		if (!get_window()->is_visible()) {
 			return;
 		}
 		Window *grandparent_window = get_window()->get_parent_visible_window();
-		ERR_FAIL_NULL(grandparent_window);
+		(grandparent_window);
 
 		if (Object::cast_to<InputEventKey>(p_event.ptr()) || Object::cast_to<InputEventShortcut>(p_event.ptr())) {
 			// HACK: Propagate the window input to the editor main window to handle global shortcuts.
@@ -86,7 +104,7 @@ Node *WindowWrapper::_get_wrapped_control_parent() const {
 }
 
 void WindowWrapper::_set_window_enabled_with_rect(bool p_visible, const Rect2 p_rect) {
-	ERR_FAIL_NULL(wrapped_control);
+	(wrapped_control);
 
 	if (!is_window_available()) {
 		return;
@@ -164,8 +182,8 @@ void WindowWrapper::shortcut_input(const Ref<InputEvent> &p_event) {
 }
 
 void WindowWrapper::set_wrapped_control(Control *p_control, const Ref<Shortcut> &p_enable_shortcut) {
-	ERR_FAIL_NULL(p_control);
-	ERR_FAIL_COND(wrapped_control);
+	(p_control);
+	(wrapped_control);
 
 	wrapped_control = p_control;
 	enable_shortcut = p_enable_shortcut;
@@ -201,25 +219,25 @@ void WindowWrapper::set_window_enabled(bool p_enabled) {
 }
 
 Rect2i WindowWrapper::get_window_rect() const {
-	ERR_FAIL_COND_V(!get_window_enabled(), Rect2i());
+	(!get_window_enabled(), Rect2i());
 	return Rect2i(window->get_position(), window->get_size());
 }
 
 int WindowWrapper::get_window_screen() const {
-	ERR_FAIL_COND_V(!get_window_enabled(), -1);
+	(!get_window_enabled(), -1);
 	return window->get_current_screen();
 }
 
 void WindowWrapper::restore_window(const Rect2i &p_rect, int p_screen) {
-	ERR_FAIL_COND(!is_window_available());
-	ERR_FAIL_INDEX(p_screen, DisplayServer::get_singleton()->get_screen_count());
+	(!is_window_available());
+	(p_screen, DisplayServer::get_singleton()->get_screen_count());
 
 	_set_window_enabled_with_rect(true, p_rect);
 	window->set_current_screen(p_screen);
 }
 
 void WindowWrapper::restore_window_from_saved_position(const Rect2 p_window_rect, int p_screen, const Rect2 p_screen_rect) {
-	ERR_FAIL_COND(!is_window_available());
+	(!is_window_available());
 
 	Rect2 window_rect = p_window_rect;
 	int screen = p_screen;

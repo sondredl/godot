@@ -31,11 +31,24 @@
 #include "fbx_importer_manager.h"
 
 #include "core/config/project_settings.h"
+#include "core/error/error_list.h"
+#include "core/io/file_access.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/os/memory.h"
+#include "core/os/os.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
 #include "editor/editor_node.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/button.h"
+#include "scene/gui/label.h"
+#include "scene/gui/line_edit.h"
 #include "scene/gui/link_button.h"
+#include "scene/scene_string_names.h"
 
 void FBXImporterManager::_notification(int p_what) {
 	switch (p_what) {
@@ -113,7 +126,7 @@ void FBXImporterManager::_path_confirmed() {
 	EditorSettings::get_singleton()->save();
 }
 
-void FBXImporterManager::_cancel_setup() {
+void FBXImporterManager::_cancel_setup() const {
 	if (!is_importing) {
 		return; // No worry.
 	}

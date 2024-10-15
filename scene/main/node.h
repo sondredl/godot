@@ -371,7 +371,6 @@ protected:
 
 	void _validate_property(PropertyInfo &p_property) const;
 
-protected:
 	virtual void input(const Ref<InputEvent> &p_event);
 	virtual void shortcut_input(const Ref<InputEvent> &p_key_event);
 	virtual void unhandled_input(const Ref<InputEvent> &p_event);
@@ -472,7 +471,7 @@ public:
 	Window *get_last_exclusive_window() const;
 
 	_FORCE_INLINE_ SceneTree *get_tree() const {
-		ERR_FAIL_NULL_V(data.tree, nullptr);
+		(data.tree, nullptr);
 		return data.tree;
 	}
 
@@ -509,7 +508,7 @@ public:
 
 	_FORCE_INLINE_ int get_index(bool p_include_internal = true) const {
 		// p_include_internal = false doesn't make sense if the node is internal.
-		ERR_FAIL_COND_V_MSG(!p_include_internal && data.internal_mode != INTERNAL_MODE_DISABLED, -1, "Node is internal. Can't get index with 'include_internal' being false.");
+		(!p_include_internal && data.internal_mode != INTERNAL_MODE_DISABLED, -1, "Node is internal. Can't get index with 'include_internal' being false.");
 		if (!data.parent) {
 			return data.index;
 		}
@@ -560,7 +559,7 @@ public:
 #endif
 	void get_storable_properties(HashSet<StringName> &r_storable_properties) const;
 
-	virtual String to_string() override;
+	String to_string() override;
 
 	/* NOTIFICATIONS */
 
@@ -739,8 +738,8 @@ public:
 	AutoTranslateMode get_auto_translate_mode() const;
 	bool can_auto_translate() const;
 
-	virtual StringName get_translation_domain() const override;
-	virtual void set_translation_domain(const StringName &p_domain) override;
+	StringName get_translation_domain() const override;
+	void set_translation_domain(const StringName &p_domain) override;
 	void set_translation_domain_inherited();
 
 	_FORCE_INLINE_ String atr(const String &p_message, const StringName &p_context = "") const { return can_auto_translate() ? tr(p_message, p_context) : p_message; }
@@ -782,30 +781,30 @@ public:
 	// These inherited functions need proper multithread locking when overridden in Node.
 #ifdef DEBUG_ENABLED
 
-	virtual void set_script(const Variant &p_script) override;
-	virtual Variant get_script() const override;
+	void set_script(const Variant &p_script) override;
+	Variant get_script() const override;
 
-	virtual bool has_meta(const StringName &p_name) const override;
-	virtual void set_meta(const StringName &p_name, const Variant &p_value) override;
-	virtual void remove_meta(const StringName &p_name) override;
-	virtual Variant get_meta(const StringName &p_name, const Variant &p_default = Variant()) const override;
-	virtual void get_meta_list(List<StringName> *p_list) const override;
+	bool has_meta(const StringName &p_name) const override;
+	void set_meta(const StringName &p_name, const Variant &p_value) override;
+	void remove_meta(const StringName &p_name) override;
+	Variant get_meta(const StringName &p_name, const Variant &p_default = Variant()) const override;
+	void get_meta_list(List<StringName> *p_list) const override;
 
-	virtual Error emit_signalp(const StringName &p_name, const Variant **p_args, int p_argcount) override;
-	virtual bool has_signal(const StringName &p_name) const override;
-	virtual void get_signal_list(List<MethodInfo> *p_signals) const override;
-	virtual void get_signal_connection_list(const StringName &p_signal, List<Connection> *p_connections) const override;
-	virtual void get_all_signal_connections(List<Connection> *p_connections) const override;
-	virtual int get_persistent_signal_connection_count() const override;
-	virtual void get_signals_connected_to_this(List<Connection> *p_connections) const override;
+	Error emit_signalp(const StringName &p_name, const Variant **p_args, int p_argcount) override;
+	bool has_signal(const StringName &p_name) const override;
+	void get_signal_list(List<MethodInfo> *p_signals) const override;
+	void get_signal_connection_list(const StringName &p_signal, List<Connection> *p_connections) const override;
+	void get_all_signal_connections(List<Connection> *p_connections) const override;
+	int get_persistent_signal_connection_count() const override;
+	void get_signals_connected_to_this(List<Connection> *p_connections) const override;
 
-	virtual Error connect(const StringName &p_signal, const Callable &p_callable, uint32_t p_flags = 0) override;
-	virtual void disconnect(const StringName &p_signal, const Callable &p_callable) override;
-	virtual bool is_connected(const StringName &p_signal, const Callable &p_callable) const override;
-	virtual bool has_connections(const StringName &p_signal) const override;
+	Error connect(const StringName &p_signal, const Callable &p_callable, uint32_t p_flags = 0) override;
+	void disconnect(const StringName &p_signal, const Callable &p_callable) override;
+	bool is_connected(const StringName &p_signal, const Callable &p_callable) const override;
+	bool has_connections(const StringName &p_signal) const override;
 #endif
 	Node();
-	~Node();
+	~Node() override;
 };
 
 VARIANT_ENUM_CAST(Node::DuplicateFlags);

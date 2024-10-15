@@ -30,11 +30,24 @@
 
 #include "editor_run_native.h"
 
+#include "core/error/error_list.h"
+#include "core/error/error_macros.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/variant/type_info.h"
+#include "core/variant/variant.h"
 #include "editor/editor_node.h"
 #include "editor/editor_settings.h"
 #include "editor/export/editor_export.h"
 #include "editor/export/editor_export_platform.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/gui/popup_menu.h"
+#include "scene/scene_string_names.h"
 
 void EditorRunNative::_notification(int p_what) {
 	switch (p_what) {
@@ -106,7 +119,7 @@ Error EditorRunNative::start_run_native(int p_id) {
 	}
 
 	Ref<EditorExportPlatform> eep = EditorExport::get_singleton()->get_export_platform(platform);
-	ERR_FAIL_COND_V(eep.is_null(), ERR_UNAVAILABLE);
+	(eep.is_null(), ERR_UNAVAILABLE);
 
 	Ref<EditorExportPreset> preset;
 

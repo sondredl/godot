@@ -123,8 +123,8 @@ public:
 	int get_total_channels_by_speaker_mode(SpeakerMode) const;
 
 	Vector<int32_t> get_input_buffer() { return input_buffer; }
-	unsigned int get_input_position() { return input_position; }
-	unsigned int get_input_size() { return input_size; }
+	unsigned int get_input_position() const { return input_position; }
+	unsigned int get_input_size() const { return input_size; }
 
 #ifdef DEBUG_ENABLED
 	uint64_t get_profiling_time() const { return prof_time.get(); }
@@ -142,7 +142,7 @@ public:
 	virtual void set_sample_playback_pause(const Ref<AudioSamplePlayback> &p_playback, bool p_paused) {}
 	virtual bool is_sample_playback_active(const Ref<AudioSamplePlayback> &p_playback) { return false; }
 	virtual double get_sample_playback_position(const Ref<AudioSamplePlayback> &p_playback) { return false; }
-	virtual void update_sample_playback_pitch_scale(const Ref<AudioSamplePlayback> &p_playback, float p_pitch_scale = 0.0f) {}
+	virtual void update_sample_playback_pitch_scale(const Ref<AudioSamplePlayback> &p_playback, float p_pitch_scale = 0.0F) {}
 	virtual void set_sample_playback_bus_volumes_linear(const Ref<AudioSamplePlayback> &p_playback, const HashMap<StringName, Vector<AudioFrame>> &p_bus_volumes) {}
 
 	virtual void set_sample_bus_count(int p_count) {}
@@ -218,13 +218,13 @@ private:
 	SafeNumeric<uint64_t> prof_time;
 #endif
 
-	float channel_disable_threshold_db = 0.0f;
+	float channel_disable_threshold_db = 0.0F;
 	uint32_t channel_disable_frames = 0;
 
 	int channel_count = 0;
 	int to_mix = 0;
 
-	float playback_speed_scale = 1.0f;
+	float playback_speed_scale = 1.0F;
 
 	bool tag_used_audio_streams = false;
 
@@ -258,7 +258,7 @@ private:
 		};
 
 		Vector<Effect> effects;
-		float volume_db = 0.0f;
+		float volume_db = 0.0F;
 		StringName send;
 		int index_cache = 0;
 	};
@@ -349,7 +349,7 @@ public:
 			case SPEAKER_SURROUND_71:
 				return 4;
 		}
-		ERR_FAIL_V(1);
+		(1);
 	}
 
 	// Do not use from outside audio thread.
@@ -473,7 +473,7 @@ public:
 	void set_enable_tagging_used_audio_streams(bool p_enable);
 
 #ifdef TOOLS_ENABLED
-	virtual void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
+	void get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const override;
 #endif
 
 	PlaybackType get_default_playback_type() const;
@@ -488,10 +488,10 @@ public:
 	void set_sample_playback_pause(const Ref<AudioSamplePlayback> &p_playback, bool p_paused);
 	bool is_sample_playback_active(const Ref<AudioSamplePlayback> &p_playback);
 	double get_sample_playback_position(const Ref<AudioSamplePlayback> &p_playback);
-	void update_sample_playback_pitch_scale(const Ref<AudioSamplePlayback> &p_playback, float p_pitch_scale = 0.0f);
+	void update_sample_playback_pitch_scale(const Ref<AudioSamplePlayback> &p_playback, float p_pitch_scale = 0.0F);
 
 	AudioServer();
-	virtual ~AudioServer();
+	~AudioServer() override;
 };
 
 VARIANT_ENUM_CAST(AudioServer::SpeakerMode)
@@ -515,7 +515,7 @@ class AudioBusLayout : public Resource {
 
 		Vector<Effect> effects;
 
-		float volume_db = 0.0f;
+		float volume_db = 0.0F;
 		StringName send;
 
 		Bus() {}

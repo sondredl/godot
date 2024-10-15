@@ -88,12 +88,11 @@ private:
 		// Update the proxyed object.
 		void edit(TileSetScenesCollectionSource *p_tile_set_atlas_source, int p_scene_id);
 
-		SceneTileProxyObject(TileSetScenesCollectionSourceEditor *p_tiles_set_scenes_collection_source_editor) {
+		explicit SceneTileProxyObject(TileSetScenesCollectionSourceEditor *p_tiles_set_scenes_collection_source_editor) {
 			tile_set_scenes_collection_source_editor = p_tiles_set_scenes_collection_source_editor;
 		}
 	};
 
-private:
 	bool read_only = false;
 
 	Ref<TileSet> tile_set;
@@ -142,7 +141,7 @@ protected:
 public:
 	void edit(Ref<TileSet> p_tile_set, TileSetScenesCollectionSource *p_tile_set_scenes_collection_source, int p_source_id);
 	TileSetScenesCollectionSourceEditor();
-	~TileSetScenesCollectionSourceEditor();
+	~TileSetScenesCollectionSourceEditor() override;
 };
 
 #endif // TILE_SET_SCENES_COLLECTION_SOURCE_EDITOR_H

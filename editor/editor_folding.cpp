@@ -30,10 +30,19 @@
 
 #include "editor_folding.h"
 
+#include "core/error/error_list.h"
+#include "core/error/error_macros.h"
 #include "core/io/config_file.h"
 #include "core/io/file_access.h"
-#include "editor/editor_inspector.h"
+#include "core/io/resource.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/string/node_path.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
 #include "editor/editor_paths.h"
+#include "scene/main/node.h"
 
 Vector<String> EditorFolding::_get_unfolds(const Object *p_object) {
 	Vector<String> sections;
@@ -130,7 +139,7 @@ void EditorFolding::_fill_folds(const Node *p_root, const Node *p_node, Array &p
 }
 
 void EditorFolding::save_scene_folding(const Node *p_scene, const String &p_path) {
-	ERR_FAIL_NULL(p_scene);
+	(p_scene);
 
 	Ref<FileAccess> file_check = FileAccess::create(FileAccess::ACCESS_RESOURCES);
 	if (!file_check->file_exists(p_path)) { //This can happen when creating scene from FilesystemDock. It has path, but no file.
@@ -140,7 +149,8 @@ void EditorFolding::save_scene_folding(const Node *p_scene, const String &p_path
 	Ref<ConfigFile> config;
 	config.instantiate();
 
-	Array unfolds, res_unfolds;
+	Array unfolds;
+	Array res_unfolds;
 	HashSet<Ref<Resource>> resources;
 	Array nodes_folded;
 	_fill_folds(p_scene, p_scene, unfolds, res_unfolds, nodes_folded, resources);
@@ -179,8 +189,8 @@ void EditorFolding::load_scene_folding(Node *p_scene, const String &p_path) {
 		nodes_folded = config->get_value("folding", "nodes_folded");
 	}
 
-	ERR_FAIL_COND(unfolds.size() & 1);
-	ERR_FAIL_COND(res_unfolds.size() & 1);
+	(unfolds.size() & 1);
+	(res_unfolds.size() & 1);
 
 	for (int i = 0; i < unfolds.size(); i += 2) {
 		NodePath path2 = unfolds[i];
@@ -203,8 +213,8 @@ void EditorFolding::load_scene_folding(Node *p_scene, const String &p_path) {
 		_set_unfolds(res.ptr(), unfolds2);
 	}
 
-	for (int i = 0; i < nodes_folded.size(); i++) {
-		NodePath fold_path = nodes_folded[i];
+	for (const auto &i : nodes_folded) {
+		NodePath fold_path = i;
 		if (p_scene->has_node(fold_path)) {
 			Node *node = p_scene->get_node(fold_path);
 			node->set_display_folded(true);

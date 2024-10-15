@@ -38,19 +38,19 @@
 template <typename T>
 struct GDExtensionConstPtr {
 	const T *data = nullptr;
-	GDExtensionConstPtr(const T *p_assign) { data = p_assign; }
+	explicit GDExtensionConstPtr(const T *p_assign) { data = p_assign; }
 	static const char *get_name() { return "const void"; }
-	operator const T *() const { return data; }
-	operator Variant() const { return uint64_t(data); }
+	explicit operator const T *() const { return data; }
+	explicit operator Variant() const { return uint64_t(data); }
 };
 
 template <typename T>
 struct GDExtensionPtr {
 	T *data = nullptr;
-	GDExtensionPtr(T *p_assign) { data = p_assign; }
+	explicit GDExtensionPtr(T *p_assign) { data = p_assign; }
 	static const char *get_name() { return "void"; }
-	operator T *() const { return data; }
-	operator Variant() const { return uint64_t(data); }
+	explicit operator T *() const { return data; }
+	explicit operator Variant() const { return uint64_t(data); }
 };
 
 #define GDVIRTUAL_NATIVE_PTR(m_type)                                                                                                                                                               \

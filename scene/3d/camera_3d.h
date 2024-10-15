@@ -127,7 +127,7 @@ protected:
 	// Opportunity for derived classes to interpolate extra attributes.
 	virtual void physics_interpolation_flip_data() {}
 
-	virtual void _physics_interpolated_changed() override;
+	void _physics_interpolated_changed() override;
 	virtual Transform3D _get_adjusted_camera_transform(const Transform3D &p_xform) const;
 	///////////////////////////////////////////////////////
 
@@ -221,7 +221,7 @@ public:
 	RID get_pyramid_shape_rid();
 
 	Camera3D();
-	~Camera3D();
+	~Camera3D() override;
 };
 
 VARIANT_ENUM_CAST(Camera3D::ProjectionType);

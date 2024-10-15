@@ -217,7 +217,7 @@ private:
 	int code_completion_longest_line = 0;
 	Rect2i code_completion_rect;
 	Rect2i code_completion_scroll_rect;
-	float code_completion_pan_offset = 0.0f;
+	float code_completion_pan_offset = 0.0F;
 
 	HashSet<char32_t> code_completion_prefixes;
 	List<ScriptLanguage::CodeCompletionOption> code_completion_option_submitted;
@@ -291,9 +291,9 @@ private:
 		int line_spacing = 1;
 	} theme_cache;
 
-	virtual Color _get_brace_mismatch_color() const override;
-	virtual Color _get_code_folding_color() const override;
-	virtual Ref<Texture2D> _get_folded_eol_icon() const override;
+	Color _get_brace_mismatch_color() const override;
+	Color _get_code_folding_color() const override;
+	Ref<Texture2D> _get_folded_eol_icon() const override;
 
 	/* Callbacks */
 	int lines_edited_changed = 0;
@@ -314,14 +314,14 @@ protected:
 	static void _bind_compatibility_methods();
 #endif
 
-	virtual void _unhide_carets() override;
+	void _unhide_carets() override;
 
 	/* Text manipulation */
 
 	// Overridable actions
-	virtual void _handle_unicode_input_internal(const uint32_t p_unicode, int p_caret) override;
-	virtual void _backspace_internal(int p_caret) override;
-	virtual void _cut_internal(int p_caret) override;
+	void _handle_unicode_input_internal(const uint32_t p_unicode, int p_caret) override;
+	void _backspace_internal(int p_caret) override;
+	void _cut_internal(int p_caret) override;
 
 	GDVIRTUAL1(_confirm_code_completion, bool)
 	GDVIRTUAL1(_request_code_completion, bool)
@@ -329,8 +329,8 @@ protected:
 
 public:
 	/* General overrides */
-	virtual void gui_input(const Ref<InputEvent> &p_gui_input) override;
-	virtual CursorShape get_cursor_shape(const Point2 &p_pos = Point2i()) const override;
+	void gui_input(const Ref<InputEvent> &p_gui_input) override;
+	CursorShape get_cursor_shape(const Point2 &p_pos = Point2i()) const override;
 
 	/* Indent management */
 	void set_indent_size(const int p_size);
@@ -505,7 +505,7 @@ public:
 	void duplicate_lines();
 
 	CodeEdit();
-	~CodeEdit();
+	~CodeEdit() override;
 };
 
 VARIANT_ENUM_CAST(CodeEdit::CodeCompletionKind);

@@ -164,7 +164,7 @@ class EditorFeatureProfileManager : public AcceptDialog {
 
 	void _class_list_item_selected();
 	void _class_list_item_edited();
-	void _class_list_item_collapsed(Object *p_item);
+	void _class_list_item_collapsed(Object *p_item) const;
 	void _property_item_edited();
 	void _save_and_update();
 

@@ -52,10 +52,10 @@ private:
 protected:
 	void _notification(int p_what);
 
-	virtual void pressed() override;
+	void pressed() override;
 
 public:
-	EditorVersionButton(VersionFormat p_format);
+	explicit EditorVersionButton(VersionFormat p_format);
 };
 
 #endif // EDITOR_VERSION_BUTTON_H

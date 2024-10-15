@@ -30,12 +30,23 @@
 
 #include "editor_sectioned_inspector.h"
 
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/object_id.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/variant.h"
 #include "editor/editor_inspector.h"
 #include "editor/editor_property_name_processor.h"
 #include "editor/editor_string_names.h"
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/check_button.h"
 #include "scene/gui/tree.h"
+#include "scene/scene_string_names.h"
 
 static bool _property_path_matches(const String &p_property_path, const String &p_filter, EditorPropertyNameProcessor::Style p_style) {
 	if (p_property_path.containsn(p_filter)) {
@@ -163,19 +174,17 @@ void SectionedInspector::set_current_section(const String &p_section) {
 String SectionedInspector::get_current_section() const {
 	if (sections->get_selected()) {
 		return sections->get_selected()->get_metadata(0);
-	} else {
-		return "";
 	}
+	return "";
 }
 
-String SectionedInspector::get_full_item_path(const String &p_item) {
+String SectionedInspector::get_full_item_path(const String &p_item) const {
 	String base = get_current_section();
 
 	if (!base.is_empty()) {
 		return base + "/" + p_item;
-	} else {
-		return p_item;
 	}
+	return p_item;
 }
 
 void SectionedInspector::edit(Object *p_object) {

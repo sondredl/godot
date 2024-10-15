@@ -118,9 +118,9 @@ class SceneImportSettingsDialog : public ConfirmationDialog {
 
 	Ref<StandardMaterial3D> collider_mat;
 
-	float cam_rot_x = 0.0f;
-	float cam_rot_y = 0.0f;
-	float cam_zoom = 0.0f;
+	float cam_rot_x = 0.0F;
+	float cam_rot_y = 0.0F;
+	float cam_zoom = 0.0F;
 
 	void _update_scene();
 
@@ -240,7 +240,7 @@ class SceneImportSettingsDialog : public ConfirmationDialog {
 	Timer *update_view_timer = nullptr;
 
 protected:
-	virtual void _update_theme_item_cache() override;
+	void _update_theme_item_cache() override;
 	void _notification(int p_what);
 
 public:
@@ -251,7 +251,7 @@ public:
 	static SceneImportSettingsDialog *get_singleton();
 	Node *get_selected_node();
 	SceneImportSettingsDialog();
-	~SceneImportSettingsDialog();
+	~SceneImportSettingsDialog() override;
 };
 
 #endif // SCENE_IMPORT_SETTINGS_H

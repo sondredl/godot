@@ -56,7 +56,7 @@ public:
 		_FORCE_INLINE_ bool operator==(const ConstIterator &p_other) const { return element_ptr == p_other.element_ptr; }
 		_FORCE_INLINE_ bool operator!=(const ConstIterator &p_other) const { return element_ptr != p_other.element_ptr; }
 
-		_FORCE_INLINE_ ConstIterator(const Variant *p_element_ptr, Variant *p_read_only = nullptr) :
+		_FORCE_INLINE_ explicit ConstIterator(const Variant *p_element_ptr, Variant *p_read_only = nullptr) :
 				element_ptr(p_element_ptr), read_only(p_read_only) {}
 		_FORCE_INLINE_ ConstIterator() {}
 		_FORCE_INLINE_ ConstIterator(const ConstIterator &p_other) :
@@ -83,7 +83,7 @@ public:
 		_FORCE_INLINE_ bool operator==(const Iterator &p_other) const { return element_ptr == p_other.element_ptr; }
 		_FORCE_INLINE_ bool operator!=(const Iterator &p_other) const { return element_ptr != p_other.element_ptr; }
 
-		_FORCE_INLINE_ Iterator(Variant *p_element_ptr, Variant *p_read_only = nullptr) :
+		_FORCE_INLINE_ explicit Iterator(Variant *p_element_ptr, Variant *p_read_only = nullptr) :
 				element_ptr(p_element_ptr), read_only(p_read_only) {}
 		_FORCE_INLINE_ Iterator() {}
 		_FORCE_INLINE_ Iterator(const Iterator &p_other) :
@@ -95,8 +95,8 @@ public:
 			return *this;
 		}
 
-		operator ConstIterator() const {
-			return ConstIterator(element_ptr, read_only);
+		explicit operator ConstIterator() const {
+			return { element_ptr, read_only };
 		}
 
 	private:

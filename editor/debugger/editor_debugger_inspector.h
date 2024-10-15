@@ -48,7 +48,7 @@ public:
 	List<PropertyInfo> prop_list;
 	HashMap<StringName, Variant> prop_values;
 
-	ObjectID get_remote_object_id() { return remote_object_id; };
+	ObjectID get_remote_object_id() const { return remote_object_id; };
 	String get_title();
 
 	Variant get_variant(const StringName &p_name);
@@ -81,7 +81,7 @@ protected:
 
 public:
 	EditorDebuggerInspector();
-	~EditorDebuggerInspector();
+	~EditorDebuggerInspector() override;
 
 	// Remote Object cache
 	ObjectID add_object(const Array &p_arr);

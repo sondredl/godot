@@ -85,7 +85,7 @@ private:
 			text_buf.instantiate();
 		}
 
-		Item(bool p_dummy) {}
+		explicit Item(bool p_dummy) {}
 	};
 
 	static inline PropertyListHelper base_property_helper;
@@ -175,7 +175,7 @@ protected:
 	static void _bind_methods();
 
 public:
-	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+	void gui_input(const Ref<InputEvent> &p_event) override;
 
 	int add_item(const String &p_item, const Ref<Texture2D> &p_texture = Ref<Texture2D>(), bool p_selectable = true);
 	int add_icon_item(const Ref<Texture2D> &p_item, bool p_selectable = true);
@@ -287,7 +287,7 @@ public:
 	void sort_items_by_text();
 	int find_metadata(const Variant &p_metadata) const;
 
-	virtual String get_tooltip(const Point2 &p_pos) const override;
+	String get_tooltip(const Point2 &p_pos) const override;
 	int get_item_at_position(const Point2 &p_pos, bool p_exact = false) const;
 	bool is_pos_at_end_of_items(const Point2 &p_pos) const;
 
@@ -309,7 +309,7 @@ public:
 	VScrollBar *get_v_scroll_bar() { return scroll_bar; }
 
 	ItemList();
-	~ItemList();
+	~ItemList() override;
 };
 
 VARIANT_ENUM_CAST(ItemList::SelectMode);

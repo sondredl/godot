@@ -62,7 +62,7 @@ class SafeBinaryMutex {
 		mutable THREADING_NAMESPACE::unique_lock<THREADING_NAMESPACE::mutex> lock;
 		uint32_t count = 0;
 
-		TLSData(SafeBinaryMutex<Tag> &p_mutex) :
+		explicit TLSData(SafeBinaryMutex<Tag> &p_mutex) :
 				lock(p_mutex.mutex, THREADING_NAMESPACE::defer_lock) {}
 	};
 	static thread_local TLSData tls_data;

@@ -104,7 +104,7 @@ class SurfaceUpgradeDialog;
 struct EditorProgress {
 	String task;
 	bool force_background = false;
-	bool step(const String &p_state, int p_step = -1, bool p_force_refresh = true);
+	bool step(const String &p_state, int p_step = -1, bool p_force_refresh = true) const;
 
 	EditorProgress(const String &p_task, const String &p_label, int p_amount, bool p_can_cancel = false, bool p_force_background = false);
 	~EditorProgress();
@@ -514,8 +514,8 @@ private:
 
 	void _add_to_history(const Object *p_object, const String &p_property, bool p_inspector_only);
 	void _edit_current(bool p_skip_foreign = false, bool p_skip_inspector_update = false);
-	void _dialog_display_save_error(String p_file, Error p_error);
-	void _dialog_display_load_error(String p_file, Error p_error);
+	void _dialog_display_save_error(const String &p_file, Error p_error);
+	void _dialog_display_load_error(const String &p_file, Error p_error);
 
 	void _menu_option(int p_option);
 	void _menu_confirm_current();
@@ -562,7 +562,7 @@ private:
 	void _set_current_scene(int p_idx);
 	void _set_current_scene_nocheck(int p_idx);
 	bool _validate_scene_recursive(const String &p_filename, Node *p_node);
-	void _save_scene(String p_file, int idx = -1);
+	void _save_scene(const String &p_file, int idx = -1);
 	void _save_all_scenes();
 	int _next_unsaved_scene(bool p_valid_filename, int p_start = 0);
 	void _discard_changes(const String &p_str = String());
@@ -582,19 +582,19 @@ private:
 	void _update_recent_scenes();
 	void _open_recent_scene(int p_idx);
 	void _dropped_files(const Vector<String> &p_files);
-	void _add_dropped_files_recursive(const Vector<String> &p_files, String to_path);
+	void _add_dropped_files_recursive(const Vector<String> &p_files, const String &to_path);
 
 	void _update_vsync_mode();
 	void _update_from_settings();
 	void _gdextensions_reloaded();
 
-	void _renderer_selected(int);
+	void _renderer_selected(int /*p_which*/);
 	void _update_renderer_color();
 	void _add_renderer_entry(const String &p_renderer_name, bool p_mark_overridden);
 
 	void _exit_editor(int p_exit_code);
 
-	virtual void shortcut_input(const Ref<InputEvent> &p_event) override;
+	rtcut_input(const Ref<InputEvent> &p_event) override;
 
 	bool has_main_screen() const { return true; }
 
@@ -606,7 +606,7 @@ private:
 	void _mark_unsaved_scenes();
 
 	void _find_node_types(Node *p_node, int &count_2d, int &count_3d);
-	void _save_scene_with_preview(String p_file, int p_idx = -1);
+	void _save_scene_with_preview(const String &p_file, int p_idx = -1);
 	void _close_save_scene_progress();
 
 	bool _find_scene_in_use(Node *p_node, const String &p_path) const;
@@ -657,7 +657,7 @@ private:
 
 	void _begin_first_scan();
 
-	void _notify_nodes_scene_reimported(Node *p_node, Array p_reimported_nodes);
+	void _notify_nodes_scene_reimported(Node *p_node, const Array &p_reimported_nodes);
 
 	void _remove_all_not_owned_children(Node *p_node, Node *p_owner);
 
@@ -887,7 +887,7 @@ public:
 
 	Control *get_gui_base() { return gui_base; }
 
-	void save_scene_to_path(String p_file, bool p_with_preview = true) {
+	void save_scene_to_path(const const String &&p_file, bool p_with_preview = true) {
 		if (p_with_preview) {
 			_save_scene_with_preview(p_file);
 		} else {
@@ -942,7 +942,7 @@ public:
 	int execute_and_show_output(const String &p_title, const String &p_path, const List<String> &p_arguments, bool p_close_on_ok = true, bool p_close_on_errors = false, String *r_output = nullptr);
 
 	EditorNode();
-	~EditorNode();
+	~EditorNode() override override;
 
 	void add_resource_conversion_plugin(const Ref<EditorResourceConversionPlugin> &p_plugin);
 	void remove_resource_conversion_plugin(const Ref<EditorResourceConversionPlugin> &p_plugin);
@@ -979,7 +979,7 @@ public:
 	bool is_empty();
 
 	EditorPluginList();
-	~EditorPluginList();
+	~EditorPluginList() override override;
 };
 
 struct EditorProgressBG {

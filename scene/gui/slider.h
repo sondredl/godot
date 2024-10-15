@@ -71,12 +71,12 @@ class Slider : public Range {
 protected:
 	bool ticks_on_borders = false;
 
-	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+	void gui_input(const Ref<InputEvent> &p_event) override;
 	void _notification(int p_what);
 	static void _bind_methods();
 
 public:
-	virtual Size2 get_minimum_size() const override;
+	Size2 get_minimum_size() const override;
 
 	void set_custom_step(double p_custom_step);
 	double get_custom_step() const;
@@ -93,7 +93,7 @@ public:
 	void set_scrollable(bool p_scrollable);
 	bool is_scrollable() const;
 
-	Slider(Orientation p_orientation = VERTICAL);
+	explicit Slider(Orientation p_orientation = VERTICAL);
 };
 
 class HSlider : public Slider {

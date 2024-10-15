@@ -50,7 +50,7 @@ class ConcavePolygonShape3D : public Shape3D {
 			return (a == p_edge.a && b == p_edge.b);
 		}
 
-		DrawEdge(const Vector3 &p_a = Vector3(), const Vector3 &p_b = Vector3()) {
+		explicit DrawEdge(const Vector3 &p_a = Vector3(), const Vector3 &p_b = Vector3()) {
 			a = p_a;
 			b = p_b;
 			if (a < b) {
@@ -62,7 +62,7 @@ class ConcavePolygonShape3D : public Shape3D {
 protected:
 	static void _bind_methods();
 
-	virtual void _update_shape() override;
+	void _update_shape() override;
 
 public:
 	void set_faces(const Vector<Vector3> &p_faces);
@@ -71,8 +71,8 @@ public:
 	void set_backface_collision_enabled(bool p_enabled);
 	bool is_backface_collision_enabled() const;
 
-	virtual Vector<Vector3> get_debug_mesh_lines() const override;
-	virtual real_t get_enclosing_radius() const override;
+	Vector<Vector3> get_debug_mesh_lines() const override;
+	real_t get_enclosing_radius() const override;
 
 	ConcavePolygonShape3D();
 };

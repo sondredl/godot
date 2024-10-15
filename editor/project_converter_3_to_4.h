@@ -129,7 +129,7 @@ class ProjectConverter3To4 {
 	bool test_conversion(RegExContainer &reg_container);
 
 public:
-	ProjectConverter3To4(int, int);
+	ProjectConverter3To4(int /*p_maximum_file_size_kb*/, int /*p_maximum_line_length*/);
 	bool validate_conversion();
 	bool convert();
 };

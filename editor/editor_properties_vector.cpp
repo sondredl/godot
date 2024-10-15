@@ -30,12 +30,22 @@
 
 #include "editor_properties_vector.h"
 
+#include "core/error/error_macros.h"
+#include "core/math/color.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/variant/callable.h"
+#include "core/variant/variant.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/gui/editor_spin_slider.h"
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/texture_button.h"
+#include "scene/scene_string_names.h"
 
 const String EditorPropertyVectorN::COMPONENT_LABELS[4] = { "x", "y", "z", "w" };
 

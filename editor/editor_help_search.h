@@ -125,7 +125,7 @@ class EditorHelpSearch::Runner : public RefCounted {
 		String keyword;
 
 		MemberMatch() {}
-		MemberMatch(const T *p_doc) :
+		explicit MemberMatch(const T *p_doc) :
 				doc(p_doc) {}
 	};
 
@@ -173,7 +173,7 @@ class EditorHelpSearch::Runner : public RefCounted {
 
 	bool _fill();
 	bool _phase_fill_classes_init();
-	bool _phase_fill_classes();
+	bool _phase_fill_classes() const;
 	bool _phase_fill_member_items_init();
 	bool _phase_fill_member_items();
 

@@ -267,7 +267,7 @@ public:
 
 	virtual void font_set_name(const RID &p_font_rid, const String &p_name) = 0;
 	virtual String font_get_name(const RID &p_font_rid) const = 0;
-	virtual Dictionary font_get_ot_name_strings(const RID &p_font_rid) const { return Dictionary(); }
+	virtual Dictionary font_get_ot_name_strings(const RID &p_font_rid) const { return {}; }
 
 	virtual void font_set_style_name(const RID &p_font_rid, const String &p_name) = 0;
 	virtual String font_get_style_name(const RID &p_font_rid) const = 0;
@@ -560,7 +560,7 @@ public:
 	virtual void cleanup() {}
 
 	TextServer();
-	~TextServer();
+	~TextServer() override;
 };
 
 /*************************************************************************/
@@ -573,9 +573,9 @@ struct Glyph {
 	uint8_t repeat = 1; // Draw multiple times in the row.
 	uint16_t flags = 0; // Grapheme flags (valid, rtl, virtual), set in the first glyph only.
 
-	float x_off = 0.f; // Offset from the origin of the glyph on baseline.
-	float y_off = 0.f;
-	float advance = 0.f; // Advance to the next glyph along baseline(x for horizontal layout, y for vertical).
+	float x_off = 0.F; // Offset from the origin of the glyph on baseline.
+	float y_off = 0.F;
+	float advance = 0.F; // Advance to the next glyph along baseline(x for horizontal layout, y for vertical).
 
 	RID font_rid; // Font resource.
 	int font_size = 0; // Font size;
@@ -627,7 +627,7 @@ public:
 	void set_primary_interface(const Ref<TextServer> &p_primary_interface);
 
 	TextServerManager();
-	~TextServerManager();
+	~TextServerManager() override;
 };
 
 /*************************************************************************/

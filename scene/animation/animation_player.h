@@ -99,9 +99,8 @@ private:
 		bool operator<(const BlendKey &bk) const {
 			if (from == bk.from) {
 				return StringName::AlphCompare()(to, bk.to);
-			} else {
-				return StringName::AlphCompare()(from, bk.from);
 			}
+			return StringName::AlphCompare()(from, bk.from);
 		}
 	};
 
@@ -131,19 +130,19 @@ private:
 protected:
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
-	virtual void _validate_property(PropertyInfo &p_property) const override;
+	void _validate_property(PropertyInfo &p_property) const override;
 	void _get_property_list(List<PropertyInfo> *p_list) const;
 	void _notification(int p_what);
 
 	static void _bind_methods();
 
 	// Make animation instances.
-	virtual bool _blend_pre_process(double p_delta, int p_track_count, const HashMap<NodePath, int> &p_track_map) override;
-	virtual void _blend_capture(double p_delta) override;
-	virtual void _blend_post_process() override;
+	bool _blend_pre_process(double p_delta, int p_track_count, const HashMap<NodePath, int> &p_track_map) override;
+	void _blend_capture(double p_delta) override;
+	void _blend_post_process() override;
 
-	virtual void _animation_removed(const StringName &p_name, const StringName &p_library) override;
-	virtual void _rename_animation(const StringName &p_from_name, const StringName &p_to_name) override;
+	void _animation_removed(const StringName &p_name, const StringName &p_library) override;
+	void _rename_animation(const StringName &p_from_name, const StringName &p_to_name) override;
 
 #ifndef DISABLE_DEPRECATED
 	void _set_process_callback_bind_compat_80813(AnimationProcessCallback p_mode);
@@ -221,10 +220,10 @@ public:
 	double get_section_end_time() const;
 	bool has_section() const;
 
-	virtual void advance(double p_time) override;
+	void advance(double p_time) override;
 
 	AnimationPlayer();
-	~AnimationPlayer();
+	~AnimationPlayer() override;
 };
 
 #ifndef DISABLE_DEPRECATED

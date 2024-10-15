@@ -59,7 +59,7 @@ private:
 	Vector2 drag_accum;
 	Vector2 drag_from;
 	Vector2 last_drag_accum;
-	float time_since_motion = 0.0f;
+	float time_since_motion = 0.0F;
 	bool drag_touching = false;
 	bool drag_touching_deaccel = false;
 	bool beyond_deadzone = false;
@@ -93,7 +93,7 @@ protected:
 	void _scroll_moved(float);
 
 public:
-	virtual void gui_input(const Ref<InputEvent> &p_gui_input) override;
+	void gui_input(const Ref<InputEvent> &p_gui_input) override;
 
 	void set_h_scroll(int p_pos);
 	int get_h_scroll() const;

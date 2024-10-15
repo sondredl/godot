@@ -84,11 +84,11 @@ class ViewportRotationControl : public Control {
 	int orbiting_index = -1;
 	int focused_axis = -2;
 
-	const float AXIS_CIRCLE_RADIUS = 8.0f * EDSCALE;
+	const float AXIS_CIRCLE_RADIUS = 8.0F * EDSCALE;
 
 protected:
 	void _notification(int p_what);
-	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+	void gui_input(const Ref<InputEvent> &p_event) override;
 	void _draw();
 	void _draw_axis(const Axis2D &p_axis);
 	void _get_sorted_axis(Vector<Axis2D> &r_axis);
@@ -534,7 +534,7 @@ public:
 	Camera3D *get_camera_3d() { return camera; } // return the default camera object.
 
 	Node3DEditorViewport(Node3DEditor *p_spatial_editor, int p_index);
-	~Node3DEditorViewport();
+	~Node3DEditorViewport() override;
 };
 
 class Node3DEditorSelectedItem : public Object {
@@ -558,7 +558,7 @@ public:
 		sp = nullptr;
 		last_xform_dirty = true;
 	}
-	~Node3DEditorSelectedItem();
+	~Node3DEditorSelectedItem() override;
 };
 
 class Node3DEditorViewportContainer : public Container {
@@ -588,7 +588,7 @@ private:
 	Vector2 drag_begin_pos;
 	Vector2 drag_begin_ratio;
 
-	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+	void gui_input(const Ref<InputEvent> &p_event) override;
 
 protected:
 	void _notification(int p_what);
@@ -876,7 +876,7 @@ private:
 protected:
 	void _notification(int p_what);
 	//void _gui_input(InputEvent p_event);
-	virtual void shortcut_input(const Ref<InputEvent> &p_event) override;
+	void shortcut_input(const Ref<InputEvent> &p_event) override;
 
 	static void _bind_methods();
 
@@ -964,7 +964,7 @@ public:
 	int get_preview_material_surface() const { return preview_material_surface; }
 
 	Node3DEditorViewport *get_editor_viewport(int p_idx) {
-		ERR_FAIL_INDEX_V(p_idx, static_cast<int>(VIEWPORTS_COUNT), nullptr);
+		(p_idx, static_cast<int>(VIEWPORTS_COUNT), nullptr);
 		return viewports[p_idx];
 	}
 
@@ -981,7 +981,7 @@ public:
 	void clear();
 
 	Node3DEditor();
-	~Node3DEditor();
+	~Node3DEditor() override;
 };
 
 class Node3DEditorPlugin : public EditorPlugin {
@@ -991,20 +991,20 @@ class Node3DEditorPlugin : public EditorPlugin {
 
 public:
 	Node3DEditor *get_spatial_editor() { return spatial_editor; }
-	virtual String get_name() const override { return "3D"; }
+	String get_name() const override { return "3D"; }
 	bool has_main_screen() const override { return true; }
-	virtual void make_visible(bool p_visible) override;
-	virtual void edit(Object *p_object) override;
-	virtual bool handles(Object *p_object) const override;
+	void make_visible(bool p_visible) override;
+	void edit(Object *p_object) override;
+	bool handles(Object *p_object) const override;
 
-	virtual Dictionary get_state() const override;
-	virtual void set_state(const Dictionary &p_state) override;
-	virtual void clear() override { spatial_editor->clear(); }
+	Dictionary get_state() const override;
+	void set_state(const Dictionary &p_state) override;
+	void clear() override { spatial_editor->clear(); }
 
-	virtual void edited_scene_changed() override;
+	void edited_scene_changed() override;
 
 	Node3DEditorPlugin();
-	~Node3DEditorPlugin();
+	~Node3DEditorPlugin() override;
 };
 
 class ViewportNavigationControl : public Control {
@@ -1017,11 +1017,11 @@ class ViewportNavigationControl : public Control {
 	int focused_index = -1;
 	Node3DEditorViewport::NavigationMode nav_mode = Node3DEditorViewport::NavigationMode::NAVIGATION_NONE;
 
-	const float AXIS_CIRCLE_RADIUS = 30.0f * EDSCALE;
+	const float AXIS_CIRCLE_RADIUS = 30.0F * EDSCALE;
 
 protected:
 	void _notification(int p_what);
-	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+	void gui_input(const Ref<InputEvent> &p_event) override;
 	void _draw();
 	void _on_mouse_entered();
 	void _on_mouse_exited();

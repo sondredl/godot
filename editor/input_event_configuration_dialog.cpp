@@ -29,15 +29,33 @@
 /**************************************************************************/
 
 #include "editor/input_event_configuration_dialog.h"
+#include "core/input/input_enums.h"
+#include "core/input/input_event.h"
 #include "core/input/input_map.h"
+#include "core/math/math_defs.h"
+#include "core/math/vector2.h"
+#include "core/math/vector2i.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/ref_counted.h"
+#include "core/os/keyboard.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/variant/variant.h"
 #include "editor/editor_string_names.h"
 #include "editor/event_listener_line_edit.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/gui/box_container.h"
 #include "scene/gui/check_box.h"
+#include "scene/gui/control.h"
+#include "scene/gui/dialogs.h"
+#include "scene/gui/label.h"
 #include "scene/gui/line_edit.h"
 #include "scene/gui/option_button.h"
 #include "scene/gui/separator.h"
 #include "scene/gui/tree.h"
+#include "scene/scene_string_names.h"
+#include "servers/text_server.h"
 
 void InputEventConfigurationDialog::_set_event(const Ref<InputEvent> &p_event, const Ref<InputEvent> &p_original_event, bool p_update_input_list_selection) {
 	if (p_event.is_valid()) {
@@ -263,7 +281,7 @@ void InputEventConfigurationDialog::_on_listen_input_changed(const Ref<InputEven
 	_set_event(received_event, received_original_event);
 }
 
-void InputEventConfigurationDialog::_search_term_updated(const String &) {
+void InputEventConfigurationDialog::_search_term_updated(const String & /*unused*/) {
 	_update_input_list();
 }
 
@@ -303,10 +321,10 @@ void InputEventConfigurationDialog::_update_input_list() {
 		mouse_root->set_meta("__type", INPUT_MOUSE_BUTTON);
 
 		MouseButton mouse_buttons[9] = { MouseButton::LEFT, MouseButton::RIGHT, MouseButton::MIDDLE, MouseButton::WHEEL_UP, MouseButton::WHEEL_DOWN, MouseButton::WHEEL_LEFT, MouseButton::WHEEL_RIGHT, MouseButton::MB_XBUTTON1, MouseButton::MB_XBUTTON2 };
-		for (int i = 0; i < 9; i++) {
+		for (auto &mouse_button : mouse_buttons) {
 			Ref<InputEventMouseButton> mb;
 			mb.instantiate();
-			mb->set_button_index(mouse_buttons[i]);
+			mb->set_button_index(mouse_button);
 			String desc = EventListenerLineEdit::get_event_text(mb, false);
 
 			if (!search_term.is_empty() && !desc.containsn(search_term)) {
@@ -315,7 +333,7 @@ void InputEventConfigurationDialog::_update_input_list() {
 
 			TreeItem *item = input_list_tree->create_item(mouse_root);
 			item->set_text(0, desc);
-			item->set_meta("__index", mouse_buttons[i]);
+			item->set_meta("__index", mouse_button);
 		}
 	}
 
@@ -464,7 +482,7 @@ void InputEventConfigurationDialog::_input_list_item_selected() {
 		return;
 	}
 
-	InputType input_type = (InputType)(int)selected->get_parent()->get_meta("__type");
+	auto input_type = (InputType)(int)selected->get_parent()->get_meta("__type");
 
 	switch (input_type) {
 		case INPUT_KEY: {
@@ -505,7 +523,7 @@ void InputEventConfigurationDialog::_input_list_item_selected() {
 			_set_event(k, ko, false);
 		} break;
 		case INPUT_MOUSE_BUTTON: {
-			MouseButton idx = (MouseButton)(int)selected->get_meta("__index");
+			auto idx = (MouseButton)(int)selected->get_meta("__index");
 			Ref<InputEventMouseButton> mb;
 			mb.instantiate();
 			mb->set_button_index(idx);
@@ -525,7 +543,7 @@ void InputEventConfigurationDialog::_input_list_item_selected() {
 			_set_event(mb, mb, false);
 		} break;
 		case INPUT_JOY_BUTTON: {
-			JoyButton idx = (JoyButton)(int)selected->get_meta("__index");
+			auto idx = (JoyButton)(int)selected->get_meta("__index");
 			Ref<InputEventJoypadButton> jb = InputEventJoypadButton::create_reference(idx);
 
 			// Maintain selected device
@@ -534,7 +552,7 @@ void InputEventConfigurationDialog::_input_list_item_selected() {
 			_set_event(jb, jb, false);
 		} break;
 		case INPUT_JOY_MOTION: {
-			JoyAxis axis = (JoyAxis)(int)selected->get_meta("__axis");
+			auto axis = (JoyAxis)(int)selected->get_meta("__axis");
 			int value = selected->get_meta("__value");
 
 			Ref<InputEventJoypadMotion> jm;
@@ -598,8 +616,8 @@ void InputEventConfigurationDialog::popup_and_configure(const Ref<InputEvent> &p
 		_set_event(Ref<InputEvent>(), Ref<InputEvent>());
 
 		// Clear Checkbox Values
-		for (int i = 0; i < MOD_MAX; i++) {
-			mod_checkboxes[i]->set_pressed(false);
+		for (auto &mod_checkboxe : mod_checkboxes) {
+			mod_checkboxe->set_pressed(false);
 		}
 
 		// Enable the Physical Key by default to encourage its use.

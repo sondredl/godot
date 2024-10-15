@@ -64,7 +64,7 @@ public:
 	void finish_upgrade();
 
 	SurfaceUpgradeTool();
-	~SurfaceUpgradeTool();
+	~SurfaceUpgradeTool() override override;
 };
 
 class SurfaceUpgradeDialog : public ConfirmationDialog {

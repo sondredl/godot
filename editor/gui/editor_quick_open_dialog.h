@@ -70,7 +70,7 @@ public:
 	void cleanup();
 
 	QuickOpenResultContainer();
-	~QuickOpenResultContainer();
+	~QuickOpenResultContainer() override;
 
 protected:
 	void _notification(int p_what);
@@ -215,8 +215,8 @@ public:
 	EditorQuickOpenDialog();
 
 protected:
-	virtual void cancel_pressed() override;
-	virtual void ok_pressed() override;
+	void cancel_pressed() override;
+	void ok_pressed() override;
 
 private:
 	static String get_dialog_title(const Vector<StringName> &p_base_types);

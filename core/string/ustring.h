@@ -62,7 +62,7 @@ public:
 			_index(p_other._index),
 			_cowdata(p_other._cowdata) {}
 
-	_FORCE_INLINE_ operator T() const {
+	_FORCE_INLINE_ explicit operator T() const {
 		if (unlikely(_index == _cowdata.size())) {
 			return _null;
 		}
@@ -111,14 +111,14 @@ public:
 	_FORCE_INLINE_ Char16String() {}
 	_FORCE_INLINE_ Char16String(const Char16String &p_str) { _cowdata._ref(p_str._cowdata); }
 	_FORCE_INLINE_ void operator=(const Char16String &p_str) { _cowdata._ref(p_str._cowdata); }
-	_FORCE_INLINE_ Char16String(const char16_t *p_cstr) { copy_from(p_cstr); }
+	_FORCE_INLINE_ explicit Char16String(const char16_t *p_cstr) { copy_from(p_cstr); }
 
 	void operator=(const char16_t *p_cstr);
 	bool operator<(const Char16String &p_right) const;
 	Char16String &operator+=(char16_t p_char);
 	int length() const { return size() ? size() - 1 : 0; }
 	const char16_t *get_data() const;
-	operator const char16_t *() const { return get_data(); };
+	explicit operator const char16_t *() const { return get_data(); };
 
 protected:
 	void copy_from(const char16_t *p_cstr);
@@ -152,7 +152,7 @@ public:
 	_FORCE_INLINE_ CharString() {}
 	_FORCE_INLINE_ CharString(const CharString &p_str) { _cowdata._ref(p_str._cowdata); }
 	_FORCE_INLINE_ void operator=(const CharString &p_str) { _cowdata._ref(p_str._cowdata); }
-	_FORCE_INLINE_ CharString(const char *p_cstr) { copy_from(p_cstr); }
+	_FORCE_INLINE_ explicit CharString(const char *p_cstr) { copy_from(p_cstr); }
 
 	void operator=(const char *p_cstr);
 	bool operator<(const CharString &p_right) const;
@@ -160,7 +160,7 @@ public:
 	CharString &operator+=(char p_char);
 	int length() const { return size() ? size() - 1 : 0; }
 	const char *get_data() const;
-	operator const char *() const { return get_data(); };
+	explicit operator const char *() const { return get_data(); };
 
 protected:
 	void copy_from(const char *p_cstr);
@@ -174,7 +174,7 @@ struct StrRange {
 	const char32_t *c_str;
 	int len;
 
-	StrRange(const char32_t *p_c_str = nullptr, int p_len = 0) {
+	explicit StrRange(const char32_t *p_c_str = nullptr, int p_len = 0) {
 		c_str = p_c_str;
 		len = p_len;
 	}
@@ -489,13 +489,13 @@ public:
 	Vector<uint8_t> to_utf32_buffer() const;
 	Vector<uint8_t> to_wchar_buffer() const;
 
-	String(const char *p_str);
-	String(const wchar_t *p_str);
-	String(const char32_t *p_str);
+	explicit String(const char *p_str);
+	explicit String(const wchar_t *p_str);
+	explicit String(const char32_t *p_str);
 	String(const char *p_str, int p_clip_to_len);
 	String(const wchar_t *p_str, int p_clip_to_len);
 	String(const char32_t *p_str, int p_clip_to_len);
-	String(const StrRange &p_range);
+	explicit String(const StrRange &p_range);
 };
 
 bool operator==(const char *p_chr, const String &p_str);
@@ -538,7 +538,8 @@ _FORCE_INLINE_ bool is_str_less(const L *l_ptr, const R *r_ptr) {
 
 		if (l == 0 && r == 0) {
 			return false;
-		} else if (l == 0) {
+		}
+		if (l == 0) {
 			return true;
 		} else if (r == 0) {
 			return false;

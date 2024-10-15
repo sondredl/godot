@@ -86,12 +86,7 @@ public:
 
 	_ALWAYS_INLINE_ bool try_wait() const {
 		std::lock_guard lock(mutex);
-		if (count) {
-			count--;
-			return true;
-		} else {
-			return false;
-		}
+		return count;
 	}
 
 #ifdef DEBUG_ENABLED

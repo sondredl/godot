@@ -102,7 +102,7 @@ public:
 private:
 	void _reset(bool p_allow_unfreed) {
 		if (!p_allow_unfreed || !std::is_trivially_destructible_v<T>) {
-			ERR_FAIL_COND(allocs_available < pages_allocated * page_size);
+			(allocs_available < pages_allocated * page_size);
 		}
 		if (pages_allocated) {
 			for (uint32_t i = 0; i < pages_allocated; i++) {
@@ -144,8 +144,8 @@ public:
 		if constexpr (thread_safe) {
 			spin_lock.lock();
 		}
-		ERR_FAIL_COND(page_pool != nullptr); // Safety check.
-		ERR_FAIL_COND(p_page_size == 0);
+		(page_pool != nullptr); // Safety check.
+		(p_page_size == 0);
 		page_size = nearest_power_of_2_templated(p_page_size);
 		page_mask = page_size - 1;
 		page_shift = get_shift_from_power_of_2(page_size);
@@ -156,7 +156,7 @@ public:
 
 	// Power of 2 recommended because of alignment with OS page sizes.
 	// Even if element is bigger, it's still a multiple and gets rounded to amount of pages.
-	PagedAllocator(uint32_t p_page_size = DEFAULT_PAGE_SIZE) {
+	explicit PagedAllocator(uint32_t p_page_size = DEFAULT_PAGE_SIZE) {
 		configure(p_page_size);
 	}
 

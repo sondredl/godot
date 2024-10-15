@@ -156,7 +156,7 @@ public:
 		_FORCE_INLINE_ bool operator==(const ConstIterator &b) const { return E == b.E; }
 		_FORCE_INLINE_ bool operator!=(const ConstIterator &b) const { return E != b.E; }
 
-		_FORCE_INLINE_ ConstIterator(const Element *p_E) { E = p_E; }
+		_FORCE_INLINE_ explicit ConstIterator(const Element *p_E) { E = p_E; }
 		_FORCE_INLINE_ ConstIterator() {}
 		_FORCE_INLINE_ ConstIterator(const ConstIterator &p_it) { E = p_it.E; }
 
@@ -181,11 +181,11 @@ public:
 		_FORCE_INLINE_ bool operator==(const Iterator &b) const { return E == b.E; }
 		_FORCE_INLINE_ bool operator!=(const Iterator &b) const { return E != b.E; }
 
-		Iterator(Element *p_E) { E = p_E; }
+		explicit Iterator(Element *p_E) { E = p_E; }
 		Iterator() {}
 		Iterator(const Iterator &p_it) { E = p_it.E; }
 
-		operator ConstIterator() const {
+		explicit operator ConstIterator() const {
 			return ConstIterator(E);
 		}
 
@@ -225,8 +225,8 @@ private:
 		int size_cache = 0;
 
 		bool erase(const Element *p_I) {
-			ERR_FAIL_NULL_V(p_I, false);
-			ERR_FAIL_COND_V(p_I->data != this, false);
+			(p_I, false);
+			(p_I->data != this, false);
 
 			if (first == p_I) {
 				first = p_I->next_ptr;
@@ -474,9 +474,9 @@ public:
 	}
 
 	void swap(Element *p_A, Element *p_B) {
-		ERR_FAIL_COND(!p_A || !p_B);
-		ERR_FAIL_COND(p_A->data != _data);
-		ERR_FAIL_COND(p_B->data != _data);
+		(!p_A || !p_B);
+		(p_A->data != _data);
+		(p_B->data != _data);
 
 		if (p_A == p_B) {
 			return;
@@ -554,7 +554,7 @@ public:
 	}
 
 	void move_to_back(Element *p_I) {
-		ERR_FAIL_COND(p_I->data != _data);
+		(p_I->data != _data);
 		if (!p_I->next_ptr) {
 			return;
 		}
@@ -591,7 +591,7 @@ public:
 	}
 
 	void move_to_front(Element *p_I) {
-		ERR_FAIL_COND(p_I->data != _data);
+		(p_I->data != _data);
 		if (!p_I->prev_ptr) {
 			return;
 		}
@@ -766,7 +766,7 @@ public:
 	~List() {
 		clear();
 		if (_data) {
-			ERR_FAIL_COND(_data->size_cache);
+			(_data->size_cache);
 			memdelete_allocator<_Data, A>(_data);
 		}
 	}

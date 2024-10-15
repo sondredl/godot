@@ -50,7 +50,7 @@ class Font : public Resource {
 	struct ShapedTextKey {
 		String text;
 		int font_size = 14;
-		float width = 0.f;
+		float width = 0.F;
 		BitField<TextServer::JustificationFlag> jst_flags = TextServer::JUSTIFICATION_NONE;
 		BitField<TextServer::LineBreakFlag> brk_flags = TextServer::BREAK_MANDATORY;
 		TextServer::Direction direction = TextServer::DIRECTION_AUTO;
@@ -99,7 +99,7 @@ protected:
 
 	virtual void _update_rids_fb(const Ref<Font> &p_f, int p_depth) const;
 	virtual void _update_rids() const;
-	virtual void reset_state() override;
+	void reset_state() override;
 
 #ifndef DISABLE_DEPRECATED
 	RID _find_variation_compat_80954(const Dictionary &p_variation_coordinates, int p_face_index = 0, float p_strength = 0.0, Transform2D p_transform = Transform2D()) const;
@@ -119,8 +119,8 @@ public:
 	virtual TypedArray<Font> get_fallbacks() const;
 
 	// Output.
-	virtual RID find_variation(const Dictionary &p_variation_coordinates, int p_face_index = 0, float p_strength = 0.0, Transform2D p_transform = Transform2D(), int p_spacing_top = 0, int p_spacing_bottom = 0, int p_spacing_space = 0, int p_spacing_glyph = 0, float p_baseline_offset = 0.0) const { return RID(); }
-	virtual RID _get_rid() const { return RID(); }
+	virtual RID find_variation(const Dictionary &p_variation_coordinates, int p_face_index = 0, float p_strength = 0.0, Transform2D p_transform = Transform2D(), int p_spacing_top = 0, int p_spacing_bottom = 0, int p_spacing_space = 0, int p_spacing_glyph = 0, float p_baseline_offset = 0.0) const { return {}; }
+	virtual RID get_rid() const { return {}; }
 	virtual TypedArray<RID> get_rids() const;
 
 	// Font metrics.
@@ -169,7 +169,7 @@ public:
 	virtual int64_t get_face_count() const;
 
 	Font();
-	~Font();
+	~Font() override;
 };
 
 /*************************************************************************/
@@ -197,7 +197,7 @@ class FontFile : public Font {
 	bool allow_system_fallback = true;
 	TextServer::Hinting hinting = TextServer::HINTING_LIGHT;
 	TextServer::SubpixelPositioning subpixel_positioning = TextServer::SUBPIXEL_POSITIONING_AUTO;
-	real_t oversampling = 0.f;
+	real_t oversampling = 0.F;
 
 #ifndef DISABLE_DEPRECATED
 	real_t bmp_height = 0.0;
@@ -224,7 +224,7 @@ protected:
 	bool _get(const StringName &p_name, Variant &r_ret) const;
 	void _get_property_list(List<PropertyInfo> *p_list) const;
 
-	virtual void reset_state() override;
+	void reset_state() override;
 
 public:
 	Error _load_bitmap_font(const String &p_path, List<String> *r_image_files);
@@ -284,8 +284,8 @@ public:
 	virtual real_t get_oversampling() const;
 
 	// Cache.
-	virtual RID find_variation(const Dictionary &p_variation_coordinates, int p_face_index = 0, float p_strength = 0.0, Transform2D p_transform = Transform2D(), int p_spacing_top = 0, int p_spacing_bottom = 0, int p_spacing_space = 0, int p_spacing_glyph = 0, float p_baseline_offset = 0.0) const override;
-	virtual RID _get_rid() const override;
+	RID find_variation(const Dictionary &p_variation_coordinates, int p_face_index = 0, float p_strength = 0.0, Transform2D p_transform = Transform2D(), int p_spacing_top = 0, int p_spacing_bottom = 0, int p_spacing_space = 0, int p_spacing_glyph = 0, float p_baseline_offset = 0.0) const override;
+	RID _get_rid() const override;
 
 	virtual int get_cache_count() const;
 	virtual void clear_cache();
@@ -386,7 +386,7 @@ public:
 	virtual char32_t get_char_from_glyph_index(int p_size, int32_t p_glyph_index) const;
 
 	FontFile();
-	~FontFile();
+	~FontFile() override;
 };
 
 /*************************************************************************/
@@ -398,7 +398,7 @@ class FontVariation : public Font {
 
 	struct Variation {
 		Dictionary opentype;
-		real_t embolden = 0.f;
+		real_t embolden = 0.F;
 		int face_index = 0;
 		Transform2D transform;
 	};
@@ -415,9 +415,9 @@ class FontVariation : public Font {
 protected:
 	static void _bind_methods();
 
-	virtual void _update_rids() const override;
+	void _update_rids() const override;
 
-	virtual void reset_state() override;
+	void reset_state() override;
 
 public:
 	virtual void set_base_font(const Ref<Font> &p_font);
@@ -437,20 +437,20 @@ public:
 	virtual int get_variation_face_index() const;
 
 	virtual void set_opentype_features(const Dictionary &p_features);
-	virtual Dictionary get_opentype_features() const override;
+	Dictionary get_opentype_features() const override;
 
 	virtual void set_spacing(TextServer::SpacingType p_spacing, int p_value);
-	virtual int get_spacing(TextServer::SpacingType p_spacing) const override;
+	int get_spacing(TextServer::SpacingType p_spacing) const override;
 
 	virtual float get_baseline_offset() const;
 	virtual void set_baseline_offset(float p_baseline_offset);
 
 	// Output.
-	virtual RID find_variation(const Dictionary &p_variation_coordinates, int p_face_index = 0, float p_strength = 0.0, Transform2D p_transform = Transform2D(), int p_spacing_top = 0, int p_spacing_bottom = 0, int p_spacing_space = 0, int p_spacing_glyph = 0, float p_baseline_offset = 0.0) const override;
-	virtual RID _get_rid() const override;
+	RID find_variation(const Dictionary &p_variation_coordinates, int p_face_index = 0, float p_strength = 0.0, Transform2D p_transform = Transform2D(), int p_spacing_top = 0, int p_spacing_bottom = 0, int p_spacing_space = 0, int p_spacing_glyph = 0, float p_baseline_offset = 0.0) const override;
+	RID _get_rid() const override;
 
 	FontVariation();
-	~FontVariation();
+	~FontVariation() override;
 };
 
 /*************************************************************************/
@@ -480,7 +480,7 @@ class SystemFont : public Font {
 	bool allow_system_fallback = true;
 	TextServer::Hinting hinting = TextServer::HINTING_LIGHT;
 	TextServer::SubpixelPositioning subpixel_positioning = TextServer::SUBPIXEL_POSITIONING_AUTO;
-	real_t oversampling = 0.f;
+	real_t oversampling = 0.F;
 	bool msdf = false;
 	int msdf_pixel_range = 16;
 	int msdf_size = 48;
@@ -489,9 +489,9 @@ protected:
 	static void _bind_methods();
 
 	virtual void _update_base_font();
-	virtual void _update_rids() const override;
+	void _update_rids() const override;
 
-	virtual void reset_state() override;
+	void reset_state() override;
 
 public:
 	virtual Ref<Font> get_base_font() const { return base_font; }
@@ -537,20 +537,20 @@ public:
 	virtual bool get_font_italic() const;
 
 	virtual void set_font_weight(int p_weight);
-	virtual int get_font_weight() const override;
+	int get_font_weight() const override;
 
 	virtual void set_font_stretch(int p_stretch);
-	virtual int get_font_stretch() const override;
+	int get_font_stretch() const override;
 
-	virtual int get_spacing(TextServer::SpacingType p_spacing) const override;
+	int get_spacing(TextServer::SpacingType p_spacing) const override;
 
-	virtual RID find_variation(const Dictionary &p_variation_coordinates, int p_face_index = 0, float p_strength = 0.0, Transform2D p_transform = Transform2D(), int p_spacing_top = 0, int p_spacing_bottom = 0, int p_spacing_space = 0, int p_spacing_glyph = 0, float p_baseline_offset = 0.0) const override;
-	virtual RID _get_rid() const override;
+	RID find_variation(const Dictionary &p_variation_coordinates, int p_face_index = 0, float p_strength = 0.0, Transform2D p_transform = Transform2D(), int p_spacing_top = 0, int p_spacing_bottom = 0, int p_spacing_space = 0, int p_spacing_glyph = 0, float p_baseline_offset = 0.0) const override;
+	RID _get_rid() const override;
 
 	int64_t get_face_count() const override;
 
 	SystemFont();
-	~SystemFont();
+	~SystemFont() override;
 };
 
 #endif // FONT_H

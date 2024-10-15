@@ -610,7 +610,7 @@ public:
 	virtual int get_process_info(ProcessInfo p_info) = 0;
 
 	PhysicsServer2D();
-	~PhysicsServer2D();
+	~PhysicsServer2D() override;
 };
 
 class PhysicsRayQueryParameters2D : public RefCounted {
@@ -789,7 +789,7 @@ class PhysicsServer2DManager : public Object {
 
 		ClassInfo() {}
 
-		ClassInfo(String p_name, Callable p_create_callback) :
+		ClassInfo(const String &p_name, const Callable &p_create_callback) :
 				name(p_name),
 				create_callback(p_create_callback) {}
 
@@ -826,7 +826,7 @@ public:
 	PhysicsServer2D *new_server(const String &p_name);
 
 	PhysicsServer2DManager();
-	~PhysicsServer2DManager();
+	~PhysicsServer2DManager() override;
 };
 
 VARIANT_ENUM_CAST(PhysicsServer2D::ShapeType);

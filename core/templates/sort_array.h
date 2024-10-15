@@ -64,7 +64,8 @@ public:
 		if (compare(a, b)) {
 			if (compare(b, c)) {
 				return b;
-			} else if (compare(a, c)) {
+			}
+			if (compare(a, c)) {
 				return c;
 			} else {
 				return a;

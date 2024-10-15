@@ -438,7 +438,7 @@ public:
 			case Variant::VARIANT_MAX:
 				ERR_FAIL_V(nullptr);
 		}
-		ERR_FAIL_V(nullptr);
+		(nullptr);
 	}
 
 	_FORCE_INLINE_ static const void *get_opaque_pointer(const Variant *v) {
@@ -524,7 +524,7 @@ public:
 			case Variant::VARIANT_MAX:
 				ERR_FAIL_V(nullptr);
 		}
-		ERR_FAIL_V(nullptr);
+		(nullptr);
 	}
 };
 

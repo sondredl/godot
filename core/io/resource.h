@@ -153,7 +153,7 @@ public:
 	String get_id_for_path(const String &p_path) const;
 
 	Resource();
-	~Resource();
+	~Resource() override;
 };
 
 class ResourceCache {

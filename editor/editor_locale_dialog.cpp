@@ -31,13 +31,26 @@
 #include "editor_locale_dialog.h"
 
 #include "core/config/project_settings.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/object.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
 #include "core/string/translation_server.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
+#include "core/variant/variant.h"
 #include "editor/editor_undo_redo_manager.h"
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/check_button.h"
+#include "scene/gui/control.h"
+#include "scene/gui/dialogs.h"
+#include "scene/gui/label.h"
 #include "scene/gui/line_edit.h"
 #include "scene/gui/option_button.h"
 #include "scene/gui/tree.h"
+#include "scene/scene_string_names.h"
 
 void EditorLocaleDialog::_bind_methods() {
 	ADD_SIGNAL(MethodInfo("locale_selected", PropertyInfo(Variant::STRING, "locale")));

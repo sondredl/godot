@@ -30,15 +30,32 @@
 
 #include "project_manager.h"
 
+#include "core/config/engine.h"
 #include "core/config/project_settings.h"
+#include "core/core_string_names.h"
+#include "core/error/error_list.h"
+#include "core/error/error_macros.h"
+#include "core/input/input.h"
+#include "core/input/input_event.h"
 #include "core/io/config_file.h"
 #include "core/io/dir_access.h"
-#include "core/io/file_access.h"
-#include "core/io/resource_saver.h"
-#include "core/io/stream_peer_tls.h"
+#include "core/math/color.h"
+#include "core/math/math_defs.h"
+#include "core/math/rect2i.h"
+#include "core/math/vector2.h"
+#include "core/math/vector2i.h"
+#include "core/math/vector3i.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
 #include "core/os/keyboard.h"
+#include "core/os/memory.h"
 #include "core/os/os.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/variant/variant.h"
 #include "core/version.h"
+#include "core/version_generated.gen.h"
 #include "editor/editor_about.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
@@ -51,25 +68,32 @@
 #include "editor/project_manager/project_list.h"
 #include "editor/project_manager/project_tag.h"
 #include "editor/project_manager/quick_settings_dialog.h"
-#include "editor/themes/editor_icons.h"
 #include "editor/themes/editor_scale.h"
 #include "editor/themes/editor_theme_manager.h"
 #include "main/main.h"
-#include "scene/gui/check_box.h"
-#include "scene/gui/color_rect.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/control.h"
+#include "scene/gui/dialogs.h"
 #include "scene/gui/flow_container.h"
 #include "scene/gui/line_edit.h"
 #include "scene/gui/margin_container.h"
 #include "scene/gui/option_button.h"
+#include "scene/gui/panel.h"
 #include "scene/gui/panel_container.h"
 #include "scene/gui/rich_text_label.h"
+#include "scene/gui/scroll_container.h"
 #include "scene/gui/separator.h"
-#include "scene/gui/texture_rect.h"
+#include "scene/main/scene_tree.h"
 #include "scene/main/window.h"
+#include "scene/resources/style_box.h"
+#include "scene/resources/theme.h"
+#include "scene/scene_string_names.h"
 #include "scene/theme/theme_db.h"
 #include "servers/display_server.h"
 #include "servers/navigation_server_3d.h"
 #include "servers/physics_server_2d.h"
+#include "servers/physics_server_3d.h"
+#include "servers/text_server.h"
 
 constexpr int GODOT4_CONFIG_VERSION = 5;
 
@@ -280,9 +304,9 @@ void ProjectManager::_update_theme(bool p_skip_creation) {
 }
 
 Button *ProjectManager::_add_main_view(MainViewTab p_id, const String &p_name, const Ref<Texture2D> &p_icon, Control *p_view_control) {
-	ERR_FAIL_INDEX_V(p_id, MAIN_VIEW_MAX, nullptr);
-	ERR_FAIL_COND_V(main_view_map.has(p_id), nullptr);
-	ERR_FAIL_COND_V(main_view_toggle_map.has(p_id), nullptr);
+	(p_id, MAIN_VIEW_MAX, nullptr);
+	(main_view_map.has(p_id), nullptr);
+	(main_view_toggle_map.has(p_id), nullptr);
 
 	Button *toggle_button = memnew(Button);
 	toggle_button->set_flat(true);
@@ -305,8 +329,8 @@ Button *ProjectManager::_add_main_view(MainViewTab p_id, const String &p_name, c
 }
 
 void ProjectManager::_set_main_view_icon(MainViewTab p_id, const Ref<Texture2D> &p_icon) {
-	ERR_FAIL_INDEX(p_id, MAIN_VIEW_MAX);
-	ERR_FAIL_COND(!main_view_toggle_map.has(p_id));
+	(p_id, MAIN_VIEW_MAX);
+	(!main_view_toggle_map.has(p_id));
 
 	Button *toggle_button = main_view_toggle_map[p_id];
 
@@ -325,11 +349,11 @@ void ProjectManager::_set_main_view_icon(MainViewTab p_id, const Ref<Texture2D> 
 }
 
 void ProjectManager::_select_main_view(int p_id) {
-	MainViewTab view_id = (MainViewTab)p_id;
+	auto view_id = (MainViewTab)p_id;
 
-	ERR_FAIL_INDEX(view_id, MAIN_VIEW_MAX);
-	ERR_FAIL_COND(!main_view_map.has(view_id));
-	ERR_FAIL_COND(!main_view_toggle_map.has(view_id));
+	(view_id, MAIN_VIEW_MAX);
+	(!main_view_map.has(view_id));
+	(!main_view_toggle_map.has(view_id));
 
 	if (current_main_view != view_id) {
 		main_view_toggle_map[current_main_view]->set_pressed_no_signal(false);
@@ -378,7 +402,7 @@ void ProjectManager::_dim_window() {
 
 	// Dim the project manager window while it's quitting to make it clearer that it's busy.
 	// No transition is applied, as the effect needs to be visible immediately
-	float c = 0.5f;
+	float c = 0.5F;
 	Color dim_color = Color(c, c, c);
 	set_modulate(dim_color);
 }
@@ -392,7 +416,7 @@ void ProjectManager::_show_quick_settings() {
 void ProjectManager::_restart_confirmed() {
 	List<String> args = OS::get_singleton()->get_cmdline_args();
 	Error err = OS::get_singleton()->create_instance(args);
-	ERR_FAIL_COND(err);
+	(err);
 
 	_dim_window();
 	get_tree()->quit();
@@ -469,7 +493,7 @@ void ProjectManager::_run_project_confirm() {
 		args.push_back(path);
 
 		Error err = OS::get_singleton()->create_instance(args);
-		ERR_FAIL_COND(err);
+		(err);
 	}
 }
 
@@ -933,7 +957,7 @@ void ProjectManager::_perform_full_project_conversion() {
 	args.push_back(Main::get_rendering_driver_name());
 
 	Error err = OS::get_singleton()->create_instance(args);
-	ERR_FAIL_COND(err);
+	(err);
 
 	project_list->set_project_version(path, GODOT4_CONFIG_VERSION);
 }
@@ -941,7 +965,7 @@ void ProjectManager::_perform_full_project_conversion() {
 // Input and I/O.
 
 void ProjectManager::shortcut_input(const Ref<InputEvent> &p_ev) {
-	ERR_FAIL_COND(p_ev.is_null());
+	(p_ev.is_null());
 
 	Ref<InputEventKey> k = p_ev;
 
@@ -1043,7 +1067,7 @@ void ProjectManager::_files_dropped(PackedStringArray p_files) {
 		const String &file = p_files[i];
 		folders_set.insert(da->dir_exists(file) ? file : file.get_base_dir());
 	}
-	ERR_FAIL_COND(folders_set.is_empty()); // This can't really happen, we consume every dropped file path above.
+	(folders_set.is_empty()); // This can't really happen, we consume every dropped file path above.
 
 	PackedStringArray folders;
 	for (const String &E : folders_set) {

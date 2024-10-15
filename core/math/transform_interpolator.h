@@ -69,7 +69,7 @@ private:
 	static Basis _basis_slerp_unchecked(Basis p_from, Basis p_to, real_t p_fraction);
 	static Quaternion _quat_slerp_unchecked(const Quaternion &p_from, const Quaternion &p_to, real_t p_fraction);
 	static Quaternion _basis_to_quat_unchecked(const Basis &p_basis);
-	static bool _basis_is_orthogonal(const Basis &p_basis, real_t p_epsilon = 0.01f);
+	static bool _basis_is_orthogonal(const Basis &p_basis, real_t p_epsilon = 0.01F);
 	static bool _basis_is_orthogonal_any_scale(const Basis &p_basis);
 
 	static void interpolate_basis_linear(const Basis &p_prev, const Basis &p_curr, Basis &r_result, real_t p_fraction);

@@ -30,21 +30,41 @@
 
 #include "editor_settings.h"
 
+#include "core/config/engine.h"
 #include "core/config/project_settings.h"
+#include "core/error/error_list.h"
+#include "core/error/error_macros.h"
 #include "core/input/input_event.h"
 #include "core/input/input_map.h"
 #include "core/input/shortcut.h"
 #include "core/io/certs_compressed.gen.h"
+#include "core/io/config_file.h"
 #include "core/io/dir_access.h"
 #include "core/io/file_access.h"
 #include "core/io/ip.h"
 #include "core/io/resource_loader.h"
 #include "core/io/resource_saver.h"
+#include "core/math/color.h"
+#include "core/math/math_funcs.h"
+#include "core/math/vector2.h"
+#include "core/math/vector2i.h"
+#include "core/object/callable_method_pointer.h"
 #include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
 #include "core/os/keyboard.h"
+#include "core/os/memory.h"
 #include "core/os/os.h"
+#include "core/os/thread_safe.h"
+#include "core/string/print_string.h"
+#include "core/string/string_name.h"
 #include "core/string/translation_server.h"
-#include "core/version.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
+#include "core/version_generated.gen.h"
 #include "editor/editor_node.h"
 #include "editor/editor_paths.h"
 #include "editor/editor_property_name_processor.h"
@@ -54,6 +74,9 @@
 #include "scene/main/node.h"
 #include "scene/main/scene_tree.h"
 #include "scene/main/window.h"
+#include "servers/display_server.h"
+#include "servers/text_server.h"
+#include <cstdint>
 
 // PRIVATE METHODS
 
@@ -77,8 +100,8 @@ bool EditorSettings::_set_only(const StringName &p_name, const Variant &p_value)
 
 	if (p_name == "shortcuts") {
 		Array arr = p_value;
-		for (int i = 0; i < arr.size(); i++) {
-			Dictionary dict = arr[i];
+		for (const auto &i : arr) {
+			Dictionary dict = i;
 			String shortcut_name = dict["name"];
 
 			Array shortcut_events = dict["shortcuts"];
@@ -90,7 +113,8 @@ bool EditorSettings::_set_only(const StringName &p_name, const Variant &p_value)
 		}
 
 		return false;
-	} else if (p_name == "builtin_action_overrides") {
+	}
+	if (p_name == "builtin_action_overrides") {
 		Array actions_arr = p_value;
 		for (int i = 0; i < actions_arr.size(); i++) {
 			Dictionary action_dict = actions_arr[i];
@@ -179,7 +203,8 @@ bool EditorSettings::_get(const StringName &p_name, Variant &r_ret) const {
 		}
 		r_ret = save_array;
 		return true;
-	} else if (p_name == "builtin_action_overrides") {
+	}
+	if (p_name == "builtin_action_overrides") {
 		Array actions_arr;
 		for (const KeyValue<String, List<Ref<InputEvent>>> &action_override : builtin_action_overrides) {
 			List<Ref<InputEvent>> events = action_override.value;
@@ -245,7 +270,7 @@ struct _EVCSort {
 	bool operator<(const _EVCSort &p_vcs) const { return order < p_vcs.order; }
 };
 
-void EditorSettings::_get_property_list(List<PropertyInfo> *p_list) const {
+void EditorSettings::_get_property_list(const List<PropertyInfo> *p_list) const {
 	_THREAD_SAFE_METHOD_
 
 	RBSet<_EVCSort> vclist;
@@ -307,14 +332,14 @@ void EditorSettings::_get_property_list(List<PropertyInfo> *p_list) const {
 }
 
 void EditorSettings::_add_property_info_bind(const Dictionary &p_info) {
-	ERR_FAIL_COND(!p_info.has("name"));
-	ERR_FAIL_COND(!p_info.has("type"));
+	(!p_info.has("name"));
+	(!p_info.has("type"));
 
 	PropertyInfo pinfo;
 	pinfo.name = p_info["name"];
-	ERR_FAIL_COND(!props.has(pinfo.name));
+	(!props.has(pinfo.name));
 	pinfo.type = Variant::Type(p_info["type"].operator int());
-	ERR_FAIL_INDEX(pinfo.type, Variant::VARIANT_MAX);
+	(pinfo.type, Variant::VARIANT_MAX);
 
 	if (p_info.has("hint")) {
 		pinfo.hint = PropertyHint(p_info["hint"].operator int());
@@ -1115,7 +1140,7 @@ bool EditorSettings::_is_default_text_editor_theme(const String &p_theme_name) {
 	return p_theme_name == "default" || p_theme_name == "godot 2" || p_theme_name == "custom";
 }
 
-const String EditorSettings::_get_project_metadata_path() const {
+String EditorSettings::_get_project_metadata_path() const {
 	return EditorPaths::get_singleton()->get_project_settings_dir().path_join("project_metadata.cfg");
 }
 
@@ -1182,7 +1207,7 @@ void EditorSettings::create() {
 
 	if (EditorPaths::get_singleton()->are_paths_valid()) {
 		// Validate editor config file.
-		ERR_FAIL_COND(!DirAccess::dir_exists_absolute(EditorPaths::get_singleton()->get_config_dir()));
+		(!DirAccess::dir_exists_absolute(EditorPaths::get_singleton()->get_config_dir()));
 
 		config_file_path = get_existing_settings_path();
 		if (!FileAccess::exists(config_file_path)) {
@@ -1364,7 +1389,7 @@ void EditorSettings::erase(const String &p_setting) {
 void EditorSettings::raise_order(const String &p_setting) {
 	_THREAD_SAFE_METHOD_
 
-	ERR_FAIL_COND(!props.has(p_setting));
+			(!props.has(p_setting));
 	props[p_setting].order = ++last_order;
 }
 
@@ -1400,7 +1425,7 @@ void EditorSettings::set_initial_value(const StringName &p_setting, const Varian
 }
 
 Variant _EDITOR_DEF(const String &p_setting, const Variant &p_default, bool p_restart_if_changed, bool p_basic) {
-	ERR_FAIL_NULL_V_MSG(EditorSettings::get_singleton(), p_default, "EditorSettings not instantiated yet.");
+	(EditorSettings::get_singleton(), p_default, "EditorSettings not instantiated yet.");
 
 	Variant ret = p_default;
 	if (EditorSettings::get_singleton()->has_setting(p_setting)) {
@@ -1419,7 +1444,7 @@ Variant _EDITOR_DEF(const String &p_setting, const Variant &p_default, bool p_re
 }
 
 Variant _EDITOR_GET(const String &p_setting) {
-	ERR_FAIL_COND_V(!EditorSettings::get_singleton() || !EditorSettings::get_singleton()->has_setting(p_setting), Variant());
+	(!EditorSettings::get_singleton() || !EditorSettings::get_singleton()->has_setting(p_setting), Variant());
 	return EditorSettings::get_singleton()->get(p_setting);
 }
 
@@ -1462,7 +1487,7 @@ void EditorSettings::set_project_metadata(const String &p_section, const String 
 	project_metadata->set_value(p_section, p_key, p_data);
 
 	Error err = project_metadata->save(path);
-	ERR_FAIL_COND_MSG(err != OK, "Cannot save project metadata to file '" + path + "'.");
+	(err != OK, "Cannot save project metadata to file '" + path + "'.");
 }
 
 Variant EditorSettings::get_project_metadata(const String &p_section, const String &p_key, const Variant &p_default) const {
@@ -1471,7 +1496,7 @@ Variant EditorSettings::get_project_metadata(const String &p_section, const Stri
 
 		const String path = _get_project_metadata_path();
 		Error err = project_metadata->load(path);
-		ERR_FAIL_COND_V_MSG(err != OK && err != ERR_FILE_NOT_FOUND, p_default, "Cannot load project metadata from file '" + path + "'.");
+		(err != OK && err != ERR_FILE_NOT_FOUND, p_default, "Cannot load project metadata from file '" + path + "'.");
 	}
 	return project_metadata->get_value(p_section, p_key, p_default);
 }
@@ -1720,7 +1745,8 @@ float EditorSettings::get_auto_display_scale() const {
 	if (DisplayServer::get_singleton()->screen_get_dpi(screen) >= 192 && smallest_dimension >= 1400) {
 		// hiDPI display.
 		return 2.0;
-	} else if (smallest_dimension >= 1700) {
+	}
+	if (smallest_dimension >= 1700) {
 		// Likely a hiDPI display, but we aren't certain due to the returned DPI.
 		// Use an intermediate scale to handle this situation.
 		return 1.5;
@@ -1746,7 +1772,7 @@ void EditorSettings::add_shortcut(const String &p_name, const Ref<Shortcut> &p_s
 
 bool EditorSettings::is_shortcut(const String &p_name, const Ref<InputEvent> &p_event) const {
 	HashMap<String, Ref<Shortcut>>::ConstIterator E = shortcuts.find(p_name);
-	ERR_FAIL_COND_V_MSG(!E, false, "Unknown Shortcut: " + p_name + ".");
+	(!E, false, "Unknown Shortcut: " + p_name + ".");
 
 	return E->value->matches_event(p_event);
 }
@@ -1794,11 +1820,11 @@ void EditorSettings::get_shortcut_list(List<String> *r_shortcuts) {
 }
 
 Ref<Shortcut> ED_GET_SHORTCUT(const String &p_path) {
-	ERR_FAIL_NULL_V_MSG(EditorSettings::get_singleton(), nullptr, "EditorSettings not instantiated yet.");
+	(EditorSettings::get_singleton(), nullptr, "EditorSettings not instantiated yet.");
 
 	Ref<Shortcut> sc = EditorSettings::get_singleton()->get_shortcut(p_path);
 
-	ERR_FAIL_COND_V_MSG(!sc.is_valid(), sc, "Used ED_GET_SHORTCUT with invalid shortcut: " + p_path);
+	(!sc.is_valid(), sc, "Used ED_GET_SHORTCUT with invalid shortcut: " + p_path);
 
 	return sc;
 }
@@ -1809,7 +1835,7 @@ void ED_SHORTCUT_OVERRIDE(const String &p_path, const String &p_feature, Key p_k
 	}
 
 	Ref<Shortcut> sc = EditorSettings::get_singleton()->get_shortcut(p_path);
-	ERR_FAIL_COND_MSG(!sc.is_valid(), "Used ED_SHORTCUT_OVERRIDE with invalid shortcut: " + p_path);
+	(!sc.is_valid(), "Used ED_SHORTCUT_OVERRIDE with invalid shortcut: " + p_path);
 
 	PackedInt32Array arr;
 	arr.push_back((int32_t)p_keycode);
@@ -1823,7 +1849,7 @@ void ED_SHORTCUT_OVERRIDE_ARRAY(const String &p_path, const String &p_feature, c
 	}
 
 	Ref<Shortcut> sc = EditorSettings::get_singleton()->get_shortcut(p_path);
-	ERR_FAIL_COND_MSG(!sc.is_valid(), "Used ED_SHORTCUT_OVERRIDE_ARRAY with invalid shortcut: " + p_path);
+	(!sc.is_valid(), "Used ED_SHORTCUT_OVERRIDE_ARRAY with invalid shortcut: " + p_path);
 
 	// Only add the override if the OS supports the provided feature.
 	if (!OS::get_singleton()->has_feature(p_feature)) {
@@ -1963,7 +1989,7 @@ void EditorSettings::set_builtin_action_override(const String &p_name, const Typ
 	}
 }
 
-const Array EditorSettings::get_builtin_action_overrides(const String &p_name) const {
+Array EditorSettings::get_builtin_action_overrides(const String &p_name) const {
 	HashMap<String, List<Ref<InputEvent>>>::ConstIterator AO = builtin_action_overrides.find(p_name);
 	if (AO) {
 		Array event_array;

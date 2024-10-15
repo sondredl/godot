@@ -51,9 +51,9 @@ struct MethodDefinition {
 	StringName name;
 	Vector<StringName> args;
 	MethodDefinition() {}
-	MethodDefinition(const char *p_name) :
+	explicit MethodDefinition(const char *p_name) :
 			name(p_name) {}
-	MethodDefinition(const StringName &p_name) :
+	explicit MethodDefinition(const StringName &p_name) :
 			name(p_name) {}
 };
 
@@ -88,7 +88,6 @@ public:
 		API_NONE
 	};
 
-public:
 	struct PropertySetGet {
 		int index;
 		StringName setter;
@@ -210,7 +209,7 @@ public:
 		static_assert(std::is_same_v<typename T::self_type, T>, "Class not declared properly, please use GDCLASS.");
 		T::initialize_class();
 		ClassInfo *t = classes.getptr(T::get_class_static());
-		ERR_FAIL_NULL(t);
+		(t);
 		t->creation_func = &creator<T>;
 		t->exposed = true;
 		t->is_virtual = p_virtual;
@@ -225,7 +224,7 @@ public:
 		static_assert(std::is_same_v<typename T::self_type, T>, "Class not declared properly, please use GDCLASS.");
 		T::initialize_class();
 		ClassInfo *t = classes.getptr(T::get_class_static());
-		ERR_FAIL_NULL(t);
+		(t);
 		t->exposed = true;
 		t->class_ptr = T::get_class_ptr_static();
 		t->api = current_api;
@@ -238,7 +237,7 @@ public:
 		static_assert(std::is_same_v<typename T::self_type, T>, "Class not declared properly, please use GDCLASS.");
 		T::initialize_class();
 		ClassInfo *t = classes.getptr(T::get_class_static());
-		ERR_FAIL_NULL(t);
+		(t);
 		t->creation_func = &creator<T>;
 		t->exposed = false;
 		t->is_virtual = false;
@@ -253,8 +252,8 @@ public:
 		static_assert(std::is_same_v<typename T::self_type, T>, "Class not declared properly, please use GDCLASS.");
 		T::initialize_class();
 		ClassInfo *t = classes.getptr(T::get_class_static());
-		ERR_FAIL_NULL(t);
-		ERR_FAIL_COND_MSG(t->inherits_ptr && !t->inherits_ptr->creation_func, vformat("Cannot register runtime class '%s' that descends from an abstract parent class.", T::get_class_static()));
+		(t);
+		(t->inherits_ptr && !t->inherits_ptr->creation_func, vformat("Cannot register runtime class '%s' that descends from an abstract parent class.", T::get_class_static()));
 		t->creation_func = &creator<T>;
 		t->exposed = true;
 		t->is_virtual = false;
@@ -278,7 +277,7 @@ public:
 		static_assert(std::is_same_v<typename T::self_type, T>, "Class not declared properly, please use GDCLASS.");
 		T::initialize_class();
 		ClassInfo *t = classes.getptr(T::get_class_static());
-		ERR_FAIL_NULL(t);
+		(t);
 		t->creation_func = &_create_ptr_func<T>;
 		t->exposed = true;
 		t->class_ptr = T::get_class_ptr_static();
@@ -393,7 +392,7 @@ public:
 		GLOBAL_LOCK_FUNCTION;
 
 		MethodBind *bind = create_vararg_method_bind(p_method, p_info, p_return_nil_is_variant);
-		ERR_FAIL_NULL_V(bind, nullptr);
+		(bind, nullptr);
 
 		if constexpr (std::is_same_v<typename member_function_traits<M>::return_type, Object *>) {
 			bind->set_return_type_is_raw_object_ptr(true);
@@ -406,7 +405,7 @@ public:
 		GLOBAL_LOCK_FUNCTION;
 
 		MethodBind *bind = create_vararg_method_bind(p_method, p_info, p_return_nil_is_variant);
-		ERR_FAIL_NULL_V(bind, nullptr);
+		(bind, nullptr);
 
 		if constexpr (std::is_same_v<typename member_function_traits<M>::return_type, Object *>) {
 			bind->set_return_type_is_raw_object_ptr(true);

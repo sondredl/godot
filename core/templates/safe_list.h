@@ -91,7 +91,6 @@ public:
 			list->active_iterator_count--;
 		}
 
-	public:
 		T &operator*() {
 			return cursor->val;
 		}
@@ -120,7 +119,6 @@ public:
 		}
 	};
 
-public:
 	// Calling this will cause an allocation.
 	void insert(T p_value) {
 		SafeListNode *new_node = memnew_allocator(SafeListNode, A);
@@ -175,13 +173,12 @@ public:
 				prev.cursor->next.store(p_iterator.cursor->next.load());
 				// Done.
 				break;
-			} else {
-				if (head.compare_exchange_strong(/* expected= */ expected_head, /* new= */ p_iterator.cursor->next.load())) {
-					// Successfully reassigned the head pointer before another thread changed it to something else.
-					break;
-				}
-				// Fall through upon failure, try again.
 			}
+			if (head.compare_exchange_strong(/* expected= */ expected_head, /* new= */ p_iterator.cursor->next.load())) {
+				// Successfully reassigned the head pointer before another thread changed it to something else.
+				break;
+			}
+			// Fall through upon failure, try again.
 		}
 		// Then queue it for deletion by putting it in the node graveyard.
 		// Don't touch `next` because an iterator might still be pointing at this node.

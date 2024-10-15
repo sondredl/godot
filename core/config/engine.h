@@ -49,7 +49,7 @@ public:
 		bool user_created = false;
 		bool editor_only = false;
 
-		Singleton(const StringName &p_name = StringName(), Object *p_ptr = nullptr, const StringName &p_class_name = StringName());
+		explicit Singleton(const StringName &p_name = StringName(), Object *p_ptr = nullptr, const StringName &p_class_name = StringName());
 	};
 
 private:
@@ -68,7 +68,7 @@ private:
 	double _time_scale = 1.0;
 	uint64_t _physics_frames = 0;
 	int max_physics_steps_per_frame = 8;
-	double _physics_interpolation_fraction = 0.0f;
+	double _physics_interpolation_fraction = 0.0F;
 	bool abort_on_gpu_errors = false;
 	bool use_validation_layers = false;
 	bool generate_spirv_debug_info = false;

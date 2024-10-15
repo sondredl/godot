@@ -59,9 +59,9 @@ public:
 	Ref<ArrayMesh> get_debug_mesh() const;
 	AABB get_aabb() const;
 
-	virtual RID get_rid() const override;
+	RID get_rid() const override;
 	Occluder3D();
-	virtual ~Occluder3D();
+	~Occluder3D() override;
 };
 
 class ArrayOccluder3D : public Occluder3D {
@@ -71,7 +71,7 @@ class ArrayOccluder3D : public Occluder3D {
 	PackedInt32Array indices;
 
 protected:
-	virtual void _update_arrays(PackedVector3Array &r_vertices, PackedInt32Array &r_indices) override;
+	void _update_arrays(PackedVector3Array &r_vertices, PackedInt32Array &r_indices) override;
 	static void _bind_methods();
 
 public:
@@ -80,17 +80,17 @@ public:
 	void set_indices(PackedInt32Array p_indices);
 
 	ArrayOccluder3D();
-	~ArrayOccluder3D();
+	~ArrayOccluder3D() override;
 };
 
 class QuadOccluder3D : public Occluder3D {
 	GDCLASS(QuadOccluder3D, Occluder3D);
 
 private:
-	Size2 size = Vector2(1.0f, 1.0f);
+	Size2 size = Vector2(1.0F, 1.0F);
 
 protected:
-	virtual void _update_arrays(PackedVector3Array &r_vertices, PackedInt32Array &r_indices) override;
+	void _update_arrays(PackedVector3Array &r_vertices, PackedInt32Array &r_indices) override;
 	static void _bind_methods();
 
 public:
@@ -98,17 +98,17 @@ public:
 	void set_size(const Size2 &p_size);
 
 	QuadOccluder3D();
-	~QuadOccluder3D();
+	~QuadOccluder3D() override;
 };
 
 class BoxOccluder3D : public Occluder3D {
 	GDCLASS(BoxOccluder3D, Occluder3D);
 
 private:
-	Vector3 size = Vector3(1.0f, 1.0f, 1.0f);
+	Vector3 size = Vector3(1.0F, 1.0F, 1.0F);
 
 protected:
-	virtual void _update_arrays(PackedVector3Array &r_vertices, PackedInt32Array &r_indices) override;
+	void _update_arrays(PackedVector3Array &r_vertices, PackedInt32Array &r_indices) override;
 	static void _bind_methods();
 
 public:
@@ -116,7 +116,7 @@ public:
 	void set_size(const Vector3 &p_size);
 
 	BoxOccluder3D();
-	~BoxOccluder3D();
+	~BoxOccluder3D() override;
 };
 
 class SphereOccluder3D : public Occluder3D {
@@ -125,10 +125,10 @@ class SphereOccluder3D : public Occluder3D {
 private:
 	static constexpr int RINGS = 7;
 	static constexpr int RADIAL_SEGMENTS = 7;
-	float radius = 1.0f;
+	float radius = 1.0F;
 
 protected:
-	virtual void _update_arrays(PackedVector3Array &r_vertices, PackedInt32Array &r_indices) override;
+	void _update_arrays(PackedVector3Array &r_vertices, PackedInt32Array &r_indices) override;
 	static void _bind_methods();
 
 public:
@@ -136,7 +136,7 @@ public:
 	void set_radius(float p_radius);
 
 	SphereOccluder3D();
-	~SphereOccluder3D();
+	~SphereOccluder3D() override;
 };
 
 class PolygonOccluder3D : public Occluder3D {
@@ -148,7 +148,7 @@ private:
 	bool _has_editable_3d_polygon_no_depth() const;
 
 protected:
-	virtual void _update_arrays(PackedVector3Array &r_vertices, PackedInt32Array &r_indices) override;
+	void _update_arrays(PackedVector3Array &r_vertices, PackedInt32Array &r_indices) override;
 	static void _bind_methods();
 
 public:
@@ -156,7 +156,7 @@ public:
 	Vector<Vector2> get_polygon() const;
 
 	PolygonOccluder3D();
-	~PolygonOccluder3D();
+	~PolygonOccluder3D() override;
 };
 
 class OccluderInstance3D : public VisualInstance3D {
@@ -165,7 +165,7 @@ class OccluderInstance3D : public VisualInstance3D {
 private:
 	Ref<Occluder3D> occluder;
 	uint32_t bake_mask = 0xFFFFFFFF;
-	float bake_simplification_dist = 0.1f;
+	float bake_simplification_dist = 0.1F;
 
 	void _occluder_changed();
 
@@ -180,7 +180,7 @@ protected:
 	static void _bind_methods();
 
 public:
-	virtual PackedStringArray get_configuration_warnings() const override;
+	PackedStringArray get_configuration_warnings() const override;
 
 	enum BakeError {
 		BAKE_ERROR_OK,
@@ -192,7 +192,7 @@ public:
 	void set_occluder(const Ref<Occluder3D> &p_occluder);
 	Ref<Occluder3D> get_occluder() const;
 
-	virtual AABB get_aabb() const override;
+	AABB get_aabb() const override;
 
 	void set_bake_mask(uint32_t p_mask);
 	uint32_t get_bake_mask() const;
@@ -207,7 +207,7 @@ public:
 	static void bake_single_node(const Node3D *p_node, float p_simplification_distance, PackedVector3Array &r_vertices, PackedInt32Array &r_indices);
 
 	OccluderInstance3D();
-	~OccluderInstance3D();
+	~OccluderInstance3D() override;
 };
 
 #endif // OCCLUDER_INSTANCE_3D_H

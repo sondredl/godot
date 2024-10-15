@@ -50,7 +50,7 @@ class GotoLineDialog : public ConfirmationDialog {
 
 	CodeEdit *text_editor = nullptr;
 
-	virtual void ok_pressed() override;
+	pressed() override;
 
 public:
 	void popup_find_line(CodeEdit *p_edit);
@@ -118,7 +118,7 @@ class FindReplaceBar : public HBoxContainer {
 
 protected:
 	void _notification(int p_what);
-	virtual void unhandled_input(const Ref<InputEvent> &p_event) override;
+	andled_input(const Ref<InputEvent> &p_event) override;
 	void _focus_lost();
 
 	void _update_flags(bool p_direction_backwards);
@@ -178,7 +178,7 @@ class CodeTextEditor : public VBoxContainer {
 	Timer *code_complete_timer = nullptr;
 	int code_complete_timer_line = 0;
 
-	float zoom_factor = 1.0f;
+	float zoom_factor = 1.0F;
 
 	Label *error = nullptr;
 	int error_line;
@@ -191,7 +191,7 @@ class CodeTextEditor : public VBoxContainer {
 	void _complete_request();
 	Ref<Texture2D> _get_completion_icon(const ScriptLanguage::CodeCompletionOption &p_option);
 
-	virtual void input(const Ref<InputEvent> &event) override;
+	ut(const Ref<InputEvent> &event) override;
 	void _text_editor_gui_input(const Ref<InputEvent> &p_event);
 
 	Color completion_font_color;
@@ -226,7 +226,7 @@ protected:
 	void _code_complete_timer_timeout();
 	void _text_changed();
 	void _line_col_changed();
-	void _notification(int);
+	void _notification(int /*p_what*/);
 	static void _bind_methods();
 
 	bool is_warnings_panel_opened = false;
@@ -283,7 +283,7 @@ public:
 	void remove_all_bookmarks();
 
 	void set_zoom_factor(float p_zoom_factor);
-	float get_zoom_factor();
+	float get_zoom_factor() const;
 
 	void set_code_complete_func(CodeTextEditorCodeCompleteFunc p_code_complete_func, void *p_ud);
 

@@ -375,7 +375,7 @@ private:
 	_FORCE_INLINE_ float _uncompress_blend_shape(const Vector3i &p_value) const;
 
 	// bind helpers
-private:
+
 	bool _float_track_optimize_key(const TKey<float> t0, const TKey<float> t1, const TKey<float> t2, real_t p_allowed_velocity_err, real_t p_allowed_precision_error);
 	bool _vector2_track_optimize_key(const TKey<Vector2> t0, const TKey<Vector2> t1, const TKey<Vector2> t2, real_t p_alowed_velocity_err, real_t p_allowed_angular_error, real_t p_allowed_precision_error);
 	bool _vector3_track_optimize_key(const TKey<Vector3> t0, const TKey<Vector3> t1, const TKey<Vector3> t2, real_t p_alowed_velocity_err, real_t p_allowed_angular_error, real_t p_allowed_precision_error);
@@ -392,7 +392,7 @@ protected:
 	bool _get(const StringName &p_name, Variant &r_ret) const;
 	void _get_property_list(List<PropertyInfo> *p_list) const;
 
-	virtual void reset_state() override;
+	void reset_state() override;
 
 	static void _bind_methods();
 
@@ -576,7 +576,7 @@ public:
 	static TrackType get_cache_type(TrackType p_type);
 
 	Animation();
-	~Animation();
+	~Animation() override;
 };
 
 VARIANT_ENUM_CAST(Animation::TrackType);

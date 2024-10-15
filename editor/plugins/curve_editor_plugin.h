@@ -75,7 +75,7 @@ protected:
 	static void _bind_methods();
 
 private:
-	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+	void gui_input(const Ref<InputEvent> &p_event) override;
 	void _curve_changed();
 
 	int get_point_at(Vector2 p_pos) const;
@@ -103,8 +103,7 @@ private:
 
 	void _redraw();
 
-private:
-	const float ASPECT_RATIO = 6.f / 13.f;
+	const float ASPECT_RATIO = 6.F / 13.F;
 
 	Transform2D _world_to_view;
 
@@ -175,8 +174,8 @@ class EditorInspectorPluginCurve : public EditorInspectorPlugin {
 	GDCLASS(EditorInspectorPluginCurve, EditorInspectorPlugin);
 
 public:
-	virtual bool can_handle(Object *p_object) override;
-	virtual void parse_begin(Object *p_object) override;
+	bool can_handle(Object *p_object) override;
+	void parse_begin(Object *p_object) override;
 };
 
 class CurveEditorPlugin : public EditorPlugin {
@@ -185,15 +184,15 @@ class CurveEditorPlugin : public EditorPlugin {
 public:
 	CurveEditorPlugin();
 
-	virtual String get_name() const override { return "Curve"; }
+	String get_name() const override { return "Curve"; }
 };
 
 class CurvePreviewGenerator : public EditorResourcePreviewGenerator {
 	GDCLASS(CurvePreviewGenerator, EditorResourcePreviewGenerator);
 
 public:
-	virtual bool handles(const String &p_type) const override;
-	virtual Ref<Texture2D> generate(const Ref<Resource> &p_from, const Size2 &p_size, Dictionary &p_metadata) const override;
+	bool handles(const String &p_type) const override;
+	Ref<Texture2D> generate(const Ref<Resource> &p_from, const Size2 &p_size, Dictionary &p_metadata) const override;
 };
 
 #endif // CURVE_EDITOR_PLUGIN_H

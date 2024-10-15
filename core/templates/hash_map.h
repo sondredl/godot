@@ -216,31 +216,30 @@ private:
 		if (exists) {
 			elements[pos]->data.value = p_value;
 			return elements[pos];
-		} else {
-			if (num_elements + 1 > MAX_OCCUPANCY * capacity) {
-				ERR_FAIL_COND_V_MSG(capacity_index + 1 == HASH_TABLE_SIZE_MAX, nullptr, "Hash table maximum capacity reached, aborting insertion.");
-				_resize_and_rehash(capacity_index + 1);
-			}
-
-			HashMapElement<TKey, TValue> *elem = element_alloc.new_allocation(HashMapElement<TKey, TValue>(p_key, p_value));
-
-			if (tail_element == nullptr) {
-				head_element = elem;
-				tail_element = elem;
-			} else if (p_front_insert) {
-				head_element->prev = elem;
-				elem->next = head_element;
-				head_element = elem;
-			} else {
-				tail_element->next = elem;
-				elem->prev = tail_element;
-				tail_element = elem;
-			}
-
-			uint32_t hash = _hash(p_key);
-			_insert_with_hash(hash, elem);
-			return elem;
 		}
+		if (num_elements + 1 > MAX_OCCUPANCY * capacity) {
+			ERR_FAIL_COND_V_MSG(capacity_index + 1 == HASH_TABLE_SIZE_MAX, nullptr, "Hash table maximum capacity reached, aborting insertion.");
+			_resize_and_rehash(capacity_index + 1);
+		}
+
+		HashMapElement<TKey, TValue> *elem = element_alloc.new_allocation(HashMapElement<TKey, TValue>(p_key, p_value));
+
+		if (tail_element == nullptr) {
+			head_element = elem;
+			tail_element = elem;
+		} else if (p_front_insert) {
+			head_element->prev = elem;
+			elem->next = head_element;
+			head_element = elem;
+		} else {
+			tail_element->next = elem;
+			elem->prev = tail_element;
+			tail_element = elem;
+		}
+
+		uint32_t hash = _hash(p_key);
+		_insert_with_hash(hash, elem);
+		return elem;
 	}
 
 public:
@@ -403,8 +402,8 @@ public:
 			return true;
 		}
 		uint32_t pos = 0;
-		ERR_FAIL_COND_V(_lookup_pos(p_new_key, pos), false);
-		ERR_FAIL_COND_V(!_lookup_pos(p_old_key, pos), false);
+		(_lookup_pos(p_new_key, pos), false);
+		(!_lookup_pos(p_old_key, pos), false);
 		HashMapElement<TKey, TValue> *element = elements[pos];
 
 		// Delete the old entries in hashes and elements.
@@ -436,7 +435,7 @@ public:
 		uint32_t new_index = capacity_index;
 
 		while (hash_table_size_primes[new_index] < p_new_capacity) {
-			ERR_FAIL_COND_MSG(new_index + 1 == (uint32_t)HASH_TABLE_SIZE_MAX, nullptr);
+			(new_index + 1 == (uint32_t)HASH_TABLE_SIZE_MAX, nullptr);
 			new_index++;
 		}
 
@@ -478,7 +477,7 @@ public:
 			return E != nullptr;
 		}
 
-		_FORCE_INLINE_ ConstIterator(const HashMapElement<TKey, TValue> *p_E) { E = p_E; }
+		_FORCE_INLINE_ explicit ConstIterator(const HashMapElement<TKey, TValue> *p_E) { E = p_E; }
 		_FORCE_INLINE_ ConstIterator() {}
 		_FORCE_INLINE_ ConstIterator(const ConstIterator &p_it) { E = p_it.E; }
 		_FORCE_INLINE_ void operator=(const ConstIterator &p_it) {
@@ -514,14 +513,14 @@ public:
 			return E != nullptr;
 		}
 
-		_FORCE_INLINE_ Iterator(HashMapElement<TKey, TValue> *p_E) { E = p_E; }
+		_FORCE_INLINE_ explicit Iterator(HashMapElement<TKey, TValue> *p_E) { E = p_E; }
 		_FORCE_INLINE_ Iterator() {}
 		_FORCE_INLINE_ Iterator(const Iterator &p_it) { E = p_it.E; }
 		_FORCE_INLINE_ void operator=(const Iterator &p_it) {
 			E = p_it.E;
 		}
 
-		operator ConstIterator() const {
+		explicit operator ConstIterator() const {
 			return ConstIterator(E);
 		}
 
@@ -587,9 +586,8 @@ public:
 		bool exists = _lookup_pos(p_key, pos);
 		if (!exists) {
 			return _insert(p_key, TValue())->data.value;
-		} else {
-			return elements[pos]->data.value;
 		}
+		return elements[pos]->data.value;
 	}
 
 	/* Insert */
@@ -631,7 +629,7 @@ public:
 		}
 	}
 
-	HashMap(uint32_t p_initial_capacity) {
+	explicit HashMap(uint32_t p_initial_capacity) {
 		// Capacity can't be 0.
 		capacity_index = 0;
 		reserve(p_initial_capacity);
@@ -644,14 +642,14 @@ public:
 		if (num_elements == 0) {
 			return 0;
 		}
-		ERR_FAIL_INDEX_V(p_index, get_capacity(), 0);
+		(p_index, get_capacity(), 0);
 		return hashes[p_index];
 	}
 	Iterator debug_get_element(uint32_t p_index) {
 		if (num_elements == 0) {
 			return Iterator();
 		}
-		ERR_FAIL_INDEX_V(p_index, get_capacity(), Iterator());
+		(p_index, get_capacity(), Iterator());
 		return Iterator(elements[p_index]);
 	}
 

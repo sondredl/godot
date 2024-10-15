@@ -129,8 +129,8 @@ struct [[nodiscard]] Vector3i {
 	_FORCE_INLINE_ bool operator>(const Vector3i &p_v) const;
 	_FORCE_INLINE_ bool operator>=(const Vector3i &p_v) const;
 
-	operator String() const;
-	operator Vector3() const;
+	explicit operator String() const;
+	explicit operator Vector3() const;
 
 	_FORCE_INLINE_ Vector3i() {}
 	_FORCE_INLINE_ Vector3i(int32_t p_x, int32_t p_y, int32_t p_z) {
@@ -149,7 +149,7 @@ double Vector3i::length() const {
 }
 
 Vector3i Vector3i::abs() const {
-	return Vector3i(Math::abs(x), Math::abs(y), Math::abs(z));
+	return { Math::abs(x), Math::abs(y), Math::abs(z) };
 }
 
 Vector3i Vector3i::sign() const {
@@ -174,7 +174,7 @@ Vector3i &Vector3i::operator+=(const Vector3i &p_v) {
 }
 
 Vector3i Vector3i::operator+(const Vector3i &p_v) const {
-	return Vector3i(x + p_v.x, y + p_v.y, z + p_v.z);
+	return { x + p_v.x, y + p_v.y, z + p_v.z };
 }
 
 Vector3i &Vector3i::operator-=(const Vector3i &p_v) {
@@ -185,7 +185,7 @@ Vector3i &Vector3i::operator-=(const Vector3i &p_v) {
 }
 
 Vector3i Vector3i::operator-(const Vector3i &p_v) const {
-	return Vector3i(x - p_v.x, y - p_v.y, z - p_v.z);
+	return { x - p_v.x, y - p_v.y, z - p_v.z };
 }
 
 Vector3i &Vector3i::operator*=(const Vector3i &p_v) {
@@ -196,7 +196,7 @@ Vector3i &Vector3i::operator*=(const Vector3i &p_v) {
 }
 
 Vector3i Vector3i::operator*(const Vector3i &p_v) const {
-	return Vector3i(x * p_v.x, y * p_v.y, z * p_v.z);
+	return { x * p_v.x, y * p_v.y, z * p_v.z };
 }
 
 Vector3i &Vector3i::operator/=(const Vector3i &p_v) {
@@ -207,7 +207,7 @@ Vector3i &Vector3i::operator/=(const Vector3i &p_v) {
 }
 
 Vector3i Vector3i::operator/(const Vector3i &p_v) const {
-	return Vector3i(x / p_v.x, y / p_v.y, z / p_v.z);
+	return { x / p_v.x, y / p_v.y, z / p_v.z };
 }
 
 Vector3i &Vector3i::operator%=(const Vector3i &p_v) {
@@ -218,7 +218,7 @@ Vector3i &Vector3i::operator%=(const Vector3i &p_v) {
 }
 
 Vector3i Vector3i::operator%(const Vector3i &p_v) const {
-	return Vector3i(x % p_v.x, y % p_v.y, z % p_v.z);
+	return { x % p_v.x, y % p_v.y, z % p_v.z };
 }
 
 Vector3i &Vector3i::operator*=(int32_t p_scalar) {
@@ -229,7 +229,7 @@ Vector3i &Vector3i::operator*=(int32_t p_scalar) {
 }
 
 Vector3i Vector3i::operator*(int32_t p_scalar) const {
-	return Vector3i(x * p_scalar, y * p_scalar, z * p_scalar);
+	return { x * p_scalar, y * p_scalar, z * p_scalar };
 }
 
 // Multiplication operators required to workaround issues with LLVM using implicit conversion.
@@ -258,7 +258,7 @@ Vector3i &Vector3i::operator/=(int32_t p_scalar) {
 }
 
 Vector3i Vector3i::operator/(int32_t p_scalar) const {
-	return Vector3i(x / p_scalar, y / p_scalar, z / p_scalar);
+	return { x / p_scalar, y / p_scalar, z / p_scalar };
 }
 
 Vector3i &Vector3i::operator%=(int32_t p_scalar) {
@@ -269,11 +269,11 @@ Vector3i &Vector3i::operator%=(int32_t p_scalar) {
 }
 
 Vector3i Vector3i::operator%(int32_t p_scalar) const {
-	return Vector3i(x % p_scalar, y % p_scalar, z % p_scalar);
+	return { x % p_scalar, y % p_scalar, z % p_scalar };
 }
 
 Vector3i Vector3i::operator-() const {
-	return Vector3i(-x, -y, -z);
+	return { -x, -y, -z };
 }
 
 bool Vector3i::operator==(const Vector3i &p_v) const {
@@ -288,9 +288,9 @@ bool Vector3i::operator<(const Vector3i &p_v) const {
 	if (x == p_v.x) {
 		if (y == p_v.y) {
 			return z < p_v.z;
-		} else {
-			return y < p_v.y;
 		}
+		return y < p_v.y;
+
 	} else {
 		return x < p_v.x;
 	}
@@ -300,9 +300,9 @@ bool Vector3i::operator>(const Vector3i &p_v) const {
 	if (x == p_v.x) {
 		if (y == p_v.y) {
 			return z > p_v.z;
-		} else {
-			return y > p_v.y;
 		}
+		return y > p_v.y;
+
 	} else {
 		return x > p_v.x;
 	}
@@ -312,9 +312,9 @@ bool Vector3i::operator<=(const Vector3i &p_v) const {
 	if (x == p_v.x) {
 		if (y == p_v.y) {
 			return z <= p_v.z;
-		} else {
-			return y < p_v.y;
 		}
+		return y < p_v.y;
+
 	} else {
 		return x < p_v.x;
 	}
@@ -324,9 +324,9 @@ bool Vector3i::operator>=(const Vector3i &p_v) const {
 	if (x == p_v.x) {
 		if (y == p_v.y) {
 			return z >= p_v.z;
-		} else {
-			return y > p_v.y;
 		}
+		return y > p_v.y;
+
 	} else {
 		return x > p_v.x;
 	}

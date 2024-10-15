@@ -88,7 +88,7 @@ public:
 	virtual int get_import_order(const String &p_path) const { return 0; }
 	virtual String get_import_group_file(const String &p_path) const { return ""; } //no group
 
-	virtual ~ResourceFormatLoader() {}
+	~ResourceFormatLoader() override {}
 };
 
 VARIANT_ENUM_CAST(ResourceFormatLoader::CacheMode)
@@ -130,7 +130,7 @@ public:
 
 		void clear();
 
-		virtual ~LoadToken();
+		~LoadToken() override;
 	};
 
 	static const int BINARY_MUTEX_TAG = 1;
@@ -180,8 +180,8 @@ private:
 		LoadToken *load_token = nullptr;
 		String local_path;
 		String type_hint;
-		float progress = 0.0f;
-		float max_reported_progress = 0.0f;
+		float progress = 0.0F;
+		float max_reported_progress = 0.0F;
 		uint64_t last_progress_check_main_thread_frame = UINT64_MAX;
 		ThreadLoadStatus status = THREAD_LOAD_IN_PROGRESS;
 		ResourceFormatLoader::CacheMode cache_mode = ResourceFormatLoader::CACHE_MODE_REUSE;

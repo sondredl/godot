@@ -32,10 +32,21 @@
 
 #include "core/config/project_settings.h"
 #include "core/io/resource_importer.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 #include "editor/action_map_editor.h"
 #include "editor/editor_inspector.h"
 #include "editor/editor_sectioned_inspector.h"
 #include "scene/gui/center_container.h"
+#include "scene/gui/label.h"
+#include "scene/scene_string_names.h"
 
 class ImportDefaultsEditorSettings : public Object {
 	GDCLASS(ImportDefaultsEditorSettings, Object)
@@ -48,21 +59,15 @@ class ImportDefaultsEditorSettings : public Object {
 
 protected:
 	bool _set(const StringName &p_name, const Variant &p_value) {
-		if (values.has(p_name)) {
-			values[p_name] = p_value;
-			return true;
-		} else {
-			return false;
-		}
+		return values.has(p_name);
 	}
 	bool _get(const StringName &p_name, Variant &r_ret) const {
 		if (values.has(p_name)) {
 			r_ret = values[p_name];
 			return true;
-		} else {
-			r_ret = Variant();
-			return false;
 		}
+		r_ret = Variant();
+		return false;
 	}
 	void _get_property_list(List<PropertyInfo> *p_list) const {
 		if (importer.is_null()) {

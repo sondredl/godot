@@ -49,12 +49,12 @@ protected:
 	static void _bind_methods();
 
 	_FORCE_INLINE_ RID get_shape() const { return shape; }
-	Shape3D(RID p_shape);
+	explicit Shape3D(RID p_shape);
 
 	virtual void _update_shape();
 
 public:
-	virtual RID get_rid() const override { return shape; }
+	RID get_rid() const override { return shape; }
 
 	Ref<ArrayMesh> get_debug_mesh();
 	virtual Vector<Vector3> get_debug_mesh_lines() const = 0; // { return Vector<Vector3>(); }
@@ -70,7 +70,7 @@ public:
 	void set_margin(real_t p_margin);
 
 	Shape3D();
-	~Shape3D();
+	~Shape3D() override;
 };
 
 #endif // SHAPE_3D_H

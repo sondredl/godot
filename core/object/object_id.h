@@ -45,8 +45,8 @@ public:
 	_ALWAYS_INLINE_ bool is_ref_counted() const { return (id & (uint64_t(1) << 63)) != 0; }
 	_ALWAYS_INLINE_ bool is_valid() const { return id != 0; }
 	_ALWAYS_INLINE_ bool is_null() const { return id == 0; }
-	_ALWAYS_INLINE_ operator uint64_t() const { return id; }
-	_ALWAYS_INLINE_ operator int64_t() const { return id; }
+	_ALWAYS_INLINE_ explicit operator uint64_t() const { return id; }
+	_ALWAYS_INLINE_ explicit operator int64_t() const { return id; }
 
 	_ALWAYS_INLINE_ bool operator==(const ObjectID &p_id) const { return id == p_id.id; }
 	_ALWAYS_INLINE_ bool operator!=(const ObjectID &p_id) const { return id != p_id.id; }

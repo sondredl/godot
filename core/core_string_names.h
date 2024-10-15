@@ -43,7 +43,7 @@ class CoreStringNames {
 		singleton = nullptr;
 	}
 
-	CoreStringNames();
+	CoreStringNames() = delete;
 
 public:
 	_FORCE_INLINE_ static CoreStringNames *get_singleton() { return singleton; }

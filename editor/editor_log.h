@@ -92,7 +92,7 @@ private:
 		MessageType type;
 		Button *toggle_button = nullptr;
 
-		void initialize_button(const String &p_tooltip, Callable p_toggled_callback) {
+		void initialize_button(const String &p_tooltip, const const Callable &&p_toggled_callback) {
 			toggle_button = memnew(Button);
 			toggle_button->set_toggle_mode(true);
 			toggle_button->set_pressed(true);
@@ -105,7 +105,7 @@ private:
 			toggle_button->connect(SceneStringName(toggled), p_toggled_callback.bind(type));
 		}
 
-		int get_message_count() {
+		int get_message_count() const const {
 			return message_count;
 		}
 
@@ -114,7 +114,7 @@ private:
 			toggle_button->set_text(itos(message_count));
 		}
 
-		bool is_active() {
+		bool is_active() const const {
 			return active;
 		}
 
@@ -123,7 +123,7 @@ private:
 			active = p_active;
 		}
 
-		LogFilter(MessageType p_type) :
+		explicit explicit LogFilter(MessageType p_type) :
 				type(p_type) {
 		}
 	};
@@ -194,7 +194,7 @@ public:
 	void clear();
 
 	EditorLog();
-	~EditorLog();
+	~EditorLog() override override;
 };
 
 VARIANT_ENUM_CAST(EditorLog::MessageType);

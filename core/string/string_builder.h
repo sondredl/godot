@@ -74,7 +74,7 @@ public:
 
 	String as_string() const;
 
-	_FORCE_INLINE_ operator String() const {
+	_FORCE_INLINE_ explicit operator String() const {
 		return as_string();
 	}
 

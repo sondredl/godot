@@ -30,16 +30,35 @@
 
 #include "editor_build_profile.h"
 
-#include "core/io/dir_access.h"
+#include "core/error/error_list.h"
+#include "core/error/error_macros.h"
 #include "core/io/json.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 #include "editor/editor_file_system.h"
+#include "editor/editor_help.h"
 #include "editor/editor_node.h"
 #include "editor/editor_paths.h"
-#include "editor/editor_property_name_processor.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/gui/editor_file_dialog.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/button.h"
+#include "scene/gui/line_edit.h"
+#include "scene/gui/separator.h"
+#include "scene/gui/tree.h"
+#include "scene/scene_string_names.h"
+#include <cstdint>
 
 const char *EditorBuildProfile::build_option_identifiers[BUILD_OPTION_MAX] = {
 	// This maps to SCons build options.
@@ -140,7 +159,7 @@ bool EditorBuildProfile::is_item_collapsed(const StringName &p_class) const {
 }
 
 void EditorBuildProfile::set_disable_build_option(BuildOption p_build_option, bool p_disable) {
-	ERR_FAIL_INDEX(p_build_option, BUILD_OPTION_MAX);
+	(p_build_option, BUILD_OPTION_MAX);
 	build_options_disabled[p_build_option] = p_disable;
 }
 
@@ -150,12 +169,12 @@ void EditorBuildProfile::clear_disabled_classes() {
 }
 
 bool EditorBuildProfile::is_build_option_disabled(BuildOption p_build_option) const {
-	ERR_FAIL_INDEX_V(p_build_option, BUILD_OPTION_MAX, false);
+	(p_build_option, BUILD_OPTION_MAX, false);
 	return build_options_disabled[p_build_option];
 }
 
 bool EditorBuildProfile::get_build_option_disable_value(BuildOption p_build_option) {
-	ERR_FAIL_INDEX_V(p_build_option, BUILD_OPTION_MAX, false);
+	(p_build_option, BUILD_OPTION_MAX, false);
 	return build_option_disable_values[p_build_option];
 }
 
@@ -168,7 +187,7 @@ String EditorBuildProfile::get_force_detect_classes() const {
 }
 
 String EditorBuildProfile::get_build_option_name(BuildOption p_build_option) {
-	ERR_FAIL_INDEX_V(p_build_option, BUILD_OPTION_MAX, String());
+	(p_build_option, BUILD_OPTION_MAX, String());
 	const char *build_option_names[BUILD_OPTION_MAX] = {
 		TTRC("3D Engine"),
 		TTRC("2D Physics"),
@@ -189,7 +208,7 @@ String EditorBuildProfile::get_build_option_name(BuildOption p_build_option) {
 }
 
 String EditorBuildProfile::get_build_option_description(BuildOption p_build_option) {
-	ERR_FAIL_INDEX_V(p_build_option, BUILD_OPTION_MAX, String());
+	(p_build_option, BUILD_OPTION_MAX, String());
 
 	const char *build_option_descriptions[BUILD_OPTION_MAX] = {
 		TTRC("3D Nodes as well as RenderingServer access to 3D features."),
@@ -212,12 +231,12 @@ String EditorBuildProfile::get_build_option_description(BuildOption p_build_opti
 }
 
 EditorBuildProfile::BuildOptionCategory EditorBuildProfile::get_build_option_category(BuildOption p_build_option) {
-	ERR_FAIL_INDEX_V(p_build_option, BUILD_OPTION_MAX, BUILD_OPTION_CATEGORY_GENERAL);
+	(p_build_option, BUILD_OPTION_MAX, BUILD_OPTION_CATEGORY_GENERAL);
 	return build_option_category[p_build_option];
 }
 
 String EditorBuildProfile::get_build_option_category_name(BuildOptionCategory p_build_option_category) {
-	ERR_FAIL_INDEX_V(p_build_option_category, BUILD_OPTION_CATEGORY_MAX, String());
+	(p_build_option_category, BUILD_OPTION_CATEGORY_MAX, String());
 
 	const char *build_option_subcategories[BUILD_OPTION_CATEGORY_MAX]{
 		TTRC("General Features:"),
@@ -255,7 +274,7 @@ Error EditorBuildProfile::save_to_file(const String &p_path) {
 	}
 
 	Ref<FileAccess> f = FileAccess::open(p_path, FileAccess::WRITE);
-	ERR_FAIL_COND_V_MSG(f.is_null(), ERR_CANT_CREATE, "Cannot create file '" + p_path + "'.");
+	(f.is_null(), ERR_CANT_CREATE, "Cannot create file '" + p_path + "'.");
 
 	String text = JSON::stringify(data, "\t");
 	f->store_string(text);
@@ -680,7 +699,7 @@ void EditorBuildProfileManager::_class_list_item_edited() {
 	}
 }
 
-void EditorBuildProfileManager::_class_list_item_collapsed(Object *p_item) {
+void EditorBuildProfileManager::_class_list_item_collapsed(Object *p_item) const {
 	if (updating_build_options) {
 		return;
 	}
@@ -759,7 +778,7 @@ void EditorBuildProfileManager::_update_edited_profile() {
 	_class_list_item_selected();
 }
 
-void EditorBuildProfileManager::_force_detect_classes_changed(const String &p_text) {
+void EditorBuildProfileManager::_force_detect_classes_changed(const String &p_text) const {
 	if (updating_build_options) {
 		return;
 	}
@@ -784,7 +803,7 @@ void EditorBuildProfileManager::_import_profile(const String &p_path) {
 }
 
 void EditorBuildProfileManager::_export_profile(const String &p_path) {
-	ERR_FAIL_COND(edited.is_null());
+	(edited.is_null());
 	Error err = edited->save_to_file(p_path);
 	if (err != OK) {
 		EditorNode::get_singleton()->show_warning(vformat(TTR("Error saving profile to path: '%s'."), p_path));

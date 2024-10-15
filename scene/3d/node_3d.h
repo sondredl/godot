@@ -45,7 +45,7 @@ public:
 	virtual void free() = 0;
 
 	Node3DGizmo();
-	virtual ~Node3DGizmo() {}
+	~Node3DGizmo() override {}
 };
 
 class Node3D : public Node {
@@ -236,7 +236,7 @@ public:
 	virtual void set_transform_gizmo_visible(bool p_enabled) { data.transform_gizmo_visible = p_enabled; };
 	virtual bool is_transform_gizmo_visible() const { return data.transform_gizmo_visible; };
 #endif
-	virtual void reparent(Node *p_parent, bool p_keep_global_transform = true) override;
+	void reparent(Node *p_parent, bool p_keep_global_transform = true) override;
 
 	void set_disable_gizmos(bool p_enabled);
 	void update_gizmos();
@@ -301,7 +301,7 @@ public:
 	NodePath get_visibility_parent() const;
 
 	Node3D();
-	~Node3D();
+	~Node3D() override;
 };
 
 VARIANT_ENUM_CAST(Node3D::RotationEditMode)

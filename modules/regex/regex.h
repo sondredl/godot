@@ -103,8 +103,8 @@ public:
 	PackedStringArray get_names() const;
 
 	RegEx();
-	RegEx(const String &p_pattern);
-	~RegEx();
+	explicit RegEx(const String &p_pattern);
+	~RegEx() override;
 };
 
 #endif // REGEX_H

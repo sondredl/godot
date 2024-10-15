@@ -30,6 +30,26 @@
 
 #include "animation_track_editor_plugins.h"
 
+#include "core/error/error_macros.h"
+#include "core/input/input_enums.h"
+#include "core/input/input_event.h"
+#include "core/io/resource_loader.h"
+#include "core/math/color.h"
+#include "core/math/math_defs.h"
+#include "core/math/math_funcs.h"
+#include "core/math/rect2.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/object.h"
+#include "core/object/object_id.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
+#include "editor/animation_track_editor.h"
 #include "editor/audio_stream_preview.h"
 #include "editor/editor_resource_preview.h"
 #include "editor/editor_string_names.h"
@@ -39,8 +59,13 @@
 #include "scene/2d/sprite_2d.h"
 #include "scene/3d/sprite_3d.h"
 #include "scene/animation/animation_player.h"
-#include "scene/resources/text_line.h"
+#include "scene/gui/control.h"
+#include "scene/resources/animation.h"
+#include "scene/resources/font.h"
+#include "scene/resources/sprite_frames.h"
+#include "scene/scene_string_names.h"
 #include "servers/audio/audio_stream.h"
+#include "servers/rendering_server.h"
 
 /// BOOL ///
 int AnimationTrackEditBool::get_key_height() const {
@@ -239,12 +264,11 @@ Rect2 AnimationTrackEditAudio::get_key_rect(int p_index, float p_pixels_sec) {
 		}
 
 		return Rect2(0, 0, len * p_pixels_sec, get_size().height);
-	} else {
-		Ref<Font> font = get_theme_font(SceneStringName(font), SNAME("Label"));
-		int font_size = get_theme_font_size(SceneStringName(font_size), SNAME("Label"));
-		int fh = font->get_height(font_size) * 0.8;
-		return Rect2(0, 0, fh, get_size().height);
 	}
+	Ref<Font> font = get_theme_font(SceneStringName(font), SNAME("Label"));
+	int font_size = get_theme_font_size(SceneStringName(font_size), SNAME("Label"));
+	int fh = font->get_height(font_size) * 0.8;
+	return Rect2(0, 0, fh, get_size().height);
 }
 
 bool AnimationTrackEditAudio::is_key_selectable_by_distance() const {
@@ -595,12 +619,11 @@ Rect2 AnimationTrackEditSubAnim::get_key_rect(int p_index, float p_pixels_sec) {
 		}
 
 		return Rect2(0, 0, len * p_pixels_sec, get_size().height);
-	} else {
-		Ref<Font> font = get_theme_font(SceneStringName(font), SNAME("Label"));
-		int font_size = get_theme_font_size(SceneStringName(font_size), SNAME("Label"));
-		int fh = font->get_height(font_size) * 0.8;
-		return Rect2(0, 0, fh, get_size().height);
 	}
+	Ref<Font> font = get_theme_font(SceneStringName(font), SNAME("Label"));
+	int font_size = get_theme_font_size(SceneStringName(font_size), SNAME("Label"));
+	int fh = font->get_height(font_size) * 0.8;
+	return Rect2(0, 0, fh, get_size().height);
 }
 
 bool AnimationTrackEditSubAnim::is_key_selectable_by_distance() const {
@@ -1018,7 +1041,7 @@ void AnimationTrackEditTypeAudio::drop_data(const Point2 &p_point, const Variant
 }
 
 void AnimationTrackEditTypeAudio::gui_input(const Ref<InputEvent> &p_event) {
-	ERR_FAIL_COND(p_event.is_null());
+	(p_event.is_null());
 
 	Ref<InputEventMouseMotion> mm = p_event;
 	if (!len_resizing && mm.is_valid()) {
@@ -1156,9 +1179,8 @@ void AnimationTrackEditTypeAudio::gui_input(const Ref<InputEvent> &p_event) {
 Control::CursorShape AnimationTrackEditTypeAudio::get_cursor_shape(const Point2 &p_pos) const {
 	if (over_drag_position || len_resizing) {
 		return Control::CURSOR_HSIZE;
-	} else {
-		return get_default_cursor_shape();
 	}
+	return get_default_cursor_shape();
 }
 
 ////////////////////
@@ -1197,12 +1219,11 @@ Rect2 AnimationTrackEditTypeAnimation::get_key_rect(int p_index, float p_pixels_
 		}
 
 		return Rect2(0, 0, len * p_pixels_sec, get_size().height);
-	} else {
-		Ref<Font> font = get_theme_font(SceneStringName(font), SNAME("Label"));
-		int font_size = get_theme_font_size(SceneStringName(font_size), SNAME("Label"));
-		int fh = font->get_height(font_size) * 0.8;
-		return Rect2(0, 0, fh, get_size().height);
 	}
+	Ref<Font> font = get_theme_font(SceneStringName(font), SNAME("Label"));
+	int font_size = get_theme_font_size(SceneStringName(font_size), SNAME("Label"));
+	int fh = font->get_height(font_size) * 0.8;
+	return Rect2(0, 0, fh, get_size().height);
 }
 
 bool AnimationTrackEditTypeAnimation::is_key_selectable_by_distance() const {

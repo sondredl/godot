@@ -93,7 +93,7 @@ class ScriptCreateDialog : public ConfirmationDialog {
 	String base_type;
 
 	void _path_hbox_sorted();
-	bool _can_be_built_in();
+	bool _can_be_built_in() const;
 	void _path_changed(const String &p_path = String());
 	void _language_changed(int l = 0);
 	void _built_in_pressed();
@@ -106,7 +106,7 @@ class ScriptCreateDialog : public ConfirmationDialog {
 	void _file_selected(const String &p_file);
 	void _create();
 	void _browse_class_in_tree();
-	virtual void ok_pressed() override;
+	pressed() override;
 	void _create_new();
 	void _load_exist();
 	void _update_template_menu();

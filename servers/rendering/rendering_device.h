@@ -130,7 +130,6 @@ private:
 	void _add_dependency(RID p_id, RID p_depends_on);
 	void _free_dependencies(RID p_id);
 
-private:
 	/***************************/
 	/**** BUFFER MANAGEMENT ****/
 	/***************************/
@@ -304,7 +303,6 @@ public:
 	void _texture_copy_shared(RID p_src_texture_rid, Texture *p_src_texture, RID p_dst_texture_rid, Texture *p_dst_texture);
 	void _texture_create_reinterpret_buffer(Texture *p_texture);
 
-public:
 	struct TextureView {
 		DataFormat format_override = DATA_FORMAT_MAX; // // Means, use same as format.
 		TextureSwizzle swizzle_r = TEXTURE_SWIZZLE_R;
@@ -315,7 +313,8 @@ public:
 		bool operator==(const TextureView &p_other) const {
 			if (format_override != p_other.format_override) {
 				return false;
-			} else if (swizzle_r != p_other.swizzle_r) {
+			}
+			if (swizzle_r != p_other.swizzle_r) {
 				return false;
 			} else if (swizzle_g != p_other.swizzle_g) {
 				return false;
@@ -552,9 +551,9 @@ private:
 						if (initial_depth_action == p_key.initial_depth_action) {
 							if (final_depth_action == p_key.final_depth_action) {
 								return view_count < p_key.view_count;
-							} else {
-								return final_depth_action < p_key.final_depth_action;
 							}
+							return final_depth_action < p_key.final_depth_action;
+
 						} else {
 							return initial_depth_action < p_key.initial_depth_action;
 						}
@@ -637,31 +636,30 @@ private:
 
 			if (vdc != vdck) {
 				return false;
-			} else {
-				const VertexAttribute *a_ptr = vertex_formats.ptr();
-				const VertexAttribute *b_ptr = p_key.vertex_formats.ptr();
-				for (int i = 0; i < vdc; i++) {
-					const VertexAttribute &a = a_ptr[i];
-					const VertexAttribute &b = b_ptr[i];
-
-					if (a.location != b.location) {
-						return false;
-					}
-					if (a.offset != b.offset) {
-						return false;
-					}
-					if (a.format != b.format) {
-						return false;
-					}
-					if (a.stride != b.stride) {
-						return false;
-					}
-					if (a.frequency != b.frequency) {
-						return false;
-					}
-				}
-				return true; // They are equal.
 			}
+			const VertexAttribute *a_ptr = vertex_formats.ptr();
+			const VertexAttribute *b_ptr = p_key.vertex_formats.ptr();
+			for (int i = 0; i < vdc; i++) {
+				const VertexAttribute &a = a_ptr[i];
+				const VertexAttribute &b = b_ptr[i];
+
+				if (a.location != b.location) {
+					return false;
+				}
+				if (a.offset != b.offset) {
+					return false;
+				}
+				if (a.format != b.format) {
+					return false;
+				}
+				if (a.stride != b.stride) {
+					return false;
+				}
+				if (a.frequency != b.frequency) {
+					return false;
+				}
+			}
+			return true; // They are equal.
 		}
 
 		uint32_t hash() const {
@@ -909,15 +907,14 @@ public:
 
 		_FORCE_INLINE_ RID get_id(uint32_t p_idx) const {
 			if (id.is_valid()) {
-				ERR_FAIL_COND_V(p_idx != 0, RID());
+				(p_idx != 0, RID());
 				return id;
-			} else {
-				return ids[p_idx];
 			}
+			return ids[p_idx];
 		}
 		_FORCE_INLINE_ void set_id(uint32_t p_idx, RID p_id) {
 			if (id.is_valid()) {
-				ERR_FAIL_COND(p_idx != 0);
+				(p_idx != 0);
 				id = p_id;
 			} else {
 				ids.write[p_idx] = p_id;
@@ -1491,7 +1488,7 @@ public:
 	static RenderingDevice *get_singleton();
 
 	RenderingDevice();
-	~RenderingDevice();
+	~RenderingDevice() override;
 
 private:
 	/*****************/

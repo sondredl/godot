@@ -115,9 +115,9 @@ protected:
 	void _object_id_selected(const StringName &p_property, ObjectID p_id);
 
 public:
-	virtual void update_property() override;
+	void update_property() override;
 
-	EditorPropertyFontMetaOverride(bool p_script);
+	explicit EditorPropertyFontMetaOverride(bool p_script);
 };
 
 /*************************************************************************/
@@ -146,7 +146,7 @@ protected:
 	void _object_id_selected(const StringName &p_property, ObjectID p_id);
 
 public:
-	virtual void update_property() override;
+	void update_property() override;
 
 	EditorPropertyOTVariation();
 };
@@ -198,7 +198,7 @@ protected:
 	void _object_id_selected(const StringName &p_property, ObjectID p_id);
 
 public:
-	virtual void update_property() override;
+	void update_property() override;
 
 	EditorPropertyOTFeatures();
 };
@@ -209,8 +209,8 @@ class EditorInspectorPluginFontVariation : public EditorInspectorPlugin {
 	GDCLASS(EditorInspectorPluginFontVariation, EditorInspectorPlugin);
 
 public:
-	virtual bool can_handle(Object *p_object) override;
-	virtual bool parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const BitField<PropertyUsageFlags> p_usage, const bool p_wide = false) override;
+	bool can_handle(Object *p_object) override;
+	bool parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const BitField<PropertyUsageFlags> p_usage, const bool p_wide = false) override;
 };
 
 /*************************************************************************/
@@ -227,7 +227,7 @@ protected:
 	void _preview_changed();
 
 public:
-	virtual Size2 get_minimum_size() const override;
+	Size2 get_minimum_size() const override;
 
 	void set_data(const Ref<Font> &p_f);
 
@@ -240,9 +240,9 @@ class EditorInspectorPluginFontPreview : public EditorInspectorPlugin {
 	GDCLASS(EditorInspectorPluginFontPreview, EditorInspectorPlugin);
 
 public:
-	virtual bool can_handle(Object *p_object) override;
-	virtual void parse_begin(Object *p_object) override;
-	virtual bool parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const BitField<PropertyUsageFlags> p_usage, const bool p_wide = false) override;
+	bool can_handle(Object *p_object) override;
+	void parse_begin(Object *p_object) override;
+	bool parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const BitField<PropertyUsageFlags> p_usage, const bool p_wide = false) override;
 };
 
 /*************************************************************************/
@@ -253,7 +253,7 @@ class EditorPropertyFontNamesArray : public EditorPropertyArray {
 	PopupMenu *menu = nullptr;
 
 protected:
-	virtual void _add_element() override;
+	void _add_element() override;
 
 	void _add_font(int p_option);
 	static void _bind_methods() {}
@@ -268,8 +268,8 @@ class EditorInspectorPluginSystemFont : public EditorInspectorPlugin {
 	GDCLASS(EditorInspectorPluginSystemFont, EditorInspectorPlugin);
 
 public:
-	virtual bool can_handle(Object *p_object) override;
-	virtual bool parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const BitField<PropertyUsageFlags> p_usage, const bool p_wide = false) override;
+	bool can_handle(Object *p_object) override;
+	bool parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const BitField<PropertyUsageFlags> p_usage, const bool p_wide = false) override;
 };
 
 /*************************************************************************/
@@ -280,7 +280,7 @@ class FontEditorPlugin : public EditorPlugin {
 public:
 	FontEditorPlugin();
 
-	virtual String get_name() const override { return "Font"; }
+	String get_name() const override { return "Font"; }
 };
 
 #endif // FONT_CONFIG_PLUGIN_H

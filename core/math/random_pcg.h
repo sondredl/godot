@@ -37,6 +37,8 @@
 
 #include <math.h>
 
+#include <cmath>
+
 #if defined(__GNUC__)
 #define CLZ32(x) __builtin_clz(x)
 #elif defined(_MSC_VER)
@@ -71,13 +73,13 @@ public:
 	static const uint64_t DEFAULT_SEED = 12047754176567800795U;
 	static const uint64_t DEFAULT_INC = PCG_DEFAULT_INC_64;
 
-	RandomPCG(uint64_t p_seed = DEFAULT_SEED, uint64_t p_inc = DEFAULT_INC);
+	explicit RandomPCG(uint64_t p_seed = DEFAULT_SEED, uint64_t p_inc = DEFAULT_INC);
 
 	_FORCE_INLINE_ void seed(uint64_t p_seed) {
 		current_seed = p_seed;
 		pcg32_srandom_r(&pcg, current_seed, current_inc);
 	}
-	_FORCE_INLINE_ uint64_t get_seed() { return current_seed; }
+	_FORCE_INLINE_ uint64_t get_seed() const { return current_seed; }
 
 	_FORCE_INLINE_ void set_state(uint64_t p_state) { pcg.state = p_state; }
 	_FORCE_INLINE_ uint64_t get_state() const { return pcg.state; }
@@ -142,7 +144,7 @@ public:
 		if (temp < CMP_EPSILON) {
 			temp += CMP_EPSILON; // To prevent generating of INF value in log function, resulting to return NaN value from this function.
 		}
-		return p_mean + p_deviation * (cos((float)Math_TAU * randf()) * sqrt(-2.0 * log(temp))); // Box-Muller transform.
+		return p_mean + p_deviation * (std::cos((float)Math_TAU * randf()) * sqrt(-2.0 * std::log(temp))); // Box-Muller transform.
 	}
 
 	double random(double p_from, double p_to);

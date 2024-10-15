@@ -239,13 +239,15 @@ private:
 		bool operator<(const RecordedCommandSort &p_other) const {
 			if (level < p_other.level) {
 				return true;
-			} else if (level > p_other.level) {
+			}
+			if (level > p_other.level) {
 				return false;
 			}
 
 			if (priority < p_other.priority) {
 				return true;
-			} else if (priority > p_other.priority) {
+			}
+			if (priority > p_other.priority) {
 				return false;
 			}
 

@@ -320,8 +320,8 @@ public:
 	Vector<uint8_t> save_jpg_to_buffer(float p_quality = 0.75) const;
 	Vector<uint8_t> save_exr_to_buffer(bool p_grayscale = false) const;
 	Error save_exr(const String &p_path, bool p_grayscale = false) const;
-	Error save_webp(const String &p_path, const bool p_lossy = false, const float p_quality = 0.75f) const;
-	Vector<uint8_t> save_webp_to_buffer(const bool p_lossy = false, const float p_quality = 0.75f) const;
+	Error save_webp(const String &p_path, const bool p_lossy = false, const float p_quality = 0.75F) const;
+	Vector<uint8_t> save_webp_to_buffer(const bool p_lossy = false, const float p_quality = 0.75F) const;
 
 	static Ref<Image> create_empty(int p_width, int p_height, bool p_use_mipmaps, Format p_format);
 	static Ref<Image> create_from_data(int p_width, int p_height, bool p_use_mipmaps, Format p_format, const Vector<uint8_t> &p_data);
@@ -340,7 +340,7 @@ public:
 	 */
 	Image(int p_width, int p_height, bool p_mipmaps, Format p_format, const Vector<uint8_t> &p_data);
 
-	~Image() {}
+	~Image() override {}
 
 	enum AlphaMode {
 		ALPHA_NONE,
@@ -422,10 +422,10 @@ public:
 	void convert_ra_rgba8_to_rg();
 	void convert_rgba8_to_bgra8();
 
-	Image(const uint8_t *p_mem_png_jpg, int p_len = -1);
-	Image(const char **p_xpm);
+	explicit Image(const uint8_t *p_mem_png_jpg, int p_len = -1);
+	explicit Image(const char **p_xpm);
 
-	virtual Ref<Resource> duplicate(bool p_subresources = false) const override;
+	Ref<Resource> duplicate(bool p_subresources = false) const override;
 
 	UsedChannels detect_used_channels(CompressSource p_source = COMPRESS_SOURCE_GENERIC) const;
 	void optimize_channels();
@@ -444,7 +444,7 @@ public:
 	void set_as_black();
 
 	void copy_internals_from(const Ref<Image> &p_image) {
-		ERR_FAIL_COND_MSG(p_image.is_null(), "Cannot copy image internals: invalid Image object.");
+		(p_image.is_null(), "Cannot copy image internals: invalid Image object.");
 		format = p_image->format;
 		width = p_image->width;
 		height = p_image->height;

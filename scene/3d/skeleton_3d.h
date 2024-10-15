@@ -60,7 +60,7 @@ public:
 
 	RID get_skeleton() const;
 	Ref<Skin> get_skin() const;
-	~SkinReference();
+	~SkinReference() override;
 };
 
 class Skeleton3D : public Node3D {
@@ -143,7 +143,7 @@ private:
 			global_pose = p_bone.global_pose;
 		}
 
-		void restore(Bone &r_bone) {
+		void restore(Bone &r_bone) const {
 			r_bone.pose_cache = pose_cache;
 			r_bone.pose_position = pose_position;
 			r_bone.pose_rotation = pose_rotation;
@@ -209,9 +209,9 @@ protected:
 	TypedArray<StringName> _get_bone_meta_list_bind(int p_bone) const;
 	static void _bind_methods();
 
-	virtual void add_child_notify(Node *p_child) override;
-	virtual void move_child_notify(Node *p_child) override;
-	virtual void remove_child_notify(Node *p_child) override;
+	void add_child_notify(Node *p_child) override;
+	void move_child_notify(Node *p_child) override;
+	void remove_child_notify(Node *p_child) override;
 
 public:
 	enum {
@@ -302,9 +302,8 @@ public:
 	void physical_bones_remove_collision_exception(RID p_exception);
 #endif // _DISABLE_DEPRECATED
 
-public:
 	Skeleton3D();
-	~Skeleton3D();
+	~Skeleton3D() override;
 };
 
 VARIANT_ENUM_CAST(Skeleton3D::ModifierCallbackModeProcess);

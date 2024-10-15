@@ -53,7 +53,6 @@ protected:
 	void _mesh_changed();
 	void _resolve_skeleton_path();
 
-protected:
 	bool _set(const StringName &p_name, const Variant &p_value);
 	bool _get(const StringName &p_name, Variant &r_ret) const;
 	void _get_property_list(List<PropertyInfo> *p_list) const;
@@ -99,13 +98,13 @@ public:
 	MeshInstance3D *create_debug_tangents_node();
 	void create_debug_tangents();
 
-	virtual AABB get_aabb() const override;
+	AABB get_aabb() const override;
 
 	Ref<ArrayMesh> bake_mesh_from_current_blend_shape_mix(Ref<ArrayMesh> p_existing = Ref<ArrayMesh>());
 	Ref<ArrayMesh> bake_mesh_from_current_skeleton_pose(Ref<ArrayMesh> p_existing = Ref<ArrayMesh>());
 
 	MeshInstance3D();
-	~MeshInstance3D();
+	~MeshInstance3D() override;
 };
 
 #endif // MESH_INSTANCE_3D_H

@@ -186,7 +186,7 @@ private:
 
 	void _invalidate();
 
-	virtual void shortcut_input(const Ref<InputEvent> &p_event) override;
+	void shortcut_input(const Ref<InputEvent> &p_event) override;
 
 	void _native_popup();
 	void _native_dialog_cb(bool p_ok, const Vector<String> &p_files, int p_filter, const Dictionary &p_selected_options);
@@ -198,7 +198,7 @@ private:
 	void _option_changed_checkbox_toggled(bool p_pressed, const String &p_name);
 	void _option_changed_item_selected(int p_idx, const String &p_name);
 
-	virtual void _post_popup() override;
+	void _post_popup() override;
 
 protected:
 	void _validate_property(PropertyInfo &p_property) const;
@@ -211,8 +211,8 @@ protected:
 	static void _bind_methods();
 
 public:
-	virtual void set_visible(bool p_visible) override;
-	virtual void popup(const Rect2i &p_rect = Rect2i()) override;
+	void set_visible(bool p_visible) override;
+	void popup(const Rect2i &p_rect = Rect2i()) override;
 
 	void popup_file_dialog();
 	void clear_filters();
@@ -277,7 +277,7 @@ public:
 	void deselect_all();
 
 	FileDialog();
-	~FileDialog();
+	~FileDialog() override;
 };
 
 VARIANT_ENUM_CAST(FileDialog::FileMode);

@@ -30,8 +30,30 @@
 
 #include "editor_properties_array_dict.h"
 
+#include "core/error/error_macros.h"
 #include "core/input/input.h"
+#include "core/input/input_event.h"
 #include "core/io/marshalls.h"
+#include "core/io/resource.h"
+#include "core/math/color.h"
+#include "core/math/rect2.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/object_id.h"
+#include "core/object/ref_counted.h"
+#include "core/object/script_language.h"
+#include "core/os/memory.h"
+#include "core/string/node_path.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/variant/array.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
+#include "core/variant/variant_internal.h"
+#include "editor/editor_file_system.h"
+#include "editor/editor_inspector.h"
 #include "editor/editor_properties.h"
 #include "editor/editor_properties_vector.h"
 #include "editor/editor_settings.h"
@@ -39,10 +61,16 @@
 #include "editor/gui/editor_spin_slider.h"
 #include "editor/inspector_dock.h"
 #include "editor/themes/editor_scale.h"
-#include "editor/themes/editor_theme_manager.h"
+#include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
+#include "scene/gui/control.h"
+#include "scene/gui/label.h"
 #include "scene/gui/margin_container.h"
-#include "scene/resources/packed_scene.h"
+#include "scene/gui/panel_container.h"
+#include "scene/gui/popup_menu.h"
+#include "scene/main/node.h"
+#include "scene/scene_string_names.h"
+#include <cstdint>
 
 bool EditorPropertyArrayObject::_set(const StringName &p_name, const Variant &p_value) {
 	String name = p_name;
@@ -134,7 +162,7 @@ bool EditorPropertyDictionaryObject::_get(const StringName &p_name, Variant &r_r
 }
 
 bool EditorPropertyDictionaryObject::get_by_property_name(const String &p_name, Variant &r_ret) const {
-	String name = p_name;
+	const String &name = p_name;
 
 	if (name == "new_item_key") {
 		r_ret = new_item_key;
@@ -261,7 +289,7 @@ void EditorPropertyArray::_change_type_menu(int p_index) {
 		return;
 	}
 
-	ERR_FAIL_COND_MSG(
+	(
 			changing_type_index == EditorPropertyArrayObject::NOT_CHANGING_TYPE,
 			"Tried to change type of an array item, but no item was selected.");
 
@@ -531,19 +559,18 @@ bool EditorPropertyArray::_is_drop_valid(const Dictionary &p_drag_data) const {
 		if (allowed_type == "NodePath") {
 			if (subtype_hint_string == "NodePath") {
 				return true;
-			} else {
-				for (int j = 0; j < subtype_hint_string.get_slice_count(","); j++) {
-					String ast = subtype_hint_string.get_slice(",", j).strip_edges();
-					allowed_subtype_array.append(ast);
-				}
+			}
+			for (int j = 0; j < subtype_hint_string.get_slice_count(","); j++) {
+				String ast = subtype_hint_string.get_slice(",", j).strip_edges();
+				allowed_subtype_array.append(ast);
 			}
 		}
 
 		bool is_drop_allowed = true;
 
-		for (int i = 0; i < node_paths.size(); i++) {
-			const Node *dropped_node = get_node_or_null(node_paths[i]);
-			ERR_FAIL_NULL_V_MSG(dropped_node, false, "Could not get the dropped node by its path.");
+		for (auto &node_path : node_paths) {
+			const Node *dropped_node = get_node_or_null(node_path);
+			(dropped_node, false, "Could not get the dropped node by its path.");
 
 			if (allowed_type != "NodePath") {
 				if (!ClassDB::is_parent_class(dropped_node->get_class_name(), allowed_type)) {
@@ -582,7 +609,7 @@ bool EditorPropertyArray::can_drop_data_fw(const Point2 &p_point, const Variant 
 }
 
 void EditorPropertyArray::drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) {
-	ERR_FAIL_COND(!_is_drop_valid(p_data));
+	(!_is_drop_valid(p_data));
 
 	Dictionary drag_data = p_data;
 	const String drop_type = drag_data.get("type", "");
@@ -615,8 +642,8 @@ void EditorPropertyArray::drop_data_fw(const Point2 &p_point, const Variant &p_d
 		Array node_paths = drag_data["nodes"];
 		Node *base_node = get_base_node();
 
-		for (int i = 0; i < node_paths.size(); i++) {
-			const NodePath &path = node_paths[i];
+		for (const auto &node_path : node_paths) {
+			const NodePath &path = node_path;
 
 			if (subtype == Variant::OBJECT) {
 				array.call("push_back", get_node(path));
@@ -770,14 +797,14 @@ void EditorPropertyArray::_reorder_button_gui_input(const Ref<InputEvent> &p_eve
 
 		// Reordering is done by moving the dragged element by +1/-1 index at a time based on the cumulated mouse delta so if
 		// already at the array bounds make sure to ignore the remaining out of bounds drag (by resetting the cumulated delta).
-		if ((reorder_to_index == 0 && reorder_mouse_y_delta < 0.0f) || (reorder_to_index == size - 1 && reorder_mouse_y_delta > 0.0f)) {
-			reorder_mouse_y_delta = 0.0f;
+		if ((reorder_to_index == 0 && reorder_mouse_y_delta < 0.0F) || (reorder_to_index == size - 1 && reorder_mouse_y_delta > 0.0F)) {
+			reorder_mouse_y_delta = 0.0F;
 			return;
 		}
 
-		float required_y_distance = 20.0f * EDSCALE;
+		float required_y_distance = 20.0F * EDSCALE;
 		if (ABS(reorder_mouse_y_delta) > required_y_distance) {
-			int direction = reorder_mouse_y_delta > 0.0f ? 1 : -1;
+			int direction = reorder_mouse_y_delta > 0.0F ? 1 : -1;
 			reorder_mouse_y_delta -= required_y_distance * direction;
 
 			reorder_to_index += direction;
@@ -824,10 +851,10 @@ void EditorPropertyArray::_reorder_button_up() {
 
 	Input::get_singleton()->set_mouse_mode(Input::MOUSE_MODE_VISIBLE);
 
-	ERR_FAIL_NULL(reorder_slot.reorder_button);
+	(reorder_slot.reorder_button);
 	reorder_slot.reorder_button->warp_mouse(reorder_slot.reorder_button->get_size() / 2.0f);
 	reorder_to_index = -1;
-	reorder_mouse_y_delta = 0.0f;
+	reorder_mouse_y_delta = 0.0F;
 	reorder_slot = Slot();
 	_page_changed(page_index);
 }
@@ -967,7 +994,7 @@ void EditorPropertyDictionary::_create_new_property_slot(int p_idx) {
 }
 
 void EditorPropertyDictionary::_change_type_menu(int p_index) {
-	ERR_FAIL_COND_MSG(
+	(
 			changing_type_index == EditorPropertyDictionaryObject::NOT_CHANGING_TYPE,
 			"Tried to change the type of a dict key or value, but nothing was selected.");
 

@@ -90,7 +90,7 @@ private:
 				rgb.b = linear_color.b;
 
 				ok_color ok_color;
-				ok_color::Lab lab_color = ok_color.linear_srgb_to_oklab(rgb);
+				ok_color::Lab lab_color = ok_color::linear_srgb_to_oklab(rgb);
 
 				// Constructs an RGB color using the Lab values directly. This allows reusing the interpolation code.
 				return { lab_color.L, lab_color.a, lab_color.b, linear_color.a };
@@ -113,7 +113,7 @@ private:
 				lab.b = p_color.b;
 
 				ok_color new_ok_color;
-				ok_color::RGB ok_rgb = new_ok_color.oklab_to_linear_srgb(lab);
+				ok_color::RGB ok_rgb = ok_color::oklab_to_linear_srgb(lab);
 				Color linear{ ok_rgb.r, ok_rgb.g, ok_rgb.b, p_color.a };
 				return linear.linear_to_srgb();
 		}
@@ -125,7 +125,7 @@ protected:
 
 public:
 	Gradient();
-	virtual ~Gradient();
+	~Gradient() override;
 
 	void add_point(float p_offset, const Color &p_color);
 	void remove_point(int p_index);
@@ -153,7 +153,7 @@ public:
 
 	_FORCE_INLINE_ Color get_color_at_offset(float p_offset) {
 		if (points.is_empty()) {
-			return Color(0, 0, 0, 1);
+			return { 0, 0, 0, 1 };
 		}
 
 		_update_sorting();

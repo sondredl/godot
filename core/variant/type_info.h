@@ -210,8 +210,7 @@ struct GetTypeInfo<T *, std::enable_if_t<std::is_base_of_v<Object, T>>> {
 	}
 };
 
-namespace godot {
-namespace details {
+namespace godot::details {
 inline String enum_qualified_name_to_class_info_name(const String &p_qualified_name) {
 	Vector<String> parts = p_qualified_name.split("::", false);
 	if (parts.size() <= 2) {
@@ -220,8 +219,7 @@ inline String enum_qualified_name_to_class_info_name(const String &p_qualified_n
 	// Contains namespace. We only want the class and enum names.
 	return parts[parts.size() - 2] + "." + parts[parts.size() - 1];
 }
-} // namespace details
-} // namespace godot
+} // namespace godot::details
 
 #define TEMPL_MAKE_ENUM_TYPE_INFO(m_enum, m_impl)                                                                                            \
 	template <>                                                                                                                              \
@@ -262,10 +260,10 @@ public:
 	_FORCE_INLINE_ void clear_flag(T p_flag) { value &= ~(int64_t)p_flag; }
 	_FORCE_INLINE_ void clear() { value = 0; }
 	_FORCE_INLINE_ constexpr BitField() = default;
-	_FORCE_INLINE_ constexpr BitField(int64_t p_value) { value = p_value; }
-	_FORCE_INLINE_ constexpr BitField(T p_value) { value = (int64_t)p_value; }
-	_FORCE_INLINE_ operator int64_t() const { return value; }
-	_FORCE_INLINE_ operator Variant() const { return value; }
+	_FORCE_INLINE_ constexpr explicit BitField(int64_t p_value) { value = p_value; }
+	_FORCE_INLINE_ constexpr explicit BitField(T p_value) { value = (int64_t)p_value; }
+	_FORCE_INLINE_ explicit operator int64_t() const { return value; }
+	_FORCE_INLINE_ explicit operator Variant() const { return value; }
 	_FORCE_INLINE_ BitField<T> operator^(const BitField<T> &p_b) const { return BitField<T>(value ^ p_b.value); }
 };
 

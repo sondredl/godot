@@ -121,7 +121,7 @@ public:
 		return dof_blur_bokeh_shape;
 	}
 
-	_FORCE_INLINE_ bool camera_attributes_get_dof_blur_use_jitter() {
+	_FORCE_INLINE_ bool camera_attributes_get_dof_blur_use_jitter() const {
 		return dof_blur_use_jitter;
 	}
 };
