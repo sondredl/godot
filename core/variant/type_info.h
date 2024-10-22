@@ -210,8 +210,7 @@ struct GetTypeInfo<T *, std::enable_if_t<std::is_base_of_v<Object, T>>> {
 	}
 };
 
-namespace godot {
-namespace details {
+namespace godot::details {
 inline String enum_qualified_name_to_class_info_name(const String &p_qualified_name) {
 	Vector<String> parts = p_qualified_name.split("::", false);
 	if (parts.size() <= 2) {
@@ -220,8 +219,7 @@ inline String enum_qualified_name_to_class_info_name(const String &p_qualified_n
 	// Contains namespace. We only want the class and enum names.
 	return parts[parts.size() - 2] + "." + parts[parts.size() - 1];
 }
-} // namespace details
-} // namespace godot
+} // namespace godot::details
 
 #define TEMPL_MAKE_ENUM_TYPE_INFO(m_enum, m_impl)                                                                                            \
 	template <>                                                                                                                              \

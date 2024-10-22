@@ -407,7 +407,7 @@ MAKE_STRINGCONV_BY_REFERENCE(IPAddress);
 template <>
 struct PtrToArg<Vector<Face3>> {
 	_FORCE_INLINE_ static Vector<Face3> convert(const void *p_ptr) {
-		const Vector<Vector3> *dvs = reinterpret_cast<const Vector<Vector3> *>(p_ptr);
+		const auto *dvs = reinterpret_cast<const Vector<Vector3> *>(p_ptr);
 		Vector<Face3> ret;
 		int len = dvs->size() / 3;
 		ret.resize(len);
@@ -423,7 +423,7 @@ struct PtrToArg<Vector<Face3>> {
 		return ret;
 	}
 	_FORCE_INLINE_ static void encode(const Vector<Face3> &p_vec, void *p_ptr) {
-		Vector<Vector3> *arr = reinterpret_cast<Vector<Vector3> *>(p_ptr);
+		auto *arr = reinterpret_cast<Vector<Vector3> *>(p_ptr);
 		int len = p_vec.size();
 		arr->resize(len * 3);
 		{
@@ -442,7 +442,7 @@ struct PtrToArg<Vector<Face3>> {
 template <>
 struct PtrToArg<const Vector<Face3> &> {
 	_FORCE_INLINE_ static Vector<Face3> convert(const void *p_ptr) {
-		const Vector<Vector3> *dvs = reinterpret_cast<const Vector<Vector3> *>(p_ptr);
+		const auto *dvs = reinterpret_cast<const Vector<Vector3> *>(p_ptr);
 		Vector<Face3> ret;
 		int len = dvs->size() / 3;
 		ret.resize(len);

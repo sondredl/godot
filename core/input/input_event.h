@@ -452,7 +452,7 @@ class InputEventAction : public InputEvent {
 	GDCLASS(InputEventAction, InputEvent);
 
 	StringName action;
-	float strength = 1.0f;
+	float strength = 1.0F;
 	int event_index = -1;
 
 protected:

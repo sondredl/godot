@@ -92,7 +92,7 @@ struct [[nodiscard]] Rect2i {
 		Rect2i new_rect = p_rect;
 
 		if (!intersects(new_rect)) {
-			return Rect2i();
+			return {};
 		}
 
 		new_rect.position = p_rect.position.max(position);

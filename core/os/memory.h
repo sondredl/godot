@@ -114,7 +114,7 @@ void operator delete(void *p_mem, void *p_pointer, size_t check, const char *p_d
 #define memrealloc(m_mem, m_size) Memory::realloc_static(m_mem, m_size)
 #define memfree(m_mem) Memory::free_static(m_mem)
 
-_ALWAYS_INLINE_ void postinitialize_handler(void *) {}
+_ALWAYS_INLINE_ void postinitialize_handler(void * /*unused*/) {}
 
 template <typename T>
 _ALWAYS_INLINE_ T *_post_initialize(T *p_obj) {
@@ -127,7 +127,7 @@ _ALWAYS_INLINE_ T *_post_initialize(T *p_obj) {
 #define memnew_allocator(m_class, m_allocator) _post_initialize(new (m_allocator::alloc) m_class)
 #define memnew_placement(m_placement, m_class) _post_initialize(new (m_placement) m_class)
 
-_ALWAYS_INLINE_ bool predelete_handler(void *) {
+_ALWAYS_INLINE_ bool predelete_handler(void * /*unused*/) {
 	return true;
 }
 
@@ -177,7 +177,7 @@ T *memnew_arr_template(size_t p_elements) {
 	same strategy used by std::vector, and the Vector class, so it should be safe.*/
 
 	size_t len = sizeof(T) * p_elements;
-	uint8_t *mem = (uint8_t *)Memory::alloc_static(len, true);
+	auto *mem = (uint8_t *)Memory::alloc_static(len, true);
 	T *failptr = nullptr; //get rid of a warning
 	ERR_FAIL_NULL_V(mem, failptr);
 
@@ -203,14 +203,14 @@ T *memnew_arr_template(size_t p_elements) {
 
 template <typename T>
 size_t memarr_len(const T *p_class) {
-	uint8_t *ptr = (uint8_t *)p_class;
+	auto *ptr = (uint8_t *)p_class;
 	uint64_t *_elem_count_ptr = _get_element_count_ptr(ptr);
 	return *(_elem_count_ptr);
 }
 
 template <typename T>
 void memdelete_arr(T *p_class) {
-	uint8_t *ptr = (uint8_t *)p_class;
+	auto *ptr = (uint8_t *)p_class;
 
 	if constexpr (!std::is_trivially_destructible_v<T>) {
 		uint64_t *_elem_count_ptr = _get_element_count_ptr(ptr);

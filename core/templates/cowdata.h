@@ -178,7 +178,7 @@ public:
 	}
 
 	_FORCE_INLINE_ Size size() const {
-		USize *size = (USize *)_get_size();
+		auto *size = (USize *)_get_size();
 		if (size) {
 			return *size;
 		} else {
@@ -283,7 +283,7 @@ typename CowData<T>::USize CowData<T>::_copy_on_write() {
 		/* in use by more than me */
 		USize current_size = *_get_size();
 
-		uint8_t *mem_new = (uint8_t *)Memory::alloc_static(_get_alloc_size(current_size) + DATA_OFFSET, false);
+		auto *mem_new = (uint8_t *)Memory::alloc_static(_get_alloc_size(current_size) + DATA_OFFSET, false);
 		ERR_FAIL_NULL_V(mem_new, 0);
 
 		SafeNumeric<USize> *_refc_ptr = _get_refcount_ptr(mem_new);
@@ -339,7 +339,7 @@ Error CowData<T>::resize(Size p_size) {
 		if (alloc_size != current_alloc_size) {
 			if (current_size == 0) {
 				// alloc from scratch
-				uint8_t *mem_new = (uint8_t *)Memory::alloc_static(alloc_size + DATA_OFFSET, false);
+				auto *mem_new = (uint8_t *)Memory::alloc_static(alloc_size + DATA_OFFSET, false);
 				ERR_FAIL_NULL_V(mem_new, ERR_OUT_OF_MEMORY);
 
 				SafeNumeric<USize> *_refc_ptr = _get_refcount_ptr(mem_new);
@@ -352,7 +352,7 @@ Error CowData<T>::resize(Size p_size) {
 				_ptr = _data_ptr;
 
 			} else {
-				uint8_t *mem_new = (uint8_t *)Memory::realloc_static(((uint8_t *)_ptr) - DATA_OFFSET, alloc_size + DATA_OFFSET, false);
+				auto *mem_new = (uint8_t *)Memory::realloc_static(((uint8_t *)_ptr) - DATA_OFFSET, alloc_size + DATA_OFFSET, false);
 				ERR_FAIL_NULL_V(mem_new, ERR_OUT_OF_MEMORY);
 
 				SafeNumeric<USize> *_refc_ptr = _get_refcount_ptr(mem_new);
@@ -386,7 +386,7 @@ Error CowData<T>::resize(Size p_size) {
 		}
 
 		if (alloc_size != current_alloc_size) {
-			uint8_t *mem_new = (uint8_t *)Memory::realloc_static(((uint8_t *)_ptr) - DATA_OFFSET, alloc_size + DATA_OFFSET, false);
+			auto *mem_new = (uint8_t *)Memory::realloc_static(((uint8_t *)_ptr) - DATA_OFFSET, alloc_size + DATA_OFFSET, false);
 			ERR_FAIL_NULL_V(mem_new, ERR_OUT_OF_MEMORY);
 
 			SafeNumeric<USize> *_refc_ptr = _get_refcount_ptr(mem_new);

@@ -55,7 +55,7 @@ protected:
 public:
 	virtual StringName get_method() const {
 #ifdef DEBUG_METHODS_ENABLED
-		return StringName(text);
+		return { text };
 #else
 		return StringName();
 #endif
@@ -91,7 +91,7 @@ class CallableCustomMethodPointer : public CallableCustomMethodPointerBase {
 public:
 	virtual ObjectID get_object() const {
 		if (ObjectDB::get_instance(ObjectID(data.object_id)) == nullptr) {
-			return ObjectID();
+			return {};
 		}
 		return data.instance->get_instance_id();
 	}
@@ -161,7 +161,7 @@ class CallableCustomMethodPointerC : public CallableCustomMethodPointerBase {
 public:
 	virtual ObjectID get_object() const override {
 		if (ObjectDB::get_instance(ObjectID(data.object_id)) == nullptr) {
-			return ObjectID();
+			return {};
 		}
 		return data.instance->get_instance_id();
 	}
@@ -238,7 +238,7 @@ public:
 	}
 
 	virtual ObjectID get_object() const override {
-		return ObjectID();
+		return {};
 	}
 
 	virtual int get_argument_count(bool &r_is_valid) const override {

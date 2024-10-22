@@ -255,7 +255,7 @@ struct MethodInfo {
 		for (uint32_t j = 0; j < pinfo.argument_count; j++) {
 			arguments.push_back(PropertyInfo(pinfo.arguments[j]));
 		}
-		const Variant *def_values = (const Variant *)pinfo.default_arguments;
+		const auto *def_values = (const Variant *)pinfo.default_arguments;
 		for (uint32_t j = 0; j < pinfo.default_argument_count; j++) {
 			default_arguments.push_back(def_values[j]);
 		}
@@ -769,7 +769,6 @@ public: // Should be protected, but bug in clang++.
 	static void initialize_class();
 	_FORCE_INLINE_ static void register_custom_data_to_otdb() {}
 
-public:
 	static constexpr bool _class_is_enabled = true;
 
 	void notify_property_list_changed();
@@ -804,7 +803,7 @@ public:
 	static void get_inheritance_list_static(List<String> *p_inheritance_list) { p_inheritance_list->push_back("Object"); }
 
 	static String get_class_static() { return "Object"; }
-	static String get_parent_class_static() { return String(); }
+	static String get_parent_class_static() { return {}; }
 
 	virtual String get_class() const {
 		if (_extension) {

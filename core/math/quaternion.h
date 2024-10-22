@@ -144,19 +144,19 @@ struct [[nodiscard]] Quaternion {
 		Vector3 c = p_v0.cross(p_v1);
 		real_t d = p_v0.dot(p_v1);
 
-		if (d < -1.0f + (real_t)CMP_EPSILON) {
+		if (d < -1.0F + (real_t)CMP_EPSILON) {
 			x = 0;
 			y = 1;
 			z = 0;
 			w = 0;
 		} else {
-			real_t s = Math::sqrt((1.0f + d) * 2.0f);
-			real_t rs = 1.0f / s;
+			real_t s = Math::sqrt((1.0F + d) * 2.0F);
+			real_t rs = 1.0F / s;
 
 			x = c.x * rs;
 			y = c.y * rs;
 			z = c.z * rs;
-			w = s * 0.5f;
+			w = s * 0.5F;
 		}
 	}
 };
@@ -191,30 +191,30 @@ void Quaternion::operator*=(real_t p_s) {
 }
 
 void Quaternion::operator/=(real_t p_s) {
-	*this *= 1.0f / p_s;
+	*this *= 1.0F / p_s;
 }
 
 Quaternion Quaternion::operator+(const Quaternion &p_q2) const {
 	const Quaternion &q1 = *this;
-	return Quaternion(q1.x + p_q2.x, q1.y + p_q2.y, q1.z + p_q2.z, q1.w + p_q2.w);
+	return { q1.x + p_q2.x, q1.y + p_q2.y, q1.z + p_q2.z, q1.w + p_q2.w };
 }
 
 Quaternion Quaternion::operator-(const Quaternion &p_q2) const {
 	const Quaternion &q1 = *this;
-	return Quaternion(q1.x - p_q2.x, q1.y - p_q2.y, q1.z - p_q2.z, q1.w - p_q2.w);
+	return { q1.x - p_q2.x, q1.y - p_q2.y, q1.z - p_q2.z, q1.w - p_q2.w };
 }
 
 Quaternion Quaternion::operator-() const {
 	const Quaternion &q2 = *this;
-	return Quaternion(-q2.x, -q2.y, -q2.z, -q2.w);
+	return { -q2.x, -q2.y, -q2.z, -q2.w };
 }
 
 Quaternion Quaternion::operator*(real_t p_s) const {
-	return Quaternion(x * p_s, y * p_s, z * p_s, w * p_s);
+	return { x * p_s, y * p_s, z * p_s, w * p_s };
 }
 
 Quaternion Quaternion::operator/(real_t p_s) const {
-	return *this * (1.0f / p_s);
+	return *this * (1.0F / p_s);
 }
 
 bool Quaternion::operator==(const Quaternion &p_quaternion) const {

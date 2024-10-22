@@ -154,15 +154,17 @@ struct [[nodiscard]] Transform2D {
 };
 
 Vector2 Transform2D::basis_xform(const Vector2 &p_vec) const {
-	return Vector2(
-			tdotx(p_vec),
-			tdoty(p_vec));
+	return {
+		tdotx(p_vec),
+		tdoty(p_vec)
+	};
 }
 
 Vector2 Transform2D::basis_xform_inv(const Vector2 &p_vec) const {
-	return Vector2(
-			columns[0].dot(p_vec),
-			columns[1].dot(p_vec));
+	return {
+		columns[0].dot(p_vec),
+		columns[1].dot(p_vec)
+	};
 }
 
 Vector2 Transform2D::xform(const Vector2 &p_vec) const {
@@ -175,9 +177,10 @@ Vector2 Transform2D::xform(const Vector2 &p_vec) const {
 Vector2 Transform2D::xform_inv(const Vector2 &p_vec) const {
 	Vector2 v = p_vec - columns[2];
 
-	return Vector2(
-			columns[0].dot(v),
-			columns[1].dot(v));
+	return {
+		columns[0].dot(v),
+		columns[1].dot(v)
+	};
 }
 
 Rect2 Transform2D::xform(const Rect2 &p_rect) const {

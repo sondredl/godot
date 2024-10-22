@@ -151,13 +151,13 @@ public:
 	_FORCE_INLINE_ operator String() const {
 		if (_data) {
 			if (_data->cname) {
-				return String(_data->cname);
+				return { _data->cname };
 			} else {
 				return _data->name;
 			}
 		}
 
-		return String();
+		return {};
 	}
 
 	static StringName search(const char *p_name);

@@ -131,19 +131,21 @@ struct [[nodiscard]] Transform3D {
 };
 
 _FORCE_INLINE_ Vector3 Transform3D::xform(const Vector3 &p_vector) const {
-	return Vector3(
-			basis[0].dot(p_vector) + origin.x,
-			basis[1].dot(p_vector) + origin.y,
-			basis[2].dot(p_vector) + origin.z);
+	return {
+		basis[0].dot(p_vector) + origin.x,
+		basis[1].dot(p_vector) + origin.y,
+		basis[2].dot(p_vector) + origin.z
+	};
 }
 
 _FORCE_INLINE_ Vector3 Transform3D::xform_inv(const Vector3 &p_vector) const {
 	Vector3 v = p_vector - origin;
 
-	return Vector3(
-			(basis.rows[0][0] * v.x) + (basis.rows[1][0] * v.y) + (basis.rows[2][0] * v.z),
-			(basis.rows[0][1] * v.x) + (basis.rows[1][1] * v.y) + (basis.rows[2][1] * v.z),
-			(basis.rows[0][2] * v.x) + (basis.rows[1][2] * v.y) + (basis.rows[2][2] * v.z));
+	return {
+		(basis.rows[0][0] * v.x) + (basis.rows[1][0] * v.y) + (basis.rows[2][0] * v.z),
+		(basis.rows[0][1] * v.x) + (basis.rows[1][1] * v.y) + (basis.rows[2][1] * v.z),
+		(basis.rows[0][2] * v.x) + (basis.rows[1][2] * v.y) + (basis.rows[2][2] * v.z)
+	};
 }
 
 // Neither the plane regular xform or xform_inv are particularly efficient,
@@ -166,7 +168,8 @@ _FORCE_INLINE_ AABB Transform3D::xform(const AABB &p_aabb) const {
 	/* https://dev.theomader.com/transform-bounding-boxes/ */
 	Vector3 min = p_aabb.position;
 	Vector3 max = p_aabb.position + p_aabb.size;
-	Vector3 tmin, tmax;
+	Vector3 tmin;
+	Vector3 tmax;
 	for (int i = 0; i < 3; i++) {
 		tmin[i] = tmax[i] = origin[i];
 		for (int j = 0; j < 3; j++) {

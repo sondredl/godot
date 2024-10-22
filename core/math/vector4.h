@@ -196,35 +196,35 @@ void Vector4::operator*=(real_t p_s) {
 }
 
 void Vector4::operator/=(real_t p_s) {
-	*this *= 1.0f / p_s;
+	*this *= 1.0F / p_s;
 }
 
 Vector4 Vector4::operator+(const Vector4 &p_vec4) const {
-	return Vector4(x + p_vec4.x, y + p_vec4.y, z + p_vec4.z, w + p_vec4.w);
+	return { x + p_vec4.x, y + p_vec4.y, z + p_vec4.z, w + p_vec4.w };
 }
 
 Vector4 Vector4::operator-(const Vector4 &p_vec4) const {
-	return Vector4(x - p_vec4.x, y - p_vec4.y, z - p_vec4.z, w - p_vec4.w);
+	return { x - p_vec4.x, y - p_vec4.y, z - p_vec4.z, w - p_vec4.w };
 }
 
 Vector4 Vector4::operator*(const Vector4 &p_vec4) const {
-	return Vector4(x * p_vec4.x, y * p_vec4.y, z * p_vec4.z, w * p_vec4.w);
+	return { x * p_vec4.x, y * p_vec4.y, z * p_vec4.z, w * p_vec4.w };
 }
 
 Vector4 Vector4::operator/(const Vector4 &p_vec4) const {
-	return Vector4(x / p_vec4.x, y / p_vec4.y, z / p_vec4.z, w / p_vec4.w);
+	return { x / p_vec4.x, y / p_vec4.y, z / p_vec4.z, w / p_vec4.w };
 }
 
 Vector4 Vector4::operator-() const {
-	return Vector4(-x, -y, -z, -w);
+	return { -x, -y, -z, -w };
 }
 
 Vector4 Vector4::operator*(real_t p_s) const {
-	return Vector4(x * p_s, y * p_s, z * p_s, w * p_s);
+	return { x * p_s, y * p_s, z * p_s, w * p_s };
 }
 
 Vector4 Vector4::operator/(real_t p_s) const {
-	return *this * (1.0f / p_s);
+	return *this * (1.0F / p_s);
 }
 
 bool Vector4::operator==(const Vector4 &p_vec4) const {

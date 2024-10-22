@@ -47,11 +47,11 @@ struct [[nodiscard]] AABB {
 
 	real_t get_volume() const;
 	_FORCE_INLINE_ bool has_volume() const {
-		return size.x > 0.0f && size.y > 0.0f && size.z > 0.0f;
+		return size.x > 0.0F && size.y > 0.0F && size.z > 0.0F;
 	}
 
 	_FORCE_INLINE_ bool has_surface() const {
-		return size.x > 0.0f || size.y > 0.0f || size.z > 0.0f;
+		return size.x > 0.0F || size.y > 0.0F || size.z > 0.0F;
 	}
 
 	const Vector3 &get_position() const { return position; }
@@ -124,7 +124,7 @@ struct [[nodiscard]] AABB {
 	}
 
 	_FORCE_INLINE_ Vector3 get_center() const {
-		return position + (size * 0.5f);
+		return position + (size * 0.5F);
 	}
 
 	operator String() const;
@@ -214,13 +214,13 @@ inline bool AABB::encloses(const AABB &p_aabb) const {
 
 Vector3 AABB::get_support(const Vector3 &p_direction) const {
 	Vector3 support = position;
-	if (p_direction.x > 0.0f) {
+	if (p_direction.x > 0.0F) {
 		support.x += size.x;
 	}
-	if (p_direction.y > 0.0f) {
+	if (p_direction.y > 0.0F) {
 		support.y += size.y;
 	}
-	if (p_direction.z > 0.0f) {
+	if (p_direction.z > 0.0F) {
 		support.z += size.z;
 	}
 	return support;
@@ -229,28 +229,28 @@ Vector3 AABB::get_support(const Vector3 &p_direction) const {
 Vector3 AABB::get_endpoint(int p_point) const {
 	switch (p_point) {
 		case 0:
-			return Vector3(position.x, position.y, position.z);
+			return { position.x, position.y, position.z };
 		case 1:
-			return Vector3(position.x, position.y, position.z + size.z);
+			return { position.x, position.y, position.z + size.z };
 		case 2:
-			return Vector3(position.x, position.y + size.y, position.z);
+			return { position.x, position.y + size.y, position.z };
 		case 3:
-			return Vector3(position.x, position.y + size.y, position.z + size.z);
+			return { position.x, position.y + size.y, position.z + size.z };
 		case 4:
-			return Vector3(position.x + size.x, position.y, position.z);
+			return { position.x + size.x, position.y, position.z };
 		case 5:
-			return Vector3(position.x + size.x, position.y, position.z + size.z);
+			return { position.x + size.x, position.y, position.z + size.z };
 		case 6:
-			return Vector3(position.x + size.x, position.y + size.y, position.z);
+			return { position.x + size.x, position.y + size.y, position.z };
 		case 7:
-			return Vector3(position.x + size.x, position.y + size.y, position.z + size.z);
+			return { position.x + size.x, position.y + size.y, position.z + size.z };
 	}
 
 	ERR_FAIL_V(Vector3());
 }
 
 bool AABB::intersects_convex_shape(const Plane *p_planes, int p_plane_count, const Vector3 *p_points, int p_point_count) const {
-	Vector3 half_extents = size * 0.5f;
+	Vector3 half_extents = size * 0.5F;
 	Vector3 ofs = position + half_extents;
 
 	for (int i = 0; i < p_plane_count; i++) {
@@ -292,7 +292,7 @@ bool AABB::intersects_convex_shape(const Plane *p_planes, int p_plane_count, con
 }
 
 bool AABB::inside_convex_shape(const Plane *p_planes, int p_plane_count) const {
-	Vector3 half_extents = size * 0.5f;
+	Vector3 half_extents = size * 0.5F;
 	Vector3 ofs = position + half_extents;
 
 	for (int i = 0; i < p_plane_count; i++) {
@@ -372,7 +372,7 @@ inline void AABB::expand_to(const Vector3 &p_vector) {
 }
 
 void AABB::project_range_in_plane(const Plane &p_plane, real_t &r_min, real_t &r_max) const {
-	Vector3 half_extents(size.x * 0.5f, size.y * 0.5f, size.z * 0.5f);
+	Vector3 half_extents(size.x * 0.5F, size.y * 0.5F, size.z * 0.5F);
 	Vector3 center(position.x + half_extents.x, position.y + half_extents.y, position.z + half_extents.z);
 
 	real_t length = p_plane.normal.abs().dot(half_extents);
@@ -415,12 +415,17 @@ bool AABB::smits_intersect_ray(const Vector3 &p_from, const Vector3 &p_dir, real
 		ERR_PRINT("AABB size is negative, this is not supported. Use AABB.abs() to get an AABB with a positive size.");
 	}
 #endif
-	real_t divx = 1.0f / p_dir.x;
-	real_t divy = 1.0f / p_dir.y;
-	real_t divz = 1.0f / p_dir.z;
+	real_t divx = 1.0F / p_dir.x;
+	real_t divy = 1.0F / p_dir.y;
+	real_t divz = 1.0F / p_dir.z;
 
 	Vector3 upbound = position + size;
-	real_t tmin, tmax, tymin, tymax, tzmin, tzmax;
+	real_t tmin;
+	real_t tmax;
+	real_t tymin;
+	real_t tymax;
+	real_t tzmin;
+	real_t tzmax;
 	if (p_dir.x >= 0) {
 		tmin = (position.x - p_from.x) * divx;
 		tmax = (upbound.x - p_from.x) * divx;
@@ -467,9 +472,9 @@ void AABB::grow_by(real_t p_amount) {
 	position.x -= p_amount;
 	position.y -= p_amount;
 	position.z -= p_amount;
-	size.x += 2.0f * p_amount;
-	size.y += 2.0f * p_amount;
-	size.z += 2.0f * p_amount;
+	size.x += 2.0F * p_amount;
+	size.y += 2.0F * p_amount;
+	size.z += 2.0F * p_amount;
 }
 
 void AABB::quantize(real_t p_unit) {

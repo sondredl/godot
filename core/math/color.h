@@ -56,11 +56,11 @@ struct [[nodiscard]] Color {
 	float get_h() const;
 	float get_s() const;
 	float get_v() const;
-	void set_hsv(float p_h, float p_s, float p_v, float p_alpha = 1.0f);
+	void set_hsv(float p_h, float p_s, float p_v, float p_alpha = 1.0F);
 	float get_ok_hsl_h() const;
 	float get_ok_hsl_s() const;
 	float get_ok_hsl_l() const;
-	void set_ok_hsl(float p_h, float p_s, float p_l, float p_alpha = 1.0f);
+	void set_ok_hsl(float p_h, float p_s, float p_l, float p_alpha = 1.0F);
 
 	_FORCE_INLINE_ float &operator[](int p_idx) {
 		return components[p_idx];
@@ -100,7 +100,7 @@ struct [[nodiscard]] Color {
 	Color inverted() const;
 
 	_FORCE_INLINE_ float get_luminance() const {
-		return 0.2126f * r + 0.7152f * g + 0.0722f * b;
+		return 0.2126F * r + 0.7152F * g + 0.0722F * b;
 	}
 
 	_FORCE_INLINE_ Color lerp(const Color &p_to, float p_weight) const {
@@ -114,29 +114,29 @@ struct [[nodiscard]] Color {
 
 	_FORCE_INLINE_ Color darkened(float p_amount) const {
 		Color res = *this;
-		res.r = res.r * (1.0f - p_amount);
-		res.g = res.g * (1.0f - p_amount);
-		res.b = res.b * (1.0f - p_amount);
+		res.r = res.r * (1.0F - p_amount);
+		res.g = res.g * (1.0F - p_amount);
+		res.b = res.b * (1.0F - p_amount);
 		return res;
 	}
 
 	_FORCE_INLINE_ Color lightened(float p_amount) const {
 		Color res = *this;
-		res.r = res.r + (1.0f - res.r) * p_amount;
-		res.g = res.g + (1.0f - res.g) * p_amount;
-		res.b = res.b + (1.0f - res.b) * p_amount;
+		res.r = res.r + (1.0F - res.r) * p_amount;
+		res.g = res.g + (1.0F - res.g) * p_amount;
+		res.b = res.b + (1.0F - res.b) * p_amount;
 		return res;
 	}
 
 	_FORCE_INLINE_ uint32_t to_rgbe9995() const {
 		// https://github.com/microsoft/DirectX-Graphics-Samples/blob/v10.0.19041.0/MiniEngine/Core/Color.cpp
-		static const float kMaxVal = float(0x1FF << 7);
-		static const float kMinVal = float(1.f / (1 << 16));
+		static const auto kMaxVal = float(0x1FF << 7);
+		static const auto kMinVal = float(1.F / (1 << 16));
 
 		// Clamp RGB to [0, 1.FF*2^16]
-		const float _r = CLAMP(r, 0.0f, kMaxVal);
-		const float _g = CLAMP(g, 0.0f, kMaxVal);
-		const float _b = CLAMP(b, 0.0f, kMaxVal);
+		const float _r = CLAMP(r, 0.0F, kMaxVal);
+		const float _g = CLAMP(g, 0.0F, kMaxVal);
+		const float _b = CLAMP(b, 0.0F, kMaxVal);
 
 		// Compute the maximum channel, no less than 1.0*2^-15
 		const float MaxChannel = MAX(MAX(_r, _g), MAX(_b, kMinVal));
@@ -173,10 +173,10 @@ struct [[nodiscard]] Color {
 
 	_FORCE_INLINE_ Color blend(const Color &p_over) const {
 		Color res;
-		float sa = 1.0f - p_over.a;
+		float sa = 1.0F - p_over.a;
 		res.a = a * sa + p_over.a;
 		if (res.a == 0) {
-			return Color(0, 0, 0, 0);
+			return { 0, 0, 0, 0 };
 		} else {
 			res.r = (r * a * sa + p_over.r * p_over.a) / res.a;
 			res.g = (g * a * sa + p_over.g * p_over.a) / res.a;
@@ -186,17 +186,19 @@ struct [[nodiscard]] Color {
 	}
 
 	_FORCE_INLINE_ Color srgb_to_linear() const {
-		return Color(
-				r < 0.04045f ? r * (1.0f / 12.92f) : Math::pow((r + 0.055f) * (float)(1.0 / (1.0 + 0.055)), 2.4f),
-				g < 0.04045f ? g * (1.0f / 12.92f) : Math::pow((g + 0.055f) * (float)(1.0 / (1.0 + 0.055)), 2.4f),
-				b < 0.04045f ? b * (1.0f / 12.92f) : Math::pow((b + 0.055f) * (float)(1.0 / (1.0 + 0.055)), 2.4f),
-				a);
+		return {
+			r < 0.04045F ? r * (1.0F / 12.92F) : Math::pow((r + 0.055F) * (float)(1.0 / (1.0 + 0.055)), 2.4F),
+			g < 0.04045F ? g * (1.0F / 12.92F) : Math::pow((g + 0.055F) * (float)(1.0 / (1.0 + 0.055)), 2.4F),
+			b < 0.04045F ? b * (1.0F / 12.92F) : Math::pow((b + 0.055F) * (float)(1.0 / (1.0 + 0.055)), 2.4F),
+			a
+		};
 	}
 	_FORCE_INLINE_ Color linear_to_srgb() const {
-		return Color(
-				r < 0.0031308f ? 12.92f * r : (1.0f + 0.055f) * Math::pow(r, 1.0f / 2.4f) - 0.055f,
-				g < 0.0031308f ? 12.92f * g : (1.0f + 0.055f) * Math::pow(g, 1.0f / 2.4f) - 0.055f,
-				b < 0.0031308f ? 12.92f * b : (1.0f + 0.055f) * Math::pow(b, 1.0f / 2.4f) - 0.055f, a);
+		return {
+			r < 0.0031308F ? 12.92F * r : (1.0F + 0.055F) * Math::pow(r, 1.0F / 2.4F) - 0.055F,
+			g < 0.0031308F ? 12.92F * g : (1.0F + 0.055F) * Math::pow(g, 1.0F / 2.4F) - 0.055F,
+			b < 0.0031308F ? 12.92F * b : (1.0F + 0.055F) * Math::pow(b, 1.0F / 2.4F) - 0.055F, a
+		};
 	}
 
 	static Color hex(uint32_t p_hex);
@@ -210,22 +212,22 @@ struct [[nodiscard]] Color {
 	static String get_named_color_name(int p_idx);
 	static Color get_named_color(int p_idx);
 	static Color from_string(const String &p_string, const Color &p_default);
-	static Color from_hsv(float p_h, float p_s, float p_v, float p_alpha = 1.0f);
-	static Color from_ok_hsl(float p_h, float p_s, float p_l, float p_alpha = 1.0f);
+	static Color from_hsv(float p_h, float p_s, float p_v, float p_alpha = 1.0F);
+	static Color from_ok_hsl(float p_h, float p_s, float p_l, float p_alpha = 1.0F);
 	static Color from_rgbe9995(uint32_t p_rgbe);
 
 	_FORCE_INLINE_ bool operator<(const Color &p_color) const; // Used in set keys.
 	operator String() const;
 
 	// For the binder.
-	_FORCE_INLINE_ void set_r8(int32_t r8) { r = (CLAMP(r8, 0, 255) / 255.0f); }
-	_FORCE_INLINE_ int32_t get_r8() const { return int32_t(CLAMP(Math::round(r * 255.0f), 0.0f, 255.0f)); }
-	_FORCE_INLINE_ void set_g8(int32_t g8) { g = (CLAMP(g8, 0, 255) / 255.0f); }
-	_FORCE_INLINE_ int32_t get_g8() const { return int32_t(CLAMP(Math::round(g * 255.0f), 0.0f, 255.0f)); }
-	_FORCE_INLINE_ void set_b8(int32_t b8) { b = (CLAMP(b8, 0, 255) / 255.0f); }
-	_FORCE_INLINE_ int32_t get_b8() const { return int32_t(CLAMP(Math::round(b * 255.0f), 0.0f, 255.0f)); }
-	_FORCE_INLINE_ void set_a8(int32_t a8) { a = (CLAMP(a8, 0, 255) / 255.0f); }
-	_FORCE_INLINE_ int32_t get_a8() const { return int32_t(CLAMP(Math::round(a * 255.0f), 0.0f, 255.0f)); }
+	_FORCE_INLINE_ void set_r8(int32_t r8) { r = (CLAMP(r8, 0, 255) / 255.0F); }
+	_FORCE_INLINE_ int32_t get_r8() const { return int32_t(CLAMP(Math::round(r * 255.0F), 0.0F, 255.0F)); }
+	_FORCE_INLINE_ void set_g8(int32_t g8) { g = (CLAMP(g8, 0, 255) / 255.0F); }
+	_FORCE_INLINE_ int32_t get_g8() const { return int32_t(CLAMP(Math::round(g * 255.0F), 0.0F, 255.0F)); }
+	_FORCE_INLINE_ void set_b8(int32_t b8) { b = (CLAMP(b8, 0, 255) / 255.0F); }
+	_FORCE_INLINE_ int32_t get_b8() const { return int32_t(CLAMP(Math::round(b * 255.0F), 0.0F, 255.0F)); }
+	_FORCE_INLINE_ void set_a8(int32_t a8) { a = (CLAMP(a8, 0, 255) / 255.0F); }
+	_FORCE_INLINE_ int32_t get_a8() const { return int32_t(CLAMP(Math::round(a * 255.0F), 0.0F, 255.0F)); }
 
 	_FORCE_INLINE_ void set_h(float p_h) { set_hsv(p_h, get_s(), get_v(), a); }
 	_FORCE_INLINE_ void set_s(float p_s) { set_hsv(get_h(), p_s, get_v(), a); }
@@ -254,7 +256,7 @@ struct [[nodiscard]] Color {
 		r = p_r;
 		g = p_g;
 		b = p_b;
-		a = 1.0f;
+		a = 1.0F;
 	}
 
 	/**

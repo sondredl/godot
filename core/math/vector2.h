@@ -163,12 +163,12 @@ struct [[nodiscard]] Vector2 {
 	static Vector2 from_angle(real_t p_angle);
 
 	_FORCE_INLINE_ Vector2 abs() const {
-		return Vector2(Math::abs(x), Math::abs(y));
+		return { Math::abs(x), Math::abs(y) };
 	}
 
 	Vector2 rotated(real_t p_by) const;
 	Vector2 orthogonal() const {
-		return Vector2(y, -x);
+		return { y, -x };
 	}
 
 	Vector2 sign() const;
@@ -196,7 +196,7 @@ _FORCE_INLINE_ Vector2 Vector2::plane_project(real_t p_d, const Vector2 &p_vec) 
 }
 
 _FORCE_INLINE_ Vector2 Vector2::operator+(const Vector2 &p_v) const {
-	return Vector2(x + p_v.x, y + p_v.y);
+	return { x + p_v.x, y + p_v.y };
 }
 
 _FORCE_INLINE_ void Vector2::operator+=(const Vector2 &p_v) {
@@ -205,7 +205,7 @@ _FORCE_INLINE_ void Vector2::operator+=(const Vector2 &p_v) {
 }
 
 _FORCE_INLINE_ Vector2 Vector2::operator-(const Vector2 &p_v) const {
-	return Vector2(x - p_v.x, y - p_v.y);
+	return { x - p_v.x, y - p_v.y };
 }
 
 _FORCE_INLINE_ void Vector2::operator-=(const Vector2 &p_v) {
@@ -214,11 +214,11 @@ _FORCE_INLINE_ void Vector2::operator-=(const Vector2 &p_v) {
 }
 
 _FORCE_INLINE_ Vector2 Vector2::operator*(const Vector2 &p_v1) const {
-	return Vector2(x * p_v1.x, y * p_v1.y);
+	return { x * p_v1.x, y * p_v1.y };
 }
 
 _FORCE_INLINE_ Vector2 Vector2::operator*(real_t p_rvalue) const {
-	return Vector2(x * p_rvalue, y * p_rvalue);
+	return { x * p_rvalue, y * p_rvalue };
 }
 
 _FORCE_INLINE_ void Vector2::operator*=(real_t p_rvalue) {
@@ -227,11 +227,11 @@ _FORCE_INLINE_ void Vector2::operator*=(real_t p_rvalue) {
 }
 
 _FORCE_INLINE_ Vector2 Vector2::operator/(const Vector2 &p_v1) const {
-	return Vector2(x / p_v1.x, y / p_v1.y);
+	return { x / p_v1.x, y / p_v1.y };
 }
 
 _FORCE_INLINE_ Vector2 Vector2::operator/(real_t p_rvalue) const {
-	return Vector2(x / p_rvalue, y / p_rvalue);
+	return { x / p_rvalue, y / p_rvalue };
 }
 
 _FORCE_INLINE_ void Vector2::operator/=(real_t p_rvalue) {
@@ -240,7 +240,7 @@ _FORCE_INLINE_ void Vector2::operator/=(real_t p_rvalue) {
 }
 
 _FORCE_INLINE_ Vector2 Vector2::operator-() const {
-	return Vector2(-x, -y);
+	return { -x, -y };
 }
 
 _FORCE_INLINE_ bool Vector2::operator==(const Vector2 &p_vec2) const {
@@ -261,7 +261,7 @@ Vector2 Vector2::lerp(const Vector2 &p_to, real_t p_weight) const {
 Vector2 Vector2::slerp(const Vector2 &p_to, real_t p_weight) const {
 	real_t start_length_sq = length_squared();
 	real_t end_length_sq = p_to.length_squared();
-	if (unlikely(start_length_sq == 0.0f || end_length_sq == 0.0f)) {
+	if (unlikely(start_length_sq == 0.0F || end_length_sq == 0.0F)) {
 		// Zero length vectors have no angle, so the best we can do is either lerp or throw an error.
 		return lerp(p_to, p_weight);
 	}

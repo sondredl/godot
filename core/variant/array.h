@@ -96,7 +96,7 @@ public:
 		}
 
 		operator ConstIterator() const {
-			return ConstIterator(element_ptr, read_only);
+			return { element_ptr, read_only };
 		}
 
 	private:

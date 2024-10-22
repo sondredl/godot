@@ -346,8 +346,8 @@ private:
 	// Avoid accidental conversion. If you reached this point, it's because you most likely forgot to dereference
 	// a Variant pointer (so add * like this: *variant_pointer).
 
-	Variant(const Variant *) {}
-	Variant(const Variant **) {}
+	Variant(const Variant * /*unused*/) {}
+	Variant(const Variant ** /*unused*/) {}
 
 public:
 	_FORCE_INLINE_ Type get_type() const {

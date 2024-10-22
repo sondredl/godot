@@ -87,7 +87,7 @@ public:
 	virtual void get_bound_arguments(Vector<Variant> &r_arguments, int &r_argcount) const override;
 
 	Callable get_callable() { return callable; }
-	int get_unbinds() { return argcount; }
+	int get_unbinds() const { return argcount; }
 
 	CallableCustomUnbind(const Callable &p_callable, int p_argcount);
 	virtual ~CallableCustomUnbind();

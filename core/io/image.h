@@ -320,8 +320,8 @@ public:
 	Vector<uint8_t> save_jpg_to_buffer(float p_quality = 0.75) const;
 	Vector<uint8_t> save_exr_to_buffer(bool p_grayscale = false) const;
 	Error save_exr(const String &p_path, bool p_grayscale = false) const;
-	Error save_webp(const String &p_path, const bool p_lossy = false, const float p_quality = 0.75f) const;
-	Vector<uint8_t> save_webp_to_buffer(const bool p_lossy = false, const float p_quality = 0.75f) const;
+	Error save_webp(const String &p_path, const bool p_lossy = false, const float p_quality = 0.75F) const;
+	Vector<uint8_t> save_webp_to_buffer(const bool p_lossy = false, const float p_quality = 0.75F) const;
 
 	static Ref<Image> create_empty(int p_width, int p_height, bool p_use_mipmaps, Format p_format);
 	static Ref<Image> create_from_data(int p_width, int p_height, bool p_use_mipmaps, Format p_format, const Vector<uint8_t> &p_data);

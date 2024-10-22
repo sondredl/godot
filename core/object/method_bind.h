@@ -83,7 +83,7 @@ public:
 		int idx = p_arg - (argument_count - default_arguments.size());
 
 		if (idx < 0 || idx >= default_arguments.size()) {
-			return Variant();
+			return {};
 		} else {
 			return default_arguments[idx];
 		}
@@ -128,7 +128,7 @@ public:
 	_FORCE_INLINE_ bool has_return() const { return _returns; }
 	virtual bool is_vararg() const { return false; }
 
-	_FORCE_INLINE_ bool is_return_type_raw_object_ptr() { return _returns_raw_obj_ptr; }
+	_FORCE_INLINE_ bool is_return_type_raw_object_ptr() const { return _returns_raw_obj_ptr; }
 	_FORCE_INLINE_ void set_return_type_is_raw_object_ptr(bool p_returns_raw_obj) { _returns_raw_obj_ptr = p_returns_raw_obj; }
 
 	void set_default_arguments(const Vector<Variant> &p_defargs);
@@ -163,7 +163,7 @@ public:
 	}
 
 #ifdef DEBUG_METHODS_ENABLED
-	virtual GodotTypeInfo::Metadata get_argument_meta(int) const override {
+	virtual GodotTypeInfo::Metadata get_argument_meta(int /*p_arg*/) const override {
 		return GodotTypeInfo::METADATA_NONE;
 	}
 #endif
@@ -344,7 +344,7 @@ public:
 #else
 		call_with_variant_args_dv(reinterpret_cast<MB_T *>(p_object), method, p_args, p_arg_count, r_error, get_default_arguments());
 #endif
-		return Variant();
+		return {};
 	}
 
 	virtual void validated_call(Object *p_object, const Variant **p_args, Variant *r_ret) const override {
@@ -428,7 +428,7 @@ public:
 #else
 		call_with_variant_argsc_dv(reinterpret_cast<MB_T *>(p_object), method, p_args, p_arg_count, r_error, get_default_arguments());
 #endif
-		return Variant();
+		return {};
 	}
 
 	virtual void validated_call(Object *p_object, const Variant **p_args, Variant *r_ret) const override {
@@ -697,7 +697,7 @@ public:
 	virtual Variant call(Object *p_object, const Variant **p_args, int p_arg_count, Callable::CallError &r_error) const override {
 		(void)p_object; // unused
 		call_with_variant_args_static_dv(function, p_args, p_arg_count, r_error, get_default_arguments());
-		return Variant();
+		return {};
 	}
 
 	virtual void validated_call(Object *p_object, const Variant **p_args, Variant *r_ret) const override {
