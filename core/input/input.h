@@ -152,7 +152,7 @@ private:
 		Vector2 screen_velocity;
 		Vector2 accum;
 		Vector2 screen_accum;
-		float accum_t = 0.0f;
+		float accum_t = 0.0F;
 		float min_ref_frame;
 		float max_ref_frame;
 
@@ -166,7 +166,7 @@ private:
 		StringName uid;
 		bool connected = false;
 		bool last_buttons[(size_t)JoyButton::MAX] = { false };
-		float last_axis[(size_t)JoyAxis::MAX] = { 0.0f };
+		float last_axis[(size_t)JoyAxis::MAX] = { 0.0F };
 		HatMask last_hat = HatMask::CENTER;
 		int mapping = -1;
 		int hat_current = 0;
@@ -199,7 +199,7 @@ private:
 	struct JoyEvent {
 		int type = TYPE_MAX;
 		int index = -1; // Can be either JoyAxis or JoyButton.
-		float value = 0.f;
+		float value = 0.F;
 	};
 
 	struct JoyBinding {
@@ -299,7 +299,7 @@ public:
 	float get_action_raw_strength(const StringName &p_action, bool p_exact = false) const;
 
 	float get_axis(const StringName &p_negative_action, const StringName &p_positive_action) const;
-	Vector2 get_vector(const StringName &p_negative_x, const StringName &p_positive_x, const StringName &p_negative_y, const StringName &p_positive_y, float p_deadzone = -1.0f) const;
+	Vector2 get_vector(const StringName &p_negative_x, const StringName &p_positive_x, const StringName &p_negative_y, const StringName &p_positive_y, float p_deadzone = -1.0F) const;
 
 	float get_joy_axis(int p_device, JoyAxis p_axis) const;
 	String get_joy_name(int p_idx);
@@ -336,7 +336,7 @@ public:
 
 	void set_mouse_position(const Point2 &p_posf);
 
-	void action_press(const StringName &p_action, float p_strength = 1.f);
+	void action_press(const StringName &p_action, float p_strength = 1.F);
 	void action_release(const StringName &p_action);
 
 	void set_emulate_touch_from_mouse(bool p_emulate);

@@ -140,12 +140,12 @@ public:
 	virtual void show_advanced_options(const String &p_path) {}
 
 	virtual int get_preset_count() const { return 0; }
-	virtual String get_preset_name(int p_idx) const { return String(); }
+	virtual String get_preset_name(int p_idx) const { return {}; }
 
 	virtual void get_import_options(const String &p_path, List<ImportOption> *r_options, int p_preset = 0) const = 0;
 	virtual bool get_option_visibility(const String &p_path, const String &p_option, const HashMap<StringName, Variant> &p_options) const = 0;
 	virtual void handle_compatibility_options(HashMap<StringName, Variant> &p_import_params) const {}
-	virtual String get_option_group_file() const { return String(); }
+	virtual String get_option_group_file() const { return {}; }
 
 	virtual Error import(const String &p_source_file, const String &p_save_path, const HashMap<StringName, Variant> &p_options, List<String> *r_platform_variants, List<String> *r_gen_files = nullptr, Variant *r_metadata = nullptr) = 0;
 	virtual bool can_import_threaded() const { return true; }
@@ -154,7 +154,7 @@ public:
 
 	virtual Error import_group_file(const String &p_group_file, const HashMap<String, HashMap<StringName, Variant>> &p_source_file_options, const HashMap<String, String> &p_base_paths) { return ERR_UNAVAILABLE; }
 	virtual bool are_import_settings_valid(const String &p_path, const Dictionary &p_meta) const { return true; }
-	virtual String get_import_settings_string() const { return String(); }
+	virtual String get_import_settings_string() const { return {}; }
 };
 
 VARIANT_ENUM_CAST(ResourceImporter::ImportOrder);

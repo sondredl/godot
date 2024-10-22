@@ -145,7 +145,6 @@ protected:
 
 	void _add_builtin_input_map();
 
-protected:
 	static void _bind_methods();
 
 public:
@@ -190,7 +189,7 @@ public:
 	Error save();
 	void set_custom_property_info(const PropertyInfo &p_info);
 	const HashMap<StringName, PropertyInfo> &get_custom_property_info() const;
-	uint64_t get_last_saved_time() { return last_save_time; }
+	uint64_t get_last_saved_time() const { return last_save_time; }
 
 	List<String> get_input_presets() const { return input_presets; }
 

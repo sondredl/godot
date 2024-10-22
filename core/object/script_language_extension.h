@@ -660,7 +660,7 @@ public:
 		Dictionary ret;
 		GDVIRTUAL_CALL(_get_global_class_name, p_path, ret);
 		if (!ret.has("name")) {
-			return String();
+			return {};
 		}
 		if (r_base_type != nullptr && ret.has("base_type")) {
 			*r_base_type = ret["base_type"];
@@ -874,7 +874,7 @@ public:
 			}
 			return ret;
 		}
-		return String();
+		return {};
 	}
 
 	virtual void refcount_incremented() override {

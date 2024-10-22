@@ -124,7 +124,7 @@ public:
 
 	static String get_extension_list_config_file();
 
-	const Ref<GDExtensionLoader> get_loader() const { return loader; }
+	Ref<GDExtensionLoader> get_loader() const { return loader; }
 
 	Error open_library(const String &p_path, const Ref<GDExtensionLoader> &p_loader);
 	void close_library();

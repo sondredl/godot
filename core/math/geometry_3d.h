@@ -51,12 +51,12 @@ public:
 			return false;
 		}
 
-		real_t f = 1.0f / a;
+		real_t f = 1.0F / a;
 
 		Vector3 s = p_from - p_v0;
 		real_t u = f * s.dot(h);
 
-		if ((u < 0.0f) || (u > 1.0f)) {
+		if ((u < 0.0F) || (u > 1.0F)) {
 			return false;
 		}
 
@@ -64,7 +64,7 @@ public:
 
 		real_t v = f * p_dir.dot(q);
 
-		if ((v < 0.0f) || (u + v > 1.0f)) {
+		if ((v < 0.0F) || (u + v > 1.0F)) {
 			return false;
 		}
 
@@ -72,7 +72,7 @@ public:
 		// the intersection point is on the line.
 		real_t t = f * e2.dot(q);
 
-		if (t > 0.00001f) { // ray intersection
+		if (t > 0.00001F) { // ray intersection
 			if (r_res) {
 				*r_res = p_from + p_dir * t;
 			}
@@ -92,12 +92,12 @@ public:
 			return false;
 		}
 
-		real_t f = 1.0f / a;
+		real_t f = 1.0F / a;
 
 		Vector3 s = p_from - p_v0;
 		real_t u = f * s.dot(h);
 
-		if ((u < 0.0f) || (u > 1.0f)) {
+		if ((u < 0.0F) || (u > 1.0F)) {
 			return false;
 		}
 
@@ -105,7 +105,7 @@ public:
 
 		real_t v = f * rel.dot(q);
 
-		if ((v < 0.0f) || (u + v > 1.0f)) {
+		if ((v < 0.0F) || (u + v > 1.0F)) {
 			return false;
 		}
 
@@ -113,7 +113,7 @@ public:
 		// the intersection point is on the line.
 		real_t t = f * e2.dot(q);
 
-		if (t > (real_t)CMP_EPSILON && t <= 1.0f) { // Ray intersection.
+		if (t > (real_t)CMP_EPSILON && t <= 1.0F) { // Ray intersection.
 			if (r_res) {
 				*r_res = p_from + rel * t;
 			}
@@ -174,7 +174,7 @@ public:
 		ERR_FAIL_COND_V(p_cylinder_axis < 0, false);
 		ERR_FAIL_COND_V(p_cylinder_axis > 2, false);
 		Vector3 cylinder_axis;
-		cylinder_axis[p_cylinder_axis] = 1.0f;
+		cylinder_axis[p_cylinder_axis] = 1.0F;
 
 		// First check if they are parallel.
 		Vector3 normal = (rel / rel_l);
@@ -185,7 +185,7 @@ public:
 
 		if (crs_l < (real_t)CMP_EPSILON) {
 			Vector3 side_axis;
-			side_axis[(p_cylinder_axis + 1) % 3] = 1.0f; // Any side axis OK.
+			side_axis[(p_cylinder_axis + 1) % 3] = 1.0F; // Any side axis OK.
 			axis_dir = side_axis;
 		} else {
 			axis_dir = crs / crs_l;
@@ -202,14 +202,15 @@ public:
 		if (w2 < (real_t)CMP_EPSILON) {
 			return false; // Avoid numerical error.
 		}
-		Size2 size(Math::sqrt(w2), p_height * 0.5f);
+		Size2 size(Math::sqrt(w2), p_height * 0.5F);
 
 		Vector3 side_dir = axis_dir.cross(cylinder_axis).normalized();
 
 		Vector2 from2D(side_dir.dot(p_from), p_from[p_cylinder_axis]);
 		Vector2 to2D(side_dir.dot(p_to), p_to[p_cylinder_axis]);
 
-		real_t min = 0, max = 1;
+		real_t min = 0;
+		real_t max = 1;
 
 		int axis = -1;
 
@@ -218,7 +219,8 @@ public:
 			real_t seg_to = to2D[i];
 			real_t box_begin = -size[i];
 			real_t box_end = size[i];
-			real_t cmin, cmax;
+			real_t cmin;
+			real_t cmax;
 
 			if (seg_from < seg_to) {
 				if (seg_from > box_end || seg_to < box_begin) {
@@ -275,7 +277,8 @@ public:
 	}
 
 	static bool segment_intersects_convex(const Vector3 &p_from, const Vector3 &p_to, const Plane *p_planes, int p_plane_count, Vector3 *p_res, Vector3 *p_norm) {
-		real_t min = -1e20, max = 1e20;
+		real_t min = -1e20;
+		real_t max = 1e20;
 
 		Vector3 rel = p_to - p_from;
 		real_t rel_l = rel.length();
@@ -331,15 +334,15 @@ public:
 		Vector3 p = p_point - p_segment[0];
 		Vector3 n = p_segment[1] - p_segment[0];
 		real_t l2 = n.length_squared();
-		if (l2 < 1e-20f) {
+		if (l2 < 1e-20F) {
 			return p_segment[0]; // Both points are the same, just give any.
 		}
 
 		real_t d = n.dot(p) / l2;
 
-		if (d <= 0.0f) {
+		if (d <= 0.0F) {
 			return p_segment[0]; // Before first point.
-		} else if (d >= 1.0f) {
+		} else if (d >= 1.0F) {
 			return p_segment[1]; // After first point.
 		} else {
 			return p_segment[0] + n * d; // Inside.
@@ -350,7 +353,7 @@ public:
 		Vector3 p = p_point - p_segment[0];
 		Vector3 n = p_segment[1] - p_segment[0];
 		real_t l2 = n.length_squared();
-		if (l2 < 1e-20f) {
+		if (l2 < 1e-20F) {
 			return p_segment[0]; // Both points are the same, just give any.
 		}
 
@@ -376,11 +379,7 @@ public:
 
 		Vector3 n3 = (p_v1 - p_point).cross(p_v1 - p_v2);
 
-		if (face_n.dot(n3) < 0) {
-			return false;
-		}
-
-		return true;
+		return face_n.dot(n3) >= 0;
 	}
 
 	static inline bool triangle_sphere_intersection_test(const Vector3 *p_triangle, const Vector3 &p_normal, const Vector3 &p_sphere_pos, real_t p_sphere_radius, Vector3 &r_triangle_contact, Vector3 &r_sphere_contact) {
@@ -596,9 +595,10 @@ public:
 
 	_FORCE_INLINE_ static bool planeBoxOverlap(Vector3 normal, real_t d, Vector3 maxbox) {
 		int q;
-		Vector3 vmin, vmax;
+		Vector3 vmin;
+		Vector3 vmax;
 		for (q = 0; q <= 2; q++) {
-			if (normal[q] > 0.0f) {
+			if (normal[q] > 0.0F) {
 				vmin[q] = -maxbox[q];
 				vmax[q] = maxbox[q];
 			} else {
@@ -606,10 +606,10 @@ public:
 				vmax[q] = -maxbox[q];
 			}
 		}
-		if (normal.dot(vmin) + d > 0.0f) {
+		if (normal.dot(vmin) + d > 0.0F) {
 			return false;
 		}
-		if (normal.dot(vmax) + d >= 0.0f) {
+		if (normal.dot(vmax) + d >= 0.0F) {
 			return true;
 		}
 
@@ -717,7 +717,15 @@ public:
 		/*    2) normal of the triangle */
 		/*    3) crossproduct(edge from tri, {x,y,z}-directin) */
 		/*       this gives 3x3=9 more tests */
-		real_t min, max, p0, p1, p2, rad, fex, fey, fez;
+		real_t min;
+		real_t max;
+		real_t p0;
+		real_t p1;
+		real_t p2;
+		real_t rad;
+		real_t fex;
+		real_t fey;
+		real_t fez;
 
 		/* This is the fastest branch on Sun */
 		/* move everything so that the boxcenter is in (0,0,0) */
@@ -801,12 +809,12 @@ public:
 		const real_t d21 = v2.dot(v1);
 		const real_t denom = (d00 * d11 - d01 * d01);
 		if (denom == 0) {
-			return Vector3(); //invalid triangle, return empty
+			return {}; //invalid triangle, return empty
 		}
 		const real_t v = (d11 * d20 - d01 * d21) / denom;
 		const real_t w = (d00 * d21 - d01 * d20) / denom;
-		const real_t u = 1.0f - v - w;
-		return Vector3(u, v, w);
+		const real_t u = 1.0F - v - w;
+		return { u, v, w };
 	}
 
 	static Color tetrahedron_get_barycentric_coords(const Vector3 &p_a, const Vector3 &p_b, const Vector3 &p_c, const Vector3 &p_d, const Vector3 &p_pos) {
@@ -826,15 +834,15 @@ public:
 		const real_t vc6 = STP(vap, vad, vab);
 		const real_t vd6 = STP(vap, vab, vac);
 		const real_t v6 = 1 / STP(vab, vac, vad);
-		return Color(va6 * v6, vb6 * v6, vc6 * v6, vd6 * v6);
+		return { va6 * v6, vb6 * v6, vc6 * v6, vd6 * v6 };
 #undef STP
 	}
 
 	_FORCE_INLINE_ static Vector3 octahedron_map_decode(const Vector2 &p_uv) {
 		// https://twitter.com/Stubbesaurus/status/937994790553227264
-		const Vector2 f = p_uv * 2.0f - Vector2(1.0f, 1.0f);
-		Vector3 n = Vector3(f.x, f.y, 1.0f - Math::abs(f.x) - Math::abs(f.y));
-		const real_t t = CLAMP(-n.z, 0.0f, 1.0f);
+		const Vector2 f = p_uv * 2.0F - Vector2(1.0F, 1.0F);
+		Vector3 n = Vector3(f.x, f.y, 1.0F - Math::abs(f.x) - Math::abs(f.y));
+		const real_t t = CLAMP(-n.z, 0.0F, 1.0F);
 		n.x += n.x >= 0 ? -t : t;
 		n.y += n.y >= 0 ? -t : t;
 		return n.normalized();

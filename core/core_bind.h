@@ -554,8 +554,8 @@ public:
 
 	bool has_singleton(const StringName &p_name) const;
 	Object *get_singleton_object(const StringName &p_name) const;
-	void register_singleton(const StringName &p_name, Object *p_object);
-	void unregister_singleton(const StringName &p_name);
+	void register_singleton(const StringName &p_name, Object *p_object) const;
+	void unregister_singleton(const StringName &p_name) const;
 	Vector<String> get_singleton_list() const;
 
 	Error register_script_language(ScriptLanguage *p_language);

@@ -743,7 +743,7 @@ Variant Geometry2D::segment_intersects_segment(const Vector2 &p_from_a, const Ve
 	if (::Geometry2D::segment_intersects_segment(p_from_a, p_to_a, p_from_b, p_to_b, &result)) {
 		return result;
 	} else {
-		return Variant();
+		return {};
 	}
 }
 
@@ -752,12 +752,13 @@ Variant Geometry2D::line_intersects_line(const Vector2 &p_from_a, const Vector2 
 	if (::Geometry2D::line_intersects_line(p_from_a, p_dir_a, p_from_b, p_dir_b, result)) {
 		return result;
 	} else {
-		return Variant();
+		return {};
 	}
 }
 
 Vector<Vector2> Geometry2D::get_closest_points_between_segments(const Vector2 &p1, const Vector2 &q1, const Vector2 &p2, const Vector2 &q2) {
-	Vector2 r1, r2;
+	Vector2 r1;
+	Vector2 r2;
 	::Geometry2D::get_closest_points_between_segments(p1, q1, p2, q2, r1, r2);
 	Vector<Vector2> r = { r1, r2 };
 	return r;
@@ -1005,7 +1006,8 @@ TypedArray<Plane> Geometry3D::build_capsule_planes(float p_radius, float p_heigh
 }
 
 Vector<Vector3> Geometry3D::get_closest_points_between_segments(const Vector3 &p1, const Vector3 &p2, const Vector3 &q1, const Vector3 &q2) {
-	Vector3 r1, r2;
+	Vector3 r1;
+	Vector3 r2;
 	::Geometry3D::get_closest_points_between_segments(p1, p2, q1, q2, r1, r2);
 	Vector<Vector3> r = { r1, r2 };
 	return r;
@@ -1031,7 +1033,7 @@ Variant Geometry3D::ray_intersects_triangle(const Vector3 &p_from, const Vector3
 	if (::Geometry3D::ray_intersects_triangle(p_from, p_dir, p_v0, p_v1, p_v2, &res)) {
 		return res;
 	} else {
-		return Variant();
+		return {};
 	}
 }
 
@@ -1040,13 +1042,14 @@ Variant Geometry3D::segment_intersects_triangle(const Vector3 &p_from, const Vec
 	if (::Geometry3D::segment_intersects_triangle(p_from, p_to, p_v0, p_v1, p_v2, &res)) {
 		return res;
 	} else {
-		return Variant();
+		return {};
 	}
 }
 
 Vector<Vector3> Geometry3D::segment_intersects_sphere(const Vector3 &p_from, const Vector3 &p_to, const Vector3 &p_sphere_pos, real_t p_sphere_radius) {
 	Vector<Vector3> r;
-	Vector3 res, norm;
+	Vector3 res;
+	Vector3 norm;
 	if (!::Geometry3D::segment_intersects_sphere(p_from, p_to, p_sphere_pos, p_sphere_radius, &res, &norm)) {
 		return r;
 	}
@@ -1059,7 +1062,8 @@ Vector<Vector3> Geometry3D::segment_intersects_sphere(const Vector3 &p_from, con
 
 Vector<Vector3> Geometry3D::segment_intersects_cylinder(const Vector3 &p_from, const Vector3 &p_to, float p_height, float p_radius) {
 	Vector<Vector3> r;
-	Vector3 res, norm;
+	Vector3 res;
+	Vector3 norm;
 	if (!::Geometry3D::segment_intersects_cylinder(p_from, p_to, p_height, p_radius, &res, &norm)) {
 		return r;
 	}
@@ -1072,7 +1076,8 @@ Vector<Vector3> Geometry3D::segment_intersects_cylinder(const Vector3 &p_from, c
 
 Vector<Vector3> Geometry3D::segment_intersects_convex(const Vector3 &p_from, const Vector3 &p_to, const TypedArray<Plane> &p_planes) {
 	Vector<Vector3> r;
-	Vector3 res, norm;
+	Vector3 res;
+	Vector3 norm;
 	Vector<Plane> planes = Variant(p_planes);
 	if (!::Geometry3D::segment_intersects_convex(p_from, p_to, planes.ptr(), planes.size(), &res, &norm)) {
 		return r;
@@ -1262,7 +1267,7 @@ void Mutex::_bind_methods() {
 ////// Thread //////
 
 void Thread::_start_func(void *ud) {
-	Ref<Thread> *tud = (Ref<Thread> *)ud;
+	auto *tud = (Ref<Thread> *)ud;
 	Ref<Thread> t = *tud;
 	memdelete(tud);
 
@@ -1413,7 +1418,7 @@ bool ClassDB::can_instantiate(const StringName &p_class) const {
 Variant ClassDB::instantiate(const StringName &p_class) const {
 	Object *obj = ::ClassDB::instantiate(p_class);
 	if (!obj) {
-		return Variant();
+		return {};
 	}
 
 	RefCounted *r = Object::cast_to<RefCounted>(obj);
@@ -1438,7 +1443,7 @@ Dictionary ClassDB::class_get_signal(const StringName &p_class, const StringName
 	if (::ClassDB::get_signal(p_class, p_signal, &signal)) {
 		return signal.operator Dictionary();
 	} else {
-		return Dictionary();
+		return {};
 	}
 }
 
@@ -1496,7 +1501,7 @@ Variant ClassDB::class_get_property_default_value(const StringName &p_class, con
 	if (valid) {
 		return ret;
 	}
-	return Variant();
+	return {};
 }
 
 bool ClassDB::class_has_method(const StringName &p_class, const StringName &p_method, bool p_no_inheritance) const {
@@ -1798,7 +1803,7 @@ Object *Engine::get_singleton_object(const StringName &p_name) const {
 	return ::Engine::get_singleton()->get_singleton_object(p_name);
 }
 
-void Engine::register_singleton(const StringName &p_name, Object *p_object) {
+void Engine::register_singleton(const StringName &p_name, Object *p_object) const {
 	ERR_FAIL_COND_MSG(has_singleton(p_name), "Singleton already registered: " + String(p_name));
 	ERR_FAIL_COND_MSG(!String(p_name).is_valid_ascii_identifier(), "Singleton name is not a valid identifier: " + p_name);
 	::Engine::Singleton s;
@@ -1809,7 +1814,7 @@ void Engine::register_singleton(const StringName &p_name, Object *p_object) {
 	::Engine::get_singleton()->add_singleton(s);
 }
 
-void Engine::unregister_singleton(const StringName &p_name) {
+void Engine::unregister_singleton(const StringName &p_name) const {
 	ERR_FAIL_COND_MSG(!has_singleton(p_name), "Attempt to remove unregistered singleton: " + String(p_name));
 	ERR_FAIL_COND_MSG(!::Engine::get_singleton()->is_singleton_user_created(p_name), "Attempt to remove non-user created singleton: " + String(p_name));
 	::Engine::get_singleton()->remove_singleton(p_name);
@@ -2023,7 +2028,8 @@ Error EngineDebugger::call_capture(void *p_user, const String &p_cmd, const Arra
 	if (!capture.is_valid()) {
 		return FAILED;
 	}
-	Variant cmd = p_cmd, data = p_data;
+	Variant cmd = p_cmd;
+	Variant data = p_data;
 	const Variant *args[2] = { &cmd, &data };
 	Variant retval;
 	Callable::CallError err;
