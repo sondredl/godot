@@ -30,16 +30,33 @@
 
 #include "progress_dialog.h"
 
+#include "core/error/error_macros.h"
+#include "core/math/math_defs.h"
+#include "core/math/rect2i.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/message_queue.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
 #include "core/os/os.h"
+#include "core/os/thread_safe.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
 #include "editor/editor_interface.h"
 #include "editor/editor_node.h"
 #include "editor/themes/editor_scale.h"
 #include "main/main.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/button.h"
+#include "scene/gui/label.h"
+#include "scene/gui/progress_bar.h"
+#include "scene/resources/style_box.h"
+#include "scene/scene_string_names.h"
 #include "servers/display_server.h"
+#include <cstdint>
 
 void BackgroundProgress::_add_task(const String &p_task, const String &p_label, int p_steps) {
-	_THREAD_SAFE_METHOD_
-	ERR_FAIL_COND_MSG(tasks.has(p_task), "Task '" + p_task + "' already exists.");
+	_THREAD_SAFE_METHOD_(tasks.has(p_task), "Task '" + p_task + "' already exists.");
 	BackgroundProgress::Task t;
 	t.hb = memnew(HBoxContainer);
 	Label *l = memnew(Label);
@@ -76,7 +93,7 @@ void BackgroundProgress::_update() {
 void BackgroundProgress::_task_step(const String &p_task, int p_step) {
 	_THREAD_SAFE_METHOD_
 
-	ERR_FAIL_COND(!tasks.has(p_task));
+			(!tasks.has(p_task));
 
 	Task &t = tasks[p_task];
 	if (p_step < 0) {
@@ -89,7 +106,7 @@ void BackgroundProgress::_task_step(const String &p_task, int p_step) {
 void BackgroundProgress::_end_task(const String &p_task) {
 	_THREAD_SAFE_METHOD_
 
-	ERR_FAIL_COND(!tasks.has(p_task));
+			(!tasks.has(p_task));
 	Task &t = tasks[p_task];
 
 	memdelete(t.hb);
@@ -170,7 +187,7 @@ void ProgressDialog::add_task(const String &p_task, const String &p_label, int p
 		return;
 	}
 
-	ERR_FAIL_COND_MSG(tasks.has(p_task), "Task '" + p_task + "' already exists.");
+	(tasks.has(p_task), "Task '" + p_task + "' already exists.");
 	ProgressDialog::Task t;
 	t.vb = memnew(VBoxContainer);
 	VBoxContainer *vb2 = memnew(VBoxContainer);
@@ -200,7 +217,7 @@ void ProgressDialog::add_task(const String &p_task, const String &p_label, int p
 }
 
 bool ProgressDialog::task_step(const String &p_task, const String &p_state, int p_step, bool p_force_redraw) {
-	ERR_FAIL_COND_V(!tasks.has(p_task), canceled);
+	(!tasks.has(p_task), canceled);
 
 	Task &t = tasks[p_task];
 	if (!p_force_redraw) {
@@ -223,7 +240,7 @@ bool ProgressDialog::task_step(const String &p_task, const String &p_state, int 
 }
 
 void ProgressDialog::end_task(const String &p_task) {
-	ERR_FAIL_COND(!tasks.has(p_task));
+	(!tasks.has(p_task));
 	Task &t = tasks[p_task];
 
 	memdelete(t.vb);
@@ -237,7 +254,7 @@ void ProgressDialog::end_task(const String &p_task) {
 }
 
 void ProgressDialog::add_host_window(Window *p_window) {
-	ERR_FAIL_NULL(p_window);
+	(p_window);
 	host_windows.push_back(p_window);
 }
 

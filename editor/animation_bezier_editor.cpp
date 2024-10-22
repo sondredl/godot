@@ -30,6 +30,29 @@
 
 #include "animation_bezier_editor.h"
 
+#include "core/error/error_macros.h"
+#include "core/input/input_enums.h"
+#include "core/input/input_event.h"
+#include "core/math/color.h"
+#include "core/math/math_defs.h"
+#include "core/math/math_funcs.h"
+#include "core/math/rect2.h"
+#include "core/math/transform_2d.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/os/keyboard.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/pair.h"
+#include "core/templates/vector.h"
+#include "core/typedefs.h"
+#include "core/variant/array.h"
+#include "core/variant/variant.h"
+#include "editor/animation_track_editor.h"
 #include "editor/editor_node.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
@@ -37,10 +60,19 @@
 #include "editor/gui/editor_spin_slider.h"
 #include "editor/plugins/animation_player_editor_plugin.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/gui/popup_menu.h"
+#include "scene/gui/range.h"
 #include "scene/gui/view_panner.h"
-#include "scene/resources/text_line.h"
+#include "scene/main/node.h"
+#include "scene/resources/animation.h"
+#include "scene/resources/font.h"
+#include "scene/resources/texture.h"
+#include "scene/scene_string_names.h"
+#include "servers/text_server.h"
 
-#include <limits.h>
+#include <climits>
+#include <cmath>
+#include <cstdlib>
 
 float AnimationBezierTrackEdit::_bezier_h_to_pixel(float p_h) {
 	float h = p_h;
@@ -671,7 +703,7 @@ void AnimationBezierTrackEdit::set_animation_and_track(const Ref<Animation> &p_a
 }
 
 Size2 AnimationBezierTrackEdit::get_minimum_size() const {
-	return Vector2(1, 1);
+	return { 1, 1 };
 }
 
 void AnimationBezierTrackEdit::set_timeline(AnimationTimelineEdit *p_timeline) {
@@ -891,7 +923,7 @@ void AnimationBezierTrackEdit::_select_at_anim(const Ref<Animation> &p_anim, int
 	}
 
 	int idx = animation->track_find_key(p_track, p_pos, Animation::FIND_MODE_APPROX);
-	ERR_FAIL_COND(idx < 0);
+	(idx < 0);
 
 	selection.insert(IntPair(p_track, idx));
 	emit_signal(SNAME("select_key"), idx, p_single, p_track);
@@ -899,7 +931,7 @@ void AnimationBezierTrackEdit::_select_at_anim(const Ref<Animation> &p_anim, int
 }
 
 void AnimationBezierTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
-	ERR_FAIL_COND(p_event.is_null());
+	(p_event.is_null());
 
 	if (panner->gui_input(p_event)) {
 		accept_event();
@@ -989,9 +1021,9 @@ void AnimationBezierTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
 			float desired_scale = (width - padding / 2.0) / (maximum_time - minimum_time);
 			minimum_time = MAX(0, minimum_time - (padding / 2.0) / desired_scale);
 
-			float zv = Math::pow(100 / desired_scale, 0.125f);
+			float zv = Math::pow(100 / desired_scale, 0.125F);
 			if (zv < 1) {
-				zv = Math::pow(desired_scale / 100, 0.125f) - 1;
+				zv = Math::pow(desired_scale / 100, 0.125F) - 1;
 				zv = 1 - zv;
 			}
 			float zoom_value = timeline->get_zoom()->get_max() - zv;
@@ -1008,7 +1040,8 @@ void AnimationBezierTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
 			queue_redraw();
 			accept_event();
 			return;
-		} else if (ED_IS_SHORTCUT("animation_bezier_editor/select_all_keys", p_event)) {
+		}
+		if (ED_IS_SHORTCUT("animation_bezier_editor/select_all_keys", p_event)) {
 			for (int i = 0; i < edit_points.size(); ++i) {
 				_select_at_anim(animation, edit_points[i].track, animation->track_get_key_time(edit_points[i].track, edit_points[i].key), i == 0);
 			}
@@ -1243,7 +1276,7 @@ void AnimationBezierTrackEdit::gui_input(const Ref<InputEvent> &p_event) {
 
 			// Then attempt to move.
 			int index = animation->track_find_key(selected_track, time, Animation::FIND_MODE_APPROX);
-			ERR_FAIL_COND(index == -1);
+			(index == -1);
 			_clear_selection();
 			_select_at_anim(animation, selected_track, animation->track_get_key_time(selected_track, index), true);
 
@@ -1878,7 +1911,7 @@ void AnimationBezierTrackEdit::paste_keys(real_t p_ofs, bool p_ofs_valid) {
 			}
 		}
 
-		ERR_FAIL_COND_MSG(!all_compatible, "Paste failed: Not all animation keys were compatible with their target tracks");
+		(!all_compatible, "Paste failed: Not all animation keys were compatible with their target tracks");
 		if (!same_track) {
 			WARN_PRINT("Pasted animation keys from multiple tracks into single Bezier track");
 		}

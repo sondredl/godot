@@ -30,23 +30,57 @@
 
 #include "editor_resource_picker.h"
 
+#include "core/core_string_names.h"
+#include "core/error/error_macros.h"
+#include "core/input/input_enums.h"
+#include "core/input/input_event.h"
+#include "core/io/resource.h"
+#include "core/io/resource_loader.h"
+#include "core/math/color.h"
+#include "core/math/math_defs.h"
+#include "core/math/rect2.h"
+#include "core/math/rect2i.h"
+#include "core/math/vector2.h"
+#include "core/math/vector2i.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/object_id.h"
+#include "core/object/ref_counted.h"
+#include "core/object/script_language.h"
+#include "core/os/memory.h"
+#include "core/os/os.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
+#include "core/variant/callable.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 #include "editor/audio_stream_preview.h"
-#include "editor/editor_help.h"
 #include "editor/editor_node.h"
 #include "editor/editor_resource_preview.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
-#include "editor/filesystem_dock.h"
 #include "editor/gui/editor_file_dialog.h"
 #include "editor/gui/editor_quick_open_dialog.h"
 #include "editor/plugins/editor_resource_conversion_plugin.h"
 #include "editor/plugins/script_editor_plugin.h"
 #include "editor/scene_tree_dock.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/gui/base_button.h"
 #include "scene/gui/button.h"
+#include "scene/gui/control.h"
+#include "scene/gui/label.h"
 #include "scene/gui/texture_rect.h"
-#include "scene/resources/gradient_texture.h"
-#include "scene/resources/image_texture.h"
+#include "scene/main/node.h"
+#include "scene/resources/font.h"
+#include "scene/resources/material.h"
+#include "scene/scene_string_names.h"
+#include "servers/audio/audio_stream.h"
+#include "servers/audio_server.h"
+#include "servers/rendering_server.h"
+#include <cstdint>
 
 void EditorResourcePicker::_update_resource() {
 	String resource_path;
@@ -139,7 +173,7 @@ void EditorResourcePicker::_resource_changed() {
 
 void EditorResourcePicker::_file_selected(const String &p_path) {
 	Ref<Resource> loaded_resource = ResourceLoader::load(p_path);
-	ERR_FAIL_COND_MSG(loaded_resource.is_null(), "Cannot load resource from path '" + p_path + "'.");
+	(loaded_resource.is_null(), "Cannot load resource from path '" + p_path + "'.");
 
 	if (!base_type.is_empty()) {
 		bool any_type_matches = false;
@@ -366,7 +400,7 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 			}
 
 			Ref<Resource> unique_resource = edited_resource->duplicate();
-			ERR_FAIL_COND(unique_resource.is_null()); // duplicate() may fail.
+			(unique_resource.is_null()); // duplicate() may fail.
 
 			edited_resource = unique_resource;
 			_resource_changed();
@@ -450,14 +484,14 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 			if (p_which >= CONVERT_BASE_ID) {
 				int to_type = p_which - CONVERT_BASE_ID;
 				Vector<Ref<EditorResourceConversionPlugin>> conversions = EditorNode::get_singleton()->find_resource_conversion_plugin_for_resource(edited_resource);
-				ERR_FAIL_INDEX(to_type, conversions.size());
+				(to_type, conversions.size());
 
 				edited_resource = conversions[to_type]->convert(edited_resource);
 				_resource_changed();
 				break;
 			}
 
-			ERR_FAIL_COND(inheritors_array.is_empty());
+			(inheritors_array.is_empty());
 
 			String intype = inheritors_array[p_which - TYPE_BASE_ID];
 			Variant obj;
@@ -473,7 +507,7 @@ void EditorResourcePicker::_edit_menu_cbk(int p_which) {
 			}
 
 			Resource *resp = Object::cast_to<Resource>(obj);
-			ERR_BREAK(!resp);
+			(!resp);
 
 			EditorNode::get_editor_data().instantiate_object_properties(obj);
 
@@ -559,7 +593,7 @@ void EditorResourcePicker::_button_input(const Ref<InputEvent> &p_event) {
 
 String EditorResourcePicker::_get_resource_type(const Ref<Resource> &p_resource) const {
 	if (p_resource.is_null()) {
-		return String();
+		return {};
 	}
 	String res_type = p_resource->get_class();
 
@@ -576,7 +610,7 @@ String EditorResourcePicker::_get_resource_type(const Ref<Resource> &p_resource)
 	return res_type;
 }
 
-static void _add_allowed_type(const StringName &p_type, HashSet<StringName> *p_vector) {
+static void _add_allowed_type(const StringName &p_type, const HashSet<StringName> *p_vector) {
 	if (p_vector->has(p_type)) {
 		// Already added
 		return;
@@ -701,7 +735,7 @@ Variant EditorResourcePicker::get_drag_data_fw(const Point2 &p_point, Control *p
 		return drag_data;
 	}
 
-	return Variant();
+	return {};
 }
 
 bool EditorResourcePicker::can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const {
@@ -709,7 +743,7 @@ bool EditorResourcePicker::can_drop_data_fw(const Point2 &p_point, const Variant
 }
 
 void EditorResourcePicker::drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) {
-	ERR_FAIL_COND(!_is_drop_valid(p_data));
+	(!_is_drop_valid(p_data));
 
 	Dictionary drag_data = p_data;
 
@@ -918,7 +952,7 @@ void EditorResourcePicker::set_edited_resource(Ref<Resource> p_resource) {
 
 		if (!is_custom && !_is_type_valid(p_resource->get_class(), allowed_types)) {
 			String class_str = (custom_class == StringName() ? p_resource->get_class() : vformat("%s (%s)", custom_class, p_resource->get_class()));
-			ERR_FAIL_MSG(vformat("Failed to set a resource of the type '%s' because this EditorResourcePicker only accepts '%s' and its derivatives.", class_str, base_type));
+			(vformat("Failed to set a resource of the type '%s' because this EditorResourcePicker only accepts '%s' and its derivatives.", class_str, base_type));
 		}
 	}
 	set_edited_resource_no_check(p_resource);
@@ -1042,7 +1076,7 @@ void EditorResourcePicker::_duplicate_selected_resources() {
 		Array meta = item->get_metadata(0);
 		Ref<Resource> res = meta[0];
 		Ref<Resource> unique_resource = res->duplicate();
-		ERR_FAIL_COND(unique_resource.is_null()); // duplicate() may fail.
+		(unique_resource.is_null()); // duplicate() may fail.
 		meta[0] = unique_resource;
 
 		if (meta.size() == 1) { // Root.

@@ -53,14 +53,14 @@ class EditorSpinSlider : public Range {
 
 	bool grabbing_grabber = false;
 	int grabbing_from = 0;
-	float grabbing_ratio = 0.0f;
+	float grabbing_ratio = 0.0F;
 
 	bool grabbing_spinner_attempt = false;
 	bool grabbing_spinner = false;
 
 	bool read_only = false;
-	float grabbing_spinner_dist_cache = 0.0f;
-	float grabbing_spinner_speed = 0.0f;
+	float grabbing_spinner_dist_cache = 0.0F;
+	float grabbing_spinner_speed = 0.0F;
 	Vector2 grabbing_spinner_mouse_pos;
 	double pre_grab_value = 0.0;
 
@@ -94,14 +94,14 @@ class EditorSpinSlider : public Range {
 
 protected:
 	void _notification(int p_what);
-	virtual void gui_input(const Ref<InputEvent> &p_event) override;
+	void gui_input(const Ref<InputEvent> &p_event) override;
 	static void _bind_methods();
 	void _grabber_mouse_entered();
 	void _grabber_mouse_exited();
 	void _focus_entered();
 
 public:
-	virtual bool is_text_field() const override;
+	bool is_text_field() const override;
 
 	String get_tooltip(const Point2 &p_pos) const override;
 
@@ -126,7 +126,7 @@ public:
 	void setup_and_show() { _focus_entered(); }
 	LineEdit *get_line_edit();
 
-	virtual Size2 get_minimum_size() const override;
+	Size2 get_minimum_size() const override;
 	EditorSpinSlider();
 };
 

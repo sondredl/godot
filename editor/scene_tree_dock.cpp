@@ -31,16 +31,39 @@
 #include "scene_tree_dock.h"
 
 #include "core/config/project_settings.h"
+#include "core/error/error_list.h"
+#include "core/error/error_macros.h"
 #include "core/input/input.h"
+#include "core/input/input_enums.h"
+#include "core/input/input_event.h"
+#include "core/io/resource.h"
+#include "core/io/resource_loader.h"
 #include "core/io/resource_saver.h"
+#include "core/math/math_defs.h"
+#include "core/math/vector2.h"
+#include "core/math/vector3.h"
+#include "core/object/callable_method_pointer.h"
 #include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/object_id.h"
+#include "core/object/ref_counted.h"
+#include "core/object/script_language.h"
 #include "core/os/keyboard.h"
+#include "core/os/memory.h"
+#include "core/string/node_path.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
+#include "core/variant/callable.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 #include "editor/debugger/editor_debugger_node.h"
 #include "editor/editor_feature_profile.h"
 #include "editor/editor_file_system.h"
 #include "editor/editor_main_screen.h"
 #include "editor/editor_node.h"
-#include "editor/editor_paths.h"
+#include "editor/editor_property_name_processor.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/editor_undo_redo_manager.h"
@@ -56,16 +79,30 @@
 #include "editor/plugins/node_3d_editor_plugin.h"
 #include "editor/plugins/script_editor_plugin.h"
 #include "editor/reparent_dialog.h"
+#include "editor/script_create_dialog.h"
 #include "editor/shader_create_dialog.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/2d/node_2d.h"
+#include "scene/3d/node_3d.h"
+#include "scene/animation/animation_mixer.h"
+#include "scene/animation/animation_player.h"
 #include "scene/animation/animation_tree.h"
-#include "scene/audio/audio_stream_player.h"
+#include "scene/gui/base_button.h"
 #include "scene/gui/check_box.h"
-#include "scene/property_utils.h"
+#include "scene/gui/container.h"
+#include "scene/gui/tree.h"
+#include "scene/main/canvas_item.h"
+#include "scene/main/node.h"
+#include "scene/main/timer.h"
+#include "scene/resources/animation.h"
+#include "scene/resources/material.h"
 #include "scene/resources/packed_scene.h"
+#include "scene/resources/shader.h"
+#include "scene/scene_string_names.h"
 #include "servers/display_server.h"
 
 #include "modules/modules_enabled.gen.h" // For regex.
+#include <cstdint>
 #ifdef MODULE_REGEX_ENABLED
 #include "editor/rename_dialog.h"
 #endif // MODULE_REGEX_ENABLED
@@ -121,7 +158,7 @@ void SceneTreeDock::_reset_hovering_timer() {
 }
 
 void SceneTreeDock::input(const Ref<InputEvent> &p_event) {
-	ERR_FAIL_COND(p_event.is_null());
+	(p_event.is_null());
 
 	Ref<InputEventMouseButton> mb = p_event;
 
@@ -144,7 +181,7 @@ void SceneTreeDock::input(const Ref<InputEvent> &p_event) {
 }
 
 void SceneTreeDock::shortcut_input(const Ref<InputEvent> &p_event) {
-	ERR_FAIL_COND(p_event.is_null());
+	(p_event.is_null());
 
 	Control *focus_owner = get_viewport()->gui_get_focus_owner();
 	if (focus_owner && focus_owner->is_text_field()) {
@@ -267,7 +304,7 @@ void SceneTreeDock::instantiate_scenes(const Vector<String> &p_files, Node *p_pa
 }
 
 void SceneTreeDock::_perform_instantiate_scenes(const Vector<String> &p_files, Node *p_parent, int p_pos) {
-	ERR_FAIL_NULL(p_parent);
+	(p_parent);
 
 	Vector<Node *> instances;
 
@@ -343,7 +380,7 @@ void SceneTreeDock::_perform_instantiate_scenes(const Vector<String> &p_files, N
 }
 
 void SceneTreeDock::_perform_create_audio_stream_players(const Vector<String> &p_files, Node *p_parent, int p_pos) {
-	ERR_FAIL_NULL(p_parent);
+	(p_parent);
 
 	StringName node_type = "AudioStreamPlayer";
 	if (Input::get_singleton()->is_key_pressed(Key::SHIFT)) {
@@ -413,7 +450,7 @@ void SceneTreeDock::_perform_create_audio_stream_players(const Vector<String> &p
 
 void SceneTreeDock::_replace_with_branch_scene(const String &p_file, Node *base) {
 	// `move_child` + `get_index` doesn't really work for internal nodes.
-	ERR_FAIL_COND_MSG(base->get_internal_mode() != INTERNAL_MODE_DISABLED, "Trying to replace internal node, this is not supported.");
+	(base->get_internal_mode() != INTERNAL_MODE_DISABLED, "Trying to replace internal node, this is not supported.");
 
 	Ref<PackedScene> sdata = ResourceLoader::load(p_file);
 	if (!sdata.is_valid()) {
@@ -974,7 +1011,7 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 			}
 
 			List<Node *> nodes = editor_selection->get_selected_node_list();
-			ERR_FAIL_COND(nodes.size() != 1);
+			(nodes.size() != 1);
 
 			Node *node = nodes.front()->get();
 			Node *root = get_tree()->get_edited_scene_root();
@@ -984,7 +1021,7 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 			}
 
 			// `move_child` + `get_index` doesn't really work for internal nodes.
-			ERR_FAIL_COND_MSG(node->get_internal_mode() != INTERNAL_MODE_DISABLED, "Trying to set internal node as scene root, this is not supported.");
+			(node->get_internal_mode() != INTERNAL_MODE_DISABLED, "Trying to set internal node as scene root, this is not supported.");
 
 			//check that from node to root, all owners are right
 
@@ -1275,7 +1312,7 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 
 					// Fire confirmation dialog when children are editable.
 					if (editable && !placeholder) {
-						placeholder_editable_instance_remove_dialog->set_text(TTR("Enabling \"Load as Placeholder\" will disable \"Editable Children\" and cause all properties of the node to be reverted to their default."));
+						placeholder_editable_instance_remove_dialog->set_text(TTR(R"(Enabling "Load as Placeholder" will disable "Editable Children" and cause all properties of the node to be reverted to their default.)"));
 						placeholder_editable_instance_remove_dialog->popup_centered();
 						break;
 					}
@@ -1311,7 +1348,7 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 						break;
 					}
 
-					ERR_FAIL_COND(node->get_scene_file_path().is_empty());
+					(node->get_scene_file_path().is_empty());
 					undo_redo->create_action(TTR("Make Local"));
 					undo_redo->add_do_method(node, "set_scene_file_path", "");
 					undo_redo->add_undo_method(node, "set_scene_file_path", node->get_scene_file_path());
@@ -1521,10 +1558,10 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 			if (p_tool >= EDIT_SUBRESOURCE_BASE) {
 				int idx = p_tool - EDIT_SUBRESOURCE_BASE;
 
-				ERR_FAIL_INDEX(idx, subresources.size());
+				(idx, subresources.size());
 
 				Object *obj = ObjectDB::get_instance(subresources[idx]);
-				ERR_FAIL_NULL(obj);
+				(obj);
 
 				_push_item(obj);
 			}
@@ -1533,7 +1570,7 @@ void SceneTreeDock::_tool_selected(int p_tool, bool p_confirm_override) {
 }
 
 void SceneTreeDock::_property_selected(int p_idx) {
-	ERR_FAIL_NULL(property_drop_node);
+	(property_drop_node);
 	_perform_property_drop(property_drop_node, menu_properties->get_item_metadata(p_idx), ResourceLoader::load(resource_drop_path));
 	property_drop_node = nullptr;
 }
@@ -1835,8 +1872,8 @@ void SceneTreeDock::_node_renamed() {
 }
 
 void SceneTreeDock::_set_owners(Node *p_owner, const Array &p_nodes) {
-	for (int i = 0; i < p_nodes.size(); i++) {
-		Node *n = Object::cast_to<Node>(p_nodes[i]);
+	for (const auto &p_node : p_nodes) {
+		Node *n = Object::cast_to<Node>(p_node);
 		if (!n) {
 			continue;
 		}
@@ -1844,7 +1881,7 @@ void SceneTreeDock::_set_owners(Node *p_owner, const Array &p_nodes) {
 	}
 }
 
-void SceneTreeDock::_fill_path_renames(Vector<StringName> base_path, Vector<StringName> new_base_path, Node *p_node, HashMap<Node *, NodePath> *p_renames) {
+void SceneTreeDock::_fill_path_renames(Vector<StringName> base_path, Vector<StringName> new_base_path, Node *p_node, const HashMap<Node *, NodePath> *p_renames) {
 	base_path.push_back(p_node->get_name());
 
 	NodePath new_path;
@@ -1932,7 +1969,7 @@ void SceneTreeDock::fill_path_renames(Node *p_node, Node *p_new_parent, HashMap<
 
 bool SceneTreeDock::_update_node_path(Node *p_root_node, NodePath &r_node_path, HashMap<Node *, NodePath> *p_renames) const {
 	Node *target_node = p_root_node->get_node_or_null(r_node_path);
-	ERR_FAIL_NULL_V_MSG(target_node, false, "Found invalid node path '" + String(r_node_path) + "' on node '" + String(scene_root->get_path_to(p_root_node)) + "'");
+	(target_node, false, "Found invalid node path '" + String(r_node_path) + "' on node '" + String(scene_root->get_path_to(p_root_node)) + "'");
 
 	// Try to find the target node in modified node paths.
 	HashMap<Node *, NodePath>::Iterator found_node_path = p_renames->find(target_node);
@@ -2054,7 +2091,7 @@ bool SceneTreeDock::_check_node_path_recursive(Node *p_root_node, Variant &r_var
 	return false;
 }
 
-void SceneTreeDock::perform_node_renames(Node *p_base, HashMap<Node *, NodePath> *p_renames, HashMap<Ref<Animation>, HashSet<int>> *r_rem_anims) {
+void SceneTreeDock::perform_node_renames(Node *p_base, HashMap<Node *, NodePath> *p_renames, const HashMap<Ref<Animation>, HashSet<int>> *r_rem_anims) {
 	HashMap<Ref<Animation>, HashSet<int>> rem_anims;
 	if (!r_rem_anims) {
 		r_rem_anims = &rem_anims;
@@ -2263,7 +2300,7 @@ bool SceneTreeDock::_validate_no_instance() {
 
 void SceneTreeDock::_node_reparent(NodePath p_path, bool p_keep_global_xform) {
 	Node *new_parent = scene_root->get_node(p_path);
-	ERR_FAIL_NULL(new_parent);
+	(new_parent);
 
 	List<Node *> selection = editor_selection->get_selected_node_list();
 	List<Node *> full_selection = editor_selection->get_full_selected_node_list();
@@ -2286,7 +2323,7 @@ void SceneTreeDock::_node_reparent(NodePath p_path, bool p_keep_global_xform) {
 }
 
 void SceneTreeDock::_do_reparent(Node *p_new_parent, int p_position_in_parent, Vector<Node *> p_nodes, bool p_keep_global_xform) {
-	ERR_FAIL_NULL(p_new_parent);
+	(p_new_parent);
 
 	if (p_nodes.size() == 0) {
 		return; // Nothing to reparent.
@@ -2302,7 +2339,7 @@ void SceneTreeDock::_do_reparent(Node *p_new_parent, int p_position_in_parent, V
 			return; // Attempt to reparent to itself.
 		}
 		// `move_child` + `get_index` doesn't really work for internal nodes.
-		ERR_FAIL_COND_MSG(p_nodes[ni]->get_internal_mode() != INTERNAL_MODE_DISABLED, "Trying to move internal node, this is not supported.");
+		(p_nodes[ni]->get_internal_mode() != INTERNAL_MODE_DISABLED, "Trying to move internal node, this is not supported.");
 
 		if (p_nodes[ni]->get_index(false) < first_idx) {
 			nodes_before--;
@@ -2328,7 +2365,7 @@ void SceneTreeDock::_do_reparent(Node *p_new_parent, int p_position_in_parent, V
 
 	Node *validate = p_new_parent;
 	while (validate) {
-		ERR_FAIL_COND_MSG(p_nodes.has(validate), "Selection changed at some point. Can't reparent.");
+		(p_nodes.has(validate), "Selection changed at some point. Can't reparent.");
 		validate = validate->get_parent();
 	}
 
@@ -2573,9 +2610,9 @@ void SceneTreeDock::_toggle_placeholder_from_selection() {
 
 void SceneTreeDock::_reparent_nodes_to_root(Node *p_root, const Array &p_nodes, Node *p_owner) {
 	List<Node *> nodes;
-	for (int i = 0; i < p_nodes.size(); i++) {
-		Node *node = Object::cast_to<Node>(p_nodes[i]);
-		ERR_FAIL_NULL(node);
+	for (const auto &p_node : p_nodes) {
+		Node *node = Object::cast_to<Node>(p_node);
+		(node);
 		nodes.push_back(node);
 	}
 
@@ -2594,16 +2631,16 @@ void SceneTreeDock::_reparent_nodes_to_root(Node *p_root, const Array &p_nodes, 
 }
 
 void SceneTreeDock::_reparent_nodes_to_paths_with_transform_and_name(Node *p_root, const Array &p_nodes, const Array &p_paths, const Array &p_transforms, const Array &p_names, Node *p_owner) {
-	ERR_FAIL_COND(p_nodes.size() != p_paths.size());
-	ERR_FAIL_COND(p_nodes.size() != p_transforms.size());
-	ERR_FAIL_COND(p_nodes.size() != p_names.size());
+	(p_nodes.size() != p_paths.size());
+	(p_nodes.size() != p_transforms.size());
+	(p_nodes.size() != p_names.size());
 
 	for (int i = 0; i < p_nodes.size(); i++) {
 		Node *node = Object::cast_to<Node>(p_nodes[i]);
-		ERR_FAIL_NULL(node);
+		(node);
 		const NodePath &np = p_paths[i];
 		Node *parent_node = p_root->get_node_or_null(np);
-		ERR_FAIL_NULL(parent_node);
+		(parent_node);
 
 		List<Node *> owned;
 		node->get_owned_by(p_owner, &owned);
@@ -2830,7 +2867,7 @@ void SceneTreeDock::_selection_changed() {
 Node *SceneTreeDock::_do_create(Node *p_parent) {
 	Variant c = create_dialog->instantiate_selected();
 	Node *child = Object::cast_to<Node>(c);
-	ERR_FAIL_NULL_V(child, nullptr);
+	(child, nullptr);
 
 	String new_name = p_parent->validate_child_name(child);
 	if (GLOBAL_GET("editor/naming/node_name_casing").operator int() != NAME_CASING_PASCAL_CASE) {
@@ -2902,14 +2939,14 @@ void SceneTreeDock::_create() {
 		} else {
 			// If no root exist in edited scene
 			parent = scene_root;
-			ERR_FAIL_NULL(parent);
+			(parent);
 		}
 
 		_do_create(parent);
 
 	} else if (current_option == TOOL_REPLACE) {
 		List<Node *> selection = editor_selection->get_selected_node_list();
-		ERR_FAIL_COND(selection.is_empty());
+		(selection.is_empty());
 
 		EditorUndoRedoManager *ur = EditorUndoRedoManager::get_singleton();
 		ur->create_action(TTR("Change type of node(s)"), UndoRedo::MERGE_DISABLE, selection.front()->get());
@@ -2928,13 +2965,13 @@ void SceneTreeDock::_create() {
 		ur->commit_action(false);
 	} else if (current_option == TOOL_REPARENT_TO_NEW_NODE) {
 		List<Node *> selection = editor_selection->get_selected_node_list();
-		ERR_FAIL_COND(selection.is_empty());
+		(selection.is_empty());
 
 		// Find top level node in selection
 		bool only_one_top_node = true;
 
 		Node *first = selection.front()->get();
-		ERR_FAIL_NULL(first);
+		(first);
 		int smaller_path_to_top = first->get_path_to(scene_root).get_name_count();
 		Node *top_node = first;
 
@@ -2943,7 +2980,7 @@ void SceneTreeDock::_create() {
 
 		for (List<Node *>::Element *E = selection.front()->next(); E; E = E->next()) {
 			Node *n = E->get();
-			ERR_FAIL_NULL(n);
+			(n);
 
 			int path_length = n->get_path_to(scene_root).get_name_count();
 
@@ -3052,7 +3089,7 @@ void SceneTreeDock::replace_node(Node *p_node, Node *p_by_node) {
 }
 
 void SceneTreeDock::_replace_node(Node *p_node, Node *p_by_node, bool p_keep_properties, bool p_remove_old) {
-	ERR_FAIL_COND_MSG(!p_node->is_inside_tree(), "_replace_node() can't be called on a node outside of tree. You might have called it twice.");
+	(!p_node->is_inside_tree(), "_replace_node() can't be called on a node outside of tree. You might have called it twice.");
 	Node *oldnode = p_node;
 	Node *newnode = p_by_node;
 
@@ -3183,7 +3220,7 @@ void SceneTreeDock::perform_node_replace(Node *p_base, Node *p_node, Node *p_by_
 	}
 }
 
-bool SceneTreeDock::_check_node_recursive(Variant &r_variant, Node *p_node, Node *p_by_node, const String type_hint, String &r_warn_message) {
+bool SceneTreeDock::_check_node_recursive(Variant &r_variant, Node *p_node, Node *p_by_node, const String &type_hint, String &r_warn_message) {
 	switch (r_variant.get_type()) {
 		case Variant::OBJECT: {
 			if (p_node == r_variant) {
@@ -3227,15 +3264,7 @@ void SceneTreeDock::set_edited_scene(Node *p_scene) {
 }
 
 static bool _is_same_selection(const Vector<Node *> &p_first, const List<Node *> &p_second) {
-	if (p_first.size() != p_second.size()) {
-		return false;
-	}
-	for (Node *node : p_second) {
-		if (!p_first.has(node)) {
-			return false;
-		}
-	}
-	return true;
+	return static_cast<bool>(p_first.size() == p_second.size());
 }
 
 void SceneTreeDock::set_selection(const Vector<Node *> &p_nodes) {
@@ -3396,7 +3425,7 @@ void SceneTreeDock::_normalize_drop(Node *&to_node, int &to_pos, int p_type) {
 		//drop at above selected node
 		if (to_node == EditorNode::get_singleton()->get_edited_scene()) {
 			to_node = nullptr;
-			ERR_FAIL_MSG("Cannot perform drop above the root node!");
+			("Cannot perform drop above the root node!");
 		}
 
 		to_pos = to_node->get_index(false);
@@ -3445,8 +3474,8 @@ Array SceneTreeDock::_get_selection_array() {
 
 void SceneTreeDock::_files_dropped(const Vector<String> &p_files, NodePath p_to, int p_type) {
 	Node *node = get_node(p_to);
-	ERR_FAIL_NULL(node);
-	ERR_FAIL_COND(p_files.is_empty());
+	(node);
+	(p_files.is_empty());
 
 	const String &res_path = p_files[0];
 	const StringName res_type = EditorFileSystem::get_singleton()->get_file_type(res_path);
@@ -3507,7 +3536,7 @@ void SceneTreeDock::_files_dropped(const Vector<String> &p_files, NodePath p_to,
 
 void SceneTreeDock::_script_dropped(const String &p_file, NodePath p_to) {
 	Ref<Script> scr = ResourceLoader::load(p_file);
-	ERR_FAIL_COND(!scr.is_valid());
+	(!scr.is_valid());
 	Node *n = get_node(p_to);
 
 	if (!n) {
@@ -3517,14 +3546,14 @@ void SceneTreeDock::_script_dropped(const String &p_file, NodePath p_to) {
 	EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 	if (Input::get_singleton()->is_key_pressed(Key::CMD_OR_CTRL)) {
 		Object *obj = ClassDB::instantiate(scr->get_instance_base_type());
-		ERR_FAIL_NULL(obj);
+		(obj);
 
 		Node *new_node = Object::cast_to<Node>(obj);
 		if (!new_node) {
 			if (!obj->is_ref_counted()) {
 				memdelete(obj);
 			}
-			ERR_FAIL_MSG("Script does not extend Node-derived type.");
+			("Script does not extend Node-derived type.");
 		}
 		new_node->set_name(Node::adjust_name_casing(p_file.get_file().get_basename()));
 		new_node->set_script(scr);
@@ -3947,7 +3976,7 @@ void SceneTreeDock::save_branch_to_file(const String &p_directory) {
 
 void SceneTreeDock::_focus_node() {
 	Node *node = scene_tree->get_selected();
-	ERR_FAIL_NULL(node);
+	(node);
 
 	if (node->is_class("CanvasItem")) {
 		CanvasItemEditorPlugin *editor = Object::cast_to<CanvasItemEditorPlugin>(editor_data->get_editor_by_name("2D"));
@@ -4198,7 +4227,7 @@ List<Node *> SceneTreeDock::get_node_clipboard() const {
 }
 
 void SceneTreeDock::add_remote_tree_editor(Control *p_remote) {
-	ERR_FAIL_COND(remote_tree != nullptr);
+	(remote_tree != nullptr);
 	add_child(p_remote);
 	remote_tree = p_remote;
 	remote_tree->hide();
@@ -4479,7 +4508,7 @@ void SceneTreeDock::_edit_subresource(int p_idx, const PopupMenu *p_from_menu) {
 	const ObjectID &id = p_from_menu->get_item_metadata(p_idx);
 
 	Object *obj = ObjectDB::get_instance(id);
-	ERR_FAIL_NULL(obj);
+	(obj);
 
 	_push_item(obj);
 }

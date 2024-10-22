@@ -37,7 +37,7 @@
 class GDExtensionExportPlugin : public EditorExportPlugin {
 protected:
 	virtual void _export_file(const String &p_path, const String &p_type, const HashSet<String> &p_features);
-	virtual String get_name() const { return "GDExtension"; }
+	String get_name() const override { return "GDExtension"; }
 };
 
 void GDExtensionExportPlugin::_export_file(const String &p_path, const String &p_type, const HashSet<String> &p_features) {
@@ -49,7 +49,7 @@ void GDExtensionExportPlugin::_export_file(const String &p_path, const String &p
 	config.instantiate();
 
 	Error err = config->load(p_path);
-	ERR_FAIL_COND_MSG(err, "Failed to load GDExtension file: " + p_path);
+	(err, "Failed to load GDExtension file: " + p_path);
 
 	// Check whether this GDExtension should be exported.
 	bool android_aar_plugin = config->get_value("configuration", "android_aar_plugin", false);
@@ -60,7 +60,7 @@ void GDExtensionExportPlugin::_export_file(const String &p_path, const String &p
 		return;
 	}
 
-	ERR_FAIL_COND_MSG(!config->has_section_key("configuration", "entry_symbol"), "Failed to export GDExtension file, missing entry symbol: " + p_path);
+	(!config->has_section_key("configuration", "entry_symbol"), "Failed to export GDExtension file, missing entry symbol: " + p_path);
 
 	String entry_symbol = config->get_value("configuration", "entry_symbol");
 

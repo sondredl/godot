@@ -30,7 +30,16 @@
 
 #include "editor_vcs_interface.h"
 
+#include "core/error/error_macros.h"
+#include "core/io/file_access.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/string/ustring.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/typed_array.h"
 #include "editor_node.h"
+#include <cstdint>
 
 EditorVCSInterface *EditorVCSInterface::singleton = nullptr;
 
@@ -56,8 +65,8 @@ List<String> EditorVCSInterface::get_remotes() {
 	}
 
 	List<String> remotes;
-	for (int i = 0; i < result.size(); i++) {
-		remotes.push_back(result[i]);
+	for (auto &i : result) {
+		remotes.push_back(i);
 	}
 	return remotes;
 }
@@ -69,8 +78,8 @@ List<EditorVCSInterface::StatusFile> EditorVCSInterface::get_modified_files_data
 	}
 
 	List<EditorVCSInterface::StatusFile> status_files;
-	for (int i = 0; i < result.size(); i++) {
-		status_files.push_back(_convert_status_file(result[i]));
+	for (const auto &i : result) {
+		status_files.push_back(_convert_status_file(i));
 	}
 	return status_files;
 }
@@ -98,8 +107,8 @@ List<EditorVCSInterface::DiffFile> EditorVCSInterface::get_diff(const String &p_
 	}
 
 	List<DiffFile> diff_files;
-	for (int i = 0; i < result.size(); i++) {
-		diff_files.push_back(_convert_diff_file(result[i]));
+	for (const auto &i : result) {
+		diff_files.push_back(_convert_diff_file(i));
 	}
 	return diff_files;
 }
@@ -111,8 +120,8 @@ List<EditorVCSInterface::Commit> EditorVCSInterface::get_previous_commits(int p_
 	}
 
 	List<EditorVCSInterface::Commit> commits;
-	for (int i = 0; i < result.size(); i++) {
-		commits.push_back(_convert_commit(result[i]));
+	for (const auto &i : result) {
+		commits.push_back(_convert_commit(i));
 	}
 	return commits;
 }
@@ -124,8 +133,8 @@ List<String> EditorVCSInterface::get_branch_list() {
 	}
 
 	List<String> branch_list;
-	for (int i = 0; i < result.size(); i++) {
-		branch_list.push_back(result[i]);
+	for (auto &i : result) {
+		branch_list.push_back(i);
 	}
 	return branch_list;
 }
@@ -177,8 +186,8 @@ List<EditorVCSInterface::DiffHunk> EditorVCSInterface::get_line_diff(const Strin
 	}
 
 	List<DiffHunk> diff_hunks;
-	for (int i = 0; i < result.size(); i++) {
-		diff_hunks.push_back(_convert_diff_hunk(result[i]));
+	for (const auto &i : result) {
+		diff_hunks.push_back(_convert_diff_hunk(i));
 	}
 	return diff_hunks;
 }
@@ -267,8 +276,8 @@ EditorVCSInterface::DiffHunk EditorVCSInterface::_convert_diff_hunk(const Dictio
 	dh.new_start = p_diff_hunk["new_start"];
 	dh.old_start = p_diff_hunk["old_start"];
 	TypedArray<Dictionary> diff_lines = p_diff_hunk["diff_lines"];
-	for (int i = 0; i < diff_lines.size(); i++) {
-		DiffLine dl = _convert_diff_line(diff_lines[i]);
+	for (const auto &diff_line : diff_lines) {
+		DiffLine dl = _convert_diff_line(diff_line);
 		dh.diff_lines.push_back(dl);
 	}
 	return dh;
@@ -279,8 +288,8 @@ EditorVCSInterface::DiffFile EditorVCSInterface::_convert_diff_file(const Dictio
 	df.new_file = p_diff_file["new_file"];
 	df.old_file = p_diff_file["old_file"];
 	TypedArray<Dictionary> diff_hunks = p_diff_file["diff_hunks"];
-	for (int i = 0; i < diff_hunks.size(); i++) {
-		DiffHunk dh = _convert_diff_hunk(diff_hunks[i]);
+	for (const auto &diff_hunk : diff_hunks) {
+		DiffHunk dh = _convert_diff_hunk(diff_hunk);
 		df.diff_hunks.push_back(dh);
 	}
 	return df;
@@ -363,7 +372,7 @@ void EditorVCSInterface::create_vcs_metadata_files(VCSMetadata p_vcs_metadata_ty
 	if (p_vcs_metadata_type == VCSMetadata::GIT) {
 		Ref<FileAccess> f = FileAccess::open(p_dir.path_join(".gitignore"), FileAccess::WRITE);
 		if (f.is_null()) {
-			ERR_FAIL_MSG("Couldn't create .gitignore in project path.");
+			("Couldn't create .gitignore in project path.");
 		} else {
 			f->store_line("# Godot 4+ specific ignores");
 			f->store_line(".godot/");
@@ -371,7 +380,7 @@ void EditorVCSInterface::create_vcs_metadata_files(VCSMetadata p_vcs_metadata_ty
 		}
 		f = FileAccess::open(p_dir.path_join(".gitattributes"), FileAccess::WRITE);
 		if (f.is_null()) {
-			ERR_FAIL_MSG("Couldn't create .gitattributes in project path.");
+			("Couldn't create .gitattributes in project path.");
 		} else {
 			f->store_line("# Normalize EOL for all files that Git considers text files.");
 			f->store_line("* text=auto eol=lf");

@@ -54,9 +54,8 @@ public:
 		bool operator<(const TileSelection &p_other) const {
 			if (tile == p_other.tile) {
 				return alternative < p_other.alternative;
-			} else {
-				return tile < p_other.tile;
 			}
+			return tile < p_other.tile;
 		}
 	};
 
@@ -107,7 +106,7 @@ public:
 		// Update the proxyed object.
 		void edit(Ref<TileSetAtlasSource> p_tile_set_atlas_source, const RBSet<TileSelection> &p_tiles = RBSet<TileSelection>());
 
-		AtlasTileProxyObject(TileSetAtlasSourceEditor *p_tiles_set_atlas_source_editor) {
+		explicit AtlasTileProxyObject(TileSetAtlasSourceEditor *p_tiles_set_atlas_source_editor) {
 			tiles_set_atlas_source_editor = p_tiles_set_atlas_source_editor;
 		}
 	};
@@ -116,8 +115,8 @@ public:
 		TileSetAtlasSourceEditor *editor = nullptr;
 
 	public:
-		virtual CursorShape get_cursor_shape(const Point2 &p_pos) const override;
-		TileAtlasControl(TileSetAtlasSourceEditor *p_editor) { editor = p_editor; }
+		CursorShape get_cursor_shape(const Point2 &p_pos) const override;
+		explicit TileAtlasControl(TileSetAtlasSourceEditor *p_editor) { editor = p_editor; }
 	};
 	friend class TileAtlasControl;
 
@@ -294,14 +293,14 @@ protected:
 	static void _bind_methods();
 
 	// -- input events --
-	virtual void shortcut_input(const Ref<InputEvent> &p_event) override;
+	void shortcut_input(const Ref<InputEvent> &p_event) override;
 
 public:
 	void edit(Ref<TileSet> p_tile_set, TileSetAtlasSource *p_tile_set_source, int p_source_id);
 	void init_new_atlases(const Vector<Ref<TileSetAtlasSource>> &p_atlases);
 
 	TileSetAtlasSourceEditor();
-	~TileSetAtlasSourceEditor();
+	~TileSetAtlasSourceEditor() override;
 };
 
 class EditorPropertyTilePolygon : public EditorProperty {
@@ -317,7 +316,7 @@ class EditorPropertyTilePolygon : public EditorProperty {
 	void _polygons_changed();
 
 public:
-	virtual void update_property() override;
+	void update_property() override;
 	void setup_single_mode(const StringName &p_property, const String &p_base_type);
 	void setup_multiple_mode(const StringName &p_property, const StringName &p_count_property, const String &p_element_pattern, const String &p_base_type);
 	EditorPropertyTilePolygon();
@@ -330,8 +329,8 @@ class EditorInspectorPluginTileData : public EditorInspectorPlugin {
 	void _polygons_changed(Object *p_generic_tile_polygon_editor, Object *p_object, const String &p_path);
 
 public:
-	virtual bool can_handle(Object *p_object) override;
-	virtual bool parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const BitField<PropertyUsageFlags> p_usage, const bool p_wide = false) override;
+	bool can_handle(Object *p_object) override;
+	bool parse_property(Object *p_object, const Variant::Type p_type, const String &p_path, const PropertyHint p_hint, const String &p_hint_text, const BitField<PropertyUsageFlags> p_usage, const bool p_wide = false) override;
 };
 
 #endif // TILE_SET_ATLAS_SOURCE_EDITOR_H

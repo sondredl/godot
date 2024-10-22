@@ -31,13 +31,34 @@
 #include "localization_editor.h"
 
 #include "core/config/project_settings.h"
+#include "core/error/error_macros.h"
+#include "core/input/input_enums.h"
+#include "core/io/file_access.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/os/memory.h"
+#include "core/string/print_string.h"
+#include "core/string/string_name.h"
 #include "core/string/translation_server.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
+#include "editor/editor_locale_dialog.h"
 #include "editor/editor_translation_parser.h"
 #include "editor/editor_undo_redo_manager.h"
 #include "editor/filesystem_dock.h"
 #include "editor/gui/editor_file_dialog.h"
 #include "editor/pot_generator.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/button.h"
+#include "scene/gui/check_box.h"
 #include "scene/gui/control.h"
+#include "scene/gui/tab_container.h"
+#include "scene/gui/tree.h"
+#include "scene/scene_string_names.h"
 
 void LocalizationEditor::_notification(int p_what) {
 	switch (p_what) {
@@ -107,13 +128,13 @@ void LocalizationEditor::_translation_delete(Object *p_item, int p_column, int p
 	}
 
 	TreeItem *ti = Object::cast_to<TreeItem>(p_item);
-	ERR_FAIL_NULL(ti);
+	(ti);
 
 	int idx = ti->get_metadata(0);
 
 	PackedStringArray translations = GLOBAL_GET("internationalization/locale/translations");
 
-	ERR_FAIL_INDEX(idx, translations.size());
+	(idx, translations.size());
 
 	translations.remove_at(idx);
 
@@ -169,16 +190,16 @@ void LocalizationEditor::_translation_res_option_file_open() {
 }
 
 void LocalizationEditor::_translation_res_option_add(const PackedStringArray &p_paths) {
-	ERR_FAIL_COND(!ProjectSettings::get_singleton()->has_setting("internationalization/locale/translation_remaps"));
+	(!ProjectSettings::get_singleton()->has_setting("internationalization/locale/translation_remaps"));
 
 	Dictionary remaps = GLOBAL_GET("internationalization/locale/translation_remaps");
 
 	TreeItem *k = translation_remap->get_selected();
-	ERR_FAIL_NULL(k);
+	(k);
 
 	String key = k->get_metadata(0);
 
-	ERR_FAIL_COND(!remaps.has(key));
+	(!remaps.has(key));
 	PackedStringArray r = remaps[key];
 	for (int i = 0; i < p_paths.size(); i++) {
 		r.push_back(p_paths[i] + ":" + "en");
@@ -205,7 +226,7 @@ void LocalizationEditor::_translation_res_select() {
 
 void LocalizationEditor::_translation_res_option_popup(bool p_arrow_clicked) {
 	TreeItem *ed = translation_remap_options->get_edited();
-	ERR_FAIL_NULL(ed);
+	(ed);
 
 	locale_select->set_locale(ed->get_tooltip_text(1));
 	locale_select->popup_locale_dialog();
@@ -213,7 +234,7 @@ void LocalizationEditor::_translation_res_option_popup(bool p_arrow_clicked) {
 
 void LocalizationEditor::_translation_res_option_selected(const String &p_locale) {
 	TreeItem *ed = translation_remap_options->get_edited();
-	ERR_FAIL_NULL(ed);
+	(ed);
 
 	ed->set_text(1, TranslationServer::get_singleton()->get_locale_name(p_locale));
 	ed->set_tooltip_text(1, p_locale);
@@ -233,16 +254,16 @@ void LocalizationEditor::_translation_res_option_changed() {
 	Dictionary remaps = GLOBAL_GET("internationalization/locale/translation_remaps");
 
 	TreeItem *k = translation_remap->get_selected();
-	ERR_FAIL_NULL(k);
+	(k);
 	TreeItem *ed = translation_remap_options->get_edited();
-	ERR_FAIL_NULL(ed);
+	(ed);
 
 	String key = k->get_metadata(0);
 	int idx = ed->get_metadata(0);
 	String path = ed->get_metadata(1);
 	String locale = ed->get_tooltip_text(1);
 
-	ERR_FAIL_COND(!remaps.has(key));
+	(!remaps.has(key));
 	PackedStringArray r = remaps[key];
 	r.set(idx, path + ":" + locale);
 	remaps[key] = r;
@@ -279,7 +300,7 @@ void LocalizationEditor::_translation_res_delete(Object *p_item, int p_column, i
 	TreeItem *k = Object::cast_to<TreeItem>(p_item);
 
 	String key = k->get_metadata(0);
-	ERR_FAIL_COND(!remaps.has(key));
+	(!remaps.has(key));
 
 	remaps.erase(key);
 
@@ -310,16 +331,16 @@ void LocalizationEditor::_translation_res_option_delete(Object *p_item, int p_co
 	Dictionary remaps = GLOBAL_GET("internationalization/locale/translation_remaps");
 
 	TreeItem *k = translation_remap->get_selected();
-	ERR_FAIL_NULL(k);
+	(k);
 	TreeItem *ed = Object::cast_to<TreeItem>(p_item);
-	ERR_FAIL_NULL(ed);
+	(ed);
 
 	String key = k->get_metadata(0);
 	int idx = ed->get_metadata(0);
 
-	ERR_FAIL_COND(!remaps.has(key));
+	(!remaps.has(key));
 	PackedStringArray r = remaps[key];
-	ERR_FAIL_INDEX(idx, r.size());
+	(idx, r.size());
 	r.remove_at(idx);
 	remaps[key] = r;
 
@@ -364,13 +385,13 @@ void LocalizationEditor::_pot_delete(Object *p_item, int p_column, int p_button,
 	}
 
 	TreeItem *ti = Object::cast_to<TreeItem>(p_item);
-	ERR_FAIL_NULL(ti);
+	(ti);
 
 	int idx = ti->get_metadata(0);
 
 	PackedStringArray pot_translations = GLOBAL_GET("internationalization/locale/translations_pot_files");
 
-	ERR_FAIL_INDEX(idx, pot_translations.size());
+	(idx, pot_translations.size());
 
 	pot_translations.remove_at(idx);
 
@@ -436,7 +457,7 @@ void LocalizationEditor::_filesystem_files_moved(const String &p_old_file, const
 
 	// Check for the Array elements of the values.
 	Array remap_keys = remaps.keys();
-	for (int i = 0; i < remap_keys.size(); i++) {
+	for (auto &remap_key : remap_keys) {
 		PackedStringArray remapped_files = remaps[remap_keys[i]];
 		bool remapped_files_updated = false;
 
@@ -451,12 +472,12 @@ void LocalizationEditor::_filesystem_files_moved(const String &p_old_file, const
 				remapped_files.remove_at(j + 1);
 				remaps_changed = true;
 				remapped_files_updated = true;
-				print_verbose(vformat("Changed remap value \"%s\" to \"%s\" of key \"%s\" due to a moved file.", res_path + ":" + locale_name, remapped_files[j], remap_keys[i]));
+				print_verbose(vformat("Changed remap value \"%s\" to \"%s\" of key \"%s\" due to a moved file.", res_path + ":" + locale_name, remapped_files[j], remap_key));
 			}
 		}
 
 		if (remapped_files_updated) {
-			remaps[remap_keys[i]] = remapped_files;
+			remaps[remap_key] = remapped_files;
 		}
 	}
 

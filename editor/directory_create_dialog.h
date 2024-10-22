@@ -60,8 +60,8 @@ private:
 	void _on_dir_path_changed();
 
 protected:
-	virtual void ok_pressed() override;
-	virtual void _post_popup() override;
+	pressed() override;
+	st_popup() override;
 
 public:
 	void config(const String &p_base_dir, const Callable &p_accept_callback, int p_mode, const String &p_title, const String &p_default_name = "");

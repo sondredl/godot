@@ -269,7 +269,7 @@ class EditorFileSystem : public Node {
 	Error _reimport_group(const String &p_group_file, const Vector<String> &p_files);
 
 	bool _test_for_reimport(const String &p_path, const String &p_expected_import_md5);
-	bool _is_test_for_reimport_needed(const String &p_path, uint64_t p_last_modification_time, uint64_t p_modification_time, uint64_t p_last_import_modification_time, uint64_t p_import_modification_time, const Vector<String> &p_import_dest_paths);
+	bool _is_test_for_reimport_needed(const String &p_path, uint64_t p_last_modification_time, uint64_t p_modification_time, uint64_t p_last_import_modification_time, uint64_t p_import_modification_time, const Vector<String> &p_import_dest_paths) const;
 	Vector<String> _get_import_dest_paths(const String &p_path);
 
 	bool reimport_on_missing_imported_files;
@@ -301,7 +301,7 @@ class EditorFileSystem : public Node {
 	void _update_script_documentation();
 	void _process_update_pending();
 	void _process_removed_files(const HashSet<String> &p_processed_files);
-	bool _should_reload_script(const String &p_path);
+	bool _should_reload_script(const String &p_path) const;
 
 	Mutex update_scene_mutex;
 	HashSet<String> update_scene_paths;
@@ -313,7 +313,7 @@ class EditorFileSystem : public Node {
 	String _get_global_script_class(const String &p_type, const String &p_path, String *r_extends, String *r_icon_path) const;
 
 	static Error _resource_import(const String &p_path);
-	static Ref<Resource> _load_resource_on_startup(ResourceFormatImporter *p_importer, const String &p_path, Error *r_error, bool p_use_sub_threads, float *r_progress, ResourceFormatLoader::CacheMode p_cache_mode);
+	static Ref<Resource> _load_resource_on_startup(ResourceFormatImporter *p_importer, const String &p_path, const Error *r_error, bool p_use_sub_threads, const float *r_progress, ResourceFormatLoader::CacheMode p_cache_mode);
 
 	bool using_fat32_or_exfat; // Workaround for projects in FAT32 or exFAT filesystem (pendrives, most of the time)
 
@@ -339,7 +339,7 @@ class EditorFileSystem : public Node {
 
 	Vector<Ref<EditorFileSystemImportFormatSupportQuery>> import_support_queries;
 
-	void _update_file_icon_path(EditorFileSystemDirectory::FileInfo *file_info);
+	void _update_file_icon_path(EditorFileSystemDirectory::FileInfo *file_info) const;
 	void _update_files_icon_path(EditorFileSystemDirectory *edp = nullptr);
 	void _remove_invalid_global_class_names(const HashSet<String> &p_existing_class_names);
 	String _get_file_by_class_name(EditorFileSystemDirectory *p_dir, const String &p_class_name, EditorFileSystemDirectory::FileInfo *&r_file_info);
@@ -363,7 +363,7 @@ public:
 	void update_file(const String &p_file);
 	void update_files(const Vector<String> &p_script_paths);
 	HashSet<String> get_valid_extensions() const;
-	void register_global_class_script(const String &p_search_path, const String &p_target_path);
+	void register_global_class_script(const String &p_search_path, const String &p_target_path) const;
 
 	EditorFileSystemDirectory *get_filesystem_path(const String &p_path);
 	String get_file_type(const String &p_file) const;

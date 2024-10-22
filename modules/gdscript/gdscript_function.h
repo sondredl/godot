@@ -79,7 +79,7 @@ public:
 					Array array = p_variant;
 					if (array.is_typed()) {
 						const GDScriptDataType &elem_type = container_element_types[0];
-						Variant::Type array_builtin_type = (Variant::Type)array.get_typed_builtin();
+						auto array_builtin_type = (Variant::Type)array.get_typed_builtin();
 						StringName array_native_type = array.get_typed_class_name();
 						Ref<Script> array_script_type_ref = array.get_typed_script();
 
@@ -98,7 +98,7 @@ public:
 					if (dictionary.is_typed()) {
 						if (dictionary.is_typed_key()) {
 							GDScriptDataType key = get_container_element_type_or_variant(0);
-							Variant::Type key_builtin_type = (Variant::Type)dictionary.get_typed_key_builtin();
+							auto key_builtin_type = (Variant::Type)dictionary.get_typed_key_builtin();
 							StringName key_native_type = dictionary.get_typed_key_class_name();
 							Ref<Script> key_script_type_ref = dictionary.get_typed_key_script();
 
@@ -113,7 +113,7 @@ public:
 
 						if (valid && dictionary.is_typed_value()) {
 							GDScriptDataType value = get_container_element_type_or_variant(1);
-							Variant::Type value_builtin_type = (Variant::Type)dictionary.get_typed_value_builtin();
+							auto value_builtin_type = (Variant::Type)dictionary.get_typed_value_builtin();
 							StringName value_native_type = dictionary.get_typed_value_class_name();
 							Ref<Script> value_script_type_ref = dictionary.get_typed_value_script();
 
@@ -206,7 +206,7 @@ public:
 	}
 
 	void set_container_element_type(int p_index, const GDScriptDataType &p_element_type) {
-		ERR_FAIL_COND(p_index < 0);
+		(p_index < 0);
 		while (p_index >= container_element_types.size()) {
 			container_element_types.push_back(GDScriptDataType());
 		}
@@ -214,13 +214,13 @@ public:
 	}
 
 	GDScriptDataType get_container_element_type(int p_index) const {
-		ERR_FAIL_INDEX_V(p_index, container_element_types.size(), GDScriptDataType());
+		(p_index, container_element_types.size(), GDScriptDataType());
 		return container_element_types[p_index];
 	}
 
 	GDScriptDataType get_container_element_type_or_variant(int p_index) const {
 		if (p_index < 0 || p_index >= container_element_types.size()) {
-			return GDScriptDataType();
+			return {};
 		}
 		return container_element_types[p_index];
 	}
@@ -620,7 +620,7 @@ public:
 	void _clear_connections();
 
 	GDScriptFunctionState();
-	~GDScriptFunctionState();
+	~GDScriptFunctionState() override;
 };
 
 #endif // GDSCRIPT_FUNCTION_H

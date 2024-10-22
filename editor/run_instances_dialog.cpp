@@ -31,16 +31,25 @@
 #include "run_instances_dialog.h"
 
 #include "core/config/project_settings.h"
+#include "core/math/vector2i.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/os/memory.h"
+#include "core/os/os.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/typed_array.h"
 #include "editor/editor_settings.h"
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/check_box.h"
+#include "scene/gui/control.h"
 #include "scene/gui/grid_container.h"
 #include "scene/gui/label.h"
 #include "scene/gui/line_edit.h"
-#include "scene/gui/separator.h"
 #include "scene/gui/spin_box.h"
 #include "scene/gui/tree.h"
 #include "scene/main/timer.h"
+#include "scene/scene_string_names.h"
 
 void RunInstancesDialog::_fetch_main_args() {
 	if (!main_args_edit->has_focus()) { // Only set the text if the user is not currently editing it.
@@ -162,9 +171,8 @@ void RunInstancesDialog::popup_dialog() {
 int RunInstancesDialog::get_instance_count() const {
 	if (enable_multiple_instances_checkbox->is_pressed()) {
 		return instance_count->get_value();
-	} else {
-		return 1;
 	}
+	return 1;
 }
 
 void RunInstancesDialog::get_argument_list_for_instance(int p_idx, List<String> &r_list) const {

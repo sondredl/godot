@@ -30,14 +30,41 @@
 
 #include "create_dialog.h"
 
+#include "core/error/error_macros.h"
+#include "core/input/input_event.h"
+#include "core/io/file_access.h"
+#include "core/io/resource_loader.h"
+#include "core/math/rect2.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
 #include "core/object/class_db.h"
-#include "core/os/keyboard.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/object/script_language.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
+#include "editor/editor_data.h"
 #include "editor/editor_feature_profile.h"
+#include "editor/editor_help.h"
 #include "editor/editor_node.h"
 #include "editor/editor_paths.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/button.h"
+#include "scene/gui/control.h"
+#include "scene/gui/item_list.h"
+#include "scene/gui/line_edit.h"
+#include "scene/gui/split_container.h"
+#include "scene/gui/tree.h"
+#include "scene/main/node.h"
+#include "scene/resources/texture.h"
+#include "scene/scene_string_names.h"
 
 void CreateDialog::popup_create(bool p_dont_clear, bool p_replace_mode, const String &p_current_type, const String &p_current_name) {
 	_fill_type_list();
@@ -187,7 +214,7 @@ void CreateDialog::_update_search() {
 	const String search_text = search_box->get_text();
 	bool empty_search = search_text.is_empty();
 
-	float highest_score = 0.0f;
+	float highest_score = 0.0F;
 	StringName best_match;
 
 	for (List<StringName>::Element *I = type_list.front(); I; I = I->next()) {
@@ -234,12 +261,12 @@ void CreateDialog::_add_type(const StringName &p_type, TypeCategory p_type_categ
 		if (p_type_category == TypeCategory::PATH_TYPE || ScriptServer::is_global_class(p_type)) {
 			Ref<Script> scr;
 			if (p_type_category == TypeCategory::PATH_TYPE) {
-				ERR_FAIL_COND(!ResourceLoader::exists(p_type, "Script"));
+				(!ResourceLoader::exists(p_type, "Script"));
 				scr = ResourceLoader::load(p_type, "Script");
 			} else {
 				scr = EditorNode::get_editor_data().script_class_load_script(p_type);
 			}
-			ERR_FAIL_COND(scr.is_null());
+			(scr.is_null());
 
 			Ref<Script> base = scr->get_base_script();
 			if (base.is_null()) {
@@ -269,7 +296,7 @@ void CreateDialog::_add_type(const StringName &p_type, TypeCategory p_type_categ
 	}
 
 	// Should never happen, but just in case...
-	ERR_FAIL_COND(inherits == StringName());
+	(inherits == StringName());
 
 	_add_type(inherits, inherited_type);
 
@@ -292,7 +319,7 @@ void CreateDialog::_configure_search_option_item(TreeItem *r_item, const StringN
 		r_item->set_suffix(0, "(" + script_path.get_file() + ")");
 
 		Ref<Script> scr = ResourceLoader::load(script_path, "Script");
-		ERR_FAIL_COND(!scr.is_valid());
+		(!scr.is_valid());
 		is_abstract = scr->is_abstract();
 	} else {
 		r_item->set_metadata(0, custom_type_parents[p_type]);
@@ -347,21 +374,21 @@ void CreateDialog::_configure_search_option_item(TreeItem *r_item, const StringN
 float CreateDialog::_score_type(const String &p_type, const String &p_search) const {
 	if (p_type == p_search) {
 		// Always favor an exact match (case-sensitive), since clicking a favorite will set the search text to the type.
-		return 1.0f;
+		return 1.0F;
 	}
 
-	float inverse_length = 1.f / float(p_type.length());
+	float inverse_length = 1.F / float(p_type.length());
 
 	// Favor types where search term is a substring close to the start of the type.
-	float w = 0.5f;
+	float w = 0.5F;
 	int pos = p_type.findn(p_search);
-	float score = (pos > -1) ? 1.0f - w * MIN(1, 3 * pos * inverse_length) : MAX(0.f, .9f - w);
+	float score = (pos > -1) ? 1.0F - w * MIN(1, 3 * pos * inverse_length) : MAX(0.F, .9f - w);
 
 	// Favor shorter items: they resemble the search term more.
-	w = 0.9f;
-	score *= (1 - w) + w * MIN(1.0f, p_search.length() * inverse_length);
+	w = 0.9F;
+	score *= (1 - w) + w * MIN(1.0F, p_search.length() * inverse_length);
 
-	score *= _is_type_preferred(p_type) ? 1.0f : 0.9f;
+	score *= _is_type_preferred(p_type) ? 1.0F : 0.9F;
 
 	// Add score for being a favorite type.
 	score *= favorite_list.has(p_type) ? 1.0f : 0.8f;
@@ -375,7 +402,7 @@ float CreateDialog::_score_type(const String &p_type, const String &p_search) co
 			break;
 		}
 	}
-	score *= in_recent ? 1.0f : 0.9f;
+	score *= in_recent ? 1.0F : 0.9F;
 
 	return score;
 }
@@ -506,7 +533,7 @@ void CreateDialog::select_base() {
 String CreateDialog::get_selected_type() {
 	TreeItem *selected = search_options->get_selected();
 	if (!selected) {
-		return String();
+		return {};
 	}
 
 	return selected->get_text(0);
@@ -521,7 +548,7 @@ Variant CreateDialog::instantiate_selected() {
 	TreeItem *selected = search_options->get_selected();
 
 	if (!selected) {
-		return Variant();
+		return {};
 	}
 
 	Variant md = selected->get_metadata(0);
@@ -621,7 +648,7 @@ Variant CreateDialog::get_drag_data_fw(const Point2 &p_point, Control *p_from) {
 		return d;
 	}
 
-	return Variant();
+	return {};
 }
 
 bool CreateDialog::can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const {

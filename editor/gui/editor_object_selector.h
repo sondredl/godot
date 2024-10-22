@@ -60,13 +60,13 @@ protected:
 	void _notification(int p_what);
 
 public:
-	virtual Size2 get_minimum_size() const override;
+	Size2 get_minimum_size() const override;
 
 	void update_path();
 	void clear_path();
 	void enable_path();
 
-	EditorObjectSelector(EditorSelectionHistory *p_history);
+	explicit EditorObjectSelector(EditorSelectionHistory *p_history);
 };
 
 #endif // EDITOR_OBJECT_SELECTOR_H

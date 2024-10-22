@@ -29,6 +29,14 @@
 /**************************************************************************/
 
 #include "project_converter_3_to_4.h"
+#include "core/error/error_list.h"
+#include "core/object/class_db.h"
+#include "core/os/memory.h"
+#include "core/string/print_string.h"
+#include "core/string/string_name.h"
+#include "core/templates/vector.h"
+#include "core/typedefs.h"
+#include <cstdint>
 
 #ifndef DISABLE_DEPRECATED
 
@@ -41,14 +49,12 @@
 #include "core/io/file_access.h"
 #include "core/object/ref_counted.h"
 #include "core/os/time.h"
-#include "core/templates/hash_map.h"
-#include "core/templates/list.h"
 #include "editor/renames_map_3_to_4.h"
 #include "modules/regex/regex.h"
 
 // Find "OS.set_property(x)", capturing x into $1.
 static String make_regex_gds_os_property_set(const String &name_set) {
-	return String("\\bOS\\.") + name_set + "\\s*\\((.*)\\)";
+	return String("\\bOS\\.") + name_set + R"(\s*\((.*)\))";
 }
 // Find "OS.property = x", capturing x into $1 or $2.
 static String make_regex_gds_os_property_assign(const String &name) {
@@ -56,7 +62,7 @@ static String make_regex_gds_os_property_assign(const String &name) {
 }
 // Find "OS.property" OR "OS.get_property()" / "OS.is_property()".
 static String make_regex_gds_os_property_get(const String &name, const String &get) {
-	return String("\\bOS\\.(") + get + "_)?" + name + "(\\s*\\(\\s*\\))?";
+	return String("\\bOS\\.(") + get + "_)?" + name + R"((\s*\(\s*\))?)";
 }
 
 class ProjectConverter3To4::RegExContainer {
@@ -331,8 +337,8 @@ bool ProjectConverter3To4::convert() {
 	int cached_maximum_line_length = maximum_line_length;
 	maximum_line_length = 10000; // Use only for tests bigger value, to not break them.
 
-	ERR_FAIL_COND_V_MSG(!test_array_names(), false, "Cannot start converting due to problems with data in arrays.");
-	ERR_FAIL_COND_V_MSG(!test_conversion(reg_container), false, "Aborting conversion due to validation tests failing");
+	(!test_array_names(), false, "Cannot start converting due to problems with data in arrays.");
+	(!test_conversion(reg_container), false, "Aborting conversion due to validation tests failing");
 
 	maximum_line_length = cached_maximum_line_length;
 
@@ -341,16 +347,16 @@ bool ProjectConverter3To4::convert() {
 	{
 		String converter_text = "; Project was converted by built-in tool to Godot 4";
 
-		ERR_FAIL_COND_V_MSG(!FileAccess::exists("project.godot"), false, "Current working directory doesn't contain a \"project.godot\" file for a Godot 3 project.");
+		(!FileAccess::exists("project.godot"), false, "Current working directory doesn't contain a \"project.godot\" file for a Godot 3 project.");
 
 		Error err = OK;
 		String project_godot_content = FileAccess::get_file_as_string("project.godot", &err);
 
-		ERR_FAIL_COND_V_MSG(err != OK, false, "Unable to read \"project.godot\".");
-		ERR_FAIL_COND_V_MSG(project_godot_content.contains(converter_text), false, "Project was already converted with this tool.");
+		(err != OK, false, "Unable to read \"project.godot\".");
+		(project_godot_content.contains(converter_text), false, "Project was already converted with this tool.");
 
 		Ref<FileAccess> file = FileAccess::open("project.godot", FileAccess::WRITE);
-		ERR_FAIL_COND_V_MSG(file.is_null(), false, "Unable to open \"project.godot\".");
+		(file.is_null(), false, "Unable to open \"project.godot\".");
 
 		file->store_string(converter_text + "\n" + project_godot_content);
 	}
@@ -366,7 +372,7 @@ bool ProjectConverter3To4::convert() {
 		uint32_t ignored_lines = 0;
 		{
 			Ref<FileAccess> file = FileAccess::open(file_name, FileAccess::READ);
-			ERR_CONTINUE_MSG(file.is_null(), vformat("Unable to read content of \"%s\".", file_name));
+			(file.is_null(), vformat("Unable to read content of \"%s\".", file_name));
 			while (!file->eof_reached()) {
 				String line = file->get_line();
 
@@ -506,7 +512,7 @@ bool ProjectConverter3To4::convert() {
 				converted_files++;
 
 				Ref<FileAccess> file = FileAccess::open(file_name, FileAccess::WRITE);
-				ERR_CONTINUE_MSG(file.is_null(), vformat("Unable to apply changes to \"%s\", no writing access.", file_name));
+				(file.is_null(), vformat("Unable to apply changes to \"%s\", no writing access.", file_name));
 				file->store_string(file_content_after);
 				reason.append(vformat("    File was changed, conversion took %d ms.", end_time - start_time));
 			} else {
@@ -536,8 +542,8 @@ bool ProjectConverter3To4::validate_conversion() {
 	int cached_maximum_line_length = maximum_line_length;
 	maximum_line_length = 10000; // To avoid breaking the tests, only use this for the their larger value.
 
-	ERR_FAIL_COND_V_MSG(!test_array_names(), false, "Cannot start converting due to problems with data in arrays.");
-	ERR_FAIL_COND_V_MSG(!test_conversion(reg_container), false, "Aborting conversion due to validation tests failing");
+	(!test_array_names(), false, "Cannot start converting due to problems with data in arrays.");
+	(!test_conversion(reg_container), false, "Aborting conversion due to validation tests failing");
 
 	maximum_line_length = cached_maximum_line_length;
 
@@ -546,13 +552,13 @@ bool ProjectConverter3To4::validate_conversion() {
 	{
 		String conventer_text = "; Project was converted by built-in tool to Godot 4";
 
-		ERR_FAIL_COND_V_MSG(!FileAccess::exists("project.godot"), false, "Current directory doesn't contain any Godot 3 project");
+		(!FileAccess::exists("project.godot"), false, "Current directory doesn't contain any Godot 3 project");
 
 		Error err = OK;
 		String project_godot_content = FileAccess::get_file_as_string("project.godot", &err);
 
-		ERR_FAIL_COND_V_MSG(err != OK, false, "Failed to read content of \"project.godot\" file.");
-		ERR_FAIL_COND_V_MSG(project_godot_content.contains(conventer_text), false, "Project already was converted with this tool.");
+		(err != OK, false, "Failed to read content of \"project.godot\" file.");
+		(project_godot_content.contains(conventer_text), false, "Project already was converted with this tool.");
 	}
 
 	Vector<String> collected_files = check_for_files();
@@ -567,7 +573,7 @@ bool ProjectConverter3To4::validate_conversion() {
 		uint64_t file_size = 0;
 		{
 			Ref<FileAccess> file = FileAccess::open(file_name, FileAccess::READ);
-			ERR_CONTINUE_MSG(file.is_null(), vformat("Unable to read content of \"%s\".", file_name));
+			(file.is_null(), vformat("Unable to read content of \"%s\".", file_name));
 			while (!file->eof_reached()) {
 				String line = file->get_line();
 				file_size += line.size();
@@ -716,8 +722,9 @@ Vector<String> ProjectConverter3To4::check_for_files() {
 					directories_to_check.append(current_dir.path_join(file_name) + "/");
 				} else {
 					bool proper_extension = false;
-					if (file_name.ends_with(".gd") || file_name.ends_with(".shader") || file_name.ends_with(".gdshader") || file_name.ends_with(".tscn") || file_name.ends_with(".tres") || file_name.ends_with(".godot") || file_name.ends_with(".cs") || file_name.ends_with(".csproj") || file_name.ends_with(".import"))
+					if (file_name.ends_with(".gd") || file_name.ends_with(".shader") || file_name.ends_with(".gdshader") || file_name.ends_with(".tscn") || file_name.ends_with(".tres") || file_name.ends_with(".godot") || file_name.ends_with(".cs") || file_name.ends_with(".csproj") || file_name.ends_with(".import")) {
 						proper_extension = true;
+					}
 
 					if (proper_extension) {
 						collected_files.append(current_dir.path_join(file_name));
@@ -751,7 +758,7 @@ bool ProjectConverter3To4::test_conversion_gdscript_builtin(const String &name, 
 
 	(this->*func)(got, reg_container, builtin_script);
 	String got_str = collect_string_from_vector(got);
-	ERR_FAIL_COND_V_MSG(expected != got_str, false, vformat("Failed to convert %s \"%s\" to \"%s\", got instead \"%s\"", what, name, expected, got_str));
+	(expected != got_str, false, vformat("Failed to convert %s \"%s\" to \"%s\", got instead \"%s\"", what, name, expected, got_str));
 
 	return true;
 }
@@ -761,7 +768,7 @@ bool ProjectConverter3To4::test_conversion_with_regex(const String &name, const 
 
 	(this->*func)(got, reg_container);
 	String got_str = collect_string_from_vector(got);
-	ERR_FAIL_COND_V_MSG(expected != got_str, false, vformat("Failed to convert %s \"%s\" to \"%s\", got instead \"%s\"", what, name, expected, got_str));
+	(expected != got_str, false, vformat("Failed to convert %s \"%s\" to \"%s\", got instead \"%s\"", what, name, expected, got_str));
 
 	return true;
 }
@@ -771,7 +778,7 @@ bool ProjectConverter3To4::test_conversion_basic(const String &name, const Strin
 
 	rename_common(array, regex_cache, got);
 	String got_str = collect_string_from_vector(got);
-	ERR_FAIL_COND_V_MSG(expected != got_str, false, vformat("Failed to convert %s \"%s\" to \"%s\", got instead \"%s\"", what, name, expected, got_str));
+	(expected != got_str, false, vformat("Failed to convert %s \"%s\" to \"%s\", got instead \"%s\"", what, name, expected, got_str));
 
 	return true;
 }
@@ -925,7 +932,7 @@ bool ProjectConverter3To4::test_conversion(RegExContainer &reg_container) {
 	valid = valid && test_conversion_gdscript_builtin("get_node(@", "get_node(", &ProjectConverter3To4::rename_gdscript_functions, "custom rename", reg_container, false);
 
 	valid = valid && test_conversion_gdscript_builtin("yield(this, \"timeout\")", "await this.timeout", &ProjectConverter3To4::rename_gdscript_functions, "custom rename", reg_container, false);
-	valid = valid && test_conversion_gdscript_builtin("yield(this, \\\"timeout\\\")", "await this.timeout", &ProjectConverter3To4::rename_gdscript_functions, "custom rename", reg_container, true);
+	valid = valid && test_conversion_gdscript_builtin(R"(yield(this, \"timeout\"))", "await this.timeout", &ProjectConverter3To4::rename_gdscript_functions, "custom rename", reg_container, true);
 
 	valid = valid && test_conversion_gdscript_builtin(" Transform.xform(Vector3(a,b,c) + Vector3.UP) ", " Transform * (Vector3(a,b,c) + Vector3.UP) ", &ProjectConverter3To4::rename_gdscript_functions, "custom rename", reg_container, false);
 	valid = valid && test_conversion_gdscript_builtin(" Transform.xform_inv(Vector3(a,b,c) + Vector3.UP) ", " (Vector3(a,b,c) + Vector3.UP) * Transform ", &ProjectConverter3To4::rename_gdscript_functions, "custom rename", reg_container, false);
@@ -1019,12 +1026,12 @@ bool ProjectConverter3To4::test_conversion(RegExContainer &reg_container) {
 	valid = valid && test_conversion_with_regex("AAA Color.white AF", "AAA Color.WHITE AF", &ProjectConverter3To4::rename_colors, "color constants", reg_container);
 
 	// Note: Do not change to *scancode*, it is applied before that conversion.
-	valid = valid && test_conversion_with_regex("\"device\":-1,\"scancode\":16777231,\"physical_scancode\":16777232", "\"device\":-1,\"scancode\":4194319,\"physical_scancode\":4194320", &ProjectConverter3To4::rename_input_map_scancode, "custom rename", reg_container);
-	valid = valid && test_conversion_with_regex("\"device\":-1,\"scancode\":65,\"physical_scancode\":66", "\"device\":-1,\"scancode\":65,\"physical_scancode\":66", &ProjectConverter3To4::rename_input_map_scancode, "custom rename", reg_container);
+	valid = valid && test_conversion_with_regex(R"("device":-1,"scancode":16777231,"physical_scancode":16777232)", R"("device":-1,"scancode":4194319,"physical_scancode":4194320)", &ProjectConverter3To4::rename_input_map_scancode, "custom rename", reg_container);
+	valid = valid && test_conversion_with_regex(R"("device":-1,"scancode":65,"physical_scancode":66)", R"("device":-1,"scancode":65,"physical_scancode":66)", &ProjectConverter3To4::rename_input_map_scancode, "custom rename", reg_container);
 
-	valid = valid && test_conversion_with_regex("\"device\":0,\"button_index\":5,\"pressure\":0.0,\"pressed\":false,", "\"device\":0,\"button_index\":10,\"pressure\":0.0,\"pressed\":false,", &ProjectConverter3To4::rename_joypad_buttons_and_axes, "custom rename", reg_container);
-	valid = valid && test_conversion_with_regex("\"device\":0,\"axis\":6,", "\"device\":0,\"axis\":4,", &ProjectConverter3To4::rename_joypad_buttons_and_axes, "custom rename", reg_container);
-	valid = valid && test_conversion_with_regex("InputEventJoypadButton,\"button_index\":7,\"pressure\":0.0,\"pressed\":false,\"script\":null", "InputEventJoypadMotion,\"axis\":5,\"axis_value\":1.0,\"script\":null", &ProjectConverter3To4::rename_joypad_buttons_and_axes, "custom rename", reg_container);
+	valid = valid && test_conversion_with_regex(R"("device":0,"button_index":5,"pressure":0.0,"pressed":false,)", R"("device":0,"button_index":10,"pressure":0.0,"pressed":false,)", &ProjectConverter3To4::rename_joypad_buttons_and_axes, "custom rename", reg_container);
+	valid = valid && test_conversion_with_regex(R"("device":0,"axis":6,)", R"("device":0,"axis":4,)", &ProjectConverter3To4::rename_joypad_buttons_and_axes, "custom rename", reg_container);
+	valid = valid && test_conversion_with_regex(R"(InputEventJoypadButton,"button_index":7,"pressure":0.0,"pressed":false,"script":null)", R"(InputEventJoypadMotion,"axis":5,"axis_value":1.0,"script":null)", &ProjectConverter3To4::rename_joypad_buttons_and_axes, "custom rename", reg_container);
 
 	// Custom rule conversion
 	{
@@ -1282,7 +1289,7 @@ Vector<String> ProjectConverter3To4::parse_arguments(const String &line) {
 	char32_t previous_character = '\0';
 	bool is_inside_string = false; // If true, it ignores these 3 characters ( , ) inside string.
 
-	ERR_FAIL_COND_V_MSG(line.count("(") != line.count(")"), parts, vformat("Converter internal bug: substring should have equal number of open and close parentheses in line - \"%s\".", line));
+	(line.count("(") != line.count(")"), parts, vformat("Converter internal bug: substring should have equal number of open and close parentheses in line - \"%s\".", line));
 
 	for (int current_index = 0; current_index < string_size; current_index++) {
 		char32_t character = line.get(current_index);
@@ -1321,8 +1328,9 @@ Vector<String> ProjectConverter3To4::parse_arguments(const String &line) {
 				break;
 			};
 			case '"': {
-				if (previous_character != '\\')
+				if (previous_character != '\\') {
 					is_inside_string = !is_inside_string;
+				}
 			}
 		}
 		previous_character = character;
@@ -1429,7 +1437,8 @@ String ProjectConverter3To4::get_object_of_execution(const String &line) const {
 		if (is_variable_char || is_nodepath_start || is_nodepath_sep) {
 			if (start == 0) {
 				break;
-			} else if (is_nodepath_sep) {
+			}
+			if (is_nodepath_sep) {
 				// Freeze variable_start, try to fetch more chars since this might be a Node path literal.
 				is_possibly_nodepath = true;
 			} else if (is_nodepath_start) {
@@ -1442,11 +1451,9 @@ String ProjectConverter3To4::get_object_of_execution(const String &line) const {
 			}
 			start--;
 			continue;
-		} else {
-			// Abandon all hope, this is neither a variable nor a Node path literal.
-			variable_start++; // Found invalid character, needs to be ignored.
-			break;
-		}
+		} // Abandon all hope, this is neither a variable nor a Node path literal.
+		variable_start++; // Found invalid character, needs to be ignored.
+		break;
 	}
 	if (is_valid_nodepath) {
 		variable_start = start;
@@ -2258,7 +2265,8 @@ void ProjectConverter3To4::process_gdscript_line(String &line, const RegExContai
 			char32_t chr = line_to_check.get(current_index);
 			if (chr == '\t' || chr == ' ') {
 				continue;
-			} else if (chr == '=') {
+			}
+			if (chr == '=') {
 				foundNextEqual = true;
 			} else {
 				break;
@@ -2280,7 +2288,8 @@ void ProjectConverter3To4::process_gdscript_line(String &line, const RegExContai
 			char32_t chr = line_to_check.get(current_index);
 			if (chr == '\t' || chr == ' ') {
 				continue;
-			} else if (chr == '=') {
+			}
+			if (chr == '=') {
 				foundNextEqual = true;
 				assigned_value = line.substr(start + function_name.length() + current_index + 1).strip_edges();
 				assigned_value = assigned_value == "true" ? "false" : "true";
@@ -2531,9 +2540,8 @@ Vector<String> ProjectConverter3To4::check_for_rename_csharp_attributes(Vector<S
 _FORCE_INLINE_ static String builtin_escape(const String &p_str, bool p_builtin) {
 	if (p_builtin) {
 		return p_str.replace("\"", "\\\"");
-	} else {
-		return p_str;
 	}
+	return p_str;
 }
 
 void ProjectConverter3To4::rename_gdscript_keywords(Vector<SourceLine> &source_lines, const RegExContainer &reg_container, bool builtin) {
@@ -2924,7 +2932,7 @@ String ProjectConverter3To4::line_formatter(int current_line, String from, Strin
 	to = to.strip_escapes();
 	line = line.replace("\r", "").replace("\n", "").strip_edges();
 
-	return vformat("Line(%d), %s -> %s  -  LINE \"\"\" %s \"\"\"", current_line, from, to, line);
+	return vformat(R"(Line(%d), %s -> %s  -  LINE """ %s """)", current_line, from, to, line);
 }
 
 // Prints only full lines e.g.:
@@ -2940,7 +2948,7 @@ String ProjectConverter3To4::simple_line_formatter(int current_line, String old_
 	old_line = old_line.replace("\r", "").replace("\n", "").strip_edges();
 	new_line = new_line.replace("\r", "").replace("\n", "").strip_edges();
 
-	return vformat("Line (%d) - FULL LINES - \"\"\" %s \"\"\"  =====>  \"\"\" %s \"\"\"", current_line, old_line, new_line);
+	return vformat(R"(Line (%d) - FULL LINES - """ %s """  =====>  """ %s """)", current_line, old_line, new_line);
 }
 
 // Collects string from vector strings

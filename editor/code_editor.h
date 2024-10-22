@@ -226,7 +226,7 @@ protected:
 	void _code_complete_timer_timeout();
 	void _text_changed();
 	void _line_col_changed();
-	void _notification(int);
+	void _notification(int /*p_what*/);
 	static void _bind_methods();
 
 	bool is_warnings_panel_opened = false;
@@ -283,7 +283,7 @@ public:
 	void remove_all_bookmarks();
 
 	void set_zoom_factor(float p_zoom_factor);
-	float get_zoom_factor();
+	float get_zoom_factor() const;
 
 	void set_code_complete_func(CodeTextEditorCodeCompleteFunc p_code_complete_func, void *p_ud);
 

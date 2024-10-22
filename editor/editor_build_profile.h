@@ -164,10 +164,10 @@ class EditorBuildProfileManager : public AcceptDialog {
 
 	void _class_list_item_selected();
 	void _class_list_item_edited();
-	void _class_list_item_collapsed(Object *p_item);
+	void _class_list_item_collapsed(Object *p_item) const;
 	void _detect_classes();
 
-	void _force_detect_classes_changed(const String &p_text);
+	void _force_detect_classes_changed(const String &p_text) const;
 
 	struct DetectedFile {
 		uint32_t timestamp = 0;

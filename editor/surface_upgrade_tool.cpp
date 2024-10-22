@@ -30,12 +30,22 @@
 
 #include "surface_upgrade_tool.h"
 
+#include "core/error/error_macros.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/object.h"
+#include "core/os/mutex.h"
+#include "core/string/print_string.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
 #include "editor/editor_file_system.h"
 #include "editor/editor_log.h"
 #include "editor/editor_node.h"
 #include "editor/editor_settings.h"
 #include "editor/gui/editor_toaster.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/scene_string_names.h"
 #include "servers/rendering_server.h"
 
 SurfaceUpgradeTool *SurfaceUpgradeTool::singleton = nullptr;

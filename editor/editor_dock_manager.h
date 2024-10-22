@@ -51,8 +51,8 @@ private:
 protected:
 	void _update_visibility();
 
-	virtual void add_child_notify(Node *p_child) override;
-	virtual void remove_child_notify(Node *p_child) override;
+	_child_notify(Node *p_child) override;
+	ove_child_notify(Node *p_child) override;
 };
 
 class DockContextPopup;
@@ -110,7 +110,7 @@ private:
 	void _dock_split_dragged(int p_offset);
 	void _dock_container_gui_input(const Ref<InputEvent> &p_input, TabContainer *p_dock_container);
 	void _bottom_dock_button_gui_input(const Ref<InputEvent> &p_input, Control *p_dock, Button *p_bottom_button);
-	void _dock_container_update_visibility(TabContainer *p_dock_container);
+	void _dock_container_update_visibility(TabContainer *p_dock_container) const;
 	void _update_layout();
 
 	void _update_docks_menu();
@@ -128,7 +128,7 @@ private:
 	void _move_dock_tab_index(Control *p_dock, int p_tab_index, bool p_set_current);
 	void _move_dock(Control *p_dock, Control *p_target, int p_tab_index = -1, bool p_set_current = true);
 
-	void _update_tab_style(Control *p_dock);
+	void _update_tab_style(Control *p_dock) const;
 
 public:
 	static EditorDockManager *get_singleton() { return singleton; }

@@ -69,7 +69,7 @@ public:
 
 	EditorInspector *get_inspector();
 	void edit(Object *p_object);
-	String get_full_item_path(const String &p_item);
+	String get_full_item_path(const String &p_item) const;
 
 	void set_current_section(const String &p_section);
 	String get_current_section() const;
@@ -77,7 +77,7 @@ public:
 	void update_category_list();
 
 	SectionedInspector();
-	~SectionedInspector();
+	~SectionedInspector() override override;
 };
 
 #endif // EDITOR_SECTIONED_INSPECTOR_H

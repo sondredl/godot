@@ -30,11 +30,31 @@
 
 #include "editor_dock_manager.h"
 
+#include "core/error/error_macros.h"
+#include "core/input/input_enums.h"
+#include "core/input/input_event.h"
+#include "core/math/color.h"
+#include "core/math/math_defs.h"
+#include "core/math/math_funcs.h"
+#include "core/math/rect2.h"
+#include "core/math/rect2i.h"
+#include "core/math/vector2.h"
+#include "core/math/vector2i.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
+#include "core/variant/dictionary.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
 #include "scene/gui/label.h"
 #include "scene/gui/split_container.h"
 #include "scene/gui/tab_container.h"
+#include "scene/main/node.h"
 #include "scene/main/window.h"
 
 #include "editor/editor_node.h"
@@ -44,6 +64,8 @@
 #include "editor/gui/editor_bottom_panel.h"
 #include "editor/themes/editor_scale.h"
 #include "editor/window_wrapper.h"
+#include "scene/resources/texture.h"
+#include "scene/scene_string_names.h"
 
 enum class TabStyle {
 	TEXT_ONLY,
@@ -146,7 +168,7 @@ void EditorDockManager::_bottom_dock_button_gui_input(const Ref<InputEvent> &p_i
 	}
 }
 
-void EditorDockManager::_dock_container_update_visibility(TabContainer *p_dock_container) {
+void EditorDockManager::_dock_container_update_visibility(TabContainer *p_dock_container) const {
 	if (!docks_visible) {
 		return;
 	}
@@ -193,11 +215,11 @@ void EditorDockManager::_update_docks_menu() {
 
 void EditorDockManager::_docks_menu_option(int p_id) {
 	Control *dock = docks_menu_docks[p_id];
-	ERR_FAIL_NULL(dock);
-	ERR_FAIL_COND_MSG(!all_docks.has(dock), vformat("Menu option for unknown dock '%s'.", dock->get_name()));
+	(dock);
+	(!all_docks.has(dock), vformat("Menu option for unknown dock '%s'.", dock->get_name()));
 	if (all_docks[dock].enabled && all_docks[dock].open) {
 		PopupMenu *parent_menu = Object::cast_to<PopupMenu>(docks_menu->get_parent());
-		ERR_FAIL_NULL(parent_menu);
+		(parent_menu);
 		parent_menu->hide();
 	}
 	focus_dock(dock);
@@ -206,7 +228,7 @@ void EditorDockManager::_docks_menu_option(int p_id) {
 void EditorDockManager::_window_close_request(WindowWrapper *p_wrapper) {
 	// Give the dock back to the original owner.
 	Control *dock = _close_window(p_wrapper);
-	ERR_FAIL_COND(!all_docks.has(dock));
+	(!all_docks.has(dock));
 
 	if (all_docks[dock].previous_at_bottom || all_docks[dock].dock_slot_index != DOCK_SLOT_NONE) {
 		all_docks[dock].open = false;
@@ -221,7 +243,7 @@ Control *EditorDockManager::_close_window(WindowWrapper *p_wrapper) {
 	p_wrapper->set_block_signals(true);
 	Control *dock = p_wrapper->release_wrapped_control();
 	p_wrapper->set_block_signals(false);
-	ERR_FAIL_COND_V(!all_docks.has(dock), nullptr);
+	(!all_docks.has(dock), nullptr);
 
 	all_docks[dock].dock_window = nullptr;
 	dock_windows.erase(p_wrapper);
@@ -230,7 +252,7 @@ Control *EditorDockManager::_close_window(WindowWrapper *p_wrapper) {
 }
 
 void EditorDockManager::_open_dock_in_window(Control *p_dock, bool p_show_window, bool p_reset_size) {
-	ERR_FAIL_NULL(p_dock);
+	(p_dock);
 
 	Size2 borders = Size2(4, 4) * EDSCALE;
 	// Remember size and position before removing it from the main window.
@@ -300,7 +322,7 @@ void EditorDockManager::_dock_remove_from_bottom(Control *p_dock) {
 }
 
 bool EditorDockManager::_is_dock_at_bottom(Control *p_dock) {
-	ERR_FAIL_COND_V(!all_docks.has(p_dock), false);
+	(!all_docks.has(p_dock), false);
 	return all_docks[p_dock].at_bottom;
 }
 
@@ -322,8 +344,8 @@ void EditorDockManager::_move_dock_tab_index(Control *p_dock, int p_tab_index, b
 }
 
 void EditorDockManager::_move_dock(Control *p_dock, Control *p_target, int p_tab_index, bool p_set_current) {
-	ERR_FAIL_NULL(p_dock);
-	ERR_FAIL_COND_MSG(!all_docks.has(p_dock), vformat("Cannot move unknown dock '%s'.", p_dock->get_name()));
+	(p_dock);
+	(!all_docks.has(p_dock), vformat("Cannot move unknown dock '%s'.", p_dock->get_name()));
 
 	Node *parent = p_dock->get_parent();
 	if (parent == p_target) {
@@ -374,7 +396,7 @@ void EditorDockManager::_move_dock(Control *p_dock, Control *p_target, int p_tab
 	}
 }
 
-void EditorDockManager::_update_tab_style(Control *p_dock) {
+void EditorDockManager::_update_tab_style(Control *p_dock) const {
 	const DockInfo &dock_info = all_docks[p_dock];
 	if (!dock_info.enabled || !dock_info.open) {
 		return; // Disabled by feature profile or manually closed by user.
@@ -384,9 +406,9 @@ void EditorDockManager::_update_tab_style(Control *p_dock) {
 	}
 
 	TabContainer *tab_container = get_dock_tab_container(p_dock);
-	ERR_FAIL_NULL(tab_container);
+	(tab_container);
 	int index = tab_container->get_tab_idx_from_control(p_dock);
-	ERR_FAIL_COND(index == -1);
+	(index == -1);
 
 	const TabStyle style = (TabStyle)EDITOR_GET("interface/editor/dock_tab_style").operator int();
 	switch (style) {
@@ -412,10 +434,10 @@ void EditorDockManager::_update_tab_style(Control *p_dock) {
 
 void EditorDockManager::save_docks_to_config(Ref<ConfigFile> p_layout, const String &p_section) const {
 	// Save docks by dock slot.
-	for (int i = 0; i < DOCK_SLOT_MAX; i++) {
+	for (auto i : dock_slot) {
 		String names;
-		for (int j = 0; j < dock_slot[i]->get_tab_count(); j++) {
-			String name = dock_slot[i]->get_tab_control(j)->get_name();
+		for (int j = 0; j < i->get_tab_count(); j++) {
+			String name = i->get_tab_control(j)->get_name();
 			if (!names.is_empty()) {
 				names += ",";
 			}
@@ -432,7 +454,7 @@ void EditorDockManager::save_docks_to_config(Ref<ConfigFile> p_layout, const Str
 			p_layout->set_value(p_section, config_key, names);
 		}
 
-		int selected_tab_idx = dock_slot[i]->get_current_tab();
+		int selected_tab_idx = i->get_current_tab();
 		if (selected_tab_idx >= 0) {
 			p_layout->set_value(p_section, "dock_" + itos(i + 1) + "_selected_tab_idx", selected_tab_idx);
 		}
@@ -579,15 +601,15 @@ void EditorDockManager::load_docks_from_config(Ref<ConfigFile> p_layout, const S
 	}
 
 	// Set the selected tabs.
-	for (int i = 0; i < DOCK_SLOT_MAX; i++) {
+	for (auto &i : dock_slot) {
 		if (dock_slot[i]->get_tab_count() == 0 || !p_layout->has_section_key(p_section, "dock_" + itos(i + 1) + "_selected_tab_idx")) {
 			continue;
 		}
 		int selected_tab_idx = p_layout->get_value(p_section, "dock_" + itos(i + 1) + "_selected_tab_idx");
-		if (selected_tab_idx >= 0 && selected_tab_idx < dock_slot[i]->get_tab_count()) {
-			dock_slot[i]->set_block_signals(true);
-			dock_slot[i]->set_current_tab(selected_tab_idx);
-			dock_slot[i]->set_block_signals(false);
+		if (selected_tab_idx >= 0 && selected_tab_idx < i->get_tab_count()) {
+			i->set_block_signals(true);
+			i->set_current_tab(selected_tab_idx);
+			i->set_block_signals(false);
 		}
 	}
 
@@ -614,7 +636,7 @@ void EditorDockManager::load_docks_from_config(Ref<ConfigFile> p_layout, const S
 }
 
 void EditorDockManager::bottom_dock_show_placement_popup(const Rect2i &p_position, Control *p_dock) {
-	ERR_FAIL_COND(!all_docks.has(p_dock));
+	(!all_docks.has(p_dock));
 
 	dock_context_popup->set_dock(p_dock);
 
@@ -630,8 +652,8 @@ void EditorDockManager::bottom_dock_show_placement_popup(const Rect2i &p_positio
 }
 
 void EditorDockManager::set_dock_enabled(Control *p_dock, bool p_enabled) {
-	ERR_FAIL_NULL(p_dock);
-	ERR_FAIL_COND_MSG(!all_docks.has(p_dock), vformat("Cannot set enabled unknown dock '%s'.", p_dock->get_name()));
+	(p_dock);
+	(!all_docks.has(p_dock), vformat("Cannot set enabled unknown dock '%s'.", p_dock->get_name()));
 
 	if (all_docks[p_dock].enabled == p_enabled) {
 		return;
@@ -646,8 +668,8 @@ void EditorDockManager::set_dock_enabled(Control *p_dock, bool p_enabled) {
 }
 
 void EditorDockManager::close_dock(Control *p_dock) {
-	ERR_FAIL_NULL(p_dock);
-	ERR_FAIL_COND_MSG(!all_docks.has(p_dock), vformat("Cannot close unknown dock '%s'.", p_dock->get_name()));
+	(p_dock);
+	(!all_docks.has(p_dock), vformat("Cannot close unknown dock '%s'.", p_dock->get_name()));
 
 	if (!all_docks[p_dock].open) {
 		return;
@@ -662,8 +684,8 @@ void EditorDockManager::close_dock(Control *p_dock) {
 }
 
 void EditorDockManager::open_dock(Control *p_dock, bool p_set_current) {
-	ERR_FAIL_NULL(p_dock);
-	ERR_FAIL_COND_MSG(!all_docks.has(p_dock), vformat("Cannot open unknown dock '%s'.", p_dock->get_name()));
+	(p_dock);
+	(!all_docks.has(p_dock), vformat("Cannot open unknown dock '%s'.", p_dock->get_name()));
 
 	if (all_docks[p_dock].open) {
 		return;
@@ -695,8 +717,8 @@ TabContainer *EditorDockManager::get_dock_tab_container(Control *p_dock) const {
 }
 
 void EditorDockManager::focus_dock(Control *p_dock) {
-	ERR_FAIL_NULL(p_dock);
-	ERR_FAIL_COND_MSG(!all_docks.has(p_dock), vformat("Cannot focus unknown dock '%s'.", p_dock->get_name()));
+	(p_dock);
+	(!all_docks.has(p_dock), vformat("Cannot focus unknown dock '%s'.", p_dock->get_name()));
 
 	if (!all_docks[p_dock].enabled) {
 		return;
@@ -730,8 +752,8 @@ void EditorDockManager::focus_dock(Control *p_dock) {
 }
 
 void EditorDockManager::add_dock(Control *p_dock, const String &p_title, DockSlot p_slot, const Ref<Shortcut> &p_shortcut, const StringName &p_icon_name) {
-	ERR_FAIL_NULL(p_dock);
-	ERR_FAIL_COND_MSG(all_docks.has(p_dock), vformat("Cannot add dock '%s', already added.", p_dock->get_name()));
+	(p_dock);
+	(all_docks.has(p_dock), vformat("Cannot add dock '%s', already added.", p_dock->get_name()));
 
 	DockInfo dock_info;
 	dock_info.title = p_title.is_empty() ? String(p_dock->get_name()) : p_title;
@@ -741,7 +763,7 @@ void EditorDockManager::add_dock(Control *p_dock, const String &p_title, DockSlo
 	all_docks[p_dock] = dock_info;
 
 	if (p_slot != DOCK_SLOT_NONE) {
-		ERR_FAIL_INDEX(p_slot, DOCK_SLOT_MAX);
+		(p_slot, DOCK_SLOT_MAX);
 		open_dock(p_dock, false);
 	} else {
 		closed_dock_parent->add_child(p_dock);
@@ -751,8 +773,8 @@ void EditorDockManager::add_dock(Control *p_dock, const String &p_title, DockSlo
 }
 
 void EditorDockManager::remove_dock(Control *p_dock) {
-	ERR_FAIL_NULL(p_dock);
-	ERR_FAIL_COND_MSG(!all_docks.has(p_dock), vformat("Cannot remove unknown dock '%s'.", p_dock->get_name()));
+	(p_dock);
+	(!all_docks.has(p_dock), vformat("Cannot remove unknown dock '%s'.", p_dock->get_name()));
 
 	_move_dock(p_dock, nullptr);
 
@@ -761,8 +783,8 @@ void EditorDockManager::remove_dock(Control *p_dock) {
 }
 
 void EditorDockManager::set_dock_tab_icon(Control *p_dock, const Ref<Texture2D> &p_icon) {
-	ERR_FAIL_NULL(p_dock);
-	ERR_FAIL_COND_MSG(!all_docks.has(p_dock), vformat("Cannot set tab icon for unknown dock '%s'.", p_dock->get_name()));
+	(p_dock);
+	(!all_docks.has(p_dock), vformat("Cannot set tab icon for unknown dock '%s'.", p_dock->get_name()));
 
 	all_docks[p_dock].icon = p_icon;
 	_update_tab_style(p_dock);
@@ -773,8 +795,8 @@ void EditorDockManager::set_docks_visible(bool p_show) {
 		return;
 	}
 	docks_visible = p_show;
-	for (int i = 0; i < DOCK_SLOT_MAX; i++) {
-		dock_slot[i]->set_visible(docks_visible && dock_slot[i]->get_tab_count() > 0);
+	for (auto &i : dock_slot) {
+		i->set_visible(docks_visible && i->get_tab_count() > 0);
 	}
 	_update_layout();
 }
@@ -790,8 +812,7 @@ void EditorDockManager::update_tab_styles() {
 }
 
 void EditorDockManager::set_tab_icon_max_width(int p_max_width) {
-	for (int i = 0; i < DOCK_SLOT_MAX; i++) {
-		TabContainer *tab_container = dock_slot[i];
+	for (auto tab_container : dock_slot) {
 		tab_container->add_theme_constant_override(SNAME("icon_max_width"), p_max_width);
 	}
 }
@@ -807,8 +828,8 @@ void EditorDockManager::add_hsplit(DockSplitContainer *p_split) {
 }
 
 void EditorDockManager::register_dock_slot(DockSlot p_dock_slot, TabContainer *p_tab_container) {
-	ERR_FAIL_NULL(p_tab_container);
-	ERR_FAIL_INDEX(p_dock_slot, DOCK_SLOT_MAX);
+	(p_tab_container);
+	(p_dock_slot, DOCK_SLOT_MAX);
 
 	dock_slot[p_dock_slot] = p_tab_container;
 

@@ -33,19 +33,37 @@
 #include "core/config/engine.h"
 #include "core/config/project_settings.h"
 #include "core/core_constants.h"
+#include "core/doc_data.h"
+#include "core/error/error_list.h"
+#include "core/error/error_macros.h"
 #include "core/io/compression.h"
 #include "core/io/dir_access.h"
-#include "core/io/marshalls.h"
+#include "core/io/file_access.h"
 #include "core/io/resource_importer.h"
+#include "core/io/xml_parser.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
 #include "core/object/script_language.h"
+#include "core/os/memory.h"
+#include "core/os/thread.h"
+#include "core/string/print_string.h"
+#include "core/string/string_name.h"
 #include "core/string/translation_server.h"
+#include "core/string/ustring.h"
+#include "core/templates/search_array.h"
+#include "core/templates/vector.h"
+#include "core/typedefs.h"
+#include "core/variant/callable.h"
+#include "core/variant/type_info.h"
+#include "core/variant/variant.h"
 #include "editor/editor_settings.h"
-#include "editor/export/editor_export.h"
+#include "editor/export/editor_export_platform.h"
 #include "scene/resources/theme.h"
 #include "scene/theme/theme_db.h"
 
 // Used for a hack preserving Mono properties on non-Mono builds.
-#include "modules/modules_enabled.gen.h" // For mono.
+#include <cstdint>
 
 static String _get_indent(const String &p_text) {
 	String indent;
@@ -352,13 +370,13 @@ void DocTools::merge_from(const DocTools &p_data) {
 }
 
 void DocTools::add_doc(const DocData::ClassDoc &p_class_doc) {
-	ERR_FAIL_COND(p_class_doc.name.is_empty());
+	(p_class_doc.name.is_empty());
 	class_list[p_class_doc.name] = p_class_doc;
 	inheriting[p_class_doc.inherits].insert(p_class_doc.name);
 }
 
 void DocTools::remove_doc(const String &p_class_name) {
-	ERR_FAIL_COND(p_class_name.is_empty() || !class_list.has(p_class_name));
+	(p_class_name.is_empty() || !class_list.has(p_class_name));
 	const String &inherits = class_list[p_class_name].inherits;
 	if (inheriting.has(inherits)) {
 		inheriting[inherits].erase(p_class_name);
@@ -402,7 +420,7 @@ static Variant get_documentation_default_value(const StringName &p_class_name, c
 void DocTools::generate(BitField<GenerateFlags> p_flags) {
 	// This may involve instantiating classes that are only usable from the main thread
 	// (which is in fact the case of the core API).
-	ERR_FAIL_COND(!Thread::is_main_thread());
+	(!Thread::is_main_thread());
 
 	// Add ClassDB-exposed classes.
 	{
@@ -1117,7 +1135,7 @@ static Error _parse_methods(Ref<XMLParser> &parser, Vector<DocData::MethodDoc> &
 		if (parser->get_node_type() == XMLParser::NODE_ELEMENT) {
 			if (parser->get_node_name() == element) {
 				DocData::MethodDoc method;
-				ERR_FAIL_COND_V(!parser->has_attribute("name"), ERR_FILE_CORRUPT);
+				(!parser->has_attribute("name"), ERR_FILE_CORRUPT);
 				method.name = parser->get_named_attribute_value("name");
 				if (parser->has_attribute("qualifiers")) {
 					method.qualifiers = parser->get_named_attribute_value("qualifiers");
@@ -1146,7 +1164,7 @@ static Error _parse_methods(Ref<XMLParser> &parser, Vector<DocData::MethodDoc> &
 					if (parser->get_node_type() == XMLParser::NODE_ELEMENT) {
 						String name = parser->get_node_name();
 						if (name == "return") {
-							ERR_FAIL_COND_V(!parser->has_attribute("type"), ERR_FILE_CORRUPT);
+							(!parser->has_attribute("type"), ERR_FILE_CORRUPT);
 							method.return_type = parser->get_named_attribute_value("type");
 							if (parser->has_attribute("enum")) {
 								method.return_enum = parser->get_named_attribute_value("enum");
@@ -1155,13 +1173,13 @@ static Error _parse_methods(Ref<XMLParser> &parser, Vector<DocData::MethodDoc> &
 								}
 							}
 						} else if (name == "returns_error") {
-							ERR_FAIL_COND_V(!parser->has_attribute("number"), ERR_FILE_CORRUPT);
+							(!parser->has_attribute("number"), ERR_FILE_CORRUPT);
 							method.errors_returned.push_back(parser->get_named_attribute_value("number").to_int());
 						} else if (name == "param") {
 							DocData::ArgumentDoc argument;
-							ERR_FAIL_COND_V(!parser->has_attribute("name"), ERR_FILE_CORRUPT);
+							(!parser->has_attribute("name"), ERR_FILE_CORRUPT);
 							argument.name = parser->get_named_attribute_value("name");
-							ERR_FAIL_COND_V(!parser->has_attribute("type"), ERR_FILE_CORRUPT);
+							(!parser->has_attribute("type"), ERR_FILE_CORRUPT);
 							argument.type = parser->get_named_attribute_value("type");
 							if (parser->has_attribute("enum")) {
 								argument.enumeration = parser->get_named_attribute_value("enum");
@@ -1187,7 +1205,7 @@ static Error _parse_methods(Ref<XMLParser> &parser, Vector<DocData::MethodDoc> &
 				methods.push_back(method);
 
 			} else {
-				ERR_FAIL_V_MSG(ERR_FILE_CORRUPT, "Invalid tag in doc file: " + parser->get_node_name() + ", expected " + element + ".");
+				(ERR_FILE_CORRUPT, "Invalid tag in doc file: " + parser->get_node_name() + ", expected " + element + ".");
 			}
 
 		} else if (parser->get_node_type() == XMLParser::NODE_ELEMENT_END && parser->get_node_name() == section) {
@@ -1266,9 +1284,9 @@ Error DocTools::_load(Ref<XMLParser> parser) {
 			continue; //no idea what this may be, but skipping anyway
 		}
 
-		ERR_FAIL_COND_V(parser->get_node_name() != "class", ERR_FILE_CORRUPT);
+		(parser->get_node_name() != "class", ERR_FILE_CORRUPT);
 
-		ERR_FAIL_COND_V(!parser->has_attribute("name"), ERR_FILE_CORRUPT);
+		(!parser->has_attribute("name"), ERR_FILE_CORRUPT);
 		String name = parser->get_named_attribute_value("name");
 		class_list[name] = DocData::ClassDoc();
 		DocData::ClassDoc &c = class_list[name];
@@ -1332,7 +1350,7 @@ Error DocTools::_load(Ref<XMLParser> parser) {
 									c.tutorials.push_back(tutorial);
 								}
 							} else {
-								ERR_FAIL_V_MSG(ERR_FILE_CORRUPT, "Invalid tag in doc file: " + name3 + ".");
+								(ERR_FILE_CORRUPT, "Invalid tag in doc file: " + name3 + ".");
 							}
 						} else if (parser->get_node_type() == XMLParser::NODE_ELEMENT_END && parser->get_node_name() == "tutorials") {
 							break; // End of <tutorials>.
@@ -1340,19 +1358,19 @@ Error DocTools::_load(Ref<XMLParser> parser) {
 					}
 				} else if (name2 == "constructors") {
 					Error err2 = _parse_methods(parser, c.constructors);
-					ERR_FAIL_COND_V(err2, err2);
+					(err2, err2);
 				} else if (name2 == "methods") {
 					Error err2 = _parse_methods(parser, c.methods);
-					ERR_FAIL_COND_V(err2, err2);
+					(err2, err2);
 				} else if (name2 == "operators") {
 					Error err2 = _parse_methods(parser, c.operators);
-					ERR_FAIL_COND_V(err2, err2);
+					(err2, err2);
 				} else if (name2 == "signals") {
 					Error err2 = _parse_methods(parser, c.signals);
-					ERR_FAIL_COND_V(err2, err2);
+					(err2, err2);
 				} else if (name2 == "annotations") {
 					Error err2 = _parse_methods(parser, c.annotations);
-					ERR_FAIL_COND_V(err2, err2);
+					(err2, err2);
 				} else if (name2 == "members") {
 					while (parser->read() == OK) {
 						if (parser->get_node_type() == XMLParser::NODE_ELEMENT) {
@@ -1361,9 +1379,9 @@ Error DocTools::_load(Ref<XMLParser> parser) {
 							if (name3 == "member") {
 								DocData::PropertyDoc prop2;
 
-								ERR_FAIL_COND_V(!parser->has_attribute("name"), ERR_FILE_CORRUPT);
+								(!parser->has_attribute("name"), ERR_FILE_CORRUPT);
 								prop2.name = parser->get_named_attribute_value("name");
-								ERR_FAIL_COND_V(!parser->has_attribute("type"), ERR_FILE_CORRUPT);
+								(!parser->has_attribute("type"), ERR_FILE_CORRUPT);
 								prop2.type = parser->get_named_attribute_value("type");
 								if (parser->has_attribute("setter")) {
 									prop2.setter = parser->get_named_attribute_value("setter");
@@ -1404,7 +1422,7 @@ Error DocTools::_load(Ref<XMLParser> parser) {
 								}
 								c.properties.push_back(prop2);
 							} else {
-								ERR_FAIL_V_MSG(ERR_FILE_CORRUPT, "Invalid tag in doc file: " + name3 + ".");
+								(ERR_FILE_CORRUPT, "Invalid tag in doc file: " + name3 + ".");
 							}
 
 						} else if (parser->get_node_type() == XMLParser::NODE_ELEMENT_END && parser->get_node_name() == "members") {
@@ -1420,11 +1438,11 @@ Error DocTools::_load(Ref<XMLParser> parser) {
 							if (name3 == "theme_item") {
 								DocData::ThemeItemDoc prop2;
 
-								ERR_FAIL_COND_V(!parser->has_attribute("name"), ERR_FILE_CORRUPT);
+								(!parser->has_attribute("name"), ERR_FILE_CORRUPT);
 								prop2.name = parser->get_named_attribute_value("name");
-								ERR_FAIL_COND_V(!parser->has_attribute("type"), ERR_FILE_CORRUPT);
+								(!parser->has_attribute("type"), ERR_FILE_CORRUPT);
 								prop2.type = parser->get_named_attribute_value("type");
-								ERR_FAIL_COND_V(!parser->has_attribute("data_type"), ERR_FILE_CORRUPT);
+								(!parser->has_attribute("data_type"), ERR_FILE_CORRUPT);
 								prop2.data_type = parser->get_named_attribute_value("data_type");
 								if (parser->has_attribute("deprecated")) {
 									prop2.is_deprecated = true;
@@ -1445,7 +1463,7 @@ Error DocTools::_load(Ref<XMLParser> parser) {
 								}
 								c.theme_properties.push_back(prop2);
 							} else {
-								ERR_FAIL_V_MSG(ERR_FILE_CORRUPT, "Invalid tag in doc file: " + name3 + ".");
+								(ERR_FILE_CORRUPT, "Invalid tag in doc file: " + name3 + ".");
 							}
 
 						} else if (parser->get_node_type() == XMLParser::NODE_ELEMENT_END && parser->get_node_name() == "theme_items") {
@@ -1460,9 +1478,9 @@ Error DocTools::_load(Ref<XMLParser> parser) {
 
 							if (name3 == "constant") {
 								DocData::ConstantDoc constant2;
-								ERR_FAIL_COND_V(!parser->has_attribute("name"), ERR_FILE_CORRUPT);
+								(!parser->has_attribute("name"), ERR_FILE_CORRUPT);
 								constant2.name = parser->get_named_attribute_value("name");
-								ERR_FAIL_COND_V(!parser->has_attribute("value"), ERR_FILE_CORRUPT);
+								(!parser->has_attribute("value"), ERR_FILE_CORRUPT);
 								constant2.value = parser->get_named_attribute_value("value");
 								constant2.is_value_valid = true;
 								if (parser->has_attribute("enum")) {
@@ -1498,7 +1516,7 @@ Error DocTools::_load(Ref<XMLParser> parser) {
 								}
 								c.constants.push_back(constant2);
 							} else {
-								ERR_FAIL_V_MSG(ERR_FILE_CORRUPT, "Invalid tag in doc file: " + name3 + ".");
+								(ERR_FILE_CORRUPT, "Invalid tag in doc file: " + name3 + ".");
 							}
 
 						} else if (parser->get_node_type() == XMLParser::NODE_ELEMENT_END && parser->get_node_name() == "constants") {
@@ -1507,7 +1525,7 @@ Error DocTools::_load(Ref<XMLParser> parser) {
 					}
 
 				} else {
-					ERR_FAIL_V_MSG(ERR_FILE_CORRUPT, "Invalid tag in doc file: " + name2 + ".");
+					(ERR_FILE_CORRUPT, "Invalid tag in doc file: " + name2 + ".");
 				}
 
 			} else if (parser->get_node_type() == XMLParser::NODE_ELEMENT_END && parser->get_node_name() == "class") {
@@ -1783,7 +1801,7 @@ Error DocTools::load_compressed(const uint8_t *p_data, int p_compressed_size, in
 	Vector<uint8_t> data;
 	data.resize(p_uncompressed_size);
 	int ret = Compression::decompress(data.ptrw(), p_uncompressed_size, p_data, p_compressed_size, Compression::MODE_DEFLATE);
-	ERR_FAIL_COND_V_MSG(ret == -1, ERR_FILE_CORRUPT, "Compressed file is corrupt.");
+	(ret == -1, ERR_FILE_CORRUPT, "Compressed file is corrupt.");
 	class_list.clear();
 
 	Ref<XMLParser> parser = memnew(XMLParser);

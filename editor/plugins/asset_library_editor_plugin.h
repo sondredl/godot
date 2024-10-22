@@ -82,7 +82,7 @@ public:
 
 	void clamp_width(int p_max_width);
 
-	EditorAssetLibraryItem(bool p_clickable = false);
+	explicit EditorAssetLibraryItem(bool p_clickable = false);
 };
 
 class EditorAssetLibraryItemDescription : public ConfirmationDialog {
@@ -128,7 +128,7 @@ public:
 	String get_title() { return title; }
 	Ref<Texture2D> get_preview_icon() { return icon; }
 	String get_download_url() { return download_url; }
-	int get_asset_id() { return asset_id; }
+	int get_asset_id() const { return asset_id; }
 	String get_sha256() { return sha256; }
 	EditorAssetLibraryItemDescription();
 };
@@ -168,7 +168,7 @@ protected:
 
 public:
 	void set_external_install(bool p_enable) { external_install = p_enable; }
-	int get_asset_id() { return asset_id; }
+	int get_asset_id() const { return asset_id; }
 	void configure(const String &p_title, int p_asset_id, const Ref<Texture2D> &p_preview, const String &p_download_url, const String &p_sha256_hash);
 
 	bool can_install() const;
@@ -326,12 +326,12 @@ class EditorAssetLibrary : public PanelContainer {
 protected:
 	static void _bind_methods();
 	void _notification(int p_what);
-	virtual void shortcut_input(const Ref<InputEvent> &p_event) override;
+	void shortcut_input(const Ref<InputEvent> &p_event) override;
 
 public:
 	void disable_community_support();
 
-	EditorAssetLibrary(bool p_templates_only = false);
+	explicit EditorAssetLibrary(bool p_templates_only = false);
 };
 
 class AssetLibraryEditorPlugin : public EditorPlugin {
@@ -342,17 +342,17 @@ class AssetLibraryEditorPlugin : public EditorPlugin {
 public:
 	static bool is_available();
 
-	virtual String get_name() const override { return "AssetLib"; }
+	String get_name() const override { return "AssetLib"; }
 	bool has_main_screen() const override { return true; }
-	virtual void edit(Object *p_object) override {}
-	virtual bool handles(Object *p_object) const override { return false; }
-	virtual void make_visible(bool p_visible) override;
+	void edit(Object *p_object) override {}
+	bool handles(Object *p_object) const override { return false; }
+	void make_visible(bool p_visible) override;
 	//virtual bool get_remove_list(List<Node*> *p_list) { return canvas_item_editor->get_remove_list(p_list); }
 	//virtual Dictionary get_state() const;
 	//virtual void set_state(const Dictionary& p_state);
 
 	AssetLibraryEditorPlugin();
-	~AssetLibraryEditorPlugin();
+	~AssetLibraryEditorPlugin() override;
 };
 
 #endif // ASSET_LIBRARY_EDITOR_PLUGIN_H

@@ -62,7 +62,7 @@ public:
 	void clear();
 
 	ImportDefaultsEditor();
-	~ImportDefaultsEditor();
+	~ImportDefaultsEditor() override override;
 };
 
 #endif // IMPORT_DEFAULTS_EDITOR_H

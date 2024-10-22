@@ -173,7 +173,7 @@ protected:
 
 	virtual void zip_folder_recursive(zipFile &p_zip, const String &p_root_path, const String &p_folder, const String &p_pkg_name);
 
-	Error _ssh_run_on_remote(const String &p_host, const String &p_port, const Vector<String> &p_ssh_args, const String &p_cmd_args, Array r_output = Array(), int p_port_fwd = -1) const {
+	Error _ssh_run_on_remote(const String &p_host, const String &p_port, const Vector<String> &p_ssh_args, const String &p_cmd_args, const Array &r_output = Array(), int p_port_fwd = -1) const {
 		String pipe;
 		Error err = ssh_run_on_remote(p_host, p_port, p_ssh_args, p_cmd_args, &pipe, p_port_fwd);
 		r_output.push_back(pipe);
@@ -184,9 +184,8 @@ protected:
 		Error err = ssh_run_on_remote_no_wait(p_host, p_port, p_ssh_args, p_cmd_args, &pid, p_port_fwd);
 		if (err != OK) {
 			return -1;
-		} else {
-			return pid;
 		}
+		return pid;
 	}
 
 	Error ssh_run_on_remote(const String &p_host, const String &p_port, const Vector<String> &p_ssh_args, const String &p_cmd_args, String *r_out = nullptr, int p_port_fwd = -1) const;
@@ -244,22 +243,22 @@ public:
 	}
 
 	virtual ExportMessage get_message(int p_index) const {
-		ERR_FAIL_INDEX_V(p_index, messages.size(), ExportMessage());
+		(p_index, messages.size(), ExportMessage());
 		return messages[p_index];
 	}
 
 	virtual ExportMessageType _get_message_type(int p_index) const {
-		ERR_FAIL_INDEX_V(p_index, messages.size(), EXPORT_MESSAGE_NONE);
+		(p_index, messages.size(), EXPORT_MESSAGE_NONE);
 		return messages[p_index].msg_type;
 	}
 
 	virtual String _get_message_category(int p_index) const {
-		ERR_FAIL_INDEX_V(p_index, messages.size(), String());
+		(p_index, messages.size(), String());
 		return messages[p_index].category;
 	}
 
 	virtual String _get_message_text(int p_index) const {
-		ERR_FAIL_INDEX_V(p_index, messages.size(), String());
+		(p_index, messages.size(), String());
 		return messages[p_index].text;
 	}
 
@@ -278,7 +277,7 @@ public:
 	virtual void get_export_options(List<ExportOption> *r_options) const = 0;
 	virtual bool should_update_export_options() { return false; }
 	virtual bool get_export_option_visibility(const EditorExportPreset *p_preset, const String &p_option) const { return true; }
-	virtual String get_export_option_warning(const EditorExportPreset *p_preset, const StringName &p_name) const { return String(); }
+	virtual String get_export_option_warning(const EditorExportPreset *p_preset, const StringName &p_name) const { return {}; }
 
 	virtual String get_os_name() const = 0;
 	virtual String get_name() const = 0;

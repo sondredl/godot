@@ -36,7 +36,7 @@
 class EditorStringNames {
 	static EditorStringNames *singleton;
 
-	EditorStringNames();
+	EditorStringNames() = delete = delete;
 
 public:
 	static void create() { singleton = memnew(EditorStringNames); }

@@ -78,14 +78,14 @@ public:
 	void replace_object(ObjectID p_old_object, ObjectID p_new_object);
 
 	int get_history_len();
-	int get_history_pos();
+	int get_history_pos() const;
 
 	// Gets an object from the history. The most recent object would be the object with p_obj = get_history_len() - 1.
 	ObjectID get_history_obj(int p_obj) const;
 
 	bool next();
 	bool previous();
-	ObjectID get_current();
+	ObjectID get_current() const;
 	bool is_current_inspector_only() const;
 
 	// Gets the size of the path of the current history item.
@@ -178,11 +178,11 @@ public:
 	bool has_extension_editor_plugin(const StringName &p_class_name);
 	EditorPlugin *get_extension_editor_plugin(const StringName &p_class_name);
 
-	void add_undo_redo_inspector_hook_callback(Callable p_callable); // Callbacks should have this signature: void (Object* undo_redo, Object *modified_object, String property, Variant new_value)
-	void remove_undo_redo_inspector_hook_callback(Callable p_callable);
-	const Vector<Callable> get_undo_redo_inspector_hook_callback();
+	void add_undo_redo_inspector_hook_callback(const Callable &p_callable); // Callbacks should have this signature: void (Object* undo_redo, Object *modified_object, String property, Variant new_value)
+	void remove_undo_redo_inspector_hook_callback(const Callable &p_callable);
+	Vector<Callable> get_undo_redo_inspector_hook_callback();
 
-	void add_move_array_element_function(const StringName &p_class, Callable p_callable); // Function should have this signature: void (Object* undo_redo, Object *modified_object, String array_prefix, int element_index, int new_position)
+	void add_move_array_element_function(const StringName &p_class, const Callable &p_callable); // Function should have this signature: void (Object* undo_redo, Object *modified_object, String array_prefix, int element_index, int new_position)
 	void remove_move_array_element_function(const StringName &p_class);
 	Callable get_move_array_element_function(const StringName &p_class) const;
 
@@ -214,7 +214,7 @@ public:
 	String get_scene_type(int p_idx) const;
 	void set_scene_path(int p_idx, const String &p_path);
 	Ref<Script> get_scene_root_script(int p_idx) const;
-	void set_scene_modified_time(int p_idx, uint64_t p_time);
+	void set_scene_modified_time(int p_idx, uint64_t p_time) const;
 	uint64_t get_scene_modified_time(int p_idx) const;
 	void clear_edited_scenes();
 	void set_edited_scene_live_edit_root(const NodePath &p_root);
@@ -224,8 +224,8 @@ public:
 
 	bool call_build();
 
-	void set_scene_as_saved(int p_idx);
-	bool is_scene_changed(int p_idx);
+	void set_scene_as_saved(int p_idx) const;
+	bool is_scene_changed(int p_idx) const;
 
 	int get_scene_history_id_from_path(const String &p_path) const;
 	int get_current_edited_scene_history_id() const;
@@ -234,7 +234,7 @@ public:
 	void set_plugin_window_layout(Ref<ConfigFile> p_layout);
 	void get_plugin_window_layout(Ref<ConfigFile> p_layout);
 
-	void save_edited_scene_state(EditorSelection *p_selection, EditorSelectionHistory *p_history, const Dictionary &p_custom);
+	void save_edited_scene_state(EditorSelection *p_selection, EditorSelectionHistory *p_history, const Dictionary &p_custom) const;
 	Dictionary restore_edited_scene_state(EditorSelection *p_selection, EditorSelectionHistory *p_history);
 	void notify_edited_scene_changed();
 	void notify_resource_saved(const Ref<Resource> &p_resource);

@@ -282,7 +282,7 @@ protected:
 public:
 	void set_edited_theme(const Ref<Theme> &p_theme);
 
-	ThemeItemEditorDialog(ThemeTypeEditor *p_theme_editor);
+	explicit ThemeItemEditorDialog(ThemeTypeEditor *p_theme_editor);
 };
 
 class ThemeTypeDialog : public ConfirmationDialog {
@@ -324,7 +324,7 @@ public:
 
 // Custom `Label` needed to use `EditorHelpBit` to display theme item documentation.
 class ThemeItemLabel : public Label {
-	virtual Control *make_custom_tooltip(const String &p_text) const;
+	Control *make_custom_tooltip(const String &p_text) const override;
 };
 
 class ThemeTypeEditor : public MarginContainer {
@@ -473,12 +473,12 @@ class ThemeEditorPlugin : public EditorPlugin {
 	Button *button = nullptr;
 
 public:
-	virtual String get_name() const override { return "Theme"; }
+	String get_name() const override { return "Theme"; }
 	bool has_main_screen() const override { return false; }
-	virtual void edit(Object *p_object) override;
-	virtual bool handles(Object *p_object) const override;
-	virtual void make_visible(bool p_visible) override;
-	virtual bool can_auto_hide() const override;
+	void edit(Object *p_object) override;
+	bool handles(Object *p_object) const override;
+	void make_visible(bool p_visible) override;
+	bool can_auto_hide() const override;
 
 	ThemeEditorPlugin();
 };

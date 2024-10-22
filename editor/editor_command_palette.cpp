@@ -29,15 +29,38 @@
 /**************************************************************************/
 
 #include "editor/editor_command_palette.h"
+#include "core/error/error_macros.h"
+#include "core/input/input_event.h"
+#include "core/input/shortcut.h"
+#include "core/math/color.h"
+#include "core/math/math_defs.h"
+#include "core/math/rect2i.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/ref_counted.h"
 #include "core/os/keyboard.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/pair.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
+#include "core/variant/callable.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 #include "editor/editor_node.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/gui/editor_toaster.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/gui/base_button.h"
 #include "scene/gui/control.h"
+#include "scene/gui/line_edit.h"
 #include "scene/gui/margin_container.h"
 #include "scene/gui/tree.h"
+#include "scene/scene_string_names.h"
+#include <alloca.h>
 
 EditorCommandPalette *EditorCommandPalette::singleton = nullptr;
 
@@ -45,26 +68,26 @@ static Rect2i prev_rect = Rect2i();
 static bool was_showed = false;
 
 float EditorCommandPalette::_score_path(const String &p_search, const String &p_path) {
-	float score = 0.9f + .1f * (p_search.length() / (float)p_path.length());
+	float score = 0.9F + .1f * (p_search.length() / (float)p_path.length());
 
 	// Positive bias for matches close to the beginning of the file name.
 	int pos = p_path.findn(p_search);
 	if (pos != -1) {
-		return score * (1.0f - 0.1f * (float(pos) / p_path.length()));
+		return score * (1.0F - 0.1F * (float(pos) / p_path.length()));
 	}
 
 	// Positive bias for matches close to the end of the path.
 	pos = p_path.rfindn(p_search);
 	if (pos != -1) {
-		return score * (0.8f - 0.1f * (float(p_path.length() - pos) / p_path.length()));
+		return score * (0.8F - 0.1F * (float(p_path.length() - pos) / p_path.length()));
 	}
 
 	// Remaining results belong to the same class of results.
-	return score * 0.69f;
+	return score * 0.69F;
 }
 
 void EditorCommandPalette::_update_command_search(const String &search_text) {
-	ERR_FAIL_COND(commands.is_empty());
+	(commands.is_empty());
 
 	HashMap<String, TreeItem *> sections;
 	TreeItem *first_section = nullptr;
@@ -207,7 +230,7 @@ void EditorCommandPalette::open_popup() {
 	if (was_showed) {
 		popup(prev_rect);
 	} else {
-		popup_centered_clamped(Size2(600, 440) * EDSCALE, 0.8f);
+		popup_centered_clamped(Size2(600, 440) * EDSCALE, 0.8F);
 	}
 
 	command_search_box->clear();
@@ -222,16 +245,16 @@ void EditorCommandPalette::get_actions_list(List<String> *p_list) const {
 	}
 }
 
-void EditorCommandPalette::remove_command(String p_key_name) {
-	ERR_FAIL_COND_MSG(!commands.has(p_key_name), "The Command '" + String(p_key_name) + "' doesn't exists. Unable to remove it.");
+void EditorCommandPalette::remove_command(const String &p_key_name) {
+	(!commands.has(p_key_name), "The Command '" + String(p_key_name) + "' doesn't exists. Unable to remove it.");
 
 	commands.erase(p_key_name);
 }
 
-void EditorCommandPalette::add_command(String p_command_name, String p_key_name, Callable p_action, Vector<Variant> arguments, const Ref<Shortcut> &p_shortcut) {
-	ERR_FAIL_COND_MSG(commands.has(p_key_name), "The Command '" + String(p_command_name) + "' already exists. Unable to add it.");
+void EditorCommandPalette::add_command(const String &p_command_name, const String &p_key_name, const Callable &p_action, Vector<Variant> arguments, const Ref<Shortcut> &p_shortcut) {
+	(commands.has(p_key_name), "The Command '" + String(p_command_name) + "' already exists. Unable to add it.");
 
-	const Variant **argptrs = (const Variant **)alloca(sizeof(Variant *) * arguments.size());
+	const auto **argptrs = (const Variant **)alloca(sizeof(Variant *) * arguments.size());
 	for (int i = 0; i < arguments.size(); i++) {
 		argptrs[i] = &arguments[i];
 	}
@@ -248,8 +271,8 @@ void EditorCommandPalette::add_command(String p_command_name, String p_key_name,
 	commands[p_key_name] = command;
 }
 
-void EditorCommandPalette::_add_command(String p_command_name, String p_key_name, Callable p_binded_action, String p_shortcut_text) {
-	ERR_FAIL_COND_MSG(commands.has(p_key_name), "The Command '" + String(p_command_name) + "' already exists. Unable to add it.");
+void EditorCommandPalette::_add_command(const String &p_command_name, const String &p_key_name, const Callable &p_binded_action, const String &p_shortcut_text) {
+	(commands.has(p_key_name), "The Command '" + String(p_command_name) + "' already exists. Unable to add it.");
 
 	Command command;
 	command.name = p_command_name;
@@ -266,7 +289,7 @@ void EditorCommandPalette::_add_command(String p_command_name, String p_key_name
 }
 
 void EditorCommandPalette::execute_command(const String &p_command_key) {
-	ERR_FAIL_COND_MSG(!commands.has(p_command_key), p_command_key + " not found.");
+	(!commands.has(p_command_key), p_command_key + " not found.");
 	commands[p_command_key].last_used = OS::get_singleton()->get_unix_time();
 	_save_history();
 
@@ -294,8 +317,8 @@ void EditorCommandPalette::register_shortcuts_as_command() {
 	// Load command use history.
 	Dictionary command_history = EditorSettings::get_singleton()->get_project_metadata("command_palette", "command_history", Dictionary());
 	Array history_entries = command_history.keys();
-	for (int i = 0; i < history_entries.size(); i++) {
-		const String &history_key = history_entries[i];
+	for (auto &history_entrie : history_entries) {
+		const String &history_key = history_entrie;
 		if (commands.has(history_key)) {
 			commands[history_key].last_used = command_history[history_key];
 		}

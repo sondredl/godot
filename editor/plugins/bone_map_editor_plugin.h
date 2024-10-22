@@ -79,7 +79,7 @@ public:
 	bool is_require() const;
 
 	BoneMapperButton(const StringName &p_profile_bone_name, bool p_require, bool p_selected);
-	~BoneMapperButton();
+	~BoneMapperButton() override;
 };
 
 class BoneMapperItem : public VBoxContainer {
@@ -105,8 +105,8 @@ protected:
 public:
 	void assign_button_id(int p_button_id);
 
-	BoneMapperItem(Ref<BoneMap> &p_bone_map, const StringName &p_profile_bone_name = StringName());
-	~BoneMapperItem();
+	explicit BoneMapperItem(Ref<BoneMap> &p_bone_map, const StringName &p_profile_bone_name = StringName());
+	~BoneMapperItem() override;
 };
 
 class BonePicker : public AcceptDialog {
@@ -129,8 +129,8 @@ private:
 	void create_bones_tree(Skeleton3D *p_skeleton);
 
 public:
-	BonePicker(Skeleton3D *p_skeleton);
-	~BonePicker();
+	explicit BonePicker(Skeleton3D *p_skeleton);
+	~BonePicker() override;
 };
 
 class BoneMapper : public VBoxContainer {
@@ -197,7 +197,7 @@ public:
 	int get_current_bone_idx() const;
 
 	BoneMapper(Skeleton3D *p_skeleton, Ref<BoneMap> &p_bone_map);
-	~BoneMapper();
+	~BoneMapper() override;
 };
 
 class BoneMapEditor : public VBoxContainer {
@@ -214,8 +214,8 @@ protected:
 	void _notification(int p_what);
 
 public:
-	BoneMapEditor(Ref<BoneMap> &p_bone_map);
-	~BoneMapEditor();
+	explicit BoneMapEditor(Ref<BoneMap> &p_bone_map);
+	~BoneMapEditor() override;
 };
 
 class EditorInspectorPluginBoneMap : public EditorInspectorPlugin {
@@ -223,15 +223,15 @@ class EditorInspectorPluginBoneMap : public EditorInspectorPlugin {
 	BoneMapEditor *editor = nullptr;
 
 public:
-	virtual bool can_handle(Object *p_object) override;
-	virtual void parse_begin(Object *p_object) override;
+	bool can_handle(Object *p_object) override;
+	void parse_begin(Object *p_object) override;
 };
 
 class BoneMapEditorPlugin : public EditorPlugin {
 	GDCLASS(BoneMapEditorPlugin, EditorPlugin);
 
 public:
-	virtual String get_name() const override { return "BoneMap"; }
+	String get_name() const override { return "BoneMap"; }
 	BoneMapEditorPlugin();
 };
 

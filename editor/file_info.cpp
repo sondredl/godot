@@ -29,6 +29,7 @@
 /**************************************************************************/
 
 #include "editor/file_info.h"
+#include "core/error/error_macros.h"
 
 void sort_file_info_list(List<FileInfo> &r_file_list, FileSortOption p_file_sort_option) {
 	// Sort the file list if needed.

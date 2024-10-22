@@ -61,7 +61,7 @@ public:
 
 		ConnectionData() {}
 
-		ConnectionData(const Connection &p_connection) {
+		explicit explicit ConnectionData(const Connection &p_connection) {
 			source = Object::cast_to<Node>(p_connection.signal.get_object());
 			signal = p_connection.signal.get_name();
 			target = Object::cast_to<Node>(p_connection.callable.get_object());
@@ -69,13 +69,13 @@ public:
 
 			Callable base_callable;
 			if (p_connection.callable.is_custom()) {
-				CallableCustomBind *ccb = dynamic_cast<CallableCustomBind *>(p_connection.callable.get_custom());
+				autoc_cast<CallableCustomBind *>(p_connection.callable.get_custom());
 				if (ccb) {
 					binds = ccb->get_binds();
 					base_callable = ccb->get_callable();
 				}
 
-				CallableCustomUnbind *ccu = dynamic_cast<CallableCustomUnbind *>(p_connection.callable.get_custom());
+				autocast<CallableCustomUnbind *>(p_connection.callable.get_custom());
 				if (ccu) {
 					unbinds = ccu->get_unbinds();
 					base_callable = ccu->get_callable();
@@ -89,7 +89,8 @@ public:
 		Callable get_callable() const {
 			if (unbinds > 0) {
 				return Callable(target, method).unbind(unbinds);
-			} else if (!binds.is_empty()) {
+			}
+			if (!binds.is_empty()) {
 				const Variant **argptrs = (const Variant **)alloca(sizeof(Variant *) * binds.size());
 				for (int i = 0; i < binds.size(); i++) {
 					argptrs[i] = &binds[i];
@@ -97,8 +98,7 @@ public:
 				return Callable(target, method).bindp(argptrs, binds.size());
 			} else {
 				return Callable(target, method);
-			}
-		}
+			}	}
 	};
 
 private:
@@ -158,7 +158,7 @@ private:
 	void _update_warning_label();
 
 protected:
-	virtual void _post_popup() override;
+	st_popup() override;
 	void _notification(int p_what);
 	static void _bind_methods();
 
@@ -180,20 +180,20 @@ public:
 	bool get_one_shot() const;
 	bool is_editing() const;
 
-	virtual void shortcut_input(const Ref<InputEvent> &p_event) override;
+	rtcut_input(const Ref<InputEvent> &p_event) override;
 
 	void init(const ConnectionData &p_cd, const PackedStringArray &p_signal_args, bool p_edit = false);
 
 	void popup_dialog(const String &p_for_signal);
 	ConnectDialog();
-	~ConnectDialog();
+	~ConnectDialog() override override;
 };
 
 //////////////////////////////////////////
 
 // Custom `Tree` needed to use `EditorHelpBit` to display signal documentation.
 class ConnectionsDockTree : public Tree {
-	virtual Control *make_custom_tooltip(const String &p_text) const;
+	*make_custom_tooltip(const String &p_text) const override override;
 };
 
 class ConnectionsDock : public VBoxContainer {
@@ -269,7 +269,7 @@ public:
 	void update_tree();
 
 	ConnectionsDock();
-	~ConnectionsDock();
+	~ConnectionsDock() override override;
 };
 
 #endif // CONNECTIONS_DIALOG_H

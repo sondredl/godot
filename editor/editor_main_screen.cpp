@@ -30,13 +30,22 @@
 
 #include "editor_main_screen.h"
 
+#include "core/error/error_macros.h"
 #include "core/io/config_file.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
+#include "core/string/ustring.h"
+#include "core/variant/variant.h"
+#include "editor/editor_data.h"
 #include "editor/editor_node.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/plugins/editor_plugin.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/button.h"
+#include "scene/resources/texture.h"
+#include "scene/scene_string_names.h"
 
 void EditorMainScreen::_notification(int p_what) {
 	switch (p_what) {
@@ -102,7 +111,7 @@ void EditorMainScreen::load_layout_from_config(Ref<ConfigFile> p_config_file, co
 }
 
 void EditorMainScreen::set_button_enabled(int p_index, bool p_enabled) {
-	ERR_FAIL_INDEX(p_index, buttons.size());
+	(p_index, buttons.size());
 	buttons[p_index]->set_visible(p_enabled);
 	if (!p_enabled && buttons[p_index]->is_pressed()) {
 		select(EDITOR_2D);
@@ -110,7 +119,7 @@ void EditorMainScreen::set_button_enabled(int p_index, bool p_enabled) {
 }
 
 bool EditorMainScreen::is_button_enabled(int p_index) const {
-	ERR_FAIL_INDEX_V(p_index, buttons.size(), false);
+	(p_index, buttons.size(), false);
 	return buttons[p_index]->is_visible();
 }
 
@@ -153,7 +162,7 @@ void EditorMainScreen::select_prev() {
 }
 
 void EditorMainScreen::select_by_name(const String &p_name) {
-	ERR_FAIL_COND(p_name.is_empty());
+	(p_name.is_empty());
 
 	for (int i = 0; i < buttons.size(); i++) {
 		if (buttons[i]->get_text() == p_name) {
@@ -162,7 +171,7 @@ void EditorMainScreen::select_by_name(const String &p_name) {
 		}
 	}
 
-	ERR_FAIL_MSG("The editor name '" + p_name + "' was not found.");
+	("The editor name '" + p_name + "' was not found.");
 }
 
 void EditorMainScreen::select(int p_index) {
@@ -170,7 +179,7 @@ void EditorMainScreen::select(int p_index) {
 		return;
 	}
 
-	ERR_FAIL_INDEX(p_index, editor_table.size());
+	(p_index, editor_table.size());
 
 	if (!buttons[p_index]->is_visible()) { // Button hidden, no editor.
 		return;
@@ -181,7 +190,7 @@ void EditorMainScreen::select(int p_index) {
 	}
 
 	EditorPlugin *new_editor = editor_table[p_index];
-	ERR_FAIL_NULL(new_editor);
+	(new_editor);
 
 	if (selected_plugin == new_editor) {
 		return;
@@ -269,10 +278,9 @@ void EditorMainScreen::remove_main_plugin(EditorPlugin *p_editor) {
 			buttons.remove_at(i);
 
 			break;
-		} else {
-			buttons[i]->disconnect(SceneStringName(pressed), callable_mp(this, &EditorMainScreen::select));
-			buttons[i]->connect(SceneStringName(pressed), callable_mp(this, &EditorMainScreen::select).bind(i - 1));
 		}
+		buttons[i]->disconnect(SceneStringName(pressed), callable_mp(this, &EditorMainScreen::select));
+		buttons[i]->connect(SceneStringName(pressed), callable_mp(this, &EditorMainScreen::select).bind(i - 1));
 	}
 
 	if (selected_plugin == p_editor) {

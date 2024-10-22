@@ -31,6 +31,27 @@
 #include "import_dock.h"
 
 #include "core/config/project_settings.h"
+#include "core/core_string_names.h"
+#include "core/error/error_list.h"
+#include "core/error/error_macros.h"
+#include "core/io/config_file.h"
+#include "core/io/resource.h"
+#include "core/io/resource_importer.h"
+#include "core/math/math_defs.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/pair.h"
+#include "core/templates/vector.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
+#include "editor/editor_file_system.h"
+#include "editor/editor_inspector.h"
 #include "editor/editor_node.h"
 #include "editor/editor_resource_preview.h"
 #include "editor/editor_settings.h"
@@ -38,6 +59,12 @@
 #include "editor/editor_undo_redo_manager.h"
 #include "editor/themes/editor_scale.h"
 #include "editor/themes/editor_theme_manager.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/button.h"
+#include "scene/gui/label.h"
+#include "scene/scene_string_names.h"
+#include "servers/display_server.h"
+#include "servers/text_server.h"
 
 class ImportDockParameters : public Object {
 	GDCLASS(ImportDockParameters, Object);
@@ -66,12 +93,7 @@ public:
 	}
 
 	bool _get(const StringName &p_name, Variant &r_ret) const {
-		if (values.has(p_name)) {
-			r_ret = values[p_name];
-			return true;
-		}
-
-		return false;
+		return values.has(p_name);
 	}
 	void _get_property_list(List<PropertyInfo> *p_list) const {
 		for (const PropertyInfo &E : properties) {
@@ -234,7 +256,7 @@ void ImportDock::set_edit_multiple_paths(const Vector<String> &p_paths) {
 		config.instantiate();
 		extensions.insert(p_paths[i].get_extension());
 		Error err = config->load(p_paths[i] + ".import");
-		ERR_CONTINUE(err != OK);
+		(err != OK);
 
 		if (i == 0) {
 			String importer_name = config->get_value("remap", "importer");
@@ -276,7 +298,7 @@ void ImportDock::set_edit_multiple_paths(const Vector<String> &p_paths) {
 		}
 	}
 
-	ERR_FAIL_COND(params->importer.is_null());
+	(params->importer.is_null());
 
 	String base_path;
 	if (extensions.size() == 1 && p_paths.size() > 0) {
@@ -412,7 +434,7 @@ void ImportDock::_importer_selected(int i_idx) {
 		_update_options(params->base_options_path, Ref<ConfigFile>());
 	} else {
 		Ref<ResourceImporter> importer = ResourceFormatImporter::get_singleton()->get_importer_by_name(name);
-		ERR_FAIL_COND(importer.is_null());
+		(importer.is_null());
 
 		params->importer = importer;
 		params->skip = false;
@@ -453,7 +475,7 @@ void ImportDock::_preset_selected(int p_idx) {
 			_update_preset_menu();
 		} break;
 		case ITEM_LOAD_DEFAULT: {
-			ERR_FAIL_COND(!ProjectSettings::get_singleton()->has_setting(setting_name));
+			(!ProjectSettings::get_singleton()->has_setting(setting_name));
 
 			Dictionary import_settings = GLOBAL_GET(setting_name);
 			List<Variant> keys;
@@ -558,7 +580,7 @@ void ImportDock::_reimport_attempt() {
 		Ref<ConfigFile> config;
 		config.instantiate();
 		Error err = config->load(params->paths[i] + ".import");
-		ERR_CONTINUE(err != OK);
+		(err != OK);
 
 		String imported_with = config->get_value("remap", "importer");
 		if (imported_with != importer_name && imported_with != "keep" && imported_with != "skip") {
@@ -639,7 +661,7 @@ void ImportDock::_reimport() {
 		Ref<ConfigFile> config;
 		config.instantiate();
 		Error err = config->load(params->paths[i] + ".import");
-		ERR_CONTINUE(err != OK);
+		(err != OK);
 
 		if (params->importer.is_valid()) {
 			String importer_name = params->importer->get_importer_name();
@@ -665,11 +687,11 @@ void ImportDock::_reimport() {
 
 			//handle group file
 			Ref<ResourceImporter> importer = ResourceFormatImporter::get_singleton()->get_importer_by_name(importer_name);
-			ERR_CONTINUE(!importer.is_valid());
+			(!importer.is_valid());
 			String group_file_property = importer->get_option_group_file();
 			if (!group_file_property.is_empty()) {
 				//can import from a group (as in, atlas)
-				ERR_CONTINUE(!params->values.has(group_file_property));
+				(!params->values.has(group_file_property));
 				String group_file = params->values[group_file_property];
 				config->set_value("remap", "group_file", group_file);
 			} else {
@@ -741,7 +763,7 @@ void ImportDock::_bind_methods() {
 }
 
 void ImportDock::initialize_import_options() const {
-	ERR_FAIL_COND(!import_opts || !params);
+	(!import_opts || !params);
 
 	import_opts->edit(params);
 }

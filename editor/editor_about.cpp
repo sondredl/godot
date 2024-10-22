@@ -33,11 +33,33 @@
 #include "core/authors.gen.h"
 #include "core/donors.gen.h"
 #include "core/license.gen.h"
+#include "core/math/color.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
+#include "core/os/os.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
 #include "editor/editor_string_names.h"
 #include "editor/gui/editor_version_button.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/control.h"
 #include "scene/gui/item_list.h"
+#include "scene/gui/label.h"
+#include "scene/gui/rich_text_label.h"
+#include "scene/gui/scroll_container.h"
+#include "scene/gui/separator.h"
+#include "scene/gui/split_container.h"
+#include "scene/gui/tab_bar.h"
+#include "scene/gui/tab_container.h"
+#include "scene/gui/texture_rect.h"
+#include "scene/gui/tree.h"
+#include "scene/resources/font.h"
 #include "scene/resources/style_box.h"
+#include "scene/scene_string_names.h"
+#include "servers/text_server.h"
 
 void EditorAbout::_notification(int p_what) {
 	switch (p_what) {
@@ -290,8 +312,7 @@ EditorAbout::EditorAbout() {
 	tpl_ti_lc->set_text(0, TTR("Licenses"));
 	tpl_ti_lc->set_selectable(0, false);
 	String long_text = "";
-	for (int component_index = 0; component_index < COPYRIGHT_INFO_COUNT; component_index++) {
-		const ComponentCopyright &component = COPYRIGHT_INFO[component_index];
+	for (const auto &component : COPYRIGHT_INFO) {
 		TreeItem *ti = _tpl_tree->create_item(tpl_ti_tp);
 		String component_name = String::utf8(component.name);
 		ti->set_text(0, component_name);

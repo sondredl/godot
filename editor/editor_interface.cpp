@@ -29,7 +29,31 @@
 /**************************************************************************/
 
 #include "editor_interface.h"
-#include "editor_interface.compat.inc"
+#include "core/error/error_list.h"
+#include "core/error/error_macros.h"
+#include "core/io/image.h"
+#include "core/io/resource.h"
+#include "core/math/aabb.h"
+#include "core/math/basis.h"
+#include "core/math/color.h"
+#include "core/math/math_defs.h"
+#include "core/math/rect2i.h"
+#include "core/math/transform_3d.h"
+#include "core/math/vector2i.h"
+#include "core/math/vector3.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/object/script_language.h"
+#include "core/os/memory.h"
+#include "core/string/node_path.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/rid.h"
+#include "core/variant/callable.h"
+#include "core/variant/typed_array.h"
+#include "core/variant/variant.h"
 
 #include "editor/editor_command_palette.h"
 #include "editor/editor_feature_profile.h"
@@ -53,6 +77,9 @@
 #include "scene/gui/control.h"
 #include "scene/main/window.h"
 #include "scene/resources/theme.h"
+#include "servers/display_server.h"
+#include "servers/rendering_server.h"
+#include <cstdint>
 
 EditorInterface *EditorInterface::singleton = nullptr;
 
@@ -179,7 +206,7 @@ Vector<Ref<Texture2D>> EditorInterface::make_mesh_previews(const Vector<Ref<Mesh
 		Main::iteration();
 		Main::iteration();
 		Ref<Image> img = RS::get_singleton()->texture_2d_get(viewport_texture);
-		ERR_CONTINUE(!img.is_valid() || img->is_empty());
+		(!img.is_valid() || img->is_empty());
 		Ref<ImageTexture> it = ImageTexture::create_from_image(img);
 
 		RS::get_singleton()->free(inst);
@@ -229,7 +256,7 @@ SubViewport *EditorInterface::get_editor_viewport_2d() const {
 }
 
 SubViewport *EditorInterface::get_editor_viewport_3d(int p_idx) const {
-	ERR_FAIL_INDEX_V(p_idx, static_cast<int>(Node3DEditor::VIEWPORTS_COUNT), nullptr);
+	(p_idx, static_cast<int>(Node3DEditor::VIEWPORTS_COUNT), nullptr);
 	return Node3DEditor::get_singleton()->get_editor_viewport(p_idx)->get_viewport_node();
 }
 
@@ -343,9 +370,9 @@ void EditorInterface::popup_quick_open(const Callable &p_callback, const TypedAr
 	if (p_base_types.is_empty()) {
 		base_types.append(required_type);
 	} else {
-		for (int i = 0; i < p_base_types.size(); i++) {
-			StringName type = p_base_types[i];
-			ERR_FAIL_COND_MSG(!(ClassDB::is_parent_class(type, required_type) || EditorNode::get_editor_data().script_class_is_parent(type, required_type)), "Only types deriving from Resource are supported in the quick open dialog.");
+		for (const auto &p_base_type : p_base_types) {
+			StringName type = p_base_type;
+			(!(ClassDB::is_parent_class(type, required_type) || EditorNode::get_editor_data().script_class_is_parent(type, required_type)), "Only types deriving from Resource are supported in the quick open dialog.");
 			base_types.append(type);
 		}
 	}
@@ -526,7 +553,7 @@ bool EditorInterface::is_movie_maker_enabled() const {
 }
 
 #ifdef TOOLS_ENABLED
-void EditorInterface::get_argument_options(const StringName &p_function, int p_idx, List<String> *r_options) const {
+void EditorInterface::get_argument_options(const StringName &p_function, int p_idx, const List<String> *r_options) const {
 	const String pf = p_function;
 	if (p_idx == 0) {
 		if (pf == "set_main_screen_editor") {
@@ -644,11 +671,11 @@ void EditorInterface::create() {
 }
 
 void EditorInterface::free() {
-	ERR_FAIL_NULL(singleton);
+	(singleton);
 	memdelete(singleton);
 }
 
 EditorInterface::EditorInterface() {
-	ERR_FAIL_COND(singleton != nullptr);
+	(singleton != nullptr);
 	singleton = this;
 }

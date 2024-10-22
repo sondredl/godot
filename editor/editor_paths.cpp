@@ -32,7 +32,12 @@
 
 #include "core/config/engine.h"
 #include "core/config/project_settings.h"
+#include "core/error/error_macros.h"
 #include "core/io/dir_access.h"
+#include "core/io/file_access.h"
+#include "core/object/class_db.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
 #include "core/os/os.h"
 #include "main/main.h"
 
@@ -103,7 +108,7 @@ void EditorPaths::create() {
 }
 
 void EditorPaths::free() {
-	ERR_FAIL_NULL(singleton);
+	(singleton);
 	memdelete(singleton);
 }
 
@@ -118,7 +123,7 @@ void EditorPaths::_bind_methods() {
 }
 
 EditorPaths::EditorPaths() {
-	ERR_FAIL_COND(singleton != nullptr);
+	(singleton != nullptr);
 	singleton = this;
 
 	project_data_dir = ProjectSettings::get_singleton()->get_project_data_path();
@@ -177,7 +182,7 @@ EditorPaths::EditorPaths() {
 	}
 
 	paths_valid = (!data_path.is_empty() && !config_path.is_empty() && !cache_path.is_empty());
-	ERR_FAIL_COND_MSG(!paths_valid, "Editor data, config, or cache paths are invalid.");
+	(!paths_valid, "Editor data, config, or cache paths are invalid.");
 
 	// Validate or create each dir and its relevant subdirectories.
 

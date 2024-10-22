@@ -69,9 +69,8 @@ class EditorCommandPalette : public ConfirmationDialog {
 		_FORCE_INLINE_ bool operator()(const CommandEntry &A, const CommandEntry &B) const {
 			if (A.last_used == B.last_used) {
 				return A.display_name < B.display_name;
-			} else {
-				return A.last_used > B.last_used;
 			}
+			return A.last_used > B.last_used;
 		}
 	};
 
@@ -82,7 +81,7 @@ class EditorCommandPalette : public ConfirmationDialog {
 	float _score_path(const String &p_search, const String &p_path);
 	void _sbox_input(const Ref<InputEvent> &p_event);
 	void _confirmed();
-	void _add_command(String p_command_name, String p_key_name, Callable p_binded_action, String p_shortcut_text = "None");
+	void _add_command(const String &p_command_name, const String &p_key_name, const Callable &p_binded_action, const String &p_shortcut_text = "None");
 	void _save_history() const;
 
 	EditorCommandPalette();
@@ -94,11 +93,11 @@ protected:
 public:
 	void open_popup();
 	void get_actions_list(List<String> *p_list) const;
-	void add_command(String p_command_name, String p_key_name, Callable p_action, Vector<Variant> arguments, const Ref<Shortcut> &p_shortcut);
+	void add_command(const String &p_command_name, const String &p_key_name, const Callable &p_action, Vector<Variant> arguments, const Ref<Shortcut> &p_shortcut);
 	void execute_command(const String &p_command_name);
 	void register_shortcuts_as_command();
 	Ref<Shortcut> add_shortcut_command(const String &p_command, const String &p_key, Ref<Shortcut> p_shortcut);
-	void remove_command(String p_key_name);
+	void remove_command(const String &p_key_name);
 	static EditorCommandPalette *get_singleton();
 };
 

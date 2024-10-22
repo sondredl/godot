@@ -47,15 +47,15 @@ protected:
 	void _notification(int p_what);
 
 public:
-	PackedSceneEditor(Ref<PackedScene> &p_packed_scene);
+	explicit PackedSceneEditor(Ref<PackedScene> &p_packed_scene);
 };
 
 class EditorInspectorPluginPackedScene : public EditorInspectorPlugin {
 	GDCLASS(EditorInspectorPluginPackedScene, EditorInspectorPlugin);
 
 public:
-	virtual bool can_handle(Object *p_object) override;
-	virtual void parse_begin(Object *p_object) override;
+	bool can_handle(Object *p_object) override;
+	void parse_begin(Object *p_object) override;
 };
 
 class PackedSceneEditorPlugin : public EditorPlugin {

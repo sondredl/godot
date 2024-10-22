@@ -32,17 +32,47 @@
 
 #include "core/config/project_settings.h"
 #include "core/core_constants.h"
+#include "core/core_string_names.h"
+#include "core/error/error_macros.h"
+#include "core/input/input_enums.h"
+#include "core/io/file_access.h"
+#include "core/io/resource.h"
+#include "core/io/resource_loader.h"
+#include "core/math/color.h"
+#include "core/math/math_defs.h"
+#include "core/math/math_funcs.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/object/script_language.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/callable.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 #include "editor/editor_node.h"
 #include "editor/editor_string_names.h"
 #include "editor/editor_undo_redo_manager.h"
 #include "editor/filesystem_dock.h"
 #include "editor/gui/editor_file_dialog.h"
 #include "editor/project_settings_editor.h"
-#include "editor/themes/editor_scale.h"
-#include "scene/main/window.h"
+#include "editor/script_create_dialog.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/button.h"
+#include "scene/gui/control.h"
+#include "scene/gui/label.h"
+#include "scene/gui/tree.h"
+#include "scene/main/node.h"
 #include "scene/resources/packed_scene.h"
+#include "scene/scene_string_names.h"
 
-#define PREVIEW_LIST_MAX_SIZE 10
+enum {
+	PREVIEW_LIST_MAX_SIZE = 10
+};
 
 void EditorAutoloadSettings::_notification(int p_what) {
 	switch (p_what) {
@@ -398,32 +428,32 @@ Node *EditorAutoloadSettings::_create_autoload(const String &p_path) {
 		scn.instantiate();
 		scn->set_path(p_path);
 		scn->reload_from_file();
-		ERR_FAIL_COND_V_MSG(!scn.is_valid(), nullptr, vformat("Failed to create an autoload, can't load from path: %s.", p_path));
+		(!scn.is_valid(), nullptr, vformat("Failed to create an autoload, can't load from path: %s.", p_path));
 
 		if (scn.is_valid()) {
 			n = scn->instantiate();
 		}
 	} else {
 		Ref<Resource> res = ResourceLoader::load(p_path);
-		ERR_FAIL_COND_V_MSG(res.is_null(), nullptr, vformat("Failed to create an autoload, can't load from path: %s.", p_path));
+		(res.is_null(), nullptr, vformat("Failed to create an autoload, can't load from path: %s.", p_path));
 
 		Ref<Script> scr = res;
 		if (scr.is_valid()) {
-			ERR_FAIL_COND_V_MSG(!scr->is_valid(), nullptr, vformat("Failed to create an autoload, script '%s' is not compiling.", p_path));
+			(!scr->is_valid(), nullptr, vformat("Failed to create an autoload, script '%s' is not compiling.", p_path));
 
 			StringName ibt = scr->get_instance_base_type();
 			bool valid_type = ClassDB::is_parent_class(ibt, "Node");
-			ERR_FAIL_COND_V_MSG(!valid_type, nullptr, vformat("Failed to create an autoload, script '%s' does not inherit from 'Node'.", p_path));
+			(!valid_type, nullptr, vformat("Failed to create an autoload, script '%s' does not inherit from 'Node'.", p_path));
 
 			Object *obj = ClassDB::instantiate(ibt);
-			ERR_FAIL_NULL_V_MSG(obj, nullptr, vformat("Failed to create an autoload, cannot instantiate '%s'.", ibt));
+			(obj, nullptr, vformat("Failed to create an autoload, cannot instantiate '%s'.", ibt));
 
 			n = Object::cast_to<Node>(obj);
 			n->set_script(scr);
 		}
 	}
 
-	ERR_FAIL_NULL_V_MSG(n, nullptr, vformat("Failed to create an autoload, path is not pointing to a scene or a script: %s.", p_path));
+	(n, nullptr, vformat("Failed to create an autoload, path is not pointing to a scene or a script: %s.", p_path));
 
 	return n;
 }
@@ -629,7 +659,7 @@ Variant EditorAutoloadSettings::get_drag_data_fw(const Point2 &p_point, Control 
 	}
 
 	if (autoloads.size() == 0 || autoloads.size() == autoload_cache.size()) {
-		return Variant();
+		return {};
 	}
 
 	VBoxContainer *preview = memnew(VBoxContainer);

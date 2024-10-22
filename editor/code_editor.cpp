@@ -30,18 +30,55 @@
 
 #include "code_editor.h"
 
+#include "core/error/error_macros.h"
 #include "core/input/input.h"
+#include "core/input/input_enums.h"
+#include "core/input/input_event.h"
+#include "core/math/color.h"
+#include "core/math/math_defs.h"
+#include "core/math/math_funcs.h"
+#include "core/math/vector2.h"
+#include "core/math/vector2i.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/object/script_language.h"
 #include "core/os/keyboard.h"
+#include "core/os/memory.h"
+#include "core/string/char_utils.h"
 #include "core/string/string_builder.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/array.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/typed_array.h"
+#include "core/variant/variant.h"
 #include "editor/editor_node.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/plugins/script_editor_plugin.h"
 #include "editor/themes/editor_scale.h"
 #include "editor/themes/editor_theme_manager.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/button.h"
+#include "scene/gui/check_box.h"
+#include "scene/gui/code_edit.h"
+#include "scene/gui/label.h"
+#include "scene/gui/line_edit.h"
 #include "scene/gui/menu_button.h"
+#include "scene/gui/popup_menu.h"
+#include "scene/gui/scroll_container.h"
 #include "scene/gui/separator.h"
+#include "scene/gui/text_edit.h"
+#include "scene/gui/texture_button.h"
+#include "scene/main/timer.h"
 #include "scene/resources/font.h"
+#include "scene/resources/texture.h"
+#include "scene/scene_string_names.h"
+#include "servers/text_server.h"
+#include <cstdint>
 
 void GotoLineDialog::popup_find_line(CodeEdit *p_edit) {
 	text_editor = p_edit;
@@ -131,7 +168,7 @@ void FindReplaceBar::_notification(int p_what) {
 }
 
 void FindReplaceBar::unhandled_input(const Ref<InputEvent> &p_event) {
-	ERR_FAIL_COND(p_event.is_null());
+	(p_event.is_null());
 
 	Ref<InputEventKey> k = p_event;
 
@@ -208,7 +245,8 @@ void FindReplaceBar::_replace() {
 	text_editor->begin_complex_operation();
 	text_editor->remove_secondary_carets();
 	bool selection_enabled = text_editor->has_selection(0);
-	Point2i selection_begin, selection_end;
+	Point2i selection_begin;
+	Point2i selection_end;
 	if (selection_enabled) {
 		selection_begin = Point2i(text_editor->get_selection_from_line(0), text_editor->get_selection_from_column(0));
 		selection_end = Point2i(text_editor->get_selection_to_line(0), text_editor->get_selection_to_column(0));
@@ -271,7 +309,8 @@ void FindReplaceBar::_replace_all() {
 		result_col = -1;
 	}
 
-	Point2i selection_begin, selection_end;
+	Point2i selection_begin;
+	Point2i selection_end;
 	if (selection_enabled) {
 		selection_begin = Point2i(text_editor->get_selection_from_line(0), text_editor->get_selection_from_column(0));
 		selection_end = Point2i(text_editor->get_selection_to_line(0), text_editor->get_selection_to_column(0));
@@ -373,7 +412,8 @@ void FindReplaceBar::_get_search_from(int &r_line, int &r_col, SearchMode p_sear
 }
 
 void FindReplaceBar::_update_results_count() {
-	int caret_line, caret_column;
+	int caret_line;
+	int caret_column;
 	_get_search_from(caret_line, caret_column, SEARCH_CURRENT);
 	bool match_selected = caret_line == result_line && caret_column == result_col && !is_selection_only() && text_editor->has_selection(0);
 
@@ -474,7 +514,8 @@ void FindReplaceBar::_update_matches_display() {
 bool FindReplaceBar::search_current() {
 	_update_flags(false);
 
-	int line, col;
+	int line;
+	int col;
 	_get_search_from(line, col, SEARCH_CURRENT);
 
 	return _search(flags, line, col);
@@ -497,7 +538,8 @@ bool FindReplaceBar::search_prev() {
 
 	_update_flags(true);
 
-	int line, col;
+	int line;
+	int col;
 	_get_search_from(line, col, SEARCH_PREV);
 
 	col -= text.length();
@@ -527,7 +569,8 @@ bool FindReplaceBar::search_next() {
 
 	_update_flags(false);
 
-	int line, col;
+	int line;
+	int col;
 	_get_search_from(line, col, SEARCH_NEXT);
 
 	return _search(flags, line, col);
@@ -826,12 +869,12 @@ FindReplaceBar::FindReplaceBar() {
 
 /*** CODE EDITOR ****/
 
-static constexpr float ZOOM_FACTOR_PRESETS[8] = { 0.5f, 0.75f, 0.9f, 1.0f, 1.1f, 1.25f, 1.5f, 2.0f };
+static constexpr float ZOOM_FACTOR_PRESETS[8] = { 0.5F, 0.75F, 0.9F, 1.0F, 1.1F, 1.25F, 1.5F, 2.0F };
 
 // This function should be used to handle shortcuts that could otherwise
 // be handled too late if they weren't handled here.
 void CodeTextEditor::input(const Ref<InputEvent> &event) {
-	ERR_FAIL_COND(event.is_null());
+	(event.is_null());
 
 	const Ref<InputEventKey> key_event = event;
 
@@ -905,7 +948,7 @@ void CodeTextEditor::_text_editor_gui_input(const Ref<InputEvent> &p_event) {
 
 	Ref<InputEventMagnifyGesture> magnify_gesture = p_event;
 	if (magnify_gesture.is_valid()) {
-		_zoom_to(zoom_factor * powf(magnify_gesture->get_factor(), 0.25f));
+		_zoom_to(zoom_factor * powf(magnify_gesture->get_factor(), 0.25F));
 		accept_event();
 		return;
 	}
@@ -1421,15 +1464,15 @@ void CodeTextEditor::set_edit_state(const Variant &p_state) {
 
 	if (state.has("breakpoints")) {
 		Array breakpoints = state["breakpoints"];
-		for (int i = 0; i < breakpoints.size(); i++) {
-			text_editor->set_line_as_breakpoint(breakpoints[i], true);
+		for (const auto &breakpoint : breakpoints) {
+			text_editor->set_line_as_breakpoint(breakpoint, true);
 		}
 	}
 
 	if (state.has("bookmarks")) {
 		Array bookmarks = state["bookmarks"];
-		for (int i = 0; i < bookmarks.size(); i++) {
-			text_editor->set_line_as_bookmarked(bookmarks[i], true);
+		for (const auto &bookmark : bookmarks) {
+			text_editor->set_line_as_bookmarked(bookmark, true);
 		}
 	}
 
@@ -1472,7 +1515,7 @@ void CodeTextEditor::set_error_pos(int p_line, int p_column) {
 }
 
 Point2i CodeTextEditor::get_error_pos() const {
-	return Point2i(error_line, error_column);
+	return { error_line, error_column };
 }
 
 void CodeTextEditor::goto_error() {
@@ -1585,7 +1628,7 @@ void CodeTextEditor::_set_show_warnings_panel(bool p_show) {
 }
 
 void CodeTextEditor::_toggle_scripts_pressed() {
-	ERR_FAIL_NULL(toggle_scripts_list);
+	(toggle_scripts_list);
 	toggle_scripts_list->set_visible(!toggle_scripts_list->is_visible());
 	update_toggle_scripts_button();
 }
@@ -1708,12 +1751,12 @@ void CodeTextEditor::remove_all_bookmarks() {
 
 void CodeTextEditor::_zoom_in() {
 	int s = text_editor->get_theme_font_size(SceneStringName(font_size));
-	_zoom_to(zoom_factor * (s + MAX(1.0f, EDSCALE)) / s);
+	_zoom_to(zoom_factor * (s + MAX(1.0F, EDSCALE)) / s);
 }
 
 void CodeTextEditor::_zoom_out() {
 	int s = text_editor->get_theme_font_size(SceneStringName(font_size));
-	_zoom_to(zoom_factor * (s - MAX(1.0f, EDSCALE)) / s);
+	_zoom_to(zoom_factor * (s - MAX(1.0F, EDSCALE)) / s);
 }
 
 void CodeTextEditor::_zoom_to(float p_zoom_factor) {
@@ -1731,7 +1774,7 @@ void CodeTextEditor::_zoom_to(float p_zoom_factor) {
 }
 
 void CodeTextEditor::set_zoom_factor(float p_zoom_factor) {
-	zoom_factor = CLAMP(p_zoom_factor, 0.25f, 3.0f);
+	zoom_factor = CLAMP(p_zoom_factor, 0.25F, 3.0F);
 	int neutral_font_size = int(EDITOR_GET("interface/editor/code_font_size")) * EDSCALE;
 	int new_font_size = Math::round(zoom_factor * neutral_font_size);
 
@@ -1743,7 +1786,7 @@ void CodeTextEditor::set_zoom_factor(float p_zoom_factor) {
 	text_editor->add_theme_font_size_override(SceneStringName(font_size), new_font_size);
 }
 
-float CodeTextEditor::get_zoom_factor() {
+float CodeTextEditor::get_zoom_factor() const {
 	return zoom_factor;
 }
 
@@ -1769,7 +1812,7 @@ void CodeTextEditor::show_toggle_scripts_button() {
 }
 
 void CodeTextEditor::update_toggle_scripts_button() {
-	ERR_FAIL_NULL(toggle_scripts_list);
+	(toggle_scripts_list);
 	bool forward = toggle_scripts_list->is_visible() == is_layout_rtl();
 	toggle_scripts_button->set_icon(get_editor_theme_icon(forward ? SNAME("Forward") : SNAME("Back")));
 	toggle_scripts_button->set_tooltip_text(vformat("%s (%s)", TTR("Toggle Scripts Panel"), ED_GET_SHORTCUT("script_editor/toggle_scripts_panel")->get_as_text()));

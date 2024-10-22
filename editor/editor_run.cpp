@@ -31,11 +31,18 @@
 #include "editor_run.h"
 
 #include "core/config/project_settings.h"
+#include "core/error/error_list.h"
+#include "core/error/error_macros.h"
+#include "core/math/math_funcs.h"
+#include "core/math/rect2.h"
+#include "core/math/vector2.h"
+#include "core/os/os.h"
+#include "core/string/ustring.h"
+#include "core/variant/variant_parser.h"
 #include "editor/debugger/editor_debugger_node.h"
 #include "editor/editor_node.h"
 #include "editor/editor_settings.h"
 #include "editor/run_instances_dialog.h"
-#include "main/main.h"
 #include "servers/display_server.h"
 
 EditorRun::Status EditorRun::get_status() const {
@@ -149,7 +156,7 @@ Error EditorRun::run(const String &p_scene, const String &p_write_movie) {
 				}
 			} else {
 				if (hidpi_proj) {
-					display_scale = (1.f / DisplayServer::get_singleton()->screen_get_max_scale()); // Editor is not in hiDPI mode, project is, scale up.
+					display_scale = (1.F / DisplayServer::get_singleton()->screen_get_max_scale()); // Editor is not in hiDPI mode, project is, scale up.
 				} else {
 					display_scale = 1; // Both editor and project runs in lowDPI mode, do not scale.
 				}
@@ -244,7 +251,7 @@ Error EditorRun::run(const String &p_scene, const String &p_write_movie) {
 
 		OS::ProcessID pid = 0;
 		Error err = OS::get_singleton()->create_instance(instance_args, &pid);
-		ERR_FAIL_COND_V(err, err);
+		(err, err);
 		if (pid != 0) {
 			pids.push_back(pid);
 		}
@@ -267,7 +274,7 @@ bool EditorRun::has_child_process(OS::ProcessID p_pid) const {
 	return false;
 }
 
-void EditorRun::stop_child_process(OS::ProcessID p_pid) {
+void EditorRun::stop_child_process(OS::ProcessID p_pid) const {
 	if (has_child_process(p_pid)) {
 		OS::get_singleton()->kill(p_pid);
 		pids.erase(p_pid);

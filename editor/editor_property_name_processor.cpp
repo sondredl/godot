@@ -30,7 +30,11 @@
 
 #include "editor_property_name_processor.h"
 
+#include "core/error/error_macros.h"
+#include "core/string/string_name.h"
 #include "core/string/translation_server.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
 #include "editor_settings.h"
 
 EditorPropertyNameProcessor *EditorPropertyNameProcessor::singleton = nullptr;
@@ -93,11 +97,11 @@ String EditorPropertyNameProcessor::_capitalize_name(const String &p_name) const
 
 StringName EditorPropertyNameProcessor::_get_context(const String &p_name, const String &p_property, const StringName &p_class) const {
 	if (p_property.is_empty() && p_class == StringName()) {
-		return StringName();
+		return {};
 	}
 	const HashMap<String, StringName> *context_map = translation_contexts.getptr(p_name);
 	if (context_map == nullptr) {
-		return StringName();
+		return {};
 	}
 	// It's expected that full property path is enough to distinguish between usages.
 	// In case a class name is needed, all usages should be prefixed with the class name.
@@ -106,7 +110,7 @@ StringName EditorPropertyNameProcessor::_get_context(const String &p_name, const
 		context = context_map->getptr(String(p_class) + "::" + p_property);
 	}
 	if (context == nullptr) {
-		return StringName();
+		return {};
 	}
 	return *context;
 }
@@ -129,7 +133,7 @@ String EditorPropertyNameProcessor::process_name(const String &p_name, Style p_s
 			return capitalized;
 		} break;
 	}
-	ERR_FAIL_V_MSG(p_name, "Unexpected property name style.");
+	(p_name, "Unexpected property name style.");
 }
 
 String EditorPropertyNameProcessor::translate_group_name(const String &p_name) const {
@@ -140,7 +144,7 @@ String EditorPropertyNameProcessor::translate_group_name(const String &p_name) c
 }
 
 EditorPropertyNameProcessor::EditorPropertyNameProcessor() {
-	ERR_FAIL_COND(singleton != nullptr);
+	(singleton != nullptr);
 	singleton = this;
 
 	// The following initialization is parsed by the l10n extraction script with a regex.

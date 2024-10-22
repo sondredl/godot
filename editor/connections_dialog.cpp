@@ -31,7 +31,29 @@
 #include "connections_dialog.h"
 
 #include "core/config/project_settings.h"
-#include "core/templates/hash_set.h"
+#include "core/error/error_macros.h"
+#include "core/input/input_event.h"
+#include "core/math/color.h"
+#include "core/math/math_defs.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/object/script_instance.h"
+#include "core/object/script_language.h"
+#include "core/os/keyboard.h"
+#include "core/os/memory.h"
+#include "core/string/char_utils.h"
+#include "core/string/node_path.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/typedefs.h"
+#include "core/variant/callable.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
+#include "editor/doc_tools.h"
 #include "editor/editor_help.h"
 #include "editor/editor_inspector.h"
 #include "editor/editor_main_screen.h"
@@ -46,12 +68,18 @@
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/button.h"
 #include "scene/gui/check_box.h"
+#include "scene/gui/check_button.h"
 #include "scene/gui/label.h"
 #include "scene/gui/line_edit.h"
-#include "scene/gui/margin_container.h"
 #include "scene/gui/option_button.h"
 #include "scene/gui/popup_menu.h"
 #include "scene/gui/spin_box.h"
+#include "scene/gui/tree.h"
+#include "scene/main/node.h"
+#include "scene/resources/texture.h"
+#include "scene/scene_string_names.h"
+#include "servers/display_server.h"
+#include "servers/text_server.h"
 
 static Node *_find_first_script(Node *p_root, Node *p_node) {
 	if (p_node != p_root && p_node->get_owner() != p_root) {
@@ -82,7 +110,7 @@ public:
 
 		if (name.begins_with("bind/argument_")) {
 			int which = name.get_slice("_", 1).to_int() - 1;
-			ERR_FAIL_INDEX_V(which, params.size(), false);
+			(which, params.size(), false);
 			params.write[which] = p_value;
 		} else {
 			return false;
@@ -96,7 +124,7 @@ public:
 
 		if (name.begins_with("bind/argument_")) {
 			int which = name.get_slice("_", 1).to_int() - 1;
-			ERR_FAIL_INDEX_V(which, params.size(), false);
+			(which, params.size(), false);
 			r_ret = params[which];
 		} else {
 			return false;
@@ -206,7 +234,7 @@ void ConnectDialog::_method_selected() {
  * Adds a new parameter bind to connection.
  */
 void ConnectDialog::_add_bind() {
-	Variant::Type type = (Variant::Type)type_list->get_item_id(type_list->get_selected());
+	auto type = (Variant::Type)type_list->get_item_id(type_list->get_selected());
 
 	Variant value;
 	Callable::CallError err;
@@ -226,7 +254,7 @@ void ConnectDialog::_remove_bind() {
 	}
 	int idx = st.get_slice("/", 1).to_int() - 1;
 
-	ERR_FAIL_INDEX(idx, cdbinds->params.size());
+	(idx, cdbinds->params.size());
 	cdbinds->params.remove_at(idx);
 	cdbinds->notify_changed();
 }
@@ -933,7 +961,7 @@ void ConnectionsDock::_filter_changed(const String &p_text) {
 void ConnectionsDock::_make_or_edit_connection() {
 	NodePath dst_path = connect_dialog->get_dst_path();
 	Node *target = selected_node->get_node(dst_path);
-	ERR_FAIL_NULL(target);
+	(target);
 
 	ConnectDialog::ConnectionData cd;
 	cd.source = connect_dialog->get_source();
@@ -1026,7 +1054,7 @@ void ConnectionsDock::_connect(const ConnectDialog::ConnectionData &p_cd) {
  * Break single connection w/ undo-redo functionality.
  */
 void ConnectionsDock::_disconnect(const ConnectDialog::ConnectionData &p_cd) {
-	ERR_FAIL_COND(p_cd.source != selected_node); // Shouldn't happen but... Bugcheck.
+	(p_cd.source != selected_node); // Shouldn't happen but... Bugcheck.
 
 	EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 	undo_redo->create_action(vformat(TTR("Disconnect '%s' from '%s'"), p_cd.signal, p_cd.method));
@@ -1110,7 +1138,8 @@ void ConnectionsDock::_tree_item_activated() { // "Activation" on double-click.
 ConnectionsDock::TreeItemType ConnectionsDock::_get_item_type(const TreeItem &p_item) const {
 	if (&p_item == tree->get_root()) {
 		return TREE_ITEM_TYPE_ROOT;
-	} else if (p_item.get_parent() == tree->get_root()) {
+	}
+	if (p_item.get_parent() == tree->get_root()) {
 		return TREE_ITEM_TYPE_CLASS;
 	} else if (p_item.get_parent()->get_parent() == tree->get_root()) {
 		return TREE_ITEM_TYPE_SIGNAL;
@@ -1151,7 +1180,7 @@ void ConnectionsDock::_open_connection_dialog(TreeItem &p_item) {
  */
 void ConnectionsDock::_open_edit_connection_dialog(TreeItem &p_item) {
 	TreeItem *signal_item = p_item.get_parent();
-	ERR_FAIL_NULL(signal_item);
+	(signal_item);
 
 	Connection connection = p_item.get_metadata(0);
 	ConnectDialog::ConnectionData cd = connection;
@@ -1179,7 +1208,7 @@ void ConnectionsDock::_go_to_method(TreeItem &p_item) {
 
 	Connection connection = p_item.get_metadata(0);
 	ConnectDialog::ConnectionData cd = connection;
-	ERR_FAIL_COND(cd.source != selected_node); // Shouldn't happen but... bugcheck.
+	(cd.source != selected_node); // Shouldn't happen but... bugcheck.
 
 	if (!cd.target) {
 		return;

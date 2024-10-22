@@ -30,14 +30,24 @@
 
 #include "directory_create_dialog.h"
 
+#include "core/error/error_macros.h"
 #include "core/io/dir_access.h"
-#include "editor/editor_file_system.h"
+#include "core/math/vector2.h"
+#include "core/math/vector2i.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
+#include "core/string/ustring.h"
+#include "core/variant/callable.h"
+#include "core/variant/variant.h"
 #include "editor/editor_node.h"
 #include "editor/gui/editor_validation_panel.h"
 #include "editor/themes/editor_scale.h"
 #include "scene/gui/box_container.h"
 #include "scene/gui/label.h"
 #include "scene/gui/line_edit.h"
+#include "scene/scene_string_names.h"
+#include "servers/text_server.h"
 
 String DirectoryCreateDialog::_sanitize_input(const String &p_path) const {
 	String path = p_path.strip_edges();
@@ -63,24 +73,21 @@ String DirectoryCreateDialog::_validate_path(const String &p_path) const {
 		if (part.is_empty()) {
 			if (is_file) {
 				return TTR("File name cannot be empty.");
-			} else {
-				return TTR("Folder name cannot be empty.");
 			}
+			return TTR("Folder name cannot be empty.");
 		}
 		if (part.contains("\\") || part.contains(":") || part.contains("*") ||
 				part.contains("|") || part.contains(">") || part.ends_with(".") || part.ends_with(" ")) {
 			if (is_file) {
 				return TTR("File name contains invalid characters.");
-			} else {
-				return TTR("Folder name contains invalid characters.");
 			}
+			return TTR("Folder name contains invalid characters.");
 		}
 		if (part[0] == '.') {
 			if (is_file) {
 				return TTR("File name begins with a dot.");
-			} else {
-				return TTR("Folder name begins with a dot.");
 			}
+			return TTR("Folder name begins with a dot.");
 		}
 	}
 
@@ -93,7 +100,7 @@ String DirectoryCreateDialog::_validate_path(const String &p_path) const {
 		return TTR("Folder with that name already exists.");
 	}
 
-	return String();
+	return {};
 }
 
 void DirectoryCreateDialog::_on_dir_path_changed() {
@@ -120,7 +127,7 @@ void DirectoryCreateDialog::ok_pressed() {
 
 	// The OK button should be disabled if the path is invalid, but just in case.
 	const String error = _validate_path(path);
-	ERR_FAIL_COND_MSG(!error.is_empty(), error);
+	(!error.is_empty(), error);
 
 	accept_callback.call(base_dir.path_join(path));
 	hide();

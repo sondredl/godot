@@ -30,14 +30,37 @@
 
 #include "editor_help_search.h"
 
-#include "core/os/keyboard.h"
+#include "core/doc_data.h"
+#include "core/error/error_macros.h"
+#include "core/input/input_event.h"
+#include "core/math/rect2.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
+#include "core/os/os.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/pair.h"
+#include "core/templates/vector.h"
+#include "core/variant/dictionary.h"
 #include "editor/editor_feature_profile.h"
+#include "editor/editor_help.h"
 #include "editor/editor_main_screen.h"
 #include "editor/editor_node.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/themes/editor_scale.h"
 #include "editor/themes/editor_theme_manager.h"
+#include "scene/gui/base_button.h"
+#include "scene/gui/line_edit.h"
+#include "scene/gui/tree.h"
+#include "scene/resources/texture.h"
+#include "scene/scene_string_names.h"
+#include "servers/display_server.h"
+#include <cstdint>
 
 bool EditorHelpSearch::_all_terms_in_name(const Vector<String> &p_terms, const String &p_name) const {
 	for (int i = 0; i < p_terms.size(); i++) {
@@ -466,7 +489,7 @@ bool EditorHelpSearch::Runner::_phase_fill_classes_init() {
 	return true;
 }
 
-bool EditorHelpSearch::Runner::_phase_fill_classes() {
+bool EditorHelpSearch::Runner::_phase_fill_classes() const {
 	if (iterator_stack.is_empty()) {
 		return true;
 	}
@@ -945,7 +968,7 @@ bool EditorHelpSearch::Runner::_phase_select_match() {
 	return true;
 }
 
-void EditorHelpSearch::Runner::_match_method_name_and_push_back(Vector<DocData::MethodDoc> &p_methods, LocalVector<MemberMatch<DocData::MethodDoc>> *r_match_methods) {
+void EditorHelpSearch::Runner::_match_method_name_and_push_back(Vector<DocData::MethodDoc> &p_methods, const LocalVector<MemberMatch<DocData::MethodDoc>> *r_match_methods) {
 	// Constructors, Methods, Operators...
 	for (int i = 0; i < p_methods.size(); i++) {
 		String method_name = (search_flags & SEARCH_CASE_SENSITIVE) ? p_methods[i].name : p_methods[i].name.to_lower();
@@ -986,9 +1009,8 @@ String EditorHelpSearch::Runner::_match_keywords_in_all_terms(const String &p_ke
 bool EditorHelpSearch::Runner::_match_string(const String &p_term, const String &p_string) const {
 	if (search_flags & SEARCH_CASE_SENSITIVE) {
 		return p_string.contains(p_term);
-	} else {
-		return p_string.containsn(p_term);
 	}
+	return p_string.containsn(p_term);
 }
 
 String EditorHelpSearch::Runner::_match_keywords(const String &p_term, const String &p_keywords) const {
@@ -998,7 +1020,7 @@ String EditorHelpSearch::Runner::_match_keywords(const String &p_term, const Str
 			return keyword;
 		}
 	}
-	return String();
+	return {};
 }
 
 void EditorHelpSearch::Runner::_match_item(TreeItem *p_item, const String &p_text, bool p_is_keywords) {
@@ -1006,20 +1028,20 @@ void EditorHelpSearch::Runner::_match_item(TreeItem *p_item, const String &p_tex
 		return;
 	}
 
-	float inverse_length = 1.0f / float(p_text.length());
+	float inverse_length = 1.0F / float(p_text.length());
 
 	// Favor types where search term is a substring close to the start of the type.
-	float w = 0.5f;
+	float w = 0.5F;
 	int pos = p_text.findn(term);
-	float score = (pos > -1) ? 1.0f - w * MIN(1, 3 * pos * inverse_length) : MAX(0.0f, 0.9f - w);
+	float score = (pos > -1) ? 1.0F - w * MIN(1, 3 * pos * inverse_length) : MAX(0.0F, 0.9F - w);
 
 	// Favor shorter items: they resemble the search term more.
-	w = 0.1f;
+	w = 0.1F;
 	score *= (1 - w) + w * (term.length() * inverse_length);
 
 	// Reduce the score of keywords, since they are an indirect match.
 	if (p_is_keywords) {
-		score *= 0.9f;
+		score *= 0.9F;
 	}
 
 	// Replace current match if term is short as we are searching in reverse.
@@ -1123,12 +1145,10 @@ bool EditorHelpSearch::Runner::_find_or_create_item(TreeItem *p_parent, const St
 		p_parent->add_child(r_item);
 
 		return false;
-	} else {
-		// Otherwise create item.
-		r_item = results_tree->create_item(p_parent);
+	} // Otherwise create item.
+	r_item = results_tree->create_item(p_parent);
 
-		return true;
-	}
+	return true;
 }
 
 TreeItem *EditorHelpSearch::Runner::_create_class_item(TreeItem *p_parent, const DocData::ClassDoc *p_doc, bool p_gray, const String &p_matching_keyword) {

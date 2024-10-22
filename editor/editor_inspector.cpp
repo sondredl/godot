@@ -29,7 +29,40 @@
 /**************************************************************************/
 
 #include "editor_inspector.h"
-#include "editor_inspector.compat.inc"
+#include "core/core_string_names.h"
+#include "core/doc_data.h"
+#include "core/error/error_macros.h"
+#include "core/input/input.h"
+#include "core/input/input_enums.h"
+#include "core/input/input_event.h"
+#include "core/io/resource.h"
+#include "core/io/resource_loader.h"
+#include "core/math/color.h"
+#include "core/math/math_defs.h"
+#include "core/math/math_funcs.h"
+#include "core/math/rect2.h"
+#include "core/math/transform_2d.h"
+#include "core/math/vector2.h"
+#include "core/math/vector2i.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/object_id.h"
+#include "core/object/ref_counted.h"
+#include "core/object/script_language.h"
+#include "core/object/undo_redo.h"
+#include "core/os/memory.h"
+#include "core/string/char_utils.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/typedefs.h"
+#include "core/variant/array.h"
+#include "core/variant/callable.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/type_info.h"
+#include "core/variant/variant.h"
+#include "editor/editor_help.h"
 
 #include "core/os/keyboard.h"
 #include "editor/add_metadata_dialog.h"
@@ -44,16 +77,24 @@
 #include "editor/gui/editor_validation_panel.h"
 #include "editor/inspector_dock.h"
 #include "editor/multi_node_edit.h"
-#include "editor/plugins/script_editor_plugin.h"
 #include "editor/themes/editor_scale.h"
 #include "editor/themes/editor_theme_manager.h"
-#include "scene/gui/margin_container.h"
+#include "scene/gui/control.h"
+#include "scene/gui/range.h"
 #include "scene/gui/spin_box.h"
-#include "scene/gui/texture_rect.h"
+#include "scene/main/node.h"
+#include "scene/main/timer.h"
 #include "scene/property_utils.h"
+#include "scene/resources/font.h"
+#include "scene/resources/material.h"
 #include "scene/resources/packed_scene.h"
+#include "scene/resources/style_box.h"
 #include "scene/resources/style_box_flat.h"
+#include "scene/resources/texture.h"
 #include "scene/scene_string_names.h"
+#include "servers/rendering_server.h"
+#include "servers/text_server.h"
+#include <cstdint>
 
 bool EditorInspector::_property_path_matches(const String &p_property_path, const String &p_filter, EditorPropertyNameProcessor::Style p_style) {
 	if (p_property_path.containsn(p_filter)) {
@@ -671,7 +712,7 @@ void EditorProperty::grab_focus(int p_focusable) {
 	}
 
 	if (p_focusable >= 0) {
-		ERR_FAIL_INDEX(p_focusable, focusables.size());
+		(p_focusable, focusables.size());
 		focusables[p_focusable]->grab_focus();
 	} else {
 		focusables[0]->grab_focus();
@@ -685,7 +726,7 @@ void EditorProperty::select(int p_focusable) {
 	}
 
 	if (p_focusable >= 0) {
-		ERR_FAIL_INDEX(p_focusable, focusables.size());
+		(p_focusable, focusables.size());
 		focusables[p_focusable]->grab_focus();
 	} else {
 		selected = true;
@@ -708,7 +749,7 @@ bool EditorProperty::is_selected() const {
 }
 
 void EditorProperty::gui_input(const Ref<InputEvent> &p_event) {
-	ERR_FAIL_COND(p_event.is_null());
+	(p_event.is_null());
 
 	if (property == StringName()) {
 		return;
@@ -791,7 +832,7 @@ void EditorProperty::gui_input(const Ref<InputEvent> &p_event) {
 			get_viewport()->gui_release_focus();
 			bool is_valid_revert = false;
 			Variant revert_value = EditorPropertyRevert::get_property_revert_value(object, property, &is_valid_revert);
-			ERR_FAIL_COND(!is_valid_revert);
+			(!is_valid_revert);
 			emit_changed(_get_revert_property(), revert_value);
 			update_property();
 		}
@@ -882,7 +923,7 @@ void EditorProperty::update_cache() {
 }
 Variant EditorProperty::get_drag_data(const Point2 &p_point) {
 	if (property == StringName()) {
-		return Variant();
+		return {};
 	}
 
 	Dictionary dp;
@@ -945,12 +986,11 @@ static bool _is_value_potential_override(Node *p_node, const String &p_property)
 	Vector<SceneState::PackState> states_stack = PropertyUtils::get_node_states_stack(p_node, edited_scene);
 	if (states_stack.size()) {
 		return true;
-	} else {
-		bool is_valid_default = false;
-		bool is_class_default = false;
-		PropertyUtils::get_property_default_value(p_node, p_property, &is_valid_default, &states_stack, false, nullptr, &is_class_default);
-		return !is_class_default;
 	}
+	bool is_valid_default = false;
+	bool is_class_default = false;
+	PropertyUtils::get_property_default_value(p_node, p_property, &is_valid_default, &states_stack, false, nullptr, &is_class_default);
+	return !is_class_default;
 }
 
 void EditorProperty::_update_pin_flags() {
@@ -1476,11 +1516,11 @@ void EditorInspectorSection::_notification(int p_what) {
 
 					// Can we fit the long version of the revertable count text?
 					num_revertable_str = vformat(TTRN("(%d change)", "(%d changes)", revertable_properties.size()), revertable_properties.size());
-					num_revertable_width = light_font->get_string_size(num_revertable_str, HORIZONTAL_ALIGNMENT_LEFT, -1.0f, light_font_size, TextServer::JUSTIFICATION_NONE).x;
+					num_revertable_width = light_font->get_string_size(num_revertable_str, HORIZONTAL_ALIGNMENT_LEFT, -1.0F, light_font_size, TextServer::JUSTIFICATION_NONE).x;
 					if (label_width + outer_margin + num_revertable_width > available) {
 						// We'll have to use the short version.
 						num_revertable_str = vformat("(%d)", revertable_properties.size());
-						num_revertable_width = light_font->get_string_size(num_revertable_str, HORIZONTAL_ALIGNMENT_LEFT, -1.0f, light_font_size, TextServer::JUSTIFICATION_NONE).x;
+						num_revertable_width = light_font->get_string_size(num_revertable_str, HORIZONTAL_ALIGNMENT_LEFT, -1.0F, light_font_size, TextServer::JUSTIFICATION_NONE).x;
 					}
 
 					float text_offset_y = light_font->get_ascent(light_font_size) + (header_height - light_font->get_height(light_font_size)) / 2;
@@ -1488,7 +1528,7 @@ void EditorInspectorSection::_notification(int p_what) {
 					if (!rtl) {
 						text_offset.x = get_size().width - (text_offset.x + num_revertable_width);
 					}
-					draw_string(light_font, text_offset, num_revertable_str, HORIZONTAL_ALIGNMENT_LEFT, -1.0f, light_font_size, light_font_color, TextServer::JUSTIFICATION_NONE);
+					draw_string(light_font, text_offset, num_revertable_str, HORIZONTAL_ALIGNMENT_LEFT, -1.0F, light_font_size, light_font_color, TextServer::JUSTIFICATION_NONE);
 					margin_end += num_revertable_width + outer_margin;
 					available -= num_revertable_width + outer_margin;
 				}
@@ -1593,7 +1633,7 @@ void EditorInspectorSection::setup(const String &p_section, const String &p_labe
 }
 
 void EditorInspectorSection::gui_input(const Ref<InputEvent> &p_event) {
-	ERR_FAIL_COND(p_event.is_null());
+	(p_event.is_null());
 
 	if (!foldable) {
 		return;
@@ -1707,7 +1747,7 @@ int EditorInspectorArray::_get_array_count() {
 	} else if (mode == MODE_USE_COUNT_PROPERTY) {
 		bool valid;
 		int count_val = object->get(count_property, &valid);
-		ERR_FAIL_COND_V_MSG(!valid, 0, vformat("%s is not a valid property to be used as array count.", count_property));
+		(!valid, 0, vformat("%s is not a valid property to be used as array count.", count_property));
 		return count_val;
 	}
 	return 0;
@@ -1783,7 +1823,7 @@ void EditorInspectorArray::_vbox_visibility_changed() {
 }
 
 void EditorInspectorArray::_panel_draw(int p_index) {
-	ERR_FAIL_INDEX(p_index, (int)array_elements.size());
+	(p_index, (int)array_elements.size());
 
 	Ref<StyleBox> style = get_theme_stylebox(SNAME("Focus"), EditorStringName(EditorStyles));
 	if (!style.is_valid()) {
@@ -1795,7 +1835,7 @@ void EditorInspectorArray::_panel_draw(int p_index) {
 }
 
 void EditorInspectorArray::_panel_gui_input(Ref<InputEvent> p_event, int p_index) {
-	ERR_FAIL_INDEX(p_index, (int)array_elements.size());
+	(p_index, (int)array_elements.size());
 
 	if (read_only) {
 		return;
@@ -1845,10 +1885,10 @@ void EditorInspectorArray::_move_element(int p_element_index, int p_to_pos) {
 			WARN_PRINT(vformat("Could not find a function to move arrays elements for class %s. Register a move element function using EditorData::add_move_array_element_function", object->get_class_name()));
 		}
 	} else if (mode == MODE_USE_COUNT_PROPERTY) {
-		ERR_FAIL_COND(p_to_pos < -1 || p_to_pos > count);
+		(p_to_pos < -1 || p_to_pos > count);
 
 		if (!swap_method.is_empty()) {
-			ERR_FAIL_COND(!object->has_method(swap_method));
+			(!object->has_method(swap_method));
 
 			// Swap method was provided, use it.
 			if (p_element_index < 0) {
@@ -1922,11 +1962,11 @@ void EditorInspectorArray::_move_element(int p_element_index, int p_to_pos) {
 
 			// For undoing things
 			undo_redo->add_undo_property(object, count_property, properties_as_array.size());
-			for (int i = 0; i < (int)properties_as_array.size(); i++) {
-				Dictionary d = Dictionary(properties_as_array[i]);
+			for (const auto &i : properties_as_array) {
+				Dictionary d = Dictionary(i);
 				Array keys = d.keys();
-				for (int j = 0; j < keys.size(); j++) {
-					String key = keys[j];
+				for (const auto &j : keys) {
+					String key = j;
 					undo_redo->add_undo_property(object, vformat(key, i), d[key]);
 				}
 			}
@@ -1945,11 +1985,11 @@ void EditorInspectorArray::_move_element(int p_element_index, int p_to_pos) {
 
 			// Change the array size then set the properties.
 			undo_redo->add_do_property(object, count_property, properties_as_array.size());
-			for (int i = 0; i < (int)properties_as_array.size(); i++) {
-				Dictionary d = properties_as_array[i];
+			for (const auto &i : properties_as_array) {
+				Dictionary d = i;
 				Array keys = d.keys();
-				for (int j = 0; j < keys.size(); j++) {
-					String key = keys[j];
+				for (const auto &j : keys) {
+					String key = j;
 					undo_redo->add_do_property(object, vformat(key, i), d[key]);
 				}
 			}
@@ -1999,11 +2039,11 @@ void EditorInspectorArray::_clear_array() {
 
 		// For undoing things
 		undo_redo->add_undo_property(object, count_property, count);
-		for (int i = 0; i < (int)properties_as_array.size(); i++) {
-			Dictionary d = Dictionary(properties_as_array[i]);
+		for (const auto &i : properties_as_array) {
+			Dictionary d = Dictionary(i);
 			Array keys = d.keys();
-			for (int j = 0; j < keys.size(); j++) {
-				String key = keys[j];
+			for (const auto &j : keys) {
+				String key = j;
 				undo_redo->add_undo_property(object, vformat(key, i), d[key]);
 			}
 		}
@@ -2022,7 +2062,7 @@ void EditorInspectorArray::_clear_array() {
 }
 
 void EditorInspectorArray::_resize_array(int p_size) {
-	ERR_FAIL_COND(p_size < 0);
+	(p_size < 0);
 	if (p_size == count) {
 		return;
 	}
@@ -2067,8 +2107,8 @@ void EditorInspectorArray::_resize_array(int p_size) {
 			for (int i = count - 1; i > p_size - 1; i--) {
 				Dictionary d = Dictionary(properties_as_array[i]);
 				Array keys = d.keys();
-				for (int j = 0; j < keys.size(); j++) {
-					String key = keys[j];
+				for (const auto &j : keys) {
+					String key = j;
 					undo_redo->add_undo_property(object, vformat(key, i), d[key]);
 				}
 			}
@@ -2297,7 +2337,7 @@ void EditorInspectorArray::_remove_item(int p_index) {
 
 Variant EditorInspectorArray::get_drag_data_fw(const Point2 &p_point, Control *p_from) {
 	if (!movable) {
-		return Variant();
+		return {};
 	}
 	int index = p_from->get_meta("index");
 	Dictionary dict;
@@ -2609,17 +2649,16 @@ EditorProperty *EditorInspector::instantiate_property_editor(Object *p_object, c
 			if (prop) {
 				inspector_plugins[i]->added_editors.clear();
 				return prop;
-			} else {
-				memdelete(inspector_plugins[i]->added_editors.front()->get().property_editor);
-				inspector_plugins[i]->added_editors.clear();
 			}
+			memdelete(inspector_plugins[i]->added_editors.front()->get().property_editor);
+			inspector_plugins[i]->added_editors.clear();
 		}
 	}
 	return nullptr;
 }
 
 void EditorInspector::add_inspector_plugin(const Ref<EditorInspectorPlugin> &p_plugin) {
-	ERR_FAIL_COND(inspector_plugin_count == MAX_PLUGINS);
+	(inspector_plugin_count == MAX_PLUGINS);
 
 	for (int i = 0; i < inspector_plugin_count; i++) {
 		if (inspector_plugins[i] == p_plugin) {
@@ -2630,7 +2669,7 @@ void EditorInspector::add_inspector_plugin(const Ref<EditorInspectorPlugin> &p_p
 }
 
 void EditorInspector::remove_inspector_plugin(const Ref<EditorInspectorPlugin> &p_plugin) {
-	ERR_FAIL_COND(inspector_plugin_count == MAX_PLUGINS);
+	(inspector_plugin_count == MAX_PLUGINS);
 
 	int idx = -1;
 	for (int i = 0; i < inspector_plugin_count; i++) {
@@ -2640,7 +2679,7 @@ void EditorInspector::remove_inspector_plugin(const Ref<EditorInspectorPlugin> &
 		}
 	}
 
-	ERR_FAIL_COND_MSG(idx == -1, "Trying to remove nonexistent inspector plugin.");
+	(idx == -1, "Trying to remove nonexistent inspector plugin.");
 	for (int i = idx; i < inspector_plugin_count - 1; i++) {
 		inspector_plugins[i] = inspector_plugins[i + 1];
 	}
@@ -2873,7 +2912,8 @@ void EditorInspector::update_tree() {
 
 			continue;
 
-		} else if (p.usage & PROPERTY_USAGE_GROUP) {
+		}
+		if (p.usage & PROPERTY_USAGE_GROUP) {
 			// Setup a property group.
 			group = p.name;
 
@@ -3700,7 +3740,7 @@ void EditorInspector::set_use_folding(bool p_use_folding, bool p_update_tree) {
 	}
 }
 
-bool EditorInspector::is_using_folding() {
+bool EditorInspector::is_using_folding() const {
 	return use_folding;
 }
 
@@ -3933,8 +3973,8 @@ void EditorInspector::_property_changed(const String &p_path, const Variant &p_v
 }
 
 void EditorInspector::_multiple_properties_changed(const Vector<String> &p_paths, const Array &p_values, bool p_changing) {
-	ERR_FAIL_COND(p_paths.is_empty() || p_values.is_empty());
-	ERR_FAIL_COND(p_paths.size() != p_values.size());
+	(p_paths.is_empty() || p_values.is_empty());
+	(p_paths.size() != p_values.size());
 	String names;
 	for (int i = 0; i < p_paths.size(); i++) {
 		if (i > 0) {
@@ -4041,7 +4081,7 @@ void EditorInspector::_property_pinned(const String &p_path, bool p_pinned) {
 	}
 
 	Node *node = Object::cast_to<Node>(object);
-	ERR_FAIL_NULL(node);
+	(node);
 
 	EditorUndoRedoManager *undo_redo = EditorUndoRedoManager::get_singleton();
 	undo_redo->create_action(vformat(p_pinned ? TTR("Pinned %s") : TTR("Unpinned %s"), p_path));

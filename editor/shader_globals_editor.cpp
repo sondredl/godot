@@ -31,10 +31,38 @@
 #include "shader_globals_editor.h"
 
 #include "core/config/project_settings.h"
+#include "core/io/resource.h"
+#include "core/math/basis.h"
+#include "core/math/color.h"
+#include "core/math/projection.h"
+#include "core/math/rect2.h"
+#include "core/math/rect2i.h"
+#include "core/math/transform_2d.h"
+#include "core/math/transform_3d.h"
+#include "core/math/vector2.h"
+#include "core/math/vector2i.h"
+#include "core/math/vector3.h"
+#include "core/math/vector3i.h"
+#include "core/math/vector4.h"
+#include "core/math/vector4i.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 #include "editor/editor_inspector.h"
 #include "editor/editor_node.h"
+#include "editor/editor_property_name_processor.h"
 #include "editor/editor_undo_redo_manager.h"
-#include "servers/rendering/shader_language.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/label.h"
+#include "scene/scene_string_names.h"
+#include "servers/rendering_server.h"
 
 static const char *global_var_type_names[RS::GLOBAL_VAR_TYPE_MAX] = {
 	"bool",
@@ -126,7 +154,7 @@ protected:
 		r_ret = RS::get_singleton()->global_shader_parameter_get(p_name);
 		return r_ret.get_type() != Variant::NIL;
 	}
-	void _get_property_list(List<PropertyInfo> *p_list) const {
+	void _get_property_list(const List<PropertyInfo> *p_list) const {
 		Vector<StringName> variables;
 		variables = RS::get_singleton()->global_shader_parameter_get_list();
 		for (int i = 0; i < variables.size(); i++) {
@@ -340,7 +368,7 @@ static Variant create_var(RS::GlobalShaderParameterType p_type) {
 			return "";
 		}
 		default: {
-			return Variant();
+			return {};
 		}
 	}
 }
@@ -467,8 +495,8 @@ ShaderGlobalsEditor::ShaderGlobalsEditor() {
 	variable_type->set_h_size_flags(SIZE_EXPAND_FILL);
 	add_menu_hb->add_child(variable_type);
 
-	for (int i = 0; i < RS::GLOBAL_VAR_TYPE_MAX; i++) {
-		variable_type->add_item(global_var_type_names[i]);
+	for (auto &global_var_type_name : global_var_type_names) {
+		variable_type->add_item(global_var_type_name);
 	}
 
 	variable_add = memnew(Button(TTR("Add")));

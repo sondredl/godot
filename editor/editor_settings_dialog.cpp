@@ -30,8 +30,24 @@
 
 #include "editor_settings_dialog.h"
 
-#include "core/input/input_map.h"
+#include "core/error/error_macros.h"
+#include "core/input/input_enums.h"
+#include "core/input/input_event.h"
+#include "core/input/shortcut.h"
+#include "core/math/color.h"
+#include "core/math/rect2.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
 #include "core/os/keyboard.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/variant/array.h"
+#include "core/variant/dictionary.h"
+#include "core/variant/variant.h"
 #include "editor/debugger/editor_debugger_node.h"
 #include "editor/editor_inspector.h"
 #include "editor/editor_log.h"
@@ -46,10 +62,15 @@
 #include "editor/plugins/node_3d_editor_plugin.h"
 #include "editor/themes/editor_scale.h"
 #include "editor/themes/editor_theme_manager.h"
+#include "scene/gui/box_container.h"
 #include "scene/gui/check_button.h"
+#include "scene/gui/control.h"
+#include "scene/gui/label.h"
 #include "scene/gui/panel_container.h"
 #include "scene/gui/tab_container.h"
 #include "scene/gui/texture_rect.h"
+#include "scene/main/timer.h"
+#include "scene/scene_string_names.h"
 
 void EditorSettingsDialog::ok_pressed() {
 	if (!EditorSettings::get_singleton()) {
@@ -194,7 +215,7 @@ void EditorSettingsDialog::popup_edit_settings() {
 	_focus_current_search_box();
 }
 
-void EditorSettingsDialog::_filter_shortcuts(const String &) {
+void EditorSettingsDialog::_filter_shortcuts(const String & /*unused*/) {
 	_update_shortcuts();
 }
 
@@ -592,9 +613,9 @@ void EditorSettingsDialog::_shortcut_button_pressed(Object *p_item, int p_column
 		return;
 	}
 	TreeItem *ti = Object::cast_to<TreeItem>(p_item);
-	ERR_FAIL_NULL_MSG(ti, "Object passed is not a TreeItem.");
+	(ti, "Object passed is not a TreeItem.");
 
-	ShortcutButton button_idx = (ShortcutButton)p_idx;
+	auto button_idx = (ShortcutButton)p_idx;
 
 	is_editing_action = ti->get_meta("is_action");
 
@@ -695,12 +716,12 @@ Variant EditorSettingsDialog::get_drag_data_fw(const Point2 &p_point, Control *p
 
 	// Only allow drag for events
 	if (!selected || (String)selected->get_meta("type", "") != "event") {
-		return Variant();
+		return {};
 	}
 
 	String label_text = vformat(TTRC("Event %d"), selected->get_meta("event_index"));
 	Label *label = memnew(Label(label_text));
-	label->set_modulate(Color(1, 1, 1, 1.0f));
+	label->set_modulate(Color(1, 1, 1, 1.0F));
 	shortcuts->set_drag_preview(label);
 
 	shortcuts->set_drop_mode_flags(Tree::DROP_MODE_INBETWEEN);

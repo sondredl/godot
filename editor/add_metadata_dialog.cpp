@@ -29,6 +29,21 @@
 /**************************************************************************/
 
 #include "add_metadata_dialog.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/variant/callable.h"
+#include "core/variant/variant.h"
+#include "editor/gui/editor_validation_panel.h"
+#include "editor/themes/editor_scale.h"
+#include "scene/gui/box_container.h"
+#include "scene/gui/control.h"
+#include "scene/gui/label.h"
+#include "scene/gui/line_edit.h"
+#include "scene/gui/option_button.h"
+#include "scene/scene_string_names.h"
 
 AddMetadataDialog::AddMetadataDialog() {
 	VBoxContainer *vbc = memnew(VBoxContainer);
@@ -86,7 +101,7 @@ void AddMetadataDialog::_complete_init(const StringName &p_title) {
 	}
 }
 
-void AddMetadataDialog::open(const StringName p_title, List<StringName> &p_existing_metas) {
+void AddMetadataDialog::open(const StringName &p_title, List<StringName> &p_existing_metas) {
 	this->_existing_metas = p_existing_metas;
 	_complete_init(p_title);
 	popup_centered();

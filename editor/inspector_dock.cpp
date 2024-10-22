@@ -30,8 +30,27 @@
 
 #include "inspector_dock.h"
 
+#include "core/error/error_macros.h"
+#include "core/input/input_event.h"
+#include "core/io/resource.h"
+#include "core/io/resource_loader.h"
+#include "core/math/vector2.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/class_db.h"
+#include "core/object/object.h"
+#include "core/object/object_id.h"
+#include "core/object/ref_counted.h"
+#include "core/object/script_instance.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
+#include "core/templates/vector.h"
+#include "core/variant/variant.h"
+#include "editor/editor_data.h"
+#include "editor/editor_inspector.h"
 #include "editor/editor_main_screen.h"
 #include "editor/editor_node.h"
+#include "editor/editor_property_name_processor.h"
 #include "editor/editor_settings.h"
 #include "editor/editor_string_names.h"
 #include "editor/editor_undo_redo_manager.h"
@@ -40,6 +59,12 @@
 #include "editor/gui/editor_object_selector.h"
 #include "editor/plugins/script_editor_plugin.h"
 #include "editor/themes/editor_scale.h"
+#include "scene/gui/container.h"
+#include "scene/gui/label.h"
+#include "scene/gui/tree.h"
+#include "scene/main/node.h"
+#include "scene/resources/texture.h"
+#include "scene/scene_string_names.h"
 
 InspectorDock *InspectorDock::singleton = nullptr;
 
@@ -92,7 +117,7 @@ void InspectorDock::_menu_option_confirm(int p_option, bool p_confirmed) {
 		} break;
 		case RESOURCE_SHOW_IN_FILESYSTEM: {
 			Ref<Resource> current_res = _get_current_resource();
-			ERR_FAIL_COND(current_res.is_null());
+			(current_res.is_null());
 			FileSystemDock::get_singleton()->navigate_to_path(current_res->get_path());
 		} break;
 
@@ -207,14 +232,14 @@ void InspectorDock::_menu_option_confirm(int p_option, bool p_confirmed) {
 
 		default: {
 			if (p_option >= OBJECT_METHOD_BASE) {
-				ERR_FAIL_NULL(current);
+				(current);
 
 				int idx = p_option - OBJECT_METHOD_BASE;
 
 				List<MethodInfo> methods;
 				current->get_method_list(&methods);
 
-				ERR_FAIL_INDEX(idx, methods.size());
+				(idx, methods.size());
 				String name = methods.get(idx).name;
 
 				current->call(name);
@@ -267,7 +292,7 @@ void InspectorDock::_resource_file_selected(const String &p_file) {
 
 void InspectorDock::_save_resource(bool save_as) {
 	Ref<Resource> current_res = _get_current_resource();
-	ERR_FAIL_COND(current_res.is_null());
+	(current_res.is_null());
 
 	if (save_as) {
 		EditorNode::get_singleton()->save_resource_as(current_res);
@@ -278,14 +303,14 @@ void InspectorDock::_save_resource(bool save_as) {
 
 void InspectorDock::_unref_resource() {
 	Ref<Resource> current_res = _get_current_resource();
-	ERR_FAIL_COND(current_res.is_null());
+	(current_res.is_null());
 	current_res->set_path("");
 	EditorNode::get_singleton()->edit_current();
 }
 
 void InspectorDock::_copy_resource() {
 	Ref<Resource> current_res = _get_current_resource();
-	ERR_FAIL_COND(current_res.is_null());
+	(current_res.is_null());
 	EditorSettings::get_singleton()->set_resource_clipboard(current_res);
 }
 
@@ -373,9 +398,9 @@ void InspectorDock::_select_history(int p_idx) {
 void InspectorDock::_resource_created() {
 	Variant c = new_resource_dialog->instantiate_selected();
 
-	ERR_FAIL_COND(!c);
+	(!c);
 	Resource *r = Object::cast_to<Resource>(c);
-	ERR_FAIL_NULL(r);
+	(r);
 
 	EditorNode::get_singleton()->push_item(r);
 }
@@ -593,7 +618,7 @@ EditorPropertyNameProcessor::Style InspectorDock::get_property_name_style() cons
 }
 
 void InspectorDock::store_script_properties(Object *p_object) {
-	ERR_FAIL_NULL(p_object);
+	(p_object);
 	ScriptInstance *si = p_object->get_script_instance();
 	if (!si) {
 		return;
@@ -602,7 +627,7 @@ void InspectorDock::store_script_properties(Object *p_object) {
 }
 
 void InspectorDock::apply_script_properties(Object *p_object) {
-	ERR_FAIL_NULL(p_object);
+	(p_object);
 	ScriptInstance *si = p_object->get_script_instance();
 	if (!si) {
 		return;
@@ -618,7 +643,7 @@ void InspectorDock::apply_script_properties(Object *p_object) {
 }
 
 void InspectorDock::shortcut_input(const Ref<InputEvent> &p_event) {
-	ERR_FAIL_COND(p_event.is_null());
+	(p_event.is_null());
 
 	Ref<InputEventKey> key = p_event;
 

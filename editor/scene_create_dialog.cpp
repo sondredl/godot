@@ -30,7 +30,16 @@
 
 #include "scene_create_dialog.h"
 
+#include "core/error/error_macros.h"
 #include "core/io/dir_access.h"
+#include "core/math/vector2.h"
+#include "core/math/vector2i.h"
+#include "core/object/callable_method_pointer.h"
+#include "core/object/object.h"
+#include "core/object/ref_counted.h"
+#include "core/os/memory.h"
+#include "core/string/string_name.h"
+#include "core/string/ustring.h"
 #include "editor/create_dialog.h"
 #include "editor/editor_node.h"
 #include "editor/editor_string_names.h"
@@ -43,7 +52,9 @@
 #include "scene/gui/grid_container.h"
 #include "scene/gui/line_edit.h"
 #include "scene/gui/option_button.h"
+#include "scene/main/node.h"
 #include "scene/resources/packed_scene.h"
+#include "scene/scene_string_names.h"
 
 void SceneCreateDialog::_notification(int p_what) {
 	switch (p_what) {
@@ -151,7 +162,7 @@ String SceneCreateDialog::get_scene_path() const {
 }
 
 Node *SceneCreateDialog::create_scene_root() {
-	ERR_FAIL_NULL_V(node_type_group->get_pressed_button(), nullptr);
+	(node_type_group->get_pressed_button(), nullptr);
 	RootType type = (RootType)node_type_group->get_pressed_button()->get_meta(type_meta).operator int();
 
 	Node *root = nullptr;
@@ -174,7 +185,7 @@ Node *SceneCreateDialog::create_scene_root() {
 			break;
 	}
 
-	ERR_FAIL_NULL_V(root, nullptr);
+	(root, nullptr);
 	root->set_name(root_name);
 	return root;
 }

@@ -49,7 +49,7 @@ class FBXImporterManager : public ConfirmationDialog {
 	void _validate_path(const String &p_path);
 	void _select_file(const String &p_path);
 	void _path_confirmed();
-	void _cancel_setup();
+	void _cancel_setup() const;
 	void _browse_install();
 	void _link_clicked();
 
