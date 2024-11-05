@@ -42,7 +42,7 @@ U_NAMESPACE_BEGIN
  */
 class WholeStringBreakIterator : public BreakIterator {
 public:
-    WholeStringBreakIterator() :  length(0) {}
+    WholeStringBreakIterator() : BreakIterator(), length(0) {}
     ~WholeStringBreakIterator() override;
     bool operator==(const BreakIterator&) const override;
     WholeStringBreakIterator *clone() const override;

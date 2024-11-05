@@ -1,8 +1,8 @@
 // This file is part of meshoptimizer library; see meshoptimizer.h for version/license details
 #include "meshoptimizer.h"
 
-#include <cassert>
-#include <cstring>
+#include <assert.h>
+#include <string.h>
 
 // The block below auto-detects SIMD ISA that can be used on the target platform
 #ifndef MESHOPTIMIZER_NO_SIMD
@@ -158,11 +158,9 @@ static Stats vertexstats[256];
 
 static bool encodeBytesGroupZero(const unsigned char* buffer)
 {
-	for (size_t i = 0; i < kByteGroupSize; ++i) {
-		if (buffer[i]) {
+	for (size_t i = 0; i < kByteGroupSize; ++i)
+		if (buffer[i])
 			return false;
-}
-}
 
 	return true;
 }
@@ -171,21 +169,18 @@ static size_t encodeBytesGroupMeasure(const unsigned char* buffer, int bits)
 {
 	assert(bits >= 1 && bits <= 8);
 
-	if (bits == 1) {
+	if (bits == 1)
 		return encodeBytesGroupZero(buffer) ? 0 : size_t(-1);
-}
 
-	if (bits == 8) {
+	if (bits == 8)
 		return kByteGroupSize;
-}
 
 	size_t result = kByteGroupSize * bits / 8;
 
 	unsigned char sentinel = (1 << bits) - 1;
 
-	for (size_t i = 0; i < kByteGroupSize; ++i) {
+	for (size_t i = 0; i < kByteGroupSize; ++i)
 		result += buffer[i] >= sentinel;
-}
 
 	return result;
 }
@@ -194,9 +189,8 @@ static unsigned char* encodeBytesGroup(unsigned char* data, const unsigned char*
 {
 	assert(bits >= 1 && bits <= 8);
 
-	if (bits == 1) {
+	if (bits == 1)
 		return data;
-}
 
 	if (bits == 8)
 	{
@@ -246,9 +240,8 @@ static unsigned char* encodeBytes(unsigned char* data, unsigned char* data_end, 
 	// round number of groups to 4 to get number of header bytes
 	size_t header_size = (buffer_size / kByteGroupSize + 3) / 4;
 
-	if (size_t(data_end - data) < header_size) {
+	if (size_t(data_end - data) < header_size)
 		return NULL;
-}
 
 	data += header_size;
 
@@ -256,9 +249,8 @@ static unsigned char* encodeBytes(unsigned char* data, unsigned char* data_end, 
 
 	for (size_t i = 0; i < buffer_size; i += kByteGroupSize)
 	{
-		if (size_t(data_end - data) < kByteGroupDecodeLimit) {
+		if (size_t(data_end - data) < kByteGroupDecodeLimit)
 			return NULL;
-}
 
 		int best_bits = 8;
 		size_t best_size = encodeBytesGroupMeasure(buffer + i, 8);
@@ -303,7 +295,7 @@ static unsigned char* encodeVertexBlock(unsigned char* data, unsigned char* data
 	assert(vertex_count > 0 && vertex_count <= kVertexBlockMaxSize);
 
 	unsigned char buffer[kVertexBlockMaxSize];
-	static_assert(sizeof(buffer) % kByteGroupSize == 0, "");
+	assert(sizeof(buffer) % kByteGroupSize == 0);
 
 	// we sometimes encode elements we didn't fill when rounding to kByteGroupSize
 	memset(buffer, 0, sizeof(buffer));
@@ -341,9 +333,8 @@ static unsigned char* encodeVertexBlock(unsigned char* data, unsigned char* data
 #endif
 
 		data = encodeBytes(data, data_end, buffer, (vertex_count + kByteGroupSize - 1) & ~(kByteGroupSize - 1));
-		if (!data) {
+		if (!data)
 			return NULL;
-}
 
 #if TRACE
 		bytestats = NULL;
@@ -415,17 +406,15 @@ static const unsigned char* decodeBytes(const unsigned char* data, const unsigne
 	// round number of groups to 4 to get number of header bytes
 	size_t header_size = (buffer_size / kByteGroupSize + 3) / 4;
 
-	if (size_t(data_end - data) < header_size) {
+	if (size_t(data_end - data) < header_size)
 		return NULL;
-}
 
 	data += header_size;
 
 	for (size_t i = 0; i < buffer_size; i += kByteGroupSize)
 	{
-		if (size_t(data_end - data) < kByteGroupDecodeLimit) {
+		if (size_t(data_end - data) < kByteGroupDecodeLimit)
 			return NULL;
-}
 
 		size_t header_offset = i / kByteGroupSize;
 
@@ -450,9 +439,8 @@ static const unsigned char* decodeVertexBlock(const unsigned char* data, const u
 	for (size_t k = 0; k < vertex_size; ++k)
 	{
 		data = decodeBytes(data, data_end, buffer, vertex_count_aligned);
-		if (!data) {
+		if (!data)
 			return NULL;
-}
 
 		size_t vertex_offset = k;
 
@@ -994,16 +982,15 @@ SIMD_TARGET
 static const unsigned char* decodeBytesSimd(const unsigned char* data, const unsigned char* data_end, unsigned char* buffer, size_t buffer_size)
 {
 	assert(buffer_size % kByteGroupSize == 0);
-	static_assert(kByteGroupSize == 16, "");
+	assert(kByteGroupSize == 16);
 
 	const unsigned char* header = data;
 
 	// round number of groups to 4 to get number of header bytes
 	size_t header_size = (buffer_size / kByteGroupSize + 3) / 4;
 
-	if (size_t(data_end - data) < header_size) {
+	if (size_t(data_end - data) < header_size)
 		return NULL;
-}
 
 	data += header_size;
 
@@ -1024,9 +1011,8 @@ static const unsigned char* decodeBytesSimd(const unsigned char* data, const uns
 	// slow-path: process remaining groups
 	for (; i < buffer_size; i += kByteGroupSize)
 	{
-		if (size_t(data_end - data) < kByteGroupDecodeLimit) {
+		if (size_t(data_end - data) < kByteGroupDecodeLimit)
 			return NULL;
-}
 
 		size_t header_offset = i / kByteGroupSize;
 
@@ -1053,9 +1039,8 @@ static const unsigned char* decodeVertexBlockSimd(const unsigned char* data, con
 		for (size_t j = 0; j < 4; ++j)
 		{
 			data = decodeBytesSimd(data, data_end, buffer + j * vertex_count_aligned, vertex_count_aligned);
-			if (!data) {
+			if (!data)
 				return NULL;
-}
 		}
 
 #if defined(SIMD_SSE) || defined(SIMD_AVX)
@@ -1171,18 +1156,16 @@ size_t meshopt_encodeVertexBuffer(unsigned char* buffer, size_t buffer_size, con
 	unsigned char* data = buffer;
 	unsigned char* data_end = buffer + buffer_size;
 
-	if (size_t(data_end - data) < 1 + vertex_size) {
+	if (size_t(data_end - data) < 1 + vertex_size)
 		return 0;
-}
 
 	int version = gEncodeVertexVersion;
 
 	*data++ = (unsigned char)(kVertexHeader | version);
 
 	unsigned char first_vertex[256] = {};
-	if (vertex_count > 0) {
+	if (vertex_count > 0)
 		memcpy(first_vertex, vertex_data, vertex_size);
-}
 
 	unsigned char last_vertex[256] = {};
 	memcpy(last_vertex, first_vertex, vertex_size);
@@ -1196,18 +1179,16 @@ size_t meshopt_encodeVertexBuffer(unsigned char* buffer, size_t buffer_size, con
 		size_t block_size = (vertex_offset + vertex_block_size < vertex_count) ? vertex_block_size : vertex_count - vertex_offset;
 
 		data = encodeVertexBlock(data, data_end, vertex_data + vertex_offset * vertex_size, block_size, vertex_size, last_vertex);
-		if (!data) {
+		if (!data)
 			return 0;
-}
 
 		vertex_offset += block_size;
 	}
 
 	size_t tail_size = vertex_size < kTailMaxSize ? kTailMaxSize : vertex_size;
 
-	if (size_t(data_end - data) < tail_size) {
+	if (size_t(data_end - data) < tail_size)
 		return 0;
-}
 
 	// write first vertex to the end of the stream and pad it to 32 bytes; this is important to simplify bounds checks in decoder
 	if (vertex_size < kTailMaxSize)
@@ -1301,20 +1282,17 @@ int meshopt_decodeVertexBuffer(void* destination, size_t vertex_count, size_t ve
 	const unsigned char* data = buffer;
 	const unsigned char* data_end = buffer + buffer_size;
 
-	if (size_t(data_end - data) < 1 + vertex_size) {
+	if (size_t(data_end - data) < 1 + vertex_size)
 		return -2;
-}
 
 	unsigned char data_header = *data++;
 
-	if ((data_header & 0xf0) != kVertexHeader) {
+	if ((data_header & 0xf0) != kVertexHeader)
 		return -1;
-}
 
 	int version = data_header & 0x0f;
-	if (version > 0) {
+	if (version > 0)
 		return -1;
-}
 
 	unsigned char last_vertex[256];
 	memcpy(last_vertex, data_end - vertex_size, vertex_size);
@@ -1328,18 +1306,16 @@ int meshopt_decodeVertexBuffer(void* destination, size_t vertex_count, size_t ve
 		size_t block_size = (vertex_offset + vertex_block_size < vertex_count) ? vertex_block_size : vertex_count - vertex_offset;
 
 		data = decode(data, data_end, vertex_data + vertex_offset * vertex_size, block_size, vertex_size, last_vertex);
-		if (!data) {
+		if (!data)
 			return -2;
-}
 
 		vertex_offset += block_size;
 	}
 
 	size_t tail_size = vertex_size < kTailMaxSize ? kTailMaxSize : vertex_size;
 
-	if (size_t(data_end - data) != tail_size) {
+	if (size_t(data_end - data) != tail_size)
 		return -3;
-}
 
 	return 0;
 }

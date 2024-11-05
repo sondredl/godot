@@ -21,7 +21,7 @@
 
 #define SARRAY_DEFAULT_MIN_SIZE 16
 
-namespace VHACD; {
+namespace VHACD {
 //!    SArray.
 template <typename T, size_t N = 64>
 class SArray {

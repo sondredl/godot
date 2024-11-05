@@ -16,8 +16,8 @@
 // 3. This notice may not be removed or altered from any source distribution.
 //
 
-#include <cmath>
-#include <cstdio>
+#include <math.h>
+#include <stdio.h>
 #include "Recast.h"
 #include "RecastAlloc.h"
 #include "RecastAssert.h"
@@ -196,7 +196,13 @@ bool rcAddSpan(rcContext* context, rcHeightfield& heightfield,
 {
 	rcAssert(context);
 
-	return !!addSpan(heightfield, x, z, spanMin, spanMax, areaID, flagMergeThreshold);
+	if (!addSpan(heightfield, x, z, spanMin, spanMax, areaID, flagMergeThreshold))
+	{
+		context->log(RC_LOG_ERROR, "rcAddSpan: Out of memory.");
+		return false;
+	}
+
+	return true;
 }
 
 enum rcAxis
@@ -460,7 +466,13 @@ bool rcRasterizeTriangle(rcContext* context,
 	// Rasterize the single triangle.
 	const float inverseCellSize = 1.0f / heightfield.cs;
 	const float inverseCellHeight = 1.0f / heightfield.ch;
-	return !!rasterizeTri(v0, v1, v2, areaID, heightfield, heightfield.bmin, heightfield.bmax, heightfield.cs, inverseCellSize, inverseCellHeight, flagMergeThreshold);
+	if (!rasterizeTri(v0, v1, v2, areaID, heightfield, heightfield.bmin, heightfield.bmax, heightfield.cs, inverseCellSize, inverseCellHeight, flagMergeThreshold))
+	{
+		context->log(RC_LOG_ERROR, "rcRasterizeTriangle: Out of memory.");
+		return false;
+	}
+
+	return true;
 }
 
 bool rcRasterizeTriangles(rcContext* context,

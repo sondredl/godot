@@ -15,8 +15,7 @@ NameTable::NameTable(const void* data, size_t length, uint16 platformId, uint16 
    m_table(0), m_nameData(NULL)
 {
     void *pdata = gralloc<byte>(length);
-    if (!pdata) { return;
-}
+    if (!pdata) return;
     memcpy(pdata, data, length);
     m_table = reinterpret_cast<const TtfUtil::Sfnt::FontNames*>(pdata);
 
@@ -39,8 +38,7 @@ NameTable::NameTable(const void* data, size_t length, uint16 platformId, uint16 
 
 uint16 NameTable::setPlatformEncoding(uint16 platformId, uint16 encodingID)
 {
-    if (!m_nameData) { return 0;
-}
+    if (!m_nameData) return 0;
     uint16 i = 0;
     uint16 count = be::swap<uint16>(m_table->count);
     for (; i < count; i++)
@@ -101,8 +99,8 @@ void* NameTable::getName(uint16& languageId, uint16 nameId, gr_encform enc, uint
     }
     if (!bestLang)
     {
-        if (enUSLang) { bestLang = enUSLang;
-        } else
+        if (enUSLang) bestLang = enUSLang;
+        else
         {
             bestLang = anyLang;
             if (!anyLang)
@@ -223,9 +221,8 @@ uint16 NameTable::getLanguageId(const char * bcp47Locale)
                             break;
                         }
                     }
-                    if (match) {
+                    if (match)
                         return 0x8000 + i;
-}
                 }
             }
         }

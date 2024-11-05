@@ -57,16 +57,14 @@ namespace embree
         if (N == 4)
         {
           size_t n = 0;
-          for (size_t i=0; i<num; i++) {
+          for (size_t i=0; i<num; i++)
             n += children[i].bounds.lower.a;
-}
 
           if (n >= 4096) {
             for (size_t i=0; i<num; i++) {
               if (children[i].bounds.lower.a < 4096) {
-                for (int j=0; j<ROTATE_TREE; j++) {
+                for (int j=0; j<ROTATE_TREE; j++)
                   BVHNRotate<N>::rotate(node->child(i));
-}
                 node->child(i).setBarrier();
               }
             }
@@ -126,9 +124,8 @@ namespace embree
         Triangle4::store_nt(accel,Triangle4(v0,v1,v2,vgeomID,vprimID));
         BBox3fx box_o = BBox3fx((Vec3fx)lower,(Vec3fx)upper);
 #if ROTATE_TREE
-        if (N == 4) {
+        if (N == 4)
           box_o.lower.a = unsigned(current.size());
-}
 #endif
         return NodeRecord(ref,box_o);
       }
@@ -182,9 +179,8 @@ namespace embree
         Triangle4v::store_nt(accel,Triangle4v(v0,v1,v2,vgeomID,vprimID));
         BBox3fx box_o = BBox3fx((Vec3fx)lower,(Vec3fx)upper);
 #if ROTATE_TREE
-        if (N == 4) {
+        if (N == 4)
           box_o.lower.a = current.size();
-}
 #endif
         return NodeRecord(ref,box_o);
       }
@@ -248,9 +244,8 @@ namespace embree
         Triangle4i::store_nt(accel,Triangle4i(v0,v1,v2,vgeomID,vprimID));
         BBox3fx box_o = BBox3fx((Vec3fx)lower,(Vec3fx)upper);
 #if ROTATE_TREE
-        if (N == 4) {
+        if (N == 4)
           box_o.lower.a = current.size();
-}
 #endif
         return NodeRecord(ref,box_o);
       }
@@ -306,9 +301,8 @@ namespace embree
         Quad4v::store_nt(accel,Quad4v(v0,v1,v2,v3,vgeomID,vprimID));
         BBox3fx box_o = BBox3fx((Vec3fx)lower,(Vec3fx)upper);
 #if ROTATE_TREE
-        if (N == 4) {
+        if (N == 4)
           box_o.lower.a = current.size();
-}
 #endif
         return NodeRecord(ref,box_o);
       }
@@ -351,9 +345,8 @@ namespace embree
 
         BBox3fx box_o = (BBox3fx&)bounds;
 #if ROTATE_TREE
-        if (N == 4) {
+        if (N == 4)
           box_o.lower.a = current.size();
-}
 #endif
         return NodeRecord(ref,box_o);
       }
@@ -396,9 +389,8 @@ namespace embree
 
         BBox3fx box_o = (BBox3fx&)bounds;
 #if ROTATE_TREE
-        if (N == 4) {
+        if (N == 4)
           box_o.lower.a = current.size();
-}
 #endif
         return NodeRecord(ref,box_o);
       }
@@ -441,9 +433,8 @@ namespace embree
 
         BBox3fx box_o = (BBox3fx&)bounds;
 #if ROTATE_TREE
-        if (N == 4) {
+        if (N == 4)
           box_o.lower.a = current.size();
-}
 #endif
         return NodeRecord(ref,box_o);
       }
@@ -481,7 +472,7 @@ namespace embree
         : bvh(bvh), mesh(mesh), morton(bvh->device,0), settings(N,BVH::maxBuildDepth,minLeafSize,min(maxLeafSize,Primitive::max_size()*BVH::maxLeafBlocks),singleThreadThreshold), geomID_(geomID) {}
 
       /* build function */
-      void build() override
+      void build()
       {
         /* we reset the allocator when the mesh size changed */
         if (mesh->numPrimitives != numPreviousPrimitives) {
@@ -523,9 +514,8 @@ namespace embree
 #if ROTATE_TREE
         if (N == 4)
         {
-          for (int i=0; i<ROTATE_TREE; i++) {
+          for (int i=0; i<ROTATE_TREE; i++)
             BVHNRotate<N>::rotate(bvh->root);
-}
           bvh->clearBarrier(bvh->root);
         }
 #endif
@@ -537,7 +527,7 @@ namespace embree
         bvh->cleanup();
       }
 
-      void clear() override {
+      void clear() {
         morton.clear();
       }
 

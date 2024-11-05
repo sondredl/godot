@@ -391,8 +391,7 @@ static int EncoderInit(VP8LEncoder* const enc) {
   // at most MAX_REFS_BLOCK_PER_IMAGE blocks used:
   const int refs_block_size = (pix_cnt - 1) / MAX_REFS_BLOCK_PER_IMAGE + 1;
   int i;
-  if (!VP8LHashChainInit(&enc->hash_chain_, pix_cnt)) { return 0;
-}
+  if (!VP8LHashChainInit(&enc->hash_chain_, pix_cnt)) return 0;
 
   for (i = 0; i < 4; ++i) VP8LBackwardRefsInit(&enc->refs_[i], refs_block_size);
 
@@ -432,8 +431,7 @@ static int GetHuffBitLengthsAndCodes(
     uint8_t* lengths;
     mem_buf = (uint8_t*)WebPSafeCalloc(total_length_size,
                                        sizeof(*lengths) + sizeof(*codes));
-    if (mem_buf == NULL) { goto End;
-}
+    if (mem_buf == NULL) goto End;
 
     codes = (uint16_t*)mem_buf;
     lengths = (uint8_t*)&codes[total_length_size];
@@ -452,8 +450,7 @@ static int GetHuffBitLengthsAndCodes(
   buf_rle = (uint8_t*)WebPSafeMalloc(1ULL, max_num_symbols);
   huff_tree = (HuffmanTree*)WebPSafeMalloc(3ULL * max_num_symbols,
                                            sizeof(*huff_tree));
-  if (buf_rle == NULL || huff_tree == NULL) { goto End;
-}
+  if (buf_rle == NULL || huff_tree == NULL) goto End;
 
   // Create Huffman trees.
   for (i = 0; i < histogram_image_size; ++i) {
@@ -1236,10 +1233,8 @@ static int MakeInputImageCopy(VP8LEncoder* const enc) {
   const int width = picture->width;
   const int height = picture->height;
 
-  if (!AllocateTransformBuffer(enc, width, height)) { return 0;
-}
-  if (enc->argb_content_ == kEncoderARGB) { return 1;
-}
+  if (!AllocateTransformBuffer(enc, width, height)) return 0;
+  if (enc->argb_content_ == kEncoderARGB) return 1;
 
   {
     uint32_t* dst = enc->argb_;
@@ -1563,8 +1558,7 @@ static int EncodeStreamHook(void* input, void* data2) {
         goto Error;
       }
       remaining_percent -= percent_range;
-      if (!MapImageFromPalette(enc, use_delta_palette)) { goto Error;
-}
+      if (!MapImageFromPalette(enc, use_delta_palette)) goto Error;
       // If using a color cache, do not have it bigger than the number of
       // colors.
       if (enc->palette_size_ < (1 << MAX_COLOR_CACHE_BITS)) {
@@ -1575,8 +1569,7 @@ static int EncodeStreamHook(void* input, void* data2) {
       // In case image is not packed.
       if (enc->argb_content_ != kEncoderNearLossless &&
           enc->argb_content_ != kEncoderPalette) {
-        if (!MakeInputImageCopy(enc)) { goto Error;
-}
+        if (!MakeInputImageCopy(enc)) goto Error;
       }
 
       // -----------------------------------------------------------------------
@@ -1817,8 +1810,7 @@ int VP8LEncodeImage(const WebPConfig* const config,
   int initial_size;
   VP8LBitWriter bw;
 
-  if (picture == NULL) { return 0;
-}
+  if (picture == NULL) return 0;
 
   if (config == NULL || picture->argb == NULL) {
     return WebPEncodingSetError(picture, VP8_ENC_ERROR_NULL_PARAMETER);
@@ -1864,22 +1856,17 @@ int VP8LEncodeImage(const WebPConfig* const config,
     goto Error;
   }
 
-  if (!WebPReportProgress(picture, 2, &percent)) { goto UserAbort;
-}
+  if (!WebPReportProgress(picture, 2, &percent)) goto UserAbort;
 
   // Encode main image stream.
-  if (!VP8LEncodeStream(config, picture, &bw)) { goto Error;
-}
+  if (!VP8LEncodeStream(config, picture, &bw)) goto Error;
 
-  if (!WebPReportProgress(picture, 99, &percent)) { goto UserAbort;
-}
+  if (!WebPReportProgress(picture, 99, &percent)) goto UserAbort;
 
   // Finish the RIFF chunk.
-  if (!WriteImage(picture, &bw, &coded_size)) { goto Error;
-}
+  if (!WriteImage(picture, &bw, &coded_size)) goto Error;
 
-  if (!WebPReportProgress(picture, 100, &percent)) { goto UserAbort;
-}
+  if (!WebPReportProgress(picture, 100, &percent)) goto UserAbort;
 
 #if !defined(WEBP_DISABLE_STATS)
   // Save size.

@@ -119,8 +119,7 @@ recurse_check this_recurse;
 
 /* If this is a "could be empty" group, its minimum length is 0. */
 
-if (*code >= OP_SBRA && *code <= OP_SCOND) { return 0;
-}
+if (*code >= OP_SBRA && *code <= OP_SCOND) return 0;
 
 /* Skip over capturing bracket number */
 
@@ -128,8 +127,7 @@ if (*code == OP_CBRA || *code == OP_CBRAPOS) cc += IMM2_SIZE;
 
 /* A large and/or complex regex can take too long to process. */
 
-if ((*countptr)++ > 1000) { return -1;
-}
+if ((*countptr)++ > 1000) return -1;
 
 /* Scan along the opcodes for this branch. If we get to the end of the branch,
 check the length against that of the other branches. If the accumulated length
@@ -187,8 +185,7 @@ for (;;)
     PROCESS_NON_CAPTURE:
     d = find_minlength(re, cc, startcode, utf, recurses, countptr,
       backref_cache);
-    if (d < 0) { return d;
-}
+    if (d < 0) return d;
     branchlength += d;
     do cc += GET(cc, 1); while (*cc == OP_ALT);
     cc += 1 + LINK_SIZE;
@@ -209,8 +206,7 @@ for (;;)
       prev_cap_recno = recno;
       prev_cap_d = find_minlength(re, cc, startcode, utf, recurses, countptr,
         backref_cache);
-      if (prev_cap_d < 0) { return prev_cap_d;
-}
+      if (prev_cap_d < 0) return prev_cap_d;
       }
     branchlength += prev_cap_d;
     do cc += GET(cc, 1); while (*cc == OP_ALT);
@@ -237,11 +233,9 @@ for (;;)
     case OP_KETRMIN:
     case OP_KETRPOS:
     case OP_END:
-    if (length < 0 || (!had_recurse && branchlength < length)) {
+    if (length < 0 || (!had_recurse && branchlength < length))
       length = branchlength;
-}
-    if (op != OP_ALT || length == 0) { return length;
-}
+    if (op != OP_ALT || length == 0) return length;
     nextbranch = cc + GET(cc, 1);
     cc += 1 + LINK_SIZE;
     branchlength = 0;
@@ -498,13 +492,12 @@ for (;;)
         int dd, i;
         recno = GET2(slot, 0);
 
-        if (recno <= backref_cache[0] && backref_cache[recno] >= 0) {
+        if (recno <= backref_cache[0] && backref_cache[recno] >= 0)
           dd = backref_cache[recno];
-        } else
+        else
           {
           ce = cs = (PCRE2_UCHAR *)PRIV(find_bracket)(startcode, utf, recno);
-          if (cs == NULL) { return -2;
-}
+          if (cs == NULL) return -2;
           do ce += GET(ce, 1); while (*ce == OP_ALT);
 
           dd = 0;
@@ -530,8 +523,7 @@ for (;;)
                 this_recurse.group = cs;
                 dd = find_minlength(re, cs, startcode, utf, &this_recurse,
                   countptr, backref_cache);
-                if (dd < 0) { return dd;
-}
+                if (dd < 0) return dd;
                 }
               }
             }
@@ -541,15 +533,12 @@ for (;;)
           backref_cache[0] = recno;
           }
 
-        if (dd < d) { d = dd;
-}
-        if (d <= 0) { break;    /* No point looking at any more */
-}
+        if (dd < d) d = dd;
+        if (d <= 0) break;    /* No point looking at any more */
         slot += re->name_entry_size;
         }
       }
-    else { d = 0;
-}
+    else d = 0;
     cc += 1 + 2*IMM2_SIZE;
     goto REPEAT_BACK_REFERENCE;
 
@@ -559,9 +548,9 @@ for (;;)
     case OP_REF:
     case OP_REFI:
     recno = GET2(cc, 1);
-    if (recno <= backref_cache[0] && backref_cache[recno] >= 0) {
+    if (recno <= backref_cache[0] && backref_cache[recno] >= 0)
       d = backref_cache[recno];
-    } else
+    else
       {
       int i;
       d = 0;
@@ -569,8 +558,7 @@ for (;;)
       if ((re->overall_options & PCRE2_MATCH_UNSET_BACKREF) == 0)
         {
         ce = cs = (PCRE2_UCHAR *)PRIV(find_bracket)(startcode, utf, recno);
-        if (cs == NULL) { return -2;
-}
+        if (cs == NULL) return -2;
         do ce += GET(ce, 1); while (*ce == OP_ALT);
 
         if (!dupcapused ||
@@ -594,8 +582,7 @@ for (;;)
               this_recurse.group = cs;
               d = find_minlength(re, cs, startcode, utf, &this_recurse, countptr,
                 backref_cache);
-              if (d < 0) { return d;
-}
+              if (d < 0) return d;
               }
             }
           }
@@ -646,10 +633,9 @@ for (;;)
      product is not greater than INT_MAX. (2) branchlength is limited to
      UINT16_MAX (checked at the top of the loop). */
 
-    if ((d > 0 && (INT_MAX/d) < min) || UINT16_MAX - branchlength < min*d) {
+    if ((d > 0 && (INT_MAX/d) < min) || UINT16_MAX - branchlength < min*d)
       branchlength = UINT16_MAX;
-    } else { branchlength += min * d;
-}
+    else branchlength += min * d;
     break;
 
     /* Recursion always refers to the first occurrence of a subpattern with a
@@ -666,22 +652,21 @@ for (;;)
     else
       {
       do ce += GET(ce, 1); while (*ce == OP_ALT);
-      if (cc > cs && cc < ce) {    /* Simple recursion */
+      if (cc > cs && cc < ce)    /* Simple recursion */
         had_recurse = TRUE;
-      } else
+      else
         {
         recurse_check *r = recurses;
         for (r = recurses; r != NULL; r = r->prev) if (r->group == cs) break;
-        if (r != NULL) {          /* Mutual recursion */
+        if (r != NULL)          /* Mutual recursion */
           had_recurse = TRUE;
-        } else
+        else
           {
           this_recurse.prev = recurses;
           this_recurse.group = cs;
           prev_recurse_d = find_minlength(re, cs, startcode, utf, &this_recurse,
             countptr, backref_cache);
-          if (prev_recurse_d < 0) { return prev_recurse_d;
-}
+          if (prev_recurse_d < 0) return prev_recurse_d;
           prev_recurse_recno = recno;
           branchlength += prev_recurse_d;
           }

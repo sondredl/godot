@@ -12,7 +12,7 @@ subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <cstring>
+#include <string.h>
 
 #include "btAlignedObjectArray.h"
 #include "btConvexHullComputer.h"
@@ -20,7 +20,7 @@ subject to the following restrictions:
 #include "btVector3.h"
 
 #ifdef __GNUC__
-#include <cstdint>
+#include <stdint.h>
 #elif defined(_MSC_VER)
 typedef __int32 int32_t;
 typedef __int64 int64_t;

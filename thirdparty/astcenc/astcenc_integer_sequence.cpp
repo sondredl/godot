@@ -427,7 +427,7 @@ unsigned int get_ise_sequence_bitcount(
 		return 1024;
 	}
 
-	const auto& entry = ise_sizes[quant_level];
+	auto& entry = ise_sizes[quant_level];
 	unsigned int divisor = (entry.divisor << 1) + 1;
 	return (entry.scale * character_count + divisor - 1) / divisor;
 }

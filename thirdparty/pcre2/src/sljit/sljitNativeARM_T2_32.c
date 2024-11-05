@@ -29,7 +29,7 @@ SLJIT_API_FUNC_ATTRIBUTE const char* sljit_get_platform_name(void)
 #ifdef __SOFTFP__
 	return "ARM-Thumb2" SLJIT_CPUINFO " ABI:softfp";
 #else
-	return "ARM-Thumb2"; SLJIT_CPUINFO " ABI:hardfp";
+	return "ARM-Thumb2" SLJIT_CPUINFO " ABI:hardfp";
 #endif
 }
 
@@ -272,7 +272,7 @@ static sljit_s32 function_check_is_freg(struct sljit_compiler *compiler, sljit_s
 
 static sljit_s32 push_inst16(struct sljit_compiler *compiler, sljit_ins inst)
 {
-	sljit_ins *ptr;
+	sljit_u16 *ptr;
 	SLJIT_ASSERT(!(inst & 0xffff0000));
 
 	ptr = (sljit_u16*)ensure_buf(compiler, sizeof(sljit_u16));
@@ -284,7 +284,7 @@ static sljit_s32 push_inst16(struct sljit_compiler *compiler, sljit_ins inst)
 
 static sljit_s32 push_inst32(struct sljit_compiler *compiler, sljit_ins inst)
 {
-	sljit_ins *ptr = (sljit_u16*)ensure_buf(compiler, sizeof(sljit_ins));
+	sljit_u16 *ptr = (sljit_u16*)ensure_buf(compiler, sizeof(sljit_ins));
 	FAIL_IF(!ptr);
 	*ptr++ = (sljit_u16)(inst >> 16);
 	*ptr = (sljit_u16)(inst);

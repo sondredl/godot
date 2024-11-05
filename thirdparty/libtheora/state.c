@@ -147,9 +147,8 @@ static void oc_sb_create_plane_mapping(oc_sb_map _sb_maps[],
     /*Figure out how many columns of blocks in this super block lie within the
        image.*/
     imax=_vfrags-y;
-    if(imax>4) {imax=4;
-    } else if(imax<=0) {break;
-}
+    if(imax>4)imax=4;
+    else if(imax<=0)break;
     for(x=0;;x+=4,sbi++){
       ptrdiff_t xfrag;
       int       jmax;
@@ -158,9 +157,8 @@ static void oc_sb_create_plane_mapping(oc_sb_map _sb_maps[],
       /*Figure out how many rows of blocks in this super block lie within the
          image.*/
       jmax=_hfrags-x;
-      if(jmax>4) {jmax=4;
-      } else if(jmax<=0) {break;
-}
+      if(jmax>4)jmax=4;
+      else if(jmax<=0)break;
       /*By default, set all fragment indices to -1.*/
       memset(_sb_maps[sbi],0xFF,sizeof(_sb_maps[sbi]));
       /*Fill in the fragment map for this super block.*/
@@ -192,10 +190,9 @@ static void oc_mb_fill_ymapping(oc_mb_map_plane _mb_map[3],
  const oc_fragment_plane *_fplane,int _xfrag0,int _yfrag0){
   int i;
   int j;
-  for(i=0;i<2;i++) {for(j=0;j<2;j++){
+  for(i=0;i<2;i++)for(j=0;j<2;j++){
     _mb_map[0][i<<1|j]=(_yfrag0+i)*(ptrdiff_t)_fplane->nhfrags+_xfrag0+j;
   }
-}
 }
 
 /*Fills in the chroma plane fragment maps for a macro block.
@@ -413,14 +410,12 @@ static void oc_state_border_init(oc_theora_state *_state){
               _state->borders[i].mask=mask;
               _state->borders[i].npixels=npixels;
             }
-            else if(_state->borders[i].mask!=mask) {continue;
-}
+            else if(_state->borders[i].mask!=mask)continue;
             frag->borderi=i;
             break;
           }
         }
-        else { frag->borderi=-1;
-}
+        else frag->borderi=-1;
       }
     }
   }
@@ -567,8 +562,7 @@ static int oc_state_ref_bufs_init(oc_theora_state *_state,int _nrefs){
   int            vdec;
   int            rfi;
   int            pli;
-  if(_nrefs<3||_nrefs>6) {return TH_EINVAL;
-}
+  if(_nrefs<3||_nrefs>6)return TH_EINVAL;
   info=&_state->info;
   /*Compute the image buffer parameters for each plane.*/
   hdec=!(info->pixel_fmt&1);
@@ -704,8 +698,7 @@ void oc_state_accel_init_c(oc_theora_state *_state){
 int oc_state_init(oc_theora_state *_state,const th_info *_info,int _nrefs){
   int ret;
   /*First validate the parameters.*/
-  if(_info==NULL) {return TH_EFAULT;
-}
+  if(_info==NULL)return TH_EFAULT;
   /*The width and height of the encoded frame must be multiples of 16.
     They must also, when divided by 16, fit into a 16-bit unsigned integer.
     The displayable frame offset coordinates must fit into an 8-bit unsigned
@@ -740,8 +733,7 @@ int oc_state_init(oc_theora_state *_state,const th_info *_info,int _nrefs){
   _state->frame_type=OC_UNKWN_FRAME;
   oc_state_accel_init(_state);
   ret=oc_state_frarray_init(_state);
-  if(ret>=0) {ret=oc_state_ref_bufs_init(_state,_nrefs);
-}
+  if(ret>=0)ret=oc_state_ref_bufs_init(_state,_nrefs);
   if(ret<0){
     oc_state_frarray_clear(_state);
     return ret;
@@ -991,8 +983,8 @@ void oc_state_frag_recon_c(const oc_theora_state *_state,ptrdiff_t _fragi,
   refi=_state->frags[_fragi].refi;
   ystride=_state->ref_ystride[_pli];
   dst=_state->ref_frame_data[OC_FRAME_SELF]+frag_buf_off;
-  if(refi==OC_FRAME_SELF) {oc_frag_recon_intra(_state,dst,ystride,_dct_coeffs+64);
-  } else{
+  if(refi==OC_FRAME_SELF)oc_frag_recon_intra(_state,dst,ystride,_dct_coeffs+64);
+  else{
     const unsigned char *ref;
     int                  mvoffsets[2];
     ref=_state->ref_frame_data[refi]+frag_buf_off;
@@ -1045,12 +1037,10 @@ void oc_loop_filter_init_c(signed char _bv[256],int _flimit){
   int i;
   memset(_bv,0,sizeof(_bv[0])*256);
   for(i=0;i<_flimit;i++){
-    if(127-i-_flimit>=0) {_bv[127-i-_flimit]=(signed char)(i-_flimit);
-}
+    if(127-i-_flimit>=0)_bv[127-i-_flimit]=(signed char)(i-_flimit);
     _bv[127-i]=(signed char)(-i);
     _bv[127+i]=(signed char)(i);
-    if(127+i+_flimit<256) {_bv[127+i+_flimit]=(signed char)(_flimit-i);
-}
+    if(127+i+_flimit<256)_bv[127+i+_flimit]=(signed char)(_flimit-i);
   }
 }
 
@@ -1099,10 +1089,8 @@ void oc_state_loop_filter_frag_rows_c(const oc_theora_state *_state,
       if(frags[fragi].coded){
         unsigned char *ref;
         ref=ref_frame_data+frag_buf_offs[fragi];
-        if(fragi>fragi0) {loop_filter_h(ref,ystride,_bv);
-}
-        if(fragi0>fragi_top) {loop_filter_v(ref,ystride,_bv);
-}
+        if(fragi>fragi0)loop_filter_h(ref,ystride,_bv);
+        if(fragi0>fragi_top)loop_filter_v(ref,ystride,_bv);
         if(fragi+1<fragi_end&&!frags[fragi+1].coded){
           loop_filter_h(ref+8,ystride,_bv);
         }

@@ -69,10 +69,8 @@ namespace embree
       double t0 = bvh->preBuild(TOSTRING(isa) "::BVH" + toString(N) + "BuilderTwoLevel");
 
       /* resize object array if scene got larger */
-      if (bvh->objects.size()  < num) { bvh->objects.resize(num);
-}
-      if (builders.size() < num) { builders.resize(num);
-}
+      if (bvh->objects.size()  < num) bvh->objects.resize(num);
+      if (builders.size() < num) builders.resize(num);
       resizeRefsList ();
       nextRef.store(0);
 
@@ -84,9 +82,8 @@ namespace embree
           Mesh* mesh = scene->getSafe<Mesh>(objectID);
 
           /* ignore meshes we do not support */
-          if (mesh == nullptr || mesh->numTimeSteps != 1) {
+          if (mesh == nullptr || mesh->numTimeSteps != 1)
             continue;
-}
 
           if (isSmallGeometry(mesh)) {
              setupSmallBuildRefBuilder (objectID, mesh);
@@ -103,9 +100,8 @@ namespace embree
         {
           /* ignore if no triangle mesh or not enabled */
           Mesh* mesh = scene->getSafe<Mesh>(objectID);
-          if (mesh == nullptr || !mesh->isEnabled() || mesh->numTimeSteps != 1) {
+          if (mesh == nullptr || !mesh->isEnabled() || mesh->numTimeSteps != 1)
             continue;
-}
 
           builders[objectID]->attachBuildRefs (this);
         }
@@ -162,11 +158,11 @@ namespace embree
 #endif
 
           /* skip if all objects where empty */
-          if (pinfo.size() == 0) {
+          if (pinfo.size() == 0)
             bvh->set(BVH::emptyNode,empty,0);
 
           /* otherwise build toplevel hierarchy */
-          } else
+          else
           {
             /* settings for BVH build */
             GeneralBVHBuilder::Settings settings;
@@ -230,25 +226,19 @@ namespace embree
     template<int N, typename Mesh, typename Primitive>
     void BVHNBuilderTwoLevel<N,Mesh,Primitive>::deleteGeometry(size_t geomID)
     {
-      if (geomID >= bvh->objects.size()) { return;
-}
-      if (builders[geomID]) { builders[geomID].reset();
-}
+      if (geomID >= bvh->objects.size()) return;
+      if (builders[geomID]) builders[geomID].reset();
       delete bvh->objects [geomID]; bvh->objects [geomID] = nullptr;
     }
 
     template<int N, typename Mesh, typename Primitive>
     void BVHNBuilderTwoLevel<N,Mesh,Primitive>::clear()
     {
-      for (size_t i=0; i<bvh->objects.size(); i++) {
-        if (bvh->objects[i]) { bvh->objects[i]->clear();
-}
-}
+      for (size_t i=0; i<bvh->objects.size(); i++)
+        if (bvh->objects[i]) bvh->objects[i]->clear();
 
-      for (size_t i=0; i<builders.size(); i++) {
-        if (builders[i]) { builders[i].reset();
-}
-}
+      for (size_t i=0; i<builders.size(); i++)
+        if (builders[i]) builders[i].reset();
 
       refs.clear();
     }
@@ -256,9 +246,8 @@ namespace embree
     template<int N, typename Mesh, typename Primitive>
     void BVHNBuilderTwoLevel<N,Mesh,Primitive>::open_sequential(const size_t extSize)
     {
-      if (refs.size() == 0) {
+      if (refs.size() == 0)
 	return;
-}
 
       refs.reserve(extSize);
 
@@ -266,9 +255,8 @@ namespace embree
       for (size_t i=0;i<refs.size();i++)
       {
         NodeRef ref = refs[i].node;
-        if (ref.isAABBNode()) {
+        if (ref.isAABBNode())
           BVH::prefetch(ref);
-}
       }
 #endif
 
@@ -277,21 +265,18 @@ namespace embree
       {
         std::pop_heap (refs.begin(),refs.end());
         NodeRef ref = refs.back().node;
-        if (ref.isLeaf()) { break;
-}
+        if (ref.isLeaf()) break;
         refs.pop_back();
 
         AABBNode* node = ref.getAABBNode();
         for (size_t i=0; i<N; i++) {
-          if (node->child(i) == BVH::emptyNode) { continue;
-}
+          if (node->child(i) == BVH::emptyNode) continue;
           refs.push_back(BuildRef(node->bounds(i),node->child(i)));
 
 #if 1
           NodeRef ref_pre = node->child(i);
-          if (ref_pre.isAABBNode()) {
+          if (ref_pre.isAABBNode())
             ref_pre.prefetch();
-}
 #endif
           std::push_heap (refs.begin(),refs.end());
         }

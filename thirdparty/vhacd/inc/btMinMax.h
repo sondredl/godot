@@ -18,7 +18,7 @@ subject to the following restrictions:
 #include "btScalar.h"
 
 // -- GODOT start --
-namespace VHACD; {
+namespace VHACD {
 // -- GODOT end --
 
 template <class T>

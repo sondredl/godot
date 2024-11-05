@@ -47,25 +47,21 @@ static void drfti1(int n, float *wa, int *ifac){
 
  L101:
   j++;
-  if (j < 4) {
+  if (j < 4)
     ntry=ntryh[j];
-  } else {
+  else
     ntry+=2;
-}
 
  L104:
   nq=nl/ntry;
   nr=nl-ntry*nq;
-  if (nr!=0) { goto L101;
-}
+  if (nr!=0) goto L101;
 
   nf++;
   ifac[nf+1]=ntry;
   nl=nq;
-  if(ntry!=2) {goto L107;
-}
-  if(nf==1) {goto L107;
-}
+  if(ntry!=2)goto L107;
+  if(nf==1)goto L107;
 
   for (i=1;i<nf;i++){
     ib=nf-i+1;
@@ -74,8 +70,7 @@ static void drfti1(int n, float *wa, int *ifac){
   ifac[2] = 2;
 
  L107:
-  if(nl!=1) {goto L104;
-}
+  if(nl!=1)goto L104;
   ifac[0]=n;
   ifac[1]=nf;
   argh=tpi/n;
@@ -83,8 +78,7 @@ static void drfti1(int n, float *wa, int *ifac){
   nfm1=nf-1;
   l1=1;
 
-  if(nfm1==0) {return;
-}
+  if(nfm1==0)return;
 
   for (k1=0;k1<nfm1;k1++){
     ip=ifac[k1+2];
@@ -112,8 +106,7 @@ static void drfti1(int n, float *wa, int *ifac){
 
 static void fdrffti(int n, float *wsave, int *ifac){
 
-  if (n == 1) { return;
-}
+  if (n == 1) return;
   drfti1(n, wsave+n, ifac);
 }
 
@@ -132,10 +125,8 @@ static void dradf2(int ido,int l1,float *cc,float *ch,float *wa1){
     t2+=ido;
   }
 
-  if(ido<2) {return;
-}
-  if(ido==2) {goto L105;
-}
+  if(ido<2)return;
+  if(ido==2)goto L105;
 
   t1=0;
   t2=t0;
@@ -160,8 +151,7 @@ static void dradf2(int ido,int l1,float *cc,float *ch,float *wa1){
     t2+=ido;
   }
 
-  if(ido%2==1) {return;
-}
+  if(ido%2==1)return;
 
  L105:
   t3=(t2=(t1=ido)-1);
@@ -202,10 +192,8 @@ static void dradf4(int ido,int l1,float *cc,float *ch,float *wa1,
     t4+=ido;
   }
 
-  if(ido<2) {return;
-}
-  if(ido==2) {goto L105;
-}
+  if(ido<2)return;
+  if(ido==2)goto L105;
 
 
   t1=0;
@@ -252,8 +240,7 @@ static void dradf4(int ido,int l1,float *cc,float *ch,float *wa1,
     }
     t1+=ido;
   }
-  if(ido&1) {return;
-}
+  if(ido&1)return;
 
  L105:
 
@@ -301,10 +288,8 @@ static void dradfg(int ido,int ip,int l1,int idl1,float *cc,float *c1,
   t0=l1*ido;
   t10=ip*ido;
 
-  if(ido==1) {goto L119;
-}
-  for(ik=0;ik<idl1;ik++) {ch2[ik]=c2[ik];
-}
+  if(ido==1)goto L119;
+  for(ik=0;ik<idl1;ik++)ch2[ik]=c2[ik];
 
   t1=0;
   for(j=1;j<ip;j++){
@@ -402,8 +387,7 @@ static void dradfg(int ido,int ip,int l1,int idl1,float *cc,float *c1,
   }
 
 L119:
-  for(ik=0;ik<idl1;ik++) {c2[ik]=ch2[ik];
-}
+  for(ik=0;ik<idl1;ik++)c2[ik]=ch2[ik];
 
   t1=0;
   t2=ipp2*idl1;
@@ -471,20 +455,17 @@ L119:
   for(j=1;j<ipph;j++){
     t1+=idl1;
     t2=t1;
-    for(ik=0;ik<idl1;ik++) {ch2[ik]+=c2[t2++];
-}
+    for(ik=0;ik<idl1;ik++)ch2[ik]+=c2[t2++];
   }
 
-  if(ido<l1) {goto L132;
-}
+  if(ido<l1)goto L132;
 
   t1=0;
   t2=0;
   for(k=0;k<l1;k++){
     t3=t1;
     t4=t2;
-    for(i=0;i<ido;i++) {cc[t4++]=ch[t3++];
-}
+    for(i=0;i<ido;i++)cc[t4++]=ch[t3++];
     t1+=ido;
     t2+=t10;
   }
@@ -526,10 +507,8 @@ L119:
     }
   }
 
-  if(ido==1) {return;
-}
-  if(nbd<l1) {goto L141;
-}
+  if(ido==1)return;
+  if(nbd<l1)goto L141;
 
   t1=-ido;
   t3=0;
@@ -609,23 +588,19 @@ static void drftf1(int n,float *c,float *ch,float *wa,int *ifac){
     iw-=(ip-1)*ido;
     na=1-na;
 
-    if(ip!=4) {goto L102;
-}
+    if(ip!=4)goto L102;
 
     ix2=iw+ido;
     ix3=ix2+ido;
-    if(na!=0) {
+    if(na!=0)
       dradf4(ido,l1,ch,c,wa+iw-1,wa+ix2-1,wa+ix3-1);
-    } else {
+    else
       dradf4(ido,l1,c,ch,wa+iw-1,wa+ix2-1,wa+ix3-1);
-}
     goto L110;
 
  L102:
-    if(ip!=2) {goto L104;
-}
-    if(na!=0) {goto L103;
-}
+    if(ip!=2)goto L104;
+    if(na!=0)goto L103;
 
     dradf2(ido,l1,c,ch,wa+iw-1);
     goto L110;
@@ -635,10 +610,8 @@ static void drftf1(int n,float *c,float *ch,float *wa,int *ifac){
     goto L110;
 
   L104:
-    if(ido==1) {na=1-na;
-}
-    if(na!=0) {goto L109;
-}
+    if(ido==1)na=1-na;
+    if(na!=0)goto L109;
 
     dradfg(ido,ip,l1,idl1,c,c,c,ch,ch,wa+iw-1);
     na=1;
@@ -652,11 +625,9 @@ static void drftf1(int n,float *c,float *ch,float *wa,int *ifac){
     l2=l1;
   }
 
-  if(na==1) {return;
-}
+  if(na==1)return;
 
-  for(i=0;i<n;i++) {c[i]=ch[i];
-}
+  for(i=0;i<n;i++)c[i]=ch[i];
 }
 
 static void dradb2(int ido,int l1,float *cc,float *ch,float *wa1){
@@ -674,10 +645,8 @@ static void dradb2(int ido,int l1,float *cc,float *ch,float *wa1){
     t2=(t1+=ido)<<1;
   }
 
-  if(ido<2) {return;
-}
-  if(ido==2) {goto L105;
-}
+  if(ido<2)return;
+  if(ido==2)goto L105;
 
   t1=0;
   t2=0;
@@ -700,8 +669,7 @@ static void dradb2(int ido,int l1,float *cc,float *ch,float *wa1){
     t2=(t1+=ido)<<1;
   }
 
-  if(ido%2==1) {return;
-}
+  if(ido%2==1)return;
 
 L105:
   t1=ido-1;
@@ -739,8 +707,7 @@ static void dradb3(int ido,int l1,float *cc,float *ch,float *wa1,
     t5+=t4;
   }
 
-  if(ido==1) {return;
-}
+  if(ido==1)return;
 
   t1=0;
   t3=ido<<1;
@@ -804,10 +771,8 @@ static void dradb4(int ido,int l1,float *cc,float *ch,float *wa1,
     t3+=t2;
   }
 
-  if(ido<2) {return;
-}
-  if(ido==2) {goto L105;
-}
+  if(ido<2)return;
+  if(ido==2)goto L105;
 
   t1=0;
   for(k=0;k<l1;k++){
@@ -846,8 +811,7 @@ static void dradb4(int ido,int l1,float *cc,float *ch,float *wa1,
     t1+=ido;
   }
 
-  if(ido%2 == 1) {return;
-}
+  if(ido%2 == 1)return;
 
  L105:
 
@@ -890,8 +854,7 @@ static void dradbg(int ido,int ip,int l1,int idl1,float *cc,float *c1,
   nbd=(ido-1)>>1;
   ipp2=ip;
   ipph=(ip+1)>>1;
-  if(ido<l1) {goto L103;
-}
+  if(ido<l1)goto L103;
 
   t1=0;
   t2=0;
@@ -941,10 +904,8 @@ static void dradbg(int ido,int ip,int l1,int idl1,float *cc,float *c1,
     t5+=t7;
   }
 
-  if (ido == 1) {goto L116;
-}
-  if(nbd<l1) {goto L112;
-}
+  if (ido == 1)goto L116;
+  if(nbd<l1)goto L112;
 
   t1=0;
   t2=ipp2*t0;
@@ -1063,8 +1024,7 @@ L116:
   for(j=1;j<ipph;j++){
     t1+=idl1;
     t2=t1;
-    for(ik=0;ik<idl1;ik++) {ch2[ik]+=ch2[t2++];
-}
+    for(ik=0;ik<idl1;ik++)ch2[ik]+=ch2[t2++];
   }
 
   t1=0;
@@ -1082,10 +1042,8 @@ L116:
     }
   }
 
-  if(ido==1) {goto L132;
-}
-  if(nbd<l1) {goto L128;
-}
+  if(ido==1)goto L132;
+  if(nbd<l1)goto L128;
 
   t1=0;
   t2=ipp2*t0;
@@ -1136,11 +1094,9 @@ L116:
   }
 
 L132:
-  if(ido==1) {return;
-}
+  if(ido==1)return;
 
-  for(ik=0;ik<idl1;ik++) {c2[ik]=ch2[ik];
-}
+  for(ik=0;ik<idl1;ik++)c2[ik]=ch2[ik];
 
   t1=0;
   for(j=1;j<ip;j++){
@@ -1151,8 +1107,7 @@ L132:
     }
   }
 
-  if(nbd>l1) {goto L139;
-}
+  if(nbd>l1)goto L139;
 
   is= -ido-1;
   t1=0;
@@ -1210,41 +1165,35 @@ static void drftb1(int n, float *c, float *ch, float *wa, int *ifac){
     l2=ip*l1;
     ido=n/l2;
     idl1=ido*l1;
-    if(ip!=4) {goto L103;
-}
+    if(ip!=4)goto L103;
     ix2=iw+ido;
     ix3=ix2+ido;
 
-    if(na!=0) {
+    if(na!=0)
       dradb4(ido,l1,ch,c,wa+iw-1,wa+ix2-1,wa+ix3-1);
-    } else {
+    else
       dradb4(ido,l1,c,ch,wa+iw-1,wa+ix2-1,wa+ix3-1);
-}
     na=1-na;
     goto L115;
 
   L103:
-    if(ip!=2) {goto L106;
-}
+    if(ip!=2)goto L106;
 
-    if(na!=0) {
+    if(na!=0)
       dradb2(ido,l1,ch,c,wa+iw-1);
-    } else {
+    else
       dradb2(ido,l1,c,ch,wa+iw-1);
-}
     na=1-na;
     goto L115;
 
   L106:
-    if(ip!=3) {goto L109;
-}
+    if(ip!=3)goto L109;
 
     ix2=iw+ido;
-    if(na!=0) {
+    if(na!=0)
       dradb3(ido,l1,ch,c,wa+iw-1,wa+ix2-1);
-    } else {
+    else
       dradb3(ido,l1,c,ch,wa+iw-1,wa+ix2-1);
-}
     na=1-na;
     goto L115;
 
@@ -1263,35 +1212,29 @@ static void drftb1(int n, float *c, float *ch, float *wa, int *ifac){
     goto L115;
 
   L112:*/
-    if(na!=0) {
+    if(na!=0)
       dradbg(ido,ip,l1,idl1,ch,ch,ch,c,c,wa+iw-1);
-    } else {
+    else
       dradbg(ido,ip,l1,idl1,c,c,c,ch,ch,wa+iw-1);
-}
-    if(ido==1) {na=1-na;
-}
+    if(ido==1)na=1-na;
 
   L115:
     l1=l2;
     iw+=(ip-1)*ido;
   }
 
-  if(na==0) {return;
-}
+  if(na==0)return;
 
-  for(i=0;i<n;i++) {c[i]=ch[i];
-}
+  for(i=0;i<n;i++)c[i]=ch[i];
 }
 
 void drft_forward(drft_lookup *l,float *data){
-  if(l->n==1) {return;
-}
+  if(l->n==1)return;
   drftf1(l->n,data,l->trigcache,l->trigcache+l->n,l->splitcache);
 }
 
 void drft_backward(drft_lookup *l,float *data){
-  if (l->n==1) {return;
-}
+  if (l->n==1)return;
   drftb1(l->n,data,l->trigcache,l->trigcache+l->n,l->splitcache);
 }
 
@@ -1304,10 +1247,8 @@ void drft_init(drft_lookup *l,int n){
 
 void drft_clear(drft_lookup *l){
   if(l){
-    if(l->trigcache) {_ogg_free(l->trigcache);
-}
-    if(l->splitcache) {_ogg_free(l->splitcache);
-}
+    if(l->trigcache)_ogg_free(l->trigcache);
+    if(l->splitcache)_ogg_free(l->splitcache);
     memset(l,0,sizeof(*l));
   }
 }

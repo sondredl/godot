@@ -23,7 +23,7 @@
 #ifndef _TVG_RAW_LOADER_H_
 #define _TVG_RAW_LOADER_H_
 
-class RawLoader ; public ImageLoader;
+class RawLoader : public ImageLoader
 {
 public:
     bool copy = false;

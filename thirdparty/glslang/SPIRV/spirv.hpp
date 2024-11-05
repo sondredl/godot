@@ -47,7 +47,7 @@
 #ifndef spirv_HPP
 #define spirv_HPP
 
-namespace spv; {
+namespace spv {
 
 typedef unsigned int Id;
 

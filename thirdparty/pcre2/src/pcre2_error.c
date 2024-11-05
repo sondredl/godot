@@ -303,8 +303,7 @@ const unsigned char *message;
 PCRE2_SIZE i;
 int n;
 
-if (size == 0) { return PCRE2_ERROR_NOMEMORY;
-}
+if (size == 0) return PCRE2_ERROR_NOMEMORY;
 
 if (enumber >= COMPILE_ERROR_BASE)  /* Compile error */
   {
@@ -325,8 +324,7 @@ else                                /* Invalid error number */
 for (; n > 0; n--)
   {
   while (*message++ != CHAR_NUL) {};
-  if (*message == CHAR_NUL) { return PCRE2_ERROR_BADDATA;
-}
+  if (*message == CHAR_NUL) return PCRE2_ERROR_BADDATA;
   }
 
 for (i = 0; *message != 0; i++)

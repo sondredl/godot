@@ -132,7 +132,7 @@ class U_COMMON_API StringPiece : public UMemory {
    */
   template <typename T,
             typename = std::enable_if_t<
-                (std::is_same<decltype(T().data()), const char*>
+                (std::is_same_v<decltype(T().data()), const char*>
 #if defined(__cpp_char8_t)
                     || std::is_same_v<decltype(T().data()), const char8_t*>
 #endif

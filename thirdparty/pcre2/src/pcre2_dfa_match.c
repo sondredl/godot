@@ -362,8 +362,7 @@ pcre2_callout_block *cb = mb->cb;
   (PCRE2_SIZE)PRIV(OP_lengths)[OP_CALLOUT] :
   (PCRE2_SIZE)GET(code, 1 + 2*LINK_SIZE + extracode);
 
-if (mb->callout == NULL) { return 0;    /* No callout provided */
-}
+if (mb->callout == NULL) return 0;    /* No callout provided */
 
 /* Fixed fields in the callout block are set once and for all at the start of
 matching. */
@@ -436,12 +435,10 @@ else
     newsizeK = (uint32_t)(mb->heap_limit - mb->heap_used);
   newsize = newsizeK*(1024/sizeof(int));
 
-  if (newsize < RWS_RSIZE + ovecsize + RWS_ANCHOR_SIZE) {
+  if (newsize < RWS_RSIZE + ovecsize + RWS_ANCHOR_SIZE)
     return PCRE2_ERROR_HEAPLIMIT;
-}
   new = mb->memctl.malloc(newsize*sizeof(int), mb->memctl.memory_data);
-  if (new == NULL) { return PCRE2_ERROR_NOMEMORY;
-}
+  if (new == NULL) return PCRE2_ERROR_NOMEMORY;
   mb->heap_used += newsizeK;
   new->next = NULL;
   new->size = newsize;
@@ -560,10 +557,8 @@ BOOL utf = FALSE;
 
 BOOL reset_could_continue = FALSE;
 
-if (mb->match_call_count++ >= mb->match_limit) { return PCRE2_ERROR_MATCHLIMIT;
-}
-if (rlevel++ > mb->match_limit_depth) { return PCRE2_ERROR_DEPTHLIMIT;
-}
+if (mb->match_call_count++ >= mb->match_limit) return PCRE2_ERROR_MATCHLIMIT;
+if (rlevel++ > mb->match_limit_depth) return PCRE2_ERROR_DEPTHLIMIT;
 offsetcount &= (uint32_t)(-2);  /* Round down */
 
 wscount -= 2;
@@ -597,8 +592,7 @@ if (*this_start_code == OP_ASSERTBACK || *this_start_code == OP_ASSERTBACK_NOT)
   do
     {
     size_t back = (size_t)GET2(end_code, 2+LINK_SIZE);
-    if (back > max_back) { max_back = back;
-}
+    if (back > max_back) max_back = back;
     end_code += GET(end_code, 1);
     }
   while (*end_code == OP_ALT);
@@ -669,9 +663,8 @@ else
     {
     do { end_code += GET(end_code, 1); } while (*end_code == OP_ALT);
     new_count = workspace[1];
-    if (!workspace[0]) {
+    if (!workspace[0])
       memcpy(new_states, active_states, (size_t)new_count * sizeof(stateblock));
-}
     }
 
   /* Not restarting */
@@ -771,8 +764,7 @@ for (;;)
         {
         ADD_NEW_DATA(state_offset, current_state->count,
           current_state->data - 1);
-        if (could_continue) { reset_could_continue = TRUE;
-}
+        if (could_continue) reset_could_continue = TRUE;
         continue;
         }
       else
@@ -788,9 +780,8 @@ for (;;)
     for (j = 0; j < i; j++)
       {
       if (active_states[j].offset == state_offset &&
-          active_states[j].count == current_state->count) {
+          active_states[j].count == current_state->count)
         goto NEXT_ACTIVE_STATE;
-}
       }
 
     /* The state offset is the offset to the opcode */
@@ -801,9 +792,8 @@ for (;;)
     /* If this opcode inspects a character, but we are at the end of the
     subject, remember the fact for use when testing for a partial match. */
 
-    if (clen == 0 && poptable[codevalue] != 0) {
+    if (clen == 0 && poptable[codevalue] != 0)
       could_continue = TRUE;
-}
 
     /* If this opcode is followed by an inline character, load it. It is
     tempting to test for the presence of a subject character here, but that
@@ -895,10 +885,9 @@ for (;;)
               ((mb->moptions & PCRE2_NOTEMPTY_ATSTART) == 0 ||
                 current_subject > start_subject + mb->start_offset)))
           {
-          if (match_count < 0) { match_count = (offsetcount >= 2)? 1 : 0;
-            } else if (match_count > 0 && ++match_count * 2 > (int)offsetcount) {
+          if (match_count < 0) match_count = (offsetcount >= 2)? 1 : 0;
+            else if (match_count > 0 && ++match_count * 2 > (int)offsetcount)
               match_count = 0;
-}
           count = ((match_count == 0)? (int)offsetcount : match_count * 2) - 2;
           if (count > 0) (void)memmove(offsets + 2, offsets,
             (size_t)count * sizeof(PCRE2_SIZE));
@@ -907,8 +896,7 @@ for (;;)
             offsets[0] = (PCRE2_SIZE)(current_subject - start_subject);
             offsets[1] = (PCRE2_SIZE)(ptr - start_subject);
             }
-          if ((mb->moptions & PCRE2_DFA_SHORTEST) != 0) { return match_count;
-}
+          if ((mb->moptions & PCRE2_DFA_SHORTEST) != 0) return match_count;
           }
         }
       break;
@@ -980,9 +968,9 @@ for (;;)
       case OP_EOD:
       if (ptr >= end_subject)
         {
-        if ((mb->moptions & PCRE2_PARTIAL_HARD) != 0) {
+        if ((mb->moptions & PCRE2_PARTIAL_HARD) != 0)
           return PCRE2_ERROR_PARTIAL;
-        } else { ADD_ACTIVE(state_offset + 1, 0); }
+        else { ADD_ACTIVE(state_offset + 1, 0); }
         }
       break;
 
@@ -1032,9 +1020,8 @@ for (;;)
       case OP_EODN:
       if (clen == 0 || (IS_NEWLINE(ptr) && ptr == end_subject - mb->nllen))
         {
-        if ((mb->moptions & PCRE2_PARTIAL_HARD) != 0) {
+        if ((mb->moptions & PCRE2_PARTIAL_HARD) != 0)
           return PCRE2_ERROR_PARTIAL;
-}
         ADD_ACTIVE(state_offset + 1, 0);
         }
       break;
@@ -1043,9 +1030,9 @@ for (;;)
       case OP_DOLL:
       if ((mb->moptions & PCRE2_NOTEOL) == 0)
         {
-        if (clen == 0 && (mb->moptions & PCRE2_PARTIAL_HARD) != 0) {
+        if (clen == 0 && (mb->moptions & PCRE2_PARTIAL_HARD) != 0)
           could_continue = TRUE;
-        } else if (clen == 0 ||
+        else if (clen == 0 ||
             ((mb->poptions & PCRE2_DOLLAR_ENDONLY) == 0 && IS_NEWLINE(ptr) &&
                (ptr == end_subject - mb->nllen)
             ))
@@ -1061,8 +1048,7 @@ for (;;)
             reset_could_continue = TRUE;
             ADD_NEW_DATA(-(state_offset + 1), 0, 1);
             }
-          else { could_continue = partial_newline = TRUE;
-}
+          else could_continue = partial_newline = TRUE;
           }
         }
       break;
@@ -1071,9 +1057,9 @@ for (;;)
       case OP_DOLLM:
       if ((mb->moptions & PCRE2_NOTEOL) == 0)
         {
-        if (clen == 0 && (mb->moptions & PCRE2_PARTIAL_HARD) != 0) {
+        if (clen == 0 && (mb->moptions & PCRE2_PARTIAL_HARD) != 0)
           could_continue = TRUE;
-        } else if (clen == 0 ||
+        else if (clen == 0 ||
             ((mb->poptions & PCRE2_DOLLAR_ENDONLY) == 0 && IS_NEWLINE(ptr)))
           { ADD_ACTIVE(state_offset + 1, 0); }
         else if (ptr + 1 >= mb->end_subject &&
@@ -1087,8 +1073,7 @@ for (;;)
             reset_could_continue = TRUE;
             ADD_NEW_DATA(-(state_offset + 1), 0, 1);
             }
-          else { could_continue = partial_newline = TRUE;
-}
+          else could_continue = partial_newline = TRUE;
           }
         }
       else if (IS_NEWLINE(ptr))
@@ -1143,8 +1128,7 @@ for (;;)
 #endif
           left_word = d < 256 && (ctypes[d] & ctype_word) != 0;
           }
-        else { left_word = FALSE;
-}
+        else left_word = FALSE;
 
         if (clen > 0)
           {
@@ -1169,8 +1153,7 @@ for (;;)
 #endif
           right_word = c < 256 && (ctypes[c] & ctype_word) != 0;
           }
-        else { right_word = FALSE;
-}
+        else right_word = FALSE;
 
         if ((left_word == right_word) ==
             (codevalue == OP_NOT_WORD_BOUNDARY ||
@@ -1630,13 +1613,11 @@ for (;;)
           case 0x2028:
           case 0x2029:
 #endif  /* Not EBCDIC */
-          if (mb->bsr_convention == PCRE2_BSR_ANYCRLF) { break;
-}
+          if (mb->bsr_convention == PCRE2_BSR_ANYCRLF) break;
           goto ANYNL01;
 
           case CHAR_CR:
-          if (ptr + 1 < end_subject && UCHAR21TEST(ptr + 1) == CHAR_LF) { ncount = 1;
-}
+          if (ptr + 1 < end_subject && UCHAR21TEST(ptr + 1) == CHAR_LF) ncount = 1;
           /* Fall through */
 
           ANYNL01:
@@ -1914,13 +1895,11 @@ for (;;)
           case 0x2028:
           case 0x2029:
 #endif  /* Not EBCDIC */
-          if (mb->bsr_convention == PCRE2_BSR_ANYCRLF) { break;
-}
+          if (mb->bsr_convention == PCRE2_BSR_ANYCRLF) break;
           goto ANYNL02;
 
           case CHAR_CR:
-          if (ptr + 1 < end_subject && UCHAR21TEST(ptr + 1) == CHAR_LF) { ncount = 1;
-}
+          if (ptr + 1 < end_subject && UCHAR21TEST(ptr + 1) == CHAR_LF) ncount = 1;
           /* Fall through */
 
           ANYNL02:
@@ -2201,13 +2180,11 @@ for (;;)
           case 0x2028:
           case 0x2029:
 #endif  /* Not EBCDIC */
-          if (mb->bsr_convention == PCRE2_BSR_ANYCRLF) { break;
-}
+          if (mb->bsr_convention == PCRE2_BSR_ANYCRLF) break;
           goto ANYNL03;
 
           case CHAR_CR:
-          if (ptr + 1 < end_subject && UCHAR21TEST(ptr + 1) == CHAR_LF) { ncount = 1;
-}
+          if (ptr + 1 < end_subject && UCHAR21TEST(ptr + 1) == CHAR_LF) ncount = 1;
           /* Fall through */
 
           ANYNL03:
@@ -2315,8 +2292,7 @@ for (;;)
 
       /*-----------------------------------------------------------------*/
       case OP_CHARI:
-      if (clen == 0) { break;
-}
+      if (clen == 0) break;
 
 #ifdef SUPPORT_UNICODE
       if (utf_or_ucp)
@@ -2366,7 +2342,7 @@ for (;;)
       state to wait for one character to pass before continuing. */
 
       case OP_ANYNL:
-      if (clen > 0) { switch(c)
+      if (clen > 0) switch(c)
         {
         case CHAR_VT:
         case CHAR_FF:
@@ -2375,8 +2351,7 @@ for (;;)
         case 0x2028:
         case 0x2029:
 #endif  /* Not EBCDIC */
-        if (mb->bsr_convention == PCRE2_BSR_ANYCRLF) { break;
-}
+        if (mb->bsr_convention == PCRE2_BSR_ANYCRLF) break;
         /* Fall through */
 
         case CHAR_LF:
@@ -2387,9 +2362,8 @@ for (;;)
         if (ptr + 1 >= end_subject)
           {
           ADD_NEW(state_offset + 1, 0);
-          if ((mb->moptions & PCRE2_PARTIAL_HARD) != 0) {
+          if ((mb->moptions & PCRE2_PARTIAL_HARD) != 0)
             reset_could_continue = TRUE;
-}
           }
         else if (UCHAR21TEST(ptr + 1) == CHAR_LF)
           {
@@ -2401,12 +2375,11 @@ for (;;)
           }
         break;
         }
-}
       break;
 
       /*-----------------------------------------------------------------*/
       case OP_NOT_VSPACE:
-      if (clen > 0) { switch(c)
+      if (clen > 0) switch(c)
         {
         VSPACE_CASES:
         break;
@@ -2415,12 +2388,11 @@ for (;;)
         ADD_NEW(state_offset + 1, 0);
         break;
         }
-}
       break;
 
       /*-----------------------------------------------------------------*/
       case OP_VSPACE:
-      if (clen > 0) { switch(c)
+      if (clen > 0) switch(c)
         {
         VSPACE_CASES:
         ADD_NEW(state_offset + 1, 0);
@@ -2429,12 +2401,11 @@ for (;;)
         default:
         break;
         }
-}
       break;
 
       /*-----------------------------------------------------------------*/
       case OP_NOT_HSPACE:
-      if (clen > 0) { switch(c)
+      if (clen > 0) switch(c)
         {
         HSPACE_CASES:
         break;
@@ -2443,12 +2414,11 @@ for (;;)
         ADD_NEW(state_offset + 1, 0);
         break;
         }
-}
       break;
 
       /*-----------------------------------------------------------------*/
       case OP_HSPACE:
-      if (clen > 0) { switch(c)
+      if (clen > 0) switch(c)
         {
         HSPACE_CASES:
         ADD_NEW(state_offset + 1, 0);
@@ -2457,7 +2427,6 @@ for (;;)
         default:
         break;
         }
-}
       break;
 
       /*-----------------------------------------------------------------*/
@@ -2832,8 +2801,7 @@ for (;;)
         if (rws->free < RWS_RSIZE + RWS_OVEC_OSIZE)
           {
           rc = more_workspace(&rws, RWS_OVEC_OSIZE, mb);
-          if (rc != 0) { return rc;
-}
+          if (rc != 0) return rc;
           RWS = (int *)rws;
           }
 
@@ -2857,8 +2825,7 @@ for (;;)
 
         rws->free += RWS_RSIZE + RWS_OVEC_OSIZE;
 
-        if (rc < 0 && rc != PCRE2_ERROR_NOMATCH) { return rc;
-}
+        if (rc < 0 && rc != PCRE2_ERROR_NOMATCH) return rc;
         if ((rc >= 0) == (codevalue == OP_ASSERT || codevalue == OP_ASSERTBACK))
             { ADD_ACTIVE((int)(endasscode + LINK_SIZE + 1 - start_code), 0); }
         }
@@ -2881,10 +2848,8 @@ for (;;)
           PCRE2_SIZE callout_length;
           rrc = do_callout_dfa(code, offsets, current_subject, ptr, mb,
             1 + LINK_SIZE, &callout_length);
-          if (rrc < 0) { return rrc;                 /* Abandon */
-}
-          if (rrc > 0) { break;                      /* Fail this thread */
-}
+          if (rrc < 0) return rrc;                 /* Abandon */
+          if (rrc > 0) break;                      /* Fail this thread */
           code += callout_length;                  /* Skip callout data */
           }
 
@@ -2894,9 +2859,8 @@ for (;;)
         are not supported */
 
         if (condcode == OP_CREF || condcode == OP_DNCREF ||
-            condcode == OP_DNRREF) {
+            condcode == OP_DNRREF)
           return PCRE2_ERROR_DFA_UCOND;
-}
 
         /* The DEFINE condition is always false, and the assertion (?!) is
         converted to OP_FAIL. */
@@ -2916,8 +2880,7 @@ for (;;)
         else if (condcode == OP_RREF)
           {
           unsigned int value = GET2(code, LINK_SIZE + 2);
-          if (value != RREF_ANY) { return PCRE2_ERROR_DFA_UCOND;
-}
+          if (value != RREF_ANY) return PCRE2_ERROR_DFA_UCOND;
           if (mb->recursive != NULL)
             { ADD_ACTIVE(state_offset + LINK_SIZE + 2 + IMM2_SIZE, 0); }
           else { ADD_ACTIVE(state_offset + codelink + LINK_SIZE + 1, 0); }
@@ -2937,8 +2900,7 @@ for (;;)
           if (rws->free < RWS_RSIZE + RWS_OVEC_OSIZE)
             {
             rc = more_workspace(&rws, RWS_OVEC_OSIZE, mb);
-            if (rc != 0) { return rc;
-}
+            if (rc != 0) return rc;
             RWS = (int *)rws;
             }
 
@@ -2962,8 +2924,7 @@ for (;;)
 
           rws->free += RWS_RSIZE + RWS_OVEC_OSIZE;
 
-          if (rc < 0 && rc != PCRE2_ERROR_NOMATCH) { return rc;
-}
+          if (rc < 0 && rc != PCRE2_ERROR_NOMATCH) return rc;
           if ((rc >= 0) ==
                 (condcode == OP_ASSERT || condcode == OP_ASSERTBACK))
             { ADD_ACTIVE((int)(endasscode + LINK_SIZE + 1 - start_code), 0); }
@@ -2987,8 +2948,7 @@ for (;;)
         if (rws->free < RWS_RSIZE + RWS_OVEC_RSIZE)
           {
           rc = more_workspace(&rws, RWS_OVEC_RSIZE, mb);
-          if (rc != 0) { return rc;
-}
+          if (rc != 0) return rc;
           RWS = (int *)rws;
           }
 
@@ -3035,8 +2995,7 @@ for (;;)
 
         /* Ran out of internal offsets */
 
-        if (rc == 0) { return PCRE2_ERROR_DFA_RECURSE;
-}
+        if (rc == 0) return PCRE2_ERROR_DFA_RECURSE;
 
         /* For each successful matched substring, set up the next state with a
         count of characters to skip before trying it. Note that the count is in
@@ -3066,8 +3025,7 @@ for (;;)
               }
             }
           }
-        else if (rc != PCRE2_ERROR_NOMATCH) { return rc;
-}
+        else if (rc != PCRE2_ERROR_NOMATCH) return rc;
         }
       break;
 
@@ -3089,8 +3047,7 @@ for (;;)
         if (rws->free < RWS_RSIZE + RWS_OVEC_OSIZE)
           {
           rc = more_workspace(&rws, RWS_OVEC_OSIZE, mb);
-          if (rc != 0) { return rc;
-}
+          if (rc != 0) return rc;
           RWS = (int *)rws;
           }
 
@@ -3103,8 +3060,7 @@ for (;;)
           allow_zero = TRUE;
           codevalue = *(++code);  /* Codevalue will be one of above BRAs */
           }
-        else { allow_zero = FALSE;
-}
+        else allow_zero = FALSE;
 
         /* Loop to match the subpattern as many times as possible as if it were
         a complete pattern. */
@@ -3127,16 +3083,14 @@ for (;;)
 
           if (rc < 0)
             {
-            if (rc != PCRE2_ERROR_NOMATCH) { return rc;
-}
+            if (rc != PCRE2_ERROR_NOMATCH) return rc;
             break;
             }
 
           /* Matched: break the loop if zero characters matched. */
 
           charcount = local_offsets[1] - local_offsets[0];
-          if (charcount == 0) { break;
-}
+          if (charcount == 0) break;
           local_ptr += charcount;    /* Advance temporary position ptr */
           }
 
@@ -3192,8 +3146,7 @@ for (;;)
         if (rws->free < RWS_RSIZE + RWS_OVEC_OSIZE)
           {
           rc = more_workspace(&rws, RWS_OVEC_OSIZE, mb);
-          if (rc != 0) { return rc;
-}
+          if (rc != 0) return rc;
           RWS = (int *)rws;
           }
 
@@ -3283,8 +3236,7 @@ for (;;)
               { ADD_NEW_DATA(-repeat_state_offset, 0, (int)(charcount - 1)); }
             }
           }
-        else if (rc != PCRE2_ERROR_NOMATCH) { return rc;
-}
+        else if (rc != PCRE2_ERROR_NOMATCH) return rc;
         }
       break;
 
@@ -3298,8 +3250,7 @@ for (;;)
         PCRE2_SIZE callout_length;
         rrc = do_callout_dfa(code, offsets, current_subject, ptr, mb, 0,
           &callout_length);
-        if (rrc < 0) { return rrc;   /* Abandon */
-}
+        if (rrc < 0) return rrc;   /* Abandon */
         if (rrc == 0)
           { ADD_ACTIVE(state_offset + (int)callout_length, 0); }
         }
@@ -3347,9 +3298,8 @@ for (;;)
             mb->allowemptypartial              /* or pattern has lookbehind */
             )                                  /* or could match empty */
           )
-        )) {
+        ))
       match_count = PCRE2_ERROR_PARTIAL;
-}
     break;  /* Exit from loop along the subject string */
     }
 
@@ -3363,9 +3313,8 @@ PCRE2_ENDANCHORED is set, the match fails. */
 
 if (match_count >= 0 &&
     ((mb->moptions | mb->poptions) & PCRE2_ENDANCHORED) != 0 &&
-    ptr < end_subject) {
+    ptr < end_subject)
   match_count = PCRE2_ERROR_NOMATCH;
-}
 
 return match_count;
 }
@@ -3451,11 +3400,9 @@ if (subject == NULL && length == 0) subject = (PCRE2_SPTR)"";
 
 /* Plausibility checks */
 
-if ((options & ~PUBLIC_DFA_MATCH_OPTIONS) != 0) { return PCRE2_ERROR_BADOPTION;
-}
-if (re == NULL || subject == NULL || workspace == NULL || match_data == NULL) {
+if ((options & ~PUBLIC_DFA_MATCH_OPTIONS) != 0) return PCRE2_ERROR_BADOPTION;
+if (re == NULL || subject == NULL || workspace == NULL || match_data == NULL)
   return PCRE2_ERROR_NULL;
-}
 
 if (length == PCRE2_ZERO_TERMINATED)
   {
@@ -3463,36 +3410,30 @@ if (length == PCRE2_ZERO_TERMINATED)
   was_zero_terminated = 1;
   }
 
-if (wscount < 20) { return PCRE2_ERROR_DFA_WSSIZE;
-}
-if (start_offset > length) { return PCRE2_ERROR_BADOFFSET;
-}
+if (wscount < 20) return PCRE2_ERROR_DFA_WSSIZE;
+if (start_offset > length) return PCRE2_ERROR_BADOFFSET;
 
 /* Partial matching and PCRE2_ENDANCHORED are currently not allowed at the same
 time. */
 
 if ((options & (PCRE2_PARTIAL_HARD|PCRE2_PARTIAL_SOFT)) != 0 &&
-   ((re->overall_options | options) & PCRE2_ENDANCHORED) != 0) {
+   ((re->overall_options | options) & PCRE2_ENDANCHORED) != 0)
   return PCRE2_ERROR_BADOPTION;
-}
 
 /* Invalid UTF support is not available for DFA matching. */
 
-if ((re->overall_options & PCRE2_MATCH_INVALID_UTF) != 0) {
+if ((re->overall_options & PCRE2_MATCH_INVALID_UTF) != 0)
   return PCRE2_ERROR_DFA_UINVALID_UTF;
-}
 
 /* Check that the first field in the block is the magic number. If it is not,
 return with PCRE2_ERROR_BADMAGIC. */
 
-if (re->magic_number != MAGIC_NUMBER) { return PCRE2_ERROR_BADMAGIC;
-}
+if (re->magic_number != MAGIC_NUMBER) return PCRE2_ERROR_BADMAGIC;
 
 /* Check the code unit width. */
 
-if ((re->flags & PCRE2_MODE_MASK) != PCRE2_CODE_UNIT_WIDTH/8) {
+if ((re->flags & PCRE2_MODE_MASK) != PCRE2_CODE_UNIT_WIDTH/8)
   return PCRE2_ERROR_BADMODE;
-}
 
 /* PCRE2_NOTEMPTY and PCRE2_NOTEMPTY_ATSTART are match-time flags in the
 options variable for this function. Users of PCRE2 who are not calling the
@@ -3518,9 +3459,8 @@ of the workspace. */
 if ((options & PCRE2_DFA_RESTART) != 0)
   {
   if ((workspace[0] & (-2)) != 0 || workspace[1] < 1 ||
-    workspace[1] > (int)((wscount - 2)/INTS_PER_STATEBLOCK)) {
+    workspace[1] > (int)((wscount - 2)/INTS_PER_STATEBLOCK))
       return PCRE2_ERROR_DFA_BADRESTART;
-}
   }
 
 /* Set some local values */
@@ -3567,9 +3507,8 @@ else
   {
   if (mcontext->offset_limit != PCRE2_UNSET)
     {
-    if ((re->overall_options & PCRE2_USE_OFFSET_LIMIT) == 0) {
+    if ((re->overall_options & PCRE2_USE_OFFSET_LIMIT) == 0)
       return PCRE2_ERROR_BADOFFSETLIMIT;
-}
     bumpalong_limit = subject + mcontext->offset_limit;
     }
   mb->callout = mcontext->callout;
@@ -3710,9 +3649,8 @@ if ((re->flags & PCRE2_FIRSTSET) != 0)
 #endif  /* SUPPORT_UNICODE */
     }
   }
-else {
-  i
-}f (!startline && (re->flags & PCRE2_FIRSTMAPSET) != 0)
+else
+  if (!startline && (re->flags & PCRE2_FIRSTMAPSET) != 0)
     start_bits = re->start_bitmap;
 
 /* There may be a "last known required code unit" set. */
@@ -3817,8 +3755,7 @@ for (;;)
             ok = (start_bits[c/8] & (1u << (c&7))) != 0;
             }
           }
-        if (!ok) { break;
-}
+        if (!ok) break;
         }
       }
 
@@ -3916,9 +3853,8 @@ for (;;)
         allowed to start with the first code unit of a newline. */
 
         if ((mb->moptions & (PCRE2_PARTIAL_HARD|PCRE2_PARTIAL_SOFT)) == 0 &&
-            start_match >= mb->end_subject) {
+            start_match >= mb->end_subject)
           break;
-}
         }
 
       /* If there's no first code unit, advance to just after a linebreak for a
@@ -3965,20 +3901,17 @@ for (;;)
           {
           uint32_t c = UCHAR21TEST(start_match);
 #if PCRE2_CODE_UNIT_WIDTH != 8
-          if (c > 255) { c = 255;
-}
+          if (c > 255) c = 255;
 #endif
-          if ((start_bits[c/8] & (1u << (c&7))) != 0) { break;
-}
+          if ((start_bits[c/8] & (1u << (c&7))) != 0) break;
           start_match++;
           }
 
         /* See comment above in first_cu checking about the next line. */
 
         if ((mb->moptions & (PCRE2_PARTIAL_HARD|PCRE2_PARTIAL_SOFT)) == 0 &&
-            start_match >= mb->end_subject) {
+            start_match >= mb->end_subject)
           break;
-}
         }
       }  /* End of first code unit handling */
 
@@ -3997,8 +3930,7 @@ for (;;)
       in characters, we treat it as code units to avoid spending too much time
       in this optimization. */
 
-      if (end_subject - start_match < re->minlength) { goto NOMATCH_EXIT;
-}
+      if (end_subject - start_match < re->minlength) goto NOMATCH_EXIT;
 
       /* If req_cu is set, we know that that code unit must appear in the
       subject for the match to succeed. If the first code unit is set, req_cu
@@ -4068,8 +4000,7 @@ for (;;)
           /* If we can't find the required code unit, break the matching loop,
           forcing a match failure. */
 
-          if (p >= end_subject) { break;
-}
+          if (p >= end_subject) break;
 
           /* If we have found the required code unit, save the point where we
           found it, so that we don't search again next time round the loop if
@@ -4085,8 +4016,7 @@ for (;;)
 
   /* Give no match if we have passed the bumpalong limit. */
 
-  if (start_match > bumpalong_limit) { break;
-}
+  if (start_match > bumpalong_limit) break;
 
   /* OK, now we can do the business */
 
@@ -4127,8 +4057,7 @@ for (;;)
       length = CU2BYTES(length + was_zero_terminated);
       match_data->subject = match_data->memctl.malloc(length,
         match_data->memctl.memory_data);
-      if (match_data->subject == NULL) { return PCRE2_ERROR_NOMEMORY;
-}
+      if (match_data->subject == NULL) return PCRE2_ERROR_NOMEMORY;
       memcpy((void *)match_data->subject, subject, length);
       match_data->flags |= PCRE2_MD_COPIED_SUBJECT;
       }
@@ -4142,8 +4071,7 @@ for (;;)
   /* Advance to the next subject character unless we are at the end of a line
   and firstline is set. */
 
-  if (firstline && IS_NEWLINE(start_match)) { break;
-}
+  if (firstline && IS_NEWLINE(start_match)) break;
   start_match++;
 #ifdef SUPPORT_UNICODE
   if (utf)
@@ -4151,8 +4079,7 @@ for (;;)
     ACROSSCHAR(start_match < end_subject, start_match, start_match++);
     }
 #endif
-  if (start_match > end_subject) { break;
-}
+  if (start_match > end_subject) break;
 
   /* If we have just passed a CR and we are now at a LF, and the pattern does
   not contain any explicit matches for \r or \n, and the newline option is CRLF

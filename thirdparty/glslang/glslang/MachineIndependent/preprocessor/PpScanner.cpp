@@ -113,29 +113,25 @@ namespace glslang {
 int TPpContext::lFloatConst(int len, int ch, TPpToken* ppToken)
 {
     const auto saveName = [&](int ch) {
-        if (len <= MaxTokenLength) {
+        if (len <= MaxTokenLength)
             ppToken->name[len++] = static_cast<char>(ch);
-}
     };
 
     // find the range of non-zero digits before the decimal point
     int startNonZero = 0;
-    while (startNonZero < len && ppToken->name[startNonZero] == '0') {
+    while (startNonZero < len && ppToken->name[startNonZero] == '0')
         ++startNonZero;
-}
     int endNonZero = len;
-    while (endNonZero > startNonZero && ppToken->name[endNonZero-1] == '0') {
+    while (endNonZero > startNonZero && ppToken->name[endNonZero-1] == '0')
         --endNonZero;
-}
     int numWholeNumberDigits = endNonZero - startNonZero;
 
     // accumulate the range's value
     bool fastPath = numWholeNumberDigits <= 15;  // when the number gets too complex, set to false
     unsigned long long wholeNumber = 0;
     if (fastPath) {
-        for (int i = startNonZero; i < endNonZero; ++i) {
+        for (int i = startNonZero; i < endNonZero; ++i)
             wholeNumber = wholeNumber * 10 + (ppToken->name[i] - '0');
-}
     }
     int decimalShift = len - endNonZero;
 
@@ -188,23 +184,20 @@ int TPpContext::lFloatConst(int len, int ch, TPpToken* ppToken)
         // Consume remaining digits, up to the exponent
         while (ch >= '0' && ch <= '9') {
             saveName(ch);
-            if (ch != '0') {
+            if (ch != '0')
                 endNonZeroDecimal = len;
-}
             ch = getChar();
         }
 
         // Compute accumulation up to the last non-zero digit
         if (endNonZeroDecimal > startNonZeroDecimal) {
             numWholeNumberDigits += endNonZeroDecimal - endNonZero - 1; // don't include the "."
-            if (numWholeNumberDigits > 15) {
+            if (numWholeNumberDigits > 15)
                 fastPath = false;
-}
             if (fastPath) {
                 for (int i = endNonZero; i < endNonZeroDecimal; ++i) {
-                    if (ppToken->name[i] != '.') {
+                    if (ppToken->name[i] != '.')
                         wholeNumber = wholeNumber * 10 + (ppToken->name[i] - '0');
-}
                 }
             }
             decimalShift = firstDecimal - endNonZeroDecimal;
@@ -239,18 +232,17 @@ int TPpContext::lFloatConst(int len, int ch, TPpToken* ppToken)
         }
 
         // Compensate for location of decimal
-        if (negativeExponent) {
+        if (negativeExponent)
             exponent -= decimalShift;
-        } else {
+        else {
             exponent += decimalShift;
             if (exponent < 0) {
                 negativeExponent = true;
                 exponent = -exponent;
             }
         }
-        if (exponent > 22) {
+        if (exponent > 22)
             fastPath = false;
-}
 
         if (fastPath) {
             // Compute the floating-point value of the exponent
@@ -258,9 +250,8 @@ int TPpContext::lFloatConst(int len, int ch, TPpToken* ppToken)
             if (exponent > 0) {
                 double expFactor = 10;
                 while (exponent > 0) {
-                    if (exponent & 0x1) {
+                    if (exponent & 0x1)
                         exponentValue *= expFactor;
-}
                     expFactor *= expFactor;
                     exponent >>= 1;
                 }
@@ -272,12 +263,10 @@ int TPpContext::lFloatConst(int len, int ch, TPpToken* ppToken)
     bool isDouble = false;
     bool isFloat16 = false;
     if (ch == 'l' || ch == 'L') {
-        if (ifdepth == 0 && parseContext.intermediate.getSource() == EShSourceGlsl) {
+        if (ifdepth == 0 && parseContext.intermediate.getSource() == EShSourceGlsl)
             parseContext.doubleCheck(ppToken->loc, "double floating-point suffix");
-}
-        if (ifdepth == 0 && !hasDecimalOrExponent) {
+        if (ifdepth == 0 && !hasDecimalOrExponent)
             parseContext.ppError(ppToken->loc, "float literal needs a decimal point or exponent", "", "");
-}
         if (parseContext.intermediate.getSource() == EShSourceGlsl) {
             int ch2 = getChar();
             if (ch2 != 'f' && ch2 != 'F') {
@@ -293,12 +282,10 @@ int TPpContext::lFloatConst(int len, int ch, TPpToken* ppToken)
             isDouble = true;
         }
     } else if (ch == 'h' || ch == 'H') {
-        if (ifdepth == 0 && parseContext.intermediate.getSource() == EShSourceGlsl) {
+        if (ifdepth == 0 && parseContext.intermediate.getSource() == EShSourceGlsl)
             parseContext.float16Check(ppToken->loc, "half floating-point suffix");
-}
-        if (ifdepth == 0 && !hasDecimalOrExponent) {
+        if (ifdepth == 0 && !hasDecimalOrExponent)
             parseContext.ppError(ppToken->loc, "float literal needs a decimal point or exponent", "", "");
-}
         if (parseContext.intermediate.getSource() == EShSourceGlsl) {
             int ch2 = getChar();
             if (ch2 != 'f' && ch2 != 'F') {
@@ -315,19 +302,15 @@ int TPpContext::lFloatConst(int len, int ch, TPpToken* ppToken)
         }
     } else
     if (ch == 'f' || ch == 'F') {
-        if (ifdepth == 0) {
+        if (ifdepth == 0)
             parseContext.profileRequires(ppToken->loc,  EEsProfile, 300, nullptr, "floating-point suffix");
-}
-        if (ifdepth == 0 && !parseContext.relaxedErrors()) {
+        if (ifdepth == 0 && !parseContext.relaxedErrors())
             parseContext.profileRequires(ppToken->loc, ~EEsProfile, 120, nullptr, "floating-point suffix");
-}
-        if (ifdepth == 0 && !hasDecimalOrExponent) {
+        if (ifdepth == 0 && !hasDecimalOrExponent)
             parseContext.ppError(ppToken->loc, "float literal needs a decimal point or exponent", "", "");
-}
         saveName(ch);
-    } else {
+    } else
         ungetChar();
-}
 
     // Patch up the name and length for overflow
 
@@ -340,43 +323,37 @@ int TPpContext::lFloatConst(int len, int ch, TPpToken* ppToken)
     // Compute the numerical value
     if (fastPath) {
         // compute the floating-point value of the exponent
-        if (exponentValue == 0.0) {
+        if (exponentValue == 0.0)
             ppToken->dval = (double)wholeNumber;
-        } else if (negativeExponent) {
+        else if (negativeExponent)
             ppToken->dval = (double)wholeNumber / exponentValue;
-        } else {
+        else
             ppToken->dval = (double)wholeNumber * exponentValue;
-}
     } else {
         // slow path
         ppToken->dval = 0.0;
 
         // remove suffix
         TString numstr(ppToken->name);
-        if (numstr.back() == 'f' || numstr.back() == 'F') {
+        if (numstr.back() == 'f' || numstr.back() == 'F')
             numstr.pop_back();
-}
-        if (numstr.back() == 'h' || numstr.back() == 'H') {
+        if (numstr.back() == 'h' || numstr.back() == 'H')
             numstr.pop_back();
-}
-        if (numstr.back() == 'l' || numstr.back() == 'L') {
+        if (numstr.back() == 'l' || numstr.back() == 'L')
             numstr.pop_back();
-}
 
         // use platform library
         strtodStream.clear();
-        strtodStream.str(numstr);
+        strtodStream.str(numstr.c_str());
         strtodStream >> ppToken->dval;
         if (strtodStream.fail()) {
             // Assume failure combined with a large exponent was overflow, in
             // an attempt to set INF.
-            if (!negativeExponent && exponent + numWholeNumberDigits > 300) {
+            if (!negativeExponent && exponent + numWholeNumberDigits > 300)
                 ppToken->i64val = 0x7ff0000000000000; // +Infinity
-}
             // Assume failure combined with a small exponent was overflow.
-            if (negativeExponent && exponent + numWholeNumberDigits > 300) {
+            if (negativeExponent && exponent + numWholeNumberDigits > 300)
                 ppToken->dval = 0.0;
-}
             // Unknown reason for failure. Theory is that either
             //  - the 0.0 is still there, or
             //  - something reasonable was written that is better than 0.0
@@ -384,13 +361,12 @@ int TPpContext::lFloatConst(int len, int ch, TPpToken* ppToken)
     }
 
     // Return the right token type
-    if (isDouble) {
+    if (isDouble)
         return PpAtomConstDouble;
-    } else if (isFloat16) {
+    else if (isFloat16)
         return PpAtomConstFloat16;
-    } else {
+    else
         return PpAtomConstFloat;
-}
 }
 
 // Recognize a character literal.
@@ -516,9 +492,8 @@ int TPpContext::tStringInput::scan(TPpToken* ppToken)
         switch (ch) {
         default:
             // Single character token, including EndOfInput, '#' and '\' (escaped newlines are handled at a lower level, so this is just a '\' token)
-            if (ch > PpAtomMaxSingle) {
+            if (ch > PpAtomMaxSingle)
                 ch = PpAtomBadToken;
-}
             return ch;
 
         case 'A': case 'B': case 'C': case 'D': case 'E':
@@ -550,9 +525,8 @@ int TPpContext::tStringInput::scan(TPpToken* ppToken)
                      ch == '_');
 
             // line continuation with no token before or after makes len == 0, and need to start over skipping white space, etc.
-            if (len == 0) {
+            if (len == 0)
                 continue;
-}
 
             ppToken->name[len] = '\0';
             ungetch();
@@ -582,17 +556,15 @@ int TPpContext::tStringInput::scan(TPpToken* ppToken)
                                 ii = ch - 'A' + 10;
                             } else if (ch >= 'a' && ch <= 'f') {
                                 ii = ch - 'a' + 10;
-                            } else {
+                            } else
                                 pp->parseContext.ppError(ppToken->loc, "bad digit in hexadecimal literal", "", "");
-}
                             ival = (ival << 4) | ii;
                         } else {
                             if (! AlreadyComplained) {
-                                if(len < MaxTokenLength) {
+                                if(len < MaxTokenLength)
                                     pp->parseContext.ppError(ppToken->loc, "hexadecimal literal too big", "", "");
-                                } else {
+                                else
                                     pp->parseContext.ppError(ppToken->loc, "hexadecimal literal too long", "", "");
-}
                                 AlreadyComplained = 1;
                             }
                             ival = 0xffffffffffffffffull;
@@ -605,45 +577,37 @@ int TPpContext::tStringInput::scan(TPpToken* ppToken)
                     pp->parseContext.ppError(ppToken->loc, "bad digit in hexadecimal literal", "", "");
                 }
                 if (ch == 'u' || ch == 'U') {
-                    if (len < MaxTokenLength) {
+                    if (len < MaxTokenLength)
                         ppToken->name[len++] = (char)ch;
-}
                     isUnsigned = true;
 
                     int nextCh = getch();
                     if (nextCh == 'l' || nextCh == 'L') {
-                        if (len < MaxTokenLength) {
+                        if (len < MaxTokenLength)
                             ppToken->name[len++] = (char)nextCh;
-}
                         isInt64 = true;
-                    } else {
+                    } else
                         ungetch();
-}
 
                     nextCh = getch();
                     if ((nextCh == 's' || nextCh == 'S') &&
                             pp->parseContext.intermediate.getSource() == EShSourceGlsl) {
-                        if (len < MaxTokenLength) {
+                        if (len < MaxTokenLength)
                             ppToken->name[len++] = (char)nextCh;
-}
                         isInt16 = true;
-                    } else {
+                    } else
                         ungetch();
-}
                 } else if (ch == 'l' || ch == 'L') {
-                    if (len < MaxTokenLength) {
+                    if (len < MaxTokenLength)
                         ppToken->name[len++] = (char)ch;
-}
                     isInt64 = true;
                 } else if ((ch == 's' || ch == 'S') &&
                            pp->parseContext.intermediate.getSource() == EShSourceGlsl) {
-                    if (len < MaxTokenLength) {
+                    if (len < MaxTokenLength)
                         ppToken->name[len++] = (char)ch;
-}
                     isInt16 = true;
-                } else {
+                } else
                     ungetch();
-}
                 ppToken->name[len] = '\0';
 
                 if (isInt64 && pp->parseContext.intermediate.getSource() == EShSourceGlsl) {
@@ -667,9 +631,8 @@ int TPpContext::tStringInput::scan(TPpToken* ppToken)
                     ppToken->ival = (int)ival;
                     return isUnsigned ? PpAtomConstUint16 : PpAtomConstInt16;
                 } else {
-                    if (ival > 0xffffffffu && !AlreadyComplained) {
+                    if (ival > 0xffffffffu && !AlreadyComplained)
                         pp->parseContext.ppError(ppToken->loc, "hexadecimal literal too big", "", "");
-}
                     ppToken->ival = (int)ival;
                     return isUnsigned ? PpAtomConstUint : PpAtomConstInt;
                 }
@@ -698,11 +661,10 @@ int TPpContext::tStringInput::scan(TPpToken* ppToken)
                         else
                         {
                             if (! AlreadyComplained) {
-                                if(len < MaxTokenLength) {
+                                if(len < MaxTokenLength)
                                     pp->parseContext.ppError(ppToken->loc, "binary literal too big", "", "");
-                                } else {
+                                else
                                     pp->parseContext.ppError(ppToken->loc, "binary literal too long", "", "");
-}
                                 AlreadyComplained = 1;
                             }
                             ival = 0xffffffffffffffffull;
@@ -717,41 +679,34 @@ int TPpContext::tStringInput::scan(TPpToken* ppToken)
 
                 // check type
                 if (ch == 'u' || ch == 'U') {
-                    if (len < MaxTokenLength) {
+                    if (len < MaxTokenLength)
                         ppToken->name[len++] = (char)ch;
-}
                     isUnsigned = true;
 
                     int nextCh = getch();
                     if (nextCh == 'l' || nextCh == 'L') {
-                        if (len < MaxTokenLength) {
+                        if (len < MaxTokenLength)
                             ppToken->name[len++] = (char)nextCh;
-}
                         isInt64 = true;
-                    } else {
+                    } else
                         ungetch();
-}
 
                     nextCh = getch();
                     if ((nextCh == 's' || nextCh == 'S') &&
                                 pp->parseContext.intermediate.getSource() == EShSourceGlsl) {
-                        if (len < MaxTokenLength) {
+                        if (len < MaxTokenLength)
                             ppToken->name[len++] = (char)nextCh;
-}
                         isInt16 = true;
-                    } else {
+                    } else
                         ungetch();
-}
                 } else if (ch == 'l' || ch == 'L') {
-                    if (len < MaxTokenLength) {
+                    if (len < MaxTokenLength)
                         ppToken->name[len++] = (char)ch;
-}
                     isInt64 = true;
                 } else if ((ch == 's' || ch == 'S') &&
                                 pp->parseContext.intermediate.getSource() == EShSourceGlsl) {
-                    if (len < MaxTokenLength) {
+                    if (len < MaxTokenLength)
                         ppToken->name[len++] = (char)ch;
-}
                     isInt16 = true;
                 } else {
                     ungetch();
@@ -795,18 +750,17 @@ int TPpContext::tStringInput::scan(TPpToken* ppToken)
 
                 // see how much octal-like stuff we can read
                 while (ch >= '0' && ch <= '7') {
-                    if (len < MaxTokenLength) {
+                    if (len < MaxTokenLength)
                         ppToken->name[len++] = (char)ch;
-                    } else if (! AlreadyComplained) {
+                    else if (! AlreadyComplained) {
                         pp->parseContext.ppError(ppToken->loc, "numeric literal too long", "", "");
                         AlreadyComplained = 1;
                     }
                     if (ival <= 0x1fffffffffffffffull) {
                         ii = ch - '0';
                         ival = (ival << 3) | ii;
-                    } else {
+                    } else
                         octalOverflow = true;
-}
                     ch = getch();
                 }
 
@@ -814,73 +768,61 @@ int TPpContext::tStringInput::scan(TPpToken* ppToken)
                 if (ch == '8' || ch == '9') {
                     nonOctal = true;
                     do {
-                        if (len < MaxTokenLength) {
+                        if (len < MaxTokenLength)
                             ppToken->name[len++] = (char)ch;
-                        } else if (! AlreadyComplained) {
+                        else if (! AlreadyComplained) {
                             pp->parseContext.ppError(ppToken->loc, "numeric literal too long", "", "");
                             AlreadyComplained = 1;
                         }
                         ch = getch();
                     } while (ch >= '0' && ch <= '9');
                 }
-                if (floatingPointChar(ch)) {
+                if (floatingPointChar(ch))
                     return pp->lFloatConst(len, ch, ppToken);
-}
 
                 // wasn't a float, so must be octal...
-                if (nonOctal) {
+                if (nonOctal)
                     pp->parseContext.ppError(ppToken->loc, "octal literal digit too large", "", "");
-}
 
                 if (ch == 'u' || ch == 'U') {
-                    if (len < MaxTokenLength) {
+                    if (len < MaxTokenLength)
                         ppToken->name[len++] = (char)ch;
-}
                     isUnsigned = true;
 
                     int nextCh = getch();
                     if (nextCh == 'l' || nextCh == 'L') {
-                        if (len < MaxTokenLength) {
+                        if (len < MaxTokenLength)
                             ppToken->name[len++] = (char)nextCh;
-}
                         isInt64 = true;
-                    } else {
+                    } else
                         ungetch();
-}
 
                     nextCh = getch();
                     if ((nextCh == 's' || nextCh == 'S') &&
                                 pp->parseContext.intermediate.getSource() == EShSourceGlsl) {
-                        if (len < MaxTokenLength) {
+                        if (len < MaxTokenLength)
                             ppToken->name[len++] = (char)nextCh;
-}
                         isInt16 = true;
-                    } else {
+                    } else
                         ungetch();
-}
                 } else if (ch == 'l' || ch == 'L') {
-                    if (len < MaxTokenLength) {
+                    if (len < MaxTokenLength)
                         ppToken->name[len++] = (char)ch;
-}
                     isInt64 = true;
                 } else if ((ch == 's' || ch == 'S') &&
                                 pp->parseContext.intermediate.getSource() == EShSourceGlsl) {
-                    if (len < MaxTokenLength) {
+                    if (len < MaxTokenLength)
                         ppToken->name[len++] = (char)ch;
-}
                     isInt16 = true;
-                } else {
+                } else
                     ungetch();
-}
                 ppToken->name[len] = '\0';
 
-                if (!isInt64 && ival > 0xffffffffu) {
+                if (!isInt64 && ival > 0xffffffffu)
                     octalOverflow = true;
-}
 
-                if (octalOverflow) {
+                if (octalOverflow)
                     pp->parseContext.ppError(ppToken->loc, "octal literal too big", "", "");
-}
 
                 if (isInt64 && pp->parseContext.intermediate.getSource() == EShSourceGlsl) {
                     if (pp->ifdepth == 0) {
@@ -913,62 +855,54 @@ int TPpContext::tStringInput::scan(TPpToken* ppToken)
             // can't be hexadecimal or octal, is either decimal or floating point
 
             do {
-                if (len < MaxTokenLength) {
+                if (len < MaxTokenLength)
                     ppToken->name[len++] = (char)ch;
-                } else if (! AlreadyComplained) {
+                else if (! AlreadyComplained) {
                     pp->parseContext.ppError(ppToken->loc, "numeric literal too long", "", "");
                     AlreadyComplained = 1;
                 }
                 ch = getch();
             } while (ch >= '0' && ch <= '9');
-            if (floatingPointChar(ch)) {
+            if (floatingPointChar(ch))
                 return pp->lFloatConst(len, ch, ppToken);
-            } else {
+            else {
                 // Finish handling signed and unsigned integers
                 int numericLen = len;
                 bool isUnsigned = false;
                 bool isInt64 = false;
                 bool isInt16 = false;
                 if (ch == 'u' || ch == 'U') {
-                    if (len < MaxTokenLength) {
+                    if (len < MaxTokenLength)
                         ppToken->name[len++] = (char)ch;
-}
                     isUnsigned = true;
 
                     int nextCh = getch();
                     if (nextCh == 'l' || nextCh == 'L') {
-                        if (len < MaxTokenLength) {
+                        if (len < MaxTokenLength)
                             ppToken->name[len++] = (char)nextCh;
-}
                         isInt64 = true;
-                    } else {
+                    } else
                         ungetch();
-}
 
                     nextCh = getch();
                     if ((nextCh == 's' || nextCh == 'S') &&
                                 pp->parseContext.intermediate.getSource() == EShSourceGlsl) {
-                        if (len < MaxTokenLength) {
+                        if (len < MaxTokenLength)
                             ppToken->name[len++] = (char)nextCh;
-}
                         isInt16 = true;
-                    } else {
+                    } else
                         ungetch();
-}
                 } else if (ch == 'l' || ch == 'L') {
-                    if (len < MaxTokenLength) {
+                    if (len < MaxTokenLength)
                         ppToken->name[len++] = (char)ch;
-}
                     isInt64 = true;
                 } else if ((ch == 's' || ch == 'S') &&
                                 pp->parseContext.intermediate.getSource() == EShSourceGlsl) {
-                    if (len < MaxTokenLength) {
+                    if (len < MaxTokenLength)
                         ppToken->name[len++] = (char)ch;
-}
                     isInt16 = true;
-                } else {
+                } else
                     ungetch();
-}
 
                 ppToken->name[len] = '\0';
                 ival = 0;
@@ -981,20 +915,18 @@ int TPpContext::tStringInput::scan(TPpToken* ppToken)
                 for (int i = 0; i < numericLen; i++) {
                     ch = ppToken->name[i] - '0';
                     bool overflow = false;
-                    if (isInt64) {
+                    if (isInt64)
                         overflow = (ival > oneTenthMaxInt64 || (ival == oneTenthMaxInt64 && (unsigned long long)ch > remainderMaxInt64));
-                    } else if (isInt16) {
+                    else if (isInt16)
                         overflow = (ival > oneTenthMaxInt16 || (ival == oneTenthMaxInt16 && (unsigned short)ch > remainderMaxInt16));
-                    } else {
+                    else
                         overflow = (ival > oneTenthMaxInt || (ival == oneTenthMaxInt && (unsigned)ch > remainderMaxInt));
-}
                     if (overflow) {
                         pp->parseContext.ppError(ppToken->loc, "numeric literal too big", "", "");
                         ival = 0xFFFFFFFFFFFFFFFFull;
                         break;
-                    } else {
+                    } else
                         ival = ival * 10 + ch;
-}
                 }
 
                 if (isInt64 && pp->parseContext.intermediate.getSource() == EShSourceGlsl) {
@@ -1062,9 +994,9 @@ int TPpContext::tStringInput::scan(TPpToken* ppToken)
             if (ch == '^') {
                 return PpAtomXor;
             } else {
-                if (ch == '=') {
+                if (ch == '=')
                     return PpAtomXorAssign;
-                } else{
+                else{
                     ungetch();
                     return '^';
                 }
@@ -1110,9 +1042,9 @@ int TPpContext::tStringInput::scan(TPpToken* ppToken)
             ch = getch();
             if (ch == '<') {
                 ch = getch();
-                if (ch == '=') {
+                if (ch == '=')
                     return PpAtomLeftAssign;
-                } else {
+                else {
                     ungetch();
                     return PpAtomLeft;
                 }
@@ -1126,9 +1058,9 @@ int TPpContext::tStringInput::scan(TPpToken* ppToken)
             ch = getch();
             if (ch == '>') {
                 ch = getch();
-                if (ch == '=') {
+                if (ch == '=')
                     return PpAtomRightAssign;
-                } else {
+                else {
                     ungetch();
                     return PpAtomRight;
                 }
@@ -1213,13 +1145,13 @@ int TPpContext::tStringInput::scan(TPpToken* ppToken)
                                 ch = 0;
                                 while (true) {
                                     nextCh = getch();
-                                    if (nextCh >= '0' && nextCh <= '9') {
+                                    if (nextCh >= '0' && nextCh <= '9')
                                         nextCh -= '0';
-                                    } else if (nextCh >= 'A' && nextCh <= 'F') {
+                                    else if (nextCh >= 'A' && nextCh <= 'F')
                                         nextCh -= 'A' - 10;
-                                    } else if (nextCh >= 'a' && nextCh <= 'f') {
+                                    else if (nextCh >= 'a' && nextCh <= 'f')
                                         nextCh -= 'a' - 10;
-                                    } else {
+                                    else {
                                         ungetch();
                                         break;
                                     }
@@ -1245,9 +1177,9 @@ int TPpContext::tStringInput::scan(TPpToken* ppToken)
                                 ch = nextCh - '0';
                                 while (numDigits < 3) {
                                     nextCh = getch();
-                                    if (nextCh >= '0' && nextCh <= '7') {
+                                    if (nextCh >= '0' && nextCh <= '7')
                                         nextCh -= '0';
-                                    } else {
+                                    else {
                                         ungetch();
                                         break;
                                     }
@@ -1264,9 +1196,8 @@ int TPpContext::tStringInput::scan(TPpToken* ppToken)
                     ppToken->name[len] = (char)ch;
                     len++;
                     ch = getch();
-                } else {
+                } else
                     break;
-}
             };
             ppToken->name[len] = '\0';
             if (ch != '"') {
@@ -1276,9 +1207,8 @@ int TPpContext::tStringInput::scan(TPpToken* ppToken)
             return PpAtomConstString;
         case ':':
             ch = getch();
-            if (ch == ':') {
+            if (ch == ':')
                 return PpAtomColonColon;
-}
             ungetch();
             return ':';
         }
@@ -1320,9 +1250,8 @@ int TPpContext::tokenize(TPpToken& ppToken)
         }
         previous_token = token;
 
-        if (token == '\n') {
+        if (token == '\n')
             continue;
-}
 
         // expand macros
         if (token == PpAtomIdentifier) {
@@ -1348,9 +1277,8 @@ int TPpContext::tokenize(TPpToken& ppToken)
         case PpAtomConstUint16:
         case PpAtomConstDouble:
         case PpAtomConstFloat16:
-            if (ppToken.name[0] == '\0') {
+            if (ppToken.name[0] == '\0')
                 continue;
-}
             break;
         case PpAtomConstString:
             // HLSL allows string literals.
@@ -1359,9 +1287,8 @@ int TPpContext::tokenize(TPpToken& ppToken)
               const char* const string_literal_EXTs[] = { E_GL_EXT_debug_printf, E_GL_EXT_spirv_intrinsics };
               parseContext.requireExtensions(ppToken.loc, 2, string_literal_EXTs, "string literal");
               if (!parseContext.extensionTurnedOn(E_GL_EXT_debug_printf) &&
-                  !parseContext.extensionTurnedOn(E_GL_EXT_spirv_intrinsics)) {
+                  !parseContext.extensionTurnedOn(E_GL_EXT_spirv_intrinsics))
                   continue;
-}
             }
             break;
         case '\'':
@@ -1462,11 +1389,10 @@ int TPpContext::tokenPaste(int token, TPpToken& ppToken)
             // correct the kind of token we are making, if needed (identifiers stay identifiers)
             if (resultToken != PpAtomIdentifier) {
                 int newToken = atomStrings.getAtom(ppToken.name);
-                if (newToken > 0) {
+                if (newToken > 0)
                     resultToken = newToken;
-                } else {
+                else
                     parseContext.ppError(ppToken.loc, "combined token is invalid", "##", "");
-}
             }
         } while (peekContinuedPasting(resultToken));
     }
@@ -1477,9 +1403,8 @@ int TPpContext::tokenPaste(int token, TPpToken& ppToken)
 // Checks if we've seen balanced #if...#endif
 void TPpContext::missingEndifCheck()
 {
-    if (ifdepth > 0) {
+    if (ifdepth > 0)
         parseContext.ppError(parseContext.getCurrentLoc(), "missing #endif", "", "");
-}
 }
 
 } // end namespace glslang

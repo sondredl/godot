@@ -72,8 +72,7 @@ static int allBytesIdentical(const void* src, size_t srcSize)
     {   const BYTE b = ((const BYTE*)src)[0];
         size_t p;
         for (p=1; p<srcSize; p++) {
-            if (((const BYTE*)src)[p] != b) { return 0;
-}
+            if (((const BYTE*)src)[p] != b) return 0;
         }
         return 1;
     }
@@ -152,14 +151,12 @@ size_t ZSTD_compressLiterals (
     /* Prepare nextEntropy assuming reusing the existing table */
     ZSTD_memcpy(nextHuf, prevHuf, sizeof(*prevHuf));
 
-    if (disableLiteralCompression) {
+    if (disableLiteralCompression)
         return ZSTD_noCompressLiterals(dst, dstCapacity, src, srcSize);
-}
 
     /* if too small, don't even attempt compression (speed opt) */
-    if (srcSize < ZSTD_minLiteralsToCompress(strategy, prevHuf->repeatMode)) {
+    if (srcSize < ZSTD_minLiteralsToCompress(strategy, prevHuf->repeatMode))
         return ZSTD_noCompressLiterals(dst, dstCapacity, src, srcSize);
-}
 
     RETURN_ERROR_IF(dstCapacity < lhSize+1, dstSize_tooSmall, "not enough space for compression");
     {   HUF_repeat repeat = prevHuf->repeatMode;
@@ -171,8 +168,7 @@ size_t ZSTD_compressLiterals (
 
         typedef size_t (*huf_compress_f)(void*, size_t, const void*, size_t, unsigned, unsigned, void*, size_t, HUF_CElt*, HUF_repeat*, int);
         huf_compress_f huf_compress;
-        if (repeat == HUF_repeat_valid && lhSize == 3) { singleStream = 1;
-}
+        if (repeat == HUF_repeat_valid && lhSize == 3) singleStream = 1;
         huf_compress = singleStream ? HUF_compress1X_repeat : HUF_compress4X_repeat;
         cLitSize = huf_compress(ostart+lhSize, dstCapacity-lhSize,
                                 src, srcSize,
@@ -213,8 +209,7 @@ size_t ZSTD_compressLiterals (
     switch(lhSize)
     {
     case 3: /* 2 - 2 - 10 - 10 */
-        if (!singleStream) { assert(srcSize >= MIN_LITERALS_FOR_4_STREAMS);
-}
+        if (!singleStream) assert(srcSize >= MIN_LITERALS_FOR_4_STREAMS);
         {   U32 const lhc = hType + ((U32)(!singleStream) << 2) + ((U32)srcSize<<4) + ((U32)cLitSize<<14);
             MEM_writeLE24(ostart, lhc);
             break;

@@ -45,9 +45,8 @@ namespace glslang {
 
 bool TSpirvTypeParameter::operator==(const TSpirvTypeParameter& rhs) const
 {
-    if (getAsConstant() != nullptr) {
+    if (getAsConstant() != nullptr)
         return getAsConstant()->getConstArray() == rhs.getAsConstant()->getConstArray();
-}
 
     assert(getAsType() != nullptr);
     return *getAsType() == *rhs.getAsType();
@@ -64,19 +63,18 @@ TSpirvRequirement* TParseContext::makeSpirvRequirement(const TSourceLoc& loc, co
 
     if (name == "extensions") {
         assert(extensions);
-        for (auto *extension : extensions->getSequence()) {
+        for (auto extension : extensions->getSequence()) {
             assert(extension->getAsConstantUnion());
             spirvReq->extensions.insert(*extension->getAsConstantUnion()->getConstArray()[0].getSConst());
         }
     } else if (name == "capabilities") {
         assert(capabilities);
-        for (auto *capability : capabilities->getSequence()) {
+        for (auto capability : capabilities->getSequence()) {
             assert(capability->getAsConstantUnion());
             spirvReq->capabilities.insert(capability->getAsConstantUnion()->getConstArray()[0].getIConst());
         }
-    } else {
+    } else
         error(loc, "unknown SPIR-V requirement", name.c_str(), "");
-}
 
     return spirvReq;
 }
@@ -86,19 +84,17 @@ TSpirvRequirement* TParseContext::mergeSpirvRequirements(const TSourceLoc& loc, 
 {
     // Merge the second SPIR-V requirement to the first one
     if (!spirvReq2->extensions.empty()) {
-        if (spirvReq1->extensions.empty()) {
+        if (spirvReq1->extensions.empty())
             spirvReq1->extensions = spirvReq2->extensions;
-        } else {
+        else
             error(loc, "too many SPIR-V requirements", "extensions", "");
-}
     }
 
     if (!spirvReq2->capabilities.empty()) {
-        if (spirvReq1->capabilities.empty()) {
+        if (spirvReq1->capabilities.empty())
             spirvReq1->capabilities = spirvReq2->capabilities;
-        } else {
+        else
             error(loc, "too many SPIR-V requirements", "capabilities", "");
-}
     }
 
     return spirvReq1;
@@ -106,17 +102,14 @@ TSpirvRequirement* TParseContext::mergeSpirvRequirements(const TSourceLoc& loc, 
 
 void TIntermediate::insertSpirvRequirement(const TSpirvRequirement* spirvReq)
 {
-    if (!spirvRequirement) {
+    if (!spirvRequirement)
         spirvRequirement = new TSpirvRequirement;
-}
 
-    for (const auto& extension : spirvReq->extensions) {
+    for (auto extension : spirvReq->extensions)
         spirvRequirement->extensions.insert(extension);
-}
 
-    for (auto capability : spirvReq->capabilities) {
+    for (auto capability : spirvReq->capabilities)
         spirvRequirement->capabilities.insert(capability);
-}
 }
 
 //
@@ -124,14 +117,13 @@ void TIntermediate::insertSpirvRequirement(const TSpirvRequirement* spirvReq)
 //
 void TIntermediate::insertSpirvExecutionMode(int executionMode, const TIntermAggregate* args)
 {
-    if (!spirvExecutionMode) {
+    if (!spirvExecutionMode)
         spirvExecutionMode = new TSpirvExecutionMode;
-}
 
     TVector<const TIntermConstantUnion*> extraOperands;
     if (args) {
-        for (auto *arg : args->getSequence()) {
-            auto *extraOperand = arg->getAsConstantUnion();
+        for (auto arg : args->getSequence()) {
+            auto extraOperand = arg->getAsConstantUnion();
             assert(extraOperand != nullptr);
             extraOperands.push_back(extraOperand);
         }
@@ -141,15 +133,14 @@ void TIntermediate::insertSpirvExecutionMode(int executionMode, const TIntermAgg
 
 void TIntermediate::insertSpirvExecutionModeId(int executionMode, const TIntermAggregate* args)
 {
-    if (!spirvExecutionMode) {
+    if (!spirvExecutionMode)
         spirvExecutionMode = new TSpirvExecutionMode;
-}
 
     assert(args);
     TVector<const TIntermTyped*> extraOperands;
 
-    for (auto *arg : args->getSequence()) {
-        auto *extraOperand = arg->getAsTyped();
+    for (auto arg : args->getSequence()) {
+        auto extraOperand = arg->getAsTyped();
         assert(extraOperand != nullptr && extraOperand->getQualifier().isConstant());
         extraOperands.push_back(extraOperand);
     }
@@ -161,14 +152,13 @@ void TIntermediate::insertSpirvExecutionModeId(int executionMode, const TIntermA
 //
 void TQualifier::setSpirvDecorate(int decoration, const TIntermAggregate* args)
 {
-    if (!spirvDecorate) {
+    if (!spirvDecorate)
         spirvDecorate = new TSpirvDecorate;
-}
 
     TVector<const TIntermConstantUnion*> extraOperands;
     if (args) {
-        for (auto *arg : args->getSequence()) {
-            auto *extraOperand = arg->getAsConstantUnion();
+        for (auto arg : args->getSequence()) {
+            auto extraOperand = arg->getAsConstantUnion();
             assert(extraOperand != nullptr);
             extraOperands.push_back(extraOperand);
         }
@@ -178,14 +168,13 @@ void TQualifier::setSpirvDecorate(int decoration, const TIntermAggregate* args)
 
 void TQualifier::setSpirvDecorateId(int decoration, const TIntermAggregate* args)
 {
-    if (!spirvDecorate) {
+    if (!spirvDecorate)
         spirvDecorate = new TSpirvDecorate;
-}
 
     assert(args);
     TVector<const TIntermTyped*> extraOperands;
-    for (auto *arg : args->getSequence()) {
-        auto *extraOperand = arg->getAsTyped();
+    for (auto arg : args->getSequence()) {
+        auto extraOperand = arg->getAsTyped();
         assert(extraOperand != nullptr);
         extraOperands.push_back(extraOperand);
     }
@@ -194,14 +183,13 @@ void TQualifier::setSpirvDecorateId(int decoration, const TIntermAggregate* args
 
 void TQualifier::setSpirvDecorateString(int decoration, const TIntermAggregate* args)
 {
-    if (!spirvDecorate) {
+    if (!spirvDecorate)
         spirvDecorate = new TSpirvDecorate;
-}
 
     assert(args);
     TVector<const TIntermConstantUnion*> extraOperands;
-    for (auto *arg : args->getSequence()) {
-        auto *extraOperand = arg->getAsConstantUnion();
+    for (auto arg : args->getSequence()) {
+        auto extraOperand = arg->getAsConstantUnion();
         assert(extraOperand != nullptr);
         extraOperands.push_back(extraOperand);
     }
@@ -214,15 +202,15 @@ TString TQualifier::getSpirvDecorateQualifierString() const
 
     TString qualifierString;
 
-    const auto appendFloat = [&](float f) { qualifierString.append(std::to_string(f)); };
-    const auto appendInt = [&](int i) { qualifierString.append(std::to_string(i)); };
-    const auto appendUint = [&](unsigned int u) { qualifierString.append(std::to_string(u)); };
-    const auto appendBool = [&](bool b) { qualifierString.append(std::to_string(b)); };
+    const auto appendFloat = [&](float f) { qualifierString.append(std::to_string(f).c_str()); };
+    const auto appendInt = [&](int i) { qualifierString.append(std::to_string(i).c_str()); };
+    const auto appendUint = [&](unsigned int u) { qualifierString.append(std::to_string(u).c_str()); };
+    const auto appendBool = [&](bool b) { qualifierString.append(std::to_string(b).c_str()); };
     const auto appendStr = [&](const char* s) { qualifierString.append(s); };
 
     const auto appendDecorate = [&](const TIntermTyped* constant) {
         if (constant->getAsConstantUnion()) {
-            const auto& constArray = constant->getAsConstantUnion()->getConstArray();
+            auto& constArray = constant->getAsConstantUnion()->getConstArray();
             if (constant->getBasicType() == EbtFloat) {
                 float value = static_cast<float>(constArray[0].getDConst());
                 appendFloat(value);
@@ -238,9 +226,8 @@ TString TQualifier::getSpirvDecorateQualifierString() const
             } else if (constant->getBasicType() == EbtString) {
                 const TString* value = constArray[0].getSConst();
                 appendStr(value->c_str());
-            } else {
+            } else
                 assert(0);
-}
         } else {
             assert(constant->getAsSymbolNode());
             appendStr(constant->getAsSymbolNode()->getName().c_str());
@@ -250,7 +237,7 @@ TString TQualifier::getSpirvDecorateQualifierString() const
     for (auto& decorate : spirvDecorate->decorates) {
         appendStr("spirv_decorate(");
         appendInt(decorate.first);
-        for (const auto *extraOperand : decorate.second) {
+        for (auto extraOperand : decorate.second) {
             appendStr(", ");
             appendDecorate(extraOperand);
         }
@@ -260,7 +247,7 @@ TString TQualifier::getSpirvDecorateQualifierString() const
     for (auto& decorateId : spirvDecorate->decorateIds) {
         appendStr("spirv_decorate_id(");
         appendInt(decorateId.first);
-        for (const auto *extraOperand : decorateId.second) {
+        for (auto extraOperand : decorateId.second) {
             appendStr(", ");
             appendDecorate(extraOperand);
         }
@@ -270,7 +257,7 @@ TString TQualifier::getSpirvDecorateQualifierString() const
     for (auto& decorateString : spirvDecorate->decorateStrings) {
         appendStr("spirv_decorate_string(");
         appendInt(decorateString.first);
-        for (const auto *extraOperand : decorateString.second) {
+        for (auto extraOperand : decorateString.second) {
             appendStr(", ");
             appendDecorate(extraOperand);
         }
@@ -285,15 +272,13 @@ TString TQualifier::getSpirvDecorateQualifierString() const
 //
 void TPublicType::setSpirvType(const TSpirvInstruction& spirvInst, const TSpirvTypeParameters* typeParams)
 {
-    if (!spirvType) {
+    if (!spirvType)
         spirvType = new TSpirvType;
-}
 
     basicType = EbtSpirvType;
     spirvType->spirvInst = spirvInst;
-    if (typeParams) {
+    if (typeParams)
         spirvType->typeParams = *typeParams;
-}
 }
 
 TSpirvTypeParameters* TParseContext::makeSpirvTypeParameters(const TSourceLoc& loc, const TIntermConstantUnion* constant)
@@ -303,11 +288,10 @@ TSpirvTypeParameters* TParseContext::makeSpirvTypeParameters(const TSourceLoc& l
         constant->getBasicType() != EbtInt &&
         constant->getBasicType() != EbtUint &&
         constant->getBasicType() != EbtBool &&
-        constant->getBasicType() != EbtString) {
+        constant->getBasicType() != EbtString)
         error(loc, "this type not allowed", constant->getType().getBasicString(), "");
-    } else {
+    else
         spirvTypeParams->push_back(TSpirvTypeParameter(constant));
-}
 
     return spirvTypeParams;
 }
@@ -323,9 +307,8 @@ TSpirvTypeParameters* TParseContext::makeSpirvTypeParameters(const TSourceLoc& /
 TSpirvTypeParameters* TParseContext::mergeSpirvTypeParameters(TSpirvTypeParameters* spirvTypeParams1, TSpirvTypeParameters* spirvTypeParams2)
 {
     // Merge SPIR-V type parameters of the second one to the first one
-    for (const auto& spirvTypeParam : *spirvTypeParams2) {
+    for (const auto& spirvTypeParam : *spirvTypeParams2)
         spirvTypeParams1->push_back(spirvTypeParam);
-}
     return spirvTypeParams1;
 }
 
@@ -335,11 +318,10 @@ TSpirvTypeParameters* TParseContext::mergeSpirvTypeParameters(TSpirvTypeParamete
 TSpirvInstruction* TParseContext::makeSpirvInstruction(const TSourceLoc& loc, const TString& name, const TString& value)
 {
     TSpirvInstruction* spirvInst = new TSpirvInstruction;
-    if (name == "set") {
+    if (name == "set")
         spirvInst->set = value;
-    } else {
+    else
         error(loc, "unknown SPIR-V instruction qualifier", name.c_str(), "");
-}
 
     return spirvInst;
 }
@@ -347,11 +329,10 @@ TSpirvInstruction* TParseContext::makeSpirvInstruction(const TSourceLoc& loc, co
 TSpirvInstruction* TParseContext::makeSpirvInstruction(const TSourceLoc& loc, const TString& name, int value)
 {
     TSpirvInstruction* spirvInstuction = new TSpirvInstruction;
-    if (name == "id") {
+    if (name == "id")
         spirvInstuction->id = value;
-    } else {
+    else
         error(loc, "unknown SPIR-V instruction qualifier", name.c_str(), "");
-}
 
     return spirvInstuction;
 }
@@ -360,19 +341,17 @@ TSpirvInstruction* TParseContext::mergeSpirvInstruction(const TSourceLoc& loc, T
 {
     // Merge qualifiers of the second SPIR-V instruction to those of the first one
     if (!spirvInst2->set.empty()) {
-        if (spirvInst1->set.empty()) {
+        if (spirvInst1->set.empty())
             spirvInst1->set = spirvInst2->set;
-        } else {
+        else
             error(loc, "too many SPIR-V instruction qualifiers", "spirv_instruction", "(set)");
-}
     }
 
     if (spirvInst2->id != -1) {
-        if (spirvInst1->id == -1) {
+        if (spirvInst1->id == -1)
             spirvInst1->id = spirvInst2->id;
-        } else {
+        else
             error(loc, "too many SPIR-V instruction qualifiers", "spirv_instruction", "(id)");
-}
     }
 
     return spirvInst1;

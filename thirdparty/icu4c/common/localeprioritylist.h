@@ -54,7 +54,7 @@ struct LocaleAndWeightArray;
  *        qvalue         = ( "0" [ "." 0*3DIGIT ] )
  *                       | ( "1" [ "." 0*3("0") ] )
  */
-class U_COMMON_API LocalePriorityList ; public UMemory; {
+class U_COMMON_API LocalePriorityList : public UMemory {
 public:
     class Iterator : public Locale::Iterator {
     public:

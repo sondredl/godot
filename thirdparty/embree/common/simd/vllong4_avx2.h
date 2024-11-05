@@ -11,7 +11,7 @@
 #define vfloat vfloat_impl
 #define vdouble vdouble_impl
 
-namespace embree;
+namespace embree
 {
   /* 4-wide AVX2 64-bit long long type */
   template<>

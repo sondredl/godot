@@ -53,8 +53,7 @@ DictionaryBreakEngine::findBreaks( UText *text,
                                  UVector32 &foundBreaks,
                                  UBool isPhraseBreaking,
                                  UErrorCode& status) const {
-    if (U_FAILURE(status)) { return 0;
-}
+    if (U_FAILURE(status)) return 0;
     int32_t result = 0;
 
     // Find the span of characters included in the set.
@@ -199,7 +198,7 @@ static const int32_t THAI_MIN_WORD = 2;
 static const int32_t THAI_MIN_WORD_SPAN = THAI_MIN_WORD * 2;
 
 ThaiBreakEngine::ThaiBreakEngine(DictionaryMatcher *adoptDictionary, UErrorCode &status)
-    :
+    : DictionaryBreakEngine(),
       fDictionary(adoptDictionary)
 {
     UTRACE_ENTRY(UTRACE_UBRK_CREATE_BREAK_ENGINE);
@@ -237,8 +236,7 @@ ThaiBreakEngine::divideUpDictionaryRange( UText *text,
                                                 UVector32 &foundBreaks,
                                                 UBool /* isPhraseBreaking */,
                                                 UErrorCode& status) const {
-    if (U_FAILURE(status)) { return 0;
-}
+    if (U_FAILURE(status)) return 0;
     utext_setNativeIndex(text, rangeStart);
     utext_moveIndex32(text, THAI_MIN_WORD_SPAN);
     if (utext_getNativeIndex(text) >= rangeEnd) {
@@ -443,7 +441,7 @@ static const int32_t LAO_MIN_WORD = 2;
 static const int32_t LAO_MIN_WORD_SPAN = LAO_MIN_WORD * 2;
 
 LaoBreakEngine::LaoBreakEngine(DictionaryMatcher *adoptDictionary, UErrorCode &status)
-    :
+    : DictionaryBreakEngine(),
       fDictionary(adoptDictionary)
 {
     UTRACE_ENTRY(UTRACE_UBRK_CREATE_BREAK_ENGINE);
@@ -478,8 +476,7 @@ LaoBreakEngine::divideUpDictionaryRange( UText *text,
                                                 UVector32 &foundBreaks,
                                                 UBool /* isPhraseBreaking */,
                                                 UErrorCode& status) const {
-    if (U_FAILURE(status)) { return 0;
-}
+    if (U_FAILURE(status)) return 0;
     if ((rangeEnd - rangeStart) < LAO_MIN_WORD_SPAN) {
         return 0;       // Not enough characters for two words
     }
@@ -641,7 +638,7 @@ static const int32_t BURMESE_MIN_WORD = 2;
 static const int32_t BURMESE_MIN_WORD_SPAN = BURMESE_MIN_WORD * 2;
 
 BurmeseBreakEngine::BurmeseBreakEngine(DictionaryMatcher *adoptDictionary, UErrorCode &status)
-    :
+    : DictionaryBreakEngine(),
       fDictionary(adoptDictionary)
 {
     UTRACE_ENTRY(UTRACE_UBRK_CREATE_BREAK_ENGINE);
@@ -672,8 +669,7 @@ BurmeseBreakEngine::divideUpDictionaryRange( UText *text,
                                                 UVector32 &foundBreaks,
                                                 UBool /* isPhraseBreaking */,
                                                 UErrorCode& status ) const {
-    if (U_FAILURE(status)) { return 0;
-}
+    if (U_FAILURE(status)) return 0;
     if ((rangeEnd - rangeStart) < BURMESE_MIN_WORD_SPAN) {
         return 0;       // Not enough characters for two words
     }
@@ -835,7 +831,7 @@ static const int32_t KHMER_MIN_WORD = 2;
 static const int32_t KHMER_MIN_WORD_SPAN = KHMER_MIN_WORD * 2;
 
 KhmerBreakEngine::KhmerBreakEngine(DictionaryMatcher *adoptDictionary, UErrorCode &status)
-    :
+    : DictionaryBreakEngine(),
       fDictionary(adoptDictionary)
 {
     UTRACE_ENTRY(UTRACE_UBRK_CREATE_BREAK_ENGINE);
@@ -879,8 +875,7 @@ KhmerBreakEngine::divideUpDictionaryRange( UText *text,
                                                 UVector32 &foundBreaks,
                                                 UBool /* isPhraseBreaking */,
                                                 UErrorCode& status ) const {
-    if (U_FAILURE(status)) { return 0;
-}
+    if (U_FAILURE(status)) return 0;
     if ((rangeEnd - rangeStart) < KHMER_MIN_WORD_SPAN) {
         return 0;       // Not enough characters for two words
     }
@@ -1059,7 +1054,7 @@ foundBest:
  */
 static const uint32_t kuint32max = 0xFFFFFFFF;
 CjkBreakEngine::CjkBreakEngine(DictionaryMatcher *adoptDictionary, LanguageType type, UErrorCode &status)
-:  fDictionary(adoptDictionary), isCj(false) {
+: DictionaryBreakEngine(), fDictionary(adoptDictionary), isCj(false) {
     UTRACE_ENTRY(UTRACE_UBRK_CREATE_BREAK_ENGINE);
     UTRACE_DATA1(UTRACE_INFO, "dictbe=%s", "Hani");
     fMlBreakEngine = nullptr;
@@ -1142,8 +1137,7 @@ CjkBreakEngine::divideUpDictionaryRange( UText *inText,
         UVector32 &foundBreaks,
         UBool isPhraseBreaking,
         UErrorCode& status) const {
-    if (U_FAILURE(status)) { return 0;
-}
+    if (U_FAILURE(status)) return 0;
     if (rangeStart >= rangeEnd) {
         return 0;
     }

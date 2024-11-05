@@ -92,7 +92,7 @@ namespace VULKAN_HPP_NAMESPACE
     ReferenceCounter( const ReferenceCounter & )             = delete;
     ReferenceCounter & operator=( const ReferenceCounter & ) = delete;
 
-
+  public:
     size_t addRef() VULKAN_HPP_NOEXCEPT
     {
       // Relaxed memory order is sufficient since this does not impose any ordering on other operations
@@ -372,7 +372,7 @@ namespace VULKAN_HPP_NAMESPACE
     {
     }
 
-
+  public:
     void destroy( DestructorType parent, HandleType handle ) const VULKAN_HPP_NOEXCEPT
     {
       VULKAN_HPP_ASSERT( m_destroy && m_dispatch );
@@ -406,7 +406,7 @@ namespace VULKAN_HPP_NAMESPACE
     {
     }
 
-
+  public:
     void destroy( DestructorType parent, HandleType handle ) const VULKAN_HPP_NOEXCEPT
     {
       VULKAN_HPP_ASSERT( m_destroy && m_dispatch );

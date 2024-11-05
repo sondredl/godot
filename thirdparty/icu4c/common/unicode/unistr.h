@@ -345,7 +345,7 @@ public:
    */
   template<typename S, typename = std::enable_if_t<ConvertibleToU16StringView<S>>>
   inline bool operator==(const S &text) const {
-    std::u16string_view; sv(internal::toU16StringView(text));
+    std::u16string_view sv(internal::toU16StringView(text));
     uint32_t len;  // unsigned to avoid a compiler warning
     return !isBogus() && (len = length()) == sv.length() && doEquals(sv.data(), len);
   }

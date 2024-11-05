@@ -191,8 +191,7 @@ while (plength > 0)
       switch (posix_state)
         {
         case POSIX_CLASS_STARTED:
-        if (c <= 127 && islower(c)) { break;  /* Remain in started state */
-}
+        if (c <= 127 && islower(c)) break;  /* Remain in started state */
         posix_state = POSIX_CLASS_NOT_STARTED;
         if (c == CHAR_COLON  && plength > 0 &&
             *posix == CHAR_RIGHT_SQUARE_BRACKET)
@@ -205,20 +204,17 @@ while (plength > 0)
         /* Fall through */
 
         case POSIX_CLASS_NOT_STARTED:
-        if (c == CHAR_LEFT_SQUARE_BRACKET) {
+        if (c == CHAR_LEFT_SQUARE_BRACKET)
           posix_state = POSIX_CLASS_STARTING;
-}
         break;
 
         case POSIX_CLASS_STARTING:
-        if (c == CHAR_COLON) { posix_state = POSIX_CLASS_STARTED;
-}
+        if (c == CHAR_COLON) posix_state = POSIX_CLASS_STARTED;
         break;
         }
 
       if (c == CHAR_BACKSLASH) PUTCHARS(STR_BACKSLASH);
-      if (p + clength > endp) { return PCRE2_ERROR_NOMEMORY;
-}
+      if (p + clength > endp) return PCRE2_ERROR_NOMEMORY;
       memcpy(p, posix - clength, CU2BYTES(clength));
       p += clength;
       }
@@ -226,7 +222,7 @@ while (plength > 0)
 
   /* Handle a character not within a class. */
 
-  else { switch(sc)
+  else switch(sc)
     {
     case CHAR_LEFT_SQUARE_BRACKET:
     PUTCHARS(STR_LEFT_SQUARE_BRACKET);
@@ -279,26 +275,22 @@ while (plength > 0)
     break;
 
     case CHAR_BACKSLASH:
-    if (plength == 0) { return PCRE2_ERROR_END_BACKSLASH;
-}
-    if (extended) { nextisliteral = TRUE; } else
+    if (plength == 0) return PCRE2_ERROR_END_BACKSLASH;
+    if (extended) nextisliteral = TRUE; else
       {
       if (*posix < 127 && strchr(posix_meta_escapes, *posix) != NULL)
         {
         if (isdigit(*posix)) PUTCHARS(STR_BACKSLASH);
-        if (p + 1 > endp) { return PCRE2_ERROR_NOMEMORY;
-}
+        if (p + 1 > endp) return PCRE2_ERROR_NOMEMORY;
         lastspecial = *p++ = *posix++;
         plength--;
         }
-      else { nextisliteral = TRUE;
-}
+      else nextisliteral = TRUE;
       }
     break;
 
     case CHAR_RIGHT_PARENTHESIS:
-    if (!extended || bracount == 0) { goto ESCAPE_LITERAL;
-}
+    if (!extended || bracount == 0) goto ESCAPE_LITERAL;
     bracount--;
     goto COPY_SPECIAL;
 
@@ -311,8 +303,7 @@ while (plength > 0)
     case CHAR_LEFT_CURLY_BRACKET:
     case CHAR_RIGHT_CURLY_BRACKET:
     case CHAR_VERTICAL_LINE:
-    if (!extended) { goto ESCAPE_LITERAL;
-}
+    if (!extended) goto ESCAPE_LITERAL;
     /* Fall through */
 
     case CHAR_DOT:
@@ -320,8 +311,7 @@ while (plength > 0)
     posix_state = POSIX_NOT_BRACKET;
     COPY_SPECIAL:
     lastspecial = c;
-    if (p + 1 > endp) { return PCRE2_ERROR_NOMEMORY;
-}
+    if (p + 1 > endp) return PCRE2_ERROR_NOMEMORY;
     *p++ = c;
     break;
 
@@ -329,16 +319,14 @@ while (plength > 0)
     if (lastspecial != CHAR_ASTERISK)
       {
       if (!extended && (posix_state < POSIX_NOT_BRACKET ||
-          lastspecial == CHAR_LEFT_PARENTHESIS)) {
+          lastspecial == CHAR_LEFT_PARENTHESIS))
         goto ESCAPE_LITERAL;
-}
       goto COPY_SPECIAL;
       }
     break;   /* Ignore second and subsequent asterisks */
 
     case CHAR_CIRCUMFLEX_ACCENT:
-    if (extended) { goto COPY_SPECIAL;
-}
+    if (extended) goto COPY_SPECIAL;
     if (posix_state == POSIX_START_REGEX ||
         lastspecial == CHAR_LEFT_PARENTHESIS)
       {
@@ -354,19 +342,16 @@ while (plength > 0)
       PUTCHARS(STR_BACKSLASH);
       }
     lastspecial = 0xff;  /* Indicates nothing special */
-    if (p + clength > endp) { return PCRE2_ERROR_NOMEMORY;
-}
+    if (p + clength > endp) return PCRE2_ERROR_NOMEMORY;
     memcpy(p, posix - clength, CU2BYTES(clength));
     p += clength;
     posix_state = POSIX_NOT_BRACKET;
     break;
     }
-}
   }
 
-if (posix_state >= POSIX_CLASS_NOT_STARTED) {
+if (posix_state >= POSIX_CLASS_NOT_STARTED)
   return PCRE2_ERROR_MISSING_SQUARE_BRACKET;
-}
 convlength += p - pp;        /* Final segment */
 *bufflenptr = convlength;
 *p++ = 0;
@@ -500,27 +485,23 @@ int class_index;
 
 while (TRUE)
   {
-  if (pattern >= pattern_end) { return 0;
-}
+  if (pattern >= pattern_end) return 0;
 
   c = *pattern++;
 
-  if (c < CHAR_a || c > CHAR_z) { break;
-}
+  if (c < CHAR_a || c > CHAR_z) break;
   }
 
 if (c != CHAR_COLON || pattern >= pattern_end ||
-    *pattern != CHAR_RIGHT_SQUARE_BRACKET) {
+    *pattern != CHAR_RIGHT_SQUARE_BRACKET)
   return 0;
-}
 
 class_ptr = posix_classes;
 class_index = 1;
 
 while (TRUE)
   {
-  if (*class_ptr == CHAR_NUL) { return 0;
-}
+  if (*class_ptr == CHAR_NUL) return 0;
 
   pattern = start;
 
@@ -540,8 +521,7 @@ while (TRUE)
     class_ptr++;
     }
 
-  while (*class_ptr != CHAR_COLON) { class_ptr++;
-}
+  while (*class_ptr != CHAR_COLON) class_ptr++;
   class_ptr++;
   class_index++;
   }
@@ -650,9 +630,8 @@ if (*pattern == CHAR_EXCLAMATION_MARK
 
   convert_glob_write_str(out, len + 1);
   }
-else {
-  c
-}onvert_glob_write(out, CHAR_LEFT_SQUARE_BRACKET);
+else
+  convert_glob_write(out, CHAR_LEFT_SQUARE_BRACKET);
 
 has_prev_c = FALSE;
 prev_c = 0;
@@ -692,8 +671,7 @@ while (pattern < pattern_end)
     return 0;
     }
 
-  if (pattern >= pattern_end) { break;
-}
+  if (pattern >= pattern_end) break;
 
   if (c == CHAR_LEFT_SQUARE_BRACKET && *pattern == CHAR_COLON)
     {
@@ -708,9 +686,8 @@ while (pattern < pattern_end)
       prev_c = 0;
 
       if (!is_negative &&
-          convert_glob_char_in_class (class_index, separator)) {
+          convert_glob_char_in_class (class_index, separator))
         separator_seen = TRUE;
-}
       continue;
       }
     }
@@ -722,8 +699,7 @@ while (pattern < pattern_end)
     char_start = pattern;
     GETCHARINCTEST(c, pattern);
 
-    if (pattern >= pattern_end) { break;
-}
+    if (pattern >= pattern_end) break;
 
     if (escape != 0 && c == escape)
       {
@@ -742,8 +718,7 @@ while (pattern < pattern_end)
       return PCRE2_ERROR_CONVERT_SYNTAX;
       }
 
-    if (prev_c < separator && separator < c) { separator_seen = TRUE;
-}
+    if (prev_c < separator && separator < c) separator_seen = TRUE;
 
     has_prev_c = FALSE;
     prev_c = 0;
@@ -755,8 +730,7 @@ while (pattern < pattern_end)
       char_start = pattern;
       GETCHARINCTEST(c, pattern);
 
-      if (pattern >= pattern_end) { break;
-}
+      if (pattern >= pattern_end) break;
       }
 
     has_prev_c = TRUE;
@@ -767,8 +741,7 @@ while (pattern < pattern_end)
       c == CHAR_BACKSLASH || c == CHAR_MINUS)
     convert_glob_write(out, CHAR_BACKSLASH);
 
-  if (c == separator) { separator_seen = TRUE;
-}
+  if (c == separator) separator_seen = TRUE;
 
   do convert_glob_write(out, *char_start++); while (char_start < pattern);
   }
@@ -864,12 +837,11 @@ is_start = TRUE;
 
 if (pattern < pattern_end && pattern[0] == CHAR_ASTERISK)
   {
-  if (no_wildsep) {
+  if (no_wildsep)
     is_start = FALSE;
-  } else if (!no_starstar && pattern + 1 < pattern_end &&
-           pattern[1] == CHAR_ASTERISK) {
+  else if (!no_starstar && pattern + 1 < pattern_end &&
+           pattern[1] == CHAR_ASTERISK)
     is_start = FALSE;
-}
   }
 
 if (is_start)
@@ -914,8 +886,7 @@ while (pattern < pattern_end)
 
       if (is_start)
         {
-        if (*pattern != separator) { continue;
-}
+        if (*pattern != separator) continue;
 
         out.out_str[0] = CHAR_LEFT_PARENTHESIS;
         out.out_str[1] = CHAR_QUESTION_MARK;
@@ -978,8 +949,7 @@ while (pattern < pattern_end)
         }
 
       /* Start check must be after the end check. */
-      if (is_start) { continue;
-}
+      if (is_start) continue;
       }
 
     if (!is_start)
@@ -992,9 +962,8 @@ while (pattern < pattern_end)
         convert_glob_write_str(&out, 3);
         in_atomic = TRUE;
         }
-      else {
+      else
         convert_glob_print_commit(&out);
-}
       }
 
     if (no_wildsep)
@@ -1004,9 +973,8 @@ while (pattern < pattern_end)
 
     out.out_str[0] = CHAR_ASTERISK;
     out.out_str[1] = CHAR_QUESTION_MARK;
-    if (pattern >= pattern_end) {
+    if (pattern >= pattern_end)
       out.out_str[1] = CHAR_PLUS;
-}
     convert_glob_write_str(&out, 2);
     continue;
     }
@@ -1024,8 +992,7 @@ while (pattern < pattern_end)
     {
     result = convert_glob_parse_range(&pattern, pattern_end,
       &out, utf, separator, with_escape, escape, no_wildsep);
-    if (result != 0) { break;
-}
+    if (result != 0) break;
     continue;
     }
 
@@ -1059,9 +1026,8 @@ if (result == 0)
 
   convert_glob_write(&out, CHAR_NUL);
 
-  if (!dummyrun && out.output_size != (PCRE2_SIZE) (out.output - use_buffer)) {
+  if (!dummyrun && out.output_size != (PCRE2_SIZE) (out.output - use_buffer))
     result = PCRE2_ERROR_NOMEMORY;
-}
   }
 
 if (result != 0)
@@ -1106,8 +1072,7 @@ PCRE2_SIZE use_length = DUMMY_BUFFER_SIZE;
 BOOL utf = (options & PCRE2_CONVERT_UTF) != 0;
 uint32_t pattype = options & TYPE_OPTIONS;
 
-if (pattern == NULL || bufflenptr == NULL) { return PCRE2_ERROR_NULL;
-}
+if (pattern == NULL || bufflenptr == NULL) return PCRE2_ERROR_NULL;
 
 if ((options & ~ALL_OPTIONS) != 0 ||        /* Undefined bit set */
     (pattype & (~pattype+1)) != pattype ||  /* More than one type set */
@@ -1179,17 +1144,15 @@ for (i = 0; i < 2; i++)
 
   if (rc != 0 ||           /* Error */
       buffptr == NULL ||   /* Just the length is required */
-      *buffptr != NULL) {    /* Buffer was provided or allocated */
+      *buffptr != NULL)    /* Buffer was provided or allocated */
     return rc;
-}
 
   /* Allocate memory for the buffer, with hidden space for an allocator at
   the start. The next time round the loop runs the conversion for real. */
 
   allocated = PRIV(memctl_malloc)(sizeof(pcre2_memctl) +
     (*bufflenptr + 1)*PCRE2_CODE_UNIT_WIDTH, (pcre2_memctl *)ccontext);
-  if (allocated == NULL) { return PCRE2_ERROR_NOMEMORY;
-}
+  if (allocated == NULL) return PCRE2_ERROR_NOMEMORY;
   *buffptr = (PCRE2_UCHAR *)(((char *)allocated) + sizeof(pcre2_memctl));
 
   use_buffer = *buffptr;

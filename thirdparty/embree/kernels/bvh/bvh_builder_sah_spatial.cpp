@@ -73,7 +73,7 @@ namespace embree
 
       // FIXME: shrink bvh->alloc in destructor here and in other builders too
 
-      void build() override
+      void build()
       {
         /* we reset the allocator when the mesh size changed */
         if (mesh && mesh->numPrimitives != numPreviousPrimitives) {
@@ -98,9 +98,8 @@ namespace embree
         prims0.resize(numSplitPrimitives);
 
         /* enable os_malloc for two level build */
-        if (mesh) {
+        if (mesh)
           bvh->alloc.setOSallocation(true);
-}
 
 	NodeRef root(0);
 	PrimInfo pinfo;
@@ -167,7 +166,7 @@ namespace embree
         bvh->postBuild(t0);
       }
 
-      void clear() override {
+      void clear() {
         prims0.clear();
       }
     };

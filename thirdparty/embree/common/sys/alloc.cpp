@@ -83,9 +83,8 @@ namespace embree
 
   void* alignedMalloc(size_t size, size_t align)
   {
-    if (size == 0) {
+    if (size == 0)
       return nullptr;
-}
 
     assert((align & (align-1)) == 0);
     void* ptr = _mm_malloc(size,align);
@@ -101,9 +100,8 @@ namespace embree
 
   void alignedFree(void* ptr)
   {
-    if (ptr) {
+    if (ptr)
       _mm_free(ptr);
-}
   }
 
 #if defined(EMBREE_SYCL_SUPPORT)
@@ -186,9 +184,8 @@ namespace embree
 
   __forceinline bool isHugePageCandidate(const size_t bytes)
   {
-    if (!huge_pages_enabled) {
+    if (!huge_pages_enabled)
       return false;
-}
 
     /* use huge pages only when memory overhead is low */
     const size_t hbytes = (bytes+PAGE_SIZE_2M-1) & ~size_t(PAGE_SIZE_2M-1);
@@ -338,9 +335,9 @@ namespace embree
 #if defined(__UNIX__)
 
 #include <sys/mman.h>
-#include <cerrno>
-#include <cstdlib>
-#include <cstring>
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sstream>
 
 #if defined(__MACOSX__)
@@ -365,8 +362,7 @@ namespace embree
     std::ifstream file;
     file.open("/proc/meminfo",std::ios::in);
     if (!file.is_open()) {
-      if (verbose) { std::cout << "WARNING: Could not open /proc/meminfo. Huge page support cannot get enabled!" << std::endl;
-}
+      if (verbose) std::cout << "WARNING: Could not open /proc/meminfo. Huge page support cannot get enabled!" << std::endl;
       huge_pages_enabled = false;
       return false;
     }
@@ -375,14 +371,11 @@ namespace embree
     while (getline(file,line))
     {
       std::stringstream sline(line);
-      while (!sline.eof() && sline.peek() == ' ') { sline.ignore();
-}
+      while (!sline.eof() && sline.peek() == ' ') sline.ignore();
       std::string tag; getline(sline,tag,' ');
-      while (!sline.eof() && sline.peek() == ' ') { sline.ignore();
-}
+      while (!sline.eof() && sline.peek() == ' ') sline.ignore();
       std::string val; getline(sline,val,' ');
-      while (!sline.eof() && sline.peek() == ' ') { sline.ignore();
-}
+      while (!sline.eof() && sline.peek() == ' ') sline.ignore();
       std::string unit; getline(sline,unit,' ');
       if (tag == "Hugepagesize:" && unit == "kB") {
 	hugepagesize = std::stoi(val)*1024;
@@ -392,8 +385,7 @@ namespace embree
 
     if (hugepagesize != PAGE_SIZE_2M)
     {
-      if (verbose) { std::cout << "WARNING: Only 2MB huge pages supported. Huge page support cannot get enabled!" << std::endl;
-}
+      if (verbose) std::cout << "WARNING: Only 2MB huge pages supported. Huge page support cannot get enabled!" << std::endl;
       huge_pages_enabled = false;
       return false;
     }
@@ -448,9 +440,8 @@ namespace embree
     const size_t pageSize = hugepages ? PAGE_SIZE_2M : PAGE_SIZE_4K;
     bytesNew = (bytesNew+pageSize-1) & ~(pageSize-1);
     bytesOld = (bytesOld+pageSize-1) & ~(pageSize-1);
-    if (bytesNew >= bytesOld) {
+    if (bytesNew >= bytesOld)
       return bytesOld;
-}
 
     // -- GODOT start --
     // if (munmap((char*)ptr+bytesNew,bytesOld-bytesNew) == -1)
@@ -465,9 +456,8 @@ namespace embree
 
   void os_free(void* ptr, size_t bytes, bool hugepages)
   {
-    if (bytes == 0) {
+    if (bytes == 0)
       return;
-}
 
     /* for hugepages we need to also align the size */
     const size_t pageSize = hugepages ? PAGE_SIZE_2M : PAGE_SIZE_4K;

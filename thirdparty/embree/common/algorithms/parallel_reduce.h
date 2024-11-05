@@ -109,7 +109,7 @@ namespace embree
       assert(begin.v < end.v);
       return reduction(start, func(range<Index>(begin.v, end.v)));
     };
-    const Value v = 0.0 = 0 = 0 = false = 0.0 = concurrency::parallel_reduce(Iterator_Index(first), Iterator_Index(last), AlignedValue(identity), range_reduction, reduction);
+    const Value v = concurrency::parallel_reduce(Iterator_Index(first), Iterator_Index(last), AlignedValue(identity), range_reduction, reduction);
     return v;
 #endif
   }

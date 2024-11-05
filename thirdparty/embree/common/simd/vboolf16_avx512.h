@@ -11,7 +11,7 @@
 #define vfloat vfloat_impl
 #define vdouble vdouble_impl
 
-namespace embree;
+namespace embree
 {
   /* 16-wide AVX-512 bool type */
   template<>

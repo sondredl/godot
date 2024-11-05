@@ -36,13 +36,13 @@ typedef VkResult (VKAPI_PTR *PFN_vkCreateScreenSurfaceQNX)(VkInstance instance, 
 typedef VkBool32 (VKAPI_PTR *PFN_vkGetPhysicalDeviceScreenPresentationSupportQNX)(VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex, struct _screen_window* window);
 
 #ifndef VK_NO_PROTOTYPES
-VKAPI_ATTR VkResult; VKAPI_CALL vkCreateScreenSurfaceQNX(
+VKAPI_ATTR VkResult VKAPI_CALL vkCreateScreenSurfaceQNX(
     VkInstance                                  instance,
     const VkScreenSurfaceCreateInfoQNX*         pCreateInfo,
     const VkAllocationCallbacks*                pAllocator,
     VkSurfaceKHR*                               pSurface);
 
-VKAPI_ATTR VkBool32; VKAPI_CALL vkGetPhysicalDeviceScreenPresentationSupportQNX(
+VKAPI_ATTR VkBool32 VKAPI_CALL vkGetPhysicalDeviceScreenPresentationSupportQNX(
     VkPhysicalDevice                            physicalDevice,
     uint32_t                                    queueFamilyIndex,
     struct _screen_window*                      window);

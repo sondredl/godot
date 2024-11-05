@@ -1760,7 +1760,7 @@ public:
     bool operator!=(const USetElementIterator &other) const { return !operator==(other); }
 
     /** @draft ICU 76 */
-    icu_70::UnicodeString operator*() const {
+    UnicodeString operator*() const {
         if (c >= 0) {
             return UnicodeString(c);
         } else if (index < totalCount) {

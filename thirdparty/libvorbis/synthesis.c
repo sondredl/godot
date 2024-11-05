@@ -78,9 +78,8 @@ int vorbis_synthesis(vorbis_block *vb,ogg_packet *op){
   /* alloc pcm passback storage */
   vb->pcmend=ci->blocksizes[vb->W];
   vb->pcm=_vorbis_block_alloc(vb,sizeof(*vb->pcm)*vi->channels);
-  for(i=0;i<vi->channels;i++) {
+  for(i=0;i<vi->channels;i++)
     vb->pcm[i]=_vorbis_block_alloc(vb,vb->pcmend*sizeof(*vb->pcm[i]));
-}
 
   /* unpack_header enforces range checking */
   type=ci->map_type[ci->mode_param[mode]->mapping];
@@ -111,8 +110,7 @@ int vorbis_synthesis_trackonly(vorbis_block *vb,ogg_packet *op){
 
   /* read our mode and pre/post windowsize */
   mode=oggpack_read(opb,b->modebits);
-  if(mode==-1) {return(OV_EBADPACKET);
-}
+  if(mode==-1)return(OV_EBADPACKET);
 
   vb->mode=mode;
   if(!ci->mode_param[mode]){
@@ -123,8 +121,7 @@ int vorbis_synthesis_trackonly(vorbis_block *vb,ogg_packet *op){
   if(vb->W){
     vb->lW=oggpack_read(opb,1);
     vb->nW=oggpack_read(opb,1);
-    if(vb->nW==-1) {   return(OV_EBADPACKET);
-}
+    if(vb->nW==-1)   return(OV_EBADPACKET);
   }else{
     vb->lW=0;
     vb->nW=0;
@@ -162,8 +159,7 @@ long vorbis_packet_blocksize(vorbis_info *vi,ogg_packet *op){
 
   /* read our mode and pre/post windowsize */
   mode=oggpack_read(&opb,ov_ilog(ci->modes-1));
-  if(mode==-1 || !ci->mode_param[mode]) {return(OV_EBADPACKET);
-}
+  if(mode==-1 || !ci->mode_param[mode])return(OV_EBADPACKET);
   return(ci->blocksizes[ci->mode_param[mode]->blockflag]);
 }
 
@@ -172,8 +168,7 @@ int vorbis_synthesis_halfrate(vorbis_info *vi,int flag){
   codec_setup_info     *ci=vi->codec_setup;
 
   /* right now, our MDCT can't handle < 64 sample windows. */
-  if(ci->blocksizes[0]<=64 && flag) {return -1;
-}
+  if(ci->blocksizes[0]<=64 && flag)return -1;
   ci->halfrate_flag=(flag?1:0);
   return 0;
 }

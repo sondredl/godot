@@ -56,8 +56,7 @@ namespace embree
     std::string fullName = "lib"+file+".so";
 #endif
     void* lib = dlopen(fullName.c_str(), RTLD_NOW);
-    if (lib) { return lib_t(lib);
-}
+    if (lib) return lib_t(lib);
     FileName executable = getExecutableFileName();
     lib = dlopen((executable.path() + fullName).c_str(),RTLD_NOW);
     if (lib == nullptr) {

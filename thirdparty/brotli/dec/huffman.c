@@ -95,8 +95,7 @@ static BROTLI_INLINE int NextTableBitSize(const uint16_t* const count,
   int left = 1 << (len - root_bits);
   while (len < BROTLI_HUFFMAN_MAX_CODE_LENGTH) {
     left -= count[len];
-    if (left <= 0) { break;
-}
+    if (left <= 0) break;
     ++len;
     left <<= 1;
   }
@@ -194,8 +193,7 @@ uint32_t BrotliBuildHuffmanTable(HuffmanCode* root_table,
   BROTLI_DCHECK(BROTLI_HUFFMAN_MAX_CODE_LENGTH - root_bits <=
                 BROTLI_REVERSE_BITS_MAX);
 
-  while (symbol_lists[max_length] == 0xFFFF) { max_length--;
-}
+  while (symbol_lists[max_length] == 0xFFFF) max_length--;
   max_length += BROTLI_HUFFMAN_MAX_CODE_LENGTH + 1;
 
   table = root_table;

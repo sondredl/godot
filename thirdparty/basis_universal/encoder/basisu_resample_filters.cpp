@@ -24,37 +24,32 @@ namespace basisu
 	static float box_filter(float t) /* pulse/Fourier window */
 	{
 		// make_clist() calls the filter function with t inverted (pos = left, neg = right)
-		if ((t >= -0.5f) && (t < 0.5f)) {
+		if ((t >= -0.5f) && (t < 0.5f))
 			return 1.0f;
-		} else {
+		else
 			return 0.0f;
-}
 	}
 
 #define TENT_FILTER_SUPPORT (1.0f)
 	static float tent_filter(float t) /* box (*) box, bilinear/triangle */
 	{
-		if (t < 0.0f) {
+		if (t < 0.0f)
 			t = -t;
-}
 
-		if (t < 1.0f) {
+		if (t < 1.0f)
 			return 1.0f - t;
-		} else {
+		else
 			return 0.0f;
-}
 	}
 
 #define BELL_SUPPORT (1.5f)
 	static float bell_filter(float t) /* box (*) box (*) box */
 	{
-		if (t < 0.0f) {
+		if (t < 0.0f)
 			t = -t;
-}
 
-		if (t < .5f) {
+		if (t < .5f)
 			return (.75f - (t * t));
-}
 
 		if (t < 1.5f)
 		{
@@ -70,9 +65,8 @@ namespace basisu
 	{
 		float tt;
 
-		if (t < 0.0f) {
+		if (t < 0.0f)
 			t = -t;
-}
 
 		if (t < 1.0f)
 		{
@@ -92,21 +86,18 @@ namespace basisu
 #define QUADRATIC_SUPPORT 1.5f
 	static float quadratic(float t, const float R)
 	{
-		if (t < 0.0f) {
+		if (t < 0.0f)
 			t = -t;
-}
 		if (t < QUADRATIC_SUPPORT)
 		{
 			float tt = t * t;
-			if (t <= .5f) {
+			if (t <= .5f)
 				return (-2.0f * R) * tt + .5f * (R + 1.0f);
-			} else {
+			else
 				return (R * tt) + (-2.0f * R - .5f) * t + (3.0f / 4.0f) * (R + 1.0f);
-}
 		}
-		else {
+		else
 			return 0.0f;
-}
 	}
 
 	static float quadratic_interp_filter(float t)
@@ -138,9 +129,8 @@ namespace basisu
 
 		tt = t * t;
 
-		if (t < 0.0f) {
+		if (t < 0.0f)
 			t = -t;
-}
 
 		if (t < 1.0f)
 		{
@@ -174,9 +164,8 @@ namespace basisu
 	{
 		x = (x * M_PI);
 
-		if ((x < 0.01f) && (x > -0.01f)) {
+		if ((x < 0.01f) && (x > -0.01f))
 			return 1.0f + x * x * (-1.0f / 6.0f + x * x * 1.0f / 120.0f);
-}
 
 		return sin(x) / x;
 	}
@@ -184,9 +173,8 @@ namespace basisu
 	static float clean(double t)
 	{
 		const float EPSILON = .0000125f;
-		if (fabs(t) < EPSILON) {
+		if (fabs(t) < EPSILON)
 			return 0.0f;
-}
 		return (float)t;
 	}
 
@@ -203,86 +191,74 @@ namespace basisu
 #define BLACKMAN_SUPPORT (3.0f)
 	static float blackman_filter(float t)
 	{
-		if (t < 0.0f) {
+		if (t < 0.0f)
 			t = -t;
-}
 
-		if (t < 3.0f) {
+		if (t < 3.0f)
 			//return clean(sinc(t) * blackman_window(t / 3.0f));
 			return clean(sinc(t) * blackman_exact_window(t / 3.0f));
-		} else {
+		else
 			return (0.0f);
-}
 	}
 
 #define GAUSSIAN_SUPPORT (1.25f)
 	static float gaussian_filter(float t) // with blackman window
 	{
-		if (t < 0) {
+		if (t < 0)
 			t = -t;
-}
-		if (t < GAUSSIAN_SUPPORT) {
+		if (t < GAUSSIAN_SUPPORT)
 			return clean(exp(-2.0f * t * t) * sqrt(2.0f / M_PI) * blackman_exact_window(t / GAUSSIAN_SUPPORT));
-		} else {
+		else
 			return 0.0f;
-}
 	}
 
 	// Windowed sinc -- see "Jimm Blinn's Corner: Dirty Pixels" pg. 26.
 #define LANCZOS3_SUPPORT (3.0f)
 	static float lanczos3_filter(float t)
 	{
-		if (t < 0.0f) {
+		if (t < 0.0f)
 			t = -t;
-}
 
-		if (t < 3.0f) {
+		if (t < 3.0f)
 			return clean(sinc(t) * sinc(t / 3.0f));
-		} else {
+		else
 			return (0.0f);
-}
 	}
 
 #define LANCZOS4_SUPPORT (4.0f)
 	static float lanczos4_filter(float t)
 	{
-		if (t < 0.0f) {
+		if (t < 0.0f)
 			t = -t;
-}
 
-		if (t < 4.0f) {
+		if (t < 4.0f)
 			return clean(sinc(t) * sinc(t / 4.0f));
-		} else {
+		else
 			return (0.0f);
-}
 	}
 
 #define LANCZOS6_SUPPORT (6.0f)
 	static float lanczos6_filter(float t)
 	{
-		if (t < 0.0f) {
+		if (t < 0.0f)
 			t = -t;
-}
 
-		if (t < 6.0f) {
+		if (t < 6.0f)
 			return clean(sinc(t) * sinc(t / 6.0f));
-		} else {
+		else
 			return (0.0f);
-}
 	}
 
 #define LANCZOS12_SUPPORT (12.0f)
 	static float lanczos12_filter(float t)
 	{
-		if (t < 0.0f) {
+		if (t < 0.0f)
 			t = -t;
-}
 
-		if (t < 12.0f) {
+		if (t < 12.0f)
 			return clean(sinc(t) * sinc(t / 12.0f));
-		} else {
+		else
 			return (0.0f);
-}
 	}
 
 	static double bessel0(double x)
@@ -317,9 +293,8 @@ namespace basisu
 #define KAISER_SUPPORT 3
 	static float kaiser_filter(float t)
 	{
-		if (t < 0.0f) {
+		if (t < 0.0f)
 			t = -t;
-}
 
 		if (t < KAISER_SUPPORT)
 		{
@@ -357,11 +332,9 @@ namespace basisu
 
 	int find_resample_filter(const char *pName)
 	{
-		for (int i = 0; i < g_num_resample_filters; i++) {
-			if (strcmp(pName, g_resample_filters[i].name) == 0) {
+		for (int i = 0; i < g_num_resample_filters; i++)
+			if (strcmp(pName, g_resample_filters[i].name) == 0)
 				return i;
-}
-}
 		return -1;
 	}
 } // namespace basisu

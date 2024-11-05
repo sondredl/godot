@@ -273,9 +273,8 @@
     unsigned int  cc;
 
 
-    if ( c < 0 || c >= 0x80 ) {
+    if ( c < 0 || c >= 0x80 )
       return 0;
-}
 
     cc = (unsigned int)c;
 
@@ -527,9 +526,8 @@
       return NULL;
 
     if ( FT_STREAM_SEEK( entry->stringOffset ) ||
-         FT_FRAME_ENTER( entry->stringLength ) ) {
+         FT_FRAME_ENTER( entry->stringLength ) )
       goto get_win_string_error;
-}
 
     r = (FT_String*)result;
     p = (FT_Char*)stream->cursor;
@@ -551,9 +549,8 @@
 
     FT_FRAME_EXIT();
 
-    if ( r != result ) {
+    if ( r != result )
       return result;
-}
 
   get_win_string_error:
     FT_FREE( result );
@@ -573,7 +570,7 @@
                     char_type_func  char_type,
                     FT_Bool         report_invalid_characters )
   {
-
+    FT_Error  error;
 
     char*       result = NULL;
     FT_String*  r;
@@ -585,9 +582,8 @@
       return NULL;
 
     if ( FT_STREAM_SEEK( entry->stringOffset ) ||
-         FT_FRAME_ENTER( entry->stringLength ) ) {
+         FT_FRAME_ENTER( entry->stringLength ) )
       goto get_apple_string_error;
-}
 
     r = (FT_String*)result;
     p = (FT_Char*)stream->cursor;
@@ -609,9 +605,8 @@
 
     FT_FRAME_EXIT();
 
-    if ( r != result ) {
+    if ( r != result )
       return result;
-}
 
   get_apple_string_error:
     FT_FREE( result );

@@ -32,14 +32,11 @@ static int BitWriterResize(VP8BitWriter* const bw, size_t extra_size) {
     bw->error_ = 1;
     return 0;
   }
-  if (needed_size <= bw->max_pos_) { return 1;
-}
+  if (needed_size <= bw->max_pos_) return 1;
   // If the following line wraps over 32bit, the test just after will catch it.
   new_size = 2 * bw->max_pos_;
-  if (new_size < needed_size) { new_size = needed_size;
-}
-  if (new_size < 1024) { new_size = 1024;
-}
+  if (new_size < needed_size) new_size = needed_size;
+  if (new_size < 1024) new_size = 1024;
   new_buf = (uint8_t*)WebPSafeMalloc(1ULL, new_size);
   if (new_buf == NULL) {
     bw->error_ = 1;
@@ -152,8 +149,7 @@ void VP8PutBits(VP8BitWriter* const bw, uint32_t value, int nb_bits) {
 }
 
 void VP8PutSignedBits(VP8BitWriter* const bw, int value, int nb_bits) {
-  if (!VP8PutBitUniform(bw, value != 0)) { return;
-}
+  if (!VP8PutBitUniform(bw, value != 0)) return;
   if (value < 0) {
     VP8PutBits(bw, ((-value) << 1) | 1, nb_bits + 1);
   } else {
@@ -185,10 +181,8 @@ uint8_t* VP8BitWriterFinish(VP8BitWriter* const bw) {
 int VP8BitWriterAppend(VP8BitWriter* const bw,
                        const uint8_t* data, size_t size) {
   assert(data != NULL);
-  if (bw->nb_bits_ != -8) { return 0;   // Flush() must have been called
-}
-  if (!BitWriterResize(bw, size)) { return 0;
-}
+  if (bw->nb_bits_ != -8) return 0;   // Flush() must have been called
+  if (!BitWriterResize(bw, size)) return 0;
   memcpy(bw->buf_ + bw->pos_, data, size);
   bw->pos_ += size;
   return 1;
@@ -220,11 +214,9 @@ static int VP8LBitWriterResize(VP8LBitWriter* const bw, size_t extra_size) {
     bw->error_ = 1;
     return 0;
   }
-  if (max_bytes > 0 && size_required <= max_bytes) { return 1;
-}
+  if (max_bytes > 0 && size_required <= max_bytes) return 1;
   allocated_size = (3 * max_bytes) >> 1;
-  if (allocated_size < size_required) { allocated_size = size_required;
-}
+  if (allocated_size < size_required) allocated_size = size_required;
   // make allocated size multiple of 1k
   allocated_size = (((allocated_size >> 10) + 1) << 10);
   allocated_buf = (uint8_t*)WebPSafeMalloc(1ULL, allocated_size);
@@ -251,8 +243,7 @@ int VP8LBitWriterClone(const VP8LBitWriter* const src,
                        VP8LBitWriter* const dst) {
   const size_t current_size = src->cur_ - src->buf_;
   assert(src->cur_ >= src->buf_ && src->cur_ <= src->end_);
-  if (!VP8LBitWriterResize(dst, current_size)) { return 0;
-}
+  if (!VP8LBitWriterResize(dst, current_size)) return 0;
   memcpy(dst->buf_, src->buf_, current_size);
   dst->bits_ = src->bits_;
   dst->used_ = src->used_;

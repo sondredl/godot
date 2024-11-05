@@ -20,7 +20,7 @@
 // THE SOFTWARE.
 
 #include "ffx_assert.h"
-#include <cstdlib>  // for malloc()
+#include <stdlib.h>  // for malloc()
 
 #ifdef _WIN32
 #ifndef WIN32_LEAN_AND_MEAN
@@ -36,6 +36,7 @@ static FfxAssertCallback s_assertCallback;
 void ffxAssertSetPrintingCallback(FfxAssertCallback callback)
 {
     s_assertCallback = callback;
+    return;
 }
 
 // implementation of assert reporting

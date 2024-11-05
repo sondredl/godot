@@ -71,10 +71,8 @@ float _bezAt(const Bezier& bz, float at, float length, LengthFunc lineLengthFunc
     auto t = 0.5f;
 
     //just in case to prevent an infinite loop
-    if (at <= 0) { return 0.0f;
-}
-    if (at >= length) { return 1.0f;
-}
+    if (at <= 0) return 0.0f;
+    if (at >= length) return 1.0f;
 
     while (true) {
         auto right = bz;
@@ -225,8 +223,7 @@ Point bezPointAt(const Bezier& bz, float t)
 
 float bezAngleAt(const Bezier& bz, float t)
 {
-    if (t < 0 || t > 1) { return 0;
-}
+    if (t < 0 || t > 1) return 0;
 
     //derivate
     // p'(t) = 3 * (-(1-2t+t^2) * p0 + (1 - 4 * t + 3 * t^2) * p1 + (2 * t - 3 *

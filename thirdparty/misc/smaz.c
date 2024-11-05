@@ -100,12 +100,9 @@ int smaz_compress(const char *in, int inlen, char *out, int outlen) {
         char *slot;
 
         h1 = h2 = in[0]<<3;
-        if (inlen > 1) { h2 += in[1];
-}
-        if (inlen > 2) { h3 = h2^in[2];
-}
-        if (j > inlen) { j = inlen;
-}
+        if (inlen > 1) h2 += in[1];
+        if (inlen > 2) h3 = h2^in[2];
+        if (j > inlen) j = inlen;
 
         /* Try to lookup substrings into the hash table, starting from the
          * longer to the shorter substrings */
@@ -126,8 +123,7 @@ int smaz_compress(const char *in, int inlen, char *out, int outlen) {
                         outlen -= needed;
                     }
                     /* Emit the byte */
-                    if (outlen <= 0) { return _outlen+1;
-}
+                    if (outlen <= 0) return _outlen+1;
                     out[0] = slot[slot[0]+1];
                     out++;
                     outlen--;
@@ -152,8 +148,7 @@ out:
             flush = out;
             out += needed;
             outlen -= needed;
-            if (outlen < 0) { return _outlen+1;
-}
+            if (outlen < 0) return _outlen+1;
         }
         /* Perform a verbatim flush if needed */
         if (flush) {
@@ -180,8 +175,7 @@ int smaz_decompress(const char *in, int inlen, char *out, int outlen) {
     while(inlen) {
         if (*c == 254) {
             /* Verbatim byte */
-            if (outlen < 1) { return _outlen+1;
-}
+            if (outlen < 1) return _outlen+1;
             *out = *(c+1);
             out++;
             outlen--;
@@ -190,8 +184,7 @@ int smaz_decompress(const char *in, int inlen, char *out, int outlen) {
         } else if (*c == 255) {
             /* Verbatim string */
             int len = (*(c+1))+1;
-            if (outlen < len) { return _outlen+1;
-}
+            if (outlen < len) return _outlen+1;
             memcpy(out,c+2,len);
             out += len;
             outlen -= len;
@@ -202,9 +195,8 @@ int smaz_decompress(const char *in, int inlen, char *out, int outlen) {
             const char *s = Smaz_rcb[*c];
             int len = strlen(s);
 
-            if (outlen < len) { return _outlen+1;
-}
-            strcpy(out,s);
+            if (outlen < len) return _outlen+1;
+            memcpy(out,s,len);
             out += len;
             outlen -= len;
             c++;

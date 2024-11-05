@@ -9,10 +9,8 @@ namespace embree
 
   /* creates map for fast categorization of characters */
   static void createCharMap(bool map[256], const std::string& chrs) {
-    for (size_t i=0; i<256; i++) { map[i] = false;
-}
-    for (size_t i=0; i<chrs.size(); i++) { map[uint8_t(chrs[i])] = true;
-}
+    for (size_t i=0; i<256; i++) map[i] = false;
+    for (size_t i=0; i<chrs.size(); i++) map[uint8_t(chrs[i])] = true;
   }
 
   /* simple tokenizer */
@@ -27,14 +25,13 @@ namespace embree
   {
     /* skip separators */
     while (cin->peek() != EOF) {
-      if (!endl.empty() && cin->peek() == '\n') { cin->drop(); return endl; }
+      if (endl != "" && cin->peek() == '\n') { cin->drop(); return endl; }
       if (multiLine && cin->peek() == '\\') {
         cin->drop();
         if (cin->peek() == '\n') { cin->drop(); continue; }
         cin->unget();
       }
-      if (!isSeparator(cin->peek())) { break;
-}
+      if (!isSeparator(cin->peek())) break;
       cin->drop();
     }
 

@@ -217,7 +217,7 @@ typedef HANDLE MemoryMap;
         length=mystat.st_size;
 
         /* open the file */
-        fd=open(path, O_RDONLY | O_CLOEXEC);
+        fd=open(path, O_RDONLY);
         if(fd==-1) {
             return false;
         }

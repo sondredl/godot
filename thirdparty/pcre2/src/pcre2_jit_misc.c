@@ -103,7 +103,7 @@ SLJIT_FREE(functions, allocator_data);
 *            Free unused JIT memory              *
 *************************************************/
 
-PCRE2_EXP_DEFN void PCRE2_CALL_CONVENTION;
+PCRE2_EXP_DEFN void PCRE2_CALL_CONVENTION
 pcre2_jit_free_unused_memory(pcre2_general_context *gcontext)
 {
 #ifndef SUPPORT_JIT

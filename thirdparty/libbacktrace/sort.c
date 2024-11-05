@@ -66,9 +66,8 @@ backtrace_qsort (void *basearg, size_t count, size_t size,
   size_t mid;
 
  tail_recurse:
-  if (count < 2) {
+  if (count < 2)
     return;
-}
 
   /* The symbol table and DWARF tables, which is all we use this
      routine for, tend to be roughly sorted.  Pick the middle element
@@ -82,15 +81,13 @@ backtrace_qsort (void *basearg, size_t count, size_t size,
       if ((*compar) (base, base + i * size) > 0)
 	{
 	  ++mid;
-	  if (i != mid) {
+	  if (i != mid)
 	    swap (base + mid * size, base + i * size, size);
-}
 	}
     }
 
-  if (mid > 0) {
+  if (mid > 0)
     swap (base, base + mid * size, size);
-}
 
   /* Recurse with the smaller array, loop with the larger one.  That
      ensures that our maximum stack depth is log count.  */

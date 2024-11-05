@@ -30,31 +30,28 @@ namespace embree
   template<>
   size_t Curve4v::Type::sizeActive(const char* This) const
   {
-    if ((*This & Geometry::GType::GTY_BASIS_MASK) == Geometry::GType::GTY_BASIS_LINEAR) {
+    if ((*This & Geometry::GType::GTY_BASIS_MASK) == Geometry::GType::GTY_BASIS_LINEAR)
       return ((Line4i*)This)->size();
-    } else {
+    else
       return ((Curve4v*)This)->N;
-}
   }
 
   template<>
   size_t Curve4v::Type::sizeTotal(const char* This) const
   {
-    if ((*This & Geometry::GType::GTY_BASIS_MASK) == Geometry::GType::GTY_BASIS_LINEAR) {
+    if ((*This & Geometry::GType::GTY_BASIS_MASK) == Geometry::GType::GTY_BASIS_LINEAR)
       return 4;
-    } else {
+    else
       return ((Curve4v*)This)->N;
-}
   }
 
   template<>
   size_t Curve4v::Type::getBytes(const char* This) const
   {
-     if ((*This & Geometry::GType::GTY_BASIS_MASK) == Geometry::GType::GTY_BASIS_LINEAR) {
+     if ((*This & Geometry::GType::GTY_BASIS_MASK) == Geometry::GType::GTY_BASIS_LINEAR)
       return Line4i::bytes(sizeActive(This));
-     } else {
+     else
         return Curve4v::bytes(sizeActive(This));
-}
   }
 
   /********************** Curve4i **************************/
@@ -67,31 +64,28 @@ namespace embree
   template<>
   size_t Curve4i::Type::sizeActive(const char* This) const
   {
-    if ((*This & Geometry::GType::GTY_BASIS_MASK) == Geometry::GType::GTY_BASIS_LINEAR) {
+    if ((*This & Geometry::GType::GTY_BASIS_MASK) == Geometry::GType::GTY_BASIS_LINEAR)
       return ((Line4i*)This)->size();
-    } else {
+    else
       return ((Curve4i*)This)->N;
-}
   }
 
   template<>
   size_t Curve4i::Type::sizeTotal(const char* This) const
   {
-    if ((*This & Geometry::GType::GTY_BASIS_MASK) == Geometry::GType::GTY_BASIS_LINEAR) {
+    if ((*This & Geometry::GType::GTY_BASIS_MASK) == Geometry::GType::GTY_BASIS_LINEAR)
       return 4;
-    } else {
+    else
       return ((Curve4i*)This)->N;
-}
   }
 
   template<>
   size_t Curve4i::Type::getBytes(const char* This) const
   {
-    if ((*This & Geometry::GType::GTY_BASIS_MASK) == Geometry::GType::GTY_BASIS_LINEAR) {
+    if ((*This & Geometry::GType::GTY_BASIS_MASK) == Geometry::GType::GTY_BASIS_LINEAR)
       return Line4i::bytes(sizeActive(This));
-    } else {
+    else
       return Curve4i::bytes(sizeActive(This));
-}
   }
 
   /********************** Curve4iMB **************************/
@@ -104,31 +98,28 @@ namespace embree
   template<>
   size_t Curve4iMB::Type::sizeActive(const char* This) const
   {
-    if ((*This & Geometry::GType::GTY_BASIS_MASK) == Geometry::GType::GTY_BASIS_LINEAR) {
+    if ((*This & Geometry::GType::GTY_BASIS_MASK) == Geometry::GType::GTY_BASIS_LINEAR)
       return ((Line4i*)This)->size();
-    } else {
+    else
       return ((Curve4iMB*)This)->N;
-}
   }
 
   template<>
   size_t Curve4iMB::Type::sizeTotal(const char* This) const
   {
-    if ((*This & Geometry::GType::GTY_BASIS_MASK) == Geometry::GType::GTY_BASIS_LINEAR) {
+    if ((*This & Geometry::GType::GTY_BASIS_MASK) == Geometry::GType::GTY_BASIS_LINEAR)
       return 4;
-    } else {
+    else
       return ((Curve4iMB*)This)->N;
-}
   }
 
   template<>
   size_t Curve4iMB::Type::getBytes(const char* This) const
   {
-    if ((*This & Geometry::GType::GTY_BASIS_MASK) == Geometry::GType::GTY_BASIS_LINEAR) {
+    if ((*This & Geometry::GType::GTY_BASIS_MASK) == Geometry::GType::GTY_BASIS_LINEAR)
       return Line4i::bytes(sizeActive(This));
-    } else {
+    else
       return Curve4iMB::bytes(sizeActive(This));
-}
   }
 
   /********************** Line4i **************************/

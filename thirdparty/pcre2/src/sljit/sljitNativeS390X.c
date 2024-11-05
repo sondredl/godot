@@ -35,7 +35,7 @@
 
 SLJIT_API_FUNC_ATTRIBUTE const char* sljit_get_platform_name(void)
 {
-	return "s390x"; SLJIT_CPUINFO;
+	return "s390x" SLJIT_CPUINFO;
 }
 
 /* Instructions. */
@@ -134,7 +134,7 @@ struct sljit_s390x_const {
 };
 
 /* Convert SLJIT register to hardware register. */
-static SLJIT_INLINE sljit_gpr; gpr(sljit_s32 r)
+static SLJIT_INLINE sljit_gpr gpr(sljit_s32 r)
 {
 	SLJIT_ASSERT(r >= 0 && r < (sljit_s32)(sizeof(reg_map) / sizeof(reg_map[0])));
 	return reg_map[r];
@@ -377,9 +377,8 @@ static SLJIT_INLINE unsigned long get_hwcap()
 
 static SLJIT_INLINE int have_stfle()
 {
-	if (have_facility_static(STORE_FACILITY_LIST_EXTENDED_FACILITY)) {
+	if (have_facility_static(STORE_FACILITY_LIST_EXTENDED_FACILITY))
 		return 1;
-}
 
 	return (get_hwcap() & HWCAP_S390_STFLE);
 }
@@ -397,9 +396,8 @@ static int have_facility_dynamic(facility_bit x)
 	const sljit_uw bit_index = ((1UL << 63) >> (x & 63));
 
 	SLJIT_ASSERT(x < size * 8);
-	if (SLJIT_UNLIKELY(!have_stfle())) {
+	if (SLJIT_UNLIKELY(!have_stfle()))
 		return 0;
-}
 
 	if (SLJIT_UNLIKELY(cpu_features.bits[0] == 0)) {
 		__asm__ __volatile__ (
@@ -1214,9 +1212,9 @@ static sljit_s32 emit_rx(struct sljit_compiler *compiler, sljit_ins ins,
 	if (FAST_IS_REG(dst)) {
 		dst_r = gpr(dst);
 
-		if (dst == src1) {
+		if (dst == src1)
 			needs_move = 0;
-		} else if (dst == (src2 & REG_MASK) || (dst == OFFS_REG(src2))) {
+		else if (dst == (src2 & REG_MASK) || (dst == OFFS_REG(src2))) {
 			dst_r = tmp0;
 			needs_move = 2;
 		}
@@ -1239,11 +1237,10 @@ static sljit_s32 emit_rx(struct sljit_compiler *compiler, sljit_ins ins,
 	} else if ((type == RX_A && !is_u12(src2w)) || (type == RXY_A && !is_s20(src2w))) {
 		FAIL_IF(push_load_imm_inst(compiler, tmp1, src2w));
 
-		if (src2 & REG_MASK) {
+		if (src2 & REG_MASK)
 			index = tmp1;
-		} else {
+		else
 			base = tmp1;
-}
 		src2w = 0;
 	}
 
@@ -1283,15 +1280,13 @@ static sljit_s32 emit_siy(struct sljit_compiler *compiler, sljit_ins ins,
 	else if (!is_s20(dstw)) {
 		FAIL_IF(push_load_imm_inst(compiler, tmp1, dstw));
 
-		if (dst & REG_MASK) {
+		if (dst & REG_MASK)
 			FAIL_IF(push_inst(compiler, la(tmp1, 0, dst_r, tmp1)));
-}
 
 		dstw = 0;
 	}
-	else {
-		d
-}st_r = gpr(dst & REG_MASK);
+	else
+		dst_r = gpr(dst & REG_MASK);
 
 	return push_inst(compiler, ins | ((sljit_ins)(srcw & 0xff) << 32) | R28A(dst_r) | disp_s20((sljit_s32)dstw));
 }
@@ -1415,8 +1410,7 @@ static sljit_s32 emit_non_commutative(struct sljit_compiler *compiler, const str
 
 			return emit_rx(compiler, ins20, dst, src1, src1w, src2, src2w, RXY_A);
 		}
-		else { i
-}f (ins12)
+		else if (ins12)
 			return emit_rx(compiler, ins12, dst, src1, src1w, src2, src2w, RX_A);
 		else if (ins20)
 			return emit_rx(compiler, ins20, dst, src1, src1w, src2, src2w, RXY_A);
@@ -2606,8 +2600,7 @@ done:
 			FAIL_IF(push_inst(compiler, brc(0xe, 2 + 2)));
 			FAIL_IF(push_inst(compiler, (op & SLJIT_32) ? lcr(tmp1, dst_r) : lcgr(tmp1, dst_r)));
 		}
-		else { i
-}f (op & SLJIT_SET_Z)
+		else if (op & SLJIT_SET_Z)
 			FAIL_IF(update_zero_overflow(compiler, op, dst_r));
 	}
 
@@ -2803,13 +2796,12 @@ static sljit_s32 sljit_emit_bitwise(struct sljit_compiler *compiler, sljit_s32 o
 			return sljit_emit_bitwise_imm(compiler, type, dst, src1, src1w, imm, count16);
 	}
 
-	if (type == SLJIT_AND) {
+	if (type == SLJIT_AND)
 		forms = &bitwise_and_forms;
-	} else if (type == SLJIT_OR) {
+	else if (type == SLJIT_OR)
 		forms = &bitwise_or_forms;
-	} else {
+	else
 		forms = &bitwise_xor_forms;
-}
 
 	return emit_commutative(compiler, forms, dst, src1, src1w, src2, src2w);
 }
@@ -2832,9 +2824,9 @@ static sljit_s32 sljit_emit_shift(struct sljit_compiler *compiler, sljit_s32 op,
 		FAIL_IF(emit_move(compiler, tmp0, src1, src1w));
 
 	if (src2 != SLJIT_IMM) {
-		if (FAST_IS_REG(src2)) {
+		if (FAST_IS_REG(src2))
 			base_r = gpr(src2);
-		} else {
+		else {
 			FAIL_IF(emit_move(compiler, tmp1, src2, src2w));
 			base_r = tmp1;
 		}
@@ -2843,22 +2835,19 @@ static sljit_s32 sljit_emit_shift(struct sljit_compiler *compiler, sljit_s32 op,
 			if (base_r != tmp1) {
 				FAIL_IF(push_inst(compiler, 0xec0000000055 /* risbg */ | R36A(tmp1) | R32A(base_r) | (59 << 24) | (1 << 23) | (63 << 16)));
 				base_r = tmp1;
-			} else {
+			} else
 				FAIL_IF(push_inst(compiler, 0xa5070000 /* nill */ | R20A(tmp1) | 0x1f));
-}
 		}
-	} else {
-		i
-}mm = (sljit_ins)(src2w & ((op & SLJIT_32) ? 0x1f : 0x3f));
+	} else
+		imm = (sljit_ins)(src2w & ((op & SLJIT_32) ? 0x1f : 0x3f));
 
 	if ((op & SLJIT_32) && dst_r == src_r) {
-		if (type == SLJIT_SHL || type == SLJIT_MSHL) {
+		if (type == SLJIT_SHL || type == SLJIT_MSHL)
 			ins = 0x89000000 /* sll */;
-		} else if (type == SLJIT_LSHR || type == SLJIT_MLSHR) {
+		else if (type == SLJIT_LSHR || type == SLJIT_MLSHR)
 			ins = 0x88000000 /* srl */;
-		} else {
+		else
 			ins = 0x8a000000 /* sra */;
-}
 
 		FAIL_IF(push_inst(compiler, ins | R20A(dst_r) | R12A(base_r) | imm));
 	} else {
@@ -2895,9 +2884,9 @@ static sljit_s32 sljit_emit_rotate(struct sljit_compiler *compiler, sljit_s32 op
 		FAIL_IF(emit_move(compiler, tmp0, src1, src1w));
 
 	if (src2 != SLJIT_IMM) {
-		if (FAST_IS_REG(src2)) {
+		if (FAST_IS_REG(src2))
 			base_r = gpr(src2);
-		} else {
+		else {
 			FAIL_IF(emit_move(compiler, tmp1, src2, src2w));
 			base_r = tmp1;
 		}
@@ -2908,9 +2897,8 @@ static sljit_s32 sljit_emit_rotate(struct sljit_compiler *compiler, sljit_s32 op
 			ins = (op & SLJIT_32) ? 0x1300 /* lcr */ : 0xb9030000 /* lcgr */;
 			FAIL_IF(push_inst(compiler, ins | R4A(tmp1) | R0A(base_r)));
 			base_r = tmp1;
-		} else {
-			s
-}rc2w = -src2w;
+		} else
+			src2w = -src2w;
 	}
 
 	if (src2 == SLJIT_IMM)

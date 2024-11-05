@@ -39,7 +39,7 @@
 // and begin a new one.  To cancel a currently running approximation just call 'Cancel'.
 #include <stdint.h>
 
-namespace VHACD; {
+namespace VHACD {
 class IVHACD {
 public:
     class IUserCallback {

@@ -195,35 +195,40 @@ FFX_STATIC void opAAddOneF3(FfxFloat32x3 d, FfxFloat32x3 a, FfxFloat32 b)
     d[0] = a[0] + b;
     d[1] = a[1] + b;
     d[2] = a[2] + b;
-    }
+    return;
+}
 
 FFX_STATIC void opACpyF3(FfxFloat32x3 d, FfxFloat32x3 a)
 {
     d[0] = a[0];
     d[1] = a[1];
     d[2] = a[2];
-    }
+    return;
+}
 
 FFX_STATIC void opAMulF3(FfxFloat32x3 d, FfxFloat32x3 a, FfxFloat32x3 b)
 {
     d[0] = a[0] * b[0];
     d[1] = a[1] * b[1];
     d[2] = a[2] * b[2];
-    }
+    return;
+}
 
 FFX_STATIC void opAMulOneF3(FfxFloat32x3 d, FfxFloat32x3 a, FfxFloat32 b)
 {
     d[0] = a[0] * b;
     d[1] = a[1] * b;
     d[2] = a[2] * b;
-    }
+    return;
+}
 
 FFX_STATIC void opARcpF3(FfxFloat32x3 d, FfxFloat32x3 a)
 {
     d[0] = ffxReciprocal(a[0]);
     d[1] = ffxReciprocal(a[1]);
     d[2] = ffxReciprocal(a[2]);
-    }
+    return;
+}
 
 /// Convert FfxFloat32 to half (in lower 16-bits of output).
 ///

@@ -58,8 +58,7 @@ namespace Clipper2Lib {
       loc = Location::Bottom;
       return false;
     }
-    else { i
-}f (pt.x < rec.left) loc = Location::Left;
+    else if (pt.x < rec.left) loc = Location::Left;
     else if (pt.x > rec.right) loc = Location::Right;
     else if (pt.y < rec.top) loc = Location::Top;
     else if (pt.y > rec.bottom) loc = Location::Bottom;
@@ -80,44 +79,38 @@ namespace Clipper2Lib {
     if (res1 == 0)
     {
       ip = p1;
-      if (res2 == 0) { return false; // segments are collinear
-      } else if (p1 == p3 || p1 == p4) { return true;
+      if (res2 == 0) return false; // segments are collinear
+      else if (p1 == p3 || p1 == p4) return true;
       //else if (p2 == p3 || p2 == p4) { ip = p2; return true; }
-      } else { i
-}f (IsHorizontal(p3, p4)) return ((p1.x > p3.x) == (p1.x < p4.x));
+      else if (IsHorizontal(p3, p4)) return ((p1.x > p3.x) == (p1.x < p4.x));
       else return ((p1.y > p3.y) == (p1.y < p4.y));
     }
     else if (res2 == 0)
     {
       ip = p2;
-      if (p2 == p3 || p2 == p4) { return true;
-      } else { i
-}f (IsHorizontal(p3, p4)) return ((p2.x > p3.x) == (p2.x < p4.x));
+      if (p2 == p3 || p2 == p4) return true;
+      else if (IsHorizontal(p3, p4)) return ((p2.x > p3.x) == (p2.x < p4.x));
       else return ((p2.y > p3.y) == (p2.y < p4.y));
     }
-    if ((res1 > 0) == (res2 > 0)) { return false;
-}
+    if ((res1 > 0) == (res2 > 0)) return false;
 
     double res3 = CrossProduct(p3, p1, p2);
     double res4 = CrossProduct(p4, p1, p2);
     if (res3 == 0)
     {
       ip = p3;
-      if (p3 == p1 || p3 == p2) { return true;
-      } else { i
-}f (IsHorizontal(p1, p2)) return ((p3.x > p1.x) == (p3.x < p2.x));
+      if (p3 == p1 || p3 == p2) return true;
+      else if (IsHorizontal(p1, p2)) return ((p3.x > p1.x) == (p3.x < p2.x));
       else return ((p3.y > p1.y) == (p3.y < p2.y));
     }
     else if (res4 == 0)
     {
       ip = p4;
-      if (p4 == p1 || p4 == p2) { return true;
-      } else { i
-}f (IsHorizontal(p1, p2)) return ((p4.x > p1.x) == (p4.x < p2.x));
+      if (p4 == p1 || p4 == p2) return true;
+      else if (IsHorizontal(p1, p2)) return ((p4.x > p1.x) == (p4.x < p2.x));
       else return ((p4.y > p1.y) == (p4.y < p2.y));
     }
-    if ((res3 > 0) == (res4 > 0)) { return false;
-}
+    if ((res3 > 0) == (res4 > 0)) return false;
 
     // segments must intersect to get here
     return GetIntersectPoint(p1, p2, p3, p4, ip);
@@ -131,8 +124,8 @@ namespace Clipper2Lib {
     switch (loc)
     {
     case Location::Left:
-      if (GetSegmentIntersection(p, p2, rectPath[0], rectPath[3], ip)) { return true;
-      } else if ((p.y < rectPath[0].y) && GetSegmentIntersection(p, p2, rectPath[0], rectPath[1], ip))
+      if (GetSegmentIntersection(p, p2, rectPath[0], rectPath[3], ip)) return true;
+      else if ((p.y < rectPath[0].y) && GetSegmentIntersection(p, p2, rectPath[0], rectPath[1], ip))
       {
         loc = Location::Top;
         return true;
@@ -142,12 +135,11 @@ namespace Clipper2Lib {
         loc = Location::Bottom;
         return true;
       }
-      else { return false;
-}
+      else return false;
 
     case Location::Top:
-      if (GetSegmentIntersection(p, p2, rectPath[0], rectPath[1], ip)) { return true;
-      } else if ((p.x < rectPath[0].x) && GetSegmentIntersection(p, p2, rectPath[0], rectPath[3], ip))
+      if (GetSegmentIntersection(p, p2, rectPath[0], rectPath[1], ip)) return true;
+      else if ((p.x < rectPath[0].x) && GetSegmentIntersection(p, p2, rectPath[0], rectPath[3], ip))
       {
         loc = Location::Left;
         return true;
@@ -157,12 +149,11 @@ namespace Clipper2Lib {
         loc = Location::Right;
         return true;
       }
-      else { return false;
-}
+      else return false;
 
     case Location::Right:
-      if (GetSegmentIntersection(p, p2, rectPath[1], rectPath[2], ip)) { return true;
-      } else if ((p.y < rectPath[1].y) && GetSegmentIntersection(p, p2, rectPath[0], rectPath[1], ip))
+      if (GetSegmentIntersection(p, p2, rectPath[1], rectPath[2], ip)) return true;
+      else if ((p.y < rectPath[1].y) && GetSegmentIntersection(p, p2, rectPath[0], rectPath[1], ip))
       {
         loc = Location::Top;
         return true;
@@ -172,12 +163,11 @@ namespace Clipper2Lib {
         loc = Location::Bottom;
         return true;
       }
-      else { return false;
-}
+      else return false;
 
     case Location::Bottom:
-      if (GetSegmentIntersection(p, p2, rectPath[2], rectPath[3], ip)) { return true;
-      } else if ((p.x < rectPath[3].x) && GetSegmentIntersection(p, p2, rectPath[0], rectPath[3], ip))
+      if (GetSegmentIntersection(p, p2, rectPath[2], rectPath[3], ip)) return true;
+      else if ((p.x < rectPath[3].x) && GetSegmentIntersection(p, p2, rectPath[0], rectPath[3], ip))
       {
         loc = Location::Left;
         return true;
@@ -187,8 +177,7 @@ namespace Clipper2Lib {
         loc = Location::Right;
         return true;
       }
-      else { return false;
-}
+      else return false;
 
     default: // loc == rInside
       if (GetSegmentIntersection(p, p2, rectPath[0], rectPath[3], ip))
@@ -211,8 +200,7 @@ namespace Clipper2Lib {
         loc = Location::Bottom;
         return true;
       }
-      else { return false;
-}
+      else return false;
     }
   }
 
@@ -243,8 +231,7 @@ namespace Clipper2Lib {
 
   inline OutPt2* UnlinkOp(OutPt2* op)
   {
-    if (op->next == op) { return nullptr;
-}
+    if (op->next == op) return nullptr;
     op->prev->next = op->next;
     op->next->prev = op->prev;
     return op->next;
@@ -252,8 +239,7 @@ namespace Clipper2Lib {
 
   inline OutPt2* UnlinkOpBack(OutPt2* op)
   {
-    if (op->next == op) { return nullptr;
-}
+    if (op->next == op) return nullptr;
     op->prev->next = op->next;
     op->next->prev = op->prev;
     return op->prev;
@@ -294,16 +280,14 @@ namespace Clipper2Lib {
 
   inline void AddToEdge(OutPt2List& edge, OutPt2* op)
   {
-    if (op->edge) { return;
-}
+    if (op->edge) return;
     op->edge = &edge;
     edge.push_back(op);
   }
 
   inline void UncoupleEdge(OutPt2* op)
   {
-    if (!op->edge) { return;
-}
+    if (!op->edge) return;
     for (size_t i = 0; i < op->edge->size(); ++i)
     {
       OutPt2* op2 = (*op->edge)[i];

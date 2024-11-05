@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 
-namespace VHACD;
+namespace VHACD
 {
 
     // Very simple brute force raycast against a triangle mesh.  Tests every triangle; no hierachy.

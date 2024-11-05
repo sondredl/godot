@@ -56,7 +56,8 @@ LocaleKey::LocaleKey(const UnicodeString& primaryID,
   : ICUServiceKey(primaryID)
   , _kind(kind)
   , _primaryID(canonicalPrimaryID)
-
+  , _fallbackID()
+  , _currentID()
 {
     _fallbackID.setToBogus();
     if (_primaryID.length() != 0) {

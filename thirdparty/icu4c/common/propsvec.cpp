@@ -18,7 +18,7 @@
 *   Store bits (Unicode character properties) in bit set vectors.
 */
 
-#include <cstdlib>
+#include <stdlib.h>
 #include "unicode/utypes.h"
 #include "cmemory.h"
 #include "utrie.h"

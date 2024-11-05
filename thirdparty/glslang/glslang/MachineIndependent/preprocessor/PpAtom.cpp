@@ -172,9 +172,8 @@ TStringAtomMap::TStringAtomMap()
     }
 
     // Add multiple character scanner tokens :
-    for (size_t ii = 0; ii < sizeof(tokens)/sizeof(tokens[0]); ii++) {
+    for (size_t ii = 0; ii < sizeof(tokens)/sizeof(tokens[0]); ii++)
         addAtomFixed(tokens[ii].str, tokens[ii].val);
-}
 
     nextAtom = PpAtomLast;
 }

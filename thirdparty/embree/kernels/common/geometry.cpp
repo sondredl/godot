@@ -64,8 +64,7 @@ namespace embree
 
   void Geometry::setNumPrimitives(unsigned int numPrimitives_in)
   {
-    if (numPrimitives_in == numPrimitives) { return;
-}
+    if (numPrimitives_in == numPrimitives) return;
 
     numPrimitives = numPrimitives_in;
 
@@ -119,9 +118,8 @@ namespace embree
 
   void Geometry::enable ()
   {
-    if (isEnabled()) {
+    if (isEnabled())
       return;
-}
 
     enabled = true;
     ++modCounter_;
@@ -129,9 +127,8 @@ namespace embree
 
   void Geometry::disable ()
   {
-    if (isDisabled()) {
+    if (isDisabled())
       return;
-}
 
     enabled = false;
     ++modCounter_;
@@ -198,8 +195,7 @@ namespace embree
 
     for (unsigned int i=0; i<N; i++)
     {
-      if (valid && !valid[i]) { continue;
-}
+      if (valid && !valid[i]) continue;
 
       RTCInterpolateArguments iargs;
       iargs.primID = primIDs[i];
@@ -217,9 +213,8 @@ namespace embree
       interpolate(&iargs);
 
       if (likely(P)) {
-        for (unsigned int j=0; j<valueCount; j++) {
+        for (unsigned int j=0; j<valueCount; j++)
           P[j*N+i] = Pt[j];
-}
       }
       if (likely(dPdu))
       {
@@ -252,10 +247,8 @@ namespace embree
     args.similarityScale = context->similarityScale;
 
     bool update = false;
-    if(context->func) {  update |= context->func(&args);
-}
-    if(pointQueryFunc) { update |= pointQueryFunc(&args);
-}
+    if(context->func)  update |= context->func(&args);
+    if(pointQueryFunc) update |= pointQueryFunc(&args);
 
     if (update && context->userContext->instStackSize > 0)
     {

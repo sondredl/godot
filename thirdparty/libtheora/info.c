@@ -29,8 +29,7 @@
 static int oc_tagcompare(const char *_s1,const char *_s2,int _n){
   int c;
   for(c=0;c<_n;c++){
-    if(toupper(_s1[c])!=toupper(_s2[c])) {return !0;
-}
+    if(toupper(_s1[c])!=toupper(_s2[c]))return !0;
   }
   return _s1[c]!='=';
 }
@@ -61,19 +60,16 @@ void th_comment_add(th_comment *_tc,const char *_comment){
   int    comment_len;
   user_comments=_ogg_realloc(_tc->user_comments,
    (_tc->comments+2)*sizeof(*_tc->user_comments));
-  if(user_comments==NULL) {return;
-}
+  if(user_comments==NULL)return;
   _tc->user_comments=user_comments;
   comment_lengths=_ogg_realloc(_tc->comment_lengths,
    (_tc->comments+2)*sizeof(*_tc->comment_lengths));
-  if(comment_lengths==NULL) {return;
-}
+  if(comment_lengths==NULL)return;
   _tc->comment_lengths=comment_lengths;
   comment_len=strlen(_comment);
   comment_lengths[_tc->comments]=comment_len;
   user_comments[_tc->comments]=_ogg_malloc(comment_len+1);
-  if(user_comments[_tc->comments]==NULL) {return;
-}
+  if(user_comments[_tc->comments]==NULL)return;
   memcpy(_tc->user_comments[_tc->comments],_comment,comment_len+1);
   _tc->comments++;
   _tc->user_comments[_tc->comments]=NULL;
@@ -87,8 +83,7 @@ void th_comment_add_tag(th_comment *_tc,const char *_tag,const char *_val){
   val_len=strlen(_val);
   /*+2 for '=' and '\0'.*/
   comment=_ogg_malloc(tag_len+val_len+2);
-  if(comment==NULL) {return;
-}
+  if(comment==NULL)return;
   memcpy(comment,_tag,tag_len);
   comment[tag_len]='=';
   memcpy(comment+tag_len+1,_val,val_len+1);
@@ -105,8 +100,7 @@ char *th_comment_query(th_comment *_tc,const char *_tag,int _count){
   for(i=0;i<_tc->comments;i++){
     if(!oc_tagcompare(_tc->user_comments[i],_tag,tag_len)){
       /*We return a pointer to the data, not a copy.*/
-      if(_count==found++) {return _tc->user_comments[i]+tag_len+1;
-}
+      if(_count==found++)return _tc->user_comments[i]+tag_len+1;
     }
   }
   /*Didn't find anything.*/
@@ -120,8 +114,7 @@ int th_comment_query_count(th_comment *_tc,const char *_tag){
   tag_len=strlen(_tag);
   count=0;
   for(i=0;i<_tc->comments;i++){
-    if(!oc_tagcompare(_tc->user_comments[i],_tag,tag_len)) {count++;
-}
+    if(!oc_tagcompare(_tc->user_comments[i],_tag,tag_len))count++;
   }
   return count;
 }
@@ -129,8 +122,7 @@ int th_comment_query_count(th_comment *_tc,const char *_tag){
 void th_comment_clear(th_comment *_tc){
   if(_tc!=NULL){
     long i;
-    for(i=0;i<_tc->comments;i++) {_ogg_free(_tc->user_comments[i]);
-}
+    for(i=0;i<_tc->comments;i++)_ogg_free(_tc->user_comments[i]);
     _ogg_free(_tc->user_comments);
     _ogg_free(_tc->comment_lengths);
     _ogg_free(_tc->vendor);

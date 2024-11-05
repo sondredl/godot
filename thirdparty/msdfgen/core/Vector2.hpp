@@ -40,9 +40,8 @@ struct Vector2 {
 
     /// Returns the normalized vector - one that has the same direction but unit length.
     inline Vector2 normalize(bool allowZero = false) const {
-        if (double len = length()) {
+        if (double len = length())
             return Vector2(x/len, y/len);
-}
         return Vector2(0, !allowZero);
     }
 
@@ -53,9 +52,8 @@ struct Vector2 {
 
     /// Returns a vector with unit length that is orthogonal to this one.
     inline Vector2 getOrthonormal(bool polarity = true, bool allowZero = false) const {
-        if (double len = length()) {
+        if (double len = length())
             return polarity ? Vector2(-y/len, x/len) : Vector2(y/len, -x/len);
-}
         return polarity ? Vector2(0, !allowZero) : Vector2(0, -!allowZero);
     }
 

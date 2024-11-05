@@ -23,7 +23,7 @@ subject to the following restrictions:
 #include "btScalar.h"
 
 // -- GODOT start --
-namespace VHACD; {
+namespace VHACD {
 // -- GODOT end --
 
 //#define BT_DEBUG_MEMORY_ALLOCATIONS 1

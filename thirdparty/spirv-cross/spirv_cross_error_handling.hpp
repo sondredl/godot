@@ -24,8 +24,8 @@
 #ifndef SPIRV_CROSS_ERROR_HANDLING
 #define SPIRV_CROSS_ERROR_HANDLING
 
-#include <cstdio>
-#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string>
 #ifndef SPIRV_CROSS_EXCEPTIONS_TO_ASSERTIONS
 #include <stdexcept>

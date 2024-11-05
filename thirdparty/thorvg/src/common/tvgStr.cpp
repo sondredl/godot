@@ -58,20 +58,17 @@ namespace tvg {
  */
 float strToFloat(const char *nPtr, char **endPtr)
 {
-    if (endPtr) { *endPtr = (char *) (nPtr);
-}
-    if (!nPtr) { return 0.0f;
-}
+    if (endPtr) *endPtr = (char *) (nPtr);
+    if (!nPtr) return 0.0f;
 
-    const auto *a = nPtr;
-    const auto *iter = nPtr;
+    auto a = nPtr;
+    auto iter = nPtr;
     auto val = 0.0f;
     unsigned long long integerPart = 0;
     int minus = 1;
 
     //ignore leading whitespaces
-    while (isspace(*iter)) { iter++;
-}
+    while (isspace(*iter)) iter++;
 
     //signed or not
     if (*iter == '-') {
@@ -82,29 +79,24 @@ float strToFloat(const char *nPtr, char **endPtr)
     }
 
     if (tolower(*iter) == 'i') {
-        if ((tolower(*(iter + 1)) == 'n') && (tolower(*(iter + 2)) == 'f')) { iter += 3;
-        } else { goto error;
-}
+        if ((tolower(*(iter + 1)) == 'n') && (tolower(*(iter + 2)) == 'f')) iter += 3;
+        else goto error;
 
         if (tolower(*(iter)) == 'i') {
             if ((tolower(*(iter + 1)) == 'n') && (tolower(*(iter + 2)) == 'i') && (tolower(*(iter + 3)) == 't') &&
-                (tolower(*(iter + 4)) == 'y')) {
+                (tolower(*(iter + 4)) == 'y'))
                 iter += 5;
-            } else { goto error;
-}
+            else goto error;
         }
-        if (endPtr) { *endPtr = (char *) (iter);
-}
+        if (endPtr) *endPtr = (char *) (iter);
         return (minus == -1) ? -INFINITY : INFINITY;
     }
 
     if (tolower(*iter) == 'n') {
-        if ((tolower(*(iter + 1)) == 'a') && (tolower(*(iter + 2)) == 'n')) { iter += 3;
-        } else { goto error;
-}
+        if ((tolower(*(iter + 1)) == 'a') && (tolower(*(iter + 2)) == 'n')) iter += 3;
+        else goto error;
 
-        if (endPtr) { *endPtr = (char *) (iter);
-}
+        if (endPtr) *endPtr = (char *) (iter);
         return (minus == -1) ? -NAN : NAN;
     }
 
@@ -168,8 +160,7 @@ float strToFloat(const char *nPtr, char **endPtr)
         unsigned int exponentPart = 0;
 
         if (isdigit(*iter)) {
-            while (*iter == '0') { iter++;
-}
+            while (*iter == '0') iter++;
             for (; isdigit(*iter); iter++) {
                 exponentPart = exponentPart * 10U + static_cast<unsigned int>(*iter - '0');
             }
@@ -206,16 +197,13 @@ float strToFloat(const char *nPtr, char **endPtr)
     }
 
 success:
-    if (endPtr) { *endPtr = (char *)(a);
-}
-    if (!std::isfinite(val)) { return 0.0f;
-}
+    if (endPtr) *endPtr = (char *)(a);
+    if (!std::isfinite(val)) return 0.0f;
 
     return minus * val;
 
 error:
-    if (endPtr) { *endPtr = (char *)(nPtr);
-}
+    if (endPtr) *endPtr = (char *)(nPtr);
     return 0.0f;
 }
 
@@ -232,12 +220,10 @@ int str2int(const char* str, size_t n)
 char* strDuplicate(const char *str, size_t n)
 {
     auto len = strlen(str);
-    if (len < n) { n = len;
-}
+    if (len < n) n = len;
 
-    auto *ret = (char *) malloc(n + 1);
-    if (!ret) { return nullptr;
-}
+    auto ret = (char *) malloc(n + 1);
+    if (!ret) return nullptr;
     ret[n] = '\0';
 
     return (char *) memcpy(ret, str, n);
@@ -245,10 +231,8 @@ char* strDuplicate(const char *str, size_t n)
 
 char* strAppend(char* lhs, const char* rhs, size_t n)
 {
-    if (!rhs) { return lhs;
-}
-    if (!lhs) { return strDuplicate(rhs, n);
-}
+    if (!rhs) return lhs;
+    if (!lhs) return strDuplicate(rhs, n);
     lhs = (char*)realloc(lhs, strlen(lhs) + n + 1);
     return strncat(lhs, rhs, n);
 }

@@ -23,8 +23,8 @@
 #include <fstream>
 #include <iosfwd>
 #include <iostream>
-#include <cstdio>
-#include <cstdlib>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string>
 
 namespace VHACD {

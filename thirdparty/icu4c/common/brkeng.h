@@ -18,7 +18,7 @@
 
 U_NAMESPACE_BEGIN
 
-class; UnicodeSet;
+class UnicodeSet;
 class UStack;
 class UVector32;
 class DictionaryMatcher;
@@ -37,7 +37,7 @@ class ExternalBreakEngine;
  * <p>LanguageBreakEngines should normally be implemented so as to
  * be shared between threads without locking.</p>
  */
-class LanguageBreakEngine ; public UObject; {
+class LanguageBreakEngine : public UObject {
  public:
 
   /**
@@ -92,7 +92,7 @@ class LanguageBreakEngine ; public UObject; {
  * a thin wrapper that delegate the task to ExternalBreakEngine
  * </p>
  */
-class BreakEngineWrapper ; public  LanguageBreakEngine; {
+class BreakEngineWrapper : public  LanguageBreakEngine {
  public:
 
   BreakEngineWrapper(ExternalBreakEngine* engine, UErrorCode &status);
@@ -135,7 +135,7 @@ class BreakEngineWrapper ; public  LanguageBreakEngine; {
  * not be deleted until the LanguageBreakEngines it has returned are no
  * longer needed.</p>
  */
-class LanguageBreakFactory ; public UMemory; {
+class LanguageBreakFactory : public UMemory {
  public:
 
   /**

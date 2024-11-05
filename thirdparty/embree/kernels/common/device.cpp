@@ -119,12 +119,10 @@ namespace embree
     }
 
     /* print info header */
-    if (State::verbosity(1)) {
+    if (State::verbosity(1))
       print();
-}
-    if (State::verbosity(2)) {
+    if (State::verbosity(2))
       State::print();
-}
 
     /* register all algorithms */
     bvh4_factory = make_unique(new BVH4Factory(enabled_builder_cpu_features, enabled_cpu_features));
@@ -260,9 +258,8 @@ namespace embree
   void Device::setDeviceErrorCode(RTCError error)
   {
     RTCError* stored_error = errorHandler.error();
-    if (*stored_error == RTC_ERROR_NONE) {
+    if (*stored_error == RTC_ERROR_NONE)
       *stored_error = error;
-}
   }
 
   RTCError Device::getDeviceErrorCode()
@@ -276,9 +273,8 @@ namespace embree
   void Device::setThreadErrorCode(RTCError error)
   {
     RTCError* stored_error = g_errorHandler.error();
-    if (*stored_error == RTC_ERROR_NONE) {
+    if (*stored_error == RTC_ERROR_NONE)
       *stored_error = error;
-}
   }
 
   RTCError Device::getThreadErrorCode()
@@ -292,9 +288,8 @@ namespace embree
   void Device::process_error(Device* device, RTCError error, const char* str)
   {
     /* store global error code when device construction failed */
-    if (!device) {
+    if (!device)
       return setThreadErrorCode(error);
-}
 
     /* print error when in verbose mode */
     if (device->verbosity(1))
@@ -308,15 +303,13 @@ namespace embree
       case RTC_ERROR_UNSUPPORTED_CPU  : std::cerr << "Embree: Unsupported CPU"; break;
       default                   : std::cerr << "Embree: Invalid error code"; break;
       };
-      if (str) { std::cerr << ", (" << str << ")";
-}
+      if (str) std::cerr << ", (" << str << ")";
       std::cerr << std::endl;
     }
 
     /* call user specified error callback */
-    if (device->error_function) {
+    if (device->error_function)
       device->error_function(device->error_function_userptr,error,str);
-}
 
     /* record error code */
     device->setDeviceErrorCode(error);
@@ -336,21 +329,18 @@ namespace embree
   size_t getMaxNumThreads()
   {
     size_t maxNumThreads = 0;
-    for (std::map<Device*,size_t>::iterator i=g_num_threads_map.begin(); i != g_num_threads_map.end(); i++) {
+    for (std::map<Device*,size_t>::iterator i=g_num_threads_map.begin(); i != g_num_threads_map.end(); i++)
       maxNumThreads = max(maxNumThreads, (*i).second);
-}
-    if (maxNumThreads == 0) {
+    if (maxNumThreads == 0)
       maxNumThreads = std::numeric_limits<size_t>::max();
-}
     return maxNumThreads;
   }
 
   size_t getMaxCacheSize()
   {
     size_t maxCacheSize = 0;
-    for (std::map<Device*,size_t>::iterator i=g_cache_size_map.begin(); i!= g_cache_size_map.end(); i++) {
+    for (std::map<Device*,size_t>::iterator i=g_cache_size_map.begin(); i!= g_cache_size_map.end(); i++)
       maxCacheSize = max(maxCacheSize, (*i).second);
-}
     return maxCacheSize;
   }
 
@@ -369,11 +359,10 @@ namespace embree
   void Device::initTaskingSystem(size_t numThreads)
   {
     Lock<MutexSys> lock(g_mutex);
-    if (numThreads == 0) {
+    if (numThreads == 0)
       g_num_threads_map[this] = std::numeric_limits<size_t>::max();
-    } else {
+    else
       g_num_threads_map[this] = numThreads;
-}
 
     /* create task scheduler */
     size_t maxNumThreads = getMaxNumThreads();
@@ -391,7 +380,7 @@ namespace embree
     g_num_threads_map.erase(this);
 
     /* terminate tasking system */
-    if (g_num_threads_map.empty()) {
+    if (g_num_threads_map.size() == 0) {
       TaskScheduler::destroy();
     }
     /* or configure new number of threads */
@@ -439,18 +428,16 @@ namespace embree
     if (iprop >= 2000000 && iprop < 3000000)
     {
       RegressionTest* test = getRegressionTest(iprop-2000000);
-      if (test) { return (ssize_t) test->name.c_str();
-      } else {      return 0;
-}
+      if (test) return (ssize_t) test->name.c_str();
+      else      return 0;
     }
 
     /* run internal regression test */
     if (iprop >= 3000000 && iprop < 4000000)
     {
       RegressionTest* test = getRegressionTest(iprop-3000000);
-      if (test) { return test->run();
-      } else {      return 0;
-}
+      if (test) return test->run();
+      else      return 0;
     }
 
     /* documented properties */

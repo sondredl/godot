@@ -372,8 +372,7 @@ static int oc_dec_init(oc_dec_ctx *_dec,const th_info *_info,
   int qi;
   int ret;
   ret=oc_state_init(&_dec->state,_info,3);
-  if(ret<0) {return ret;
-}
+  if(ret<0)return ret;
   ret=oc_huff_trees_copy(_dec->huff_tables,
    (const ogg_int16_t *const *)_setup->huff_tables);
   if(ret<0){
@@ -391,24 +390,21 @@ static int oc_dec_init(oc_dec_ctx *_dec,const th_info *_info,
     oc_state_clear(&_dec->state);
     return TH_EFAULT;
   }
-  for(qi=0;qi<64;qi++) {for(pli=0;pli<3;pli++) {for(qti=0;qti<2;qti++){
+  for(qi=0;qi<64;qi++)for(pli=0;pli<3;pli++)for(qti=0;qti<2;qti++){
     _dec->state.dequant_tables[qi][pli][qti]=
      _dec->state.dequant_table_data[qi][pli][qti];
   }
-}
-}
   oc_dequant_tables_init(_dec->state.dequant_tables,_dec->pp_dc_scale,
    &_setup->qinfo);
   for(qi=0;qi<64;qi++){
     int qsum;
     qsum=0;
-    for(qti=0;qti<2;qti++) {for(pli=0;pli<3;pli++){
+    for(qti=0;qti<2;qti++)for(pli=0;pli<3;pli++){
       qsum+=_dec->state.dequant_tables[qi][pli][qti][12]+
        _dec->state.dequant_tables[qi][pli][qti][17]+
        _dec->state.dequant_tables[qi][pli][qti][18]+
        _dec->state.dequant_tables[qi][pli][qti][24]<<(pli==0);
     }
-}
     _dec->pp_sharp_mod[qi]=-(qsum>>11);
   }
   memcpy(_dec->state.loop_filter_limits,_setup->qinfo.loop_filter_limits,
@@ -447,8 +443,7 @@ static int oc_dec_frame_header_unpack(oc_dec_ctx *_dec){
   long val;
   /*Check to make sure this is a data packet.*/
   val=oc_pack_read1(&_dec->opb);
-  if(val!=0) {return TH_EBADPACKET;
-}
+  if(val!=0)return TH_EBADPACKET;
   /*Read in the frame type (I or P).*/
   val=oc_pack_read1(&_dec->opb);
   _dec->state.frame_type=(int)val;
@@ -456,13 +451,13 @@ static int oc_dec_frame_header_unpack(oc_dec_ctx *_dec){
   val=oc_pack_read(&_dec->opb,6);
   _dec->state.qis[0]=(unsigned char)val;
   val=oc_pack_read1(&_dec->opb);
-  if(!val) {_dec->state.nqis=1;
-  } else{
+  if(!val)_dec->state.nqis=1;
+  else{
     val=oc_pack_read(&_dec->opb,6);
     _dec->state.qis[1]=(unsigned char)val;
     val=oc_pack_read1(&_dec->opb);
-    if(!val) {_dec->state.nqis=2;
-    } else{
+    if(!val)_dec->state.nqis=2;
+    else{
       val=oc_pack_read(&_dec->opb,6);
       _dec->state.qis[2]=(unsigned char)val;
       _dec->state.nqis=3;
@@ -475,8 +470,7 @@ static int oc_dec_frame_header_unpack(oc_dec_ctx *_dec){
     /*I wanted to eliminate wasted bits, but not all config wiggle room
        --Monty.*/
     val=oc_pack_read(&_dec->opb,3);
-    if(val!=0) {return TH_EIMPL;
-}
+    if(val!=0)return TH_EIMPL;
   }
   return 0;
 }
@@ -506,7 +500,7 @@ static void oc_dec_mark_all_intra(oc_dec_ctx *_dec){
     nsbs+=_dec->state.fplanes[pli].nsbs;
     for(;sbi<nsbs;sbi++){
       int quadi;
-      for(quadi=0;quadi<4;quadi++) {if(sb_flags[sbi].quad_valid&1<<quadi){
+      for(quadi=0;quadi<4;quadi++)if(sb_flags[sbi].quad_valid&1<<quadi){
         int bi;
         for(bi=0;bi<4;bi++){
           ptrdiff_t fragi;
@@ -519,7 +513,6 @@ static void oc_dec_mark_all_intra(oc_dec_ctx *_dec){
           }
         }
       }
-}
     }
     _dec->state.ncoded_fragis[pli]=ncoded_fragis-prev_ncoded_fragis;
     prev_ncoded_fragis=ncoded_fragis;
@@ -558,8 +551,7 @@ static unsigned oc_dec_partial_sb_flags_unpack(oc_dec_ctx *_dec){
       val=oc_pack_read1(&_dec->opb);
       flag=(int)val;
     }
-    else { flag=!flag;
-}
+    else flag=!flag;
   }
   /*TODO: run_count should be 0 here.
     If it's not, we should issue a warning of some kind.*/
@@ -581,8 +573,7 @@ static void oc_dec_coded_sb_flags_unpack(oc_dec_ctx *_dec){
   sb_flags=_dec->state.sb_flags;
   nsbs=_dec->state.nsbs;
   /*Skip partially coded super blocks.*/
-  for(sbi=0;sb_flags[sbi].coded_partially;sbi++) {;
-}
+  for(sbi=0;sb_flags[sbi].coded_partially;sbi++);
   val=oc_pack_read1(&_dec->opb);
   flag=(int)val;
   do{
@@ -590,18 +581,15 @@ static void oc_dec_coded_sb_flags_unpack(oc_dec_ctx *_dec){
     run_count=oc_sb_run_unpack(&_dec->opb);
     full_run=run_count>=4129;
     for(;sbi<nsbs;sbi++){
-      if(sb_flags[sbi].coded_partially) {continue;
-}
-      if(run_count--<=0) {break;
-}
+      if(sb_flags[sbi].coded_partially)continue;
+      if(run_count--<=0)break;
       sb_flags[sbi].coded_fully=flag;
     }
     if(full_run&&sbi<nsbs){
       val=oc_pack_read1(&_dec->opb);
       flag=(int)val;
     }
-    else { flag=!flag;
-}
+    else flag=!flag;
   }
   while(sbi<nsbs);
   /*TODO: run_count should be 0 here.
@@ -626,14 +614,12 @@ static void oc_dec_coded_flags_unpack(oc_dec_ctx *_dec){
   ptrdiff_t          nuncoded_fragis;
   ptrdiff_t          prev_ncoded_fragis;
   npartial=oc_dec_partial_sb_flags_unpack(_dec);
-  if(npartial<_dec->state.nsbs) {oc_dec_coded_sb_flags_unpack(_dec);
-}
+  if(npartial<_dec->state.nsbs)oc_dec_coded_sb_flags_unpack(_dec);
   if(npartial>0){
     val=oc_pack_read1(&_dec->opb);
     flag=!(int)val;
   }
-  else { flag=0;
-}
+  else flag=0;
   sb_maps=(const oc_sb_map *)_dec->state.sb_maps;
   sb_flags=_dec->state.sb_flags;
   mb_modes=_dec->state.mb_modes;
@@ -646,7 +632,7 @@ static void oc_dec_coded_flags_unpack(oc_dec_ctx *_dec){
     nsbs+=_dec->state.fplanes[pli].nsbs;
     for(;sbi<nsbs;sbi++){
       int quadi;
-      for(quadi=0;quadi<4;quadi++) {if(sb_flags[sbi].quad_valid&1<<quadi){
+      for(quadi=0;quadi<4;quadi++)if(sb_flags[sbi].quad_valid&1<<quadi){
         int quad_coded;
         int bi;
         quad_coded=0;
@@ -655,9 +641,9 @@ static void oc_dec_coded_flags_unpack(oc_dec_ctx *_dec){
           fragi=sb_maps[sbi][quadi][bi];
           if(fragi>=0){
             int coded;
-            if(sb_flags[sbi].coded_fully) {coded=1;
-            } else if(!sb_flags[sbi].coded_partially) {coded=0;
-            } else{
+            if(sb_flags[sbi].coded_fully)coded=1;
+            else if(!sb_flags[sbi].coded_partially)coded=0;
+            else{
               if(run_count<=0){
                 run_count=oc_block_run_unpack(&_dec->opb);
                 flag=!flag;
@@ -665,19 +651,16 @@ static void oc_dec_coded_flags_unpack(oc_dec_ctx *_dec){
               run_count--;
               coded=flag;
             }
-            if(coded) {coded_fragis[ncoded_fragis++]=fragi;
-            } else { *(uncoded_fragis-++nuncoded_fragis)=fragi;
-}
+            if(coded)coded_fragis[ncoded_fragis++]=fragi;
+            else *(uncoded_fragis-++nuncoded_fragis)=fragi;
             quad_coded|=coded;
             frags[fragi].coded=coded;
             frags[fragi].refi=OC_FRAME_NONE;
           }
         }
         /*Remember if there's a coded luma block in this macro block.*/
-        if(!pli) {mb_modes[sbi<<2|quadi]=quad_coded;
-}
+        if(!pli)mb_modes[sbi<<2|quadi]=quad_coded;
       }
-}
     }
     _dec->state.ncoded_fragis[pli]=ncoded_fragis-prev_ncoded_fragis;
     prev_ncoded_fragis=ncoded_fragis;
@@ -734,16 +717,14 @@ static void oc_dec_mb_modes_unpack(oc_dec_ctx *_dec){
        corrupt and the rest of the packet is garbage anyway, but this way we
        won't crash, and we'll decode SOMETHING.*/
     /*LOOP VECTORIZES*/
-    for(mi=0;mi<OC_NMODES;mi++) {scheme0_alphabet[mi]=OC_MODE_INTER_NOMV;
-}
+    for(mi=0;mi<OC_NMODES;mi++)scheme0_alphabet[mi]=OC_MODE_INTER_NOMV;
     for(mi=0;mi<OC_NMODES;mi++){
       val=oc_pack_read(&_dec->opb,3);
       scheme0_alphabet[val]=OC_MODE_ALPHABETS[6][mi];
     }
     alphabet=scheme0_alphabet;
   }
-  else { alphabet=OC_MODE_ALPHABETS[mode_scheme-1];
-}
+  else alphabet=OC_MODE_ALPHABETS[mode_scheme-1];
   mode_tree=mode_scheme==7?OC_CLC_MODE_TREE:OC_VLC_MODE_TREE;
   mb_modes=_dec->state.mb_modes;
   nmbs=_dec->state.nmbs;
@@ -869,8 +850,7 @@ static void oc_dec_mv_unpack_and_frag_modes_fill(oc_dec_ctx *_dec){
             lbmvs[bi]=last_mv=oc_mv_unpack(&_dec->opb,mv_comp_tree);
             frag_mvs[fragi]=lbmvs[bi];
           }
-          else { lbmvs[bi]=0;
-}
+          else lbmvs[bi]=0;
         }
         (*set_chroma_mvs)(cbmvs,lbmvs);
         for(mapii=4;mapii<map_nidxs;mapii++){
@@ -926,8 +906,7 @@ static void oc_dec_block_qis_unpack(oc_dec_ctx *_dec){
   ptrdiff_t        fragii;
   ptrdiff_t        fragi;
   ncoded_fragis=_dec->state.ntotal_coded_fragis;
-  if(ncoded_fragis<=0) {return;
-}
+  if(ncoded_fragis<=0)return;
   frags=_dec->state.frags;
   coded_fragis=_dec->state.coded_fragis;
   if(_dec->state.nqis==1){
@@ -967,8 +946,7 @@ static void oc_dec_block_qis_unpack(oc_dec_ctx *_dec){
         val=oc_pack_read1(&_dec->opb);
         flag=(int)val;
       }
-      else { flag=!flag;
-}
+      else flag=!flag;
     }
     /*TODO: run_count should be 0 here.
       If it's not, we should issue a warning of some kind.*/
@@ -976,8 +954,7 @@ static void oc_dec_block_qis_unpack(oc_dec_ctx *_dec){
        fragment with a non-zero qi, make the second pass.*/
     if(_dec->state.nqis==3&&nqi1>0){
       /*Skip qii==0 fragments.*/
-      for(fragii=0;frags[coded_fragis[fragii]].qii==0;fragii++) {;
-}
+      for(fragii=0;frags[coded_fragis[fragii]].qii==0;fragii++);
       val=oc_pack_read1(&_dec->opb);
       flag=(int)val;
       do{
@@ -986,18 +963,15 @@ static void oc_dec_block_qis_unpack(oc_dec_ctx *_dec){
         full_run=run_count>=4129;
         for(;fragii<ncoded_fragis;fragii++){
           fragi=coded_fragis[fragii];
-          if(frags[fragi].qii==0) {continue;
-}
-          if(run_count--<=0) {break;
-}
+          if(frags[fragi].qii==0)continue;
+          if(run_count--<=0)break;
           frags[fragi].qii+=flag;
         }
         if(full_run&&fragii<ncoded_fragis){
           val=oc_pack_read1(&_dec->opb);
           flag=(int)val;
         }
-        else { flag=!flag;
-}
+        else flag=!flag;
       }
       while(fragii<ncoded_fragis);
       /*TODO: run_count should be 0 here.
@@ -1041,12 +1015,10 @@ static ptrdiff_t oc_dec_dc_coeff_unpack(oc_dec_ctx *_dec,int _huff_idxs[2],
     _dec->ti0[pli][0]=ti;
     /*Continue any previous EOB run, if there was one.*/
     eobi=eobs;
-    if(ncoded_fragis-fragii<eobi) {eobi=ncoded_fragis-fragii;
-}
+    if(ncoded_fragis-fragii<eobi)eobi=ncoded_fragis-fragii;
     eob_count=eobi;
     eobs-=eobi;
-    while(eobi-->0) {frags[coded_fragis[fragii++]].dc=0;
-}
+    while(eobi-->0)frags[coded_fragis[fragii++]].dc=0;
     while(fragii<ncoded_fragis){
       int token;
       int cw;
@@ -1059,30 +1031,25 @@ static ptrdiff_t oc_dec_dc_coeff_unpack(oc_dec_ctx *_dec,int _huff_idxs[2],
         eb=(int)oc_pack_read(&_dec->opb,
          OC_INTERNAL_DCT_TOKEN_EXTRA_BITS[token]);
         dct_tokens[ti++]=(unsigned char)eb;
-        if(token==OC_DCT_TOKEN_FAT_EOB) {dct_tokens[ti++]=(unsigned char)(eb>>8);
-}
+        if(token==OC_DCT_TOKEN_FAT_EOB)dct_tokens[ti++]=(unsigned char)(eb>>8);
         eb<<=OC_DCT_TOKEN_EB_POS(token);
       }
-      else { eb=0;
-}
+      else eb=0;
       cw=OC_DCT_CODE_WORD[token]+eb;
       eobs=cw>>OC_DCT_CW_EOB_SHIFT&0xFFF;
-      if(cw==OC_DCT_CW_FINISH) {eobs=OC_DCT_EOB_FINISH;
-}
+      if(cw==OC_DCT_CW_FINISH)eobs=OC_DCT_EOB_FINISH;
       if(eobs){
         eobi=OC_MINI(eobs,ncoded_fragis-fragii);
         eob_count+=eobi;
         eobs-=eobi;
-        while(eobi-->0) {frags[coded_fragis[fragii++]].dc=0;
-}
+        while(eobi-->0)frags[coded_fragis[fragii++]].dc=0;
       }
       else{
         int coeff;
         skip=(unsigned char)(cw>>OC_DCT_CW_RLEN_SHIFT);
         cw^=-(cw&1<<OC_DCT_CW_FLIP_BIT);
         coeff=cw>>OC_DCT_CW_MAG_SHIFT;
-        if(skip) {coeff=0;
-}
+        if(skip)coeff=0;
         run_counts[skip]++;
         frags[coded_fragis[fragii++]].dc=coeff;
       }
@@ -1090,12 +1057,10 @@ static ptrdiff_t oc_dec_dc_coeff_unpack(oc_dec_ctx *_dec,int _huff_idxs[2],
     /*Add the total EOB count to the longest run length.*/
     run_counts[63]+=eob_count;
     /*And convert the run_counts array to a moment table.*/
-    for(rli=63;rli-->0;) {run_counts[rli]+=run_counts[rli+1];
-}
+    for(rli=63;rli-->0;)run_counts[rli]+=run_counts[rli+1];
     /*Finally, subtract off the number of coefficients that have been
        accounted for by runs started in this coefficient.*/
-    for(rli=64;rli-->0;) {_ntoks_left[pli][rli]-=run_counts[rli];
-}
+    for(rli=64;rli-->0;)_ntoks_left[pli][rli]-=run_counts[rli];
   }
   _dec->dct_tokens_count=ti;
   return eobs;
@@ -1144,17 +1109,14 @@ static int oc_dec_ac_coeff_unpack(oc_dec_ctx *_dec,int _zzi,int _huff_idxs[2],
         eb=(int)oc_pack_read(&_dec->opb,
          OC_INTERNAL_DCT_TOKEN_EXTRA_BITS[token]);
         dct_tokens[ti++]=(unsigned char)eb;
-        if(token==OC_DCT_TOKEN_FAT_EOB) {dct_tokens[ti++]=(unsigned char)(eb>>8);
-}
+        if(token==OC_DCT_TOKEN_FAT_EOB)dct_tokens[ti++]=(unsigned char)(eb>>8);
         eb<<=OC_DCT_TOKEN_EB_POS(token);
       }
-      else { eb=0;
-}
+      else eb=0;
       cw=OC_DCT_CODE_WORD[token]+eb;
       skip=(unsigned char)(cw>>OC_DCT_CW_RLEN_SHIFT);
       _eobs=cw>>OC_DCT_CW_EOB_SHIFT&0xFFF;
-      if(cw==OC_DCT_CW_FINISH) {_eobs=OC_DCT_EOB_FINISH;
-}
+      if(cw==OC_DCT_CW_FINISH)_eobs=OC_DCT_EOB_FINISH;
       if(_eobs==0){
         run_counts[skip]++;
         ntoks++;
@@ -1167,12 +1129,10 @@ static int oc_dec_ac_coeff_unpack(oc_dec_ctx *_dec,int _zzi,int _huff_idxs[2],
     /*Add the total EOB count to the longest run length.*/
     run_counts[63]+=eob_count;
     /*And convert the run_counts array to a moment table.*/
-    for(rli=63;rli-->0;) {run_counts[rli]+=run_counts[rli+1];
-}
+    for(rli=63;rli-->0;)run_counts[rli]+=run_counts[rli+1];
     /*Finally, subtract off the number of coefficients that have been
        accounted for by runs started in this coefficient.*/
-    for(rli=64-_zzi;rli-->0;) {_ntoks_left[pli][_zzi+rli]-=run_counts[rli];
-}
+    for(rli=64-_zzi;rli-->0;)_ntoks_left[pli][_zzi+rli]-=run_counts[rli];
   }
   _dec->dct_tokens_count=ti;
   return _eobs;
@@ -1210,10 +1170,9 @@ static void oc_dec_residual_tokens_unpack(oc_dec_ctx *_dec){
   int        pli;
   int        zzi;
   int        hgi;
-  for(pli=0;pli<3;pli++) {for(zzi=0;zzi<64;zzi++){
+  for(pli=0;pli<3;pli++)for(zzi=0;zzi<64;zzi++){
     ntoks_left[pli][zzi]=_dec->state.ncoded_fragis[pli];
   }
-}
   val=oc_pack_read(&_dec->opb,4);
   huff_idxs[0]=(int)val;
   val=oc_pack_read(&_dec->opb,4);
@@ -1261,12 +1220,10 @@ static int oc_dec_postprocess_init(oc_dec_ctx *_dec){
   if(_dec->dc_qis==NULL){
     /*If we haven't been tracking DC quantization indices, there's no point in
        starting now.*/
-    if(_dec->state.frame_type!=OC_INTRA_FRAME) {return 1;
-}
+    if(_dec->state.frame_type!=OC_INTRA_FRAME)return 1;
     _dec->dc_qis=(unsigned char *)_ogg_malloc(
      _dec->state.nfrags*sizeof(_dec->dc_qis[0]));
-    if(_dec->dc_qis==NULL) {return 1;
-}
+    if(_dec->dc_qis==NULL)return 1;
     memset(_dec->dc_qis,_dec->state.qis[0],_dec->state.nfrags);
   }
   else{
@@ -1411,23 +1368,21 @@ static void oc_dec_pipeline_init(oc_dec_ctx *_dec,
   /*Initialize the bounding value array for the loop filter.*/
   flimit=_dec->state.loop_filter_limits[_dec->state.qis[0]];
   _pipe->loop_filter=flimit!=0;
-  if(flimit!=0) {oc_loop_filter_init(&_dec->state,_pipe->bounding_values,flimit);
-}
+  if(flimit!=0)oc_loop_filter_init(&_dec->state,_pipe->bounding_values,flimit);
   /*Initialize any buffers needed for post-processing.
     We also save the current post-processing level, to guard against the user
      changing it from a callback.*/
-  if(!oc_dec_postprocess_init(_dec)) {_pipe->pp_level=_dec->pp_level;
+  if(!oc_dec_postprocess_init(_dec))_pipe->pp_level=_dec->pp_level;
   /*If we don't have enough information to post-process, disable it, regardless
      of the user-requested level.*/
-  } else{
+  else{
     _pipe->pp_level=OC_PP_LEVEL_DISABLED;
     memcpy(_dec->pp_frame_buf,
      _dec->state.ref_frame_bufs[_dec->state.ref_frame_idx[OC_FRAME_SELF]],
      sizeof(_dec->pp_frame_buf[0])*3);
   }
   /*Clear down the DCT coefficient buffer for the first block.*/
-  for(zzi=0;zzi<64;zzi++) {_pipe->dct_coeffs[zzi]=0;
-}
+  for(zzi=0;zzi<64;zzi++)_pipe->dct_coeffs[zzi]=0;
 }
 
 /*Undo the DC prediction in a single plane of an MCU (one or two super block
@@ -1480,9 +1435,8 @@ void oc_dec_dc_unpredict_mcu_plane_c(oc_dec_ctx *_dec,
       u_ref=u_frags[fragi].refi;
       for(fragx=0;fragx<nhfrags;fragx++,fragi++){
         int ur_ref;
-        if(fragx+1>=nhfrags) {ur_ref=-1;
-        } else { ur_ref=u_frags[fragi+1].refi;
-}
+        if(fragx+1>=nhfrags)ur_ref=-1;
+        else ur_ref=u_frags[fragi+1].refi;
         if(frags[fragi].coded){
           int pred;
           int refi;
@@ -1524,18 +1478,16 @@ void oc_dec_dc_unpredict_mcu_plane_c(oc_dec_ctx *_dec,
               p1=u_frags[fragi-1].dc;
               p2=u_frags[fragi].dc;
               pred=(29*(p0+p2)-26*p1)/32;
-              if(abs(pred-p2)>128) {pred=p2;
-              } else if(abs(pred-p0)>128) {pred=p0;
-              } else if(abs(pred-p1)>128) {pred=p1;
-}
+              if(abs(pred-p2)>128)pred=p2;
+              else if(abs(pred-p0)>128)pred=p0;
+              else if(abs(pred-p1)>128)pred=p1;
             }break;
           }
           pred_last[refi]=frags[fragi].dc+=pred;
           ncoded_fragis++;
           l_ref=refi;
         }
-        else { l_ref=-1;
-}
+        else l_ref=-1;
         ul_ref=u_ref;
         u_ref=ur_ref;
       }
@@ -1610,8 +1562,7 @@ static void oc_dec_frags_recon_mcu_plane(oc_dec_ctx *_dec,
         eob=cw>>OC_DCT_CW_EOB_SHIFT&0xFFF;
         if(token==OC_DCT_TOKEN_FAT_EOB){
           eob+=dct_tokens[lti++]<<8;
-          if(eob==0) {eob=OC_DCT_EOB_FINISH;
-}
+          if(eob==0)eob=OC_DCT_EOB_FINISH;
         }
         rlen=(unsigned char)(cw>>OC_DCT_CW_RLEN_SHIFT);
         cw^=-(cw&1<<OC_DCT_CW_FLIP_BIT);
@@ -1724,8 +1675,7 @@ static void oc_filter_vedge(unsigned char *_dst,int _dst_ystride,
   for(by=0;by<8;by++){
     rsrc=cdst-1;
     rdst=cdst;
-    for(bx=0;bx<10;bx++) {r[bx]=*rsrc++;
-}
+    for(bx=0;bx<10;bx++)r[bx]=*rsrc++;
     sum0=sum1=0;
     for(bx=0;bx<4;bx++){
       sum0+=abs(r[bx+1]-r[bx]);
@@ -2010,8 +1960,7 @@ static void oc_dec_dering_frag_rows(oc_dec_ctx *_dec,th_img_plane *_img,
 
 th_dec_ctx *th_decode_alloc(const th_info *_info,const th_setup_info *_setup){
   oc_dec_ctx *dec;
-  if(_info==NULL||_setup==NULL) {return NULL;
-}
+  if(_info==NULL||_setup==NULL)return NULL;
   dec=oc_aligned_malloc(sizeof(*dec),16);
   if(dec==NULL||oc_dec_init(dec,_info,_setup)<0){
     oc_aligned_free(dec);
@@ -2032,34 +1981,26 @@ int th_decode_ctl(th_dec_ctx *_dec,int _req,void *_buf,
  size_t _buf_sz){
   switch(_req){
   case TH_DECCTL_GET_PPLEVEL_MAX:{
-    if(_dec==NULL||_buf==NULL) {return TH_EFAULT;
-}
-    if(_buf_sz!=sizeof(int)) {return TH_EINVAL;
-}
+    if(_dec==NULL||_buf==NULL)return TH_EFAULT;
+    if(_buf_sz!=sizeof(int))return TH_EINVAL;
     (*(int *)_buf)=OC_PP_LEVEL_MAX;
     return 0;
   }break;
   case TH_DECCTL_SET_PPLEVEL:{
     int pp_level;
-    if(_dec==NULL||_buf==NULL) {return TH_EFAULT;
-}
-    if(_buf_sz!=sizeof(int)) {return TH_EINVAL;
-}
+    if(_dec==NULL||_buf==NULL)return TH_EFAULT;
+    if(_buf_sz!=sizeof(int))return TH_EINVAL;
     pp_level=*(int *)_buf;
-    if(pp_level<0||pp_level>OC_PP_LEVEL_MAX) {return TH_EINVAL;
-}
+    if(pp_level<0||pp_level>OC_PP_LEVEL_MAX)return TH_EINVAL;
     _dec->pp_level=pp_level;
     return 0;
   }break;
   case TH_DECCTL_SET_GRANPOS:{
     ogg_int64_t granpos;
-    if(_dec==NULL||_buf==NULL) {return TH_EFAULT;
-}
-    if(_buf_sz!=sizeof(ogg_int64_t)) {return TH_EINVAL;
-}
+    if(_dec==NULL||_buf==NULL)return TH_EFAULT;
+    if(_buf_sz!=sizeof(ogg_int64_t))return TH_EINVAL;
     granpos=*(ogg_int64_t *)_buf;
-    if(granpos<0) {return TH_EINVAL;
-}
+    if(granpos<0)return TH_EINVAL;
     _dec->state.granpos=granpos;
     _dec->state.keyframe_num=(granpos>>_dec->state.info.keyframe_granule_shift)
      -_dec->state.granpos_bias;
@@ -2069,10 +2010,8 @@ int th_decode_ctl(th_dec_ctx *_dec,int _req,void *_buf,
   }break;
   case TH_DECCTL_SET_STRIPE_CB:{
     th_stripe_callback *cb;
-    if(_dec==NULL||_buf==NULL) {return TH_EFAULT;
-}
-    if(_buf_sz!=sizeof(th_stripe_callback)) {return TH_EINVAL;
-}
+    if(_dec==NULL||_buf==NULL)return TH_EFAULT;
+    if(_buf_sz!=sizeof(th_stripe_callback))return TH_EINVAL;
     cb=(th_stripe_callback *)_buf;
     _dec->stripe_cb.ctx=cb->ctx;
     _dec->stripe_cb.stripe_decoded=cb->stripe_decoded;
@@ -2801,8 +2740,7 @@ static void oc_render_telemetry(th_dec_ctx *_dec,th_ycbcr_buffer _ycbcr,
 int th_decode_packetin(th_dec_ctx *_dec,const ogg_packet *_op,
  ogg_int64_t *_granpos){
   int ret;
-  if(_dec==NULL||_op==NULL) {return TH_EFAULT;
-}
+  if(_dec==NULL||_op==NULL)return TH_EFAULT;
   /*A completely empty packet indicates a dropped frame and is treated exactly
      like an inter frame with no coded blocks.*/
   if(_op->bytes==0){
@@ -2812,11 +2750,9 @@ int th_decode_packetin(th_dec_ctx *_dec,const ogg_packet *_op,
   else{
     oc_pack_readinit(&_dec->opb,_op->packet,_op->bytes);
     ret=oc_dec_frame_header_unpack(_dec);
-    if(ret<0) {return ret;
-}
-    if(_dec->state.frame_type==OC_INTRA_FRAME) {oc_dec_mark_all_intra(_dec);
-    } else { oc_dec_coded_flags_unpack(_dec);
-}
+    if(ret<0)return ret;
+    if(_dec->state.frame_type==OC_INTRA_FRAME)oc_dec_mark_all_intra(_dec);
+    else oc_dec_coded_flags_unpack(_dec);
   }
   /*If there have been no reference frames, and we need one, initialize one.*/
   if(_dec->state.frame_type!=OC_INTRA_FRAME&&
@@ -2831,8 +2767,7 @@ int th_decode_packetin(th_dec_ctx *_dec,const ogg_packet *_op,
      _dec->state.info.keyframe_granule_shift)
      +(_dec->state.curframe_num-_dec->state.keyframe_num);
     _dec->state.curframe_num++;
-    if(_granpos!=NULL) {*_granpos=_dec->state.granpos;
-}
+    if(_granpos!=NULL)*_granpos=_dec->state.granpos;
     return TH_DUPFRAME;
   }
   else{
@@ -2853,8 +2788,7 @@ int th_decode_packetin(th_dec_ctx *_dec,const ogg_packet *_op,
 #endif
     /*Select a free buffer to use for the reconstructed version of this frame.*/
     for(refi=0;refi==_dec->state.ref_frame_idx[OC_FRAME_GOLD]||
-     refi==_dec->state.ref_frame_idx[OC_FRAME_PREV];refi++) {;
-}
+     refi==_dec->state.ref_frame_idx[OC_FRAME_PREV];refi++);
     _dec->state.ref_frame_idx[OC_FRAME_SELF]=refi;
     _dec->state.ref_frame_data[OC_FRAME_SELF]=
      _dec->state.ref_frame_bufs[refi][0].data;
@@ -2894,8 +2828,7 @@ int th_decode_packetin(th_dec_ctx *_dec,const ogg_packet *_op,
      _dec->state.info.keyframe_granule_shift)
      +(_dec->state.curframe_num-_dec->state.keyframe_num);
     _dec->state.curframe_num++;
-    if(_granpos!=NULL) {*_granpos=_dec->state.granpos;
-}
+    if(_granpos!=NULL)*_granpos=_dec->state.granpos;
     /*All of the rest of the operations -- DC prediction reversal,
        reconstructing coded fragments, copying uncoded fragments, loop
        filtering, extending borders, and out-of-loop post-processing -- should
@@ -3009,8 +2942,7 @@ int th_decode_packetin(th_dec_ctx *_dec,const ogg_packet *_op,
       notstart=1;
     }
     /*Finish filling in the reference frame borders.*/
-    for(pli=0;pli<3;pli++) {oc_state_borders_fill_caps(&_dec->state,refi,pli);
-}
+    for(pli=0;pli<3;pli++)oc_state_borders_fill_caps(&_dec->state,refi,pli);
     /*Update the reference frame indices.*/
     if(_dec->state.frame_type==OC_INTRA_FRAME){
       /*The new frame becomes both the previous and gold reference frames.*/
@@ -3054,8 +2986,7 @@ int th_decode_packetin(th_dec_ctx *_dec,const ogg_packet *_op,
 }
 
 int th_decode_ycbcr_out(th_dec_ctx *_dec,th_ycbcr_buffer _ycbcr){
-  if(_dec==NULL||_ycbcr==NULL) {return TH_EFAULT;
-}
+  if(_dec==NULL||_ycbcr==NULL)return TH_EFAULT;
   oc_ycbcr_buffer_flip(_ycbcr,_dec->pp_frame_buf);
   return 0;
 }

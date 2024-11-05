@@ -8,14 +8,12 @@
 
 
 static void th_enc_api_clear(th_api_wrapper *_api){
-  if(_api->encode) {th_encode_free(_api->encode);
-}
+  if(_api->encode)th_encode_free(_api->encode);
   memset(_api,0,sizeof(*_api));
 }
 
 static void theora_encode_clear(theora_state *_te){
-  if(_te->i!=NULL) {theora_info_clear(_te->i);
-}
+  if(_te->i!=NULL)theora_info_clear(_te->i);
   memset(_te,0,sizeof(*_te));
 }
 
@@ -51,8 +49,7 @@ int theora_encode_init(theora_state *_te,theora_info *_ci){
     This avoids having to figure out whether or not we need to free the info
      struct in either theora_info_clear() or theora_clear().*/
   apiinfo=(th_api_info *)_ogg_malloc(sizeof(*apiinfo));
-  if(apiinfo==NULL) {return TH_EFAULT;
-}
+  if(apiinfo==NULL)return TH_EFAULT;
   /*Make our own copy of the info struct, since its lifetime should be
      independent of the one we were passed in.*/
   *&apiinfo->info=*_ci;
@@ -97,8 +94,7 @@ int theora_encode_YUVin(theora_state *_te,yuv_buffer *_yuv){
   buf[2].stride=_yuv->uv_stride;
   buf[2].data=_yuv->v;
   ret=th_encode_ycbcr_in(api->encode,buf);
-  if(ret<0) {return ret;
-}
+  if(ret<0)return ret;
   _te->granulepos=api->encode->state.granpos;
   return ret;
 }

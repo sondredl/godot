@@ -333,11 +333,10 @@ namespace basisu
 
 		static inline uint32_t get_block_values(uint8_t *pDst, uint32_t l, uint32_t h)
 		{
-			if (l > h) {
+			if (l > h)
 				return get_block_values8(pDst, l, h);
-			} else {
+			else
 				return get_block_values6(pDst, l, h);
-}
 		}
 	};
 
@@ -366,9 +365,8 @@ namespace basisu
 	{
 		bool success = true;
 
-		if (unpack_bc1((const uint8_t *)pBlock_bits + sizeof(bc4_block), pPixels, true)) {
+		if (unpack_bc1((const uint8_t *)pBlock_bits + sizeof(bc4_block), pPixels, true))
 			success = false;
-}
 
 		unpack_bc4(pBlock_bits, &pPixels[0].a, sizeof(color_rgba));
 
@@ -473,50 +471,40 @@ namespace basisu
 		uint32_t bit_offset = 0;
 		const uint8_t* pBuf = static_cast<const uint8_t*>(pBlock_bits);
 
-		if (read_bits32(pBuf, bit_offset, mode + 1) != (1U << mode)) { return false;
-}
+		if (read_bits32(pBuf, bit_offset, mode + 1) != (1U << mode)) return false;
 
 		const uint32_t part = read_bits32(pBuf, bit_offset, (mode == 0) ? 4 : 6);
 
 		color_rgba endpoints[ENDPOINTS];
-		for (uint32_t c = 0; c < COMPS; c++) {
-			for (uint32_t e = 0; e < ENDPOINTS; e++) {
+		for (uint32_t c = 0; c < COMPS; c++)
+			for (uint32_t e = 0; e < ENDPOINTS; e++)
 				endpoints[e][c] = (uint8_t)read_bits32(pBuf, bit_offset, ENDPOINT_BITS);
-}
-}
 
 		uint32_t pbits[6];
-		for (uint32_t p = 0; p < PBITS; p++) {
+		for (uint32_t p = 0; p < PBITS; p++)
 			pbits[p] = read_bits32(pBuf, bit_offset, 1);
-}
 
 		uint32_t weights[16];
-		for (uint32_t i = 0; i < 16; i++) {
+		for (uint32_t i = 0; i < 16; i++)
 			weights[i] = read_bits32(pBuf, bit_offset, ((!i) || (i == basist::g_bc7_table_anchor_index_third_subset_1[part]) || (i == basist::g_bc7_table_anchor_index_third_subset_2[part])) ? (WEIGHT_BITS - 1) : WEIGHT_BITS);
-}
 
 		assert(bit_offset == 128);
 
-		for (uint32_t e = 0; e < ENDPOINTS; e++) {
-			for (uint32_t c = 0; c < 4; c++) {
+		for (uint32_t e = 0; e < ENDPOINTS; e++)
+			for (uint32_t c = 0; c < 4; c++)
 				endpoints[e][c] = (uint8_t)((c == 3) ? 255 : (PBITS ? bc7_dequant(endpoints[e][c], pbits[e], ENDPOINT_BITS) : bc7_dequant(endpoints[e][c], ENDPOINT_BITS)));
-}
-}
 
 		color_rgba block_colors[3][8];
-		for (uint32_t s = 0; s < 3; s++) {
+		for (uint32_t s = 0; s < 3; s++)
 			for (uint32_t i = 0; i < WEIGHT_VALS; i++)
 			{
-				for (uint32_t c = 0; c < 3; c++) {
+				for (uint32_t c = 0; c < 3; c++)
 					block_colors[s][i][c] = (uint8_t)bc7_interp(endpoints[s * 2 + 0][c], endpoints[s * 2 + 1][c], i, WEIGHT_BITS);
-}
 				block_colors[s][i][3] = 255;
 			}
-}
 
-		for (uint32_t i = 0; i < 16; i++) {
+		for (uint32_t i = 0; i < 16; i++)
 			pPixels[i] = block_colors[basist::g_bc7_partition3[part * 16 + i]][weights[i]];
-}
 
 		return true;
 	}
@@ -529,56 +517,46 @@ namespace basisu
 		const uint32_t WEIGHT_BITS = (mode == 1) ? 3 : 2;
 		const uint32_t ENDPOINT_BITS = (mode == 7) ? 5 : ((mode == 1) ? 6 : 7);
 		const uint32_t PBITS = (mode == 1) ? 2 : 4;
-		const uint32_t SHARED_PBITS = mode == 1;
+		const uint32_t SHARED_PBITS = (mode == 1) ? true : false;
 		const uint32_t WEIGHT_VALS = 1 << WEIGHT_BITS;
 
 		uint32_t bit_offset = 0;
 		const uint8_t* pBuf = static_cast<const uint8_t*>(pBlock_bits);
 
-		if (read_bits32(pBuf, bit_offset, mode + 1) != (1U << mode)) { return false;
-}
+		if (read_bits32(pBuf, bit_offset, mode + 1) != (1U << mode)) return false;
 
 		const uint32_t part = read_bits32(pBuf, bit_offset, 6);
 
 		color_rgba endpoints[ENDPOINTS];
-		for (uint32_t c = 0; c < COMPS; c++) {
-			for (uint32_t e = 0; e < ENDPOINTS; e++) {
+		for (uint32_t c = 0; c < COMPS; c++)
+			for (uint32_t e = 0; e < ENDPOINTS; e++)
 				endpoints[e][c] = (uint8_t)read_bits32(pBuf, bit_offset, ENDPOINT_BITS);
-}
-}
 
 		uint32_t pbits[4];
-		for (uint32_t p = 0; p < PBITS; p++) {
+		for (uint32_t p = 0; p < PBITS; p++)
 			pbits[p] = read_bits32(pBuf, bit_offset, 1);
-}
 
 		uint32_t weights[16];
-		for (uint32_t i = 0; i < 16; i++) {
+		for (uint32_t i = 0; i < 16; i++)
 			weights[i] = read_bits32(pBuf, bit_offset, ((!i) || (i == basist::g_bc7_table_anchor_index_second_subset[part])) ? (WEIGHT_BITS - 1) : WEIGHT_BITS);
-}
 
 		assert(bit_offset == 128);
 
-		for (uint32_t e = 0; e < ENDPOINTS; e++) {
-			for (uint32_t c = 0; c < 4; c++) {
+		for (uint32_t e = 0; e < ENDPOINTS; e++)
+			for (uint32_t c = 0; c < 4; c++)
 				endpoints[e][c] = (uint8_t)((c == ((mode == 7U) ? 4U : 3U)) ? 255 : bc7_dequant(endpoints[e][c], pbits[SHARED_PBITS ? (e >> 1) : e], ENDPOINT_BITS));
-}
-}
 
 		color_rgba block_colors[2][8];
-		for (uint32_t s = 0; s < 2; s++) {
+		for (uint32_t s = 0; s < 2; s++)
 			for (uint32_t i = 0; i < WEIGHT_VALS; i++)
 			{
-				for (uint32_t c = 0; c < COMPS; c++) {
+				for (uint32_t c = 0; c < COMPS; c++)
 					block_colors[s][i][c] = (uint8_t)bc7_interp(endpoints[s * 2 + 0][c], endpoints[s * 2 + 1][c], i, WEIGHT_BITS);
-}
 				block_colors[s][i][3] = (COMPS == 3) ? 255 : block_colors[s][i][3];
 			}
-}
 
-		for (uint32_t i = 0; i < 16; i++) {
+		for (uint32_t i = 0; i < 16; i++)
 			pPixels[i] = block_colors[basist::g_bc7_partition2[part * 16 + i]][weights[i]];
-}
 
 		return true;
 	}
@@ -597,57 +575,46 @@ namespace basisu
 		uint32_t bit_offset = 0;
 		const uint8_t* pBuf = static_cast<const uint8_t*>(pBlock_bits);
 
-		if (read_bits32(pBuf, bit_offset, mode + 1) != (1U << mode)) { return false;
-}
+		if (read_bits32(pBuf, bit_offset, mode + 1) != (1U << mode)) return false;
 
 		const uint32_t comp_rot = read_bits32(pBuf, bit_offset, 2);
 		const uint32_t index_mode = (mode == 4) ? read_bits32(pBuf, bit_offset, 1) : 0;
 
 		color_rgba endpoints[ENDPOINTS];
-		for (uint32_t c = 0; c < COMPS; c++) {
-			for (uint32_t e = 0; e < ENDPOINTS; e++) {
+		for (uint32_t c = 0; c < COMPS; c++)
+			for (uint32_t e = 0; e < ENDPOINTS; e++)
 				endpoints[e][c] = (uint8_t)read_bits32(pBuf, bit_offset, (c == 3) ? A_ENDPOINT_BITS : ENDPOINT_BITS);
-}
-}
 
 		const uint32_t weight_bits[2] = { index_mode ? A_WEIGHT_BITS : WEIGHT_BITS,  index_mode ? WEIGHT_BITS : A_WEIGHT_BITS };
 
 		uint32_t weights[16], a_weights[16];
 
-		for (uint32_t i = 0; i < 16; i++) {
+		for (uint32_t i = 0; i < 16; i++)
 			(index_mode ? a_weights : weights)[i] = read_bits32(pBuf, bit_offset, weight_bits[index_mode] - ((!i) ? 1 : 0));
-}
 
-		for (uint32_t i = 0; i < 16; i++) {
+		for (uint32_t i = 0; i < 16; i++)
 			(index_mode ? weights : a_weights)[i] = read_bits32(pBuf, bit_offset, weight_bits[1 - index_mode] - ((!i) ? 1 : 0));
-}
 
 		assert(bit_offset == 128);
 
-		for (uint32_t e = 0; e < ENDPOINTS; e++) {
-			for (uint32_t c = 0; c < 4; c++) {
+		for (uint32_t e = 0; e < ENDPOINTS; e++)
+			for (uint32_t c = 0; c < 4; c++)
 				endpoints[e][c] = (uint8_t)bc7_dequant(endpoints[e][c], (c == 3) ? A_ENDPOINT_BITS : ENDPOINT_BITS);
-}
-}
 
 		color_rgba block_colors[8];
-		for (uint32_t i = 0; i < (1U << weight_bits[0]); i++) {
-			for (uint32_t c = 0; c < 3; c++) {
+		for (uint32_t i = 0; i < (1U << weight_bits[0]); i++)
+			for (uint32_t c = 0; c < 3; c++)
 				block_colors[i][c] = (uint8_t)bc7_interp(endpoints[0][c], endpoints[1][c], i, weight_bits[0]);
-}
-}
 
-		for (uint32_t i = 0; i < (1U << weight_bits[1]); i++) {
+		for (uint32_t i = 0; i < (1U << weight_bits[1]); i++)
 			block_colors[i][3] = (uint8_t)bc7_interp(endpoints[0][3], endpoints[1][3], i, weight_bits[1]);
-}
 
 		for (uint32_t i = 0; i < 16; i++)
 		{
 			pPixels[i] = block_colors[weights[i]];
 			pPixels[i].a = block_colors[a_weights[i]].a;
-			if (comp_rot >= 1) {
+			if (comp_rot >= 1)
 				std::swap(pPixels[i].a, pPixels[i].m_comps[comp_rot - 1]);
-}
 		}
 
 		return true;
@@ -706,9 +673,8 @@ namespace basisu
 
 		const bc7_mode_6 &block = *static_cast<const bc7_mode_6 *>(pBlock_bits);
 
-		if (block.m_lo.m_mode != (1 << 6)) {
+		if (block.m_lo.m_mode != (1 << 6))
 			return false;
-}
 
 		const uint32_t r0 = (uint32_t)((block.m_lo.m_r0 << 1) | block.m_lo.m_p0);
 		const uint32_t g0 = (uint32_t)((block.m_lo.m_g0 << 1) | block.m_lo.m_p0);
@@ -804,9 +770,9 @@ namespace basisu
 		int result;
 		if (is_signed)
 		{
-			if (bits >= 16) {
+			if (bits >= 16)
 				result = val;
-			} else
+			else
 			{
 				int s_flag = 0;
 				if (val < 0)
@@ -815,30 +781,27 @@ namespace basisu
 					val = -val;
 				}
 
-				if (val == 0) {
+				if (val == 0)
 					result = 0;
-				} else if (val >= ((1 << (bits - 1)) - 1)) {
+				else if (val >= ((1 << (bits - 1)) - 1))
 					result = 0x7FFF;
-				} else {
+				else
 					result = ((val << 15) + 0x4000) >> (bits - 1);
-}
 
-				if (s_flag) {
+				if (s_flag)
 					result = -result;
-}
 			}
 		}
 		else
 		{
-			if (bits >= 15) {
+			if (bits >= 15)
 				result = val;
-			} else if (!val) {
+			else if (!val)
 				result = 0;
-			} else if (val == ((1 << bits) - 1)) {
+			else if (val == ((1 << bits) - 1))
 				result = 0xFFFF;
-			} else {
+			else
 				result = ((val << 16) + 0x8000) >> bits;
-}
 		}
 		return result;
 	}
@@ -943,9 +906,8 @@ namespace basisu
 		{
 			const basist::bc6h_bit_layout& layout = basist::g_bc6h_bit_layouts[mode][layout_index];
 
-			if (layout.m_comp < 0) {
+			if (layout.m_comp < 0)
 				break;
-}
 
 			const int subset = layout.m_index >> 1, lh_index = layout.m_index & 1;
 			assert((layout.m_comp == 3) || ((subset >= 0) && (subset < (int)MAX_SUBSETS)));
@@ -966,9 +928,8 @@ namespace basisu
 
 				int b = bc6h_get_bits(total_bits, blo, bhi, total_bits_read);
 
-				if (last_bit < first_bit) {
+				if (last_bit < first_bit)
 					b = bc6h_reverse_bits(b, total_bits);
-}
 
 				res |= (b << bit_shift);
 			}
@@ -981,40 +942,30 @@ namespace basisu
 		const int num_sig_bits = basist::g_bc6h_mode_sig_bits[mode][0];
 		if (is_signed)
 		{
-			for (uint32_t comp = 0; comp < 3; comp++) {
+			for (uint32_t comp = 0; comp < 3; comp++)
 				comps[0][comp][0] = bc6h_sign_extend(comps[0][comp][0], num_sig_bits);
-}
 		}
 
 		if (is_signed || !is_mode_9_or_10)
 		{
-			for (uint32_t subset = 0; subset < num_subsets; subset++) {
-				for (uint32_t comp = 0; comp < 3; comp++) {
-					for (uint32_t lh = (subset ? 0 : 1); lh < 2; lh++) {
+			for (uint32_t subset = 0; subset < num_subsets; subset++)
+				for (uint32_t comp = 0; comp < 3; comp++)
+					for (uint32_t lh = (subset ? 0 : 1); lh < 2; lh++)
 						comps[subset][comp][lh] = bc6h_sign_extend(comps[subset][comp][lh], basist::g_bc6h_mode_sig_bits[mode][1 + comp]);
-}
-}
-}
 		}
 
 		if (!is_mode_9_or_10)
 		{
-			for (uint32_t subset = 0; subset < num_subsets; subset++) {
-				for (uint32_t comp = 0; comp < 3; comp++) {
-					for (uint32_t lh = (subset ? 0 : 1); lh < 2; lh++) {
+			for (uint32_t subset = 0; subset < num_subsets; subset++)
+				for (uint32_t comp = 0; comp < 3; comp++)
+					for (uint32_t lh = (subset ? 0 : 1); lh < 2; lh++)
 						comps[subset][comp][lh] = bc6h_apply_delta(comps[0][comp][0], comps[subset][comp][lh], num_sig_bits, is_signed);
-}
-}
-}
 		}
 
-		for (uint32_t subset = 0; subset < num_subsets; subset++) {
-			for (uint32_t comp = 0; comp < 3; comp++) {
-				for (uint32_t lh = 0; lh < 2; lh++) {
+		for (uint32_t subset = 0; subset < num_subsets; subset++)
+			for (uint32_t comp = 0; comp < 3; comp++)
+				for (uint32_t lh = 0; lh < 2; lh++)
 					comps[subset][comp][lh] = bc6h_dequantize(comps[subset][comp][lh], num_sig_bits, is_signed);
-}
-}
-}
 
 		// Now unpack weights and output texels
 		const int weight_bits = (mode >= 10) ? 4 : 3;
@@ -1145,12 +1096,10 @@ namespace basisu
 	{
 		const fxt1_block* pBlock = static_cast<const fxt1_block*>(p);
 
-		if (pBlock->m_hi.m_mode == 0) {
+		if (pBlock->m_hi.m_mode == 0)
 			return false;
-}
-		if (pBlock->m_hi.m_alpha == 1) {
+		if (pBlock->m_hi.m_alpha == 1)
 			return false;
-}
 
 		color_rgba colors[4];
 
@@ -1174,9 +1123,8 @@ namespace basisu
 		colors[3].b = pBlock->m_hi.m_b3;
 		colors[3].a = 255;
 
-		for (uint32_t i = 0; i < 4; i++) {
+		for (uint32_t i = 0; i < 4; i++)
 			colors[i] = expand_565(colors[i]);
-}
 
 		color_rgba block0_colors[4];
 		block0_colors[0] = colors[0];
@@ -1458,9 +1406,8 @@ namespace basisu
 		}
 		case texture_format::cETC2_RGBA:
 		{
-			if (!unpack_etc1(static_cast<const etc_block*>(pBlock)[1], pPixels)) {
+			if (!unpack_etc1(static_cast<const etc_block*>(pBlock)[1], pPixels))
 				return false;
-}
 			unpack_etc2_eac(pBlock, pPixels);
 			break;
 		}
@@ -1485,9 +1432,8 @@ namespace basisu
 			bool status = basisu_astc::astc::decompress_ldr(reinterpret_cast<uint8_t*>(pPixels), static_cast<const uint8_t*>(pBlock), astc_srgb, 4, 4);
 			assert(status);
 
-			if (!status) {
+			if (!status)
 				return false;
-}
 
 			break;
 		}
@@ -1547,9 +1493,8 @@ namespace basisu
 #if 1
 				bool status = basisu_astc::astc::decompress_hdr(&pPixels[0][0], (uint8_t*)pBlock, 4, 4);
 				assert(status);
-				if (!status) {
+				if (!status)
 					return false;
-}
 #else
 				basist::half_float half_block[16][4];
 
@@ -1603,17 +1548,15 @@ namespace basisu
 		img.resize(get_pixel_width(), get_pixel_height());
 		img.set_all(g_black_color);
 
-		if (!img.get_width() || !img.get_height()) {
+		if (!img.get_width() || !img.get_height())
 			return true;
-}
 
 		if ((m_fmt == texture_format::cPVRTC1_4_RGB) || (m_fmt == texture_format::cPVRTC1_4_RGBA))
 		{
 			pvrtc4_image pi(m_width, m_height);
 
-			if (get_total_blocks() != pi.get_total_blocks()) {
+			if (get_total_blocks() != pi.get_total_blocks())
 				return false;
-}
 
 			memcpy(&pi.get_blocks()[0], get_ptr(), get_size_in_bytes());
 
@@ -1626,9 +1569,8 @@ namespace basisu
 
 		assert((m_block_width <= cMaxBlockSize) && (m_block_height <= cMaxBlockSize));
 		color_rgba pixels[cMaxBlockSize * cMaxBlockSize];
-		for (uint32_t i = 0; i < cMaxBlockSize * cMaxBlockSize; i++) {
+		for (uint32_t i = 0; i < cMaxBlockSize * cMaxBlockSize; i++)
 			pixels[i] = g_black_color;
-}
 
 		bool success = true;
 
@@ -1638,9 +1580,8 @@ namespace basisu
 			{
 				const void* pBlock = get_block_ptr(bx, by);
 
-				if (!unpack_block(m_fmt, pBlock, pixels)) {
+				if (!unpack_block(m_fmt, pBlock, pixels))
 					success = false;
-}
 
 				img.set_block_clipped(pixels, bx * m_block_width, by * m_block_height, m_block_width, m_block_height);
 			} // bx
@@ -1664,9 +1605,8 @@ namespace basisu
 		img.resize(get_pixel_width(), get_pixel_height());
 		img.set_all(vec4F(0.0f));
 
-		if (!img.get_width() || !img.get_height()) {
+		if (!img.get_width() || !img.get_height())
 			return true;
-}
 
 		assert((m_block_width <= cMaxBlockSize) && (m_block_height <= cMaxBlockSize));
 		vec4F pixels[cMaxBlockSize * cMaxBlockSize];
@@ -1680,9 +1620,8 @@ namespace basisu
 			{
 				const void* pBlock = get_block_ptr(bx, by);
 
-				if (!unpack_block_hdr(m_fmt, pBlock, pixels)) {
+				if (!unpack_block_hdr(m_fmt, pBlock, pixels))
 					success = false;
-}
 
 				img.set_block_clipped(pixels, bx * m_block_width, by * m_block_height, m_block_width, m_block_height);
 			} // bx
@@ -1751,7 +1690,7 @@ namespace basisu
 	// Input is a texture array of mipmapped gpu_image's: gpu_images[array_index][level_index]
 	bool create_ktx_texture_file(uint8_vec &ktx_data, const basisu::vector<gpu_image_vec>& gpu_images, bool cubemap_flag)
 	{
-		if (gpu_images.empty())
+		if (!gpu_images.size())
 		{
 			assert(0);
 			return false;
@@ -1774,7 +1713,7 @@ namespace basisu
 		{
 			const gpu_image_vec &levels = gpu_images[array_index];
 
-			if (levels.empty())
+			if (!levels.size())
 			{
 				// Empty mip chain
 				assert(0);
@@ -1968,9 +1907,8 @@ namespace basisu
 		header.m_glBaseInternalFormat = base_internal_fmt;
 
 		header.m_numberOfArrayElements = (uint32_t)(cubemap_flag ? (gpu_images.size() / 6) : gpu_images.size());
-		if (header.m_numberOfArrayElements == 1) {
+		if (header.m_numberOfArrayElements == 1)
 			header.m_numberOfArrayElements = 0;
-}
 
 		header.m_numberOfMipmapLevels = total_levels;
 		header.m_numberOfFaces = cubemap_flag ? 6 : 1;
@@ -2046,9 +1984,8 @@ namespace basisu
 	{
 		uint8_vec dds_data;
 
-		if (!write_dds_file(dds_data, gpu_images, cubemap_flag, use_srgb_format)) {
+		if (!write_dds_file(dds_data, gpu_images, cubemap_flag, use_srgb_format))
 			return false;
-}
 
 		if (!write_vec_to_file(pFilename, dds_data))
 		{
@@ -2071,9 +2008,8 @@ namespace basisu
 		uint8_vec filedata;
 		if (extension == "ktx")
 		{
-			if (!create_ktx_texture_file(filedata, g, cubemap_flag)) {
+			if (!create_ktx_texture_file(filedata, g, cubemap_flag))
 				return false;
-}
 		}
 		else if (extension == "pvr")
 		{
@@ -2082,9 +2018,8 @@ namespace basisu
 		}
 		else if (extension == "dds")
 		{
-			if (!write_dds_file(filedata, g, cubemap_flag, use_srgb_format)) {
+			if (!write_dds_file(filedata, g, cubemap_flag, use_srgb_format))
 				return false;
-}
 		}
 		else
 		{
@@ -2136,11 +2071,10 @@ namespace basisu
 #ifdef _WIN32
 		fopen_s(&pFile, pFilename, "wb");
 #else
-		pFile = fopen(pFilename, "wbe");
+		pFile = fopen(pFilename, "wb");
 #endif
-		if (!pFile) {
+		if (!pFile)
 			return false;
-}
 
 		fwrite(&hdr, sizeof(hdr), 1, pFile);
 		fwrite(gi.get_ptr(), gi.get_size_in_bytes(), 1, pFile);

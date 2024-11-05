@@ -84,9 +84,8 @@ ktxMem_create(ktxMem** ppMem)
     ktxMem* pNewMem = (ktxMem*)malloc(sizeof(ktxMem));
     if (pNewMem) {
         KTX_error_code result = ktxMem_construct(pNewMem);
-        if (result == KTX_SUCCESS) {
+        if (result == KTX_SUCCESS)
             *ppMem = pNewMem;
-}
         return result;
     }
     else {
@@ -337,9 +336,8 @@ KTX_error_code ktxMemStream_write(ktxStream* str, const void* src,
 
     memcpy(mem->bytes + mem->pos, src, size*count);
     mem->pos += size*count;
-    if (mem->pos > (ktx_off_t)mem->used_size) {
+    if (mem->pos > (ktx_off_t)mem->used_size)
         mem->used_size = mem->pos;
-}
 
 
     return KTX_SUCCESS;

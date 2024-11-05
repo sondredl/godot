@@ -22,9 +22,7 @@
  */
 
 #include "spirv_parser.hpp"
-#include <cassert>
-
-#include "absl/strings/match.h"
+#include <assert.h>
 
 using namespace std;
 using namespace spv;
@@ -83,27 +81,23 @@ void Parser::parse()
 	auto &spirv = ir.spirv;
 
 	auto len = spirv.size();
-	if (len < 5) {
+	if (len < 5)
 		SPIRV_CROSS_THROW("SPIRV file too small.");
-}
 
-	auto *s = spirv.data();
+	auto s = spirv.data();
 
 	// Endian-swap if we need to.
-	if (s[0] == swap_endian(MagicNumber)) {
+	if (s[0] == swap_endian(MagicNumber))
 		transform(begin(spirv), end(spirv), begin(spirv), [](uint32_t c) { return swap_endian(c); });
-}
 
-	if (s[0] != MagicNumber || !is_valid_spirv_version(s[1])) {
+	if (s[0] != MagicNumber || !is_valid_spirv_version(s[1]))
 		SPIRV_CROSS_THROW("Invalid SPIRV format.");
-}
 
 	uint32_t bound = s[3];
 
 	const uint32_t MaximumNumberOfIDs = 0x3fffff;
-	if (bound > MaximumNumberOfIDs) {
+	if (bound > MaximumNumberOfIDs)
 		SPIRV_CROSS_THROW("ID bound exceeds limit of 0x3fffff.\n");
-}
 
 	ir.set_id_bounds(bound);
 
@@ -116,25 +110,22 @@ void Parser::parse()
 		instr.op = spirv[offset] & 0xffff;
 		instr.count = (spirv[offset] >> 16) & 0xffff;
 
-		if (instr.count == 0) {
+		if (instr.count == 0)
 			SPIRV_CROSS_THROW("SPIR-V instructions cannot consume 0 words. Invalid SPIR-V file.");
-}
 
 		instr.offset = offset + 1;
 		instr.length = instr.count - 1;
 
 		offset += instr.count;
 
-		if (offset > spirv.size()) {
+		if (offset > spirv.size())
 			SPIRV_CROSS_THROW("SPIR-V instruction goes out of bounds.");
-}
 
 		instructions.push_back(instr);
 	}
 
-	for (auto &i : instructions) {
+	for (auto &i : instructions)
 		parse(i);
-}
 
 	for (auto &fixup : forward_pointer_fixups)
 	{
@@ -146,15 +137,12 @@ void Parser::parse()
 	}
 	forward_pointer_fixups.clear();
 
-	if (current_function) {
+	if (current_function)
 		SPIRV_CROSS_THROW("Function was not terminated.");
-}
-	if (current_block) {
+	if (current_block)
 		SPIRV_CROSS_THROW("Block was not terminated.");
-}
-	if (ir.default_entry_point == 0) {
+	if (ir.default_entry_point == 0)
 		SPIRV_CROSS_THROW("There is no entry point in the SPIR-V module.");
-}
 }
 
 const uint32_t *Parser::stream(const Instruction &instr) const
@@ -162,13 +150,11 @@ const uint32_t *Parser::stream(const Instruction &instr) const
 	// If we're not going to use any arguments, just return nullptr.
 	// We want to avoid case where we return an out of range pointer
 	// that trips debug assertions on some platforms.
-	if (!instr.length) {
+	if (!instr.length)
 		return nullptr;
-}
 
-	if (instr.offset + instr.length > ir.spirv.size()) {
+	if (instr.offset + instr.length > ir.spirv.size())
 		SPIRV_CROSS_THROW("Compiler::stream() out of range.");
-}
 	return &ir.spirv[instr.offset];
 }
 
@@ -182,9 +168,8 @@ static string extract_string(const vector<uint32_t> &spirv, uint32_t offset)
 		for (uint32_t j = 0; j < 4; j++, w >>= 8)
 		{
 			char c = w & 0xff;
-			if (c == '\0') {
+			if (c == '\0')
 				return ret;
-}
 			ret += c;
 		}
 	}
@@ -194,7 +179,7 @@ static string extract_string(const vector<uint32_t> &spirv, uint32_t offset)
 
 void Parser::parse(const Instruction &instruction)
 {
-	const auto *ops = stream(instruction);
+	auto *ops = stream(instruction);
 	auto op = static_cast<Op>(instruction.op);
 	uint32_t length = instruction.length;
 
@@ -203,9 +188,8 @@ void Parser::parse(const Instruction &instruction)
 	if (ignore_trailing_block_opcodes)
 	{
 		ignore_trailing_block_opcodes = false;
-		if (op == OpReturn || op == OpBranch || op == OpUnreachable) {
+		if (op == OpReturn || op == OpBranch || op == OpUnreachable)
 			return;
-}
 	}
 
 	switch (op)
@@ -266,18 +250,16 @@ void Parser::parse(const Instruction &instruction)
 		uint32_t result_type = ops[0];
 		uint32_t id = ops[1];
 		set<SPIRUndef>(id, result_type);
-		if (current_block) {
+		if (current_block)
 			current_block->ops.push_back(instruction);
-}
 		break;
 	}
 
 	case OpCapability:
 	{
 		uint32_t cap = ops[0];
-		if (cap == CapabilityKernel) {
+		if (cap == CapabilityKernel)
 			SPIRV_CROSS_THROW("Kernel capability not supported.");
-}
 
 		ir.declared_capabilities.push_back(static_cast<Capability>(ops[0]));
 		break;
@@ -297,25 +279,24 @@ void Parser::parse(const Instruction &instruction)
 		SPIRExtension::Extension spirv_ext = SPIRExtension::Unsupported;
 
 		auto ext = extract_string(ir.spirv, instruction.offset + 1);
-		if (ext == "GLSL.std.450") {
+		if (ext == "GLSL.std.450")
 			spirv_ext = SPIRExtension::GLSL;
-		} else if (ext == "DebugInfo") {
+		else if (ext == "DebugInfo")
 			spirv_ext = SPIRExtension::SPV_debug_info;
-		} else if (ext == "SPV_AMD_shader_ballot") {
+		else if (ext == "SPV_AMD_shader_ballot")
 			spirv_ext = SPIRExtension::SPV_AMD_shader_ballot;
-		} else if (ext == "SPV_AMD_shader_explicit_vertex_parameter") {
+		else if (ext == "SPV_AMD_shader_explicit_vertex_parameter")
 			spirv_ext = SPIRExtension::SPV_AMD_shader_explicit_vertex_parameter;
-		} else if (ext == "SPV_AMD_shader_trinary_minmax") {
+		else if (ext == "SPV_AMD_shader_trinary_minmax")
 			spirv_ext = SPIRExtension::SPV_AMD_shader_trinary_minmax;
-		} else if (ext == "SPV_AMD_gcn_shader") {
+		else if (ext == "SPV_AMD_gcn_shader")
 			spirv_ext = SPIRExtension::SPV_AMD_gcn_shader;
-		} else if (ext == "NonSemantic.DebugPrintf") {
+		else if (ext == "NonSemantic.DebugPrintf")
 			spirv_ext = SPIRExtension::NonSemanticDebugPrintf;
-		} else if (ext == "NonSemantic.Shader.DebugInfo.100") {
+		else if (ext == "NonSemantic.Shader.DebugInfo.100")
 			spirv_ext = SPIRExtension::NonSemanticShaderDebugInfo;
-		} else if (absl::StartsWith(ext, "NonSemantic.")) {
+		else if (ext.find("NonSemantic.") == 0)
 			spirv_ext = SPIRExtension::NonSemanticGeneric;
-}
 
 		set<SPIRExtension>(id, spirv_ext);
 		// Other SPIR-V extensions which have ExtInstrs are currently not supported.
@@ -332,9 +313,8 @@ void Parser::parse(const Instruction &instruction)
 			if (length >= 2)
 			{
 				const auto *type = maybe_get<SPIRType>(ops[0]);
-				if (type) {
+				if (type)
 					ir.load_type_width.insert({ ops[1], type->width });
-}
 			}
 		}
 		break;
@@ -350,17 +330,15 @@ void Parser::parse(const Instruction &instruction)
 		// Strings need nul-terminator and consume the whole word.
 		uint32_t strlen_words = uint32_t((e.name.size() + 1 + 3) >> 2);
 
-		for (uint32_t i = strlen_words + 2; i < instruction.length; i++) {
+		for (uint32_t i = strlen_words + 2; i < instruction.length; i++)
 			e.interface_variables.push_back(ops[i]);
-}
 
 		// Set the name of the entry point in case OpName is not provided later.
 		ir.set_name(ops[1], e.name);
 
 		// If we don't have an entry, make the first one our "default".
-		if (!ir.default_entry_point) {
+		if (!ir.default_entry_point)
 			ir.default_entry_point = ops[1];
-}
 		break;
 	}
 
@@ -477,12 +455,11 @@ void Parser::parse(const Instruction &instruction)
 			flags.for_each_bit([&](uint32_t bit) {
 				auto decoration = static_cast<Decoration>(bit);
 
-				if (decoration_is_string(decoration)) {
+				if (decoration_is_string(decoration))
 					ir.set_member_decoration_string(target, index, decoration,
 					                                ir.get_decoration_string(group_id, decoration));
-				} else {
+				else
 					ir.set_member_decoration(target, index, decoration, ir.get_decoration(group_id, decoration));
-}
 			});
 		}
 		break;
@@ -501,9 +478,8 @@ void Parser::parse(const Instruction &instruction)
 			ir.meta[id].decoration_word_offset[decoration] = uint32_t(&ops[2] - ir.spirv.data());
 			ir.set_decoration(id, decoration, ops[2]);
 		}
-		else {
+		else
 			ir.set_decoration(id, decoration);
-}
 
 		break;
 	}
@@ -521,11 +497,10 @@ void Parser::parse(const Instruction &instruction)
 		uint32_t id = ops[0];
 		uint32_t member = ops[1];
 		auto decoration = static_cast<Decoration>(ops[2]);
-		if (length >= 4) {
+		if (length >= 4)
 			ir.set_member_decoration(id, member, decoration, ops[3]);
-		} else {
+		else
 			ir.set_member_decoration(id, member, decoration);
-}
 		break;
 	}
 
@@ -561,15 +536,14 @@ void Parser::parse(const Instruction &instruction)
 		uint32_t id = ops[0];
 		uint32_t width = ops[1];
 		auto &type = set<SPIRType>(id, op);
-		if (width == 64) {
+		if (width == 64)
 			type.basetype = SPIRType::Double;
-		} else if (width == 32) {
+		else if (width == 32)
 			type.basetype = SPIRType::Float;
-		} else if (width == 16) {
+		else if (width == 16)
 			type.basetype = SPIRType::Half;
-		} else {
+		else
 			SPIRV_CROSS_THROW("Unrecognized bit-width of floating point type.");
-}
 		type.width = width;
 		break;
 	}
@@ -635,9 +609,8 @@ void Parser::parse(const Instruction &instruction)
 
 		// We're copying type information into Array types, so we'll need a fixup for any physical pointer
 		// references.
-		if (base.forward_pointer) {
+		if (base.forward_pointer)
 			forward_pointer_fixups.push_back({ id, tid });
-}
 
 		arraybase.array_size_literal.push_back(literal);
 		arraybase.array.push_back(literal ? c->scalar() : cid);
@@ -656,9 +629,8 @@ void Parser::parse(const Instruction &instruction)
 
 		// We're copying type information into Array types, so we'll need a fixup for any physical pointer
 		// references.
-		if (base.forward_pointer) {
+		if (base.forward_pointer)
 			forward_pointer_fixups.push_back({ id, ops[1] });
-}
 
 		arraybase.op = op;
 		arraybase.array.push_back(0);
@@ -725,13 +697,11 @@ void Parser::parse(const Instruction &instruction)
 		ptrbase.pointer_depth++;
 		ptrbase.storage = static_cast<StorageClass>(ops[1]);
 
-		if (ptrbase.storage == StorageClassAtomicCounter) {
+		if (ptrbase.storage == StorageClassAtomicCounter)
 			ptrbase.basetype = SPIRType::AtomicCounter;
-}
 
-		if (base && base->forward_pointer) {
+		if (base && base->forward_pointer)
 			forward_pointer_fixups.push_back({ id, ops[2] });
-}
 
 		ptrbase.parent_type = ops[2];
 
@@ -748,9 +718,8 @@ void Parser::parse(const Instruction &instruction)
 		ptrbase.storage = static_cast<StorageClass>(ops[1]);
 		ptrbase.forward_pointer = true;
 
-		if (ptrbase.storage == StorageClassAtomicCounter) {
+		if (ptrbase.storage == StorageClassAtomicCounter)
 			ptrbase.basetype = SPIRType::AtomicCounter;
-}
 
 		break;
 	}
@@ -760,9 +729,8 @@ void Parser::parse(const Instruction &instruction)
 		uint32_t id = ops[0];
 		auto &type = set<SPIRType>(id, op);
 		type.basetype = SPIRType::Struct;
-		for (uint32_t i = 1; i < length; i++) {
+		for (uint32_t i = 1; i < length; i++)
 			type.member_types.push_back(ops[i]);
-}
 
 		// Check if we have seen this struct type before, with just different
 		// decorations.
@@ -788,9 +756,8 @@ void Parser::parse(const Instruction &instruction)
 				}
 			}
 
-			if (type.type_alias == TypeID(0)) {
+			if (type.type_alias == TypeID(0))
 				global_struct_cache.push_back(id);
-}
 		}
 		break;
 	}
@@ -801,9 +768,8 @@ void Parser::parse(const Instruction &instruction)
 		uint32_t ret = ops[1];
 
 		auto &func = set<SPIRFunctionPrototype>(id, ret);
-		for (uint32_t i = 2; i < length; i++) {
+		for (uint32_t i = 2; i < length; i++)
 			func.parameter_types.push_back(ops[i]);
-}
 		break;
 	}
 
@@ -834,9 +800,8 @@ void Parser::parse(const Instruction &instruction)
 
 		if (storage == StorageClassFunction)
 		{
-			if (!current_function) {
+			if (!current_function)
 				SPIRV_CROSS_THROW("No function currently in scope");
-}
 			current_function->add_local_variable(id);
 		}
 
@@ -851,12 +816,10 @@ void Parser::parse(const Instruction &instruction)
 	// variable to emulate SSA Phi.
 	case OpPhi:
 	{
-		if (!current_function) {
+		if (!current_function)
 			SPIRV_CROSS_THROW("No function currently in scope");
-}
-		if (!current_block) {
+		if (!current_block)
 			SPIRV_CROSS_THROW("No block currently in scope");
-}
 
 		uint32_t result_type = ops[0];
 		uint32_t id = ops[1];
@@ -867,9 +830,8 @@ void Parser::parse(const Instruction &instruction)
 
 		current_function->add_local_variable(id);
 
-		for (uint32_t i = 2; i + 2 <= length; i += 2) {
+		for (uint32_t i = 2; i + 2 <= length; i += 2)
 			current_block->phi_variables.push_back({ ops[i], ops[i + 1], id });
-}
 		break;
 	}
 
@@ -880,11 +842,10 @@ void Parser::parse(const Instruction &instruction)
 		uint32_t id = ops[1];
 		auto &type = get<SPIRType>(ops[0]);
 
-		if (type.width > 32) {
+		if (type.width > 32)
 			set<SPIRConstant>(id, ops[0], ops[2] | (uint64_t(ops[3]) << 32), op == OpSpecConstant);
-		} else {
+		else
 			set<SPIRConstant>(id, ops[0], ops[2], op == OpSpecConstant);
-}
 		break;
 	}
 
@@ -930,9 +891,8 @@ void Parser::parse(const Instruction &instruction)
 		else
 		{
 			uint32_t elements = length - 2;
-			if (elements > 4) {
+			if (elements > 4)
 				SPIRV_CROSS_THROW("OpConstantComposite only supports 1, 2, 3 and 4 elements.");
-}
 
 			SPIRConstant remapped_constant_ops[4];
 			const SPIRConstant *c[4];
@@ -945,9 +905,8 @@ void Parser::parse(const Instruction &instruction)
 				auto *undef_op = maybe_get<SPIRUndef>(ops[2 + i]);
 				if (constant_op)
 				{
-					if (op == OpConstantComposite) {
+					if (op == OpConstantComposite)
 						SPIRV_CROSS_THROW("Specialization constant operation used in OpConstantComposite.");
-}
 
 					remapped_constant_ops[i].make_null(get<SPIRType>(constant_op->basetype));
 					remapped_constant_ops[i].self = constant_op->self;
@@ -962,9 +921,8 @@ void Parser::parse(const Instruction &instruction)
 					remapped_constant_ops[i].constant_type = undef_op->basetype;
 					c[i] = &remapped_constant_ops[i];
 				}
-				else {
+				else
 					c[i] = &get<SPIRConstant>(ops[2 + i]);
-}
 			}
 			set<SPIRConstant>(id, type, c, elements, op == OpSpecConstantComposite);
 		}
@@ -979,9 +937,8 @@ void Parser::parse(const Instruction &instruction)
 		// Control
 		uint32_t type = ops[3];
 
-		if (current_function) {
+		if (current_function)
 			SPIRV_CROSS_THROW("Must end a function before starting a new one!");
-}
 
 		current_function = &set<SPIRFunction>(id, res, type);
 		break;
@@ -992,9 +949,8 @@ void Parser::parse(const Instruction &instruction)
 		uint32_t type = ops[0];
 		uint32_t id = ops[1];
 
-		if (!current_function) {
+		if (!current_function)
 			SPIRV_CROSS_THROW("Must be in a function!");
-}
 
 		current_function->add_parameter(type, id);
 		set<SPIRVariable>(id, type, StorageClassFunction);
@@ -1018,20 +974,17 @@ void Parser::parse(const Instruction &instruction)
 	case OpLabel:
 	{
 		// OpLabel always starts a block.
-		if (!current_function) {
+		if (!current_function)
 			SPIRV_CROSS_THROW("Blocks cannot exist outside functions!");
-}
 
 		uint32_t id = ops[0];
 
 		current_function->blocks.push_back(id);
-		if (!current_function->entry_block) {
+		if (!current_function->entry_block)
 			current_function->entry_block = id;
-}
 
-		if (current_block) {
+		if (current_block)
 			SPIRV_CROSS_THROW("Cannot start a block before ending the current block.");
-}
 
 		current_block = &set<SPIRBlock>(id);
 		break;
@@ -1040,9 +993,8 @@ void Parser::parse(const Instruction &instruction)
 	// Branch instructions end blocks.
 	case OpBranch:
 	{
-		if (!current_block) {
+		if (!current_block)
 			SPIRV_CROSS_THROW("Trying to end a non-existing block.");
-}
 
 		uint32_t target = ops[0];
 		current_block->terminator = SPIRBlock::Direct;
@@ -1053,9 +1005,8 @@ void Parser::parse(const Instruction &instruction)
 
 	case OpBranchConditional:
 	{
-		if (!current_block) {
+		if (!current_block)
 			SPIRV_CROSS_THROW("Trying to end a non-existing block.");
-}
 
 		current_block->condition = ops[0];
 		current_block->true_block = ops[1];
@@ -1119,9 +1070,8 @@ void Parser::parse(const Instruction &instruction)
 
 	case OpSwitch:
 	{
-		if (!current_block) {
+		if (!current_block)
 			SPIRV_CROSS_THROW("Trying to end a non-existing block.");
-}
 
 		current_block->terminator = SPIRBlock::MultiSelect;
 
@@ -1131,9 +1081,8 @@ void Parser::parse(const Instruction &instruction)
 		uint32_t remaining_ops = length - 2;
 		if ((remaining_ops % 2) == 0)
 		{
-			for (uint32_t i = 2; i + 2 <= length; i += 2) {
+			for (uint32_t i = 2; i + 2 <= length; i += 2)
 				current_block->cases_32bit.push_back({ ops[i], ops[i + 1] });
-}
 		}
 
 		if ((remaining_ops % 3) == 0)
@@ -1155,9 +1104,8 @@ void Parser::parse(const Instruction &instruction)
 	case OpKill:
 	case OpTerminateInvocation:
 	{
-		if (!current_block) {
+		if (!current_block)
 			SPIRV_CROSS_THROW("Trying to end a non-existing block.");
-}
 		current_block->terminator = SPIRBlock::Kill;
 		current_block = nullptr;
 		break;
@@ -1165,30 +1113,26 @@ void Parser::parse(const Instruction &instruction)
 
 	case OpTerminateRayKHR:
 		// NV variant is not a terminator.
-		if (!current_block) {
+		if (!current_block)
 			SPIRV_CROSS_THROW("Trying to end a non-existing block.");
-}
 		current_block->terminator = SPIRBlock::TerminateRay;
 		current_block = nullptr;
 		break;
 
 	case OpIgnoreIntersectionKHR:
 		// NV variant is not a terminator.
-		if (!current_block) {
+		if (!current_block)
 			SPIRV_CROSS_THROW("Trying to end a non-existing block.");
-}
 		current_block->terminator = SPIRBlock::IgnoreIntersection;
 		current_block = nullptr;
 		break;
 
 	case OpEmitMeshTasksEXT:
-		if (!current_block) {
+		if (!current_block)
 			SPIRV_CROSS_THROW("Trying to end a non-existing block.");
-}
 		current_block->terminator = SPIRBlock::EmitMeshTasks;
-		for (uint32_t i = 0; i < 3; i++) {
+		for (uint32_t i = 0; i < 3; i++)
 			current_block->mesh.groups[i] = ops[i];
-}
 		current_block->mesh.payload = length >= 4 ? ops[3] : 0;
 		current_block = nullptr;
 		// Currently glslang is bugged and does not treat EmitMeshTasksEXT as a terminator.
@@ -1197,9 +1141,8 @@ void Parser::parse(const Instruction &instruction)
 
 	case OpReturn:
 	{
-		if (!current_block) {
+		if (!current_block)
 			SPIRV_CROSS_THROW("Trying to end a non-existing block.");
-}
 		current_block->terminator = SPIRBlock::Return;
 		current_block = nullptr;
 		break;
@@ -1207,9 +1150,8 @@ void Parser::parse(const Instruction &instruction)
 
 	case OpReturnValue:
 	{
-		if (!current_block) {
+		if (!current_block)
 			SPIRV_CROSS_THROW("Trying to end a non-existing block.");
-}
 		current_block->terminator = SPIRBlock::Return;
 		current_block->return_value = ops[0];
 		current_block = nullptr;
@@ -1218,9 +1160,8 @@ void Parser::parse(const Instruction &instruction)
 
 	case OpUnreachable:
 	{
-		if (!current_block) {
+		if (!current_block)
 			SPIRV_CROSS_THROW("Trying to end a non-existing block.");
-}
 		current_block->terminator = SPIRBlock::Unreachable;
 		current_block = nullptr;
 		break;
@@ -1228,9 +1169,8 @@ void Parser::parse(const Instruction &instruction)
 
 	case OpSelectionMerge:
 	{
-		if (!current_block) {
+		if (!current_block)
 			SPIRV_CROSS_THROW("Trying to modify a non-existing block.");
-}
 
 		current_block->next_block = ops[0];
 		current_block->merge = SPIRBlock::MergeSelection;
@@ -1238,20 +1178,18 @@ void Parser::parse(const Instruction &instruction)
 
 		if (length >= 2)
 		{
-			if (ops[1] & SelectionControlFlattenMask) {
+			if (ops[1] & SelectionControlFlattenMask)
 				current_block->hint = SPIRBlock::HintFlatten;
-			} else if (ops[1] & SelectionControlDontFlattenMask) {
+			else if (ops[1] & SelectionControlDontFlattenMask)
 				current_block->hint = SPIRBlock::HintDontFlatten;
-}
 		}
 		break;
 	}
 
 	case OpLoopMerge:
 	{
-		if (!current_block) {
+		if (!current_block)
 			SPIRV_CROSS_THROW("Trying to modify a non-existing block.");
-}
 
 		current_block->merge_block = ops[0];
 		current_block->continue_block = ops[1];
@@ -1265,26 +1203,23 @@ void Parser::parse(const Instruction &instruction)
 		// Don't add loop headers to continue blocks,
 		// which would make it impossible branch into the loop header since
 		// they are treated as continues.
-		if (current_block->continue_block != BlockID(current_block->self)) {
+		if (current_block->continue_block != BlockID(current_block->self))
 			ir.block_meta[current_block->continue_block] |= ParsedIR::BLOCK_META_CONTINUE_BIT;
-}
 
 		if (length >= 3)
 		{
-			if (ops[2] & LoopControlUnrollMask) {
+			if (ops[2] & LoopControlUnrollMask)
 				current_block->hint = SPIRBlock::HintUnroll;
-			} else if (ops[2] & LoopControlDontUnrollMask) {
+			else if (ops[2] & LoopControlDontUnrollMask)
 				current_block->hint = SPIRBlock::HintDontUnroll;
-}
 		}
 		break;
 	}
 
 	case OpSpecConstantOp:
 	{
-		if (length < 3) {
+		if (length < 3)
 			SPIRV_CROSS_THROW("OpSpecConstantOp not enough arguments.");
-}
 
 		uint32_t result_type = ops[0];
 		uint32_t id = ops[1];
@@ -1299,9 +1234,8 @@ void Parser::parse(const Instruction &instruction)
 		// OpLine might come at global scope, but we don't care about those since they will not be declared in any
 		// meaningful correct order.
 		// Ignore all OpLine directives which live outside a function.
-		if (current_block) {
+		if (current_block)
 			current_block->ops.push_back(instruction);
-}
 
 		// Line directives may arrive before first OpLabel.
 		// Treat this as the line of the function declaration,
@@ -1321,9 +1255,8 @@ void Parser::parse(const Instruction &instruction)
 	case OpNoLine:
 	{
 		// OpNoLine might come at global scope.
-		if (current_block) {
+		if (current_block)
 			current_block->ops.push_back(instruction);
-}
 		break;
 	}
 
@@ -1333,14 +1266,12 @@ void Parser::parse(const Instruction &instruction)
 		if (length >= 2)
 		{
 			const auto *type = maybe_get<SPIRType>(ops[0]);
-			if (type) {
+			if (type)
 				ir.load_type_width.insert({ ops[1], type->width });
-}
 		}
 
-		if (!current_block) {
+		if (!current_block)
 			SPIRV_CROSS_THROW("Currently no block to insert opcode.");
-}
 
 		current_block->ops.push_back(instruction);
 		break;
@@ -1350,44 +1281,35 @@ void Parser::parse(const Instruction &instruction)
 
 bool Parser::types_are_logically_equivalent(const SPIRType &a, const SPIRType &b) const
 {
-	if (a.basetype != b.basetype) {
+	if (a.basetype != b.basetype)
 		return false;
-}
-	if (a.width != b.width) {
+	if (a.width != b.width)
 		return false;
-}
-	if (a.vecsize != b.vecsize) {
+	if (a.vecsize != b.vecsize)
 		return false;
-}
-	if (a.columns != b.columns) {
+	if (a.columns != b.columns)
 		return false;
-}
-	if (a.array.size() != b.array.size()) {
+	if (a.array.size() != b.array.size())
 		return false;
-}
 
 	size_t array_count = a.array.size();
-	if (array_count && memcmp(a.array.data(), b.array.data(), array_count * sizeof(uint32_t)) != 0) {
+	if (array_count && memcmp(a.array.data(), b.array.data(), array_count * sizeof(uint32_t)) != 0)
 		return false;
-}
 
 	if (a.basetype == SPIRType::Image || a.basetype == SPIRType::SampledImage)
 	{
-		if (memcmp(&a.image, &b.image, sizeof(SPIRType::Image)) != 0) {
+		if (memcmp(&a.image, &b.image, sizeof(SPIRType::Image)) != 0)
 			return false;
-}
 	}
 
-	if (a.member_types.size() != b.member_types.size()) {
+	if (a.member_types.size() != b.member_types.size())
 		return false;
-}
 
 	size_t member_types = a.member_types.size();
 	for (size_t i = 0; i < member_types; i++)
 	{
-		if (!types_are_logically_equivalent(get<SPIRType>(a.member_types[i]), get<SPIRType>(b.member_types[i]))) {
+		if (!types_are_logically_equivalent(get<SPIRType>(a.member_types[i]), get<SPIRType>(b.member_types[i])))
 			return false;
-}
 	}
 
 	return true;
@@ -1395,9 +1317,9 @@ bool Parser::types_are_logically_equivalent(const SPIRType &a, const SPIRType &b
 
 bool Parser::variable_storage_is_aliased(const SPIRVariable &v) const
 {
-	const auto &type = get<SPIRType>(v.basetype);
+	auto &type = get<SPIRType>(v.basetype);
 
-	const auto *type_meta = ir.find_meta(type.self);
+	auto *type_meta = ir.find_meta(type.self);
 
 	bool ssbo = v.storage == StorageClassStorageBuffer ||
 	            (type_meta && type_meta->decoration.decoration_flags.get(DecorationBufferBlock));
@@ -1405,11 +1327,10 @@ bool Parser::variable_storage_is_aliased(const SPIRVariable &v) const
 	bool counter = type.basetype == SPIRType::AtomicCounter;
 
 	bool is_restrict;
-	if (ssbo) {
+	if (ssbo)
 		is_restrict = ir.get_buffer_block_flags(v).get(DecorationRestrict);
-	} else {
+	else
 		is_restrict = ir.has_decoration(v.self, DecorationRestrict);
-}
 
 	return !is_restrict && (ssbo || image || counter);
 }

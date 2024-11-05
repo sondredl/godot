@@ -23,8 +23,8 @@
 
 #include "polypartition.h"
 
-#include <cmath>
-#include <cstring>
+#include <math.h>
+#include <string.h>
 #include <algorithm>
 
 TPPLPoly::TPPLPoly() {
@@ -34,15 +34,15 @@ TPPLPoly::TPPLPoly() {
 }
 
 TPPLPoly::~TPPLPoly() {
-
+  if (points) {
     delete[] points;
-
+  }
 }
 
 void TPPLPoly::Clear() {
-
+  if (points) {
     delete[] points;
-
+  }
   hole = false;
   numpoints = 0;
   points = NULL;
@@ -212,7 +212,7 @@ int TPPLPartition::RemoveHoles(TPPLPolyList *inpolys, TPPLPolyList *outpolys) {
 
   polys = *inpolys;
 
-  while (true) {
+  while (1) {
     // Find the hole point with the largest x.
     hasholes = false;
     for (iter = polys.front(); iter; iter = iter->next()) {
@@ -322,9 +322,9 @@ bool TPPLPartition::IsConvex(TPPLPoint &p1, TPPLPoint &p2, TPPLPoint &p3) {
   tppl_float tmp;
   tmp = (p3.y - p1.y) * (p2.x - p1.x) - (p3.x - p1.x) * (p2.y - p1.y);
   if (tmp > 0) {
-    return true;
+    return 1;
   } else {
-    return false;
+    return 0;
   }
 }
 
@@ -332,9 +332,9 @@ bool TPPLPartition::IsReflex(TPPLPoint &p1, TPPLPoint &p2, TPPLPoint &p3) {
   tppl_float tmp;
   tmp = (p3.y - p1.y) * (p2.x - p1.x) - (p3.x - p1.x) * (p2.y - p1.y);
   if (tmp < 0) {
-    return true;
+    return 1;
   } else {
-    return false;
+    return 0;
   }
 }
 
@@ -1130,7 +1130,7 @@ int TPPLPartition::ConvexPartition_OPT(TPPLPoly *poly, TPPLPolyList *parts) {
       if ((j - diagonal.index1) > 1) {
         if (iter->get().index1 != iter->get().index2) {
           pairs2 = &(dpstates[diagonal.index1][j].pairs);
-          while (true) {
+          while (1) {
             if (pairs2->is_empty()) {
               ret = 0;
               break;
@@ -1160,7 +1160,7 @@ int TPPLPartition::ConvexPartition_OPT(TPPLPoly *poly, TPPLPolyList *parts) {
       if ((diagonal.index2 - j) > 1) {
         if (iter->get().index1 != iter->get().index2) {
           pairs2 = &(dpstates[j][diagonal.index2].pairs);
-          while (true) {
+          while (1) {
             if (pairs2->is_empty()) {
               ret = 0;
               break;
@@ -1513,9 +1513,8 @@ int TPPLPartition::MonotonePartition(TPPLPolyList *inpolys, TPPLPolyList *monoto
         break;
     }
 
-    if (error) {
+    if (error)
       break;
-}
   }
 
   char *used = new char[newnumvertices];
@@ -1636,10 +1635,10 @@ bool TPPLPartition::ScanLineEdge::IsConvex(const TPPLPoint &p1, const TPPLPoint 
   tppl_float tmp;
   tmp = (p3.y - p1.y) * (p2.x - p1.x) - (p3.x - p1.x) * (p2.y - p1.y);
   if (tmp > 0) {
-    return true;
+    return 1;
   }
 
-  return false;
+  return 0;
 }
 
 bool TPPLPartition::ScanLineEdge::operator<(const ScanLineEdge &other) const {

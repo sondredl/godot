@@ -534,9 +534,8 @@ protected:
 		}
 		else
 		{
-			for (uint32_t i = 0; i < indent; i++) {
+			for (uint32_t i = 0; i < indent; i++)
 				buffer << "    ";
-}
 			statement_inner(std::forward<Ts>(ts)...);
 			buffer << '\n';
 		}

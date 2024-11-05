@@ -90,9 +90,8 @@ Shape::Bounds Shape::getBounds(double border, double miterLimit, int polarity) c
     if (border > 0) {
         bounds.l -= border, bounds.b -= border;
         bounds.r += border, bounds.t += border;
-        if (miterLimit > 0) {
+        if (miterLimit > 0)
             boundMiters(bounds.l, bounds.b, bounds.r, bounds.t, border, miterLimit, polarity);
-}
     }
     return bounds;
 }

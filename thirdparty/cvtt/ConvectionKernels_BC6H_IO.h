@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include "ConvectionKernels_BC6H_IO.h"
 
-namespace cvtt;
+namespace cvtt
 {
     namespace BC6H_IO
     {

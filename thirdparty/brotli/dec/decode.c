@@ -1171,8 +1171,7 @@ static BROTLI_INLINE BROTLI_BOOL DecodeBlockTypeAndLength(
 static BROTLI_INLINE void DetectTrivialLiteralBlockTypes(
     BrotliDecoderState* s) {
   size_t i;
-  for (i = 0; i < 8; ++i) { s->trivial_literal_contexts[i] = 0;
-}
+  for (i = 0; i < 8; ++i) s->trivial_literal_contexts[i] = 0;
   for (i = 0; i < s->num_block_types[0]; i++) {
     size_t offset = i << BROTLI_LITERAL_CONTEXT_BITS;
     size_t error = 0;
@@ -1493,15 +1492,12 @@ static void EnsureCoumpoundDictionaryInitialized(BrotliDecoderState* state) {
   int block_bits = 8;
   int cursor = 0;
   int index = 0;
-  if (addon->block_bits != -1) { return;
-}
-  while (((addon->total_size - 1) >> block_bits) != 0) { block_bits++;
-}
+  if (addon->block_bits != -1) return;
+  while (((addon->total_size - 1) >> block_bits) != 0) block_bits++;
   block_bits -= 8;
   addon->block_bits = block_bits;
   while (cursor < addon->total_size) {
-    while (addon->chunk_offsets[index + 1] < cursor) { index++;
-}
+    while (addon->chunk_offsets[index + 1] < cursor) index++;
     addon->block_map[cursor >> block_bits] = (uint8_t)index;
     cursor += 1 << block_bits;
   }
@@ -1513,8 +1509,7 @@ static BROTLI_BOOL InitializeCompoundDictionaryCopy(BrotliDecoderState* s,
   int index;
   EnsureCoumpoundDictionaryInitialized(s);
   index = addon->block_map[address >> addon->block_bits];
-  while (address >= addon->chunk_offsets[index + 1]) { index++;
-}
+  while (address >= addon->chunk_offsets[index + 1]) index++;
   if (addon->total_size < address + length) return BROTLI_FALSE;
   /* Update the recent distances cache. */
   s->dist_rb[s->dist_rb_idx & 3] = s->distance_code;
@@ -1542,10 +1537,8 @@ static int CopyFromCompoundDictionary(BrotliDecoderState* s, int pos) {
     int rem_chunk_length = (addon->chunk_offsets[addon->br_index + 1] -
         addon->chunk_offsets[addon->br_index]) - addon->br_offset;
     int length = addon->br_length - addon->br_copied;
-    if (length > rem_chunk_length) { length = rem_chunk_length;
-}
-    if (length > space) { length = space;
-}
+    if (length > rem_chunk_length) length = rem_chunk_length;
+    if (length > space) length = space;
     memcpy(copy_dst, copy_src, (size_t)length);
     pos += length;
     addon->br_offset += length;
@@ -1554,8 +1547,7 @@ static int CopyFromCompoundDictionary(BrotliDecoderState* s, int pos) {
       addon->br_index++;
       addon->br_offset = 0;
     }
-    if (pos == s->ringbuffer_size) { break;
-}
+    if (pos == s->ringbuffer_size) break;
   }
   return pos - orig_pos;
 }
@@ -2539,8 +2531,7 @@ BrotliDecoderResult BrotliDecoderDecompressStream(
         int tree_offset = s->loop_counter * BROTLI_HUFFMAN_MAX_SIZE_258;
         result = ReadHuffmanCode(alphabet_size, alphabet_size,
             &s->block_type_trees[tree_offset], NULL, s);
-        if (result != BROTLI_DECODER_SUCCESS) { break;
-}
+        if (result != BROTLI_DECODER_SUCCESS) break;
         s->state = BROTLI_STATE_HUFFMAN_CODE_2;
       }
       /* Fall through. */
@@ -2550,8 +2541,7 @@ BrotliDecoderResult BrotliDecoderDecompressStream(
         int tree_offset = s->loop_counter * BROTLI_HUFFMAN_MAX_SIZE_26;
         result = ReadHuffmanCode(alphabet_size, alphabet_size,
             &s->block_len_trees[tree_offset], NULL, s);
-        if (result != BROTLI_DECODER_SUCCESS) { break;
-}
+        if (result != BROTLI_DECODER_SUCCESS) break;
         s->state = BROTLI_STATE_HUFFMAN_CODE_3;
       }
       /* Fall through. */
@@ -2677,8 +2667,7 @@ BrotliDecoderResult BrotliDecoderDecompressStream(
               BROTLI_DECODER_ERROR_UNREACHABLE));  /* COV_NF_LINE */
         }
         result = HuffmanTreeGroupDecode(hgroup, s);
-        if (result != BROTLI_DECODER_SUCCESS) { break;
-}
+        if (result != BROTLI_DECODER_SUCCESS) break;
         s->loop_counter++;
         if (s->loop_counter < 3) {
           break;
@@ -2730,8 +2719,7 @@ BrotliDecoderResult BrotliDecoderDecompressStream(
           BrotliDecoderCompoundDictionary* addon = s->compound_dictionary;
           if (addon && (addon->br_length != addon->br_copied)) {
             s->pos += CopyFromCompoundDictionary(s, s->pos);
-            if (s->pos >= s->ringbuffer_size) { continue;
-}
+            if (s->pos >= s->ringbuffer_size) continue;
           }
           if (s->meta_block_remaining_len == 0) {
             /* Next metablock, if any. */

@@ -25,14 +25,10 @@ EdgeHolder &Contour::addEdge() {
 }
 
 static void boundPoint(double &l, double &b, double &r, double &t, Point2 p) {
-    if (p.x < l) { l = p.x;
-}
-    if (p.y < b) { b = p.y;
-}
-    if (p.x > r) { r = p.x;
-}
-    if (p.y > t) { t = p.y;
-}
+    if (p.x < l) l = p.x;
+    if (p.y < b) b = p.y;
+    if (p.x > r) r = p.x;
+    if (p.y > t) t = p.y;
 }
 
 void Contour::bound(double &l, double &b, double &r, double &t) const {
@@ -41,9 +37,8 @@ void Contour::bound(double &l, double &b, double &r, double &t) const {
 }
 
 void Contour::boundMiters(double &l, double &b, double &r, double &t, double border, double miterLimit, int polarity) const {
-    if (edges.empty()) {
+    if (edges.empty())
         return;
-}
     Vector2 prevDir = edges.back()->direction(1).normalize(true);
     for (std::vector<EdgeHolder>::const_iterator edge = edges.begin(); edge != edges.end(); ++edge) {
         Vector2 dir = -(*edge)->direction(0).normalize(true);
@@ -60,9 +55,8 @@ void Contour::boundMiters(double &l, double &b, double &r, double &t, double bor
 }
 
 int Contour::winding() const {
-    if (edges.empty()) {
+    if (edges.empty())
         return 0;
-}
     double total = 0;
     if (edges.size() == 1) {
         Point2 a = edges[0]->point(0), b = edges[0]->point(1/3.), c = edges[0]->point(2/3.);

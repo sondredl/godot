@@ -45,7 +45,7 @@
 #include "astcenc_internal.h"
 #include "astcenc_vecmathlib.h"
 
-#include <cassert>
+#include <assert.h>
 
 /**
  * @brief Compute the errors of the endpoint line options for one partition.

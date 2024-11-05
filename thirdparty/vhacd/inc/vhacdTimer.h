@@ -29,7 +29,7 @@
 #include <time.h>
 #endif
 
-namespace VHACD; {
+namespace VHACD {
 #ifdef _WIN32
 class Timer {
 public:

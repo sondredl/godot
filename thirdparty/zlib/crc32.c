@@ -160,9 +160,8 @@ local z_crc_t multmodp(z_crc_t a, z_crc_t b) {
     for (;;) {
         if (a & m) {
             p ^= b;
-            if ((a & (m - 1)) == 0) {
+            if ((a & (m - 1)) == 0)
                 break;
-}
         }
         m >>= 1;
         b = b & 1 ? (b >> 1) ^ POLY : b >> 1;
@@ -179,9 +178,8 @@ local z_crc_t x2nmodp(z_off64_t n, unsigned k) {
 
     p = (z_crc_t)1 << 31;           /* x^0 == 1 */
     while (n) {
-        if (n & 1) {
+        if (n & 1)
             p = multmodp(x2n_table[k & 31], p);
-}
         n >>= 1;
         k++;
     }
@@ -677,18 +675,16 @@ unsigned long ZEXPORT crc32_z(unsigned long crc, const unsigned char FAR *buf,
  */
 local z_crc_t crc_word(z_word_t data) {
     int k;
-    for (k = 0; k < W; k++) {
+    for (k = 0; k < W; k++)
         data = (data >> 8) ^ crc_table[data & 0xff];
-}
     return (z_crc_t)data;
 }
 
 local z_word_t crc_word_big(z_word_t data) {
     int k;
-    for (k = 0; k < W; k++) {
+    for (k = 0; k < W; k++)
         data = (data << 8) ^
             crc_big_table[(data >> ((W - 1) << 3)) & 0xff];
-}
     return data;
 }
 
@@ -698,8 +694,7 @@ local z_word_t crc_word_big(z_word_t data) {
 unsigned long ZEXPORT crc32_z(unsigned long crc, const unsigned char FAR *buf,
                               z_size_t len) {
     /* Return initial CRC, if requested. */
-    if (buf == Z_NULL) { return 0;
-}
+    if (buf == Z_NULL) return 0;
 
 #ifdef DYNAMIC_CRC_TABLE
     once(&made, make_crc_table);

@@ -5,7 +5,7 @@
 #pragma warning (disable:4127) // warning C4127: conditional expression is constant
 #endif
 
-namespace basisu;
+namespace basisu
 {
    bool elemental_vector::increase_capacity(uint32_t min_new_capacity, bool grow_hint, uint32_t element_size, object_mover pMover, bool nofail)
    {

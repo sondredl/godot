@@ -4,7 +4,7 @@
 #include "estring.h"
 
 #include <algorithm>
-#include <cctype>
+#include <ctype.h>
 
 namespace embree
 {

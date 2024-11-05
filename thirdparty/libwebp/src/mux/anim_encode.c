@@ -248,8 +248,7 @@ WebPAnimEncoder* WebPAnimEncoderNewInternal(
   }
 
   enc = (WebPAnimEncoder*)WebPSafeCalloc(1, sizeof(*enc));
-  if (enc == NULL) { return NULL;
-}
+  if (enc == NULL) return NULL;
   MarkNoError(enc);
 
   // Dimensions and options.
@@ -285,16 +284,13 @@ WebPAnimEncoder* WebPAnimEncoderNewInternal(
   enc->size_ = enc->options_.kmax - enc->options_.kmin + 1;
   // We need space for at least 2 frames. But when kmin, kmax are both zero,
   // enc->size_ will be 1. So we handle that special case below.
-  if (enc->size_ < 2) { enc->size_ = 2;
-}
+  if (enc->size_ < 2) enc->size_ = 2;
   enc->encoded_frames_ =
       (EncodedFrame*)WebPSafeCalloc(enc->size_, sizeof(*enc->encoded_frames_));
-  if (enc->encoded_frames_ == NULL) { goto Err;
-}
+  if (enc->encoded_frames_ == NULL) goto Err;
 
   enc->mux_ = WebPMuxNew();
-  if (enc->mux_ == NULL) { goto Err;
-}
+  if (enc->mux_ == NULL) goto Err;
 
   enc->count_since_key_frame_ = 0;
   enc->first_timestamp_ = 0;
@@ -442,8 +438,7 @@ static void MinimizeChangeRectangle(const WebPPicture* const src,
       break;
     }
   }
-  if (rect->width_ == 0) { goto NoChange;
-}
+  if (rect->width_ == 0) goto NoChange;
 
   // Right boundary.
   for (i = rect->x_offset_ + rect->width_ - 1; i >= rect->x_offset_; --i) {
@@ -458,8 +453,7 @@ static void MinimizeChangeRectangle(const WebPPicture* const src,
       break;
     }
   }
-  if (rect->width_ == 0) { goto NoChange;
-}
+  if (rect->width_ == 0) goto NoChange;
 
   // Top boundary.
   for (j = rect->y_offset_; j < rect->y_offset_ + rect->height_; ++j) {
@@ -475,8 +469,7 @@ static void MinimizeChangeRectangle(const WebPPicture* const src,
       break;
     }
   }
-  if (rect->height_ == 0) { goto NoChange;
-}
+  if (rect->height_ == 0) goto NoChange;
 
   // Bottom boundary.
   for (j = rect->y_offset_ + rect->height_ - 1; j >= rect->y_offset_; --j) {
@@ -491,8 +484,7 @@ static void MinimizeChangeRectangle(const WebPPicture* const src,
       break;
     }
   }
-  if (rect->height_ == 0) { goto NoChange;
-}
+  if (rect->height_ == 0) goto NoChange;
 
   if (IsEmptyRect(rect)) {
  NoChange:
@@ -729,7 +721,7 @@ static int FlattenSimilarBlocks(const WebPPicture* const src,
   const int x_end = (rect->x_offset_ + rect->width_) & ~(block_size - 1);
   assert(src != NULL && dst != NULL && rect != NULL);
   assert(src->width == dst->width && src->height == dst->height);
-  static_assert((block_size & (block_size - 1)) == 0, "");  // must be a power of 2
+  assert((block_size & (block_size - 1)) == 0);  // must be a power of 2
   // Iterate over each block and count similar pixels.
   for (j = y_start; j < y_end; j += block_size) {
     for (i = x_start; i < x_end; i += block_size) {
@@ -1165,8 +1157,7 @@ static WebPEncodingError SetFrame(WebPAnimEncoder* const enc,
     error_code = GenerateCandidates(
         enc, candidates, WEBP_MUX_DISPOSE_NONE, is_lossless, is_key_frame,
         &dispose_none_params, &config_ll, &config_lossy);
-    if (error_code != VP8_ENC_OK) { goto Err;
-}
+    if (error_code != VP8_ENC_OK) goto Err;
   }
 
   if (dispose_bg_params.should_try_) {
@@ -1175,8 +1166,7 @@ static WebPEncodingError SetFrame(WebPAnimEncoder* const enc,
     error_code = GenerateCandidates(
         enc, candidates, WEBP_MUX_DISPOSE_BACKGROUND, is_lossless, is_key_frame,
         &dispose_bg_params, &config_ll, &config_lossy);
-    if (error_code != VP8_ENC_OK) { goto Err;
-}
+    if (error_code != VP8_ENC_OK) goto Err;
   }
 
   PickBestCandidate(enc, candidates, is_key_frame, encoded_frame);
@@ -1215,8 +1205,7 @@ static int CacheFrame(WebPAnimEncoder* const enc,
 
   if (enc->is_first_frame_) {  // Add this as a key-frame.
     error_code = SetFrame(enc, config, 1, encoded_frame, &frame_skipped);
-    if (error_code != VP8_ENC_OK) { goto End;
-}
+    if (error_code != VP8_ENC_OK) goto End;
     assert(frame_skipped == 0);  // First frame can't be skipped, even if empty.
     assert(position == 0 && enc->count_ == 1);
     encoded_frame->is_key_frame_ = 1;
@@ -1228,10 +1217,8 @@ static int CacheFrame(WebPAnimEncoder* const enc,
     if (enc->count_since_key_frame_ <= enc->options_.kmin) {
       // Add this as a frame rectangle.
       error_code = SetFrame(enc, config, 0, encoded_frame, &frame_skipped);
-      if (error_code != VP8_ENC_OK) { goto End;
-}
-      if (frame_skipped) { goto Skip;
-}
+      if (error_code != VP8_ENC_OK) goto End;
+      if (frame_skipped) goto Skip;
       encoded_frame->is_key_frame_ = 0;
       enc->flush_count_ = enc->count_ - 1;
       enc->prev_candidate_undecided_ = 0;
@@ -1241,17 +1228,14 @@ static int CacheFrame(WebPAnimEncoder* const enc,
 
       // Add this as a frame rectangle to enc.
       error_code = SetFrame(enc, config, 0, encoded_frame, &frame_skipped);
-      if (error_code != VP8_ENC_OK) { goto End;
-}
-      if (frame_skipped) { goto Skip;
-}
+      if (error_code != VP8_ENC_OK) goto End;
+      if (frame_skipped) goto Skip;
       prev_rect_sub = enc->prev_rect_;
 
 
       // Add this as a key-frame to enc, too.
       error_code = SetFrame(enc, config, 1, encoded_frame, &frame_skipped);
-      if (error_code != VP8_ENC_OK) { goto End;
-}
+      if (error_code != VP8_ENC_OK) goto End;
       assert(frame_skipped == 0);  // Key-frame cannot be an empty rectangle.
       prev_rect_key = enc->prev_rect_;
 
@@ -1300,8 +1284,7 @@ static int CacheFrame(WebPAnimEncoder* const enc,
     FrameRelease(encoded_frame);
     // We reset some counters, as the frame addition failed/was skipped.
     --enc->count_;
-    if (!enc->is_first_frame_) { --enc->count_since_key_frame_;
-}
+    if (!enc->is_first_frame_) --enc->count_since_key_frame_;
     if (!ok) {
       MarkError2(enc, "ERROR adding frame. WebPEncodingError", error_code);
     }
@@ -1333,8 +1316,7 @@ static int FlushFrames(WebPAnimEncoder* const enc) {
     ++enc->start_;
     --enc->flush_count_;
     --enc->count_;
-    if (enc->keyframe_ != KEYFRAME_NONE) { --enc->keyframe_;
-}
+    if (enc->keyframe_ != KEYFRAME_NONE) --enc->keyframe_;
   }
 
   if (enc->count_ == 1 && enc->start_ != 0) {
@@ -1478,15 +1460,12 @@ static int FrameToFullCanvas(WebPAnimEncoder* const enc,
   WebPMemoryWriterInit(&mem1);
   WebPMemoryWriterInit(&mem2);
 
-  if (!DecodeFrameOntoCanvas(frame, canvas_buf)) { goto Err;
-}
-  if (!EncodeFrame(&enc->last_config_, canvas_buf, &mem1)) { goto Err;
-}
+  if (!DecodeFrameOntoCanvas(frame, canvas_buf)) goto Err;
+  if (!EncodeFrame(&enc->last_config_, canvas_buf, &mem1)) goto Err;
   GetEncodedData(&mem1, full_image);
 
   if (enc->options_.allow_mixed) {
-    if (!EncodeFrame(&enc->last_config_reversed_, canvas_buf, &mem2)) { goto Err;
-}
+    if (!EncodeFrame(&enc->last_config_reversed_, canvas_buf, &mem2)) goto Err;
     if (mem2.size < mem1.size) {
       GetEncodedData(&mem2, full_image);
       WebPMemoryWriterClear(&mem1);
@@ -1520,23 +1499,18 @@ static WebPMuxError OptimizeSingleFrame(WebPAnimEncoder* const enc,
   WebPDataInit(&webp_data2);
 
   err = WebPMuxGetFrame(mux, 1, &frame);
-  if (err != WEBP_MUX_OK) { goto End;
-}
-  if (frame.id != WEBP_CHUNK_ANMF) { goto End;  // Non-animation: nothing to do.
-}
+  if (err != WEBP_MUX_OK) goto End;
+  if (frame.id != WEBP_CHUNK_ANMF) goto End;  // Non-animation: nothing to do.
   err = WebPMuxGetCanvasSize(mux, &canvas_width, &canvas_height);
-  if (err != WEBP_MUX_OK) { goto End;
-}
+  if (err != WEBP_MUX_OK) goto End;
   if (!FrameToFullCanvas(enc, &frame, &full_image)) {
     err = WEBP_MUX_BAD_DATA;
     goto End;
   }
   err = WebPMuxSetImage(mux, &full_image, 1);
-  if (err != WEBP_MUX_OK) { goto End;
-}
+  if (err != WEBP_MUX_OK) goto End;
   err = WebPMuxAssemble(mux, &webp_data2);
-  if (err != WEBP_MUX_OK) { goto End;
-}
+  if (err != WEBP_MUX_OK) goto End;
 
   if (webp_data2.size < webp_data->size) {  // Pick 'webp_data2' if smaller.
     WebPDataClear(webp_data);
@@ -1590,22 +1564,18 @@ int WebPAnimEncoderAssemble(WebPAnimEncoder* enc, WebPData* webp_data) {
   // Set definitive canvas size.
   mux = enc->mux_;
   err = WebPMuxSetCanvasSize(mux, enc->canvas_width_, enc->canvas_height_);
-  if (err != WEBP_MUX_OK) { goto Err;
-}
+  if (err != WEBP_MUX_OK) goto Err;
 
   err = WebPMuxSetAnimationParams(mux, &enc->options_.anim_params);
-  if (err != WEBP_MUX_OK) { goto Err;
-}
+  if (err != WEBP_MUX_OK) goto Err;
 
   // Assemble into a WebP bitstream.
   err = WebPMuxAssemble(mux, webp_data);
-  if (err != WEBP_MUX_OK) { goto Err;
-}
+  if (err != WEBP_MUX_OK) goto Err;
 
   if (enc->out_frame_count_ == 1) {
     err = OptimizeSingleFrame(enc, webp_data);
-    if (err != WEBP_MUX_OK) { goto Err;
-}
+    if (err != WEBP_MUX_OK) goto Err;
   }
   return 1;
 
@@ -1615,8 +1585,7 @@ int WebPAnimEncoderAssemble(WebPAnimEncoder* enc, WebPData* webp_data) {
 }
 
 const char* WebPAnimEncoderGetError(WebPAnimEncoder* enc) {
-  if (enc == NULL) { return NULL;
-}
+  if (enc == NULL) return NULL;
   return enc->error_str_;
 }
 

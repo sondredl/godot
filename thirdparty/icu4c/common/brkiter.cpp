@@ -68,9 +68,8 @@ BreakIterator::buildInstance(const Locale& loc, const char *type, UErrorCode &st
     UResourceBundle *brkName  = &brkNameStack;
     RuleBasedBreakIterator *result = nullptr;
 
-    if (U_FAILURE(status)) {
+    if (U_FAILURE(status))
         return nullptr;
-}
 
     ures_initStackObject(brkRules);
     ures_initStackObject(brkName);
@@ -213,14 +212,14 @@ BreakIterator::BreakIterator()
 BreakIterator::BreakIterator(const BreakIterator &other) : UObject(other) {
     uprv_strncpy(actualLocale, other.actualLocale, sizeof(actualLocale));
     uprv_strncpy(validLocale, other.validLocale, sizeof(validLocale));
-    uprv_strncpy(getLocale, other.requestLocale, sizeof(requestLocale));
+    uprv_strncpy(requestLocale, other.requestLocale, sizeof(requestLocale));
 }
 
 BreakIterator &BreakIterator::operator =(const BreakIterator &other) {
     if (this != &other) {
         uprv_strncpy(actualLocale, other.actualLocale, sizeof(actualLocale));
         uprv_strncpy(validLocale, other.validLocale, sizeof(validLocale));
-        uprv_strncpy(getLocale, other.requestLocale, sizeof(requestLocale));
+        uprv_strncpy(requestLocale, other.requestLocale, sizeof(requestLocale));
     }
     return *this;
 }
@@ -240,9 +239,9 @@ BreakIterator::~BreakIterator()
 
 class ICUBreakIteratorFactory : public ICUResourceBundleFactory {
 public:
-    ~ICUBreakIteratorFactory() override;
+    virtual ~ICUBreakIteratorFactory();
 protected:
-    UObject* handleCreate(const Locale& loc, int32_t kind, const ICUService* /*service*/, UErrorCode& status) const override {
+    virtual UObject* handleCreate(const Locale& loc, int32_t kind, const ICUService* /*service*/, UErrorCode& status) const override {
         return BreakIterator::makeInstance(loc, kind, status);
     }
 };
@@ -260,13 +259,13 @@ public:
         registerFactory(new ICUBreakIteratorFactory(), status);
     }
 
-    ~ICUBreakIteratorService() override;
+    virtual ~ICUBreakIteratorService();
 
-    UObject* cloneInstance(UObject* instance) const override {
+    virtual UObject* cloneInstance(UObject* instance) const override {
         return ((BreakIterator*)instance)->clone();
     }
 
-    UObject* handleDefault(const ICUServiceKey& key, UnicodeString* /*actualID*/, UErrorCode& status) const override {
+    virtual UObject* handleDefault(const ICUServiceKey& key, UnicodeString* /*actualID*/, UErrorCode& status) const override {
         LocaleKey& lkey = static_cast<LocaleKey&>(const_cast<ICUServiceKey&>(key));
         int32_t kind = lkey.kind();
         Locale loc;
@@ -274,7 +273,7 @@ public:
         return BreakIterator::makeInstance(loc, kind, status);
     }
 
-    UBool isDefault() const override {
+    virtual UBool isDefault() const override {
         return countFactories() == 1;
     }
 };
@@ -498,7 +497,7 @@ BreakIterator::makeInstance(const Locale& loc, int32_t kind, UErrorCode& status)
 Locale
 BreakIterator::getLocale(ULocDataLocaleType type, UErrorCode& status) const {
     if (type == ULOC_REQUESTED_LOCALE) {
-        return {getLocale};
+        return {requestLocale};
     }
     U_LOCALE_BASED(locBased, *this);
     return locBased.getLocale(type, status);
@@ -507,7 +506,7 @@ BreakIterator::getLocale(ULocDataLocaleType type, UErrorCode& status) const {
 const char *
 BreakIterator::getLocaleID(ULocDataLocaleType type, UErrorCode& status) const {
     if (type == ULOC_REQUESTED_LOCALE) {
-        return getLocale;
+        return requestLocale;
     }
     U_LOCALE_BASED(locBased, *this);
     return locBased.getLocaleID(type, status);

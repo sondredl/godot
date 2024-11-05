@@ -1,10 +1,10 @@
 #ifndef __DARKRL__VECTOR_HPP__
 #define __DARKRL__VECTOR_HPP__
 
-#include <cassert>
+#include <assert.h>
 #include <algorithm>
-#include <cmath>
-#include <cstdint>
+#include <math.h>
+#include <stdint.h>
 
 #include "Math.hpp"
 

@@ -204,7 +204,7 @@ __kernel void ComputePartialSums(__global uint4 * data,                         
 #endif //OCL_SOURCE_FROM_FILE
 
 namespace VHACD {
-IVHACD* CreateVHACD()
+IVHACD* CreateVHACD(void)
 {
     return new VHACD();
 }

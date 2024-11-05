@@ -177,7 +177,7 @@ namespace embree
   {
     Lock<MutexSys> lock(mutex);
 
-    if (threadIDs.empty())
+    if (threadIDs.size() == 0)
     {
       /* parse thread/CPU topology */
       for (size_t cpuID=0;;cpuID++)
@@ -185,18 +185,15 @@ namespace embree
         std::fstream fs;
         std::string cpu = std::string("/sys/devices/system/cpu/cpu") + std::to_string((long long)cpuID) + std::string("/topology/thread_siblings_list");
         fs.open (cpu.c_str(), std::fstream::in);
-        if (fs.fail()) { break;
-}
+        if (fs.fail()) break;
 
         int i;
         while (fs >> i)
         {
-          if (std::none_of(threadIDs.begin(),threadIDs.end(),[&] (int id) { return id == i; })) {
+          if (std::none_of(threadIDs.begin(),threadIDs.end(),[&] (int id) { return id == i; }))
             threadIDs.push_back(i);
-}
-          if (fs.peek() == ',') {
+          if (fs.peek() == ',')
             fs.ignore();
-}
         }
         fs.close();
       }
@@ -218,9 +215,8 @@ namespace embree
 
     /* re-map threadIDs if mapping is available */
     size_t ID = threadID;
-    if (threadID < threadIDs.size()) {
+    if (threadID < threadIDs.size())
       ID = threadIDs[threadID];
-}
 
     /* find correct thread to affinitize to */
     cpu_set_t set;
@@ -230,8 +226,7 @@ namespace embree
     {
       for (int i=0, j=0; i<CPU_SETSIZE; i++)
       {
-        if (!CPU_ISSET(i,&set)) { continue;
-}
+        if (!CPU_ISSET(i,&set)) continue;
 
         if (j == ID) {
           ID = i;
@@ -362,7 +357,7 @@ namespace embree
   public:
     ThreadStartupData (thread_func f, void* arg, int affinity)
       : f(f), arg(arg), affinity(affinity) {}
-
+  public:
     thread_func f;
     void* arg;
     ssize_t affinity;
@@ -389,8 +384,7 @@ namespace embree
     /* set stack size */
     pthread_attr_t attr;
     pthread_attr_init(&attr);
-    if (stack_size > 0) { pthread_attr_setstacksize (&attr, stack_size);
-}
+    if (stack_size > 0) pthread_attr_setstacksize (&attr, stack_size);
 
     /* create thread */
     pthread_t* tid = new pthread_t;

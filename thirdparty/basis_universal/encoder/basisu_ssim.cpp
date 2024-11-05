@@ -32,9 +32,8 @@ namespace basisu
 	{
 		assert(size_x & size_y & 1);
 
-		if (!(size_x | size_y)) {
+		if (!(size_x | size_y))
 			return;
-}
 
 		int mid_x = size_x / 2;
 		int mid_y = size_y / 2;
@@ -45,15 +44,14 @@ namespace basisu
 			for (int y = 0; y < size_y; y++)
 			{
 				float g;
-				if ((x > mid_x) && (y < mid_y)) {
+				if ((x > mid_x) && (y < mid_y))
 					g = pDst[(size_x - x - 1) + y * size_x];
-				} else if ((x < mid_x) && (y > mid_y)) {
+				else if ((x < mid_x) && (y > mid_y))
 					g = pDst[x + (size_y - y - 1) * size_x];
-				} else if ((x > mid_x) && (y > mid_y)) {
+				else if ((x > mid_x) && (y > mid_y))
 					g = pDst[(size_x - x - 1) + (size_y - y - 1) * size_x];
-				} else {
+				else
 					g = gauss(x - mid_x, y - mid_y, sigma_sqr);
-}
 
 				pDst[x + y * size_x] = g;
 				sum += g;
@@ -68,13 +66,11 @@ namespace basisu
 		if (flags & (cComputeGaussianFlagNormalizeCenterToOne | cComputeGaussianFlagNormalize))
 		{
 			double one_over_sum = 1.0f / sum;
-			for (int i = 0; i < size_x * size_y; i++) {
+			for (int i = 0; i < size_x * size_y; i++)
 				pDst[i] = static_cast<float>(pDst[i] * one_over_sum);
-}
 
-			if (flags & cComputeGaussianFlagNormalizeCenterToOne) {
+			if (flags & cComputeGaussianFlagNormalizeCenterToOne)
 				pDst[mid_x + mid_y * size_x] = 1.0f;
-}
 		}
 
 		if (flags & cComputeGaussianFlagPrint)
@@ -150,11 +146,10 @@ namespace basisu
 			{
 				const vec4F &p = src(x, y);
 
-				if ((power[0] == 2.0f) && (power[1] == 2.0f) && (power[2] == 2.0f) && (power[3] == 2.0f)) {
+				if ((power[0] == 2.0f) && (power[1] == 2.0f) && (power[2] == 2.0f) && (power[3] == 2.0f))
 					dst(x, y).set(p[0] * p[0], p[1] * p[1], p[2] * p[2], p[3] * p[3]);
-				} else {
+				else
 					dst(x, y).set(powf(p[0], power[0]), powf(p[1], power[1]), powf(p[2], power[2]), powf(p[3], power[3]));
-}
 			}
 		}
 	}
@@ -187,9 +182,8 @@ namespace basisu
 
 				vec4F d;
 
-				for (uint32_t c = 0; c < 4; c++) {
+				for (uint32_t c = 0; c < 4; c++)
 					d[c] = scale[c] * p[c] + shift[c];
-}
 
 				dst(x, y).set(d[0], d[1], d[2], d[3]);
 			}
@@ -293,11 +287,10 @@ namespace basisu
 				for (uint32_t c = 0; c < 4; c++)
 				{
 					float v = s2[c];
-					if (v == 0.0f) {
+					if (v == 0.0f)
 						d[c] = 0.0f;
-					} else {
+					else
 						d[c] = (s1[c] * scale[c]) / v;
-}
 				}
 
 				dst(x, y) = d;

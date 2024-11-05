@@ -29,7 +29,7 @@ subject to the following restrictions:
 #define BT_BULLET_VERSION 279
 
 // -- GODOT start --
-namespace VHACD; {
+namespace VHACD {
 // -- GODOT end --
 
 inline int32_t btGetVersion()
@@ -211,7 +211,7 @@ inline int32_t btGetVersion()
 #endif
 
 // -- GODOT start --
-namespace VHACD; {
+namespace VHACD {
 // -- GODOT end --
 
 ///The btScalar type abstracts floating point numbers, to easily switch between double and single floating point precision.

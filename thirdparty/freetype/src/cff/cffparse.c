@@ -218,26 +218,25 @@
         p++;
 
         /* Make sure we don't read past the end. */
-        if ( p + 1 > limit && limit >= p ) {
+        if ( p + 1 > limit && limit >= p )
           goto Bad;
-}
       }
 
       /* Get the nibble. */
       nib   = (FT_Int)( p[0] >> phase ) & 0xF;
       phase = 4 - phase;
 
-      if ( nib == 0xE ) {
+      if ( nib == 0xE )
         sign = 1;
-      } else if ( nib > 9 ) {
+      else if ( nib > 9 )
         break;
-      } else
+      else
       {
         /* Increase exponent if we can't add the digit. */
-        if ( number >= 0xCCCCCCCL ) {
+        if ( number >= 0xCCCCCCCL )
           exponent_add++;
         /* Skip leading zeros. */
-        } else if ( nib || number )
+        else if ( nib || number )
         {
           integer_length++;
           number = number * 10 + nib;
@@ -246,7 +245,7 @@
     }
 
     /* Read fraction part, if any. */
-    if ( nib == 0xA ) {
+    if ( nib == 0xA )
       for (;;)
       {
         /* If we entered this iteration with phase == 4, we need */
@@ -256,29 +255,26 @@
           p++;
 
           /* Make sure we don't read past the end. */
-          if ( p + 1 > limit && limit >= p ) {
+          if ( p + 1 > limit && limit >= p )
             goto Bad;
-}
         }
 
         /* Get the nibble. */
         nib   = ( p[0] >> phase ) & 0xF;
         phase = 4 - phase;
-        if ( nib >= 10 ) {
+        if ( nib >= 10 )
           break;
-}
 
         /* Skip leading zeros if possible. */
-        if ( !nib && !number ) {
+        if ( !nib && !number )
           exponent_add--;
         /* Only add digit if we don't overflow. */
-        } else if ( number < 0xCCCCCCCL && fraction_length < 9 )
+        else if ( number < 0xCCCCCCCL && fraction_length < 9 )
         {
           fraction_length++;
           number = number * 10 + nib;
         }
       }
-}
 
     /* Read exponent, if any. */
     if ( nib == 12 )
@@ -298,17 +294,15 @@
           p++;
 
           /* Make sure we don't read past the end. */
-          if ( p + 1 > limit && limit >= p ) {
+          if ( p + 1 > limit && limit >= p )
             goto Bad;
-}
         }
 
         /* Get the nibble. */
         nib   = ( p[0] >> phase ) & 0xF;
         phase = 4 - phase;
-        if ( nib >= 10 ) {
+        if ( nib >= 10 )
           break;
-}
 
         /* Arbitrarily limit exponent. */
         if ( exponent > 1000 )
@@ -321,17 +315,15 @@
         exponent = -exponent;
     }
 
-    if ( !number ) {
+    if ( !number )
       goto Exit;
-}
 
     if ( have_overflow )
     {
-      if ( exponent_sign ) {
+      if ( exponent_sign )
         goto Underflow;
-      } else {
+      else
         goto Overflow;
-}
     }
 
     /* We don't check `power_ten' and `exponent_add'. */
@@ -371,13 +363,11 @@
                 exponent += 1;
               }
             }
-            else {
-              e
-}xponent -= fraction_length;
+            else
+              exponent -= fraction_length;
           }
-          else {
-            e
-}xponent -= fraction_length;
+          else
+            exponent -= fraction_length;
 
           result   = (FT_Long)( (FT_ULong)number << 16 );
           *scaling = exponent;
@@ -402,12 +392,10 @@
       integer_length  += exponent;
       fraction_length -= exponent;
 
-      if ( integer_length > 5 ) {
+      if ( integer_length > 5 )
         goto Overflow;
-}
-      if ( integer_length < -5 ) {
+      if ( integer_length < -5 )
         goto Underflow;
-}
 
       /* Remove non-significant digits. */
       if ( integer_length < 0 )
@@ -426,9 +414,8 @@
       /* Convert into 16.16 format. */
       if ( fraction_length > 0 )
       {
-        if ( ( number / power_tens[fraction_length] ) > 0x7FFFL ) {
+        if ( ( number / power_tens[fraction_length] ) > 0x7FFFL )
           goto Exit;
-}
 
         result = FT_DivFix( number, power_tens[fraction_length] );
       }
@@ -436,9 +423,8 @@
       {
         number *= power_tens[-fraction_length];
 
-        if ( number > 0x7FFFL ) {
+        if ( number > 0x7FFFL )
           goto Overflow;
-}
 
         result = (FT_Long)( (FT_ULong)number << 16 );
       }

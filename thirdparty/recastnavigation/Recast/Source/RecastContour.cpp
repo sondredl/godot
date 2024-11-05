@@ -16,10 +16,10 @@
 // 3. This notice may not be removed or altered from any source distribution.
 //
 
-#include <cmath>
-#include <cstring>
-#include <cstdio>
-#include <cstdlib>
+#include <math.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "Recast.h"
 #include "RecastAlloc.h"
 #include "RecastAssert.h"
@@ -106,9 +106,8 @@ static void walkContour(int x, int y, int i,
 {
 	// Choose the first non-connected edge
 	unsigned char dir = 0;
-	while ((flags[i] & (1 << dir)) == 0) {
+	while ((flags[i] & (1 << dir)) == 0)
 		dir++;
-}
 
 	unsigned char startDir = dir;
 	int starti = i;
@@ -140,9 +139,8 @@ static void walkContour(int x, int y, int i,
 				const int ay = y + rcGetDirOffsetY(dir);
 				const int ai = (int)chf.cells[ax+ay*chf.width].index + rcGetCon(s, dir);
 				r = (int)chf.spans[ai].reg;
-				if (area != chf.areas[ai]) {
+				if (area != chf.areas[ai])
 					isAreaBorder = true;
-}
 			}
 			if (isBorderVertex)
 				r |= RC_BORDER_VERTEX;
@@ -195,14 +193,12 @@ static float distancePtSeg(const int x, const int z,
 	float dz = (float)(z - pz);
 	float d = pqx*pqx + pqz*pqz;
 	float t = pqx*dx + pqz*dz;
-	if (d > 0) {
+	if (d > 0)
 		t /= d;
-}
-	if (t < 0) {
+	if (t < 0)
 		t = 0;
-	} else if (t > 1) {
+	else if (t > 1)
 		t = 1;
-}
 
 	dx = px + t*pqx - x;
 	dz = pz + t*pqz - z;
@@ -509,9 +505,8 @@ static bool intersectProp(const int* a, const int* b, const int* c, const int* d
 {
 	// Eliminate improper cases.
 	if (collinear(a,b,c) || collinear(a,b,d) ||
-		collinear(c,d,a) || collinear(c,d,b)) {
+		collinear(c,d,a) || collinear(c,d,b))
 		return false;
-}
 
 	return xorb(left(a,b,c), left(a,b,d)) && xorb(left(c,d,a), left(c,d,b));
 }
@@ -520,28 +515,25 @@ static bool intersectProp(const int* a, const int* b, const int* c, const int* d
 // on the closed segement ab.
 static bool between(const int* a, const int* b, const int* c)
 {
-	if (!collinear(a, b, c)) {
+	if (!collinear(a, b, c))
 		return false;
-}
 	// If ab not vertical, check betweenness on x; else on y.
-	if (a[0] != b[0]) {
+	if (a[0] != b[0])
 		return	((a[0] <= c[0]) && (c[0] <= b[0])) || ((a[0] >= c[0]) && (c[0] >= b[0]));
-	} else {
+	else
 		return	((a[2] <= c[2]) && (c[2] <= b[2])) || ((a[2] >= c[2]) && (c[2] >= b[2]));
-}
 }
 
 // Returns true iff segments ab and cd intersect, properly or improperly.
 static bool intersect(const int* a, const int* b, const int* c, const int* d)
 {
-	if (intersectProp(a, b, c, d)) {
+	if (intersectProp(a, b, c, d))
 		return true;
-	} else if (between(a, b, c) || between(a, b, d) ||
-			 between(c, d, a) || between(c, d, b)) {
+	else if (between(a, b, c) || between(a, b, d) ||
+			 between(c, d, a) || between(c, d, b))
 		return true;
-	} else {
+	else
 		return false;
-}
 }
 
 static bool vequal(const int* a, const int* b)
@@ -556,18 +548,15 @@ static bool intersectSegContour(const int* d0, const int* d1, int i, int n, cons
 	{
 		int k1 = next(k, n);
 		// Skip edges incident to i.
-		if (i == k || i == k1) {
+		if (i == k || i == k1)
 			continue;
-}
 		const int* p0 = &verts[k * 4];
 		const int* p1 = &verts[k1 * 4];
-		if (vequal(d0, p0) || vequal(d1, p0) || vequal(d0, p1) || vequal(d1, p1)) {
+		if (vequal(d0, p0) || vequal(d1, p0) || vequal(d0, p1) || vequal(d1, p1))
 			continue;
-}
 
-		if (intersect(d0, d1, p0, p1)) {
+		if (intersect(d0, d1, p0, p1))
 			return true;
-}
 	}
 	return false;
 }
@@ -579,9 +568,8 @@ static bool	inCone(int i, int n, const int* verts, const int* pj)
 	const int* pin1 = &verts[prev(i, n) * 4];
 
 	// If P[i] is a convex vertex [ i+1 left or on (i-1,i) ].
-	if (leftOn(pin1, pi, pi1)) {
+	if (leftOn(pin1, pi, pi1))
 		return left(pi, pj, pin1) && left(pj, pi, pi1);
-}
 	// Assume (i-1,i,i+1) not collinear.
 	// else P[i] is reflex.
 	return !(leftOn(pi, pj, pi1) && leftOn(pj, pi, pin1));
@@ -618,9 +606,8 @@ static bool mergeContours(rcContour& ca, rcContour& cb, int ia, int ib)
 {
 	const int maxVerts = ca.nverts + cb.nverts + 2;
 	int* verts = (int*)rcAlloc(sizeof(int)*maxVerts*4, RC_ALLOC_PERM);
-	if (!verts) {
+	if (!verts)
 		return false;
-}
 
 	int nv = 0;
 
@@ -703,21 +690,17 @@ static int compareHoles(const void* va, const void* vb)
 	const rcContourHole* b = (const rcContourHole*)vb;
 	if (a->minx == b->minx)
 	{
-		if (a->minz < b->minz) {
+		if (a->minz < b->minz)
 			return -1;
-}
-		if (a->minz > b->minz) {
+		if (a->minz > b->minz)
 			return 1;
-}
 	}
 	else
 	{
-		if (a->minx < b->minx) {
+		if (a->minx < b->minx)
 			return -1;
-}
-		if (a->minx > b->minx) {
+		if (a->minx > b->minx)
 			return 1;
-}
 	}
 	return 0;
 }
@@ -727,12 +710,10 @@ static int compareDiagDist(const void* va, const void* vb)
 {
 	const rcPotentialDiagonal* a = (const rcPotentialDiagonal*)va;
 	const rcPotentialDiagonal* b = (const rcPotentialDiagonal*)vb;
-	if (a->dist < b->dist) {
+	if (a->dist < b->dist)
 		return -1;
-}
-	if (a->dist > b->dist) {
+	if (a->dist > b->dist)
 		return 1;
-}
 	return 0;
 }
 
@@ -740,16 +721,14 @@ static int compareDiagDist(const void* va, const void* vb)
 static void mergeRegionHoles(rcContext* ctx, rcContourRegion& region)
 {
 	// Sort holes from left to right.
-	for (int i = 0; i < region.nholes; i++) {
+	for (int i = 0; i < region.nholes; i++)
 		findLeftMostVertex(region.holes[i].contour, &region.holes[i].minx, &region.holes[i].minz, &region.holes[i].leftmost);
-}
 
 	qsort(region.holes, region.nholes, sizeof(rcContourHole), compareHoles);
 
 	int maxVerts = region.outline->nverts;
-	for (int i = 0; i < region.nholes; i++) {
+	for (int i = 0; i < region.nholes; i++)
 		maxVerts += region.holes[i].contour->nverts;
-}
 
 	rcScopedDelete<rcPotentialDiagonal> diags((rcPotentialDiagonal*)rcAlloc(sizeof(rcPotentialDiagonal)*maxVerts, RC_ALLOC_TEMP));
 	if (!diags)
@@ -873,9 +852,8 @@ bool rcBuildContours(rcContext* ctx, const rcCompactHeightfield& chf,
 
 	int maxContours = rcMax((int)chf.maxRegions, 8);
 	cset.conts = (rcContour*)rcAlloc(sizeof(rcContour)*maxContours, RC_ALLOC_PERM);
-	if (!cset.conts) {
+	if (!cset.conts)
 		return false;
-}
 	cset.nconts = 0;
 
 	rcScopedDelete<unsigned char> flags((unsigned char*)rcAlloc(sizeof(unsigned char)*chf.spanCount, RC_ALLOC_TEMP));
@@ -912,9 +890,8 @@ bool rcBuildContours(rcContext* ctx, const rcCompactHeightfield& chf,
 						const int ai = (int)chf.cells[ax+ay*w].index + rcGetCon(s, dir);
 						r = chf.spans[ai].reg;
 					}
-					if (r == chf.spans[i].reg) {
+					if (r == chf.spans[i].reg)
 						res |= (1 << dir);
-}
 				}
 				flags[i] = res ^ 0xf; // Inverse, mark non connected edges.
 			}
@@ -939,9 +916,8 @@ bool rcBuildContours(rcContext* ctx, const rcCompactHeightfield& chf,
 					continue;
 				}
 				const unsigned short reg = chf.spans[i].reg;
-				if (!reg || (reg & RC_BORDER_REG)) {
+				if (!reg || (reg & RC_BORDER_REG))
 					continue;
-}
 				const unsigned char area = chf.areas[i];
 
 				verts.clear();
@@ -1106,8 +1082,7 @@ bool rcBuildContours(rcContext* ctx, const rcCompactHeightfield& chf,
 			for (int i = 0; i < nregions; i++)
 			{
 				rcContourRegion& reg = regions[i];
-				if (!reg.nholes) { continue;
-}
+				if (!reg.nholes) continue;
 
 				if (reg.outline)
 				{

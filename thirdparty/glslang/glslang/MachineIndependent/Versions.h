@@ -62,7 +62,7 @@ typedef enum : unsigned {
     LAST_ELEMENT_MARKER(EProfileCount),
 } EProfile;
 
-namespace glslang;; {
+namespace glslang {
 
 //
 // Map from profile enum to externally readable text name.

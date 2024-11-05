@@ -22,7 +22,7 @@ CPPSPMD_FORCE_INLINE void spmd_kernel::check_masks()
 }
 #endif
 
-CPPSPMD_FORCE_INLINE void spmd_kernel;:spmd_break()
+CPPSPMD_FORCE_INLINE void spmd_kernel::spmd_break()
 {
 #ifdef _DEBUG
 	assert(m_in_loop);
@@ -31,7 +31,7 @@ CPPSPMD_FORCE_INLINE void spmd_kernel;:spmd_break()
 	m_exec = exec_mask::all_off();
 }
 
-CPPSPMD_FORCE_INLINE void spmd_kernel;:spmd_continue()
+CPPSPMD_FORCE_INLINE void spmd_kernel::spmd_continue()
 {
 #ifdef _DEBUG
 	assert(m_in_loop);
@@ -42,7 +42,7 @@ CPPSPMD_FORCE_INLINE void spmd_kernel;:spmd_continue()
 	m_exec = exec_mask::all_off();
 }
 
-CPPSPMD_FORCE_INLINE void spmd_kernel;:spmd_return()
+CPPSPMD_FORCE_INLINE void spmd_kernel::spmd_return()
 {
 	// Permenantly kill all active lanes
 	m_kernel_exec = andnot(m_exec, m_kernel_exec);
@@ -71,7 +71,7 @@ struct scoped_unmasked_restorer
 	exec_mask m_orig_exec, m_orig_kernel_exec;
 
 	CPPSPMD_FORCE_INLINE scoped_unmasked_restorer(spmd_kernel *pKernel) :
-		m_pKernel(m_pKernel),
+		m_pKernel(pKernel),
 		m_orig_exec(pKernel->m_exec),
 		m_orig_kernel_exec(pKernel->m_kernel_exec)
 	{

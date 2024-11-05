@@ -141,11 +141,10 @@ ZSTD_seqDecompressedSize(seqStore_t const* seqStore,
     DEBUGLOG(5, "ZSTD_seqDecompressedSize: %u sequences from %p: %u literals + %u matchlength",
                 (unsigned)nbSeqs, (const void*)sequences,
                 (unsigned)litLengthSum, (unsigned)matchLengthSum);
-    if (!lastSubBlock) {
+    if (!lastSubBlock)
         assert(litLengthSum == litSize);
-    } else {
+    else
         assert(litLengthSum <= litSize);
-}
     (void)litLengthSum;
     return matchLengthSum + litSize;
 }
@@ -181,13 +180,12 @@ ZSTD_compressSubBlock_sequences(const ZSTD_fseCTables_t* fseTables,
     /* Sequences Header */
     RETURN_ERROR_IF((oend-op) < 3 /*max nbSeq Size*/ + 1 /*seqHead*/,
                     dstSize_tooSmall, "");
-    if (nbSeq < 128) {
+    if (nbSeq < 128)
         *op++ = (BYTE)nbSeq;
-    } else if (nbSeq < LONGNBSEQ) {
+    else if (nbSeq < LONGNBSEQ)
         op[0] = (BYTE)((nbSeq>>8) + 0x80), op[1] = (BYTE)nbSeq, op+=2;
-    } else {
+    else
         op[0]=0xFF, MEM_writeLE16(op+1, (U16)(nbSeq - LONGNBSEQ)), op+=3;
-}
     if (nbSeq==0) {
         return (size_t)(op - ostart);
     }
@@ -284,8 +282,7 @@ static size_t ZSTD_compressSubBlock(const ZSTD_entropyCTables_t* entropy,
                                                         op, (size_t)(oend-op),
                                                         bmi2, writeLitEntropy, litEntropyWritten);
         FORWARD_IF_ERROR(cLitSize, "ZSTD_compressSubBlock_literal failed");
-        if (cLitSize == 0) { return 0;
-}
+        if (cLitSize == 0) return 0;
         op += cLitSize;
     }
     {   size_t cSeqSize = ZSTD_compressSubBlock_sequences(&entropy->fse,
@@ -296,8 +293,7 @@ static size_t ZSTD_compressSubBlock(const ZSTD_entropyCTables_t* entropy,
                                                   op, (size_t)(oend-op),
                                                   bmi2, writeSeqEntropy, seqEntropyWritten);
         FORWARD_IF_ERROR(cSeqSize, "ZSTD_compressSubBlock_sequences failed");
-        if (cSeqSize == 0) { return 0;
-}
+        if (cSeqSize == 0) return 0;
         op += cSeqSize;
     }
     /* Write block header */
@@ -318,15 +314,13 @@ static size_t ZSTD_estimateSubBlockSize_literal(const BYTE* literals, size_t lit
     unsigned maxSymbolValue = 255;
     size_t literalSectionHeaderSize = 3; /* Use hard coded size of 3 bytes */
 
-    if (hufMetadata->hType == set_basic) { return litSize;
-    } else if (hufMetadata->hType == set_rle) { return 1;
-    } else if (hufMetadata->hType == set_compressed || hufMetadata->hType == set_repeat) {
+    if (hufMetadata->hType == set_basic) return litSize;
+    else if (hufMetadata->hType == set_rle) return 1;
+    else if (hufMetadata->hType == set_compressed || hufMetadata->hType == set_repeat) {
         size_t const largest = HIST_count_wksp (countWksp, &maxSymbolValue, (const BYTE*)literals, litSize, workspace, wkspSize);
-        if (ZSTD_isError(largest)) { return litSize;
-}
+        if (ZSTD_isError(largest)) return litSize;
         {   size_t cLitSizeEstimate = HUF_estimateCompressedSize((const HUF_CElt*)huf->CTable, countWksp, maxSymbolValue);
-            if (writeEntropy) { cLitSizeEstimate += hufMetadata->hufDesSize;
-}
+            if (writeEntropy) cLitSizeEstimate += hufMetadata->hufDesSize;
             return cLitSizeEstimate + literalSectionHeaderSize;
     }   }
     assert(0); /* impossible */
@@ -359,12 +353,10 @@ static size_t ZSTD_estimateSubBlockSize_symbolType(symbolEncodingType_e type,
     } else if (type == set_compressed || type == set_repeat) {
         cSymbolTypeSizeEstimateInBits = ZSTD_fseBitCost(fseCTable, countWksp, max);
     }
-    if (ZSTD_isError(cSymbolTypeSizeEstimateInBits)) { return nbSeq * 10;
-}
+    if (ZSTD_isError(cSymbolTypeSizeEstimateInBits)) return nbSeq * 10;
     while (ctp < ctEnd) {
-        if (additionalBits) { cSymbolTypeSizeEstimateInBits += additionalBits[*ctp];
-        } else { cSymbolTypeSizeEstimateInBits += *ctp; /* for offset, offset code is also the number of additional bits */
-}
+        if (additionalBits) cSymbolTypeSizeEstimateInBits += additionalBits[*ctp];
+        else cSymbolTypeSizeEstimateInBits += *ctp; /* for offset, offset code is also the number of additional bits */
         ctp++;
     }
     return cSymbolTypeSizeEstimateInBits / 8;
@@ -381,8 +373,7 @@ static size_t ZSTD_estimateSubBlockSize_sequences(const BYTE* ofCodeTable,
 {
     size_t const sequencesSectionHeaderSize = 3; /* Use hard coded size of 3 bytes */
     size_t cSeqSizeEstimate = 0;
-    if (nbSeq == 0) { return sequencesSectionHeaderSize;
-}
+    if (nbSeq == 0) return sequencesSectionHeaderSize;
     cSeqSizeEstimate += ZSTD_estimateSubBlockSize_symbolType(fseMetadata->ofType, ofCodeTable, MaxOff,
                                          nbSeq, fseTables->offcodeCTable, NULL,
                                          OF_defaultNorm, OF_defaultNormLog, DefaultMaxOff,
@@ -395,8 +386,7 @@ static size_t ZSTD_estimateSubBlockSize_sequences(const BYTE* ofCodeTable,
                                          nbSeq, fseTables->matchlengthCTable, ML_bits,
                                          ML_defaultNorm, ML_defaultNormLog, MaxML,
                                          workspace, wkspSize);
-    if (writeEntropy) { cSeqSizeEstimate += fseMetadata->fseTablesSize;
-}
+    if (writeEntropy) cSeqSizeEstimate += fseMetadata->fseTablesSize;
     return cSeqSizeEstimate + sequencesSectionHeaderSize;
 }
 
@@ -427,15 +417,12 @@ static EstimatedBlockSize ZSTD_estimateSubBlockSize(const BYTE* literals, size_t
 
 static int ZSTD_needSequenceEntropyTables(ZSTD_fseCTablesMetadata_t const* fseMetadata)
 {
-    if (fseMetadata->llType == set_compressed || fseMetadata->llType == set_rle) {
+    if (fseMetadata->llType == set_compressed || fseMetadata->llType == set_rle)
         return 1;
-}
-    if (fseMetadata->mlType == set_compressed || fseMetadata->mlType == set_rle) {
+    if (fseMetadata->mlType == set_compressed || fseMetadata->mlType == set_rle)
         return 1;
-}
-    if (fseMetadata->ofType == set_compressed || fseMetadata->ofType == set_rle) {
+    if (fseMetadata->ofType == set_compressed || fseMetadata->ofType == set_rle)
         return 1;
-}
     return 0;
 }
 
@@ -464,8 +451,7 @@ static size_t sizeBlockSequences(const seqDef* sp, size_t nbSeqs,
 
     /* first sequence => at least one sequence*/
     budget += sp[0].litLength * avgLitCost + avgSeqCost;
-    if (budget > targetBudget) { return 1;
-}
+    if (budget > targetBudget) return 1;
     inSize = sp[0].litLength + (sp[0].mlBase+MINMATCH);
 
     /* loop over sequences */
@@ -476,9 +462,8 @@ static size_t sizeBlockSequences(const seqDef* sp, size_t nbSeqs,
         /* stop when sub-block budget is reached */
         if ( (budget > targetBudget)
             /* though continue to expand until the sub-block is deemed compressible */
-          && (budget < inSize * BYTESCALE) ) {
+          && (budget < inSize * BYTESCALE) )
             break;
-}
     }
 
     return n;
@@ -544,8 +529,7 @@ static size_t ZSTD_compressSubBlock_multi(const seqStore_t* seqStorePtr,
                     (unsigned)targetCBlockSize, (unsigned)nbSubBlocks, (double)avgBlockBudget/BYTESCALE);
         /* simplification: if estimates states that the full superblock doesn't compress, just bail out immediately
          * this will result in the production of a single uncompressed block covering @srcSize.*/
-        if (ebs.estBlockSize > srcSize) { return 0;
-}
+        if (ebs.estBlockSize > srcSize) return 0;
 
         /* compress and write sub-blocks */
         assert(nbSubBlocks>0);
@@ -555,8 +539,7 @@ static size_t ZSTD_compressSubBlock_multi(const seqStore_t* seqStorePtr,
                                         avgBlockBudget + blockBudgetSupp, avgLitCost, avgSeqCost, n==0);
             /* if reached last sequence : break to last sub-block (simplification) */
             assert(seqCount <= (size_t)(send-sp));
-            if (sp + seqCount == send) { break;
-}
+            if (sp + seqCount == send) break;
             assert(seqCount > 0);
             /* compress sub-block */
             {   int litEntropyWritten = 0;

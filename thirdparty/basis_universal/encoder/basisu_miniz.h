@@ -89,7 +89,7 @@
 #define MINIZ_HAS_64BIT_REGISTERS 1
 #endif
 
-namespace buminiz; {
+namespace buminiz {
 
 // ------------------- zlib-style API Definitions.
 
@@ -606,7 +606,7 @@ mz_uint tdefl_create_comp_flags_from_zip_params(int level, int window_bits, int 
 #include <string.h>
 #include <assert.h>
 
-namespace buminiz; {
+namespace buminiz {
 
 typedef unsigned char mz_validate_uint16[sizeof(mz_uint16)==2 ? 1 : -1];
 typedef unsigned char mz_validate_uint32[sizeof(mz_uint32)==4 ? 1 : -1];

@@ -1277,9 +1277,8 @@
     FT_Int  n;
 
 
-    if ( !face ) {
+    if ( !face )
       return;
-}
 
     for ( n = 0; n < face->num_charmaps; n++ )
     {
@@ -1521,9 +1520,8 @@
     memory = driver->root.memory;
 
     /* allocate the face object and perform basic initialization */
-    if ( FT_ALLOC( face, clazz->face_object_size ) ) {
+    if ( FT_ALLOC( face, clazz->face_object_size ) )
       goto Fail;
-}
 
     face->driver = driver;
     face->memory = memory;
@@ -1533,9 +1531,8 @@
     if ( *anexternal_stream )
       face->face_flags |= FT_FACE_FLAG_EXTERNAL_STREAM;
 
-    if ( FT_NEW( internal ) ) {
+    if ( FT_NEW( internal ) )
       goto Fail;
-}
 
     face->internal = internal;
 
@@ -1565,9 +1562,8 @@
     *astream = face->stream;
     *anexternal_stream =
       ( face->face_flags & FT_FACE_FLAG_EXTERNAL_STREAM ) != 0;
-    if ( error ) {
+    if ( error )
       goto Fail;
-}
 
     /* select Unicode charmap by default */
     error2 = find_unicode_charmap( face );

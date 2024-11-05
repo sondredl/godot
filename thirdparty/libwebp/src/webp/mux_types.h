@@ -81,13 +81,11 @@ static WEBP_INLINE void WebPDataClear(WebPData* webp_data) {
 // Returns true on success.
 WEBP_NODISCARD static WEBP_INLINE int WebPDataCopy(const WebPData* src,
                                                    WebPData* dst) {
-  if (src == NULL || dst == NULL) { return 0;
-}
+  if (src == NULL || dst == NULL) return 0;
   WebPDataInit(dst);
   if (src->bytes != NULL && src->size != 0) {
     dst->bytes = (uint8_t*)WebPMalloc(src->size);
-    if (dst->bytes == NULL) { return 0;
-}
+    if (dst->bytes == NULL) return 0;
     memcpy((void*)dst->bytes, src->bytes, src->size);
     dst->size = src->size;
   }

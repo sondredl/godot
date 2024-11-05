@@ -27,10 +27,10 @@
  * \brief ASTC Utilities.
  *//*--------------------------------------------------------------------*/
 #include "android_astc_decomp.h"
-#include <cassert>
+#include <assert.h>
 #include <algorithm>
-#include <cfenv>
-#include <cmath>
+#include <fenv.h>
+#include <math.h>
 
 #define DE_LENGTH_OF_ARRAY(x) (sizeof(x)/sizeof(x[0]))
 #define DE_UNREF(x) (void)x
@@ -84,11 +84,10 @@ namespace basisu_astc
     template<typename T>
     static inline T clamp(T a, T l, T h)
     {
-        if (a < l) {
+        if (a < l)
             return l;
-        } else if (a > h) {
+        else if (a > h)
             return h;
-}
         return a;
     }
 
@@ -231,11 +230,10 @@ inline deUint32 getBits (deUint32 src, int low, int high)
     const int numBits = (high-low) + 1;
     DE_ASSERT(basisu_astc::inRange(numBits, 1, 32));
 
-    if (numBits < 32) {
+    if (numBits < 32)
         return (deUint32)((src >> low) & ((1u<<numBits)-1));
-    } else {
+    else
         return (deUint32)((src >> low) & 0xFFFFFFFFu);
-}
 }
 
 inline bool isBitSet (deUint32 src, int ndx)
@@ -248,9 +246,8 @@ inline deUint32 reverseBits (deUint32 src, int numBits)
     DE_ASSERT(basisu_astc::inRange(numBits, 0, 32));
 
     deUint32 result = 0;
-    for (int i = 0; i < numBits; i++) {
+    for (int i = 0; i < numBits; i++)
         result |= ((src >> i) & 1) << (numBits-1-i);
-}
 
     return result;
 }
@@ -261,9 +258,8 @@ inline deUint32 bitReplicationScale (deUint32 src, int numSrcBits, int numDstBit
     DE_ASSERT((src & ((1<<numSrcBits)-1)) == src);
 
     deUint32 dst = 0;
-    for (int shift = numDstBits-numSrcBits; shift > -numSrcBits; shift -= numSrcBits) {
+    for (int shift = numDstBits-numSrcBits; shift > -numSrcBits; shift -= numSrcBits)
         dst |= (shift >= 0) ? (src << shift) : (src >> -shift);
-}
 
     return dst;
 }
@@ -392,9 +388,8 @@ ISEParams computeMaximumRangeISEParams (int numAvailableBits, int numValuesInSeq
         {
             const ISEParams params(ISEMODE_TRIT, curBitsForTritMode);
 
-            if (computeNumRequiredBits(params, numValuesInSequence) <= numAvailableBits) {
+            if (computeNumRequiredBits(params, numValuesInSequence) <= numAvailableBits)
                 return ISEParams(ISEMODE_TRIT, curBitsForTritMode);
-}
 
             curBitsForTritMode--;
         }
@@ -402,9 +397,8 @@ ISEParams computeMaximumRangeISEParams (int numAvailableBits, int numValuesInSeq
         {
             const ISEParams params(ISEMODE_QUINT, curBitsForQuintMode);
 
-            if (computeNumRequiredBits(params, numValuesInSequence) <= numAvailableBits) {
+            if (computeNumRequiredBits(params, numValuesInSequence) <= numAvailableBits)
                 return ISEParams(ISEMODE_QUINT, curBitsForQuintMode);
-}
 
             curBitsForQuintMode--;
         }
@@ -413,9 +407,8 @@ ISEParams computeMaximumRangeISEParams (int numAvailableBits, int numValuesInSeq
             const ISEParams params(ISEMODE_PLAIN_BIT, curBitsForPlainBitMode);
             DE_ASSERT(maxRange == plainBitRange);
 
-            if (computeNumRequiredBits(params, numValuesInSequence) <= numAvailableBits) {
+            if (computeNumRequiredBits(params, numValuesInSequence) <= numAvailableBits)
                 return ISEParams(ISEMODE_PLAIN_BIT, curBitsForPlainBitMode);
-}
 
             curBitsForPlainBitMode--;
         }
@@ -456,9 +449,8 @@ public:
         for (int wordNdx = 0; wordNdx < NUM_WORDS; wordNdx++)
         {
             m_words[wordNdx] = 0;
-            for (int byteNdx = 0; byteNdx < WORD_BYTES; byteNdx++) {
+            for (int byteNdx = 0; byteNdx < WORD_BYTES; byteNdx++)
                 m_words[wordNdx] |= (Word)src[wordNdx*WORD_BYTES + byteNdx] << (8*byteNdx);
-}
         }
     }
 
@@ -474,16 +466,15 @@ public:
         DE_ASSERT(basisu_astc::inBounds(high, 0, 128));
         DE_ASSERT(basisu_astc::inRange(high-low+1, 0, 32));
 
-        if (high-low+1 == 0) {
+        if (high-low+1 == 0)
             return 0;
-}
 
         const int word0Ndx = low / WORD_BITS;
         const int word1Ndx = high / WORD_BITS;
         // \note "foo << bar << 1" done instead of "foo << (bar+1)" to avoid overflow, i.e. shift amount being too big.
-        if (word0Ndx == word1Ndx) {
+        if (word0Ndx == word1Ndx)
             return (deUint32)((m_words[word0Ndx] & ((((Word)1 << high%WORD_BITS << 1) - 1))) >> ((Word)low % WORD_BITS));
-        } else
+        else
         {
             DE_ASSERT(word1Ndx == word0Ndx + 1);
             return (deUint32)(m_words[word0Ndx] >> (low%WORD_BITS)) |
@@ -517,9 +508,8 @@ public:
     // Get the next num bits. Bits at positions greater than or equal to m_length are zeros.
     deUint32 getNext (int num)
     {
-        if (num == 0 || m_ndx >= m_length) {
+        if (num == 0 || m_ndx >= m_length)
             return 0;
-}
         const int end               = m_ndx + num;
         const int numBitsFromSrc    = basisu_astc::max(0, basisu_astc::min(m_length, end) - m_ndx);
         const int low               = m_ndx;
@@ -558,7 +548,7 @@ struct ASTCBlockMode
     int         weightGridHeight;
     ISEParams   weightISEParams;
 
-    ASTCBlockMode ()
+    ASTCBlockMode (void)
         : isError           (true)
         , isVoidExtent      (true)
         , isDualPlane       (true)
@@ -592,9 +582,8 @@ ASTCBlockMode getASTCBlockMode (deUint32 blockModeData)
     blockMode.isVoidExtent = getBits(blockModeData, 0, 8) == 0x1fc;
     if (!blockMode.isVoidExtent)
     {
-        if ((getBits(blockModeData, 0, 1) == 0 && getBits(blockModeData, 6, 8) == 7) || getBits(blockModeData, 0, 3) == 0) {
+        if ((getBits(blockModeData, 0, 1) == 0 && getBits(blockModeData, 6, 8) == 7) || getBits(blockModeData, 0, 3) == 0)
             return blockMode; // Invalid ("reserved").
-}
 
         deUint32 r = (deUint32)-1; // \note Set in the following branches.
 
@@ -656,8 +645,8 @@ ASTCBlockMode getASTCBlockMode (deUint32 blockModeData)
         }
 
         const bool  zeroDH      = getBits(blockModeData, 0, 1) == 0 && getBits(blockModeData, 7, 8) == 2;
-        const bool  h           = zeroDH ? false : isBitSet(blockModeData, 9);
-        blockMode.isDualPlane   = zeroDH ? false : isBitSet(blockModeData, 10);
+        const bool  h           = zeroDH ? 0 : isBitSet(blockModeData, 9);
+        blockMode.isDualPlane   = zeroDH ? 0 : isBitSet(blockModeData, 10);
 
         {
             ISEMode&    m   = blockMode.weightISEParams.mode;
@@ -751,9 +740,8 @@ DecompressResult decodeVoidExtentBlock (void* dst, const Block128& blockData, in
         deUint8* const dstU = (deUint8*)dst;
         for (int i = 0; i < blockWidth * blockHeight; i++)
         {
-            for (int c = 0; c < 4; c++) {
+            for (int c = 0; c < 4; c++)
                 dstU[i * 4 + c] = (deUint8)((rgba[c] & 0xff00) >> 8);
-}
         }
     }
     else
@@ -774,18 +762,16 @@ DecompressResult decodeVoidExtentBlock (void* dst, const Block128& blockData, in
 
             for (int i = 0; i < blockWidth * blockHeight; i++)
             {
-                for (int c = 0; c < 4; c++) {
+                for (int c = 0; c < 4; c++)
                     dstF[i * 4 + c] = deFloat16To32((deFloat16)rgba[c]);
-}
             }
         }
         else
         {
             for (int i = 0; i < blockWidth * blockHeight; i++)
             {
-                for (int c = 0; c < 4; c++) {
+                for (int c = 0; c < 4; c++)
                     dstF[i * 4 + c] = (rgba[c] == 65535) ? 1.0f : ((float)rgba[c] / 65536.0f);
-}
             }
         }
     }
@@ -795,9 +781,9 @@ DecompressResult decodeVoidExtentBlock (void* dst, const Block128& blockData, in
 
 void decodeColorEndpointModes (deUint32* endpointModesDst, const Block128& blockData, int numPartitions, int extraCemBitsStart)
 {
-    if (numPartitions == 1) {
+    if (numPartitions == 1)
         endpointModesDst[0] = blockData.getBits(13, 16);
-    } else
+    else
     {
         const deUint32 highLevelSelector = blockData.getBits(23, 24);
 
@@ -805,9 +791,8 @@ void decodeColorEndpointModes (deUint32* endpointModesDst, const Block128& block
         {
             const deUint32 mode = blockData.getBits(25, 28);
 
-            for (int i = 0; i < numPartitions; i++) {
+            for (int i = 0; i < numPartitions; i++)
                 endpointModesDst[i] = mode;
-}
         }
         else
         {
@@ -829,9 +814,8 @@ int computeNumColorEndpointValues (const deUint32* endpointModes, int numPartiti
 {
     int result = 0;
 
-    for (int i = 0; i < numPartitions; i++) {
+    for (int i = 0; i < numPartitions; i++)
         result += computeNumColorEndpointValues(endpointModes[i]);
-}
 
     return result;
 }
@@ -983,9 +967,8 @@ void decodeISE (ISEDecodedResult* dst, int numValues, BitAccessStream& data, con
     else
     {
         DE_ASSERT(params.mode == ISEMODE_PLAIN_BIT);
-        for (int i = 0; i < numValues; i++) {
+        for (int i = 0; i < numValues; i++)
             decodeISEBitBlock(&dst[i], data, params.numBits);
-}
     }
 }
 
@@ -1029,9 +1012,8 @@ void unquantizeColorEndpoints (deUint32* dst, const ISEDecodedResult* iseResults
     else
     {
         DE_ASSERT(iseParams.mode == ISEMODE_PLAIN_BIT);
-        for (int endpointNdx = 0; endpointNdx < numEndpoints; endpointNdx++) {
+        for (int endpointNdx = 0; endpointNdx < numEndpoints; endpointNdx++)
             dst[endpointNdx] = bitReplicationScale(iseResults[endpointNdx].v, iseParams.numBits, 8);
-}
     }
 }
 
@@ -1041,9 +1023,8 @@ inline void bitTransferSigned (deInt32& a, deInt32& b)
     b |= a & 0x80;
     a >>= 1;
     a &= 0x3f;
-    if (isBitSet(a, 5)) {
+    if (isBitSet(a, 5))
         a -= 0x40;
-}
 }
 
 inline UVec4 clampedRGBA (const IVec4& rgba)
@@ -1133,11 +1114,10 @@ void decodeHDREndpointMode7 (UVec4& e0, UVec4& e1, deUint32 v0, deUint32 v1, deU
         blue    = red - blue;
     }
 
-    if (majComp == 1) {
+    if (majComp == 1)
         std::swap(red, green);
-    } else if (majComp == 2) {
+    else if (majComp == 2)
         std::swap(red, blue);
-}
 
     e0 = UVec4(basisu_astc::clamp(red   - scale,    0, 0xfff),
         basisu_astc::clamp(green    - scale,    0, 0xfff),
@@ -1498,19 +1478,16 @@ void unquantizeWeights (deUint32 dst[64], const ISEDecodedResult* weightGrid, co
     else
     {
         DE_ASSERT(iseParams.mode == ISEMODE_PLAIN_BIT);
-        for (int weightNdx = 0; weightNdx < numWeights; weightNdx++) {
+        for (int weightNdx = 0; weightNdx < numWeights; weightNdx++)
             dst[weightNdx] = bitReplicationScale(weightGrid[weightNdx].v, iseParams.numBits, 6);
-}
     }
 
-    for (int weightNdx = 0; weightNdx < numWeights; weightNdx++) {
+    for (int weightNdx = 0; weightNdx < numWeights; weightNdx++)
         dst[weightNdx] += dst[weightNdx] > 32 ? 1 : 0;
-}
 
     // Initialize nonexistent weights to poison values
-    for (int weightNdx = numWeights; weightNdx < 64; weightNdx++) {
+    for (int weightNdx = numWeights; weightNdx < 64; weightNdx++)
         dst[weightNdx] = ~0u;
-}
 }
 
 void interpolateWeights (TexelWeightPair* dst, const deUint32 (&unquantizedWeights) [64], int blockWidth, int blockHeight, const ASTCBlockMode& blockMode)
@@ -1704,11 +1681,10 @@ DecompressResult setTexelColors (void* dst, ColorEndpointPair* colorEndpoints, T
                         const deUint32 w = weight.w[ccs == channelNdx ? 1 : 0];
                         const deUint32 c = (c0 * (64 - w) + c1 * w + 32) / 64;
 
-                        if (isSRGB) {
+                        if (isSRGB)
                             ((deUint8*)dst)[texelNdx * 4 + channelNdx] = (deUint8)((c & 0xff00) >> 8);
-                        } else {
+                        else
                             ((float*)dst)[texelNdx * 4 + channelNdx] = (c == 65535) ? 1.0f : (float)c / 65536.0f;
-}
                     }
                     else
                     {
@@ -1753,9 +1729,8 @@ DecompressResult decompressBlock (void* dst, const Block128& blockData, int bloc
     }
 
     // Separate path for void-extent.
-    if (blockMode.isVoidExtent) {
+    if (blockMode.isVoidExtent)
         return decodeVoidExtentBlock(dst, blockData, blockWidth, blockHeight, isSRGB, isLDR);
-}
 
     // Compute weight grid values.
     const int numWeights            = computeNumWeights(blockMode);
@@ -1823,9 +1798,8 @@ int isHDR(const Block128& blockData, int blockWidth, int blockHeight)
     const ASTCBlockMode blockMode = getASTCBlockMode(blockData.getBits(0, 10));
 
     // Check for block mode errors.
-    if (blockMode.isError) {
+    if (blockMode.isError)
         return -1;
-}
 
     // Separate path for void-extent.
     if (blockMode.isVoidExtent)
@@ -1865,9 +1839,8 @@ int isHDR(const Block128& blockData, int blockWidth, int blockHeight)
 
     for (int i = 0; i < numPartitions; i++)
     {
-        if (isColorEndpointModeHDR(colorEndpointModes[i])) {
+        if (isColorEndpointModeHDR(colorEndpointModes[i]))
             return 1;
-}
     }
 
     return 0;
@@ -1885,32 +1858,29 @@ half_float float_to_half(float val, bool toward_zero)
     if (flt_e == 0xff)
     {
         e = 31;
-        if (flt_m != 0) { // NaN
+        if (flt_m != 0) // NaN
             m = 1;
-}
     }
     // not zero or denormal
     else if (flt_e != 0)
     {
         int new_exp = flt_e - 127;
-        if (new_exp > 15) {
+        if (new_exp > 15)
             e = 31;
-        } else if (new_exp < -14)
+        else if (new_exp < -14)
         {
-            if (toward_zero) {
+            if (toward_zero)
                 m = (int)truncf((1 << 24) * fabsf(fi.f));
-            } else {
+            else
                 m = lrintf((1 << 24) * fabsf(fi.f));
-}
         }
         else
         {
             e = new_exp + 15;
-            if (toward_zero) {
+            if (toward_zero)
                 m = (int)truncf((float)flt_m * (1.0f / (float)(1 << 13)));
-            } else {
+            else
                 m = lrintf((float)flt_m * (1.0f / (float)(1 << 13)));
-}
         }
     }
 

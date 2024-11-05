@@ -53,9 +53,8 @@ png_calloc,(png_const_structrp png_ptr, png_alloc_size_t size),PNG_ALLOCATED)
 
    ret = png_malloc(png_ptr, size);
 
-   if (ret != NULL) {
+   if (ret != NULL)
       memset(ret, 0, size);
-}
 
    return ret;
 }
@@ -88,13 +87,12 @@ png_malloc_base,(png_const_structrp png_ptr, png_alloc_size_t size),
       )
    {
 #ifdef PNG_USER_MEM_SUPPORTED
-      if (png_ptr != NULL && png_ptr->malloc_fn != NULL) {
+      if (png_ptr != NULL && png_ptr->malloc_fn != NULL)
          return png_ptr->malloc_fn(png_constcast(png_structrp,png_ptr), size);
 
-      } else {
+      else
 #endif
          return malloc((size_t)size); /* checked for truncation above */
-}
    }
 
    else
@@ -113,9 +111,8 @@ png_malloc_array_checked(png_const_structrp png_ptr, int nelements,
 {
    png_alloc_size_t req = (png_alloc_size_t)nelements; /* known to be > 0 */
 
-   if (req <= PNG_SIZE_MAX/element_size) {
+   if (req <= PNG_SIZE_MAX/element_size)
       return png_malloc_base(png_ptr, req * element_size);
-}
 
    /* The failure case when the request is too large */
    return NULL;
@@ -125,9 +122,8 @@ PNG_FUNCTION(png_voidp /* PRIVATE */,
 png_malloc_array,(png_const_structrp png_ptr, int nelements,
     size_t element_size),PNG_ALLOCATED)
 {
-   if (nelements <= 0 || element_size == 0) {
+   if (nelements <= 0 || element_size == 0)
       png_error(png_ptr, "internal error: array alloc");
-}
 
    return png_malloc_array_checked(png_ptr, nelements, element_size);
 }
@@ -138,9 +134,8 @@ png_realloc_array,(png_const_structrp png_ptr, png_const_voidp old_array,
 {
    /* These are internal errors: */
    if (add_elements <= 0 || element_size == 0 || old_elements < 0 ||
-      (old_array == NULL && old_elements > 0)) {
+      (old_array == NULL && old_elements > 0))
       png_error(png_ptr, "internal error: array realloc");
-}
 
    /* Check for overflow on the elements count (so the caller does not have to
     * check.)
@@ -155,9 +150,8 @@ png_realloc_array,(png_const_structrp png_ptr, png_const_voidp old_array,
          /* Because png_malloc_array worked the size calculations below cannot
           * overflow.
           */
-         if (old_elements > 0) {
+         if (old_elements > 0)
             memcpy(new_array, old_array, element_size*(unsigned)old_elements);
-}
 
          memset((char*)new_array + element_size*(unsigned)old_elements, 0,
              element_size*(unsigned)add_elements);
@@ -179,15 +173,13 @@ png_malloc,(png_const_structrp png_ptr, png_alloc_size_t size),PNG_ALLOCATED)
 {
    png_voidp ret;
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return NULL;
-}
 
    ret = png_malloc_base(png_ptr, size);
 
-   if (ret == NULL) {
+   if (ret == NULL)
        png_error(png_ptr, "Out of memory"); /* 'm' means png_malloc */
-}
 
    return ret;
 }
@@ -199,16 +191,14 @@ png_malloc_default,(png_const_structrp png_ptr, png_alloc_size_t size),
 {
    png_voidp ret;
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return NULL;
-}
 
    /* Passing 'NULL' here bypasses the application provided memory handler. */
    ret = png_malloc_base(NULL/*use malloc*/, size);
 
-   if (ret == NULL) {
+   if (ret == NULL)
       png_error(png_ptr, "Out of Memory"); /* 'M' means png_malloc_default */
-}
 
    return ret;
 }
@@ -226,9 +216,8 @@ png_malloc_warn,(png_const_structrp png_ptr, png_alloc_size_t size),
    {
       png_voidp ret = png_malloc_base(png_ptr, size);
 
-      if (ret != NULL) {
+      if (ret != NULL)
          return ret;
-}
 
       png_warning(png_ptr, "Out of memory");
    }
@@ -242,25 +231,22 @@ png_malloc_warn,(png_const_structrp png_ptr, png_alloc_size_t size),
 void PNGAPI
 png_free(png_const_structrp png_ptr, png_voidp ptr)
 {
-   if (png_ptr == NULL || ptr == NULL) {
+   if (png_ptr == NULL || ptr == NULL)
       return;
-}
 
 #ifdef PNG_USER_MEM_SUPPORTED
-   if (png_ptr->free_fn != NULL) {
+   if (png_ptr->free_fn != NULL)
       png_ptr->free_fn(png_constcast(png_structrp,png_ptr), ptr);
 
-   } else {
+   else
       png_free_default(png_ptr, ptr);
-}
 }
 
 PNG_FUNCTION(void,PNGAPI
 png_free_default,(png_const_structrp png_ptr, png_voidp ptr),PNG_DEPRECATED)
 {
-   if (png_ptr == NULL || ptr == NULL) {
+   if (png_ptr == NULL || ptr == NULL)
       return;
-}
 #endif /* USER_MEM */
 
    free(ptr);
@@ -289,9 +275,8 @@ png_set_mem_fn(png_structrp png_ptr, png_voidp mem_ptr, png_malloc_ptr
 png_voidp PNGAPI
 png_get_mem_ptr(png_const_structrp png_ptr)
 {
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return NULL;
-}
 
    return png_ptr->mem_ptr;
 }

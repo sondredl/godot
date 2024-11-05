@@ -14,16 +14,14 @@
 
 #include <stdint.h>
 #include <stdio.h>
-#include "KHR/khr_df.h"
+#include <KHR/khr_df.h>
 #include "dfd.h"
 
 static uint32_t bit_ceil(uint32_t x) {
     x -= 1;
-    for (uint32_t i = 0; i < sizeof(x) * 8; ++i) {
-        if (1u << i > x) {
+    for (uint32_t i = 0; i < sizeof(x) * 8; ++i)
+        if (1u << i > x)
             return 1u << i;
-}
-}
     return 0;
 }
 
@@ -75,9 +73,8 @@ enum InterpretDFDResult interpretDFD(const uint32_t *DFD,
     const uint32_t *BDFDB = DFD+1;
 
     uint32_t numSamples = KHR_DFDSAMPLECOUNT(BDFDB);
-    if (numSamples == 0) {
+    if (numSamples == 0)
         return i_UNSUPPORTED_CHANNEL_TYPES;
-}
 
     int determinedEndianness = 0;
     enum InterpretDFDResult result = 0; /* Build this up incrementally. */
@@ -96,8 +93,7 @@ enum InterpretDFDResult interpretDFD(const uint32_t *DFD,
     /* (We rely on KHR_DF_WORD_BYTESPLANE0..3 being the same and */
     /* KHR_DF_WORD_BYTESPLANE4..7 being the same as a short cut.) */
     if ((BDFDB[KHR_DF_WORD_BYTESPLANE0] & ~KHR_DF_MASK_BYTESPLANE0)
-        || BDFDB[KHR_DF_WORD_BYTESPLANE4]) { return i_UNSUPPORTED_MULTIPLE_PLANES;
-}
+        || BDFDB[KHR_DF_WORD_BYTESPLANE4]) return i_UNSUPPORTED_MULTIPLE_PLANES;
 
     /* If this is a packed format, we work out our offsets differently. */
     /* We assume a packed format has channels that aren't byte-aligned. */
@@ -143,8 +139,7 @@ enum InterpretDFDResult interpretDFD(const uint32_t *DFD,
         } else {
             uint32_t sampleUpper = KHR_DFDSVAL(BDFDB, i, SAMPLEUPPER);
             uint32_t maxVal = 1U << KHR_DFDSVAL(BDFDB, i, BITLENGTH);
-            if (!isSigned) { maxVal <<= 1;
-}
+            if (!isSigned) maxVal <<= 1;
             maxVal--;
             isFixed = 1U < sampleUpper && sampleUpper < maxVal;
             isNormalized = !isFixed && sampleUpper != 1U;
@@ -154,9 +149,8 @@ enum InterpretDFDResult interpretDFD(const uint32_t *DFD,
         hasFloat |= isFloat;
         // By our definition the normalizedness of a single bit channel (like in RGBA 5:5:5:1)
         // is ambiguous. Ignore these during normalized checks.
-        if (KHR_DFDSVAL(BDFDB, i, BITLENGTH) > 0) {
+        if (KHR_DFDSVAL(BDFDB, i, BITLENGTH) > 0)
             hasNormalized |= isNormalized;
-}
     }
     result |= hasSigned ? i_SIGNED_FORMAT_BIT : 0;
     result |= hasFloat ? i_FLOAT_FORMAT_BIT : 0;
@@ -189,24 +183,21 @@ enum InterpretDFDResult interpretDFD(const uint32_t *DFD,
         uint32_t largestSampleSize = 0;
         for (uint32_t i = 0; i < numSamples; ++i) {
             uint32_t length = KHR_DFDSVAL(BDFDB, i, BITLENGTH) + 1;
-            if (largestSampleSize < length) {
+            if (largestSampleSize < length)
                 largestSampleSize = length;
-}
         }
         *wordBytes = ((result & i_PACKED_FORMAT_BIT) ? 4 : 1) * bit_ceil(largestSampleSize) / 8;
 
     } else if (KHR_DFDVAL(BDFDB, MODEL) == KHR_DF_MODEL_RGBSDA) {
         /* Check if transfer is sRGB. */
-        if (KHR_DFDVAL(BDFDB, TRANSFER) == KHR_DF_TRANSFER_SRGB) { result |= i_SRGB_FORMAT_BIT;
-}
+        if (KHR_DFDVAL(BDFDB, TRANSFER) == KHR_DF_TRANSFER_SRGB) result |= i_SRGB_FORMAT_BIT;
 
         /* We only support samples at coordinate 0,0,0,0. */
         /* (We could confirm this from texel_block_dimensions in 1.2, but */
         /* the interpretation might change in later versions.) */
         for (uint32_t sampleCounter = 0; sampleCounter < numSamples; ++sampleCounter) {
-            if (KHR_DFDSVAL(BDFDB, sampleCounter, SAMPLEPOSITION_ALL)) {
+            if (KHR_DFDSVAL(BDFDB, sampleCounter, SAMPLEPOSITION_ALL))
                 return i_UNSUPPORTED_MULTIPLE_SAMPLE_LOCATIONS;
-}
         }
     }
 
@@ -231,12 +222,10 @@ enum InterpretDFDResult interpretDFD(const uint32_t *DFD,
                 const bool isSigned = (KHR_DFDSVAL(BDFDB, i, QUALIFIERS) & KHR_DF_SAMPLE_DATATYPE_SIGNED) != 0;
                 const bool isFloat = (KHR_DFDSVAL(BDFDB, i, QUALIFIERS) & KHR_DF_SAMPLE_DATATYPE_FLOAT) != 0;
 
-                if (isSigned != hasSigned) {
+                if (isSigned != hasSigned)
                     return i_UNSUPPORTED_MIXED_CHANNELS;
-}
-                if (isFloat != hasFloat) {
+                if (isFloat != hasFloat)
                     return i_UNSUPPORTED_MIXED_CHANNELS;
-}
 
                 // Note: We don't check for inconsistent normalization, because
                 // channels composed of multiple samples will have 0 in the

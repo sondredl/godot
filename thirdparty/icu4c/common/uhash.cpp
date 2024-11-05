@@ -219,8 +219,7 @@ _uhash_allocate(UHashtable *hash,
     UHashElement *p, *limit;
     UHashTok emptytok;
 
-    if (U_FAILURE(*status)) { return;
-}
+    if (U_FAILURE(*status)) return;
 
     U_ASSERT(primeIndex >= 0 && primeIndex < PRIMES_LENGTH);
 
@@ -259,8 +258,7 @@ _uhash_init(UHashtable *result,
               int32_t primeIndex,
               UErrorCode *status)
 {
-    if (U_FAILURE(*status)) { return nullptr;
-}
+    if (U_FAILURE(*status)) return nullptr;
     U_ASSERT(keyHash != nullptr);
     U_ASSERT(keyComp != nullptr);
 
@@ -289,8 +287,7 @@ _uhash_create(UHashFunction *keyHash,
               UErrorCode *status) {
     UHashtable *result;
 
-    if (U_FAILURE(*status)) { return nullptr;
-}
+    if (U_FAILURE(*status)) return nullptr;
 
     result = static_cast<UHashtable*>(uprv_malloc(sizeof(UHashtable)));
     if (result == nullptr) {
@@ -1000,7 +997,7 @@ uhash_equals(const UHashtable* hash1, const UHashtable* hash2){
          */
         const UHashElement* elem2 = _uhash_find(hash2, key1, hash2->keyHasher(key1));
         const UHashTok val2 = elem2->value;
-        if(!static_cast<bool>(hash1->valueComparator(val1, val2))){
+        if(hash1->valueComparator(val1, val2)==false){
             return false;
         }
     }

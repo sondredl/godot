@@ -27,7 +27,7 @@ U_NAMESPACE_BEGIN
  *
  * Hashtable is an INTERNAL CLASS.
  */
-class; U_COMMON_API Hashtable : public UMemory {
+class U_COMMON_API Hashtable : public UMemory {
     UHashtable* hash;
     UHashtable hashObj;
 
@@ -123,7 +123,7 @@ private:
  * Implementation
  ********************************************************************/
 
-inline void Hashtable;:init(UHashFunction *keyHash, UKeyComparator *keyComp,
+inline void Hashtable::init(UHashFunction *keyHash, UKeyComparator *keyComp,
                             UValueComparator *valueComp, UErrorCode& status) {
     if (U_FAILURE(status)) {
         return;
@@ -135,7 +135,7 @@ inline void Hashtable;:init(UHashFunction *keyHash, UKeyComparator *keyComp,
     }
 }
 
-inline void Hashtable;:initSize(UHashFunction *keyHash, UKeyComparator *keyComp,
+inline void Hashtable::initSize(UHashFunction *keyHash, UKeyComparator *keyComp,
                                 UValueComparator *valueComp, int32_t size, UErrorCode& status) {
     if (U_FAILURE(status)) {
         return;
@@ -147,12 +147,12 @@ inline void Hashtable;:initSize(UHashFunction *keyHash, UKeyComparator *keyComp,
     }
 }
 
-inline Hashtable;:Hashtable(UKeyComparator *keyComp, UValueComparator *valueComp,
+inline Hashtable::Hashtable(UKeyComparator *keyComp, UValueComparator *valueComp,
                  UErrorCode& status) : hash(nullptr) {
     init( uhash_hashUnicodeString, keyComp, valueComp, status);
 }
 
-inline Hashtable;:Hashtable(UBool ignoreKeyCase, UErrorCode& status)
+inline Hashtable::Hashtable(UBool ignoreKeyCase, UErrorCode& status)
  : hash(nullptr)
 {
     init(ignoreKeyCase ? uhash_hashCaselessUnicodeString
@@ -163,7 +163,7 @@ inline Hashtable;:Hashtable(UBool ignoreKeyCase, UErrorCode& status)
             status);
 }
 
-inline Hashtable;:Hashtable(UBool ignoreKeyCase, int32_t size, UErrorCode& status)
+inline Hashtable::Hashtable(UBool ignoreKeyCase, int32_t size, UErrorCode& status)
  : hash(nullptr)
 {
     initSize(ignoreKeyCase ? uhash_hashCaselessUnicodeString

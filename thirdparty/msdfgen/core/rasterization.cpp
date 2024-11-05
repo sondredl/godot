@@ -11,9 +11,8 @@ void rasterize(const BitmapRef<float, 1> &output, const Shape &shape, const Proj
     for (int y = 0; y < output.height; ++y) {
         int row = shape.inverseYAxis ? output.height-y-1 : y;
         shape.scanline(scanline, projection.unprojectY(y+.5));
-        for (int x = 0; x < output.width; ++x) {
+        for (int x = 0; x < output.width; ++x)
             *output(x, row) = (float) scanline.filled(projection.unprojectX(x+.5), fillRule);
-}
     }
 }
 
@@ -25,9 +24,8 @@ void distanceSignCorrection(const BitmapRef<float, 1> &sdf, const Shape &shape, 
         for (int x = 0; x < sdf.width; ++x) {
             bool fill = scanline.filled(projection.unprojectX(x+.5), fillRule);
             float &sd = *sdf(x, row);
-            if ((sd > .5f) != fill) {
+            if ((sd > .5f) != fill)
                 sd = 1.f-sd;
-}
         }
     }
 }
@@ -35,9 +33,8 @@ void distanceSignCorrection(const BitmapRef<float, 1> &sdf, const Shape &shape, 
 template <int N>
 static void multiDistanceSignCorrection(const BitmapRef<float, N> &sdf, const Shape &shape, const Projection &projection, FillRule fillRule) {
     int w = sdf.width, h = sdf.height;
-    if (!(w*h)) {
+    if (!(w*h))
         return;
-}
     Scanline scanline;
     bool ambiguous = false;
     std::vector<char> matchMap;
@@ -50,19 +47,17 @@ static void multiDistanceSignCorrection(const BitmapRef<float, N> &sdf, const Sh
             bool fill = scanline.filled(projection.unprojectX(x+.5), fillRule);
             float *msd = sdf(x, row);
             float sd = median(msd[0], msd[1], msd[2]);
-            if (sd == .5f) {
+            if (sd == .5f)
                 ambiguous = true;
-            } else if ((sd > .5f) != fill) {
+            else if ((sd > .5f) != fill) {
                 msd[0] = 1.f-msd[0];
                 msd[1] = 1.f-msd[1];
                 msd[2] = 1.f-msd[2];
                 *match = -1;
-            } else {
+            } else
                 *match = 1;
-}
-            if (N >= 4 && (msd[3] > .5f) != fill) {
+            if (N >= 4 && (msd[3] > .5f) != fill)
                 msd[3] = 1.f-msd[3];
-}
             ++match;
         }
     }
@@ -74,14 +69,10 @@ static void multiDistanceSignCorrection(const BitmapRef<float, N> &sdf, const Sh
             for (int x = 0; x < w; ++x) {
                 if (!*match) {
                     int neighborMatch = 0;
-                    if (x > 0) { neighborMatch += *(match-1);
-}
-                    if (x < w-1) { neighborMatch += *(match+1);
-}
-                    if (y > 0) { neighborMatch += *(match-w);
-}
-                    if (y < h-1) { neighborMatch += *(match+w);
-}
+                    if (x > 0) neighborMatch += *(match-1);
+                    if (x < w-1) neighborMatch += *(match+1);
+                    if (y > 0) neighborMatch += *(match-w);
+                    if (y < h-1) neighborMatch += *(match+w);
                     if (neighborMatch < 0) {
                         float *msd = sdf(x, row);
                         msd[0] = 1.f-msd[0];

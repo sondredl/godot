@@ -1046,7 +1046,7 @@ void RBBIRuleScanner::parse() {
             #ifdef RBBI_DEBUG
                 if (fRB->fDebugEnv && uprv_strstr(fRB->fDebugEnv, "scan")) { RBBIDebugPrintf("."); fflush(stdout);}
             #endif
-            if (tableEl->fCharClass < 127 && !static_cast<bool>(fC.fEscaped) &&   tableEl->fCharClass == fC.fChar) {
+            if (tableEl->fCharClass < 127 && fC.fEscaped == false &&   tableEl->fCharClass == fC.fChar) {
                 // Table row specified an individual character, not a set, and
                 //   the input character is not escaped, and
                 //   the input character matched it.
@@ -1071,7 +1071,7 @@ void RBBIRuleScanner::parse() {
             }
 
             if (tableEl->fCharClass >= 128 && tableEl->fCharClass < 240 &&   // Table specs a char class &&
-                !static_cast<bool>(fC.fEscaped) &&                                      //   char is not escaped &&
+                fC.fEscaped == false &&                                      //   char is not escaped &&
                 fC.fChar != static_cast<UChar32>(-1)) {                      //   char is not EOF
                 U_ASSERT((tableEl->fCharClass-128) < UPRV_LENGTHOF(fRuleSets));
                 if (fRuleSets[tableEl->fCharClass-128].contains(fC.fChar)) {
@@ -1090,7 +1090,7 @@ void RBBIRuleScanner::parse() {
         // We've found the row of the state table that matches the current input
         //   character from the rules string.
         // Perform any action specified  by this row in the state table.
-        if (!static_cast<bool>(doParseActions(static_cast<int32_t>(tableEl->fAction)))) {
+        if (doParseActions(static_cast<int32_t>(tableEl->fAction)) == false) {
             // Break out of the state machine loop if the
             //   the action signalled some kind of error, or
             //   the action was to exit, occurs on normal end-of-rules-input.

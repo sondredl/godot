@@ -84,9 +84,8 @@ namespace embree
       if (scene0 == scene1 && geomID0 == geomID1)
       {
         /* ignore self intersections */
-        if (primID0 == primID1) {
+        if (primID0 == primID1)
           return false;
-}
       }
       CSTAT(bvh_collide_prim_intersections2++);
 
@@ -94,12 +93,9 @@ namespace embree
       {
         /* ignore intersection with topological neighbors */
         const vint4 t0(tri0.v[0],tri0.v[1],tri0.v[2],tri0.v[2]);
-        if (any(vint4(tri1.v[0]) == t0)) { return false;
-}
-        if (any(vint4(tri1.v[1]) == t0)) { return false;
-}
-        if (any(vint4(tri1.v[2]) == t0)) { return false;
-}
+        if (any(vint4(tri1.v[0]) == t0)) return false;
+        if (any(vint4(tri1.v[1]) == t0)) return false;
+        if (any(vint4(tri1.v[2]) == t0)) return false;
       }
       CSTAT(bvh_collide_prim_intersections3++);
 
@@ -127,8 +123,7 @@ namespace embree
           const unsigned primID0 = leaf0[i].primID();
           const unsigned geomID1 = leaf1[j].geomID();
           const unsigned primID1 = leaf1[j].primID();
-          if (this->scene0 == this->scene1 && geomID0 == geomID1 && primID0 == primID1) { continue;
-}
+          if (this->scene0 == this->scene1 && geomID0 == geomID1 && primID0 == primID1) continue;
           collisions[num_collisions++] = Collision(geomID0,primID0,geomID1,primID1);
           if (num_collisions == 16) {
             this->callback(this->userPtr,(RTCCollision*)&collisions,num_collisions);
@@ -136,9 +131,8 @@ namespace embree
           }
         }
       }
-      if (num_collisions) {
+      if (num_collisions)
         this->callback(this->userPtr,(RTCCollision*)&collisions,num_collisions);
-}
     }
 
     template<int N>
@@ -150,8 +144,7 @@ namespace embree
           CSTAT(bvh_collide_leaf_pairs++);
           processLeaf(ref0,ref1);
           return;
-        } else { goto recurse_node1;
-}
+        } else goto recurse_node1;
 
       } else {
         if (unlikely(ref1.isLeaf())) {
@@ -228,8 +221,7 @@ namespace embree
         if (unlikely(job.ref1.isLeaf())) {
           jobs.push_back(job);
           return;
-        } else { goto recurse_node1;
-}
+        } else goto recurse_node1;
       } else {
         if (unlikely(job.ref1.isLeaf())) {
           goto recurse_node0;
@@ -302,9 +294,8 @@ namespace embree
         }
 
         /* stop splitting jobs if we reached only leaves and cannot make progress anymore */
-        if (jobs[target].size() == jobs[source].size()) {
+        if (jobs[target].size() == jobs[source].size())
           break;
-}
 
         jobs[source].resize(0);
         std::swap(source,target);

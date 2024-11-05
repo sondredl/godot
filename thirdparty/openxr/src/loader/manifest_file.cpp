@@ -76,7 +76,11 @@ static inline bool StringEndsWith(const std::string &value, const std::string &e
 
 // If the file found is a manifest file name, add it to the out_files manifest list.
 static bool AddIfJson(const std::string &full_file, std::vector<std::string> &manifest_files) {
-    return !static_cast<bool>(full_file.empty() || !StringEndsWith(full_file, ".json"));
+    if (full_file.empty() || !StringEndsWith(full_file, ".json")) {
+        return false;
+    }
+    manifest_files.push_back(full_file);
+    return true;
 }
 
 // Check the current path for any manifest files.  If the provided search_path is a directory, look for

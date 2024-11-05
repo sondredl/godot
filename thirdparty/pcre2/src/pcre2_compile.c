@@ -3004,11 +3004,9 @@ while (ptr < ptrend)
         {
         escape = PRIV(check_escape)(&ptr, ptrend, &c, &errorcode, options,
           xoptions, FALSE, cb);
-        if (errorcode != 0) { goto FAILED;
-}
+        if (errorcode != 0) goto FAILED;
         }
-      else { escape = 0;   /* Treat all as literal */
-}
+      else escape = 0;   /* Treat all as literal */
 
       switch(escape)
         {
@@ -3064,8 +3062,7 @@ while (ptr < ptrend)
 
   if ((options & PCRE2_EXTENDED) != 0)
     {
-    if (c < 256 && (cb->ctypes[c] & ctype_space) != 0) { continue;
-}
+    if (c < 256 && (cb->ctypes[c] & ctype_space) != 0) continue;
 #ifdef SUPPORT_UNICODE
     if (c == CHAR_NEL || (c|1) == 0x200f || (c|1) == 0x2029) continue;
 #endif
@@ -3092,8 +3089,7 @@ while (ptr < ptrend)
   if (c == CHAR_LEFT_PARENTHESIS && ptrend - ptr >= 2 &&
       ptr[0] == CHAR_QUESTION_MARK && ptr[1] == CHAR_NUMBER_SIGN)
     {
-    while (++ptr < ptrend && *ptr != CHAR_RIGHT_PARENTHESIS) {;
-}
+    while (++ptr < ptrend && *ptr != CHAR_RIGHT_PARENTHESIS);
     if (ptr >= ptrend)
       {
       errorcode = ERR18;  /* A special error for missing ) in a comment */
@@ -3138,7 +3134,7 @@ while (ptr < ptrend)
         {
         ok = MAX_255(ptr[1]) && (cb->ctypes[ptr[1]] & ctype_lcletter) != 0;
         }
-      else { switch(ptr[1])  /* Traditional symbolic format */
+      else switch(ptr[1])  /* Traditional symbolic format */
         {
         case CHAR_C:
         ok = expect_cond_assert == 2;
@@ -3155,7 +3151,6 @@ while (ptr < ptrend)
         default:
         ok = FALSE;
         }
-}
       }
 
     if (!ok)
@@ -3212,11 +3207,10 @@ while (ptr < ptrend)
     if (errorcode != 0)
       {
       ESCAPE_FAILED:
-      if ((xoptions & PCRE2_EXTRA_BAD_ESCAPE_IS_LITERAL) == 0) {
+      if ((xoptions & PCRE2_EXTRA_BAD_ESCAPE_IS_LITERAL) == 0)
         goto FAILED;
-}
       ptr = tempptr;
-      if (ptr >= ptrend) { c = CHAR_BACKSLASH; } else
+      if (ptr >= ptrend) c = CHAR_BACKSLASH; else
         {
         GETCHARINCTEST(c, ptr);   /* Get character value, increment pointer */
         }
@@ -3270,7 +3264,7 @@ while (ptr < ptrend)
     and returned as a negative value (handled above). A name is coded as an
     offset into the pattern and a length. */
 
-    else { switch (escape)
+    else switch (escape)
       {
       case ESC_C:
 #ifdef NEVER_BACKSLASH_C
@@ -3385,16 +3379,14 @@ while (ptr < ptrend)
           ptr = p;
           goto SET_RECURSION;
           }
-        if (errorcode != 0) { goto ESCAPE_FAILED;
-}
+        if (errorcode != 0) goto ESCAPE_FAILED;
         }
 
       /* Not a numerical recursion. Perl allows spaces and tabs after { and
       before } but not for other delimiters. */
 
       if (!read_name(&ptr, ptrend, utf, terminator, &offset, &name, &namelen,
-          &errorcode, cb)) { goto ESCAPE_FAILED;
-}
+          &errorcode, cb)) goto ESCAPE_FAILED;
 
       /* \k and \g when used with braces are back references, whereas \g used
       with quotes or angle brackets is a recursion */
@@ -3408,7 +3400,6 @@ while (ptr < ptrend)
       okquantifier = TRUE;
       break;  /* End special escape processing */
       }
-}
     break;    /* End escape sequence processing */
 
 
@@ -3449,8 +3440,7 @@ while (ptr < ptrend)
     if (!read_repeat_counts(&ptr, ptrend, &min_repeat, &max_repeat,
         &errorcode))
       {
-      if (errorcode != 0) { goto FAILED;     /* Error in quantifier. */
-}
+      if (errorcode != 0) goto FAILED;     /* Error in quantifier. */
       PARSED_LITERAL(c, parsed_pattern);   /* Not a quantifier */
       break;                               /* No more quantifier processing */
       }
@@ -3479,8 +3469,7 @@ while (ptr < ptrend)
     if (*prev_parsed_item == META_ACCEPT)
       {
       uint32_t *p;
-      for (p = parsed_pattern - 1; p >= verbstartptr; p--) { p[1] = p[0];
-}
+      for (p = parsed_pattern - 1; p >= verbstartptr; p--) p[1] = p[0];
       *verbstartptr = META_NOCAPTURE;
       parsed_pattern[1] = META_KET;
       parsed_pattern += 2;
@@ -3532,9 +3521,9 @@ while (ptr < ptrend)
         PUTOFFSET((PCRE2_SIZE)0, parsed_pattern);
         }
 
-      if ((options & PCRE2_UCP) == 0) {
+      if ((options & PCRE2_UCP) == 0)
         *parsed_pattern++ = META_ESCAPE + ESC_w;
-      } else
+      else
         {
         *parsed_pattern++ = META_ESCAPE + ESC_p;
         *parsed_pattern++ = PT_WORD << 16;
@@ -3566,21 +3555,19 @@ while (ptr < ptrend)
       GETCHARINCTEST(c, ptr);
       if (c == CHAR_BACKSLASH)
         {
-        if (ptr < ptrend && *ptr == CHAR_E) { ptr++;
-        } else if (ptrend - ptr >= 3 &&
-             PRIV(strncmp_c8)(ptr, STR_Q STR_BACKSLASH STR_E, 3) == 0) {
+        if (ptr < ptrend && *ptr == CHAR_E) ptr++;
+        else if (ptrend - ptr >= 3 &&
+             PRIV(strncmp_c8)(ptr, STR_Q STR_BACKSLASH STR_E, 3) == 0)
           ptr += 3;
-        } else {
+        else
           break;
-}
         }
       else if ((options & PCRE2_EXTENDED_MORE) != 0 &&
-               (c == CHAR_SPACE || c == CHAR_HT)) {  /* Note: just these two */
+               (c == CHAR_SPACE || c == CHAR_HT))  /* Note: just these two */
         continue;
-      } else if (!negate_class && c == CHAR_CIRCUMFLEX_ACCENT) {
+      else if (!negate_class && c == CHAR_CIRCUMFLEX_ACCENT)
         negate_class = TRUE;
-      } else { break;
-}
+      else break;
       }
 
     /* Now the real contents of the class; c has the first "real" character.
@@ -3628,9 +3615,8 @@ while (ptr < ptrend)
       /* Skip over space and tab (only) in extended-more mode. */
 
       if ((options & PCRE2_EXTENDED_MORE) != 0 &&
-          (c == CHAR_SPACE || c == CHAR_HT)) {
+          (c == CHAR_SPACE || c == CHAR_HT))
         goto CLASS_CONTINUE;
-}
 
       /* Handle POSIX class names. Perl allows a negation extension of the
       form [:^name:]. A square bracket that doesn't match the syntax is
@@ -3756,18 +3742,17 @@ while (ptr < ptrend)
         CLASS_LITERAL:
         if (class_range_state == RANGE_STARTED)
           {
-          if (c == parsed_pattern[-2]) {       /* Optimize one-char range */
+          if (c == parsed_pattern[-2])       /* Optimize one-char range */
             parsed_pattern--;
-          } else if (parsed_pattern[-2] > c)   /* Check range is in order */
+          else if (parsed_pattern[-2] > c)   /* Check range is in order */
             {
             errorcode = ERR8;
             goto FAILED_BACK;
             }
           else
             {
-            if (!char_is_literal && parsed_pattern[-1] == META_RANGE_LITERAL) {
+            if (!char_is_literal && parsed_pattern[-1] == META_RANGE_LITERAL)
               parsed_pattern[-1] = META_RANGE_ESCAPED;
-}
             PARSED_LITERAL(c, parsed_pattern);
             }
           class_range_state = RANGE_NO;
@@ -3790,11 +3775,10 @@ while (ptr < ptrend)
 
         if (errorcode != 0)
           {
-          if ((xoptions & PCRE2_EXTRA_BAD_ESCAPE_IS_LITERAL) == 0) {
+          if ((xoptions & PCRE2_EXTRA_BAD_ESCAPE_IS_LITERAL) == 0)
             goto FAILED;
-}
           ptr = tempptr;
-          if (ptr >= ptrend) { c = CHAR_BACKSLASH; } else
+          if (ptr >= ptrend) c = CHAR_BACKSLASH; else
             {
             GETCHARINCTEST(c, ptr);   /* Get character value, increment pointer */
             }
@@ -3915,8 +3899,7 @@ while (ptr < ptrend)
         goto FAILED;
         }
       GETCHARINCTEST(c, ptr);
-      if (c == CHAR_RIGHT_SQUARE_BRACKET && !inescq) { break;
-}
+      if (c == CHAR_RIGHT_SQUARE_BRACKET && !inescq) break;
       }     /* End of class-processing loop */
 
     /* -] at the end of a class is a literal '-' */
@@ -3934,8 +3917,7 @@ while (ptr < ptrend)
     /* ---- Opening parenthesis ---- */
 
     case CHAR_LEFT_PARENTHESIS:
-    if (ptr >= ptrend) { goto UNCLOSED_PARENTHESIS;
-}
+    if (ptr >= ptrend) goto UNCLOSED_PARENTHESIS;
 
     /* If ( is not followed by ? it is either a capture or a special verb or an
     alpha assertion or a positive non-atomic lookahead. */
@@ -3960,14 +3942,13 @@ while (ptr < ptrend)
           cb->bracount++;
           *parsed_pattern++ = META_CAPTURE | cb->bracount;
           }
-        else { *parsed_pattern++ = META_NOCAPTURE;
-}
+        else *parsed_pattern++ = META_NOCAPTURE;
         }
 
       /* Do nothing for (* followed by end of pattern or ) so it gives a "bad
       quantifier" error rather than "(*MARK) must have an argument". */
 
-      else if (ptrend - ptr <= 1 || (c = ptr[1]) == CHAR_RIGHT_PARENTHESIS) {
+      else if (ptrend - ptr <= 1 || (c = ptr[1]) == CHAR_RIGHT_PARENTHESIS)
         break;
 
       /* Handle "alpha assertions" such as (*pla:...). Most of these are
@@ -3976,14 +3957,13 @@ while (ptr < ptrend)
       with a lower case letter. Checking both ends of the alphabet makes this
       work in all character codes. */
 
-      } else if (CHMAX_255(c) && (cb->ctypes[c] & ctype_lcletter) != 0)
+      else if (CHMAX_255(c) && (cb->ctypes[c] & ctype_lcletter) != 0)
         {
         uint32_t meta;
 
         vn = alasnames;
         if (!read_name(&ptr, ptrend, utf, 0, &offset, &name, &namelen,
-          &errorcode, cb)) { goto FAILED;
-}
+          &errorcode, cb)) goto FAILED;
         if (ptr >= ptrend || *ptr != CHAR_COLON)
           {
           errorcode = ERR95;  /* Malformed */
@@ -3995,9 +3975,8 @@ while (ptr < ptrend)
         for (i = 0; i < alascount; i++)
           {
           if (namelen == alasmeta[i].len &&
-              PRIV(strncmp_c8)(name, vn, namelen) == 0) {
+              PRIV(strncmp_c8)(name, vn, namelen) == 0)
             break;
-}
           vn += alasmeta[i].len + 1;
           }
 
@@ -4087,8 +4066,7 @@ while (ptr < ptrend)
         {
         vn = verbnames;
         if (!read_name(&ptr, ptrend, utf, 0, &offset, &name, &namelen,
-          &errorcode, cb)) { goto FAILED;
-}
+          &errorcode, cb)) goto FAILED;
         if (ptr >= ptrend || (*ptr != CHAR_COLON &&
                               *ptr != CHAR_RIGHT_PARENTHESIS))
           {
@@ -4101,9 +4079,8 @@ while (ptr < ptrend)
         for (i = 0; i < verbcount; i++)
           {
           if (namelen == verbs[i].len &&
-              PRIV(strncmp_c8)(name, vn, namelen) == 0) {
+              PRIV(strncmp_c8)(name, vn, namelen) == 0)
             break;
-}
           vn += verbs[i].len + 1;
           }
 
@@ -4184,22 +4161,20 @@ while (ptr < ptrend)
     ambiguity about the sequence (?- because if a digit follows it's a relative
     recursion or subroutine call whereas otherwise it's an option unsetting. */
 
-    if (++ptr >= ptrend) { goto UNCLOSED_PARENTHESIS;
-}
+    if (++ptr >= ptrend) goto UNCLOSED_PARENTHESIS;
 
     switch(*ptr)
       {
       default:
-      if (*ptr == CHAR_MINUS && ptrend - ptr > 1 && IS_DIGIT(ptr[1])) {
+      if (*ptr == CHAR_MINUS && ptrend - ptr > 1 && IS_DIGIT(ptr[1]))
         goto RECURSION_BYNUMBER;  /* The + case is handled by CHAR_PLUS */
-}
 
       /* We now have either (?| or a (possibly empty) option setting,
       optionally followed by a non-capturing group. */
 
       nest_depth++;
-      if (top_nest == NULL) { top_nest = (nest_save *)(cb->start_workspace);
-      } else if (++top_nest >= end_nests)
+      if (top_nest == NULL) top_nest = (nest_save *)(cb->start_workspace);
+      else if (++top_nest >= end_nests)
         {
         errorcode = ERR84;
         goto FAILED;
@@ -4341,9 +4316,8 @@ while (ptr < ptrend)
         unset extended-more. */
 
         if ((set & (PCRE2_EXTENDED|PCRE2_EXTENDED_MORE)) == PCRE2_EXTENDED ||
-            (unset & PCRE2_EXTENDED) != 0) {
+            (unset & PCRE2_EXTENDED) != 0)
           unset |= PCRE2_EXTENDED_MORE;
-}
 
         options = (options | set) & (~unset);
         xoptions = (xoptions | xset) & (~xunset);
@@ -4355,8 +4329,7 @@ while (ptr < ptrend)
         If the options ended with ':' we are starting a non-capturing group,
         possibly with an options setting. */
 
-        if (ptr >= ptrend) { goto UNCLOSED_PARENTHESIS;
-}
+        if (ptr >= ptrend) goto UNCLOSED_PARENTHESIS;
         if (*ptr++ == CHAR_RIGHT_PARENTHESIS)
           {
           nest_depth--;  /* This is not a nested group after all. */
@@ -4364,8 +4337,7 @@ while (ptr < ptrend)
               (top_nest-1)->nest_depth == nest_depth) top_nest--;
           else top_nest->nest_depth = nest_depth;
           }
-        else { *parsed_pattern++ = META_NOCAPTURE;
-}
+        else *parsed_pattern++ = META_NOCAPTURE;
 
         /* If nothing changed, no need to record. */
 
@@ -4382,8 +4354,7 @@ while (ptr < ptrend)
       /* ---- Python syntax support ---- */
 
       case CHAR_P:
-      if (++ptr >= ptrend) { goto UNCLOSED_PARENTHESIS;
-}
+      if (++ptr >= ptrend) goto UNCLOSED_PARENTHESIS;
 
       /* (?P<name> is the same as (?<name>, which defines a named group. */
 
@@ -4396,8 +4367,7 @@ while (ptr < ptrend)
       /* (?P>name) is the same as (?&name), which is a recursion or subroutine
       call. */
 
-      if (*ptr == CHAR_GREATER_THAN_SIGN) { goto RECURSE_BY_NAME;
-}
+      if (*ptr == CHAR_GREATER_THAN_SIGN) goto RECURSE_BY_NAME;
 
       /* (?P=name) is the same as \k<name>, a back reference by name. Anything
       else after (?P is an error. */
@@ -4408,8 +4378,7 @@ while (ptr < ptrend)
         goto FAILED;
         }
       if (!read_name(&ptr, ptrend, utf, CHAR_RIGHT_PARENTHESIS, &offset, &name,
-          &namelen, &errorcode, cb)) { goto FAILED;
-}
+          &namelen, &errorcode, cb)) goto FAILED;
       *parsed_pattern++ = META_BACKREF_BYNAME;
       *parsed_pattern++ = namelen;
       PUTOFFSET(offset, parsed_pattern);
@@ -4446,16 +4415,14 @@ while (ptr < ptrend)
       if (!read_number(&ptr, ptrend,
           (IS_DIGIT(*ptr))? -1:(int)(cb->bracount), /* + and - are relative */
           MAX_GROUP_NUMBER, ERR61,
-          &i, &errorcode)) { goto FAILED;
-}
+          &i, &errorcode)) goto FAILED;
       if (i < 0)  /* NB (?0) is permitted */
         {
         errorcode = ERR15;   /* Unknown group */
         goto FAILED_BACK;
         }
-      if (ptr >= ptrend || *ptr != CHAR_RIGHT_PARENTHESIS) {
+      if (ptr >= ptrend || *ptr != CHAR_RIGHT_PARENTHESIS)
         goto UNCLOSED_PARENTHESIS;
-}
 
       SET_RECURSION:
       *parsed_pattern++ = META_RECURSE | (uint32_t)i;
@@ -4471,8 +4438,7 @@ while (ptr < ptrend)
       case CHAR_AMPERSAND:
       RECURSE_BY_NAME:
       if (!read_name(&ptr, ptrend, utf, CHAR_RIGHT_PARENTHESIS, &offset, &name,
-          &namelen, &errorcode, cb)) { goto FAILED;
-}
+          &namelen, &errorcode, cb)) goto FAILED;
       *parsed_pattern++ = META_RECURSE_BYNAME;
       *parsed_pattern++ = namelen;
       PUTOFFSET(offset, parsed_pattern);
@@ -4482,8 +4448,7 @@ while (ptr < ptrend)
       /* ---- Callout with numerical or string argument ---- */
 
       case CHAR_C:
-      if (++ptr >= ptrend) { goto UNCLOSED_PARENTHESIS;
-}
+      if (++ptr >= ptrend) goto UNCLOSED_PARENTHESIS;
 
       /* If the previous item was a condition starting (?(? an assertion,
       optionally preceded by a callout, is expected. This is checked later on,
@@ -4503,9 +4468,8 @@ while (ptr < ptrend)
 
       if (previous_callout != NULL && (options & PCRE2_AUTO_CALLOUT) != 0 &&
           previous_callout == parsed_pattern - 4 &&
-          parsed_pattern[-1] == 255) {
+          parsed_pattern[-1] == 255)
         parsed_pattern = previous_callout;
-}
 
       /* Save for updating next pattern item length, and skip one item before
       completing. */
@@ -4546,9 +4510,8 @@ while (ptr < ptrend)
             ptr = startptr;   /* To give a more useful message */
             goto FAILED;
             }
-          if (*ptr == delimiter && (++ptr >= ptrend || *ptr != delimiter)) {
+          if (*ptr == delimiter && (++ptr >= ptrend || *ptr != delimiter))
             break;
-}
           }
 
         calloutlength = (PCRE2_SIZE)(ptr - startptr);
@@ -4619,8 +4582,7 @@ while (ptr < ptrend)
       before a condition that is an assertion. */
 
       case CHAR_LEFT_PARENTHESIS:
-      if (++ptr >= ptrend) { goto UNCLOSED_PARENTHESIS;
-}
+      if (++ptr >= ptrend) goto UNCLOSED_PARENTHESIS;
       nest_depth++;
 
       /* If the next character is ? or * there must be an assertion next
@@ -4654,11 +4616,11 @@ while (ptr < ptrend)
         PUTOFFSET(offset, parsed_pattern);
         *parsed_pattern++ = i;
         }
-      else if (errorcode != 0) { goto FAILED;   /* Number too big */
+      else if (errorcode != 0) goto FAILED;   /* Number too big */
 
       /* No number found. Handle the special case (?(VERSION[>]=n.m)... */
 
-      } else if (ptrend - ptr >= 10 &&
+      else if (ptrend - ptr >= 10 &&
                PRIV(strncmp_c8)(ptr, STRING_VERSION, 7) == 0 &&
                ptr[7] != CHAR_RIGHT_PARENTHESIS)
         {
@@ -4676,27 +4638,21 @@ while (ptr < ptrend)
         /* NOTE: cannot write IS_DIGIT(*(++ptr)) here because IS_DIGIT
         references its argument twice. */
 
-        if (*ptr != CHAR_EQUALS_SIGN || (ptr++, !IS_DIGIT(*ptr))) {
+        if (*ptr != CHAR_EQUALS_SIGN || (ptr++, !IS_DIGIT(*ptr)))
           goto BAD_VERSION_CONDITION;
-}
 
-        if (!read_number(&ptr, ptrend, -1, 1000, ERR79, &major, &errorcode)) {
+        if (!read_number(&ptr, ptrend, -1, 1000, ERR79, &major, &errorcode))
           goto FAILED;
-}
 
-        if (ptr >= ptrend) { goto BAD_VERSION_CONDITION;
-}
+        if (ptr >= ptrend) goto BAD_VERSION_CONDITION;
         if (*ptr == CHAR_DOT)
           {
-          if (++ptr >= ptrend || !IS_DIGIT(*ptr)) { goto BAD_VERSION_CONDITION;
-}
+          if (++ptr >= ptrend || !IS_DIGIT(*ptr)) goto BAD_VERSION_CONDITION;
           minor = (*ptr++ - CHAR_0) * 10;
-          if (ptr >= ptrend) { goto BAD_VERSION_CONDITION;
-}
+          if (ptr >= ptrend) goto BAD_VERSION_CONDITION;
           if (IS_DIGIT(*ptr)) minor += *ptr++ - CHAR_0;
-          if (ptr >= ptrend || *ptr != CHAR_RIGHT_PARENTHESIS) {
+          if (ptr >= ptrend || *ptr != CHAR_RIGHT_PARENTHESIS)
             goto BAD_VERSION_CONDITION;
-}
           }
 
         *parsed_pattern++ = META_COND_VERSION;
@@ -4721,18 +4677,17 @@ while (ptr < ptrend)
           was_r_ampersand = TRUE;
           ptr++;
           }
-        else if (*ptr == CHAR_LESS_THAN_SIGN) {
+        else if (*ptr == CHAR_LESS_THAN_SIGN)
           terminator = CHAR_GREATER_THAN_SIGN;
-        } else if (*ptr == CHAR_APOSTROPHE) {
+        else if (*ptr == CHAR_APOSTROPHE)
           terminator = CHAR_APOSTROPHE;
-        } else
+        else
           {
           terminator = CHAR_RIGHT_PARENTHESIS;
           ptr--;   /* Point to char before name */
           }
         if (!read_name(&ptr, ptrend, utf, terminator, &offset, &name, &namelen,
-            &errorcode, cb)) { goto FAILED;
-}
+            &errorcode, cb)) goto FAILED;
 
         /* Handle (?(R&name) */
 
@@ -4748,14 +4703,12 @@ while (ptr < ptrend)
 
         else if (terminator == CHAR_RIGHT_PARENTHESIS)
           {
-          if (namelen == 6 && PRIV(strncmp_c8)(name, STRING_DEFINE, 6) == 0) {
+          if (namelen == 6 && PRIV(strncmp_c8)(name, STRING_DEFINE, 6) == 0)
             *parsed_pattern = META_COND_DEFINE;
-          } else
+          else
             {
-            for (i = 1; i < (int)namelen; i++) {
-              if (!IS_DIGIT(name[i])) { break;
-}
-}
+            for (i = 1; i < (int)namelen; i++)
+              if (!IS_DIGIT(name[i])) break;
             *parsed_pattern = (*name == CHAR_R && i >= (int)namelen)?
               META_COND_RNUMBER : META_COND_NAME;
             }
@@ -4764,14 +4717,12 @@ while (ptr < ptrend)
 
         /* Handle (?('name') or (?(<name>) */
 
-        else { *parsed_pattern = META_COND_NAME;
-}
+        else *parsed_pattern = META_COND_NAME;
 
         /* All these cases except DEFINE end with the name length and offset;
         DEFINE just has an offset (for the "too many branches" error). */
 
-        if (*parsed_pattern++ != META_COND_DEFINE) { *parsed_pattern++ = namelen;
-}
+        if (*parsed_pattern++ != META_COND_DEFINE) *parsed_pattern++ = namelen;
         PUTOFFSET(offset, parsed_pattern);
         }  /* End cases that read a name */
 
@@ -4855,8 +4806,8 @@ while (ptr < ptrend)
       nest_depth++;
       if (prev_expect_cond_assert > 0)
         {
-        if (top_nest == NULL) { top_nest = (nest_save *)(cb->start_workspace);
-        } else if (++top_nest >= end_nests)
+        if (top_nest == NULL) top_nest = (nest_save *)(cb->start_workspace);
+        else if (++top_nest >= end_nests)
           {
           errorcode = ERR84;
           goto FAILED;
@@ -4880,8 +4831,7 @@ while (ptr < ptrend)
 
       DEFINE_NAME:
       if (!read_name(&ptr, ptrend, utf, terminator, &offset, &name, &namelen,
-          &errorcode, cb)) { goto FAILED;
-}
+          &errorcode, cb)) goto FAILED;
 
       /* We have a name for this capturing group. It is also assigned a number,
       which is its primary means of identification. */
@@ -4938,8 +4888,7 @@ while (ptr < ptrend)
           }
         }
 
-      if (i < cb->names_found) { break;   /* Ignore duplicate with same number */
-}
+      if (i < cb->names_found) break;   /* Ignore duplicate with same number */
 
       /* Increase the list size if necessary */
 
@@ -5004,9 +4953,8 @@ while (ptr < ptrend)
       if ((top_nest->flags & NSF_RESET) != 0 &&
           top_nest->max_group > cb->bracount)
         cb->bracount = top_nest->max_group;
-      if ((top_nest->flags & NSF_CONDASSERT) != 0) {
+      if ((top_nest->flags & NSF_CONDASSERT) != 0)
         okquantifier = FALSE;
-}
 
       if ((top_nest->flags & NSF_ATOMICSR) != 0)
         {
@@ -5065,8 +5013,7 @@ if (parsed_pattern >= parsed_pattern_end)
   }
 
 *parsed_pattern = META_END;
-if (nest_depth == 0) { return 0;
-}
+if (nest_depth == 0) return 0;
 
 UNCLOSED_PARENTHESIS:
 errorcode = ERR14;

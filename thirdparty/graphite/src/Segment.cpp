@@ -56,8 +56,7 @@ void Segment::appendSlot(int id, int cid, int gid, int iFeats, size_t coffset)
 {
     Slot *aSlot = newSlot();
 
-    if (!aSlot) { return;
-}
+    if (!aSlot) return;
     m_charinfo[id].init(cid);
     m_charinfo[id].feats(iFeats);
     m_charinfo[id].base(coffset);
@@ -83,13 +82,11 @@ Slot *Segment::newSlot()
     if (!m_freeSlots)
     {
         // check that the segment doesn't grow indefinintely
-        if (m_numGlyphs > m_numCharinfo * MAX_SEG_GROWTH_FACTOR) {
+        if (m_numGlyphs > m_numCharinfo * MAX_SEG_GROWTH_FACTOR)
             return NULL;
-}
         int numUser = m_silf->numUser();
 #if !defined GRAPHITE2_NTRACING
-        if (m_face->logger()) { ++numUser;
-}
+        if (m_face->logger()) ++numUser;
 #endif
         Slot *newSlots = grzeroalloc<Slot>(m_bufSize);
         int16 *newAttrs = grzeroalloc<int16>(m_bufSize * numUser);
@@ -119,13 +116,11 @@ Slot *Segment::newSlot()
 
 void Segment::freeSlot(Slot *aSlot)
 {
-    if (aSlot == nullptr) { return;
-}
+    if (aSlot == nullptr) return;
     if (m_last == aSlot) m_last = aSlot->prev();
     if (m_first == aSlot) m_first = aSlot->next();
-    if (aSlot->attachedTo()) {
+    if (aSlot->attachedTo())
         aSlot->attachedTo()->removeChild(aSlot);
-}
     while (aSlot->firstChild())
     {
         if (aSlot->firstChild()->attachedTo() == aSlot)
@@ -133,25 +128,22 @@ void Segment::freeSlot(Slot *aSlot)
             aSlot->firstChild()->attachTo(nullptr);
             aSlot->removeChild(aSlot->firstChild());
         }
-        else {
+        else
             aSlot->firstChild(nullptr);
-}
     }
     // reset the slot incase it is reused
     ::new (aSlot) Slot(aSlot->userAttrs());
     memset(aSlot->userAttrs(), 0, m_silf->numUser() * sizeof(int16));
     // Update generation counter for debug
 #if !defined GRAPHITE2_NTRACING
-    if (m_face->logger()) {
+    if (m_face->logger())
         ++aSlot->userAttrs()[m_silf->numUser()];
-}
 #endif
     // update next pointer
-    if (!m_freeSlots) {
+    if (!m_freeSlots)
         aSlot->next(nullptr);
-    } else {
-        a
-}Slot->next(m_freeSlots);
+    else
+        aSlot->next(m_freeSlots);
     m_freeSlots = aSlot;
 }
 
@@ -161,8 +153,7 @@ SlotJustify *Segment::newJustify()
     {
         const size_t justSize = SlotJustify::size_of(m_silf->numJustLevels());
         byte *justs = grzeroalloc<byte>(justSize * m_bufSize);
-        if (!justs) { return NULL;
-}
+        if (!justs) return NULL;
         for (ptrdiff_t i = m_bufSize - 2; i >= 0; --i)
         {
             SlotJustify *p = reinterpret_cast<SlotJustify *>(justs + justSize * i);
@@ -181,8 +172,7 @@ SlotJustify *Segment::newJustify()
 void Segment::freeJustify(SlotJustify *aJustify)
 {
     int numJust = m_silf->numJustLevels();
-    if (m_silf->numJustLevels() <= 0) { numJust = 1;
-}
+    if (m_silf->numJustLevels() <= 0) numJust = 1;
     aJustify->next = m_freeJustifies;
     memset(aJustify->values, 0, numJust*SlotJustify::NUMJUSTPARAMS*sizeof(int16));
     m_freeJustifies = aJustify;
@@ -192,8 +182,7 @@ void Segment::freeJustify(SlotJustify *aJustify)
 void Segment::reverseSlots()
 {
     m_dir = m_dir ^ 64;                 // invert the reverse flag
-    if (m_first == m_last) { return;      // skip 0 or 1 glyph runs
-}
+    if (m_first == m_last) return;      // skip 0 or 1 glyph runs
 
     Slot *t = 0;
     Slot *curr = m_first;
@@ -201,11 +190,9 @@ void Segment::reverseSlots()
     Slot *tfirst;
     Slot *out = 0;
 
-    while (curr && getSlotBidiClass(curr) == 16) {
+    while (curr && getSlotBidiClass(curr) == 16)
         curr = curr->next();
-}
-    if (!curr) { return;
-}
+    if (!curr) return;
     tfirst = curr->prev();
     tlast = curr;
 
@@ -214,17 +201,15 @@ void Segment::reverseSlots()
         if (getSlotBidiClass(curr) == 16)
         {
             Slot *d = curr->next();
-            while (d && getSlotBidiClass(d) == 16) {
+            while (d && getSlotBidiClass(d) == 16)
                 d = d->next();
-}
 
             d = d ? d->prev() : m_last;
             Slot *p = out->next();    // one after the diacritics. out can't be null
-            if (p) {
+            if (p)
                 p->prev(d);
-            } else {
+            else
                 tlast = d;
-}
             t = d->next();
             d->next(p);
             curr->prev(out);
@@ -232,9 +217,8 @@ void Segment::reverseSlots()
         }
         else    // will always fire first time round the loop
         {
-            if (out) {
+            if (out)
                 out->prev(curr);
-}
             t = curr->next();
             curr->next(out);
             out = curr;
@@ -242,11 +226,10 @@ void Segment::reverseSlots()
         curr = t;
     }
     out->prev(tfirst);
-    if (tfirst) {
+    if (tfirst)
         tfirst->next(out);
-    } else {
-        m
-}_first = out;
+    else
+        m_first = out;
     m_last = tlast;
 }
 
@@ -254,16 +237,14 @@ void Segment::linkClusters(Slot *s, Slot * end)
 {
     end = end->next();
 
-    for (; s != end && !s->isBase(); s = s->next()) {;
-}
+    for (; s != end && !s->isBase(); s = s->next());
     Slot * ls = s;
 
     if (m_dir & 1)
     {
         for (; s != end; s = s->next())
         {
-            if (!s->isBase()) {   continue;
-}
+            if (!s->isBase())   continue;
 
             s->sibling(ls);
             ls = s;
@@ -273,8 +254,7 @@ void Segment::linkClusters(Slot *s, Slot * end)
     {
         for (; s != end; s = s->next())
         {
-            if (!s->isBase()) {   continue;
-}
+            if (!s->isBase())   continue;
 
             ls->sibling(s);
             ls = s;
@@ -319,9 +299,8 @@ Position Segment::positionSlots(const Font *font, Slot * iStart, Slot * iEnd, bo
                 currpos = s->finalise(this, font, currpos, bbox, 0, clusterMin = currpos.x, isRtl, isFinal);
         }
     }
-    if (reorder) {
+    if (reorder)
         reverseSlots();
-}
     return currpos;
 }
 
@@ -338,16 +317,13 @@ void Segment::associateChars(int offset, size_t numChars)
     for (Slot * s = m_first; s; s->index(i++), s = s->next())
     {
         j = s->before();
-        if (j < 0) {  continue;
-}
+        if (j < 0)  continue;
 
         for (const int after = s->after(); j <= after; ++j)
         {
             c = charinfo(j);
-            if (c->before() == -1 || i < c->before()) {   c->before(i);
-}
-            if (c->after() < i) {                         c->after(i);
-}
+            if (c->before() == -1 || i < c->before())   c->before(i);
+            if (c->after() < i)                         c->after(i);
         }
     }
     for (Slot *s = m_first; s; s = s->next())
@@ -377,8 +353,7 @@ inline void process_utf_data(Segment & seg, const Face & face, const int fid, ut
     {
         const uint32 usv = *c;
         uint16 gid = cmap[usv];
-        if (!gid) {   gid = face.findPseudo(usv);
-}
+        if (!gid)   gid = face.findPseudo(usv);
         seg.appendSlot(slotid, usv, gid, fid, c - base);
     }
 }
@@ -388,8 +363,7 @@ bool Segment::read_text(const Face *face, const Features* pFeats/*must not be NU
 {
     assert(face);
     assert(pFeats);
-    if (!m_charinfo) { return false;
-}
+    if (!m_charinfo) return false;
 
     // utf iterator is self recovering so we don't care about the error state of the iterator.
     switch (enc)
@@ -407,24 +381,20 @@ void Segment::doMirror(uint16 aMirror)
     for (s = m_first; s; s = s->next())
     {
         unsigned short g = glyphAttr(s->gid(), aMirror);
-        if (g && (!(dir() & 4) || !glyphAttr(s->gid(), aMirror + 1))) {
+        if (g && (!(dir() & 4) || !glyphAttr(s->gid(), aMirror + 1)))
             s->setGlyph(this, g);
-}
     }
 }
 
 bool Segment::initCollisions()
 {
     m_collisions = grzeroalloc<SlotCollision>(slotCount());
-    if (!m_collisions) { return false;
-}
+    if (!m_collisions) return false;
 
-    for (Slot *p = m_first; p; p = p->next()) {
-        if (p->index() < slotCount()) {
+    for (Slot *p = m_first; p; p = p->next())
+        if (p->index() < slotCount())
             ::new (collisionInfo(p)) SlotCollision(this, p);
-        } else {
+        else
             return false;
-}
-}
     return true;
 }

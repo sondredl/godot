@@ -65,7 +65,7 @@ class LoaderInstance {
     LoaderInstance(XrInstance instance, const XrInstanceCreateInfo* createInfo, PFN_xrGetInstanceProcAddr topmost_gipa,
                    std::vector<std::unique_ptr<ApiLayerInterface>> api_layer_interfaces);
 
-
+   private:
     XrInstance _runtime_instance{XR_NULL_HANDLE};
     PFN_xrGetInstanceProcAddr _topmost_gipa{nullptr};
     std::vector<std::string> _enabled_extensions;

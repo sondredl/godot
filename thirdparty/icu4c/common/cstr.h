@@ -41,7 +41,7 @@
  *   which works well when passing it as a parameter to another function, such as printf.
  */
 
-U_NAMESPACE_BEGIN;
+U_NAMESPACE_BEGIN
 
 class U_COMMON_API CStr : public UMemory {
   public:

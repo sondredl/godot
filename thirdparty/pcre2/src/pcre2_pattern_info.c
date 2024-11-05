@@ -107,19 +107,16 @@ if (where == NULL)   /* Requests field length */
     }
   }
 
-if (re == NULL) { return PCRE2_ERROR_NULL;
-}
+if (re == NULL) return PCRE2_ERROR_NULL;
 
 /* Check that the first field in the block is the magic number. If it is not,
 return with PCRE2_ERROR_BADMAGIC. */
 
-if (re->magic_number != MAGIC_NUMBER) { return PCRE2_ERROR_BADMAGIC;
-}
+if (re->magic_number != MAGIC_NUMBER) return PCRE2_ERROR_BADMAGIC;
 
 /* Check that this pattern was compiled in the correct bit mode */
 
-if ((re->flags & (PCRE2_CODE_UNIT_WIDTH/8)) == 0) { return PCRE2_ERROR_BADMODE;
-}
+if ((re->flags & (PCRE2_CODE_UNIT_WIDTH/8)) == 0) return PCRE2_ERROR_BADMODE;
 
 switch(what)
   {
@@ -145,8 +142,7 @@ switch(what)
 
   case PCRE2_INFO_DEPTHLIMIT:
   *((uint32_t *)where) = re->limit_depth;
-  if (re->limit_depth == UINT32_MAX) { return PCRE2_ERROR_UNSET;
-}
+  if (re->limit_depth == UINT32_MAX) return PCRE2_ERROR_UNSET;
   break;
 
   case PCRE2_INFO_EXTRAOPTIONS:
@@ -183,8 +179,7 @@ switch(what)
 
   case PCRE2_INFO_HEAPLIMIT:
   *((uint32_t *)where) = re->limit_heap;
-  if (re->limit_heap == UINT32_MAX) { return PCRE2_ERROR_UNSET;
-}
+  if (re->limit_heap == UINT32_MAX) return PCRE2_ERROR_UNSET;
   break;
 
   case PCRE2_INFO_JCHANGED:
@@ -215,8 +210,7 @@ switch(what)
 
   case PCRE2_INFO_MATCHLIMIT:
   *((uint32_t *)where) = re->limit_match;
-  if (re->limit_match == UINT32_MAX) { return PCRE2_ERROR_UNSET;
-}
+  if (re->limit_match == UINT32_MAX) return PCRE2_ERROR_UNSET;
   break;
 
   case PCRE2_INFO_MAXLOOKBEHIND:
@@ -281,8 +275,7 @@ PCRE2_SPTR cc;
 BOOL utf;
 #endif
 
-if (re == NULL) { return PCRE2_ERROR_NULL;
-}
+if (re == NULL) return PCRE2_ERROR_NULL;
 
 #ifdef SUPPORT_UNICODE
 utf = (re->overall_options & PCRE2_UTF) != 0;
@@ -291,13 +284,11 @@ utf = (re->overall_options & PCRE2_UTF) != 0;
 /* Check that the first field in the block is the magic number. If it is not,
 return with PCRE2_ERROR_BADMAGIC. */
 
-if (re->magic_number != MAGIC_NUMBER) { return PCRE2_ERROR_BADMAGIC;
-}
+if (re->magic_number != MAGIC_NUMBER) return PCRE2_ERROR_BADMAGIC;
 
 /* Check that this pattern was compiled in the correct bit mode */
 
-if ((re->flags & (PCRE2_CODE_UNIT_WIDTH/8)) == 0) { return PCRE2_ERROR_BADMODE;
-}
+if ((re->flags & (PCRE2_CODE_UNIT_WIDTH/8)) == 0) return PCRE2_ERROR_BADMODE;
 
 cb.version = 0;
 cc = (PCRE2_SPTR)((uint8_t *)re + sizeof(pcre2_real_code))
@@ -414,8 +405,7 @@ while (TRUE)
     cb.callout_string_length = 0;
     cb.callout_string = NULL;
     rc = callback(&cb, callout_data);
-    if (rc != 0) { return rc;
-}
+    if (rc != 0) return rc;
     cc += PRIV(OP_lengths)[*cc];
     break;
 
@@ -428,8 +418,7 @@ while (TRUE)
       GET(cc, 1 + 2*LINK_SIZE) - (1 + 4*LINK_SIZE) - 2;
     cb.callout_string = cc + (1 + 4*LINK_SIZE) + 1;
     rc = callback(&cb, callout_data);
-    if (rc != 0) { return rc;
-}
+    if (rc != 0) return rc;
     cc += GET(cc, 1 + 2*LINK_SIZE);
     break;
 

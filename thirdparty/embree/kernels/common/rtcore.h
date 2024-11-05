@@ -6,7 +6,7 @@
 #include "../../include/embree4/rtcore.h"
 RTC_NAMESPACE_USE
 
-namespace embree;
+namespace embree
 {
   /*! decoding of intersection flags */
   __forceinline bool isCoherent  (RTCRayQueryFlags flags) { return (flags & RTC_RAY_QUERY_FLAG_COHERENT) == RTC_RAY_QUERY_FLAG_COHERENT; }

@@ -25,14 +25,14 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #if !defined(CVTT_SINGLE_FILE) || defined(CVTT_SINGLE_FILE_IMPL)
 
-#include <cstdint>
+#include <stdint.h>
 #include "ConvectionKernels.h"
 #include "ConvectionKernels_Util.h"
 #include "ConvectionKernels_BC67.h"
 #include "ConvectionKernels_ETC.h"
 #include "ConvectionKernels_S3TC.h"
 
-#include <cassert>
+#include <assert.h>
 
 namespace cvtt
 {
@@ -277,13 +277,11 @@ namespace cvtt
 
             for (size_t blockBase = 0; blockBase < cvtt::NumParallelBlocks; blockBase++)
             {
-                for (size_t blockData = 0; blockData < 8; blockData++) {
+                for (size_t blockData = 0; blockData < 8; blockData++)
                     pBC[blockBase * 16 + blockData] = alphaBlockData[blockBase * 8 + blockData];
-}
 
-                for (size_t blockData = 0; blockData < 8; blockData++) {
+                for (size_t blockData = 0; blockData < 8; blockData++)
                     pBC[blockBase * 16 + 8 + blockData] = colorBlockData[blockBase * 8 + blockData];
-}
             }
         }
 

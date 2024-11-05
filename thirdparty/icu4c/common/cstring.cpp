@@ -23,8 +23,8 @@
 
 
 
-#include <cstdlib>
-#include <cstdio>
+#include <stdlib.h>
+#include <stdio.h>
 #include "unicode/utypes.h"
 #include "cmemory.h"
 #include "cstring.h"
@@ -125,9 +125,9 @@ T_CString_toLowerCase(char* str)
     char* origPtr = str;
 
     if (str) {
-        do {
+        do
             *str = uprv_tolower(*str);
-        } while (*(str++));
+        while (*(str++));
     }
 
     return origPtr;
@@ -139,9 +139,9 @@ T_CString_toUpperCase(char* str)
     char* origPtr = str;
 
     if (str) {
-        do {
+        do
             *str = uprv_toupper(*str);
-        } while (*(str++));
+        while (*(str++));
     }
 
     return origPtr;

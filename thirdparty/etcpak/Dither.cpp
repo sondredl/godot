@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <cstring>
+#include <string.h>
 
 #include "Dither.hpp"
 #include "Math.hpp"

@@ -14,7 +14,7 @@
 #include "unicode/uobject.h"
 #include "lsr.h"
 
-U_NAMESPACE_BEGIN;
+U_NAMESPACE_BEGIN
 
 struct LocaleDistanceData;
 
@@ -22,7 +22,7 @@ struct LocaleDistanceData;
  * Offline-built data for LocaleMatcher.
  * Mostly but not only the data for mapping locales to their maximized forms.
  */
-class LocaleDistance; final : public UMemory {
+class LocaleDistance final : public UMemory {
 public:
     static const LocaleDistance *getSingleton(UErrorCode &errorCode);
 

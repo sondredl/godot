@@ -65,9 +65,8 @@ public:
 		else
 		{
 			// If we have more threads than the CPU, don't hog the CPU for very long periods of time.
-			while (iteration.load(std::memory_order_relaxed) != target_iteration) {
+			while (iteration.load(std::memory_order_relaxed) != target_iteration)
 				std::this_thread::yield();
-}
 		}
 	}
 

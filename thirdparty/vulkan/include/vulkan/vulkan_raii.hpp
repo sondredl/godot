@@ -54,7 +54,7 @@ namespace VULKAN_HPP_NAMESPACE
       {
       }
 
-
+    public:
       PFN_vkGetInstanceProcAddr vkGetInstanceProcAddr = 0;
 
       //=== VK_VERSION_1_0 ===
@@ -389,7 +389,7 @@ namespace VULKAN_HPP_NAMESPACE
         vkGetDeviceProcAddr = PFN_vkGetDeviceProcAddr( vkGetInstanceProcAddr( instance, "vkGetDeviceProcAddr" ) );
       }
 
-
+    public:
       //=== VK_VERSION_1_0 ===
       PFN_vkDestroyInstance                              vkDestroyInstance                              = 0;
       PFN_vkEnumeratePhysicalDevices                     vkEnumeratePhysicalDevices                     = 0;
@@ -1724,7 +1724,7 @@ namespace VULKAN_HPP_NAMESPACE
           PFN_vkCmdBindDescriptorBufferEmbeddedSamplers2EXT( vkGetDeviceProcAddr( device, "vkCmdBindDescriptorBufferEmbeddedSamplers2EXT" ) );
       }
 
-
+    public:
       //=== VK_VERSION_1_0 ===
       PFN_vkGetDeviceProcAddr                vkGetDeviceProcAddr                = 0;
       PFN_vkDestroyDevice                    vkDestroyDevice                    = 0;
@@ -2727,7 +2727,7 @@ namespace VULKAN_HPP_NAMESPACE
       ~Context() = default;
 
       Context( Context const & ) = delete;
-      Context( Context && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Context( Context && rhs ) VULKAN_HPP_NOEXCEPT
 #  if VULKAN_HPP_ENABLE_DYNAMIC_LOADER_TOOL
         : m_dynamicLoader( std::move( rhs.m_dynamicLoader ) )
         , m_dispatcher( rhs.m_dispatcher.release() )
@@ -2738,7 +2738,7 @@ namespace VULKAN_HPP_NAMESPACE
       }
       Context & operator=( Context const & ) = delete;
 
-      Context & operator=( Context && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Context & operator=( Context && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -2797,7 +2797,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eInstance;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       Instance( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Context const &                context,
                 VULKAN_HPP_NAMESPACE::InstanceCreateInfo const &                                createInfo,
@@ -2826,7 +2826,7 @@ namespace VULKAN_HPP_NAMESPACE
       Instance()                   = delete;
       Instance( Instance const & ) = delete;
 
-      Instance( Instance && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Instance( Instance && rhs ) VULKAN_HPP_NOEXCEPT
         : m_instance( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_instance, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
         , m_dispatcher( rhs.m_dispatcher.release() )
@@ -2835,7 +2835,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       Instance & operator=( Instance const & ) = delete;
 
-      Instance & operator=( Instance && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Instance & operator=( Instance && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -3078,7 +3078,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::ePhysicalDevice;
 
-
+    public:
       PhysicalDevice( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Instance const & instance, VkPhysicalDevice physicalDevice )
         : m_physicalDevice( physicalDevice ), m_dispatcher( instance.getDispatcher() )
       {
@@ -3095,7 +3095,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       PhysicalDevice( PhysicalDevice const & rhs ) : m_physicalDevice( rhs.m_physicalDevice ), m_dispatcher( rhs.m_dispatcher ) {}
 
-      PhysicalDevice( PhysicalDevice && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      PhysicalDevice( PhysicalDevice && rhs ) VULKAN_HPP_NOEXCEPT
         : m_physicalDevice( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_physicalDevice, {} ) )
         , m_dispatcher( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_dispatcher, nullptr ) )
       {
@@ -3535,7 +3535,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eDevice;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       Device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::PhysicalDevice const &         physicalDevice,
               VULKAN_HPP_NAMESPACE::DeviceCreateInfo const &                                  createInfo,
@@ -3564,7 +3564,7 @@ namespace VULKAN_HPP_NAMESPACE
       Device()                 = delete;
       Device( Device const & ) = delete;
 
-      Device( Device && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Device( Device && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
         , m_dispatcher( rhs.m_dispatcher.release() )
@@ -3573,7 +3573,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       Device & operator=( Device const & ) = delete;
 
-      Device & operator=( Device && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Device & operator=( Device && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -4602,7 +4602,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eAccelerationStructureKHR;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       AccelerationStructureKHR( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                                 VULKAN_HPP_NAMESPACE::AccelerationStructureCreateInfoKHR const &                createInfo,
@@ -4632,7 +4632,7 @@ namespace VULKAN_HPP_NAMESPACE
       AccelerationStructureKHR()                                   = delete;
       AccelerationStructureKHR( AccelerationStructureKHR const & ) = delete;
 
-      AccelerationStructureKHR( AccelerationStructureKHR && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      AccelerationStructureKHR( AccelerationStructureKHR && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_accelerationStructure( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_accelerationStructure, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -4642,7 +4642,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       AccelerationStructureKHR & operator=( AccelerationStructureKHR const & ) = delete;
 
-      AccelerationStructureKHR & operator=( AccelerationStructureKHR && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      AccelerationStructureKHR & operator=( AccelerationStructureKHR && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -4722,7 +4722,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eAccelerationStructureNV;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       AccelerationStructureNV( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                                VULKAN_HPP_NAMESPACE::AccelerationStructureCreateInfoNV const &                 createInfo,
@@ -4752,7 +4752,7 @@ namespace VULKAN_HPP_NAMESPACE
       AccelerationStructureNV()                                  = delete;
       AccelerationStructureNV( AccelerationStructureNV const & ) = delete;
 
-      AccelerationStructureNV( AccelerationStructureNV && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      AccelerationStructureNV( AccelerationStructureNV && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_accelerationStructure( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_accelerationStructure, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -4762,7 +4762,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       AccelerationStructureNV & operator=( AccelerationStructureNV const & ) = delete;
 
-      AccelerationStructureNV & operator=( AccelerationStructureNV && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      AccelerationStructureNV & operator=( AccelerationStructureNV && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -4850,7 +4850,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eBuffer;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       Buffer( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
               VULKAN_HPP_NAMESPACE::BufferCreateInfo const &                                  createInfo,
@@ -4880,7 +4880,7 @@ namespace VULKAN_HPP_NAMESPACE
       Buffer()                 = delete;
       Buffer( Buffer const & ) = delete;
 
-      Buffer( Buffer && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Buffer( Buffer && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_buffer( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_buffer, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -4890,7 +4890,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       Buffer & operator=( Buffer const & ) = delete;
 
-      Buffer & operator=( Buffer && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Buffer & operator=( Buffer && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -5105,7 +5105,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eBufferView;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       BufferView( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                   VULKAN_HPP_NAMESPACE::BufferViewCreateInfo const &                              createInfo,
@@ -5135,7 +5135,7 @@ namespace VULKAN_HPP_NAMESPACE
       BufferView()                     = delete;
       BufferView( BufferView const & ) = delete;
 
-      BufferView( BufferView && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      BufferView( BufferView && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_bufferView( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_bufferView, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -5145,7 +5145,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       BufferView & operator=( BufferView const & ) = delete;
 
-      BufferView & operator=( BufferView && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      BufferView & operator=( BufferView && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -5224,7 +5224,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eCommandPool;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       CommandPool( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                    VULKAN_HPP_NAMESPACE::CommandPoolCreateInfo const &                             createInfo,
@@ -5254,7 +5254,7 @@ namespace VULKAN_HPP_NAMESPACE
       CommandPool()                      = delete;
       CommandPool( CommandPool const & ) = delete;
 
-      CommandPool( CommandPool && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      CommandPool( CommandPool && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_commandPool( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_commandPool, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -5264,7 +5264,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       CommandPool & operator=( CommandPool const & ) = delete;
 
-      CommandPool & operator=( CommandPool && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      CommandPool & operator=( CommandPool && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -5355,7 +5355,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eCommandBuffer;
 
-
+    public:
       CommandBuffer( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const & device, VkCommandBuffer commandBuffer, VkCommandPool commandPool )
         : m_device( device ), m_commandPool( commandPool ), m_commandBuffer( commandBuffer ), m_dispatcher( device.getDispatcher() )
       {
@@ -5371,7 +5371,7 @@ namespace VULKAN_HPP_NAMESPACE
       CommandBuffer()                        = delete;
       CommandBuffer( CommandBuffer const & ) = delete;
 
-      CommandBuffer( CommandBuffer && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      CommandBuffer( CommandBuffer && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_commandPool( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_commandPool, {} ) )
         , m_commandBuffer( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_commandBuffer, {} ) )
@@ -5381,7 +5381,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       CommandBuffer & operator=( CommandBuffer const & ) = delete;
 
-      CommandBuffer & operator=( CommandBuffer && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      CommandBuffer & operator=( CommandBuffer && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -6425,7 +6425,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eCuFunctionNVX;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       CuFunctionNVX( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                      VULKAN_HPP_NAMESPACE::CuFunctionCreateInfoNVX const &                           createInfo,
@@ -6455,7 +6455,7 @@ namespace VULKAN_HPP_NAMESPACE
       CuFunctionNVX()                        = delete;
       CuFunctionNVX( CuFunctionNVX const & ) = delete;
 
-      CuFunctionNVX( CuFunctionNVX && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      CuFunctionNVX( CuFunctionNVX && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_function( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_function, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -6465,7 +6465,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       CuFunctionNVX & operator=( CuFunctionNVX const & ) = delete;
 
-      CuFunctionNVX & operator=( CuFunctionNVX && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      CuFunctionNVX & operator=( CuFunctionNVX && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -6544,7 +6544,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eCuModuleNVX;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       CuModuleNVX( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                    VULKAN_HPP_NAMESPACE::CuModuleCreateInfoNVX const &                             createInfo,
@@ -6574,7 +6574,7 @@ namespace VULKAN_HPP_NAMESPACE
       CuModuleNVX()                      = delete;
       CuModuleNVX( CuModuleNVX const & ) = delete;
 
-      CuModuleNVX( CuModuleNVX && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      CuModuleNVX( CuModuleNVX && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_module( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_module, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -6584,7 +6584,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       CuModuleNVX & operator=( CuModuleNVX const & ) = delete;
 
-      CuModuleNVX & operator=( CuModuleNVX && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      CuModuleNVX & operator=( CuModuleNVX && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -6909,7 +6909,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eDebugReportCallbackEXT;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       DebugReportCallbackEXT( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Instance const &               instance,
                               VULKAN_HPP_NAMESPACE::DebugReportCallbackCreateInfoEXT const &                  createInfo,
@@ -6939,7 +6939,7 @@ namespace VULKAN_HPP_NAMESPACE
       DebugReportCallbackEXT()                                 = delete;
       DebugReportCallbackEXT( DebugReportCallbackEXT const & ) = delete;
 
-      DebugReportCallbackEXT( DebugReportCallbackEXT && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      DebugReportCallbackEXT( DebugReportCallbackEXT && rhs ) VULKAN_HPP_NOEXCEPT
         : m_instance( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_instance, {} ) )
         , m_callback( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_callback, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -6949,7 +6949,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       DebugReportCallbackEXT & operator=( DebugReportCallbackEXT const & ) = delete;
 
-      DebugReportCallbackEXT & operator=( DebugReportCallbackEXT && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      DebugReportCallbackEXT & operator=( DebugReportCallbackEXT && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -7029,7 +7029,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eUnknown;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       DebugUtilsMessengerEXT( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Instance const &               instance,
                               VULKAN_HPP_NAMESPACE::DebugUtilsMessengerCreateInfoEXT const &                  createInfo,
@@ -7059,7 +7059,7 @@ namespace VULKAN_HPP_NAMESPACE
       DebugUtilsMessengerEXT()                                 = delete;
       DebugUtilsMessengerEXT( DebugUtilsMessengerEXT const & ) = delete;
 
-      DebugUtilsMessengerEXT( DebugUtilsMessengerEXT && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      DebugUtilsMessengerEXT( DebugUtilsMessengerEXT && rhs ) VULKAN_HPP_NOEXCEPT
         : m_instance( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_instance, {} ) )
         , m_messenger( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_messenger, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -7069,7 +7069,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       DebugUtilsMessengerEXT & operator=( DebugUtilsMessengerEXT const & ) = delete;
 
-      DebugUtilsMessengerEXT & operator=( DebugUtilsMessengerEXT && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      DebugUtilsMessengerEXT & operator=( DebugUtilsMessengerEXT && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -7149,7 +7149,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eUnknown;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       DeferredOperationKHR( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                             VULKAN_HPP_NAMESPACE::Optional<const VULKAN_HPP_NAMESPACE::AllocationCallbacks> allocator = nullptr )
@@ -7178,7 +7178,7 @@ namespace VULKAN_HPP_NAMESPACE
       DeferredOperationKHR()                               = delete;
       DeferredOperationKHR( DeferredOperationKHR const & ) = delete;
 
-      DeferredOperationKHR( DeferredOperationKHR && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      DeferredOperationKHR( DeferredOperationKHR && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_operation( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_operation, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -7188,7 +7188,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       DeferredOperationKHR & operator=( DeferredOperationKHR const & ) = delete;
 
-      DeferredOperationKHR & operator=( DeferredOperationKHR && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      DeferredOperationKHR & operator=( DeferredOperationKHR && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -7276,7 +7276,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eDescriptorPool;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       DescriptorPool( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                       VULKAN_HPP_NAMESPACE::DescriptorPoolCreateInfo const &                          createInfo,
@@ -7306,7 +7306,7 @@ namespace VULKAN_HPP_NAMESPACE
       DescriptorPool()                         = delete;
       DescriptorPool( DescriptorPool const & ) = delete;
 
-      DescriptorPool( DescriptorPool && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      DescriptorPool( DescriptorPool && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_descriptorPool( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_descriptorPool, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -7316,7 +7316,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       DescriptorPool & operator=( DescriptorPool const & ) = delete;
 
-      DescriptorPool & operator=( DescriptorPool && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      DescriptorPool & operator=( DescriptorPool && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -7400,7 +7400,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eDescriptorSet;
 
-
+    public:
       DescriptorSet( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const & device, VkDescriptorSet descriptorSet, VkDescriptorPool descriptorPool )
         : m_device( device ), m_descriptorPool( descriptorPool ), m_descriptorSet( descriptorSet ), m_dispatcher( device.getDispatcher() )
       {
@@ -7416,7 +7416,7 @@ namespace VULKAN_HPP_NAMESPACE
       DescriptorSet()                        = delete;
       DescriptorSet( DescriptorSet const & ) = delete;
 
-      DescriptorSet( DescriptorSet && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      DescriptorSet( DescriptorSet && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_descriptorPool( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_descriptorPool, {} ) )
         , m_descriptorSet( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_descriptorSet, {} ) )
@@ -7426,7 +7426,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       DescriptorSet & operator=( DescriptorSet const & ) = delete;
 
-      DescriptorSet & operator=( DescriptorSet && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      DescriptorSet & operator=( DescriptorSet && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -7547,7 +7547,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eDescriptorSetLayout;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       DescriptorSetLayout( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                            VULKAN_HPP_NAMESPACE::DescriptorSetLayoutCreateInfo const &                     createInfo,
@@ -7577,7 +7577,7 @@ namespace VULKAN_HPP_NAMESPACE
       DescriptorSetLayout()                              = delete;
       DescriptorSetLayout( DescriptorSetLayout const & ) = delete;
 
-      DescriptorSetLayout( DescriptorSetLayout && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      DescriptorSetLayout( DescriptorSetLayout && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_descriptorSetLayout( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_descriptorSetLayout, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -7587,7 +7587,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       DescriptorSetLayout & operator=( DescriptorSetLayout const & ) = delete;
 
-      DescriptorSetLayout & operator=( DescriptorSetLayout && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      DescriptorSetLayout & operator=( DescriptorSetLayout && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -7673,7 +7673,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eDescriptorUpdateTemplate;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       DescriptorUpdateTemplate( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                                 VULKAN_HPP_NAMESPACE::DescriptorUpdateTemplateCreateInfo const &                createInfo,
@@ -7703,7 +7703,7 @@ namespace VULKAN_HPP_NAMESPACE
       DescriptorUpdateTemplate()                                   = delete;
       DescriptorUpdateTemplate( DescriptorUpdateTemplate const & ) = delete;
 
-      DescriptorUpdateTemplate( DescriptorUpdateTemplate && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      DescriptorUpdateTemplate( DescriptorUpdateTemplate && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_descriptorUpdateTemplate( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_descriptorUpdateTemplate, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -7713,7 +7713,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       DescriptorUpdateTemplate & operator=( DescriptorUpdateTemplate const & ) = delete;
 
-      DescriptorUpdateTemplate & operator=( DescriptorUpdateTemplate && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      DescriptorUpdateTemplate & operator=( DescriptorUpdateTemplate && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -7793,7 +7793,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eDeviceMemory;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       DeviceMemory( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                     VULKAN_HPP_NAMESPACE::MemoryAllocateInfo const &                                allocateInfo,
@@ -7823,7 +7823,7 @@ namespace VULKAN_HPP_NAMESPACE
       DeviceMemory()                       = delete;
       DeviceMemory( DeviceMemory const & ) = delete;
 
-      DeviceMemory( DeviceMemory && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      DeviceMemory( DeviceMemory && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_memory( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_memory, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -7833,7 +7833,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       DeviceMemory & operator=( DeviceMemory const & ) = delete;
 
-      DeviceMemory & operator=( DeviceMemory && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      DeviceMemory & operator=( DeviceMemory && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -7932,7 +7932,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eDisplayKHR;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       DisplayKHR( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::PhysicalDevice const & physicalDevice, int32_t drmFd, uint32_t connectorId )
       {
@@ -7973,7 +7973,7 @@ namespace VULKAN_HPP_NAMESPACE
       DisplayKHR()                     = delete;
       DisplayKHR( DisplayKHR const & ) = delete;
 
-      DisplayKHR( DisplayKHR && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      DisplayKHR( DisplayKHR && rhs ) VULKAN_HPP_NOEXCEPT
         : m_physicalDevice( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_physicalDevice, {} ) )
         , m_display( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_display, {} ) )
         , m_dispatcher( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_dispatcher, nullptr ) )
@@ -7982,7 +7982,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       DisplayKHR & operator=( DisplayKHR const & ) = delete;
 
-      DisplayKHR & operator=( DisplayKHR && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      DisplayKHR & operator=( DisplayKHR && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -8099,7 +8099,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eDisplayModeKHR;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       DisplayModeKHR( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::DisplayKHR const &             display,
                       VULKAN_HPP_NAMESPACE::DisplayModeCreateInfoKHR const &                          createInfo,
@@ -8125,7 +8125,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       DisplayModeKHR( DisplayModeKHR const & rhs ) : m_displayModeKHR( rhs.m_displayModeKHR ), m_dispatcher( rhs.m_dispatcher ) {}
 
-      DisplayModeKHR( DisplayModeKHR && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      DisplayModeKHR( DisplayModeKHR && rhs ) VULKAN_HPP_NOEXCEPT
         : m_physicalDevice( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_physicalDevice, {} ) )
         , m_displayModeKHR( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_displayModeKHR, {} ) )
         , m_dispatcher( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_dispatcher, nullptr ) )
@@ -8207,7 +8207,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eEvent;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       Event( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
              VULKAN_HPP_NAMESPACE::EventCreateInfo const &                                   createInfo,
@@ -8237,7 +8237,7 @@ namespace VULKAN_HPP_NAMESPACE
       Event()                = delete;
       Event( Event const & ) = delete;
 
-      Event( Event && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Event( Event && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_event( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_event, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -8247,7 +8247,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       Event & operator=( Event const & ) = delete;
 
-      Event & operator=( Event && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Event & operator=( Event && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -8334,7 +8334,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eFence;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       Fence( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
              VULKAN_HPP_NAMESPACE::FenceCreateInfo const &                                   createInfo,
@@ -8383,7 +8383,7 @@ namespace VULKAN_HPP_NAMESPACE
       Fence()                = delete;
       Fence( Fence const & ) = delete;
 
-      Fence( Fence && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Fence( Fence && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_fence( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_fence, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -8393,7 +8393,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       Fence & operator=( Fence const & ) = delete;
 
-      Fence & operator=( Fence && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Fence & operator=( Fence && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -8476,7 +8476,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eFramebuffer;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       Framebuffer( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                    VULKAN_HPP_NAMESPACE::FramebufferCreateInfo const &                             createInfo,
@@ -8506,7 +8506,7 @@ namespace VULKAN_HPP_NAMESPACE
       Framebuffer()                      = delete;
       Framebuffer( Framebuffer const & ) = delete;
 
-      Framebuffer( Framebuffer && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Framebuffer( Framebuffer && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_framebuffer( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_framebuffer, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -8516,7 +8516,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       Framebuffer & operator=( Framebuffer const & ) = delete;
 
-      Framebuffer & operator=( Framebuffer && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Framebuffer & operator=( Framebuffer && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -8599,7 +8599,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eImage;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       Image( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
              VULKAN_HPP_NAMESPACE::ImageCreateInfo const &                                   createInfo,
@@ -8629,7 +8629,7 @@ namespace VULKAN_HPP_NAMESPACE
       Image()                = delete;
       Image( Image const & ) = delete;
 
-      Image( Image && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Image( Image && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_image( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_image, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -8639,7 +8639,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       Image & operator=( Image const & ) = delete;
 
-      Image & operator=( Image && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Image & operator=( Image && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -8751,7 +8751,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eImageView;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       ImageView( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                  VULKAN_HPP_NAMESPACE::ImageViewCreateInfo const &                               createInfo,
@@ -8781,7 +8781,7 @@ namespace VULKAN_HPP_NAMESPACE
       ImageView()                    = delete;
       ImageView( ImageView const & ) = delete;
 
-      ImageView( ImageView && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      ImageView( ImageView && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_imageView( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_imageView, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -8791,7 +8791,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       ImageView & operator=( ImageView const & ) = delete;
 
-      ImageView & operator=( ImageView && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      ImageView & operator=( ImageView && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -8874,7 +8874,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eUnknown;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       IndirectCommandsLayoutNV( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                                 VULKAN_HPP_NAMESPACE::IndirectCommandsLayoutCreateInfoNV const &                createInfo,
@@ -8904,7 +8904,7 @@ namespace VULKAN_HPP_NAMESPACE
       IndirectCommandsLayoutNV()                                   = delete;
       IndirectCommandsLayoutNV( IndirectCommandsLayoutNV const & ) = delete;
 
-      IndirectCommandsLayoutNV( IndirectCommandsLayoutNV && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      IndirectCommandsLayoutNV( IndirectCommandsLayoutNV && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_indirectCommandsLayout( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_indirectCommandsLayout, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -8914,7 +8914,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       IndirectCommandsLayoutNV & operator=( IndirectCommandsLayoutNV const & ) = delete;
 
-      IndirectCommandsLayoutNV & operator=( IndirectCommandsLayoutNV && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      IndirectCommandsLayoutNV & operator=( IndirectCommandsLayoutNV && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -8994,7 +8994,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eUnknown;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       MicromapEXT( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                    VULKAN_HPP_NAMESPACE::MicromapCreateInfoEXT const &                             createInfo,
@@ -9024,7 +9024,7 @@ namespace VULKAN_HPP_NAMESPACE
       MicromapEXT()                      = delete;
       MicromapEXT( MicromapEXT const & ) = delete;
 
-      MicromapEXT( MicromapEXT && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      MicromapEXT( MicromapEXT && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_micromap( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_micromap, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -9034,7 +9034,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       MicromapEXT & operator=( MicromapEXT const & ) = delete;
 
-      MicromapEXT & operator=( MicromapEXT && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      MicromapEXT & operator=( MicromapEXT && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -9113,7 +9113,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eUnknown;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       OpticalFlowSessionNV( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                             VULKAN_HPP_NAMESPACE::OpticalFlowSessionCreateInfoNV const &                    createInfo,
@@ -9143,7 +9143,7 @@ namespace VULKAN_HPP_NAMESPACE
       OpticalFlowSessionNV()                               = delete;
       OpticalFlowSessionNV( OpticalFlowSessionNV const & ) = delete;
 
-      OpticalFlowSessionNV( OpticalFlowSessionNV && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      OpticalFlowSessionNV( OpticalFlowSessionNV && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_session( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_session, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -9153,7 +9153,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       OpticalFlowSessionNV & operator=( OpticalFlowSessionNV const & ) = delete;
 
-      OpticalFlowSessionNV & operator=( OpticalFlowSessionNV && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      OpticalFlowSessionNV & operator=( OpticalFlowSessionNV && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -9239,7 +9239,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eUnknown;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       PerformanceConfigurationINTEL( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &        device,
                                      VULKAN_HPP_NAMESPACE::PerformanceConfigurationAcquireInfoINTEL const & acquireInfo )
@@ -9263,7 +9263,7 @@ namespace VULKAN_HPP_NAMESPACE
       PerformanceConfigurationINTEL()                                        = delete;
       PerformanceConfigurationINTEL( PerformanceConfigurationINTEL const & ) = delete;
 
-      PerformanceConfigurationINTEL( PerformanceConfigurationINTEL && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      PerformanceConfigurationINTEL( PerformanceConfigurationINTEL && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_configuration( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_configuration, {} ) )
         , m_dispatcher( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_dispatcher, nullptr ) )
@@ -9272,7 +9272,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       PerformanceConfigurationINTEL & operator=( PerformanceConfigurationINTEL const & ) = delete;
 
-      PerformanceConfigurationINTEL & operator=( PerformanceConfigurationINTEL && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      PerformanceConfigurationINTEL & operator=( PerformanceConfigurationINTEL && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -9346,7 +9346,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::ePipelineCache;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       PipelineCache( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                      VULKAN_HPP_NAMESPACE::PipelineCacheCreateInfo const &                           createInfo,
@@ -9376,7 +9376,7 @@ namespace VULKAN_HPP_NAMESPACE
       PipelineCache()                        = delete;
       PipelineCache( PipelineCache const & ) = delete;
 
-      PipelineCache( PipelineCache && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      PipelineCache( PipelineCache && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_pipelineCache( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_pipelineCache, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -9386,7 +9386,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       PipelineCache & operator=( PipelineCache const & ) = delete;
 
-      PipelineCache & operator=( PipelineCache && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      PipelineCache & operator=( PipelineCache && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -9472,7 +9472,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::ePipeline;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       Pipeline( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                                              device,
                 VULKAN_HPP_NAMESPACE::Optional<const VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::PipelineCache> const & pipelineCache,
@@ -9548,7 +9548,7 @@ namespace VULKAN_HPP_NAMESPACE
       Pipeline()                   = delete;
       Pipeline( Pipeline const & ) = delete;
 
-      Pipeline( Pipeline && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Pipeline( Pipeline && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_pipeline( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_pipeline, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -9559,7 +9559,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       Pipeline & operator=( Pipeline const & ) = delete;
 
-      Pipeline & operator=( Pipeline && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Pipeline & operator=( Pipeline && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -9760,7 +9760,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::ePipelineLayout;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       PipelineLayout( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                       VULKAN_HPP_NAMESPACE::PipelineLayoutCreateInfo const &                          createInfo,
@@ -9790,7 +9790,7 @@ namespace VULKAN_HPP_NAMESPACE
       PipelineLayout()                         = delete;
       PipelineLayout( PipelineLayout const & ) = delete;
 
-      PipelineLayout( PipelineLayout && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      PipelineLayout( PipelineLayout && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_pipelineLayout( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_pipelineLayout, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -9800,7 +9800,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       PipelineLayout & operator=( PipelineLayout const & ) = delete;
 
-      PipelineLayout & operator=( PipelineLayout && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      PipelineLayout & operator=( PipelineLayout && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -9880,7 +9880,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eUnknown;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       PrivateDataSlot( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                        VULKAN_HPP_NAMESPACE::PrivateDataSlotCreateInfo const &                         createInfo,
@@ -9910,7 +9910,7 @@ namespace VULKAN_HPP_NAMESPACE
       PrivateDataSlot()                          = delete;
       PrivateDataSlot( PrivateDataSlot const & ) = delete;
 
-      PrivateDataSlot( PrivateDataSlot && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      PrivateDataSlot( PrivateDataSlot && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_privateDataSlot( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_privateDataSlot, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -9920,7 +9920,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       PrivateDataSlot & operator=( PrivateDataSlot const & ) = delete;
 
-      PrivateDataSlot & operator=( PrivateDataSlot && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      PrivateDataSlot & operator=( PrivateDataSlot && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -10000,7 +10000,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eQueryPool;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       QueryPool( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                  VULKAN_HPP_NAMESPACE::QueryPoolCreateInfo const &                               createInfo,
@@ -10030,7 +10030,7 @@ namespace VULKAN_HPP_NAMESPACE
       QueryPool()                    = delete;
       QueryPool( QueryPool const & ) = delete;
 
-      QueryPool( QueryPool && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      QueryPool( QueryPool && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_queryPool( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_queryPool, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -10040,7 +10040,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       QueryPool & operator=( QueryPool const & ) = delete;
 
-      QueryPool & operator=( QueryPool && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      QueryPool & operator=( QueryPool && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -10144,7 +10144,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eQueue;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       Queue( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const & device, uint32_t queueFamilyIndex, uint32_t queueIndex )
       {
@@ -10174,7 +10174,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       Queue( Queue const & rhs ) : m_queue( rhs.m_queue ), m_dispatcher( rhs.m_dispatcher ) {}
 
-      Queue( Queue && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Queue( Queue && rhs ) VULKAN_HPP_NOEXCEPT
         : m_queue( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_queue, {} ) )
         , m_dispatcher( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_dispatcher, nullptr ) )
       {
@@ -10292,7 +10292,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eRenderPass;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       RenderPass( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                   VULKAN_HPP_NAMESPACE::RenderPassCreateInfo const &                              createInfo,
@@ -10331,7 +10331,7 @@ namespace VULKAN_HPP_NAMESPACE
       RenderPass()                     = delete;
       RenderPass( RenderPass const & ) = delete;
 
-      RenderPass( RenderPass && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      RenderPass( RenderPass && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_renderPass( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_renderPass, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -10341,7 +10341,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       RenderPass & operator=( RenderPass const & ) = delete;
 
-      RenderPass & operator=( RenderPass && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      RenderPass & operator=( RenderPass && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -10428,7 +10428,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eSampler;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       Sampler( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                VULKAN_HPP_NAMESPACE::SamplerCreateInfo const &                                 createInfo,
@@ -10458,7 +10458,7 @@ namespace VULKAN_HPP_NAMESPACE
       Sampler()                  = delete;
       Sampler( Sampler const & ) = delete;
 
-      Sampler( Sampler && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Sampler( Sampler && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_sampler( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_sampler, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -10468,7 +10468,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       Sampler & operator=( Sampler const & ) = delete;
 
-      Sampler & operator=( Sampler && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Sampler & operator=( Sampler && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -10547,7 +10547,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eSamplerYcbcrConversion;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       SamplerYcbcrConversion( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                               VULKAN_HPP_NAMESPACE::SamplerYcbcrConversionCreateInfo const &                  createInfo,
@@ -10577,7 +10577,7 @@ namespace VULKAN_HPP_NAMESPACE
       SamplerYcbcrConversion()                                 = delete;
       SamplerYcbcrConversion( SamplerYcbcrConversion const & ) = delete;
 
-      SamplerYcbcrConversion( SamplerYcbcrConversion && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      SamplerYcbcrConversion( SamplerYcbcrConversion && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_ycbcrConversion( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_ycbcrConversion, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -10587,7 +10587,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       SamplerYcbcrConversion & operator=( SamplerYcbcrConversion const & ) = delete;
 
-      SamplerYcbcrConversion & operator=( SamplerYcbcrConversion && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      SamplerYcbcrConversion & operator=( SamplerYcbcrConversion && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -10667,7 +10667,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eSemaphore;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       Semaphore( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                  VULKAN_HPP_NAMESPACE::SemaphoreCreateInfo const &                               createInfo,
@@ -10697,7 +10697,7 @@ namespace VULKAN_HPP_NAMESPACE
       Semaphore()                    = delete;
       Semaphore( Semaphore const & ) = delete;
 
-      Semaphore( Semaphore && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Semaphore( Semaphore && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_semaphore( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_semaphore, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -10707,7 +10707,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       Semaphore & operator=( Semaphore const & ) = delete;
 
-      Semaphore & operator=( Semaphore && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      Semaphore & operator=( Semaphore && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -10794,7 +10794,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eUnknown;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       ShaderEXT( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                  VULKAN_HPP_NAMESPACE::ShaderCreateInfoEXT const &                               createInfo,
@@ -10826,7 +10826,7 @@ namespace VULKAN_HPP_NAMESPACE
       ShaderEXT()                    = delete;
       ShaderEXT( ShaderEXT const & ) = delete;
 
-      ShaderEXT( ShaderEXT && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      ShaderEXT( ShaderEXT && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_shader( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_shader, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -10837,7 +10837,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       ShaderEXT & operator=( ShaderEXT const & ) = delete;
 
-      ShaderEXT & operator=( ShaderEXT && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      ShaderEXT & operator=( ShaderEXT && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -10957,7 +10957,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eShaderModule;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       ShaderModule( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                     VULKAN_HPP_NAMESPACE::ShaderModuleCreateInfo const &                            createInfo,
@@ -10987,7 +10987,7 @@ namespace VULKAN_HPP_NAMESPACE
       ShaderModule()                       = delete;
       ShaderModule( ShaderModule const & ) = delete;
 
-      ShaderModule( ShaderModule && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      ShaderModule( ShaderModule && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_shaderModule( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_shaderModule, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -10997,7 +10997,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       ShaderModule & operator=( ShaderModule const & ) = delete;
 
-      ShaderModule & operator=( ShaderModule && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      ShaderModule & operator=( ShaderModule && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -11080,7 +11080,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eSurfaceKHR;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
 #    if defined( VK_USE_PLATFORM_ANDROID_KHR )
       SurfaceKHR( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Instance const &               instance,
@@ -11262,7 +11262,7 @@ namespace VULKAN_HPP_NAMESPACE
       SurfaceKHR()                     = delete;
       SurfaceKHR( SurfaceKHR const & ) = delete;
 
-      SurfaceKHR( SurfaceKHR && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      SurfaceKHR( SurfaceKHR && rhs ) VULKAN_HPP_NOEXCEPT
         : m_instance( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_instance, {} ) )
         , m_surface( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_surface, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -11272,7 +11272,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       SurfaceKHR & operator=( SurfaceKHR const & ) = delete;
 
-      SurfaceKHR & operator=( SurfaceKHR && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      SurfaceKHR & operator=( SurfaceKHR && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -11351,7 +11351,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eSwapchainKHR;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       SwapchainKHR( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                     VULKAN_HPP_NAMESPACE::SwapchainCreateInfoKHR const &                            createInfo,
@@ -11381,7 +11381,7 @@ namespace VULKAN_HPP_NAMESPACE
       SwapchainKHR()                       = delete;
       SwapchainKHR( SwapchainKHR const & ) = delete;
 
-      SwapchainKHR( SwapchainKHR && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      SwapchainKHR( SwapchainKHR && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_swapchain( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_swapchain, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -11391,7 +11391,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       SwapchainKHR & operator=( SwapchainKHR const & ) = delete;
 
-      SwapchainKHR & operator=( SwapchainKHR && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      SwapchainKHR & operator=( SwapchainKHR && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -11546,7 +11546,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eValidationCacheEXT;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       ValidationCacheEXT( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                           VULKAN_HPP_NAMESPACE::ValidationCacheCreateInfoEXT const &                      createInfo,
@@ -11576,7 +11576,7 @@ namespace VULKAN_HPP_NAMESPACE
       ValidationCacheEXT()                             = delete;
       ValidationCacheEXT( ValidationCacheEXT const & ) = delete;
 
-      ValidationCacheEXT( ValidationCacheEXT && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      ValidationCacheEXT( ValidationCacheEXT && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_validationCache( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_validationCache, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -11586,7 +11586,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       ValidationCacheEXT & operator=( ValidationCacheEXT const & ) = delete;
 
-      ValidationCacheEXT & operator=( ValidationCacheEXT && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      ValidationCacheEXT & operator=( ValidationCacheEXT && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -11672,7 +11672,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eUnknown;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       VideoSessionKHR( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                        VULKAN_HPP_NAMESPACE::VideoSessionCreateInfoKHR const &                         createInfo,
@@ -11702,7 +11702,7 @@ namespace VULKAN_HPP_NAMESPACE
       VideoSessionKHR()                          = delete;
       VideoSessionKHR( VideoSessionKHR const & ) = delete;
 
-      VideoSessionKHR( VideoSessionKHR && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      VideoSessionKHR( VideoSessionKHR && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_videoSession( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_videoSession, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -11712,7 +11712,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       VideoSessionKHR & operator=( VideoSessionKHR const & ) = delete;
 
-      VideoSessionKHR & operator=( VideoSessionKHR && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      VideoSessionKHR & operator=( VideoSessionKHR && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {
@@ -11798,7 +11798,7 @@ namespace VULKAN_HPP_NAMESPACE
       static VULKAN_HPP_CONST_OR_CONSTEXPR VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT debugReportObjectType =
         VULKAN_HPP_NAMESPACE::DebugReportObjectTypeEXT::eUnknown;
 
-
+    public:
 #  if !defined( VULKAN_HPP_RAII_NO_EXCEPTIONS )
       VideoSessionParametersKHR( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::Device const &                 device,
                                  VULKAN_HPP_NAMESPACE::VideoSessionParametersCreateInfoKHR const &               createInfo,
@@ -11828,7 +11828,7 @@ namespace VULKAN_HPP_NAMESPACE
       VideoSessionParametersKHR()                                    = delete;
       VideoSessionParametersKHR( VideoSessionParametersKHR const & ) = delete;
 
-      VideoSessionParametersKHR( VideoSessionParametersKHR && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      VideoSessionParametersKHR( VideoSessionParametersKHR && rhs ) VULKAN_HPP_NOEXCEPT
         : m_device( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_device, {} ) )
         , m_videoSessionParameters( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_videoSessionParameters, {} ) )
         , m_allocator( VULKAN_HPP_NAMESPACE::VULKAN_HPP_RAII_NAMESPACE::exchange( rhs.m_allocator, {} ) )
@@ -11838,7 +11838,7 @@ namespace VULKAN_HPP_NAMESPACE
 
       VideoSessionParametersKHR & operator=( VideoSessionParametersKHR const & ) = delete;
 
-      VideoSessionParametersKHR & operator=( VideoSessionParametersKHR && rhs )  noexcept VULKAN_HPP_NOEXCEPT
+      VideoSessionParametersKHR & operator=( VideoSessionParametersKHR && rhs ) VULKAN_HPP_NOEXCEPT
       {
         if ( this != &rhs )
         {

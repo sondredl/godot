@@ -65,7 +65,7 @@ namespace Clipper2Lib {
 
   inline bool IsOdd(int val)
   {
-    return (val & 1) != 0;
+    return (val & 1) ? true : false;
   }
 
 
@@ -392,8 +392,7 @@ namespace Clipper2Lib {
 
   void ReverseOutPts(OutPt* op)
   {
-    if (!op) { return;
-}
+    if (!op) return;
 
     OutPt* op1 = op;
     OutPt* op2;
@@ -431,8 +430,7 @@ namespace Clipper2Lib {
   inline void UncoupleOutRec(Active ae)
   {
     OutRec* outrec = ae.outrec;
-    if (!outrec) { return;
-}
+    if (!outrec) return;
     outrec->front_edge->outrec = nullptr;
     outrec->back_edge->outrec = nullptr;
     outrec->front_edge = nullptr;
@@ -501,8 +499,7 @@ namespace Clipper2Lib {
     OutPt* op2 = op;
     do
     {
-      if (op->pt.y != pt.y) { break;
-}
+      if (op->pt.y != pt.y) break;
       op = op->next;
     } while (op != op2);
     if (op->pt.y == pt.y) // not a proper polygon
@@ -517,8 +514,7 @@ namespace Clipper2Lib {
         while (op2 != op && op2->pt.y < pt.y) op2 = op2->next;
       else
         while (op2 != op && op2->pt.y > pt.y) op2 = op2->next;
-      if (op2 == op) { break;
-}
+      if (op2 == op) break;
 
       // must have touched or crossed the pt.Y horizonal
       // and this must happen an even number of times
@@ -530,22 +526,20 @@ namespace Clipper2Lib {
           return PointInPolygonResult::IsOn;
 
         op2 = op2->next;
-        if (op2 == op) { break;
-}
+        if (op2 == op) break;
         continue;
       }
 
-      if (pt.x < op2->pt.x && pt.x < op2->prev->pt.x) {;
+      if (pt.x < op2->pt.x && pt.x < op2->prev->pt.x);
       // do nothing because
       // we're only interested in edges crossing on the left
-      } else if ((pt.x > op2->prev->pt.x && pt.x > op2->pt.x)) {
+      else if ((pt.x > op2->prev->pt.x && pt.x > op2->pt.x))
         val = 1 - val; // toggle val
-      } else
+      else
       {
         double d = CrossProduct(op2->prev->pt, op2->pt, pt);
         if (d == 0) return PointInPolygonResult::IsOn;
-        if ((d < 0) == is_above) { val = 1 - val;
-}
+        if ((d < 0) == is_above) val = 1 - val;
       }
       is_above = !is_above;
       op2 = op2->next;
@@ -555,8 +549,7 @@ namespace Clipper2Lib {
     {
       double d = CrossProduct(op2->prev->pt, op2->pt, pt);
       if (d == 0) return PointInPolygonResult::IsOn;
-      if ((d < 0) == is_above) { val = 1 - val;
-}
+      if ((d < 0) == is_above) val = 1 - val;
     }
 
     if (val == 0) return PointInPolygonResult::IsOutside;
@@ -596,13 +589,11 @@ namespace Clipper2Lib {
     do
     {
       result = PointInOpPolygon(op->pt, op2);
-      if (result == PointInPolygonResult::IsOutside) { ++outside_cnt;
-      } else if (result == PointInPolygonResult::IsInside) { --outside_cnt;
-}
+      if (result == PointInPolygonResult::IsOutside) ++outside_cnt;
+      else if (result == PointInPolygonResult::IsInside) --outside_cnt;
       op = op->next;
     } while (op != op1 && std::abs(outside_cnt) < 2);
-    if (std::abs(outside_cnt) > 1) { return (outside_cnt < 0);
-}
+    if (std::abs(outside_cnt) > 1) return (outside_cnt < 0);
     // since path1's location is still equivocal, check its midpoint
     Point64 mp = GetBounds(GetCleanPath(op1)).MidPoint();
     Path64 path2 = GetCleanPath(op2);
@@ -616,8 +607,7 @@ namespace Clipper2Lib {
     Vertex& vert, PathType polytype, bool is_open)
   {
     //make sure the vertex is added only once ...
-    if ((VertexFlags::LocalMin & vert.flags) != VertexFlags::None) { return;
-}
+    if ((VertexFlags::LocalMin & vert.flags) != VertexFlags::None) return;
 
     vert.flags = (vert.flags | VertexFlags::LocalMin);
     list.push_back(std::make_unique <LocalMinima>(&vert, polytype, is_open));
@@ -630,8 +620,7 @@ namespace Clipper2Lib {
       std::accumulate(paths.begin(), paths.end(), 0,
         [](const auto& a, const Path64& path)
         {return a + static_cast<unsigned>(path.size()); });
-    if (total_vertex_count == 0) { return;
-}
+    if (total_vertex_count == 0) return;
 
     Vertex* vertices = new Vertex[total_vertex_count], * v = vertices;
     for (const Path64& path : paths)
@@ -1136,8 +1125,7 @@ namespace Clipper2Lib {
 
     //get the turning direction  a1.top, a2.bot, a2.top
     double d = CrossProduct(resident.top, newcomer.bot, newcomer.top);
-    if (d != 0) { return d < 0;
-}
+    if (d != 0) return d < 0;
 
     //edges must be collinear to get here
     //for starting open paths, place them according to
@@ -1156,17 +1144,16 @@ namespace Clipper2Lib {
     int64_t y = newcomer.bot.y;
     bool newcomerIsLeft = newcomer.is_left_bound;
 
-    if (resident.bot.y != y || resident.local_min->vertex->pt.y != y) {
+    if (resident.bot.y != y || resident.local_min->vertex->pt.y != y)
       return newcomer.is_left_bound;
     //resident must also have just been inserted
-    } else if (resident.is_left_bound != newcomerIsLeft) {
+    else if (resident.is_left_bound != newcomerIsLeft)
       return newcomerIsLeft;
-    } else if (CrossProduct(PrevPrevVertex(resident)->pt,
-      resident.bot, resident.top) == 0) { return true;
-    } else {
+    else if (CrossProduct(PrevPrevVertex(resident)->pt,
+      resident.bot, resident.top) == 0) return true;
+    else
       //compare turning direction of the alternate bound
-      r
-}eturn (CrossProduct(PrevPrevVertex(resident)->pt,
+      return (CrossProduct(PrevPrevVertex(resident)->pt,
         newcomer.bot, PrevPrevVertex(newcomer)->pt) > 0) == newcomerIsLeft;
   }
 
@@ -1693,8 +1680,7 @@ namespace Clipper2Lib {
     {
       opCurr->outrec = outrec;
       opCurr = opCurr->next;
-      if (opCurr == outrec->pts) { return;
-}
+      if (opCurr == outrec->pts) return;
     }
   }
 
@@ -1731,15 +1717,13 @@ namespace Clipper2Lib {
       //always trim 180 deg. spikes (in closed paths)
       //but otherwise break if preserveCollinear = true
       if (preserveCollinear &&
-        ((pt.x < horzEdge.top.x) != (horzEdge.bot.x < horzEdge.top.x))) {
+        ((pt.x < horzEdge.top.x) != (horzEdge.bot.x < horzEdge.top.x)))
         break;
-}
 
       horzEdge.vertex_top = NextVertex(horzEdge);
       horzEdge.top = pt;
       wasTrimmed = true;
-      if (IsMaxima(horzEdge)) { break;
-}
+      if (IsMaxima(horzEdge)) break;
       pt = NextVertex(horzEdge)->pt;
     }
 
@@ -1780,10 +1764,9 @@ namespace Clipper2Lib {
     result = e->prev_in_ael;
     while (result)
     {
-      if (result->local_min == e->local_min) { return result;
-      } else if (!IsHorizontal(*result) && e->bot != result->bot) { return nullptr;
-      } else { r
-}esult = result->prev_in_ael;
+      if (result->local_min == e->local_min) return result;
+      else if (!IsHorizontal(*result) && e->bot != result->bot) return nullptr;
+      else result = result->prev_in_ael;
     }
     return result;
   }
@@ -2129,8 +2112,7 @@ namespace Clipper2Lib {
 
   inline bool SetHorzSegHeadingForward(HorzSegment& hs, OutPt* opP, OutPt* opN)
   {
-    if (opP->pt.x == opN->pt.x) { return false;
-}
+    if (opP->pt.x == opN->pt.x) return false;
     if (opP->pt.x < opN->pt.x)
     {
       hs.left_op = opP;
@@ -2231,8 +2213,7 @@ namespace Clipper2Lib {
 
   void MoveSplits(OutRec* fromOr, OutRec* toOr)
   {
-    if (!fromOr->splits) { return;
-}
+    if (!fromOr->splits) return;
     if (!toOr->splits) toOr->splits = new OutRecList();
     OutRecList::iterator orIter = fromOr->splits->begin();
     for (; orIter != fromOr->splits->end(); ++orIter)
@@ -2850,9 +2831,8 @@ namespace Clipper2Lib {
 
   bool BuildPath64(OutPt* op, bool reverse, bool isOpen, Path64& path)
   {
-    if (!op || op->next == op || (!isOpen && op->next == op->prev)) {
+    if (!op || op->next == op || (!isOpen && op->next == op->prev))
       return false;
-}
 
     path.resize(0);
     Point64 lastPt;
@@ -2883,7 +2863,8 @@ namespace Clipper2Lib {
         op2 = op2->next;
     }
 
-    return !path.size() == 3 && IsVerySmallTriangle(*op2);
+    if (path.size() == 3 && IsVerySmallTriangle(*op2)) return false;
+    else return true;
   }
 
   bool ClipperBase::CheckBounds(OutRec* outrec)
@@ -3010,9 +2991,8 @@ namespace Clipper2Lib {
 
   bool BuildPathD(OutPt* op, bool reverse, bool isOpen, PathD& path, double inv_scale)
   {
-    if (!op || op->next == op || (!isOpen && op->next == op->prev)) {
+    if (!op || op->next == op || (!isOpen && op->next == op->prev))
       return false;
-}
 
     path.resize(0);
     Point64 lastPt;
@@ -3051,7 +3031,8 @@ namespace Clipper2Lib {
       else
         op2 = op2->next;
     }
-    return !path.size() == 3 && IsVerySmallTriangle(*op2);
+    if (path.size() == 3 && IsVerySmallTriangle(*op2)) return false;
+    return true;
   }
 
   void ClipperD::BuildPathsD(PathsD& solutionClosed, PathsD* solutionOpen)

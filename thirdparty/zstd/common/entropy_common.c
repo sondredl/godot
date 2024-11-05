@@ -60,10 +60,8 @@ size_t FSE_readNCount_body(short* normalizedCounter, unsigned* maxSVPtr, unsigne
         ZSTD_memcpy(buffer, headerBuffer, hbSize);
         {   size_t const countSize = FSE_readNCount(normalizedCounter, maxSVPtr, tableLogPtr,
                                                     buffer, sizeof(buffer));
-            if (FSE_isError(countSize)) { return countSize;
-}
-            if (countSize > hbSize) { return ERROR(corruption_detected);
-}
+            if (FSE_isError(countSize)) return countSize;
+            if (countSize > hbSize) return ERROR(corruption_detected);
             return countSize;
     }   }
     assert(hbSize >= 8);
@@ -72,8 +70,7 @@ size_t FSE_readNCount_body(short* normalizedCounter, unsigned* maxSVPtr, unsigne
     ZSTD_memset(normalizedCounter, 0, (*maxSVPtr+1) * sizeof(normalizedCounter[0]));   /* all symbols not present in NCount have a frequency of 0 */
     bitStream = MEM_readLE32(ip);
     nbBits = (bitStream & 0xF) + FSE_MIN_TABLELOG;   /* extract tableLog */
-    if (nbBits > FSE_TABLELOG_ABSOLUTE_MAX) { return ERROR(tableLog_tooLarge);
-}
+    if (nbBits > FSE_TABLELOG_ABSOLUTE_MAX) return ERROR(tableLog_tooLarge);
     bitStream >>= 4;
     bitCount = 4;
     *tableLogPtr = nbBits;
@@ -114,8 +111,7 @@ size_t FSE_readNCount_body(short* normalizedCounter, unsigned* maxSVPtr, unsigne
              * at the end, because returning out of a loop makes
              * it harder for the compiler to optimize.
              */
-            if (charnum >= maxSV1) { break;
-}
+            if (charnum >= maxSV1) break;
 
             /* We don't need to set the normalized count to 0
              * because we already memset the whole buffer to 0.
@@ -141,8 +137,7 @@ size_t FSE_readNCount_body(short* normalizedCounter, unsigned* maxSVPtr, unsigne
                 bitCount += nbBits-1;
             } else {
                 count = bitStream & (2*threshold-1);
-                if (count >= threshold) { count -= max;
-}
+                if (count >= threshold) count -= max;
                 bitCount += nbBits;
             }
 
@@ -165,13 +160,11 @@ size_t FSE_readNCount_body(short* normalizedCounter, unsigned* maxSVPtr, unsigne
                  * threshold update condition because we
                  * know that threshold > 1.
                  */
-                if (remaining <= 1) { break;
-}
+                if (remaining <= 1) break;
                 nbBits = ZSTD_highbit32(remaining) + 1;
                 threshold = 1 << (nbBits - 1);
             }
-            if (charnum >= maxSV1) { break;
-}
+            if (charnum >= maxSV1) break;
 
             if (LIKELY(ip <= iend-7) || (ip + (bitCount>>3) <= iend-4)) {
                 ip += bitCount>>3;
@@ -183,13 +176,10 @@ size_t FSE_readNCount_body(short* normalizedCounter, unsigned* maxSVPtr, unsigne
             }
             bitStream = MEM_readLE32(ip) >> bitCount;
     }   }
-    if (remaining != 1) { return ERROR(corruption_detected);
-}
+    if (remaining != 1) return ERROR(corruption_detected);
     /* Only possible when there are too many zeros. */
-    if (charnum > maxSV1) { return ERROR(maxSymbolValue_tooSmall);
-}
-    if (bitCount > 32) { return ERROR(corruption_detected);
-}
+    if (charnum > maxSV1) return ERROR(maxSymbolValue_tooSmall);
+    if (bitCount > 32) return ERROR(corruption_detected);
     *maxSVPtr = charnum-1;
 
     ip += (bitCount+7)>>3;
@@ -261,18 +251,15 @@ HUF_readStats_body(BYTE* huffWeight, size_t hwSize, U32* rankStats,
     size_t iSize;
     size_t oSize;
 
-    if (!srcSize) { return ERROR(srcSize_wrong);
-}
+    if (!srcSize) return ERROR(srcSize_wrong);
     iSize = ip[0];
     /* ZSTD_memset(huffWeight, 0, hwSize);   *//* is not necessary, even though some analyzer complain ... */
 
     if (iSize >= 128) {  /* special header */
         oSize = iSize - 127;
         iSize = ((oSize+1)/2);
-        if (iSize+1 > srcSize) { return ERROR(srcSize_wrong);
-}
-        if (oSize >= hwSize) { return ERROR(corruption_detected);
-}
+        if (iSize+1 > srcSize) return ERROR(srcSize_wrong);
+        if (oSize >= hwSize) return ERROR(corruption_detected);
         ip += 1;
         {   U32 n;
             for (n=0; n<oSize; n+=2) {
@@ -280,45 +267,38 @@ HUF_readStats_body(BYTE* huffWeight, size_t hwSize, U32* rankStats,
                 huffWeight[n+1] = ip[n/2] & 15;
     }   }   }
     else  {   /* header compressed with FSE (normal case) */
-        if (iSize+1 > srcSize) { return ERROR(srcSize_wrong);
-}
+        if (iSize+1 > srcSize) return ERROR(srcSize_wrong);
         /* max (hwSize-1) values decoded, as last one is implied */
         oSize = FSE_decompress_wksp_bmi2(huffWeight, hwSize-1, ip+1, iSize, 6, workSpace, wkspSize, bmi2);
-        if (FSE_isError(oSize)) { return oSize;
-}
+        if (FSE_isError(oSize)) return oSize;
     }
 
     /* collect weight stats */
     ZSTD_memset(rankStats, 0, (HUF_TABLELOG_MAX + 1) * sizeof(U32));
     weightTotal = 0;
     {   U32 n; for (n=0; n<oSize; n++) {
-            if (huffWeight[n] > HUF_TABLELOG_MAX) { return ERROR(corruption_detected);
-}
+            if (huffWeight[n] > HUF_TABLELOG_MAX) return ERROR(corruption_detected);
             rankStats[huffWeight[n]]++;
             weightTotal += (1 << huffWeight[n]) >> 1;
     }   }
-    if (weightTotal == 0) { return ERROR(corruption_detected);
-}
+    if (weightTotal == 0) return ERROR(corruption_detected);
 
     /* get last non-null symbol weight (implied, total must be 2^n) */
     {   U32 const tableLog = ZSTD_highbit32(weightTotal) + 1;
-        if (tableLog > HUF_TABLELOG_MAX) { return ERROR(corruption_detected);
-}
+        if (tableLog > HUF_TABLELOG_MAX) return ERROR(corruption_detected);
         *tableLogPtr = tableLog;
         /* determine last weight */
         {   U32 const total = 1 << tableLog;
             U32 const rest = total - weightTotal;
             U32 const verif = 1 << ZSTD_highbit32(rest);
             U32 const lastWeight = ZSTD_highbit32(rest) + 1;
-            if (verif != rest) { return ERROR(corruption_detected);    /* last value must be a clean power of 2 */
-}
+            if (verif != rest) return ERROR(corruption_detected);    /* last value must be a clean power of 2 */
             huffWeight[oSize] = (BYTE)lastWeight;
             rankStats[lastWeight]++;
     }   }
 
     /* check tree construction validity */
-    if ((rankStats[1] < 2) || (rankStats[1] & 1)) { return ERROR(corruption_detected);   /* by construction : at least 2 elts of rank 1, must be even */
-}
+    if ((rankStats[1] < 2) || (rankStats[1] & 1)) return ERROR(corruption_detected);   /* by construction : at least 2 elts of rank 1, must be even */
 
     /* results */
     *nbSymbolsPtr = (U32)(oSize+1);

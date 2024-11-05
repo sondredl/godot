@@ -32,7 +32,7 @@ write_unknown_chunks(png_structrp png_ptr, png_const_inforp info_ptr,
 
       for (up = info_ptr->unknown_chunks;
            up < info_ptr->unknown_chunks + info_ptr->unknown_chunks_num;
-           ++up) {
+           ++up)
          if ((up->location & where) != 0)
       {
          /* If per-chunk unknown chunk handling is enabled use it, otherwise
@@ -61,14 +61,12 @@ write_unknown_chunks(png_structrp png_ptr, png_const_inforp info_ptr,
 #endif
          {
             /* TODO: review, what is wrong with a zero length unknown chunk? */
-            if (up->size == 0) {
+            if (up->size == 0)
                png_warning(png_ptr, "Writing zero-length unknown chunk");
-}
 
             png_write_chunk(png_ptr, up->name, up->data, up->size);
          }
       }
-}
    }
 }
 #endif /* WRITE_UNKNOWN_CHUNKS */
@@ -87,9 +85,8 @@ png_write_info_before_PLTE(png_structrp png_ptr, png_const_inforp info_ptr)
 {
    png_debug(1, "in png_write_info_before_PLTE");
 
-   if (png_ptr == NULL || info_ptr == NULL) {
+   if (png_ptr == NULL || info_ptr == NULL)
       return;
-}
 
    if ((png_ptr->mode & PNG_WROTE_INFO_BEFORE_PLTE) == 0)
    {
@@ -135,9 +132,8 @@ png_write_info_before_PLTE(png_structrp png_ptr, png_const_inforp info_ptr)
 #  ifdef PNG_WRITE_gAMA_SUPPORTED
       if ((info_ptr->colorspace.flags & PNG_COLORSPACE_INVALID) == 0 &&
           (info_ptr->colorspace.flags & PNG_COLORSPACE_FROM_gAMA) != 0 &&
-          (info_ptr->valid & PNG_INFO_gAMA) != 0) {
+          (info_ptr->valid & PNG_INFO_gAMA) != 0)
          png_write_gAMA_fixed(png_ptr, info_ptr->colorspace.gamma);
-}
 #  endif
 #endif
 
@@ -150,10 +146,9 @@ png_write_info_before_PLTE(png_structrp png_ptr, png_const_inforp info_ptr)
              (info_ptr->valid & PNG_INFO_iCCP) != 0)
          {
 #    ifdef PNG_WRITE_sRGB_SUPPORTED
-               if ((info_ptr->valid & PNG_INFO_sRGB) != 0) {
+               if ((info_ptr->valid & PNG_INFO_sRGB) != 0)
                   png_app_warning(png_ptr,
                       "profile matches sRGB but writing iCCP instead");
-}
 #     endif
 
             png_write_iCCP(png_ptr, info_ptr->iccp_name,
@@ -166,25 +161,22 @@ png_write_info_before_PLTE(png_structrp png_ptr, png_const_inforp info_ptr)
 
 #  ifdef PNG_WRITE_sRGB_SUPPORTED
          if ((info_ptr->colorspace.flags & PNG_COLORSPACE_INVALID) == 0 &&
-             (info_ptr->valid & PNG_INFO_sRGB) != 0) {
+             (info_ptr->valid & PNG_INFO_sRGB) != 0)
             png_write_sRGB(png_ptr, info_ptr->colorspace.rendering_intent);
-}
 #  endif /* WRITE_sRGB */
 #endif /* COLORSPACE */
 
 #ifdef PNG_WRITE_sBIT_SUPPORTED
-         if ((info_ptr->valid & PNG_INFO_sBIT) != 0) {
+         if ((info_ptr->valid & PNG_INFO_sBIT) != 0)
             png_write_sBIT(png_ptr, &(info_ptr->sig_bit), info_ptr->color_type);
-}
 #endif
 
 #ifdef PNG_COLORSPACE_SUPPORTED
 #  ifdef PNG_WRITE_cHRM_SUPPORTED
          if ((info_ptr->colorspace.flags & PNG_COLORSPACE_INVALID) == 0 &&
              (info_ptr->colorspace.flags & PNG_COLORSPACE_FROM_cHRM) != 0 &&
-             (info_ptr->valid & PNG_INFO_cHRM) != 0) {
+             (info_ptr->valid & PNG_INFO_cHRM) != 0)
             png_write_cHRM_fixed(png_ptr, &info_ptr->colorspace.end_points_xy);
-}
 #  endif
 #endif
 
@@ -205,19 +197,17 @@ png_write_info(png_structrp png_ptr, png_const_inforp info_ptr)
 
    png_debug(1, "in png_write_info");
 
-   if (png_ptr == NULL || info_ptr == NULL) {
+   if (png_ptr == NULL || info_ptr == NULL)
       return;
-}
 
    png_write_info_before_PLTE(png_ptr, info_ptr);
 
-   if ((info_ptr->valid & PNG_INFO_PLTE) != 0) {
+   if ((info_ptr->valid & PNG_INFO_PLTE) != 0)
       png_write_PLTE(png_ptr, info_ptr->palette,
           (png_uint_32)info_ptr->num_palette);
 
-   } else if (info_ptr->color_type == PNG_COLOR_TYPE_PALETTE) {
+   else if (info_ptr->color_type == PNG_COLOR_TYPE_PALETTE)
       png_error(png_ptr, "Valid palette required for paletted images");
-}
 
 #ifdef PNG_WRITE_tRNS_SUPPORTED
    if ((info_ptr->valid & PNG_INFO_tRNS) !=0)
@@ -230,14 +220,12 @@ png_write_info(png_structrp png_ptr, png_const_inforp info_ptr)
          int j, jend;
 
          jend = info_ptr->num_trans;
-         if (jend > PNG_MAX_PALETTE_LENGTH) {
+         if (jend > PNG_MAX_PALETTE_LENGTH)
             jend = PNG_MAX_PALETTE_LENGTH;
-}
 
-         for (j = 0; j<jend; ++j) {
+         for (j = 0; j<jend; ++j)
             info_ptr->trans_alpha[j] =
                (png_byte)(255 - info_ptr->trans_alpha[j]);
-}
       }
 #endif
       png_write_tRNS(png_ptr, info_ptr->trans_alpha, &(info_ptr->trans_color),
@@ -245,9 +233,8 @@ png_write_info(png_structrp png_ptr, png_const_inforp info_ptr)
    }
 #endif
 #ifdef PNG_WRITE_bKGD_SUPPORTED
-   if ((info_ptr->valid & PNG_INFO_bKGD) != 0) {
+   if ((info_ptr->valid & PNG_INFO_bKGD) != 0)
       png_write_bKGD(png_ptr, &(info_ptr->background), info_ptr->color_type);
-}
 #endif
 
 #ifdef PNG_WRITE_eXIf_SUPPORTED
@@ -259,38 +246,33 @@ png_write_info(png_structrp png_ptr, png_const_inforp info_ptr)
 #endif
 
 #ifdef PNG_WRITE_hIST_SUPPORTED
-   if ((info_ptr->valid & PNG_INFO_hIST) != 0) {
+   if ((info_ptr->valid & PNG_INFO_hIST) != 0)
       png_write_hIST(png_ptr, info_ptr->hist, info_ptr->num_palette);
-}
 #endif
 
 #ifdef PNG_WRITE_oFFs_SUPPORTED
-   if ((info_ptr->valid & PNG_INFO_oFFs) != 0) {
+   if ((info_ptr->valid & PNG_INFO_oFFs) != 0)
       png_write_oFFs(png_ptr, info_ptr->x_offset, info_ptr->y_offset,
           info_ptr->offset_unit_type);
-}
 #endif
 
 #ifdef PNG_WRITE_pCAL_SUPPORTED
-   if ((info_ptr->valid & PNG_INFO_pCAL) != 0) {
+   if ((info_ptr->valid & PNG_INFO_pCAL) != 0)
       png_write_pCAL(png_ptr, info_ptr->pcal_purpose, info_ptr->pcal_X0,
           info_ptr->pcal_X1, info_ptr->pcal_type, info_ptr->pcal_nparams,
           info_ptr->pcal_units, info_ptr->pcal_params);
-}
 #endif
 
 #ifdef PNG_WRITE_sCAL_SUPPORTED
-   if ((info_ptr->valid & PNG_INFO_sCAL) != 0) {
+   if ((info_ptr->valid & PNG_INFO_sCAL) != 0)
       png_write_sCAL_s(png_ptr, (int)info_ptr->scal_unit,
           info_ptr->scal_s_width, info_ptr->scal_s_height);
-}
 #endif /* sCAL */
 
 #ifdef PNG_WRITE_pHYs_SUPPORTED
-   if ((info_ptr->valid & PNG_INFO_pHYs) != 0) {
+   if ((info_ptr->valid & PNG_INFO_pHYs) != 0)
       png_write_pHYs(png_ptr, info_ptr->x_pixels_per_unit,
           info_ptr->y_pixels_per_unit, info_ptr->phys_unit_type);
-}
 #endif /* pHYs */
 
 #ifdef PNG_WRITE_tIME_SUPPORTED
@@ -302,11 +284,9 @@ png_write_info(png_structrp png_ptr, png_const_inforp info_ptr)
 #endif /* tIME */
 
 #ifdef PNG_WRITE_sPLT_SUPPORTED
-   if ((info_ptr->valid & PNG_INFO_sPLT) != 0) {
-      for (i = 0; i < (int)info_ptr->splt_palettes_num; i++) {
+   if ((info_ptr->valid & PNG_INFO_sPLT) != 0)
+      for (i = 0; i < (int)info_ptr->splt_palettes_num; i++)
          png_write_sPLT(png_ptr, info_ptr->splt_palettes + i);
-}
-}
 #endif /* sPLT */
 
 #ifdef PNG_WRITE_TEXT_SUPPORTED
@@ -327,11 +307,10 @@ png_write_info(png_structrp png_ptr, png_const_inforp info_ptr)
              info_ptr->text[i].lang_key,
              info_ptr->text[i].text);
          /* Mark this chunk as written */
-         if (info_ptr->text[i].compression == PNG_TEXT_COMPRESSION_NONE) {
+         if (info_ptr->text[i].compression == PNG_TEXT_COMPRESSION_NONE)
             info_ptr->text[i].compression = PNG_TEXT_COMPRESSION_NONE_WR;
-         } else {
+         else
             info_ptr->text[i].compression = PNG_TEXT_COMPRESSION_zTXt_WR;
-}
 #else
          png_warning(png_ptr, "Unable to write international text");
 #endif
@@ -383,19 +362,16 @@ png_write_end(png_structrp png_ptr, png_inforp info_ptr)
 {
    png_debug(1, "in png_write_end");
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return;
-}
 
-   if ((png_ptr->mode & PNG_HAVE_IDAT) == 0) {
+   if ((png_ptr->mode & PNG_HAVE_IDAT) == 0)
       png_error(png_ptr, "No IDATs written into file");
-}
 
 #ifdef PNG_WRITE_CHECK_FOR_INVALID_INDEX_SUPPORTED
    if (png_ptr->color_type == PNG_COLOR_TYPE_PALETTE &&
-       png_ptr->num_palette_max >= png_ptr->num_palette) {
+       png_ptr->num_palette_max >= png_ptr->num_palette)
       png_benign_error(png_ptr, "Wrote palette index exceeding num_palette");
-}
 #endif
 
    /* See if user wants us to write information chunks */
@@ -407,9 +383,8 @@ png_write_end(png_structrp png_ptr, png_inforp info_ptr)
 #ifdef PNG_WRITE_tIME_SUPPORTED
       /* Check to see if user has supplied a time chunk */
       if ((info_ptr->valid & PNG_INFO_tIME) != 0 &&
-          (png_ptr->mode & PNG_WROTE_tIME) == 0) {
+          (png_ptr->mode & PNG_WROTE_tIME) == 0)
          png_write_tIME(png_ptr, &(info_ptr->mod_time));
-}
 
 #endif
 #ifdef PNG_WRITE_TEXT_SUPPORTED
@@ -430,11 +405,10 @@ png_write_end(png_structrp png_ptr, png_inforp info_ptr)
                 info_ptr->text[i].lang_key,
                 info_ptr->text[i].text);
             /* Mark this chunk as written */
-            if (info_ptr->text[i].compression == PNG_TEXT_COMPRESSION_NONE) {
+            if (info_ptr->text[i].compression == PNG_TEXT_COMPRESSION_NONE)
                info_ptr->text[i].compression = PNG_TEXT_COMPRESSION_NONE_WR;
-            } else {
+            else
                info_ptr->text[i].compression = PNG_TEXT_COMPRESSION_zTXt_WR;
-}
 #else
             png_warning(png_ptr, "Unable to write international text");
 #endif
@@ -470,9 +444,8 @@ png_write_end(png_structrp png_ptr, png_inforp info_ptr)
 
 #ifdef PNG_WRITE_eXIf_SUPPORTED
       if ((info_ptr->valid & PNG_INFO_eXIf) != 0 &&
-          (png_ptr->mode & PNG_WROTE_eXIf) == 0) {
+          (png_ptr->mode & PNG_WROTE_eXIf) == 0)
          png_write_eXIf(png_ptr, info_ptr->exif, info_ptr->num_exif);
-}
 #endif
 
 #ifdef PNG_WRITE_UNKNOWN_CHUNKS_SUPPORTED
@@ -626,9 +599,8 @@ png_write_rows(png_structrp png_ptr, png_bytepp row,
 
    png_debug(1, "in png_write_rows");
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return;
-}
 
    /* Loop through the rows */
    for (i = 0, rp = row; i < num_rows; i++, rp++)
@@ -647,9 +619,8 @@ png_write_image(png_structrp png_ptr, png_bytepp image)
    int pass, num_pass; /* pass variables */
    png_bytepp rp; /* points to current row */
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return;
-}
 
    png_debug(1, "in png_write_image");
 
@@ -688,15 +659,14 @@ png_do_write_intrapixel(png_row_infop row_info, png_bytep row)
          png_bytep rp;
          png_uint_32 i;
 
-         if (row_info->color_type == PNG_COLOR_TYPE_RGB) {
+         if (row_info->color_type == PNG_COLOR_TYPE_RGB)
             bytes_per_pixel = 3;
 
-         } else if (row_info->color_type == PNG_COLOR_TYPE_RGB_ALPHA) {
+         else if (row_info->color_type == PNG_COLOR_TYPE_RGB_ALPHA)
             bytes_per_pixel = 4;
 
-         } else {
+         else
             return;
-}
 
          for (i = 0, rp = row; i < row_width; i++, rp += bytes_per_pixel)
          {
@@ -711,15 +681,14 @@ png_do_write_intrapixel(png_row_infop row_info, png_bytep row)
          png_bytep rp;
          png_uint_32 i;
 
-         if (row_info->color_type == PNG_COLOR_TYPE_RGB) {
+         if (row_info->color_type == PNG_COLOR_TYPE_RGB)
             bytes_per_pixel = 6;
 
-         } else if (row_info->color_type == PNG_COLOR_TYPE_RGB_ALPHA) {
+         else if (row_info->color_type == PNG_COLOR_TYPE_RGB_ALPHA)
             bytes_per_pixel = 8;
 
-         } else {
+         else
             return;
-}
 
          for (i = 0, rp = row; i < row_width; i++, rp += bytes_per_pixel)
          {
@@ -749,18 +718,16 @@ png_write_row(png_structrp png_ptr, png_const_bytep row)
    png_debug2(1, "in png_write_row (row %u, pass %d)",
        png_ptr->row_number, png_ptr->pass);
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return;
-}
 
    /* Initialize transformations and other stuff if first time */
    if (png_ptr->row_number == 0 && png_ptr->pass == 0)
    {
       /* Make sure we wrote the header info */
-      if ((png_ptr->mode & PNG_WROTE_INFO_BEFORE_PLTE) == 0) {
+      if ((png_ptr->mode & PNG_WROTE_INFO_BEFORE_PLTE) == 0)
          png_error(png_ptr,
              "png_write_info was never called before png_write_row");
-}
 
       /* Check for transforms that have been set but were defined out */
 #if !defined(PNG_WRITE_INVERT_SUPPORTED) && defined(PNG_READ_INVERT_SUPPORTED)
@@ -906,18 +873,16 @@ png_write_row(png_structrp png_ptr, png_const_bytep row)
 
 #ifdef PNG_WRITE_TRANSFORMS_SUPPORTED
    /* Handle other transformations */
-   if (png_ptr->transformations != 0) {
+   if (png_ptr->transformations != 0)
       png_do_write_transformations(png_ptr, &row_info);
-}
 #endif
 
    /* At this point the row_info pixel depth must match the 'transformed' depth,
     * which is also the output depth.
     */
    if (row_info.pixel_depth != png_ptr->pixel_depth ||
-       row_info.pixel_depth != png_ptr->transformed_pixel_depth) {
+       row_info.pixel_depth != png_ptr->transformed_pixel_depth)
       png_error(png_ptr, "internal write transform logic error");
-}
 
 #ifdef PNG_MNG_FEATURES_SUPPORTED
    /* Write filter_method 64 (intrapixel differencing) only if
@@ -941,17 +906,15 @@ png_write_row(png_structrp png_ptr, png_const_bytep row)
 #ifdef PNG_WRITE_CHECK_FOR_INVALID_INDEX_SUPPORTED
    /* Check for out-of-range palette index */
    if (row_info.color_type == PNG_COLOR_TYPE_PALETTE &&
-       png_ptr->num_palette_max >= 0) {
+       png_ptr->num_palette_max >= 0)
       png_do_check_palette_indexes(png_ptr, &row_info);
-}
 #endif
 
    /* Find a filter if necessary, filter the row and write it out. */
    png_write_find_filter(png_ptr, &row_info);
 
-   if (png_ptr->write_row_fn != NULL) {
+   if (png_ptr->write_row_fn != NULL)
       (*(png_ptr->write_row_fn))(png_ptr, png_ptr->row_number, png_ptr->pass);
-}
 }
 
 #ifdef PNG_WRITE_FLUSH_SUPPORTED
@@ -961,9 +924,8 @@ png_set_flush(png_structrp png_ptr, int nrows)
 {
    png_debug(1, "in png_set_flush");
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return;
-}
 
    png_ptr->flush_dist = (nrows < 0 ? 0 : (png_uint_32)nrows);
 }
@@ -974,14 +936,12 @@ png_write_flush(png_structrp png_ptr)
 {
    png_debug(1, "in png_write_flush");
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return;
-}
 
    /* We have already written out all of the data */
-   if (png_ptr->row_number >= png_ptr->num_rows) {
+   if (png_ptr->row_number >= png_ptr->num_rows)
       return;
-}
 
    png_compress_IDAT(png_ptr, NULL, 0, Z_SYNC_FLUSH);
    png_ptr->flush_rows = 0;
@@ -996,9 +956,8 @@ png_write_destroy(png_structrp png_ptr)
    png_debug(1, "in png_write_destroy");
 
    /* Free any memory zlib uses */
-   if ((png_ptr->flags & PNG_FLAG_ZSTREAM_INITIALIZED) != 0) {
+   if ((png_ptr->flags & PNG_FLAG_ZSTREAM_INITIALIZED) != 0)
       deflateEnd(&png_ptr->zstream);
-}
 
    /* Free our memory.  png_free checks NULL for us. */
    png_free_buffer_list(png_ptr, &png_ptr->zbuffer_list);
@@ -1057,15 +1016,13 @@ png_set_filter(png_structrp png_ptr, int method, int filters)
 {
    png_debug(1, "in png_set_filter");
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return;
-}
 
 #ifdef PNG_MNG_FEATURES_SUPPORTED
    if ((png_ptr->mng_features_permitted & PNG_FLAG_MNG_FILTER_64) != 0 &&
-       (method == PNG_INTRAPIXEL_DIFFERENCING)) {
+       (method == PNG_INTRAPIXEL_DIFFERENCING))
       method = PNG_FILTER_TYPE_BASE;
-}
 
 #endif
    if (method == PNG_FILTER_TYPE_BASE)
@@ -1125,13 +1082,11 @@ png_set_filter(png_structrp png_ptr, int method, int filters)
           * images cannot benefit from certain filters.  If this isn't done here
           * the check below will fire on 1 pixel high images.
           */
-         if (png_ptr->height == 1) {
+         if (png_ptr->height == 1)
             filters &= ~(PNG_FILTER_UP|PNG_FILTER_AVG|PNG_FILTER_PAETH);
-}
 
-         if (png_ptr->width == 1) {
+         if (png_ptr->width == 1)
             filters &= ~(PNG_FILTER_SUB|PNG_FILTER_AVG|PNG_FILTER_PAETH);
-}
 
          if ((filters & (PNG_FILTER_UP|PNG_FILTER_AVG|PNG_FILTER_PAETH)) != 0
             && png_ptr->prev_row == NULL)
@@ -1146,21 +1101,17 @@ png_set_filter(png_structrp png_ptr, int method, int filters)
 
          num_filters = 0;
 
-         if (filters & PNG_FILTER_SUB) {
+         if (filters & PNG_FILTER_SUB)
             num_filters++;
-}
 
-         if (filters & PNG_FILTER_UP) {
+         if (filters & PNG_FILTER_UP)
             num_filters++;
-}
 
-         if (filters & PNG_FILTER_AVG) {
+         if (filters & PNG_FILTER_AVG)
             num_filters++;
-}
 
-         if (filters & PNG_FILTER_PAETH) {
+         if (filters & PNG_FILTER_PAETH)
             num_filters++;
-}
 
          /* Allocate needed row buffers if they have not already been
           * allocated.
@@ -1168,25 +1119,22 @@ png_set_filter(png_structrp png_ptr, int method, int filters)
          buf_size = PNG_ROWBYTES(png_ptr->usr_channels * png_ptr->usr_bit_depth,
              png_ptr->width) + 1;
 
-         if (png_ptr->try_row == NULL) {
+         if (png_ptr->try_row == NULL)
             png_ptr->try_row = png_voidcast(png_bytep,
                 png_malloc(png_ptr, buf_size));
-}
 
          if (num_filters > 1)
          {
-            if (png_ptr->tst_row == NULL) {
+            if (png_ptr->tst_row == NULL)
                png_ptr->tst_row = png_voidcast(png_bytep,
                    png_malloc(png_ptr, buf_size));
-}
          }
       }
       png_ptr->do_filter = (png_byte)filters;
 #endif
    }
-   else {
+   else
       png_error(png_ptr, "Unknown custom filter method");
-}
 }
 
 #ifdef PNG_WRITE_WEIGHTED_FILTER_SUPPORTED /* DEPRECATED */
@@ -1226,9 +1174,8 @@ png_set_compression_level(png_structrp png_ptr, int level)
 {
    png_debug(1, "in png_set_compression_level");
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return;
-}
 
    png_ptr->zlib_level = level;
 }
@@ -1238,9 +1185,8 @@ png_set_compression_mem_level(png_structrp png_ptr, int mem_level)
 {
    png_debug(1, "in png_set_compression_mem_level");
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return;
-}
 
    png_ptr->zlib_mem_level = mem_level;
 }
@@ -1250,9 +1196,8 @@ png_set_compression_strategy(png_structrp png_ptr, int strategy)
 {
    png_debug(1, "in png_set_compression_strategy");
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return;
-}
 
    /* The flag setting here prevents the libpng dynamic selection of strategy.
     */
@@ -1268,9 +1213,8 @@ png_set_compression_window_bits(png_structrp png_ptr, int window_bits)
 {
    png_debug(1, "in png_set_compression_window_bits");
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return;
-}
 
    /* Prior to 1.6.0 this would warn but then set the window_bits value. This
     * meant that negative window bits values could be selected that would cause
@@ -1298,16 +1242,14 @@ png_set_compression_method(png_structrp png_ptr, int method)
 {
    png_debug(1, "in png_set_compression_method");
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return;
-}
 
    /* This would produce an invalid PNG file if it worked, but it doesn't and
     * deflate will fault it, so it is harmless to just warn here.
     */
-   if (method != 8) {
+   if (method != 8)
       png_warning(png_ptr, "Only compression method 8 is supported by PNG");
-}
 
    png_ptr->zlib_method = method;
 }
@@ -1320,9 +1262,8 @@ png_set_text_compression_level(png_structrp png_ptr, int level)
 {
    png_debug(1, "in png_set_text_compression_level");
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return;
-}
 
    png_ptr->zlib_text_level = level;
 }
@@ -1332,9 +1273,8 @@ png_set_text_compression_mem_level(png_structrp png_ptr, int mem_level)
 {
    png_debug(1, "in png_set_text_compression_mem_level");
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return;
-}
 
    png_ptr->zlib_text_mem_level = mem_level;
 }
@@ -1344,9 +1284,8 @@ png_set_text_compression_strategy(png_structrp png_ptr, int strategy)
 {
    png_debug(1, "in png_set_text_compression_strategy");
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return;
-}
 
    png_ptr->zlib_text_strategy = strategy;
 }
@@ -1359,9 +1298,8 @@ png_set_text_compression_window_bits(png_structrp png_ptr, int window_bits)
 {
    png_debug(1, "in png_set_text_compression_window_bits");
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return;
-}
 
    if (window_bits > 15)
    {
@@ -1383,13 +1321,11 @@ png_set_text_compression_method(png_structrp png_ptr, int method)
 {
    png_debug(1, "in png_set_text_compression_method");
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return;
-}
 
-   if (method != 8) {
+   if (method != 8)
       png_warning(png_ptr, "Only compression method 8 is supported by PNG");
-}
 
    png_ptr->zlib_text_method = method;
 }
@@ -1401,9 +1337,8 @@ png_set_write_status_fn(png_structrp png_ptr, png_write_status_ptr write_row_fn)
 {
    png_debug(1, "in png_set_write_status_fn");
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return;
-}
 
    png_ptr->write_row_fn = write_row_fn;
 }
@@ -1415,9 +1350,8 @@ png_set_write_user_transform_fn(png_structrp png_ptr, png_user_transform_ptr
 {
    png_debug(1, "in png_set_write_user_transform_fn");
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return;
-}
 
    png_ptr->transformations |= PNG_USER_TRANSFORM;
    png_ptr->write_user_transform_fn = write_user_transform_fn;
@@ -1432,9 +1366,8 @@ png_write_png(png_structrp png_ptr, png_inforp info_ptr,
 {
    png_debug(1, "in png_write_png");
 
-   if (png_ptr == NULL || info_ptr == NULL) {
+   if (png_ptr == NULL || info_ptr == NULL)
       return;
-}
 
    if ((info_ptr->valid & PNG_INFO_IDAT) == 0)
    {
@@ -1448,10 +1381,9 @@ png_write_png(png_structrp png_ptr, png_inforp info_ptr,
    /* ------ these transformations don't touch the info structure ------- */
 
    /* Invert monochrome pixels */
-   if ((transforms & PNG_TRANSFORM_INVERT_MONO) != 0) {
+   if ((transforms & PNG_TRANSFORM_INVERT_MONO) != 0)
 #ifdef PNG_WRITE_INVERT_SUPPORTED
       png_set_invert_mono(png_ptr);
-}
 #else
       png_app_error(png_ptr, "PNG_TRANSFORM_INVERT_MONO not supported");
 #endif
@@ -1459,30 +1391,26 @@ png_write_png(png_structrp png_ptr, png_inforp info_ptr,
    /* Shift the pixels up to a legal bit depth and fill in
     * as appropriate to correctly scale the image.
     */
-   if ((transforms & PNG_TRANSFORM_SHIFT) != 0) {
+   if ((transforms & PNG_TRANSFORM_SHIFT) != 0)
 #ifdef PNG_WRITE_SHIFT_SUPPORTED
-      if ((info_ptr->valid & PNG_INFO_sBIT) != 0) {
+      if ((info_ptr->valid & PNG_INFO_sBIT) != 0)
          png_set_shift(png_ptr, &info_ptr->sig_bit);
-}
-}
 #else
       png_app_error(png_ptr, "PNG_TRANSFORM_SHIFT not supported");
 #endif
 
    /* Pack pixels into bytes */
-   if ((transforms & PNG_TRANSFORM_PACKING) != 0) {
+   if ((transforms & PNG_TRANSFORM_PACKING) != 0)
 #ifdef PNG_WRITE_PACK_SUPPORTED
       png_set_packing(png_ptr);
-}
 #else
       png_app_error(png_ptr, "PNG_TRANSFORM_PACKING not supported");
 #endif
 
    /* Swap location of alpha bytes from ARGB to RGBA */
-   if ((transforms & PNG_TRANSFORM_SWAP_ALPHA) != 0) {
+   if ((transforms & PNG_TRANSFORM_SWAP_ALPHA) != 0)
 #ifdef PNG_WRITE_SWAP_ALPHA_SUPPORTED
       png_set_swap_alpha(png_ptr);
-}
 #else
       png_app_error(png_ptr, "PNG_TRANSFORM_SWAP_ALPHA not supported");
 #endif
@@ -1497,55 +1425,49 @@ png_write_png(png_structrp png_ptr, png_inforp info_ptr,
 #ifdef PNG_WRITE_FILLER_SUPPORTED
       if ((transforms & PNG_TRANSFORM_STRIP_FILLER_AFTER) != 0)
       {
-         if ((transforms & PNG_TRANSFORM_STRIP_FILLER_BEFORE) != 0) {
+         if ((transforms & PNG_TRANSFORM_STRIP_FILLER_BEFORE) != 0)
             png_app_error(png_ptr,
                 "PNG_TRANSFORM_STRIP_FILLER: BEFORE+AFTER not supported");
-}
 
          /* Continue if ignored - this is the pre-1.6.10 behavior */
          png_set_filler(png_ptr, 0, PNG_FILLER_AFTER);
       }
 
-      else if ((transforms & PNG_TRANSFORM_STRIP_FILLER_BEFORE) != 0) {
+      else if ((transforms & PNG_TRANSFORM_STRIP_FILLER_BEFORE) != 0)
          png_set_filler(png_ptr, 0, PNG_FILLER_BEFORE);
-}
 #else
       png_app_error(png_ptr, "PNG_TRANSFORM_STRIP_FILLER not supported");
 #endif
    }
 
    /* Flip BGR pixels to RGB */
-   if ((transforms & PNG_TRANSFORM_BGR) != 0) {
+   if ((transforms & PNG_TRANSFORM_BGR) != 0)
 #ifdef PNG_WRITE_BGR_SUPPORTED
       png_set_bgr(png_ptr);
-}
 #else
       png_app_error(png_ptr, "PNG_TRANSFORM_BGR not supported");
 #endif
 
    /* Swap bytes of 16-bit files to most significant byte first */
-   if ((transforms & PNG_TRANSFORM_SWAP_ENDIAN) != 0) {
+   if ((transforms & PNG_TRANSFORM_SWAP_ENDIAN) != 0)
 #ifdef PNG_WRITE_SWAP_SUPPORTED
       png_set_swap(png_ptr);
-}
 #else
       png_app_error(png_ptr, "PNG_TRANSFORM_SWAP_ENDIAN not supported");
 #endif
 
    /* Swap bits of 1-bit, 2-bit, 4-bit packed pixel formats */
-   if ((transforms & PNG_TRANSFORM_PACKSWAP) != 0) {
+   if ((transforms & PNG_TRANSFORM_PACKSWAP) != 0)
 #ifdef PNG_WRITE_PACKSWAP_SUPPORTED
       png_set_packswap(png_ptr);
-}
 #else
       png_app_error(png_ptr, "PNG_TRANSFORM_PACKSWAP not supported");
 #endif
 
    /* Invert the alpha channel from opacity to transparency */
-   if ((transforms & PNG_TRANSFORM_INVERT_ALPHA) != 0) {
+   if ((transforms & PNG_TRANSFORM_INVERT_ALPHA) != 0)
 #ifdef PNG_WRITE_INVERT_ALPHA_SUPPORTED
       png_set_invert_alpha(png_ptr);
-}
 #else
       png_app_error(png_ptr, "PNG_TRANSFORM_INVERT_ALPHA not supported");
 #endif
@@ -1651,17 +1573,15 @@ png_write_image_16bit(png_voidp argument)
          ++input_row; /* To point to the first component */
          ++output_row;
       }
-         else {
+         else
             aindex = (int)channels;
-}
 #     else
          aindex = (int)channels;
 #     endif
    }
 
-   else {
+   else
       png_error(png_ptr, "png_write_image: internal call error");
-}
 
    /* Work out the output row end and count over this, note that the increment
     * above to 'row' means that row_end can actually be beyond the end of the
@@ -1687,9 +1607,8 @@ png_write_image_16bit(png_voidp argument)
           * allows correct rounding by adding .5 before the shift.  'reciprocal'
           * is only initialized when required.
           */
-         if (alpha > 0 && alpha < 65535) {
+         if (alpha > 0 && alpha < 65535)
             reciprocal = ((0xffff<<15)+(alpha>>1))/alpha;
-}
 
          c = (int)channels;
          do /* always at least one channel */
@@ -1703,13 +1622,13 @@ png_write_image_16bit(png_voidp argument)
              * nearly transparent one.  (The assumption here is that opaque
              * areas tend not to be 0 intensity.)
              */
-            if (component >= alpha) {
+            if (component >= alpha)
                component = 65535;
 
             /* component<alpha, so component/alpha is less than one and
              * component*reciprocal is less than 2^31.
              */
-            } else if (component > 0 && alpha < 65535)
+            else if (component > 0 && alpha < 65535)
             {
                png_uint_32 calc = component * reciprocal;
                calc += 16384; /* round to nearest */
@@ -1756,13 +1675,13 @@ png_unpremultiply(png_uint_32 component, png_uint_32 alpha,
     * as 0 when scaled to 8 bits.  To avoid introducing spurious colors into the
     * output change for this too.
     */
-   if (component >= alpha || alpha < 128) {
+   if (component >= alpha || alpha < 128)
       return 255;
 
    /* component<alpha, so component/alpha is less than one and
     * component*reciprocal is less than 2^31.
     */
-   } else if (component > 0)
+   else if (component > 0)
    {
       /* The test is that alpha/257 (rounded) is less than 255, the first value
        * that becomes 255 is 65407.
@@ -1776,17 +1695,15 @@ png_unpremultiply(png_uint_32 component, png_uint_32 alpha,
          component >>= 7;
       }
 
-      else {
+      else
          component *= 255;
-}
 
       /* Convert the component to sRGB. */
       return (png_byte)PNG_sRGB_FROM_LINEAR(component);
    }
 
-   else {
+   else
       return 0;
-}
 }
 
 static int
@@ -1817,10 +1734,9 @@ png_write_image_8bit(png_voidp argument)
          ++output_row;
       }
 
-      else {
+      else
 #   endif
       aindex = (int)channels;
-}
 
       /* Use row_end in place of a loop counter: */
       row_end = output_row + image->width * (channels+1);
@@ -1840,14 +1756,13 @@ png_write_image_8bit(png_voidp argument)
             /* Scale and write the alpha channel. */
             out_ptr[aindex] = alphabyte;
 
-            if (alphabyte > 0 && alphabyte < 255) {
+            if (alphabyte > 0 && alphabyte < 255)
                reciprocal = UNP_RECIPROCAL(alpha);
-}
 
             c = (int)channels;
-            do { /* always at least one channel */
+            do /* always at least one channel */
                *out_ptr++ = png_unpremultiply(*in_ptr++, alpha, reciprocal);
-            } while (--c > 0);
+            while (--c > 0);
 
             /* Skip to next component (skip the intervening alpha channel) */
             ++in_ptr;
@@ -1944,10 +1859,9 @@ png_image_set_PLTE(png_image_write_control *display)
                    entry[bgr]);
             }
 
-            else { /* Gray */
+            else /* Gray */
                palette[i].blue = palette[i].red = palette[i].green =
                   (png_byte)PNG_sRGB_FROM_LINEAR(255 * *entry);
-}
          }
 
          else /* alpha */
@@ -1960,14 +1874,12 @@ png_image_set_PLTE(png_image_write_control *display)
              * this is designed to produce a value scaled to 255*65535 when
              * divided by 128 (i.e. asr 7).
              */
-            if (alphabyte > 0 && alphabyte < 255) {
+            if (alphabyte > 0 && alphabyte < 255)
                reciprocal = (((0xffff*0xff)<<7)+(alpha>>1))/alpha;
-}
 
             tRNS[i] = alphabyte;
-            if (alphabyte < 255) {
+            if (alphabyte < 255)
                num_trans = i+1;
-}
 
             if (channels >= 3) /* RGB */
             {
@@ -1979,10 +1891,9 @@ png_image_set_PLTE(png_image_write_control *display)
                    reciprocal);
             }
 
-            else { /* gray */
+            else /* gray */
                palette[i].blue = palette[i].red = palette[i].green =
                    png_unpremultiply(entry[afirst], alpha, reciprocal);
-}
          }
       }
 
@@ -1996,9 +1907,8 @@ png_image_set_PLTE(png_image_write_control *display)
          {
             case 4:
                tRNS[i] = entry[afirst ? 0 : 3];
-               if (tRNS[i] < 255) {
+               if (tRNS[i] < 255)
                   num_trans = i+1;
-}
                /* FALLTHROUGH */
             case 3:
                palette[i].blue = entry[afirst + (2 ^ bgr)];
@@ -2008,9 +1918,8 @@ png_image_set_PLTE(png_image_write_control *display)
 
             case 2:
                tRNS[i] = entry[1 ^ afirst];
-               if (tRNS[i] < 255) {
+               if (tRNS[i] < 255)
                   num_trans = i+1;
-}
                /* FALLTHROUGH */
             case 1:
                palette[i].blue = palette[i].red = palette[i].green =
@@ -2033,10 +1942,9 @@ png_image_set_PLTE(png_image_write_control *display)
    png_set_PLTE(image->opaque->png_ptr, image->opaque->info_ptr, palette,
        entries);
 
-   if (num_trans > 0) {
+   if (num_trans > 0)
       png_set_tRNS(image->opaque->png_ptr, image->opaque->info_ptr, tRNS,
           num_trans, NULL);
-}
 
    image->colormap_entries = (png_uint_32)entries;
 }
@@ -2073,16 +1981,14 @@ png_image_write_main(png_voidp argument)
          png_uint_32 check;
          png_uint_32 png_row_stride = image->width * channels;
 
-         if (display->row_stride == 0) {
+         if (display->row_stride == 0)
             display->row_stride = (png_int_32)/*SAFE*/png_row_stride;
-}
 
-         if (display->row_stride < 0) {
+         if (display->row_stride < 0)
             check = (png_uint_32)(-display->row_stride);
 
-         } else {
+         else
             check = (png_uint_32)display->row_stride;
-}
 
          if (check >= png_row_stride)
          {
@@ -2090,19 +1996,16 @@ png_image_write_main(png_voidp argument)
              * limits the whole image size to 32 bits for API compatibility with
              * the current, 32-bit, PNG_IMAGE_BUFFER_SIZE macro.
              */
-            if (image->height > 0xffffffffU/png_row_stride) {
+            if (image->height > 0xffffffffU/png_row_stride)
                png_error(image->opaque->png_ptr, "memory image too large");
-}
          }
 
-         else {
+         else
             png_error(image->opaque->png_ptr, "supplied row stride too small");
-}
       }
 
-      else {
+      else
          png_error(image->opaque->png_ptr, "image row stride too large");
-}
    }
 
    /* Set the required transforms then write the rows in the correct order. */
@@ -2120,19 +2023,17 @@ png_image_write_main(png_voidp argument)
          png_image_set_PLTE(display);
       }
 
-      else {
+      else
          png_error(image->opaque->png_ptr,
              "no color-map for color-mapped image");
-}
    }
 
-   else {
+   else
       png_set_IHDR(png_ptr, info_ptr, image->width, image->height,
           write_16bit ? 16 : 8,
           ((format & PNG_FORMAT_FLAG_COLOR) ? PNG_COLOR_MASK_COLOR : 0) +
           ((format & PNG_FORMAT_FLAG_ALPHA) ? PNG_COLOR_MASK_ALPHA : 0),
           PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
-}
 
    /* Counter-intuitively the data transformations must be called *after*
     * png_write_info, not before as in the read code, but the 'set' functions
@@ -2145,7 +2046,7 @@ png_image_write_main(png_voidp argument)
       /* The gamma here is 1.0 (linear) and the cHRM chunk matches sRGB. */
       png_set_gAMA_fixed(png_ptr, info_ptr, PNG_GAMMA_LINEAR);
 
-      if ((image->flags & PNG_IMAGE_FLAG_COLORSPACE_NOT_sRGB) == 0) {
+      if ((image->flags & PNG_IMAGE_FLAG_COLORSPACE_NOT_sRGB) == 0)
          png_set_cHRM_fixed(png_ptr, info_ptr,
              /* color      x       y */
              /* white */ 31270, 32900,
@@ -2153,18 +2054,16 @@ png_image_write_main(png_voidp argument)
              /* green */ 30000, 60000,
              /* blue  */ 15000,  6000
          );
-}
    }
 
-   else if ((image->flags & PNG_IMAGE_FLAG_COLORSPACE_NOT_sRGB) == 0) {
+   else if ((image->flags & PNG_IMAGE_FLAG_COLORSPACE_NOT_sRGB) == 0)
       png_set_sRGB(png_ptr, info_ptr, PNG_sRGB_INTENT_PERCEPTUAL);
 
    /* Else writing an 8-bit file and the *colors* aren't sRGB, but the 8-bit
     * space must still be gamma encoded.
     */
-   } else {
+   else
       png_set_gAMA_fixed(png_ptr, info_ptr, PNG_GAMMA_sRGB_INVERSE);
-}
 
    /* Write the file header. */
    png_write_info(png_ptr, info_ptr);
@@ -2178,17 +2077,15 @@ png_image_write_main(png_voidp argument)
    {
       png_uint_16 le = 0x0001;
 
-      if ((*(png_const_bytep) & le) != 0) {
+      if ((*(png_const_bytep) & le) != 0)
          png_set_swap(png_ptr);
-}
    }
 
 #   ifdef PNG_SIMPLIFIED_WRITE_BGR_SUPPORTED
       if ((format & PNG_FORMAT_FLAG_BGR) != 0)
       {
-         if (colormap == 0 && (format & PNG_FORMAT_FLAG_COLOR) != 0) {
+         if (colormap == 0 && (format & PNG_FORMAT_FLAG_COLOR) != 0)
             png_set_bgr(png_ptr);
-}
          format &= ~PNG_FORMAT_FLAG_BGR;
       }
 #   endif
@@ -2196,9 +2093,8 @@ png_image_write_main(png_voidp argument)
 #   ifdef PNG_SIMPLIFIED_WRITE_AFIRST_SUPPORTED
       if ((format & PNG_FORMAT_FLAG_AFIRST) != 0)
       {
-         if (colormap == 0 && (format & PNG_FORMAT_FLAG_ALPHA) != 0) {
+         if (colormap == 0 && (format & PNG_FORMAT_FLAG_ALPHA) != 0)
             png_set_swap_alpha(png_ptr);
-}
          format &= ~PNG_FORMAT_FLAG_AFIRST;
       }
 #   endif
@@ -2206,27 +2102,23 @@ png_image_write_main(png_voidp argument)
    /* If there are 16 or fewer color-map entries we wrote a lower bit depth
     * above, but the application data is still byte packed.
     */
-   if (colormap != 0 && image->colormap_entries <= 16) {
+   if (colormap != 0 && image->colormap_entries <= 16)
       png_set_packing(png_ptr);
-}
 
    /* That should have handled all (both) the transforms. */
    if ((format & ~(png_uint_32)(PNG_FORMAT_FLAG_COLOR | PNG_FORMAT_FLAG_LINEAR |
-         PNG_FORMAT_FLAG_ALPHA | PNG_FORMAT_FLAG_COLORMAP)) != 0) {
+         PNG_FORMAT_FLAG_ALPHA | PNG_FORMAT_FLAG_COLORMAP)) != 0)
       png_error(png_ptr, "png_write_image: unsupported transformation");
-}
 
    {
       png_const_bytep row = png_voidcast(png_const_bytep, display->buffer);
       ptrdiff_t row_bytes = display->row_stride;
 
-      if (linear != 0) {
+      if (linear != 0)
          row_bytes *= (sizeof (png_uint_16));
-}
 
-      if (row_bytes < 0) {
+      if (row_bytes < 0)
          row += (image->height-1) * (-row_bytes);
-}
 
       display->first_row = row;
       display->row_bytes = row_bytes;
@@ -2258,19 +2150,17 @@ png_image_write_main(png_voidp argument)
       int result;
 
       display->local_row = row;
-      if (write_16bit != 0) {
+      if (write_16bit != 0)
          result = png_safe_execute(image, png_write_image_16bit, display);
-      } else {
+      else
          result = png_safe_execute(image, png_write_image_8bit, display);
-}
       display->local_row = NULL;
 
       png_free(png_ptr, row);
 
       /* Skip the 'write_end' on error: */
-      if (result == 0) {
+      if (result == 0)
          return 0;
-}
    }
 
    /* Otherwise this is the case where the input is in a format currently
@@ -2307,18 +2197,16 @@ image_memory_write)(png_structp png_ptr, png_bytep/*const*/ data, size_t size)
       /* I don't think libpng ever does this, but just in case: */
       if (size > 0)
       {
-         if (display->memory_bytes >= ob+size) { /* writing */
+         if (display->memory_bytes >= ob+size) /* writing */
             memcpy(display->memory+ob, data, size);
-}
 
          /* Always update the size: */
          display->output_bytes = ob+size;
       }
    }
 
-   else {
+   else
       png_error(png_ptr, "png_image_write_to_memory: PNG too big");
-}
 }
 
 static void (PNGCBAPI
@@ -2356,9 +2244,8 @@ png_image_write_to_memory(png_imagep image, void *memory,
          /* This is to give the caller an easier error detection in the NULL
           * case and guard against uninitialized variable problems:
           */
-         if (memory == NULL) {
+         if (memory == NULL)
             *memory_bytes = 0;
-}
 
          if (png_image_write_init(image) != 0)
          {
@@ -2384,9 +2271,8 @@ png_image_write_to_memory(png_imagep image, void *memory,
                /* On out-of-buffer this function returns '0' but still updates
                 * memory_bytes:
                 */
-               if (memory != NULL && display.output_bytes > *memory_bytes) {
+               if (memory != NULL && display.output_bytes > *memory_bytes)
                   result = 0;
-}
 
                *memory_bytes = display.output_bytes;
             }
@@ -2394,24 +2280,21 @@ png_image_write_to_memory(png_imagep image, void *memory,
             return result;
          }
 
-         else {
+         else
             return 0;
-}
       }
 
-      else {
+      else
          return png_image_error(image,
              "png_image_write_to_memory: invalid argument");
-}
    }
 
-   else if (image != NULL) {
+   else if (image != NULL)
       return png_image_error(image,
           "png_image_write_to_memory: incorrect PNG_IMAGE_VERSION");
 
-   } else {
+   else
       return 0;
-}
 }
 
 #ifdef PNG_SIMPLIFIED_WRITE_STDIO_SUPPORTED
@@ -2447,24 +2330,21 @@ png_image_write_to_stdio(png_imagep image, FILE *file, int convert_to_8bit,
             return result;
          }
 
-         else {
+         else
             return 0;
-}
       }
 
-      else {
+      else
          return png_image_error(image,
              "png_image_write_to_stdio: invalid argument");
-}
    }
 
-   else if (image != NULL) {
+   else if (image != NULL)
       return png_image_error(image,
           "png_image_write_to_stdio: incorrect PNG_IMAGE_VERSION");
 
-   } else {
+   else
       return 0;
-}
 }
 
 int PNGAPI
@@ -2477,7 +2357,7 @@ png_image_write_to_file(png_imagep image, const char *file_name,
    {
       if (file_name != NULL && buffer != NULL)
       {
-         FILE *fp = fopen(file_name, "wbe");
+         FILE *fp = fopen(file_name, "wb");
 
          if (fp != NULL)
          {
@@ -2489,9 +2369,8 @@ png_image_write_to_file(png_imagep image, const char *file_name,
                /* Make sure the file is flushed correctly. */
                if (fflush(fp) == 0 && ferror(fp) == 0)
                {
-                  if (fclose(fp) == 0) {
+                  if (fclose(fp) == 0)
                      return 1;
-}
 
                   error = errno; /* from fclose */
                }
@@ -2518,24 +2397,21 @@ png_image_write_to_file(png_imagep image, const char *file_name,
             }
          }
 
-         else {
+         else
             return png_image_error(image, strerror(errno));
-}
       }
 
-      else {
+      else
          return png_image_error(image,
              "png_image_write_to_file: invalid argument");
-}
    }
 
-   else if (image != NULL) {
+   else if (image != NULL)
       return png_image_error(image,
           "png_image_write_to_file: incorrect PNG_IMAGE_VERSION");
 
-   } else {
+   else
       return 0;
-}
 }
 #endif /* SIMPLIFIED_WRITE_STDIO */
 #endif /* SIMPLIFIED_WRITE */

@@ -23,7 +23,7 @@ U_NAMESPACE_BEGIN
  * A wrapper to make a UEnumeration into a StringEnumeration.  The
  * wrapper adopts the UEnumeration is wraps.
  */
-class; U_COMMON_API UStringEnumeration : public StringEnumeration {
+class U_COMMON_API UStringEnumeration : public StringEnumeration {
 
 public:
     /**

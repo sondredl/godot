@@ -25,8 +25,8 @@ U_NAMESPACE_BEGIN
 UOBJECT_DEFINE_RTTI_IMPLEMENTATION(StringCharacterIterator)
 
 StringCharacterIterator::StringCharacterIterator()
-
-
+  : UCharCharacterIterator(),
+    text()
 {
   // NEVER DEFAULT CONSTRUCT!
 }

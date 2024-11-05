@@ -41,7 +41,7 @@ U_NAMESPACE_BEGIN
  *    \u3001-\u3003\u3008-\u3020\u3030\uFD3E\uFD3F\uFE45\uFE46]
  * @author mscherer
  */
-class; U_COMMON_API PatternProps {
+class U_COMMON_API PatternProps {
 public:
     /**
      * @return true if c is a Pattern_Syntax code point.

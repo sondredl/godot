@@ -112,7 +112,8 @@ namespace embree
 
       cond.wait(mutex);
       mutex.unlock();
-   }
+      return;
+    }
 
   public:
     MutexSys mutex;
@@ -145,8 +146,7 @@ namespace embree
   LinearBarrierActive::LinearBarrierActive (size_t N)
     : count0(nullptr), count1(nullptr), mode(0), flag0(0), flag1(0), threadCount(0)
   {
-    if (N == 0) { N = getNumberOfLogicalThreads();
-}
+    if (N == 0) N = getNumberOfLogicalThreads();
     init(N);
   }
 
@@ -160,16 +160,14 @@ namespace embree
   {
     if (threadCount != N) {
       threadCount = N;
-      delete[] count0; count0 = new unsigned char[N];
-      delete[] count1; count1 = new unsigned char[N];
+      if (count0) delete[] count0; count0 = new unsigned char[N];
+      if (count1) delete[] count1; count1 = new unsigned char[N];
     }
     mode      = 0;
     flag0     = 0;
     flag1     = 0;
-    for (size_t i=0; i<N; i++) { count0[i] = 0;
-}
-    for (size_t i=0; i<N; i++) { count1[i] = 0;
-}
+    for (size_t i=0; i<N; i++) count0[i] = 0;
+    for (size_t i=0; i<N; i++) count1[i] = 0;
   }
 
   void LinearBarrierActive::wait (const size_t threadIndex)
@@ -178,15 +176,13 @@ namespace embree
     {
       if (threadIndex == 0)
       {
-        for (size_t i=0; i<threadCount; i++) {
+        for (size_t i=0; i<threadCount; i++)
           count1[i] = 0;
-}
 
         for (size_t i=1; i<threadCount; i++)
         {
-          while (likely(count0[i] == 0)) {
+          while (likely(count0[i] == 0))
             pause_cpu();
-}
         }
         mode  = 1;
         flag1 = 0;
@@ -197,9 +193,8 @@ namespace embree
       {
         count0[threadIndex] = 1;
         {
-          while (likely(flag0 == 0)) {
+          while (likely(flag0 == 0))
             pause_cpu();
-}
         }
 
       }
@@ -208,15 +203,13 @@ namespace embree
     {
       if (threadIndex == 0)
       {
-        for (size_t i=0; i<threadCount; i++) {
+        for (size_t i=0; i<threadCount; i++)
           count0[i] = 0;
-}
 
         for (size_t i=1; i<threadCount; i++)
         {
-          while (likely(count1[i] == 0)) {
+          while (likely(count1[i] == 0))
             pause_cpu();
-}
         }
 
         mode  = 0;
@@ -228,9 +221,8 @@ namespace embree
       {
         count1[threadIndex] = 1;
         {
-          while (likely(flag1 == 0)) {
+          while (likely(flag1 == 0))
             pause_cpu();
-}
         }
       }
     }
@@ -260,7 +252,7 @@ namespace embree
       }
     }
 
-    bool run () override
+    bool run ()
     {
       threadID.store(0);
       numFailed.store(0);
@@ -271,25 +263,21 @@ namespace embree
 
       /* create threads */
       std::vector<thread_t> threads;
-      for (size_t i=0; i<numThreads; i++) {
+      for (size_t i=0; i<numThreads; i++)
         threads.push_back(createThread((thread_func)thread_alloc,this));
-}
 
       /* run test */
       for (size_t i=0; i<1000; i++)
       {
-        for (size_t i=0; i<numThreads; i++) { threadResults[i] = 0;
-}
+        for (size_t i=0; i<numThreads; i++) threadResults[i] = 0;
         barrier.wait();
         barrier.wait();
-        for (size_t i=0; i<numThreads; i++) { numFailed += threadResults[i] != i;
-}
+        for (size_t i=0; i<numThreads; i++) numFailed += threadResults[i] != i;
       }
 
       /* destroy threads */
-      for (size_t i=0; i<numThreads; i++) {
+      for (size_t i=0; i<numThreads; i++)
         join(threads[i]);
-}
 
       return numFailed == 0;
     }

@@ -91,9 +91,8 @@
     if ( count > table->max_hints )
     {
       error = ps_hint_table_ensure( table, count, memory );
-      if ( error ) {
+      if ( error )
         goto Exit;
-}
     }
 
     hint = table->hints + count - 1;  /* initialized upstream */
@@ -153,9 +152,8 @@
   ps_mask_test_bit( PS_Mask  mask,
                     FT_UInt  idx )
   {
-    if ( idx >= mask->num_bits ) {
+    if ( idx >= mask->num_bits )
       return 0;
-}
 
     return mask->bytes[idx >> 3] & ( 0x80 >> ( idx & 7 ) );
   }
@@ -174,9 +172,8 @@
     if ( idx >= mask->num_bits )
     {
       error = ps_mask_ensure( mask, idx + 1, memory );
-      if ( error ) {
+      if ( error )
         goto Exit;
-}
 
       mask->num_bits = idx + 1;
     }
@@ -245,18 +242,16 @@
     if ( count > table->max_masks )
     {
       error = ps_mask_table_ensure( table, count, memory );
-      if ( error ) {
+      if ( error )
         goto Exit;
-}
     }
 
     mask             = table->masks + count - 1;
     mask->num_bits   = 0;
     mask->end_point  = 0;
     /* reused mask must be cleared */
-    if ( mask->max_bits ) {
+    if ( mask->max_bits )
       FT_MEM_ZERO( mask->bytes, mask->max_bits >> 3 );
-}
 
     table->num_masks = count;
 
@@ -281,13 +276,11 @@
     if ( count == 0 )
     {
       error = ps_mask_table_alloc( table, memory, &mask );
-      if ( error ) {
+      if ( error )
         goto Exit;
-}
     }
-    else {
-      m
-}ask = table->masks + count - 1;
+    else
+      mask = table->masks + count - 1;
 
   Exit:
     *amask = mask;
@@ -308,14 +301,12 @@
 
 
     error = ps_mask_table_last( table, memory, &mask );
-    if ( error ) {
+    if ( error )
       goto Exit;
-}
 
     error = ps_mask_ensure( mask, bit_count, memory );
-    if ( error ) {
+    if ( error )
       goto Exit;
-}
 
     mask->num_bits = bit_count;
 
@@ -383,9 +374,8 @@
       p2++;
     }
 
-    if ( count == 0 ) {
+    if ( count == 0 )
       return 0;
-}
 
     return ( p1[0] & p2[0] ) & ~( 0xFF >> count );
   }
@@ -435,9 +425,8 @@
         if ( count2 > count1 )
         {
           error = ps_mask_ensure( mask1, count2, memory );
-          if ( error ) {
+          if ( error )
             goto Exit;
-}
 
           mask1->num_bits = count2;
         }
@@ -477,9 +466,8 @@
 
       table->num_masks--;
     }
-    else {
-      F
-}T_TRACE0(( "ps_mask_table_merge: ignoring invalid indices (%d,%d)\n",
+    else
+      FT_TRACE0(( "ps_mask_table_merge: ignoring invalid indices (%d,%d)\n",
                   index1, index2 ));
 
   Exit:
@@ -624,9 +612,8 @@
 
     /* reset current mask, if any */
     error = ps_dimension_reset_mask( dim, end_point, memory );
-    if ( error ) {
+    if ( error )
       goto Exit;
-}
 
     /* set bits in new mask */
     error = ps_mask_table_set_bits( &dim->masks, source,
@@ -679,9 +666,8 @@
       if ( idx >= max )
       {
         error = ps_hint_table_alloc( &dim->hints, memory, &hint );
-        if ( error ) {
+        if ( error )
           goto Exit;
-}
 
         hint->pos   = pos;
         hint->len   = len;
@@ -690,14 +676,12 @@
 
       /* now, store the hint in the current mask */
       error = ps_mask_table_last( &dim->masks, memory, &mask );
-      if ( error ) {
+      if ( error )
         goto Exit;
-}
 
       error = ps_mask_set_bit( mask, idx, memory );
-      if ( error ) {
+      if ( error )
         goto Exit;
-}
 
       if ( aindex )
         *aindex = idx;
@@ -735,26 +719,22 @@
     if ( count == 0 )
     {
       error = ps_mask_table_alloc( &dim->counters, memory, &counter );
-      if ( error ) {
+      if ( error )
         goto Exit;
-}
     }
 
     /* now, set the bits for our hints in the counter mask */
     error = ps_mask_set_bit( counter, hint1, memory );
-    if ( error ) {
+    if ( error )
       goto Exit;
-}
 
     error = ps_mask_set_bit( counter, hint2, memory );
-    if ( error ) {
+    if ( error )
       goto Exit;
-}
 
     error = ps_mask_set_bit( counter, hint3, memory );
-    if ( error ) {
+    if ( error )
       goto Exit;
-}
 
   Exit:
     return error;

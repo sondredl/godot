@@ -30,23 +30,20 @@ class ThreadGroup
 public:
 	ThreadGroup(T *impl)
 	{
-		for (unsigned i = 0; i < Size; i++) {
+		for (unsigned i = 0; i < Size; i++)
 			workers[i].start(&impl[i]);
-}
 	}
 
 	void run()
 	{
-		for (auto &worker : workers) {
+		for (auto &worker : workers)
 			worker.run();
-}
 	}
 
 	void wait()
 	{
-		for (auto &worker : workers) {
+		for (auto &worker : workers)
 			worker.wait();
-}
 	}
 
 private:
@@ -68,9 +65,8 @@ private:
 					{
 						std::unique_lock<std::mutex> l{ lock };
 						cond.wait(l, [this] { return state != Idle; });
-						if (state == Dying) {
+						if (state == Dying)
 							break;
-}
 					}
 
 					impl->main();

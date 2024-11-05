@@ -6,7 +6,7 @@
 #include <float.h>
 #include <stdint.h>
 
-namespace FLOAT_MATH;
+namespace FLOAT_MATH
 {
 
 enum FM_ClipState

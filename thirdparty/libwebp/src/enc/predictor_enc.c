@@ -386,10 +386,8 @@ static int GetBestPredictorForTile(int width, int height,
     cur_diff = PredictionCostSpatialHistogram(
         (const int (*)[256])accumulated, (const int (*)[256])histo_argb);
     // Favor keeping the areas locally similar.
-    if (mode == left_mode) { cur_diff -= kSpatialPredictorBias;
-}
-    if (mode == above_mode) { cur_diff -= kSpatialPredictorBias;
-}
+    if (mode == left_mode) cur_diff -= kSpatialPredictorBias;
+    if (mode == above_mode) cur_diff -= kSpatialPredictorBias;
 
     if (cur_diff < best_diff) {
       int (*tmp)[256] = histo_argb;
@@ -461,8 +459,7 @@ static void CopyImageWithPrediction(int width, int height,
         const int mode =
             (modes[(y >> bits) * tiles_per_row + (x >> bits)] >> 8) & 0xff;
         int x_end = x + (1 << bits);
-        if (x_end > width) { x_end = width;
-}
+        if (x_end > width) x_end = width;
         GetResidual(width, height, upper_row, current_row, current_max_diffs,
                     mode, x, x_end, y, max_quantization, exact,
                     used_subtract_green, argb + y * width + x);

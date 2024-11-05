@@ -3,15 +3,14 @@
 
 #include <algorithm>
 #include <cmath>
-#include <cstdint>
+#include <stdint.h>
 
 #include "ForceInline.hpp"
 
 template<typename T>
 static etcpak_force_inline T AlignPOT( T val )
 {
-    if( val == 0 ) { return 1;
-}
+    if( val == 0 ) return 1;
     val--;
     for( unsigned int i=1; i<sizeof( T ) * 8; i <<= 1 )
     {
@@ -74,8 +73,7 @@ static etcpak_force_inline T SmoothStep( T x )
 
 static etcpak_force_inline uint8_t clampu8( int32_t val )
 {
-    if( ( val & ~0xFF ) == 0 ) { return val;
-}
+    if( ( val & ~0xFF ) == 0 ) return val;
     return ( ( ~val ) >> 31 ) & 0xFF;
 }
 

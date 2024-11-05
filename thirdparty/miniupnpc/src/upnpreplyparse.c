@@ -18,9 +18,8 @@ NameValueParserStartElt(void * d, const char * name, int l)
 {
 	struct NameValueParserData * data = (struct NameValueParserData *)d;
 	data->topelt = 1;
-    if(l>63) {
+    if(l>63)
         l = 63;
-}
     memcpy(data->curelt, name, l);
     data->curelt[l] = '\0';
 	data->cdata = NULL;
@@ -34,9 +33,8 @@ NameValueParserEndElt(void * d, const char * name, int namelen)
     struct NameValue * nv;
 	(void)name;
 	(void)namelen;
-	if(!data->topelt) {
+	if(!data->topelt)
 		return;
-}
 	if(strcmp(data->curelt, "NewPortListing") != 0)
 	{
 		int l;
@@ -52,9 +50,8 @@ NameValueParserEndElt(void * d, const char * name, int namelen)
 #endif /* DEBUG */
 			return;
 		}
-	    if(l>=(int)sizeof(nv->value)) {
+	    if(l>=(int)sizeof(nv->value))
 	        l = sizeof(nv->value) - 1;
-}
 	    strncpy(nv->name, data->curelt, 64);
 		nv->name[63] = '\0';
 		if(data->cdata != NULL)
@@ -148,9 +145,8 @@ GetValueFromNameValueList(struct NameValueParserData * pdata,
         (nv != NULL) && (p == NULL);
         nv = nv->l_next)
     {
-        if(strcmp(nv->name, Name) == 0) {
+        if(strcmp(nv->name, Name) == 0)
             p = nv->value;
-}
     }
     return p;
 }

@@ -24,7 +24,7 @@ namespace embree
         device->refInc();
       }
 
-      ~BVH() override {
+      ~BVH() {
         device->refDec();
       }
 
@@ -60,9 +60,8 @@ namespace embree
       const BBox3fa centBounds = parallel_reduce ( size_t(0), primitiveCount, BBox3fa(empty), [&](const range<size_t>& r) -> BBox3fa {
 
           BBox3fa bounds(empty);
-          for (size_t i=r.begin(); i<r.end(); i++) {
+          for (size_t i=r.begin(); i<r.end(); i++)
             bounds.extend(prims[i].bounds().center2());
-}
           return bounds;
         }, BBox3fa::merge);
 
@@ -126,8 +125,7 @@ namespace embree
 
         /* progress monitor function */
         [&] (size_t dn) {
-          if (!buildProgress) { return true;
-}
+          if (!buildProgress) return true;
           const size_t n = progress.fetch_add(dn)+dn;
           const double f = std::min(1.0,double(n)/double(primitiveCount));
           return buildProgress(userPtr,f);
@@ -158,9 +156,8 @@ namespace embree
       auto computeBounds = [&](const range<size_t>& r) -> CentGeomBBox3fa
         {
           CentGeomBBox3fa bounds(empty);
-          for (size_t j=r.begin(); j<r.end(); j++) {
+          for (size_t j=r.begin(); j<r.end(); j++)
             bounds.extend((BBox3fa&)prims[j]);
-}
           return bounds;
         };
       const CentGeomBBox3fa bounds =
@@ -181,8 +178,7 @@ namespace embree
         {
           void* node = createNode((RTCThreadLocalAllocator)&alloc, (unsigned int)N,userPtr);
           const RTCBounds* cbounds[GeneralBVHBuilder::MAX_BRANCHING_FACTOR];
-          for (size_t i=0; i<N; i++) { cbounds[i] = (const RTCBounds*) &children[i].prims.geomBounds;
-}
+          for (size_t i=0; i<N; i++) cbounds[i] = (const RTCBounds*) &children[i].prims.geomBounds;
           setNodeBounds(node,cbounds, (unsigned int)N,userPtr);
           return node;
         },
@@ -200,8 +196,7 @@ namespace embree
 
         /* progress monitor function */
         [&] (size_t dn) {
-          if (!buildProgress) { return true;
-}
+          if (!buildProgress) return true;
           const size_t n = progress.fetch_add(dn)+dn;
           const double f = std::min(1.0,double(n)/double(primitiveCount));
           return buildProgress(userPtr,f);
@@ -302,8 +297,7 @@ namespace embree
         {
           void* node = createNode((RTCThreadLocalAllocator)&alloc, (unsigned int)N,userPtr);
           const RTCBounds* cbounds[GeneralBVHBuilder::MAX_BRANCHING_FACTOR];
-          for (size_t i=0; i<N; i++) { cbounds[i] = (const RTCBounds*) &children[i].prims.geomBounds;
-}
+          for (size_t i=0; i<N; i++) cbounds[i] = (const RTCBounds*) &children[i].prims.geomBounds;
           setNodeBounds(node,cbounds, (unsigned int)N,userPtr);
           return node;
         },
@@ -326,8 +320,7 @@ namespace embree
 
         /* progress monitor function */
         [&] (size_t dn) {
-          if (!buildProgress) { return true;
-}
+          if (!buildProgress) return true;
           const size_t n = progress.fetch_add(dn)+dn;
           const double f = std::min(1.0,double(n)/double(primitiveCount));
           return buildProgress(userPtr,f);
@@ -379,16 +372,15 @@ RTC_NAMESPACE_BEGIN
       bvh->allocator.reset();
 
       /* switch between different builders based on quality level */
-      if (arguments->buildQuality == RTC_BUILD_QUALITY_LOW) {
+      if (arguments->buildQuality == RTC_BUILD_QUALITY_LOW)
         return rtcBuildBVHMorton(arguments);
-      } else if (arguments->buildQuality == RTC_BUILD_QUALITY_MEDIUM) {
+      else if (arguments->buildQuality == RTC_BUILD_QUALITY_MEDIUM)
         return rtcBuildBVHBinnedSAH(arguments);
-      } else if (arguments->buildQuality == RTC_BUILD_QUALITY_HIGH) {
-        if (arguments->splitPrimitive == nullptr || arguments->primitiveArrayCapacity <= arguments->primitiveCount) {
+      else if (arguments->buildQuality == RTC_BUILD_QUALITY_HIGH) {
+        if (arguments->splitPrimitive == nullptr || arguments->primitiveArrayCapacity <= arguments->primitiveCount)
           return rtcBuildBVHBinnedSAH(arguments);
-        } else {
+        else
           return rtcBuildBVHSpatialSAH(arguments);
-}
       }
       else
         throw_RTCError(RTC_ERROR_INVALID_OPERATION,"invalid build quality");

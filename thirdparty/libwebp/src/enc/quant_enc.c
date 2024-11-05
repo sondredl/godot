@@ -235,8 +235,7 @@ static int ExpandMatrix(VP8Matrix* const m, int type) {
   return (sum + 8) >> 4;
 }
 
-static void CheckLambdaValue(int* const v) { if (*v < 1) { *v = 1;
-}}
+static void CheckLambdaValue(int* const v) { if (*v < 1) *v = 1; }
 
 static void SetupMatrices(VP8Encoder* enc) {
   int i;
@@ -630,8 +629,7 @@ static int TrellisQuantizeBlock(const VP8Encoder* WEBP_RESTRICT const enc,
     }
     // we don't need to go inspect up to n = 16 coeffs. We can just go up
     // to last + 1 (inclusive) without losing much.
-    if (last < 15) { ++last;
-}
+    if (last < 15) ++last;
 
     // compute 'skip' score. This is the max score one can do.
     cost = VP8BitCost(0, last_proba);
@@ -868,8 +866,7 @@ static int QuantizeSingle(int16_t* WEBP_RESTRICT const v,
                           const VP8Matrix* WEBP_RESTRICT const mtx) {
   int V = *v;
   const int sign = (V < 0);
-  if (sign) { V = -V;
-}
+  if (sign) V = -V;
   if (V > (int)mtx->zthresh_[0]) {
     const int qV = QUANTDIV(V, mtx->iq_[0], mtx->bias_[0]) * mtx->q_[0];
     const int err = (V - qV);

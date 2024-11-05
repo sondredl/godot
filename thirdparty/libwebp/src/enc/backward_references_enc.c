@@ -71,8 +71,7 @@ static WEBP_INLINE int FindMatchLength(const uint32_t* const array1,
                                        int best_len_match, int max_limit) {
   // Before 'expensive' linear match, check if the two arrays match at the
   // current best length index.
-  if (array1[best_len_match] != array2[best_len_match]) { return 0;
-}
+  if (array1[best_len_match] != array2[best_len_match]) return 0;
 
   return VP8LVectorMismatch(array1, array2, max_limit);
 }
@@ -180,8 +179,7 @@ static int BackwardRefsClone(const VP8LBackwardRefs* const from,
   VP8LClearBackwardRefs(to);
   while (block_from != NULL) {
     PixOrCopyBlock* const block_to = BackwardRefsNewBlock(to);
-    if (block_to == NULL) { return 0;
-}
+    if (block_to == NULL) return 0;
     memcpy(block_to->start_, block_from->start_,
            block_from->size_ * sizeof(PixOrCopy));
     block_to->size_ = block_from->size_;
@@ -197,8 +195,7 @@ void VP8LBackwardRefsCursorAdd(VP8LBackwardRefs* const refs,
   PixOrCopyBlock* b = refs->last_block_;
   if (b == NULL || b->size_ == refs->block_size_) {
     b = BackwardRefsNewBlock(refs);
-    if (b == NULL) { return;   // refs->error_ is set
-}
+    if (b == NULL) return;   // refs->error_ is set
   }
   b->start_[b->size_++] = v;
 }
@@ -212,8 +209,7 @@ int VP8LHashChainInit(VP8LHashChain* const p, int size) {
   assert(size > 0);
   p->offset_length_ =
       (uint32_t*)WebPSafeMalloc(size, sizeof(*p->offset_length_));
-  if (p->offset_length_ == NULL) { return 0;
-}
+  if (p->offset_length_ == NULL) return 0;
   p->size_ = size;
 
   return 1;
@@ -931,15 +927,13 @@ static int GetBackwardReferences(int width, int height,
   memset(&hash_chain_box, 0, sizeof(hash_chain_box));
 
   histo = VP8LAllocateHistogram(MAX_COLOR_CACHE_BITS);
-  if (histo == NULL) { goto Error;
-}
+  if (histo == NULL) goto Error;
 
   for (lz77_type = 1; lz77_types_to_try;
        lz77_types_to_try &= ~lz77_type, lz77_type <<= 1) {
     int res = 0;
     float bit_cost = 0.f;
-    if ((lz77_types_to_try & lz77_type) == 0) { continue;
-}
+    if ((lz77_types_to_try & lz77_type) == 0) continue;
     switch (lz77_type) {
       case kLZ77RLE:
         res = BackwardReferencesRle(width, height, argb, 0, refs_tmp);
@@ -951,23 +945,20 @@ static int GetBackwardReferences(int width, int height,
                                      refs_tmp);
         break;
       case kLZ77Box:
-        if (!VP8LHashChainInit(&hash_chain_box, width * height)) { goto Error;
-}
+        if (!VP8LHashChainInit(&hash_chain_box, width * height)) goto Error;
         res = BackwardReferencesLz77Box(width, height, argb, 0, hash_chain,
                                         &hash_chain_box, refs_tmp);
         break;
       default:
         assert(0);
     }
-    if (!res) { goto Error;
-}
+    if (!res) goto Error;
 
     // Start with the no color cache case.
     for (i = 1; i >= 0; --i) {
       int cache_bits = (i == 1) ? 0 : cache_bits_max;
 
-      if (i == 1 && !do_no_cache) { continue;
-}
+      if (i == 1 && !do_no_cache) continue;
 
       if (i == 0) {
         // Try with a color cache.
@@ -992,15 +983,13 @@ static int GetBackwardReferences(int width, int height,
         if (i == 1) {
           // Do not swap as the full cache analysis would have the wrong
           // VP8LBackwardRefs to start with.
-          if (!BackwardRefsClone(refs_tmp, &refs[1])) { goto Error;
-}
+          if (!BackwardRefsClone(refs_tmp, &refs[1])) goto Error;
         } else {
           BackwardRefsSwap(refs_tmp, &refs[0]);
         }
         bit_costs_best[i] = bit_cost;
         lz77_types_best[i] = lz77_type;
-        if (i == 0) { *cache_bits_best = cache_bits;
-}
+        if (i == 0) *cache_bits_best = cache_bits;
       }
     }
   }
@@ -1010,8 +999,7 @@ static int GetBackwardReferences(int width, int height,
   // Improve on simple LZ77 but only for high quality (TraceBackwards is
   // costly).
   for (i = 1; i >= 0; --i) {
-    if (i == 1 && !do_no_cache) { continue;
-}
+    if (i == 1 && !do_no_cache) continue;
     if ((lz77_types_best[i] == kLZ77Standard ||
          lz77_types_best[i] == kLZ77Box) &&
         quality >= 25) {
@@ -1037,8 +1025,7 @@ static int GetBackwardReferences(int width, int height,
         *cache_bits_best == 0) {
       // If the best cache size is 0 and we have the same best LZ77, just copy
       // the data over and stop here.
-      if (!BackwardRefsClone(&refs[1], &refs[0])) { goto Error;
-}
+      if (!BackwardRefsClone(&refs[1], &refs[0])) goto Error;
       break;
     }
   }

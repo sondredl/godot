@@ -36,9 +36,8 @@ namespace embree
       const BVH* __restrict__ bvh = (const BVH*)This->ptr;
 
       /* we may traverse an empty BVH in case all geometry was invalid */
-      if (bvh->root == BVH::emptyNode) {
+      if (bvh->root == BVH::emptyNode)
         return;
-}
 
       /* perform per ray precalculations required by the primitive intersector */
       Precalculations pre(ray, bvh);
@@ -50,9 +49,8 @@ namespace embree
       stack[0].ptr  = bvh->root;
       stack[0].dist = neg_inf;
 
-      if (bvh->root == BVH::emptyNode) {
+      if (bvh->root == BVH::emptyNode)
         return;
-}
 
       /* filter out invalid rays */
 #if defined(EMBREE_IGNORE_INVALID_RAYS)
@@ -70,18 +68,16 @@ namespace embree
       BVHNNodeTraverser1Hit<N, types> nodeTraverser;
 
       /* pop loop */
-      while (true) { pop:
+      while (true) pop:
       {
         /* pop next node */
-        if (unlikely(stackPtr == stack)) { break;
-}
+        if (unlikely(stackPtr == stack)) break;
         stackPtr--;
         NodeRef cur = NodeRef(stackPtr->ptr);
 
         /* if popped node is too far, pop next one */
-        if (unlikely(*(float*)&stackPtr->dist > ray.tfar)) {
+        if (unlikely(*(float*)&stackPtr->dist > ray.tfar))
           continue;
-}
 
         /* downtraversal loop */
         while (true)
@@ -93,9 +89,8 @@ namespace embree
           if (unlikely(!nodeIntersected)) { STAT3(normal.trav_nodes,-1,-1,-1); break; }
 
           /* if no child is hit, pop next node */
-          if (unlikely(mask == 0)) {
+          if (unlikely(mask == 0))
             goto pop;
-}
 
           /* select next child and push other children */
           nodeTraverser.traverseClosestHit(cur, mask, tNear, stackPtr, stackEnd);
@@ -116,7 +111,6 @@ namespace embree
           stackPtr++;
         }
       }
-}
     }
 
     template<int N, int types, bool robust, typename PrimitiveIntersector1>
@@ -127,14 +121,12 @@ namespace embree
       const BVH* __restrict__ bvh = (const BVH*)This->ptr;
 
       /* we may traverse an empty BVH in case all geometry was invalid */
-      if (bvh->root == BVH::emptyNode) {
+      if (bvh->root == BVH::emptyNode)
         return;
-}
 
       /* early out for already occluded rays */
-      if (unlikely(ray.tfar < 0.0f)) {
+      if (unlikely(ray.tfar < 0.0f))
         return;
-}
 
       /* perform per ray precalculations required by the primitive intersector */
       Precalculations pre(ray, bvh);
@@ -162,11 +154,10 @@ namespace embree
       BVHNNodeTraverser1Hit<N, types> nodeTraverser;
 
       /* pop loop */
-      while (true) { pop:
+      while (true) pop:
       {
         /* pop next node */
-        if (unlikely(stackPtr == stack)) { break;
-}
+        if (unlikely(stackPtr == stack)) break;
         stackPtr--;
         NodeRef cur = (NodeRef)*stackPtr;
 
@@ -180,9 +171,8 @@ namespace embree
           if (unlikely(!nodeIntersected)) { STAT3(shadow.trav_nodes,-1,-1,-1); break; }
 
           /* if no child is hit, pop next node */
-          if (unlikely(mask == 0)) {
+          if (unlikely(mask == 0))
             goto pop;
-}
 
           /* select next child and push other children */
           nodeTraverser.traverseAnyHit(cur, mask, tNear, stackPtr, stackEnd);
@@ -204,7 +194,6 @@ namespace embree
           stackPtr++;
         }
       }
-}
     }
 
     template<int N, int types, bool robust, typename PrimitiveIntersector1>
@@ -224,9 +213,8 @@ namespace embree
         const BVH* __restrict__ bvh = (const BVH*)This->ptr;
 
         /* we may traverse an empty BVH in case all geometry was invalid */
-        if (bvh->root == BVH::emptyNode) {
+        if (bvh->root == BVH::emptyNode)
           return false;
-}
 
         /* stack state */
         StackItemT<NodeRef> stack[stackSize];    // stack of nodes
@@ -250,18 +238,16 @@ namespace embree
                           : dot(context->query_radius, context->query_radius);
 
         /* pop loop */
-        while (true) { pop:
+        while (true) pop:
         {
           /* pop next node */
-          if (unlikely(stackPtr == stack)) { break;
-}
+          if (unlikely(stackPtr == stack)) break;
           stackPtr--;
           NodeRef cur = NodeRef(stackPtr->ptr);
 
           /* if popped node is too far, pop next one */
-          if (unlikely(*(float*)&stackPtr->dist > cull_radius)) {
+          if (unlikely(*(float*)&stackPtr->dist > cull_radius))
             continue;
-}
 
           /* downtraversal loop */
           while (true)
@@ -278,9 +264,8 @@ namespace embree
             if (unlikely(!nodeIntersected)) { STAT3(point_query.trav_nodes,-1,-1,-1); break; }
 
             /* if no child is hit, pop next node */
-            if (unlikely(mask == 0)) {
+            if (unlikely(mask == 0))
               goto pop;
-}
 
             /* select next child and push other children */
             nodeTraverser.traverseClosestHit(cur, mask, tNear, stackPtr, stackEnd);
@@ -307,7 +292,6 @@ namespace embree
             stackPtr++;
           }
         }
-}
         return changed;
       }
     };

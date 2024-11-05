@@ -68,8 +68,7 @@ static const unsigned char OC_MODE_RANKS[7][OC_NMODES]={
 void oc_mode_scheme_chooser_init(oc_mode_scheme_chooser *_chooser){
   int si;
   _chooser->mode_ranks[0]=_chooser->scheme0_ranks;
-  for(si=1;si<8;si++) {_chooser->mode_ranks[si]=OC_MODE_RANKS[si-1];
-}
+  for(si=1;si<8;si++)_chooser->mode_ranks[si]=OC_MODE_RANKS[si-1];
 }
 
 /*Reset the mode scheme chooser.
@@ -107,8 +106,7 @@ static int oc_mode_scheme_chooser_scheme_mb_cost(
     /*We don't actually reorder the list; this is for computing opportunity
        cost, not an update.*/
     mc=_chooser->mode_counts[_mb_mode];
-    while(ri>0&&mc>=_chooser->mode_counts[_chooser->scheme0_list[ri-1]]) {ri--;
-}
+    while(ri>0&&mc>=_chooser->mode_counts[_chooser->scheme0_list[ri-1]])ri--;
   }
   return OC_MODE_BITS[codebook][ri];
 }
@@ -143,8 +141,7 @@ static int oc_mode_scheme_chooser_cost(oc_mode_scheme_chooser *_chooser,
   /*Typical case: If the difference between the best scheme and the next best
      is greater than 6 bits, then adding just one mode cannot change which
      scheme we use.*/
-  if(scheme1_bits-scheme0_bits>6) {return mode_bits;
-}
+  if(scheme1_bits-scheme0_bits>6)return mode_bits;
   /*Otherwise, check to see if adding this mode selects a different scheme as
      the best.*/
   si=1;
@@ -153,10 +150,8 @@ static int oc_mode_scheme_chooser_cost(oc_mode_scheme_chooser *_chooser,
     int cur_bits;
     cur_bits=scheme1_bits+
      oc_mode_scheme_chooser_scheme_mb_cost(_chooser,scheme1,_mb_mode);
-    if(cur_bits<best_bits) {best_bits=cur_bits;
-}
-    if(++si>=8) {break;
-}
+    if(cur_bits<best_bits)best_bits=cur_bits;
+    if(++si>=8)break;
     scheme1=_chooser->scheme_list[si];
     scheme1_bits=_chooser->scheme_bits[scheme1];
   }
@@ -176,8 +171,7 @@ static void oc_mode_scheme_chooser_update(oc_mode_scheme_chooser *_chooser,
   for(ri=_chooser->scheme0_ranks[_mb_mode];ri>0;ri--){
     int pmode;
     pmode=_chooser->scheme0_list[ri-1];
-    if(_chooser->mode_counts[pmode]>=_chooser->mode_counts[_mb_mode]) {break;
-}
+    if(_chooser->mode_counts[pmode]>=_chooser->mode_counts[_mb_mode])break;
     /*Reorder the mode ranking.*/
     _chooser->scheme0_ranks[pmode]++;
     _chooser->scheme0_list[ri]=pmode;
@@ -200,8 +194,7 @@ static void oc_mode_scheme_chooser_update(oc_mode_scheme_chooser *_chooser,
     do{
       int scheme1;
       scheme1=_chooser->scheme_list[sj-1];
-      if(bits0>=_chooser->scheme_bits[scheme1]) {break;
-}
+      if(bits0>=_chooser->scheme_bits[scheme1])break;
       _chooser->scheme_list[sj]=scheme1;
     }
     while(--sj>0);
@@ -256,11 +249,9 @@ static int oc_fr_state_sb_cost(const oc_fr_state *_fr,
       bits++;
       sb_partial_count=0;
     }
-    else { bits-=oc_sb_run_bits(sb_partial_count);
-}
+    else bits-=oc_sb_run_bits(sb_partial_count);
   }
-  else { sb_partial_count=0;
-}
+  else sb_partial_count=0;
   bits+=oc_sb_run_bits(++sb_partial_count);
   if(!_sb_partial){
     /*Extend the sb_full run, or start a new one.*/
@@ -270,11 +261,9 @@ static int oc_fr_state_sb_cost(const oc_fr_state *_fr,
         bits++;
         sb_full_count=0;
       }
-      else { bits-=oc_sb_run_bits(sb_full_count);
-}
+      else bits-=oc_sb_run_bits(sb_full_count);
     }
-    else { sb_full_count=0;
-}
+    else sb_full_count=0;
     bits+=oc_sb_run_bits(++sb_full_count);
   }
   return bits;
@@ -285,13 +274,11 @@ static void oc_fr_state_advance_sb(oc_fr_state *_fr,
   int sb_partial_count;
   int sb_full_count;
   sb_partial_count=_fr->sb_partial_count;
-  if(_fr->sb_partial!=_sb_partial||sb_partial_count>=4129) {sb_partial_count=0;
-}
+  if(_fr->sb_partial!=_sb_partial||sb_partial_count>=4129)sb_partial_count=0;
   sb_partial_count++;
   if(!_sb_partial){
     sb_full_count=_fr->sb_full_count;
-    if(_fr->sb_full!=_sb_full||sb_full_count>=4129) {sb_full_count=0;
-}
+    if(_fr->sb_full!=_sb_full||sb_full_count>=4129)sb_full_count=0;
     sb_full_count++;
     _fr->sb_full_count=sb_full_count;
     _fr->sb_full=_sb_full;
@@ -338,8 +325,7 @@ static void oc_fr_state_flush_sb(oc_fr_state *_fr){
         _fr->bits+=sb_bits-_fr->sb_bits;
         _fr->sb_bits=sb_bits;
       }
-      else { sb_partial=1;
-}
+      else sb_partial=1;
     }
   }
   oc_fr_state_advance_sb(_fr,sb_partial,sb_full);
@@ -423,9 +409,8 @@ static void oc_fr_state_advance_block(oc_fr_state *_fr,int _b_coded){
   }
   else{
     b_count++;
-    if(_fr->b_coded==_b_coded) {sb_bits-=oc_block_run_bits(b_coded_count);
-    } else { b_coded_count=0;
-}
+    if(_fr->b_coded==_b_coded)sb_bits-=oc_block_run_bits(b_coded_count);
+    else b_coded_count=0;
     sb_bits+=oc_block_run_bits(++b_coded_count);
   }
   _fr->bits=bits+sb_bits;
@@ -491,11 +476,9 @@ static void oc_qii_state_advance(oc_qii_state *_qd,
       bits++;
       qi01_count=0;
     }
-    else { bits-=oc_sb_run_bits(qi01_count);
-}
+    else bits-=oc_sb_run_bits(qi01_count);
   }
-  else { qi01_count=0;
-}
+  else qi01_count=0;
   qi01_count++;
   bits+=oc_sb_run_bits(qi01_count);
   qi12_count=_qs->qi12_count;
@@ -506,16 +489,13 @@ static void oc_qii_state_advance(oc_qii_state *_qd,
         bits++;
         qi12_count=0;
       }
-      else { bits-=oc_sb_run_bits(qi12_count);
-}
+      else bits-=oc_sb_run_bits(qi12_count);
     }
-    else { qi12_count=0;
-}
+    else qi12_count=0;
     qi12_count++;
     bits+=oc_sb_run_bits(qi12_count);
   }
-  else { qi12=_qs->qi12;
-}
+  else qi12=_qs->qi12;
   _qd->bits=bits;
   _qd->qi01=qi01;
   _qd->qi01_count=qi01_count;
@@ -540,10 +520,8 @@ static void oc_enc_pipeline_init(oc_enc_ctx *_enc,oc_enc_pipeline_state *_pipe){
   /*Initialize the per-plane coded block flag trackers.
     These are used for bit-estimation purposes only; the real flag bits span
      all three planes, so we can't compute them in parallel.*/
-  for(pli=0;pli<3;pli++) {oc_fr_state_init(_pipe->fr+pli);
-}
-  for(pli=0;pli<3;pli++) {oc_qii_state_init(_pipe->qs+pli);
-}
+  for(pli=0;pli<3;pli++)oc_fr_state_init(_pipe->fr+pli);
+  for(pli=0;pli<3;pli++)oc_qii_state_init(_pipe->qs+pli);
   /*Set up the per-plane skip SSD storage pointers.*/
   mcu_nvsbs=_enc->mcu_nvsbs;
   mcu_nfrags=mcu_nvsbs*_enc->state.fplanes[0].nhsbs*16;
@@ -593,8 +571,7 @@ static void oc_enc_pipeline_init(oc_enc_ctx *_enc,oc_enc_pipeline_state *_pipe){
   /*Initialize the bounding value array for the loop filter.*/
   flimit=_enc->state.loop_filter_limits[_enc->state.qis[0]];
   _pipe->loop_filter=flimit!=0;
-  if(flimit!=0) {oc_loop_filter_init(&_enc->state,_pipe->bounding_values,flimit);
-}
+  if(flimit!=0)oc_loop_filter_init(&_enc->state,_pipe->bounding_values,flimit);
   /*Clear the temporary DCT scratch space.*/
   memset(_pipe->dct_data,0,sizeof(_pipe->dct_data));
 }
@@ -612,8 +589,7 @@ static int oc_enc_pipeline_set_stripe(oc_enc_ctx *_enc,
   mcu_nvsbs=_enc->mcu_nvsbs;
   sby_end=_enc->state.fplanes[0].nvsbs;
   notdone=_sby+mcu_nvsbs<sby_end;
-  if(notdone) {sby_end=_sby+mcu_nvsbs;
-}
+  if(notdone)sby_end=_sby+mcu_nvsbs;
   vdec=0;
   for(pli=0;pli<3;pli++){
     fplane=_enc->state.fplanes+pli;
@@ -666,8 +642,7 @@ static void oc_enc_pipeline_finish_mcu_plane(oc_enc_ctx *_enc,
      _pipe->bounding_values,OC_FRAME_SELF,_pli,
      _pipe->fragy0[_pli]-_sdelay,_pipe->fragy_end[_pli]-_edelay);
   }
-  else { _sdelay=_edelay=0;
-}
+  else _sdelay=_edelay=0;
   /*To fill borders, we have an additional two pixel delay, since a fragment
      in the next row could filter its top edge, using two pixels from a
      fragment in this row.
@@ -829,9 +804,8 @@ static int oc_enc_block_transform_quantize(oc_enc_ctx *_enc,
     /*We didn't code any AC coefficients, so don't change the quantizer.*/
     qi01=_pipe->qs[_pli].qi01;
     qi12=_pipe->qs[_pli].qi12;
-    if(qi01>0) {qii=1+qi12;
-    } else if(qi01>=0) {qii=0;
-}
+    if(qi01>0)qii=1+qi12;
+    else if(qi01>=0)qii=0;
   }
   else{
     idct[0]=dc*dequant_dc;
@@ -843,8 +817,8 @@ static int oc_enc_block_transform_quantize(oc_enc_ctx *_enc,
     oc_qii_state_advance(&qs,_pipe->qs+_pli,qii);
     ac_bits+=qs.bits-_pipe->qs[_pli].bits;
   }
-  if(!qti) {oc_enc_frag_recon_intra(_enc,dst,ystride,data);
-  } else{
+  if(!qti)oc_enc_frag_recon_intra(_enc,dst,ystride,data);
+  else{
     oc_enc_frag_recon_inter(_enc,dst,
      nmv_offs==1?ref+mv_offs[0]:dst,ystride,data);
   }
@@ -882,8 +856,7 @@ static int oc_enc_block_transform_quantize(oc_enc_ctx *_enc,
          it's not clear that allowing it to encourage coding through negative
          coding overhead deltas is useful.
         For that reason, we disallow negative coding overheads.*/
-      if(overhead_bits<0) {overhead_bits=0;
-}
+      if(overhead_bits<0)overhead_bits=0;
       if(uncoded_ssd<=coded_ssd+(overhead_bits+ac_bits)*_enc->lambda){
         /*Hm, not worth it; roll back.*/
         oc_enc_tokenlog_rollback(_enc,checkpoint,(*_stack)-checkpoint);
@@ -894,8 +867,7 @@ static int oc_enc_block_transform_quantize(oc_enc_ctx *_enc,
         return 0;
       }
     }
-    else { _mo->dc_flag=1;
-}
+    else _mo->dc_flag=1;
     _mo->uncoded_ac_ssd+=uncoded_ssd;
     _mo->coded_ac_ssd+=coded_ssd;
     _mo->ac_bits+=ac_bits;
@@ -904,8 +876,7 @@ static int oc_enc_block_transform_quantize(oc_enc_ctx *_enc,
   /*GCC 4.4.4 generates a warning here because it can't tell that
      the init code in the nqis check above will run anytime this
      line runs.*/
-  if(nqis>1) {*(_pipe->qs+_pli)=*&qs;
-}
+  if(nqis>1)*(_pipe->qs+_pli)=*&qs;
   frags[_fragi].dc=dc;
   frags[_fragi].coded=1;
   return 1;
@@ -955,8 +926,7 @@ static int oc_enc_mb_transform_quantize_inter_luma(oc_enc_ctx *_enc,
       coded_fragis[ncoded_fragis++]=fragi;
       ncoded++;
     }
-    else { *(uncoded_fragis-++nuncoded_fragis)=fragi;
-}
+    else *(uncoded_fragis-++nuncoded_fragis)=fragi;
   }
   if(ncoded>0&&!mo.dc_flag){
     int cost;
@@ -984,12 +954,12 @@ static int oc_enc_mb_transform_quantize_inter_luma(oc_enc_ctx *_enc,
     }
   }
   /*If no luma blocks coded, the mode is forced.*/
-  if(ncoded==0) {mb_modes[_mbi]=OC_MODE_INTER_NOMV;
+  if(ncoded==0)mb_modes[_mbi]=OC_MODE_INTER_NOMV;
   /*Assume that a 1MV with a single coded block is always cheaper than a 4MV
      with a single coded block.
     This may not be strictly true: a 4MV computes chroma MVs using (0,0) for
      skipped blocks, while a 1MV does not.*/
-  } else if(ncoded==1&&mb_mode==OC_MODE_INTER_MV_FOUR){
+  else if(ncoded==1&&mb_mode==OC_MODE_INTER_MV_FOUR){
     mb_modes[_mbi]=OC_MODE_INTER_MV;
   }
   _pipe->ncoded_fragis[0]=ncoded_fragis;
@@ -1027,7 +997,7 @@ static void oc_enc_sb_transform_quantize_inter_chroma(oc_enc_ctx *_enc,
     int                 quadi;
     int                 bi;
     memset(&mo,0,sizeof(mo));
-    for(quadi=0;quadi<4;quadi++) {for(bi=0;bi<4;bi++){
+    for(quadi=0;quadi<4;quadi++)for(bi=0;bi<4;bi++){
       ptrdiff_t fragi;
       fragi=sb_maps[sbi][quadi][bi];
       if(fragi>=0){
@@ -1041,11 +1011,9 @@ static void oc_enc_sb_transform_quantize_inter_chroma(oc_enc_ctx *_enc,
          rd_scale,rd_iscale,&mo,fr,&stackptr)){
           coded_fragis[ncoded_fragis++]=fragi;
         }
-        else { *(uncoded_fragis-++nuncoded_fragis)=fragi;
-}
+        else *(uncoded_fragis-++nuncoded_fragis)=fragi;
       }
     }
-}
     oc_fr_state_flush_sb(fr);
     sb_flags[sbi].coded_fully=fr->sb_full;
     sb_flags[sbi].coded_partially=fr->sb_partial;
@@ -1129,8 +1097,7 @@ static void oc_enc_mode_rd_init(oc_enc_ctx *_enc){
         /*Interpolate a row for this quantizer.*/
         dx=OC_MODE_LOGQ[modeline][pli][qti]-log_plq;
         dq=OC_MODE_LOGQ[modeline][pli][qti]-OC_MODE_LOGQ[modeline+1][pli][qti];
-        if(dq==0) {dq=1;
-}
+        if(dq==0)dq=1;
         for(bin=0;bin<OC_COMP_BINS;bin++){
           int y0;
           int z0;
@@ -1379,13 +1346,11 @@ static unsigned oc_mb_masking(unsigned _rd_scale[5],unsigned _rd_iscale[5],
       bi_min2=bi_min;
       bi_min=bi;
     }
-    else if(_rd_iscale[bi]<_rd_iscale[bi_min2]) {bi_min2=bi;
-}
+    else if(_rd_iscale[bi]<_rd_iscale[bi_min2])bi_min2=bi;
   }
   /*If the minimum iscale is less than 1.0, use the second smallest instead,
      and force the value to at least 1.0 (inflating chroma is a waste).*/
-  if(_rd_iscale[bi_min]<(1<<OC_RD_ISCALE_BITS)) {bi_min=bi_min2;
-}
+  if(_rd_iscale[bi_min]<(1<<OC_RD_ISCALE_BITS))bi_min=bi_min2;
   d=OC_MINI(_rd_scale[bi_min],1<<OC_RD_SCALE_BITS);
   _rd_scale[4]=OC_RD_SCALE(d,_chroma_rd_scale[0]);
   d=OC_MAXI(_rd_iscale[bi_min],1<<OC_RD_ISCALE_BITS);
@@ -1541,8 +1506,7 @@ static unsigned oc_analyze_intra_mb_luma(oc_enc_ctx *_enc,
   for(bi=3;;){
     fragi=sb_maps[_mbi>>2][_mbi&3][bi];
     frags[fragi].qii=best_qii;
-    if(bi--<=0) {break;
-}
+    if(bi--<=0)break;
     best_qii=prev[bi][best_qii];
   }
   return best_cost;
@@ -1653,7 +1617,7 @@ static void oc_enc_sb_transform_quantize_intra_chroma(oc_enc_ctx *_enc,
     oc_token_checkpoint stack[64];
     int                 quadi;
     int                 bi;
-    for(quadi=0;quadi<4;quadi++) {for(bi=0;bi<4;bi++){
+    for(quadi=0;quadi<4;quadi++)for(bi=0;bi<4;bi++){
       ptrdiff_t fragi;
       fragi=sb_maps[sbi][quadi][bi];
       if(fragi>=0){
@@ -1669,7 +1633,6 @@ static void oc_enc_sb_transform_quantize_intra_chroma(oc_enc_ctx *_enc,
         coded_fragis[ncoded_fragis++]=fragi;
       }
     }
-}
   }
   _pipe->ncoded_fragis[_pli]=ncoded_fragis;
 }
@@ -1731,7 +1694,7 @@ void oc_enc_analyze_intra(oc_enc_ctx *_enc,int _recode){
     for(sbi=_enc->pipe.sbi0[0];sbi<sbi_end;sbi++){
       int quadi;
       /*Mode addressing is through Y plane, always 4 MB per SB.*/
-      for(quadi=0;quadi<4;quadi++) {if(sb_flags[sbi].quad_valid&1<<quadi){
+      for(quadi=0;quadi<4;quadi++)if(sb_flags[sbi].quad_valid&1<<quadi){
         unsigned  activity[4];
         unsigned  rd_scale[5];
         unsigned  rd_iscale[5];
@@ -1750,8 +1713,7 @@ void oc_enc_analyze_intra(oc_enc_ctx *_enc,int _recode){
           unsigned intra_satd[12];
           luma=oc_mb_intra_satd(_enc,mbi,intra_satd);
           oc_mb_activity_fast(_enc,mbi,activity,intra_satd);
-          for(bi=0;bi<4;bi++) {frags[sb_maps[mbi>>2][mbi&3][bi]].qii=0;
-}
+          for(bi=0;bi<4;bi++)frags[sb_maps[mbi>>2][mbi&3][bi]].qii=0;
         }
         activity_sum+=oc_mb_masking(rd_scale,rd_iscale,
          chroma_rd_scale,activity,activity_avg,luma,luma_avg);
@@ -1787,7 +1749,6 @@ void oc_enc_analyze_intra(oc_enc_ctx *_enc,int _recode){
           mcu_rd_iscale[fragi-cfroffset]=(ogg_uint16_t)rd_iscale[4];
         }
       }
-}
     }
     oc_enc_pipeline_finish_mcu_plane(_enc,&_enc->pipe,0,notstart,notdone);
     /*Code chroma planes.*/
@@ -1805,8 +1766,7 @@ void oc_enc_analyze_intra(oc_enc_ctx *_enc,int _recode){
   _enc->luma_avg=(unsigned)((luma_sum+(_enc->state.nmbs>>1))/_enc->state.nmbs);
   /*Finish filling in the reference frame borders.*/
   refi=_enc->state.ref_frame_idx[OC_FRAME_SELF];
-  for(pli=0;pli<3;pli++) {oc_state_borders_fill_caps(&_enc->state,refi,pli);
-}
+  for(pli=0;pli<3;pli++)oc_state_borders_fill_caps(&_enc->state,refi,pli);
   _enc->state.ntotal_coded_fragis=_enc->state.nfrags;
 }
 
@@ -1922,9 +1882,8 @@ static void oc_analyze_mb_mode_luma(oc_enc_ctx *_enc,
     rate+=best_rate;
     ssd+=best_ssd;
     *&fr=*(ft+best_fri);
-    if(best_fri==0) {*&qs=*(qt+best_qii);
-    } else { nskipped++;
-}
+    if(best_fri==0)*&qs=*(qt+best_qii);
+    else nskipped++;
     _modec->qii[bi]=best_qii;
   }
   _modec->ssd=ssd;
@@ -2051,8 +2010,7 @@ static void oc_skip_cost(oc_enc_ctx *_enc,oc_enc_pipeline_state *_pipe,
        against the prior frame, penalize skipping.
       TODO: The factor of two here is a kludge, but it tested out better than a
        hard limit.*/
-    if(mvs[bi]!=0) {uncoded_ssd*=2;
-}
+    if(mvs[bi]!=0)uncoded_ssd*=2;
     _pipe->skip_ssd[0][fragi-_pipe->froffset[0]]=_ssd[bi]=uncoded_ssd;
   }
   mb_map=(const oc_mb_map_plane *)_enc->state.mb_maps[_mbi];
@@ -2082,8 +2040,7 @@ static void oc_skip_cost(oc_enc_ctx *_enc,oc_enc_pipeline_state *_pipe,
          against the prior frame, penalize skipping.
         TODO: The factor of two here is a kludge, but it tested out better than
          a hard limit*/
-      if(mvs[OC_FRAME_PREV]!=0) {uncoded_ssd*=2;
-}
+      if(mvs[OC_FRAME_PREV]!=0)uncoded_ssd*=2;
       _pipe->skip_ssd[pli][fragi-_pipe->froffset[pli]]=_ssd[mapii]=uncoded_ssd;
     }
     map_nidxs=(map_nidxs-4<<1)+4;
@@ -2289,8 +2246,8 @@ static void oc_cost_inter4mv(oc_enc_ctx *_enc,oc_mode_choice *_modec,
   bits1=0;
   nqis=_enc->state.nqis;
   for(bi=0;bi<4;bi++){
-    if(_modec->qii[OC_MB_PHASE[_mbi&3][bi]]>=nqis) {lbmvs[bi]=0;
-    } else{
+    if(_modec->qii[OC_MB_PHASE[_mbi&3][bi]]>=nqis)lbmvs[bi]=0;
+    else{
       lbmvs[bi]=_mv[bi];
       bits0+=OC_MV_BITS[0][OC_MV_X(_mv[bi])+31]
        +OC_MV_BITS[0][OC_MV_Y(_mv[bi])+31];
@@ -2336,8 +2293,8 @@ int oc_enc_analyze_inter(oc_enc_ctx *_enc,int _allow_keyframe,int _recode){
   oc_mv                   prior_mv;
   ogg_int64_t             interbits;
   ogg_int64_t             intrabits;
-
-
+  ogg_int64_t             activity_sum;
+  ogg_int64_t             luma_sum;
   unsigned                activity_avg;
   unsigned                luma_avg;
   const ogg_uint16_t     *chroma_rd_scale;
@@ -2372,8 +2329,7 @@ int oc_enc_analyze_inter(oc_enc_ctx *_enc,int _allow_keyframe,int _recode){
   oc_enc_tokenize_start(_enc);
   oc_enc_pipeline_init(_enc,&_enc->pipe);
   oc_enc_mode_rd_init(_enc);
-  if(_allow_keyframe) {oc_qii_state_init(&intra_luma_qs);
-}
+  if(_allow_keyframe)oc_qii_state_init(&intra_luma_qs);
   _enc->mv_bits[0]=_enc->mv_bits[1]=0;
   interbits=intrabits=0;
   activity_sum=luma_sum=0;
@@ -2412,7 +2368,7 @@ int oc_enc_analyze_inter(oc_enc_ctx *_enc,int _allow_keyframe,int _recode){
     for(sbi=_enc->pipe.sbi0[0];sbi<sbi_end;sbi++){
       int quadi;
       /*Mode addressing is through Y plane, always 4 MB per SB.*/
-      for(quadi=0;quadi<4;quadi++) {if(sb_flags[sbi].quad_valid&1<<quadi){
+      for(quadi=0;quadi<4;quadi++)if(sb_flags[sbi].quad_valid&1<<quadi){
         oc_mode_choice modes[8];
         unsigned       activity[4];
         unsigned       rd_scale[5];
@@ -2437,16 +2393,14 @@ int oc_enc_analyze_inter(oc_enc_ctx *_enc,int _allow_keyframe,int _recode){
         if(sp_level<OC_SP_LEVEL_FAST_ANALYSIS){
           oc_mb_activity(_enc,mbi,activity);
         }
-        else { oc_mb_activity_fast(_enc,mbi,activity,intra_satd);
-}
+        else oc_mb_activity_fast(_enc,mbi,activity,intra_satd);
         luma_sum+=luma;
         activity_sum+=oc_mb_masking(rd_scale,rd_iscale,
          chroma_rd_scale,activity,activity_avg,luma,luma_avg);
         /*Motion estimation:
           We always do a basic 1MV search for all macroblocks, coded or not,
            keyframe or not.*/
-        if(!_recode&&sp_level<OC_SP_LEVEL_NOMC) {oc_mcenc_search(_enc,mbi);
-}
+        if(!_recode&&sp_level<OC_SP_LEVEL_NOMC)oc_mcenc_search(_enc,mbi);
         mv=0;
         /*Find the block choice with the lowest estimated coding cost.
           If a Cb or Cr block is coded but no Y' block from a macro block then
@@ -2628,8 +2582,7 @@ int oc_enc_analyze_inter(oc_enc_ctx *_enc,int _allow_keyframe,int _recode){
                  +OC_MV_BITS[0][OC_MV_Y(mv)+31];
               }
               /*Otherwise we used the original analysis MV.*/
-              else { last_mv=embs[mbi].analysis_mv[0][OC_FRAME_PREV];
-}
+              else last_mv=embs[mbi].analysis_mv[0][OC_FRAME_PREV];
               _enc->mv_bits[0]+=mb_mv_bits_0;
               _enc->mv_bits[1]+=12;
             }break;
@@ -2656,8 +2609,7 @@ int oc_enc_analyze_inter(oc_enc_ctx *_enc,int _allow_keyframe,int _recode){
                   _enc->mv_bits[1]+=12;
                 }
                 /*Replace the block MVs for not-coded blocks with (0,0).*/
-                else { lbmvs[bi]=0;
-}
+                else lbmvs[bi]=0;
               }
               (*set_chroma_mvs)(cbmvs,lbmvs);
               for(mapii=4;mapii<nmap_idxs;mapii++){
@@ -2709,7 +2661,6 @@ int oc_enc_analyze_inter(oc_enc_ctx *_enc,int _allow_keyframe,int _recode){
           mcu_rd_iscale[fragi-cfroffset]=(ogg_uint16_t)rd_iscale[4];
         }
       }
-}
       oc_fr_state_flush_sb(_enc->pipe.fr+0);
       sb_flags[sbi].coded_fully=_enc->pipe.fr[0].sb_full;
       sb_flags[sbi].coded_partially=_enc->pipe.fr[0].sb_partial;
@@ -2732,8 +2683,7 @@ int oc_enc_analyze_inter(oc_enc_ctx *_enc,int _allow_keyframe,int _recode){
   _enc->luma_avg=(unsigned)((luma_sum+(_enc->state.nmbs>>1))/_enc->state.nmbs);
   /*Finish filling in the reference frame borders.*/
   refi=_enc->state.ref_frame_idx[OC_FRAME_SELF];
-  for(pli=0;pli<3;pli++) {oc_state_borders_fill_caps(&_enc->state,refi,pli);
-}
+  for(pli=0;pli<3;pli++)oc_state_borders_fill_caps(&_enc->state,refi,pli);
   /*Finish adding flagging overhead costs to inter bit counts to determine if
      we should have coded a key frame instead.*/
   if(_allow_keyframe){
@@ -2742,10 +2692,8 @@ int oc_enc_analyze_inter(oc_enc_ctx *_enc,int _allow_keyframe,int _recode){
        inaccuracy is small.
       We don't need to add the luma plane coding flag costs, because they are
        already included in the MB rate estimates.*/
-    for(pli=1;pli<3;pli++) {interbits+=_enc->pipe.fr[pli].bits<<OC_BIT_SCALE;
-}
-    if(interbits>intrabits) {return 1;
-}
+    for(pli=1;pli<3;pli++)interbits+=_enc->pipe.fr[pli].bits<<OC_BIT_SCALE;
+    if(interbits>intrabits)return 1;
   }
   _enc->ncoded_mbis=ncoded_mbis;
   /*Compact the coded fragment list.*/

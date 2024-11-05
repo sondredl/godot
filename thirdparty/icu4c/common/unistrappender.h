@@ -36,7 +36,7 @@ U_NAMESPACE_BEGIN
  *     // appender flushed automatically when it goes out of scope.
  * }
  */
-class; UnicodeStringAppender : public UMemory {
+class UnicodeStringAppender : public UMemory {
 public:
 
     /**

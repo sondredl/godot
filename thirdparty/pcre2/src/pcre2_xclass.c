@@ -84,14 +84,12 @@ if (c < 256)
   {
   if ((*data & XCL_HASPROP) == 0)
     {
-    if ((*data & XCL_MAP) == 0) { return negated;
-}
+    if ((*data & XCL_MAP) == 0) return negated;
     return (((uint8_t *)(data + 1))[c/8] & (1u << (c&7))) != 0;
     }
   if ((*data & XCL_MAP) != 0 &&
-    (((uint8_t *)(data + 1))[c/8] & (1u << (c&7))) != 0) {
+    (((uint8_t *)(data + 1))[c/8] & (1u << (c&7))) != 0)
     return !negated; /* char found */
-}
   }
 
 /* First skip the bit map if present. Then match against the list of Unicode
@@ -113,8 +111,7 @@ while ((t = *data++) != XCL_END)
     else
 #endif
     x = *data++;
-    if (c == x) { return !negated;
-}
+    if (c == x) return !negated;
     }
   else if (t == XCL_RANGE)
     {
@@ -130,8 +127,7 @@ while ((t = *data++) != XCL_END)
       x = *data++;
       y = *data++;
       }
-    if (c >= x && c <= y) { return !negated;
-}
+    if (c >= x && c <= y) return !negated;
     }
 
 #ifdef SUPPORT_UNICODE

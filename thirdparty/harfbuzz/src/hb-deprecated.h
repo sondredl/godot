@@ -232,7 +232,7 @@ hb_unicode_decompose_compatibility (hb_unicode_funcs_t *ufuncs,
  * the specified font, for vertical text segments.
  *
  **/
-typedef hb_font_get_glyph_func_t hb_font_get_glyph_v_kerning_func_t;
+typedef hb_font_get_glyph_kerning_func_t hb_font_get_glyph_v_kerning_func_t;
 
 /**
  * hb_font_funcs_set_glyph_v_kerning_func:
@@ -272,7 +272,7 @@ hb_font_get_glyph_v_kerning (hb_font_t *font,
  **/
 typedef void (*hb_font_get_glyph_shape_func_t) (hb_font_t *font, void *font_data,
 						hb_codepoint_t glyph,
-						hb_font_funcs_t *draw_funcs, void *draw_data,
+						hb_draw_funcs_t *draw_funcs, void *draw_data,
 						void *user_data);
 
 /**
@@ -298,7 +298,7 @@ HB_DEPRECATED_FOR (hb_font_draw_glyph)
 HB_EXTERN void
 hb_font_get_glyph_shape (hb_font_t *font,
 			 hb_codepoint_t glyph,
-			 hb_font_funcs_t *dfuncs, void *draw_data);
+			 hb_draw_funcs_t *dfuncs, void *draw_data);
 
 
 /**

@@ -56,21 +56,18 @@ static int EncodeLossless(const uint8_t* const data, int width, int height,
   WebPConfig config;
   WebPPicture picture;
 
-  if (!WebPPictureInit(&picture)) { return 0;
-}
+  if (!WebPPictureInit(&picture)) return 0;
   picture.width = width;
   picture.height = height;
   picture.use_argb = 1;
   picture.stats = stats;
-  if (!WebPPictureAlloc(&picture)) { return 0;
-}
+  if (!WebPPictureAlloc(&picture)) return 0;
 
   // Transfer the alpha values to the green channel.
   WebPDispatchAlphaToGreen(data, width, picture.width, picture.height,
                            picture.argb, picture.argb_stride);
 
-  if (!WebPConfigInit(&config)) { return 0;
-}
+  if (!WebPConfigInit(&config)) return 0;
   config.lossless = 1;
   // Enable exact, or it would alter RGB values of transparent alpha, which is
   // normally OK but not here since we are not encoding the input image but  an
@@ -169,8 +166,7 @@ static int EncodeAlphaInternal(const uint8_t* const data, int width, int height,
   header = method | (filter << 2);
   if (reduce_levels) header |= ALPHA_PREPROCESSED_LEVELS << 4;
 
-  if (!VP8BitWriterInit(&result->bw, ALPHA_HEADER_LEN + output_size)) { ok = 0;
-}
+  if (!VP8BitWriterInit(&result->bw, ALPHA_HEADER_LEN + output_size)) ok = 0;
   ok = ok && VP8BitWriterAppend(&result->bw, &header, ALPHA_HEADER_LEN);
   ok = ok && VP8BitWriterAppend(&result->bw, output, output_size);
 
@@ -198,8 +194,7 @@ static int GetNumColors(const uint8_t* data, int width, int height,
     }
   }
   for (j = 0; j < 256; ++j) {
-    if (color[j] > 0) { ++colors;
-}
+    if (color[j] > 0) ++colors;
   }
   return colors;
 }
@@ -254,8 +249,7 @@ static int ApplyFiltersAndEncode(const uint8_t* alpha, int width, int height,
 
   if (try_map != FILTER_TRY_NONE) {
     uint8_t* filtered_alpha =  (uint8_t*)WebPSafeMalloc(1ULL, data_size);
-    if (filtered_alpha == NULL) { return 0;
-}
+    if (filtered_alpha == NULL) return 0;
 
     for (filter = WEBP_FILTER_NONE; ok && try_map; ++filter, try_map >>= 1) {
       if (try_map & 1) {
@@ -433,8 +427,7 @@ int VP8EncFinishAlpha(VP8Encoder* const enc) {
   if (enc->has_alpha_) {
     if (enc->thread_level_ > 0) {
       WebPWorker* const worker = &enc->alpha_worker_;
-      if (!WebPGetWorkerInterface()->Sync(worker)) { return 0;  // error
-}
+      if (!WebPGetWorkerInterface()->Sync(worker)) return 0;  // error
     }
   }
   return WebPReportProgress(enc->pic_, enc->percent_ + 20, &enc->percent_);

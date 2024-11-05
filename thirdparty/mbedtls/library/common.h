@@ -17,6 +17,7 @@
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stddef.h>
 
 #if defined(__ARM_NEON)
 #include <arm_neon.h>

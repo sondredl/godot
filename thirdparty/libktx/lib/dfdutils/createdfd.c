@@ -18,7 +18,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-#include "KHR/khr_df.h"
+#include <KHR/khr_df.h>
 
 #include "dfd.h"
 
@@ -114,8 +114,7 @@ static void writeSample(uint32_t *DFD, int sampleNo, int channel,
     } lower, upper;
     uint32_t *sample = DFD + 1 + KHR_DF_WORD_SAMPLESTART + sampleNo * KHR_DF_WORD_SAMPLEWORDS;
 
-    if (channel == 3) { channel = KHR_DF_CHANNEL_RGBSDA_ALPHA;
-}
+    if (channel == 3) channel = KHR_DF_CHANNEL_RGBSDA_ALPHA;
     channel = setChannelFlags(channel, suffix);
 
     sample[KHR_DF_SAMPLEWORD_BITOFFSET] =
@@ -143,8 +142,7 @@ static void writeSample(uint32_t *DFD, int sampleNo, int channel,
             upper.i = topSample ? (1U << (bits - 1)) - 1 : (1U << bits) - 1;
         }
         lower.i = ~upper.i;
-        if (bottomSample) { lower.i += 1;
-}
+        if (bottomSample) lower.i += 1;
         break;
     case s_USCALED:
     case s_UINT:
@@ -407,9 +405,8 @@ uint32_t *createDFD422(int bigEndian, int numSamples,
     assert(suffix == s_UNORM); (void) suffix;
 
     int totalBits = 0;
-    for (int i = 0; i < numSamples; ++i) {
+    for (int i = 0; i < numSamples; ++i)
         totalBits += shiftBits[i] + bits[i];
-}
     assert(totalBits % 8 == 0);
 
     uint32_t BDFDSize = sizeof(uint32_t) * (KHR_DF_WORD_SAMPLESTART + numSamples * KHR_DF_WORD_SAMPLEWORDS);

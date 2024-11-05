@@ -83,8 +83,7 @@ UnhandledEngine::findBreaks( UText *text,
                              UVector32 &/*foundBreaks*/,
                              UBool /* isPhraseBreaking */,
                              UErrorCode &status) const {
-    if (U_FAILURE(status)) { return 0;
-}
+    if (U_FAILURE(status)) return 0;
     utext_setNativeIndex(text, startPos);
     UChar32 c = utext_current32(text);
     while (static_cast<int32_t>(utext_getNativeIndex(text)) < endPos && fHandled->contains(c)) {
@@ -330,8 +329,7 @@ int32_t BreakEngineWrapper::findBreaks(
     UVector32 &foundBreaks,
     UBool /* isPhraseBreaking */,
     UErrorCode &status) const {
-    if (U_FAILURE(status)) { return 0;
-}
+    if (U_FAILURE(status)) return 0;
     int32_t result = 0;
 
     // Find the span of characters included in the set.
@@ -354,13 +352,11 @@ int32_t BreakEngineWrapper::findBreaks(
     int32_t additionalCapacity = rangeEnd - rangeStart + 1;
     // enlarge to contains (rangeEnd-rangeStart+1) more items
     foundBreaks.ensureCapacity(beforeSize+additionalCapacity, status);
-    if (U_FAILURE(status)) { return 0;
-}
+    if (U_FAILURE(status)) return 0;
     foundBreaks.setSize(beforeSize + beforeSize+additionalCapacity);
     result = delegate->fillBreaks(text, rangeStart, rangeEnd, foundBreaks.getBuffer()+beforeSize,
                                   additionalCapacity, status);
-    if (U_FAILURE(status)) { return 0;
-}
+    if (U_FAILURE(status)) return 0;
     foundBreaks.setSize(beforeSize + result);
     utext_setNativeIndex(text, current);
     return result;

@@ -129,10 +129,8 @@ static VP8StatusCode ParseVP8X(const uint8_t** const data,
     }
 
     if (flags_ptr != NULL) *flags_ptr = flags;
-    if (width_ptr != NULL) { *width_ptr = width;
-}
-    if (height_ptr != NULL) { *height_ptr = height;
-}
+    if (width_ptr != NULL) *width_ptr = width;
+    if (height_ptr != NULL) *height_ptr = height;
     // Skip over VP8X header bytes.
     *data += vp8x_size;
     *data_size -= vp8x_size;
@@ -328,10 +326,8 @@ static VP8StatusCode ParseHeadersInternal(const uint8_t* data,
       return VP8_STATUS_BITSTREAM_ERROR;
     }
     if (has_alpha != NULL) *has_alpha = !!(flags & ALPHA_FLAG);
-    if (has_animation != NULL) { *has_animation = animation_present;
-}
-    if (format != NULL) { *format = 0;   // default = undefined
-}
+    if (has_animation != NULL) *has_animation = animation_present;
+    if (format != NULL) *format = 0;   // default = undefined
 
     image_width = canvas_width;
     image_height = canvas_height;
@@ -410,10 +406,8 @@ static VP8StatusCode ParseHeadersInternal(const uint8_t* data,
       // to set this is by looking for alpha data (from an ALPH chunk).
       *has_alpha |= (hdrs.alpha_data != NULL);
     }
-    if (width != NULL) { *width = image_width;
-}
-    if (height != NULL) { *height = image_height;
-}
+    if (width != NULL) *width = image_width;
+    if (height != NULL) *height = image_height;
     return VP8_STATUS_OK;
   } else {
     return status;

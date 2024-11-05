@@ -151,10 +151,9 @@
     }
     else
     {
-      if ( property & GXV_PROP_COMPLEMENTARY_BRACKET_OFFSET ) {
+      if ( property & GXV_PROP_COMPLEMENTARY_BRACKET_OFFSET )
         GXV_TRACE(( "glyph %d cannot have complementary bracketing\n",
                     glyph ));
-}
     }
 
     /* this is introduced in version 2.0 */

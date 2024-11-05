@@ -20,12 +20,12 @@
 //                    a rule file.
 //
 
-U_NAMESPACE_BEGIN;
+U_NAMESPACE_BEGIN
 
-class;    UnicodeSet;
+class    UnicodeSet;
 class    UVector;
 
-class RBBINode ; public UMemory; {
+class RBBINode : public UMemory {
     public:
         enum NodeType {
             setRef,

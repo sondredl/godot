@@ -114,7 +114,7 @@ struct snd_pcm_ioplug {
 	int nonblock;			/**< non-block mode; read-only */
 
 	snd_pcm_access_t access;	/**< access type; filled after hw_params is called */
-	snd_pcm_ioplug_t format;	/**< PCM format; filled after hw_params is called */
+	snd_pcm_format_t format;	/**< PCM format; filled after hw_params is called */
 	unsigned int channels;		/**< number of channels; filled after hw_params is called */
 	unsigned int rate;		/**< rate; filled after hw_params is called */
 	snd_pcm_uframes_t period_size;	/**< period size; filled after hw_params is called */

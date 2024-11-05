@@ -17,17 +17,14 @@ namespace embree
     size_t BVHNRotate<4>::rotate(NodeRef parentRef, size_t depth)
     {
       /*! nothing to rotate if we reached a leaf node. */
-      if (parentRef.isBarrier()) { return 0;
-}
-      if (parentRef.isLeaf()) { return 0;
-}
+      if (parentRef.isBarrier()) return 0;
+      if (parentRef.isLeaf()) return 0;
       AABBNode* parent = parentRef.getAABBNode();
 
       /*! rotate all children first */
       vint4 cdepth;
-      for (size_t c=0; c<4; c++) {
+      for (size_t c=0; c<4; c++)
 	cdepth[c] = (int)rotate(parent->child(c),depth+1);
-}
 
       /* compute current areas of all children */
       vfloat4 sizeX = parent->upper_x-parent->lower_x;
@@ -47,10 +44,8 @@ namespace embree
       for (size_t c2=0; c2<4; c2++)
       {
 	/*! ignore leaf nodes as we cannot descent into them */
-	if (parent->child(c2).isBarrier()) { continue;
-}
-	if (parent->child(c2).isLeaf()) { continue;
-}
+	if (parent->child(c2).isBarrier()) continue;
+	if (parent->child(c2).isLeaf()) continue;
 	AABBNode* child2 = parent->child(c2).getAABBNode();
 
 	/*! transpose child bounds */
@@ -99,12 +94,10 @@ namespace embree
 	const size_t mbd = BVH4::maxBuildDepth;
 	vbool4 valid = vint4(int(depth+1))+cdepth <= vint4(mbd); // only select swaps that fulfill depth constraints
 	valid &= vint4(int(c2)) != vint4(step);
-	if (none(valid)) { continue;
-}
+	if (none(valid)) continue;
 	size_t c1 = select_min(valid,area0123);
 	float area = area0123[c1];
-        if (c1 == c2) { continue; // can happen if bounds are NANs
-}
+        if (c1 == c2) continue; // can happen if bounds are NANs
 
 	/*! accept a swap when it reduces cost and is not swapping a node with itself */
 	if (area < bestArea) {
@@ -116,8 +109,7 @@ namespace embree
       }
 
       /*! if we did not find a swap that improves the SAH then do nothing */
-      if (bestChild1 == size_t(-1)) { return 1+reduce_max(cdepth);
-}
+      if (bestChild1 == size_t(-1)) return 1+reduce_max(cdepth);
 
       /*! perform the best found tree rotation */
       AABBNode* child2 = parent->child(bestChild2).getAABBNode();

@@ -1,9 +1,9 @@
 // This file is part of meshoptimizer library; see meshoptimizer.h for version/license details
 #include "meshoptimizer.h"
 
-#include <cassert>
-#include <cfloat>
-#include <cstring>
+#include <assert.h>
+#include <float.h>
+#include <string.h>
 
 // This work is based on:
 // Nicolas Capens. Advanced Rasterization. 2004
@@ -212,8 +212,8 @@ meshopt_OverdrawStatistics meshopt_analyzeOverdraw(const unsigned int* indices, 
 			}
 		}
 
-		for (int y = 0; y < kViewport; ++y) {
-			for (int x = 0; x < kViewport; ++x) {
+		for (int y = 0; y < kViewport; ++y)
+			for (int x = 0; x < kViewport; ++x)
 				for (int s = 0; s < 2; ++s)
 				{
 					unsigned int overdraw = buffer->overdraw[y][x][s];
@@ -221,8 +221,6 @@ meshopt_OverdrawStatistics meshopt_analyzeOverdraw(const unsigned int* indices, 
 					result.pixels_covered += overdraw > 0;
 					result.pixels_shaded += overdraw;
 				}
-}
-}
 	}
 
 	result.overdraw = result.pixels_covered ? float(result.pixels_shaded) / float(result.pixels_covered) : 0.f;

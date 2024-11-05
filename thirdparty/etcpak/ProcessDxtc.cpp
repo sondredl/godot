@@ -2,9 +2,9 @@
 #include "ForceInline.hpp"
 #include "ProcessDxtc.hpp"
 
-#include <cassert>
-#include <cstdint>
-#include <cstring>
+#include <assert.h>
+#include <stdint.h>
+#include <string.h>
 
 #ifdef __ARM_NEON
 #  include <arm_neon.h>
@@ -451,13 +451,12 @@ static etcpak_force_inline uint64_t ProcessRGB( const uint8_t* src )
     uint32_t ref;
     memcpy( &ref, src, 4 );
     uint32_t refMask = ref & 0xF8FCF8;
-    const auto *stmp = src + 4;
+    auto stmp = src + 4;
     for( int i=1; i<16; i++ )
     {
         uint32_t px;
         memcpy( &px, stmp, 4 );
-        if( ( px & 0xF8FCF8 ) != refMask ) { break;
-}
+        if( ( px & 0xF8FCF8 ) != refMask ) break;
         stmp += 4;
     }
     if( stmp == src + 64 )
@@ -467,14 +466,13 @@ static etcpak_force_inline uint64_t ProcessRGB( const uint8_t* src )
 
     uint8_t min[3] = { src[0], src[1], src[2] };
     uint8_t max[3] = { src[0], src[1], src[2] };
-    const auto *tmp = src + 4;
+    auto tmp = src + 4;
     for( int i=1; i<16; i++ )
     {
         for( int j=0; j<3; j++ )
         {
-            if( tmp[j] < min[j] ) { min[j] = tmp[j];
-            } else if( tmp[j] > max[j] ) { max[j] = tmp[j];
-}
+            if( tmp[j] < min[j] ) min[j] = tmp[j];
+            else if( tmp[j] > max[j] ) max[j] = tmp[j];
         }
         tmp += 4;
     }
@@ -636,9 +634,8 @@ static etcpak_force_inline uint64_t ProcessAlpha( const uint8_t* src )
     for( int i=1; i<16; i++ )
     {
         const auto v = src[i];
-        if( v > max ) { max = v;
-        } else if( v < min ) { min = v;
-}
+        if( v > max ) max = v;
+        else if( v < min ) min = v;
     }
 
     uint32_t range = ( 8 << 13 ) / ( 1 + max - min );
@@ -844,10 +841,10 @@ void CompressDxt1( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t w
         uint32_t buf[4*4];
         int i = 0;
 
-        auto *ptr = dst;
+        auto ptr = dst;
         do
         {
-            auto *tmp = (char*)buf;
+            auto tmp = (char*)buf;
             memcpy( tmp,        src + width * 0, 4*4 );
             memcpy( tmp + 4*4,  src + width * 1, 4*4 );
             memcpy( tmp + 8*4,  src + width * 2, 4*4 );
@@ -862,8 +859,7 @@ void CompressDxt1( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t w
             const auto c = ProcessRGB( (uint8_t*)buf );
             uint8_t fix[8];
             memcpy( fix, &c, 8 );
-            for( int j=4; j<8; j++ ) { fix[j] = DxtcIndexTable[fix[j]];
-}
+            for( int j=4; j<8; j++ ) fix[j] = DxtcIndexTable[fix[j]];
             memcpy( ptr, fix, sizeof( uint64_t ) );
             ptr++;
         }
@@ -876,10 +872,10 @@ void CompressDxt1Dither( const uint32_t* src, uint64_t* dst, uint32_t blocks, si
     uint32_t buf[4*4];
     int i = 0;
 
-    auto *ptr = dst;
+    auto ptr = dst;
     do
     {
-        auto *tmp = (char*)buf;
+        auto tmp = (char*)buf;
         memcpy( tmp,        src + width * 0, 4*4 );
         memcpy( tmp + 4*4,  src + width * 1, 4*4 );
         memcpy( tmp + 8*4,  src + width * 2, 4*4 );
@@ -896,8 +892,7 @@ void CompressDxt1Dither( const uint32_t* src, uint64_t* dst, uint32_t blocks, si
         const auto c = ProcessRGB( (uint8_t*)buf );
         uint8_t fix[8];
         memcpy( fix, &c, 8 );
-        for( int j=4; j<8; j++ ) { fix[j] = DxtcIndexTable[fix[j]];
-}
+        for( int j=4; j<8; j++ ) fix[j] = DxtcIndexTable[fix[j]];
         memcpy( ptr, fix, sizeof( uint64_t ) );
         ptr++;
     }
@@ -907,7 +902,7 @@ void CompressDxt1Dither( const uint32_t* src, uint64_t* dst, uint32_t blocks, si
 void CompressDxt5( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t width )
 {
     int i = 0;
-    auto *ptr = dst;
+    auto ptr = dst;
     do
     {
 #ifdef __SSE4_1__
@@ -935,7 +930,7 @@ void CompressDxt5( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t w
         uint32_t rgba[4*4];
         uint8_t alpha[4*4];
 
-        auto *tmp = (char*)rgba;
+        auto tmp = (char*)rgba;
         memcpy( tmp,        src + width * 0, 4*4 );
         memcpy( tmp + 4*4,  src + width * 1, 4*4 );
         memcpy( tmp + 8*4,  src + width * 2, 4*4 );
@@ -957,8 +952,7 @@ void CompressDxt5( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t w
         const auto c = ProcessRGB( (uint8_t*)rgba );
         uint8_t fix[8];
         memcpy( fix, &c, 8 );
-        for( int j=4; j<8; j++ ) { fix[j] = DxtcIndexTable[fix[j]];
-}
+        for( int j=4; j<8; j++ ) fix[j] = DxtcIndexTable[fix[j]];
         memcpy( ptr, fix, sizeof( uint64_t ) );
         ptr++;
 #endif
@@ -969,7 +963,7 @@ void CompressDxt5( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t w
 void CompressBc4( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t width )
 {
     int i = 0;
-    auto *ptr = dst;
+    auto ptr = dst;
     do
     {
 #ifdef __SSE4_1__
@@ -997,7 +991,7 @@ void CompressBc4( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t wi
         *ptr++ = ProcessOneChannel_SSE( _mm_or_si128( m4, m5 ) );
 #else
         uint8_t r[4*4];
-        const auto *rgba = src;
+        auto rgba = src;
         for( int i=0; i<4; i++ )
         {
             r[i*4] = rgba[0] & 0xff;
@@ -1023,7 +1017,7 @@ void CompressBc4( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t wi
 void CompressBc5( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t width )
 {
     int i = 0;
-    auto *ptr = dst;
+    auto ptr = dst;
     do
     {
 #ifdef __SSE4_1__
@@ -1062,7 +1056,7 @@ void CompressBc5( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t wi
         *ptr++ = ProcessOneChannel_SSE( _mm_or_si128( m4, m5 ) );
 #else
         uint8_t rg[4*4*2];
-        const auto *rgba = src;
+        auto rgba = src;
         for( int i=0; i<4; i++ )
         {
             rg[i*4] = rgba[0] & 0xff;

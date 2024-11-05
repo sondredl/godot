@@ -719,7 +719,7 @@ static void ures_setIsStackObject( UResourceBundle* resB, UBool state) {
 }
 
 static UBool ures_isStackObject(const UResourceBundle* resB) {
-  return(!(resB->fMagic1 == MAGIC1 && resB->fMagic2 == MAGIC2));
+  return((resB->fMagic1 == MAGIC1 && resB->fMagic2 == MAGIC2)?false:true);
 }
 
 
@@ -1130,7 +1130,7 @@ ures_closeBundle(UResourceBundle* resB, UBool freeBundleObj)
         }
         ures_freeResPath(resB);
 
-        if(!static_cast<bool>(ures_isStackObject(resB)) && freeBundleObj) {
+        if(ures_isStackObject(resB) == false && freeBundleObj) {
             uprv_free(resB);
         }
 #if 0 /*U_DEBUG*/
@@ -2335,8 +2335,8 @@ struct GetAllChildrenSink : public ResourceSink {
 
     GetAllChildrenSink(ResourceSink& dest)
         : dest(dest) {}
-    ~GetAllChildrenSink() override;
-    void put(const char *key, ResourceValue &value, UBool isRoot,
+    virtual ~GetAllChildrenSink() override;
+    virtual void put(const char *key, ResourceValue &value, UBool isRoot,
            UErrorCode &errorCode) override {
         ResourceTable itemsTable = value.getTable(errorCode);
         if (U_FAILURE(errorCode)) { return; }
@@ -2854,8 +2854,7 @@ ures_countArrayItems(const UResourceBundle* resourceBundle,
 U_CAPI const char* U_EXPORT2
 ures_getVersionNumberInternal(const UResourceBundle *resourceBundle)
 {
-    if (!resourceBundle) { return nullptr;
-}
+    if (!resourceBundle) return nullptr;
 
     if(resourceBundle->fVersion == nullptr) {
 
@@ -2903,8 +2902,7 @@ ures_getVersionNumber(const UResourceBundle*   resourceBundle)
 }
 
 U_CAPI void U_EXPORT2 ures_getVersion(const UResourceBundle* resB, UVersionInfo versionInfo) {
-    if (!resB) { return;
-}
+    if (!resB) return;
 
     u_versionFromString(versionInfo, ures_getVersionNumberInternal(resB));
 }
@@ -3074,8 +3072,7 @@ ures_getFunctionalEquivalent(char *result, int32_t resultCapacity,
     UResourceBundle *res = nullptr;
     UErrorCode subStatus = U_ZERO_ERROR;
     int32_t length = 0;
-    if(U_FAILURE(*status)) { return 0;
-}
+    if(U_FAILURE(*status)) return 0;
     CharString kwVal;
     if (keyword != nullptr && *keyword != '\0') {
         kwVal = ulocimp_getKeywordValue(locid, keyword, subStatus);

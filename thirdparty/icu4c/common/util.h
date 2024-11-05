@@ -22,11 +22,11 @@
 // i18n utility functions, scoped into the class ICU_Utility.
 //--------------------------------------------------------------------
 
-U_NAMESPACE_BEGIN;
+U_NAMESPACE_BEGIN
 
 class UnicodeMatcher;
 
-class U_COMMON_API ICU_Utility; /* not : public UObject because all methods are static */ {
+class U_COMMON_API ICU_Utility /* not : public UObject because all methods are static */ {
  public:
 
     /**

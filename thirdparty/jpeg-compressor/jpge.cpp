@@ -30,8 +30,8 @@
 
 #include "jpge.h"
 
-#include <cstdlib>
-#include <cstring>
+#include <stdlib.h>
+#include <string.h>
 
 #define JPGE_MAX(a,b) (((a)>(b))?(a):(b))
 #define JPGE_MIN(a,b) (((a)<(b))?(a):(b))
@@ -82,8 +82,7 @@ namespace jpge {
 	template <class T> inline void clear_obj(T& obj) { memset(&obj, 0, sizeof(obj)); }
 
 	const int YR = 19595, YG = 38470, YB = 7471, CB_R = -11059, CB_G = -21709, CB_B = 32768, CR_R = 32768, CR_G = -27439, CR_B = -5329;
-	static inline uint8 clamp(int i) { if (static_cast<uint>(i) > 255U) { if (i < 0) { i = 0; } else if (i > 255) { i = 255;
-}} return static_cast<uint8>(i); }
+	static inline uint8 clamp(int i) { if (static_cast<uint>(i) > 255U) { if (i < 0) i = 0; else if (i > 255) i = 255; } return static_cast<uint8>(i); }
 
 	static inline int left_shifti(int val, uint32 bits)
 	{
@@ -103,9 +102,8 @@ namespace jpge {
 
 	static void RGB_to_Y(uint8* pDst, const uint8* pSrc, int num_pixels)
 	{
-		for (; num_pixels; pDst++, pSrc += 3, num_pixels--) {
+		for (; num_pixels; pDst++, pSrc += 3, num_pixels--)
 			pDst[0] = static_cast<uint8>((pSrc[0] * YR + pSrc[1] * YG + pSrc[2] * YB + 32768) >> 16);
-}
 	}
 
 	static void RGBA_to_YCC(uint8* pDst, const uint8* pSrc, int num_pixels)
@@ -121,9 +119,8 @@ namespace jpge {
 
 	static void RGBA_to_Y(uint8* pDst, const uint8* pSrc, int num_pixels)
 	{
-		for (; num_pixels; pDst++, pSrc += 4, num_pixels--) {
+		for (; num_pixels; pDst++, pSrc += 4, num_pixels--)
 			pDst[0] = static_cast<uint8>((pSrc[0] * YR + pSrc[1] * YG + pSrc[2] * YB + 32768) >> 16);
-}
 	}
 
 	static void Y_to_YCC(uint8* pDst, const uint8* pSrc, int num_pixels)
@@ -179,16 +176,14 @@ namespace jpge {
 		uint32 hist[256 * cMaxPasses]; clear_obj(hist);
 		for (uint i = 0; i < num_syms; i++) { uint freq = pSyms0[i].m_key; hist[freq & 0xFF]++; hist[256 + ((freq >> 8) & 0xFF)]++; hist[256 * 2 + ((freq >> 16) & 0xFF)]++; hist[256 * 3 + ((freq >> 24) & 0xFF)]++; }
 		sym_freq* pCur_syms = pSyms0, * pNew_syms = pSyms1;
-		uint total_passes = cMaxPasses; while ((total_passes > 1) && (num_syms == hist[(total_passes - 1) * 256])) { total_passes--;
-}
+		uint total_passes = cMaxPasses; while ((total_passes > 1) && (num_syms == hist[(total_passes - 1) * 256])) total_passes--;
 		for (uint pass_shift = 0, pass = 0; pass < total_passes; pass++, pass_shift += 8)
 		{
 			const uint32* pHist = &hist[pass << 8];
 			uint offsets[256], cur_ofs = 0;
 			for (uint i = 0; i < 256; i++) { offsets[i] = cur_ofs; cur_ofs += pHist[i]; }
-			for (uint i = 0; i < num_syms; i++) {
+			for (uint i = 0; i < num_syms; i++)
 				pNew_syms[offsets[(pCur_syms[i].m_key >> pass_shift) & 0xFF]++] = pCur_syms[i];
-}
 			sym_freq* t = pCur_syms; pCur_syms = pNew_syms; pNew_syms = t;
 		}
 		return pCur_syms;
@@ -198,20 +193,17 @@ namespace jpge {
 	static void calculate_minimum_redundancy(sym_freq* A, int n)
 	{
 		int root, leaf, next, avbl, used, dpth;
-		if (n == 0) { return; } else if (n == 1) { A[0].m_key = 1; return; }
+		if (n == 0) return; else if (n == 1) { A[0].m_key = 1; return; }
 		A[0].m_key += A[1].m_key; root = 0; leaf = 2;
 		for (next = 1; next < n - 1; next++)
 		{
 			if (leaf >= n || A[root].m_key < A[leaf].m_key) { A[next].m_key = A[root].m_key; A[root++].m_key = next; }
-			else { A[next].m_key = A[leaf++].m_key;
-}
+			else A[next].m_key = A[leaf++].m_key;
 			if (leaf >= n || (root < next && A[root].m_key < A[leaf].m_key)) { A[next].m_key += A[root].m_key; A[root++].m_key = next; }
-			else { A[next].m_key += A[leaf++].m_key;
-}
+			else A[next].m_key += A[leaf++].m_key;
 		}
 		A[n - 2].m_key = 0;
-		for (next = n - 3; next >= 0; next--) { A[next].m_key = A[A[next].m_key].m_key + 1;
-}
+		for (next = n - 3; next >= 0; next--) A[next].m_key = A[A[next].m_key].m_key + 1;
 		avbl = 1; used = dpth = 0; root = n - 2; next = n - 1;
 		while (avbl > 0)
 		{
@@ -224,16 +216,13 @@ namespace jpge {
 	// Limits canonical Huffman code table's max code size to max_code_size.
 	static void huffman_enforce_max_code_size(int* pNum_codes, int code_list_len, int max_code_size)
 	{
-		if (code_list_len <= 1) { return;
-}
+		if (code_list_len <= 1) return;
 
-		for (int i = max_code_size + 1; i <= MAX_HUFF_CODESIZE; i++) { pNum_codes[max_code_size] += pNum_codes[i];
-}
+		for (int i = max_code_size + 1; i <= MAX_HUFF_CODESIZE; i++) pNum_codes[max_code_size] += pNum_codes[i];
 
 		uint32 total = 0;
-		for (int i = max_code_size; i > 0; i--) {
+		for (int i = max_code_size; i > 0; i--)
 			total += (((uint32)pNum_codes[i]) << (max_code_size - i));
-}
 
 		while (total != (1UL << max_code_size))
 		{
@@ -253,26 +242,23 @@ namespace jpge {
 		syms0[0].m_key = 1; syms0[0].m_sym_index = 0;  // dummy symbol, assures that no valid code contains all 1's
 		int num_used_syms = 1;
 		const uint32* pSym_count = &m_huff_count[table_num][0];
-		for (int i = 0; i < table_len; i++) {
+		for (int i = 0; i < table_len; i++)
 			if (pSym_count[i]) { syms0[num_used_syms].m_key = pSym_count[i]; syms0[num_used_syms++].m_sym_index = i + 1; }
-}
 		sym_freq* pSyms = radix_sort_syms(num_used_syms, syms0, syms1);
 		calculate_minimum_redundancy(pSyms, num_used_syms);
 
 		// Count the # of symbols of each code size.
 		int num_codes[1 + MAX_HUFF_CODESIZE]; clear_obj(num_codes);
-		for (int i = 0; i < num_used_syms; i++) {
+		for (int i = 0; i < num_used_syms; i++)
 			num_codes[pSyms[i].m_key]++;
-}
 
 		const uint JPGE_CODE_SIZE_LIMIT = 16; // the maximum possible size of a JPEG Huffman code (valid range is [9,16] - 9 vs. 8 because of the dummy symbol)
 		huffman_enforce_max_code_size(num_codes, num_used_syms, JPGE_CODE_SIZE_LIMIT);
 
 		// Compute m_huff_bits array, which contains the # of symbols per code size.
 		clear_obj(m_huff_bits[table_num]);
-		for (int i = 1; i <= (int)JPGE_CODE_SIZE_LIMIT; i++) {
+		for (int i = 1; i <= (int)JPGE_CODE_SIZE_LIMIT; i++)
 			m_huff_bits[table_num][i] = static_cast<uint8>(num_codes[i]);
-}
 
 		// Remove the dummy symbol added above, which must be in largest bucket.
 		for (int i = JPGE_CODE_SIZE_LIMIT; i >= 1; i--)
@@ -281,9 +267,8 @@ namespace jpge {
 		}
 
 		// Compute the m_huff_val array, which contains the symbol indices sorted by code size (smallest to largest).
-		for (int i = num_used_syms - 1; i >= 1; i--) {
+		for (int i = num_used_syms - 1; i >= 1; i--)
 			m_huff_val[table_num][num_used_syms - 1 - i] = static_cast<uint8>(pSyms[i].m_sym_index - 1);
-}
 	}
 
 	// JPEG marker generation.
@@ -326,9 +311,8 @@ namespace jpge {
 			emit_marker(M_DQT);
 			emit_word(64 + 1 + 2);
 			emit_byte(static_cast<uint8>(i));
-			for (int j = 0; j < 64; j++) {
+			for (int j = 0; j < 64; j++)
 				emit_byte(static_cast<uint8>(m_quantization_tables[i][j]));
-}
 		}
 	}
 
@@ -355,20 +339,17 @@ namespace jpge {
 		emit_marker(M_DHT);
 
 		int length = 0;
-		for (int i = 1; i <= 16; i++) {
+		for (int i = 1; i <= 16; i++)
 			length += bits[i];
-}
 
 		emit_word(length + 2 + 1 + 16);
 		emit_byte(static_cast<uint8>(index + (ac_flag << 4)));
 
-		for (int i = 1; i <= 16; i++) {
+		for (int i = 1; i <= 16; i++)
 			emit_byte(bits[i]);
-}
 
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < length; i++)
 			emit_byte(val[i]);
-}
 	}
 
 	// Emit all Huffman tables.
@@ -392,11 +373,10 @@ namespace jpge {
 		for (int i = 0; i < m_num_components; i++)
 		{
 			emit_byte(static_cast<uint8>(i + 1));
-			if (i == 0) {
+			if (i == 0)
 				emit_byte((0 << 4) + 0);
-			} else {
+			else
 				emit_byte((1 << 4) + 1);
-}
 		}
 		emit_byte(0);     /* spectral selection */
 		emit_byte(63);
@@ -423,11 +403,9 @@ namespace jpge {
 		uint code;
 
 		int p = 0;
-		for (l = 1; l <= 16; l++) {
-			for (i = 1; i <= bits[l]; i++) {
+		for (l = 1; l <= 16; l++)
+			for (i = 1; i <= bits[l]; i++)
 				huff_size[p++] = (char)l;
-}
-}
 
 		huff_size[p] = 0; last_p = p; // write sentinel
 
@@ -435,9 +413,8 @@ namespace jpge {
 
 		while (huff_size[p])
 		{
-			while (huff_size[p] == si) {
+			while (huff_size[p] == si)
 				huff_code[p++] = code++;
-}
 			code <<= 1;
 			si++;
 		}
@@ -455,11 +432,10 @@ namespace jpge {
 	void jpeg_encoder::compute_quant_table(int32* pDst, int16* pSrc)
 	{
 		int32 q;
-		if (m_params.m_quality < 50) {
+		if (m_params.m_quality < 50)
 			q = 5000 / m_params.m_quality;
-		} else {
+		else
 			q = 200 - m_params.m_quality * 2;
-}
 		for (int i = 0; i < 64; i++)
 		{
 			int32 j = *pSrc++; j = (j * q + 50L) / 100L;
@@ -537,11 +513,9 @@ namespace jpge {
 		m_image_bpl_mcu = m_image_x_mcu * m_num_components;
 		m_mcus_per_row = m_image_x_mcu / m_mcu_x;
 
-		if ((m_mcu_lines[0] = static_cast<uint8*>(jpge_malloc(m_image_bpl_mcu * m_mcu_y))) == NULL) { return false;
-}
-		for (int i = 1; i < m_mcu_y; i++) {
+		if ((m_mcu_lines[0] = static_cast<uint8*>(jpge_malloc(m_image_bpl_mcu * m_mcu_y))) == NULL) return false;
+		for (int i = 1; i < m_mcu_y; i++)
 			m_mcu_lines[i] = m_mcu_lines[i - 1] + m_image_bpl_mcu;
-}
 
 		if (m_params.m_use_std_tables)
 		{
@@ -568,8 +542,7 @@ namespace jpge {
 			memcpy(m_huff_bits[2 + 0], s_ac_lum_bits, 17);    memcpy(m_huff_val[2 + 0], s_ac_lum_val, AC_LUM_CODES);
 			memcpy(m_huff_bits[0 + 1], s_dc_chroma_bits, 17); memcpy(m_huff_val[0 + 1], s_dc_chroma_val, DC_CHROMA_CODES);
 			memcpy(m_huff_bits[2 + 1], s_ac_chroma_bits, 17); memcpy(m_huff_val[2 + 1], s_ac_chroma_val, AC_CHROMA_CODES);
-			if (!second_pass_init()) { return false;   // in effect, skip over the first pass
-}
+			if (!second_pass_init()) return false;   // in effect, skip over the first pass
 		}
 		return m_all_stream_writes_succeeded;
 	}
@@ -641,19 +614,17 @@ namespace jpge {
 			sample_array_t j = m_sample_array[s_zag[i]];
 			if (j < 0)
 			{
-				if ((j = -j + (*q >> 1)) < *q) {
+				if ((j = -j + (*q >> 1)) < *q)
 					*pDst++ = 0;
-				} else {
+				else
 					*pDst++ = static_cast<int16>(-(j / *q));
-}
 			}
 			else
 			{
-				if ((j = j + (*q >> 1)) < *q) {
+				if ((j = j + (*q >> 1)) < *q)
 					*pDst++ = 0;
-				} else {
+				else
 					*pDst++ = static_cast<int16>((j / *q));
-}
 			}
 			q++;
 		}
@@ -661,9 +632,8 @@ namespace jpge {
 
 	void jpeg_encoder::flush_output_buffer()
 	{
-		if (m_out_buf_left != JPGE_OUT_BUF_SIZE) {
+		if (m_out_buf_left != JPGE_OUT_BUF_SIZE)
 			m_all_stream_writes_succeeded = m_all_stream_writes_succeeded && m_pStream->put_buf(m_out_buf, JPGE_OUT_BUF_SIZE - m_out_buf_left);
-}
 		m_pOut_buf = m_out_buf;
 		m_out_buf_left = JPGE_OUT_BUF_SIZE;
 	}
@@ -684,16 +654,14 @@ namespace jpge {
 
 	void jpeg_encoder::code_coefficients_pass_one(int component_num)
 	{
-		if (component_num >= 3) { return; // just to shut up static analysis
-}
+		if (component_num >= 3) return; // just to shut up static analysis
 		int i, run_len, nbits, temp1;
 		int16* src = m_coefficient_array;
 		uint32* dc_count = component_num ? m_huff_count[0 + 1] : m_huff_count[0 + 0], * ac_count = component_num ? m_huff_count[2 + 1] : m_huff_count[2 + 0];
 
 		temp1 = src[0] - m_last_dc_val[component_num];
 		m_last_dc_val[component_num] = src[0];
-		if (temp1 < 0) { temp1 = -temp1;
-}
+		if (temp1 < 0) temp1 = -temp1;
 
 		nbits = 0;
 		while (temp1)
@@ -704,26 +672,23 @@ namespace jpge {
 		dc_count[nbits]++;
 		for (run_len = 0, i = 1; i < 64; i++)
 		{
-			if ((temp1 = m_coefficient_array[i]) == 0) {
+			if ((temp1 = m_coefficient_array[i]) == 0)
 				run_len++;
-			} else
+			else
 			{
 				while (run_len >= 16)
 				{
 					ac_count[0xF0]++;
 					run_len -= 16;
 				}
-				if (temp1 < 0) { temp1 = -temp1;
-}
+				if (temp1 < 0) temp1 = -temp1;
 				nbits = 1;
-				while (temp1 >>= 1) { nbits++;
-}
+				while (temp1 >>= 1) nbits++;
 				ac_count[(run_len << 4) + nbits]++;
 				run_len = 0;
 			}
 		}
-		if (run_len) { ac_count[0]++;
-}
+		if (run_len) ac_count[0]++;
 	}
 
 	void jpeg_encoder::code_coefficients_pass_two(int component_num)
@@ -759,14 +724,13 @@ namespace jpge {
 		}
 
 		put_bits(codes[0][nbits], code_sizes[0][nbits]);
-		if (nbits) { put_bits(temp2 & ((1 << nbits) - 1), nbits);
-}
+		if (nbits) put_bits(temp2 & ((1 << nbits) - 1), nbits);
 
 		for (run_len = 0, i = 1; i < 64; i++)
 		{
-			if ((temp1 = m_coefficient_array[i]) == 0) {
+			if ((temp1 = m_coefficient_array[i]) == 0)
 				run_len++;
-			} else
+			else
 			{
 				while (run_len >= 16)
 				{
@@ -779,29 +743,26 @@ namespace jpge {
 					temp2--;
 				}
 				nbits = 1;
-				while (temp1 >>= 1) {
+				while (temp1 >>= 1)
 					nbits++;
-}
 				j = (run_len << 4) + nbits;
 				put_bits(codes[1][j], code_sizes[1][j]);
 				put_bits(temp2 & ((1 << nbits) - 1), nbits);
 				run_len = 0;
 			}
 		}
-		if (run_len) {
+		if (run_len)
 			put_bits(codes[1][0], code_sizes[1][0]);
-}
 	}
 
 	void jpeg_encoder::code_block(int component_num)
 	{
 		DCT2D(m_sample_array);
 		load_quantized_coefficients(component_num);
-		if (m_pass_num == 1) {
+		if (m_pass_num == 1)
 			code_coefficients_pass_one(component_num);
-		} else {
+		else
 			code_coefficients_pass_two(component_num);
-}
 	}
 
 	void jpeg_encoder::process_mcu_row()
@@ -864,19 +825,17 @@ namespace jpge {
 		{
 			if (m_mcu_y_ofs < 16) // check here just to shut up static analysis
 			{
-				for (int i = m_mcu_y_ofs; i < m_mcu_y; i++) {
+				for (int i = m_mcu_y_ofs; i < m_mcu_y; i++)
 					memcpy(m_mcu_lines[i], m_mcu_lines[m_mcu_y_ofs - 1], m_image_bpl_mcu);
-}
 			}
 
 			process_mcu_row();
 		}
 
-		if (m_pass_num == 1) {
+		if (m_pass_num == 1)
 			return terminate_pass_one();
-		} else {
+		else
 			return terminate_pass_two();
-}
 	}
 
 	void jpeg_encoder::load_mcu(const void* pSrc)
@@ -887,29 +846,27 @@ namespace jpge {
 
 		if (m_num_components == 1)
 		{
-			if (m_image_bpp == 4) {
+			if (m_image_bpp == 4)
 				RGBA_to_Y(pDst, Psrc, m_image_x);
-			} else if (m_image_bpp == 3) {
+			else if (m_image_bpp == 3)
 				RGB_to_Y(pDst, Psrc, m_image_x);
-			} else {
+			else
 				memcpy(pDst, Psrc, m_image_x);
-}
 		}
 		else
 		{
-			if (m_image_bpp == 4) {
+			if (m_image_bpp == 4)
 				RGBA_to_YCC(pDst, Psrc, m_image_x);
-			} else if (m_image_bpp == 3) {
+			else if (m_image_bpp == 3)
 				RGB_to_YCC(pDst, Psrc, m_image_x);
-			} else {
+			else
 				Y_to_YCC(pDst, Psrc, m_image_x);
-}
 		}
 
 		// Possibly duplicate pixels at end of scanline if not a multiple of 8 or 16
-		if (m_num_components == 1) {
+		if (m_num_components == 1)
 			memset(m_mcu_lines[m_mcu_y_ofs] + m_image_bpl_xlt, pDst[m_image_bpl_xlt - 1], m_image_x_mcu - m_image_x);
-		} else
+		else
 		{
 			const uint8 y = pDst[m_image_bpl_xlt - 3 + 0], cb = pDst[m_image_bpl_xlt - 3 + 1], cr = pDst[m_image_bpl_xlt - 3 + 2];
 			uint8* q = m_mcu_lines[m_mcu_y_ofs] + m_image_bpl_xlt;
@@ -946,8 +903,7 @@ namespace jpge {
 	bool jpeg_encoder::init(output_stream* pStream, int width, int height, int src_channels, const params& comp_params)
 	{
 		deinit();
-		if (((!pStream) || (width < 1) || (height < 1)) || ((src_channels != 1) && (src_channels != 3) && (src_channels != 4)) || (!comp_params.check())) { return false;
-}
+		if (((!pStream) || (width < 1) || (height < 1)) || ((src_channels != 1) && (src_channels != 3) && (src_channels != 4)) || (!comp_params.check())) return false;
 		m_pStream = pStream;
 		m_params = comp_params;
 		return jpg_open(width, height, src_channels);
@@ -961,14 +917,12 @@ namespace jpge {
 
 	bool jpeg_encoder::process_scanline(const void* pScanline)
 	{
-		if ((m_pass_num < 1) || (m_pass_num > 2)) { return false;
-}
+		if ((m_pass_num < 1) || (m_pass_num > 2)) return false;
 		if (m_all_stream_writes_succeeded)
 		{
 			if (!pScanline)
 			{
-				if (!process_end_of_image()) { return false;
-}
+				if (!process_end_of_image()) return false;
 			}
 			else
 			{
@@ -979,7 +933,7 @@ namespace jpge {
 	}
 
 	// Higher level wrappers/examples (optional).
-#include <cstdio>
+#include <stdio.h>
 
 	class cfile_stream : public output_stream
 	{
@@ -992,7 +946,7 @@ namespace jpge {
 	public:
 		cfile_stream() : m_pFile(NULL), m_bStatus(false) { }
 
-		~cfile_stream() override
+		virtual ~cfile_stream()
 		{
 			close();
 		}
@@ -1018,7 +972,7 @@ namespace jpge {
 			return m_bStatus;
 		}
 
-		bool put_buf(const void* pBuf, int len) override
+		virtual bool put_buf(const void* pBuf, int len)
 		{
 			m_bStatus = m_bStatus && (fwrite(pBuf, len, 1, m_pFile) == 1);
 			return m_bStatus;
@@ -1034,27 +988,23 @@ namespace jpge {
 	bool compress_image_to_jpeg_file(const char* pFilename, int width, int height, int num_channels, const uint8* pImage_data, const params& comp_params)
 	{
 		cfile_stream dst_stream;
-		if (!dst_stream.open(pFilename)) {
+		if (!dst_stream.open(pFilename))
 			return false;
-}
 
 		jpge::jpeg_encoder dst_image;
-		if (!dst_image.init(&dst_stream, width, height, num_channels, comp_params)) {
+		if (!dst_image.init(&dst_stream, width, height, num_channels, comp_params))
 			return false;
-}
 
 		for (uint pass_index = 0; pass_index < dst_image.get_total_passes(); pass_index++)
 		{
 			for (int i = 0; i < height; i++)
 			{
 				const uint8* pBuf = pImage_data + i * width * num_channels;
-				if (!dst_image.process_scanline(pBuf)) {
+				if (!dst_image.process_scanline(pBuf))
 					return false;
-}
 			}
-			if (!dst_image.process_scanline(NULL)) {
+			if (!dst_image.process_scanline(NULL))
 				return false;
-}
 		}
 
 		dst_image.deinit();
@@ -1073,14 +1023,13 @@ namespace jpge {
 	public:
 		memory_stream(void* pBuf, uint buf_size) : m_pBuf(static_cast<uint8*>(pBuf)), m_buf_size(buf_size), m_buf_ofs(0) { }
 
-		~memory_stream() override { }
+		virtual ~memory_stream() { }
 
-		bool put_buf(const void* pBuf, int len) override
+		virtual bool put_buf(const void* pBuf, int len)
 		{
 			uint buf_remaining = m_buf_size - m_buf_ofs;
-			if ((uint)len > buf_remaining) {
+			if ((uint)len > buf_remaining)
 				return false;
-}
 			memcpy(m_pBuf + m_buf_ofs, pBuf, len);
 			m_buf_ofs += len;
 			return true;
@@ -1094,31 +1043,27 @@ namespace jpge {
 
 	bool compress_image_to_jpeg_file_in_memory(void* pDstBuf, int& buf_size, int width, int height, int num_channels, const uint8* pImage_data, const params& comp_params)
 	{
-		if ((!pDstBuf) || (!buf_size)) {
+		if ((!pDstBuf) || (!buf_size))
 			return false;
-}
 
 		memory_stream dst_stream(pDstBuf, buf_size);
 
 		buf_size = 0;
 
 		jpge::jpeg_encoder dst_image;
-		if (!dst_image.init(&dst_stream, width, height, num_channels, comp_params)) {
+		if (!dst_image.init(&dst_stream, width, height, num_channels, comp_params))
 			return false;
-}
 
 		for (uint pass_index = 0; pass_index < dst_image.get_total_passes(); pass_index++)
 		{
 			for (int i = 0; i < height; i++)
 			{
 				const uint8* pScanline = pImage_data + i * width * num_channels;
-				if (!dst_image.process_scanline(pScanline)) {
+				if (!dst_image.process_scanline(pScanline))
 					return false;
-}
 			}
-			if (!dst_image.process_scanline(NULL)) {
+			if (!dst_image.process_scanline(NULL))
 				return false;
-}
 		}
 
 		dst_image.deinit();

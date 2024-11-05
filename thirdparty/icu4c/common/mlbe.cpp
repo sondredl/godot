@@ -67,8 +67,7 @@ int32_t MlBreakEngine::divideUpRange(UText *inText, int32_t rangeStart, int32_t 
     // Add a break for the start.
     boundary.addElement(0, status);
     numBreaks++;
-    if (U_FAILURE(status)) { return 0;
-}
+    if (U_FAILURE(status)) return 0;
 
     for (int32_t idx = 0; idx + 1 < codePointLength && U_SUCCESS(status); idx++) {
         numBreaks =
@@ -79,8 +78,7 @@ int32_t MlBreakEngine::divideUpRange(UText *inText, int32_t rangeStart, int32_t 
         }
     }
 
-    if (U_FAILURE(status)) { return 0;
-}
+    if (U_FAILURE(status)) return 0;
 
     // Add a break for the end if there is not one there already.
     if (boundary.lastElementi() != inString.countChar32()) {
@@ -208,8 +206,7 @@ void MlBreakEngine::loadMLModel(UErrorCode &error) {
     // feature and its score. As integrating it into jaml.txt, we define thirteen kinds of key and
     // value to represent the feature and the corresponding score respectively.
 
-    if (U_FAILURE(error)) { return;
-}
+    if (U_FAILURE(error)) return;
 
     UnicodeString key;
     StackUResourceBundle stackTempBundle;
@@ -217,8 +214,7 @@ void MlBreakEngine::loadMLModel(UErrorCode &error) {
 
     LocalUResourceBundlePointer rbp(ures_openDirect(U_ICUDATA_BRKITR, "jaml", &error));
     UResourceBundle *rb = rbp.getAlias();
-    if (U_FAILURE(error)) { return;
-}
+    if (U_FAILURE(error)) return;
 
     int32_t index = 0;
     initKeyValue(rb, "UW1Keys", "UW1Values", fModel[index++], error);
@@ -249,15 +245,13 @@ void MlBreakEngine::initKeyValue(UResourceBundle *rb, const char *keyName, const
     // get modelValues
     LocalUResourceBundlePointer modelValue(ures_getByKey(rb, valueName, nullptr, &error));
     const int32_t *value = ures_getIntVector(modelValue.getAlias(), &valueSize, &error);
-    if (U_FAILURE(error)) { return;
-}
+    if (U_FAILURE(error)) return;
 
     // get modelKeys
     ures_getValueWithFallback(rb, keyName, stackTempBundle.getAlias(), modelKey, error);
     ResourceArray stringArray = modelKey.getArray(error);
     keySize = stringArray.getSize();
-    if (U_FAILURE(error)) { return;
-}
+    if (U_FAILURE(error)) return;
 
     for (int32_t idx = 0; idx < keySize; idx++) {
         stringArray.getValue(idx, modelKey);

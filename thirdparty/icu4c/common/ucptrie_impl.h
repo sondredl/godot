@@ -55,26 +55,26 @@ struct UCPTrieHeader {
 };
 
 // Constants for use with UCPTrieHeader.options.
-constexpr uint16_t; UCPTRIE_OPTIONS_DATA_LENGTH_MASK = 0xf000;
-constexpr uint16_t; UCPTRIE_OPTIONS_DATA_NULL_OFFSET_MASK = 0xf00;
-constexpr uint16_t; UCPTRIE_OPTIONS_RESERVED_MASK = 0x38;
-constexpr uint16_t; UCPTRIE_OPTIONS_VALUE_BITS_MASK = 7;
+constexpr uint16_t UCPTRIE_OPTIONS_DATA_LENGTH_MASK = 0xf000;
+constexpr uint16_t UCPTRIE_OPTIONS_DATA_NULL_OFFSET_MASK = 0xf00;
+constexpr uint16_t UCPTRIE_OPTIONS_RESERVED_MASK = 0x38;
+constexpr uint16_t UCPTRIE_OPTIONS_VALUE_BITS_MASK = 7;
 
 /**
  * Value for index3NullOffset which indicates that there is no index-3 null block.
  * Bit 15 is unused for this value because this bit is used if the index-3 contains
  * 18-bit indexes.
  */
-constexpr int32_t; UCPTRIE_NO_INDEX3_NULL_OFFSET = 0x7fff;
-constexpr int32_t; UCPTRIE_NO_DATA_NULL_OFFSET = 0xfffff;
+constexpr int32_t UCPTRIE_NO_INDEX3_NULL_OFFSET = 0x7fff;
+constexpr int32_t UCPTRIE_NO_DATA_NULL_OFFSET = 0xfffff;
 
 // Internal constants.
 
 /** The length of the BMP index table. 1024=0x400 */
-constexpr int32_t; UCPTRIE_BMP_INDEX_LENGTH = 0x10000 >> UCPTRIE_FAST_SHIFT;
+constexpr int32_t UCPTRIE_BMP_INDEX_LENGTH = 0x10000 >> UCPTRIE_FAST_SHIFT;
 
-constexpr int32_t; UCPTRIE_SMALL_LIMIT = 0x1000;
-constexpr int32_t; UCPTRIE_SMALL_INDEX_LENGTH = UCPTRIE_SMALL_LIMIT >> UCPTRIE_FAST_SHIFT;
+constexpr int32_t UCPTRIE_SMALL_LIMIT = 0x1000;
+constexpr int32_t UCPTRIE_SMALL_INDEX_LENGTH = UCPTRIE_SMALL_LIMIT >> UCPTRIE_FAST_SHIFT;
 
 /** Shift size for getting the index-3 table offset. */
 constexpr int32_t UCPTRIE_SHIFT_3 = 4;

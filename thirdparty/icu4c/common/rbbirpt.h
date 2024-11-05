@@ -17,11 +17,11 @@
 
 #include "unicode/utypes.h"
 
-U_NAMESPACE_BEGIN;
+U_NAMESPACE_BEGIN
 //
 // Character classes for RBBI rule scanning.
 //
-    static const uint8_t; kRuleSet_digit_char = 128;
+    static const uint8_t kRuleSet_digit_char = 128;
     static const uint8_t kRuleSet_name_char = 129;
     static const uint8_t kRuleSet_name_start_char = 130;
     static const uint8_t kRuleSet_rule_char = 131;
@@ -69,7 +69,7 @@ enum RBBI_RuleParseAction {
 //                     for the rule parser state machine.
 //-------------------------------------------------------------------------------
 struct RBBIRuleTableEl {
-    enum RBBI_RuleParseAction          fAction;
+    RBBI_RuleParseAction          fAction;
     uint8_t                       fCharClass;       // 0-127:    an individual ASCII character
                                                     // 128-255:  character class index
     uint8_t                       fNextState;       // 0-250:    normal next-stat numbers

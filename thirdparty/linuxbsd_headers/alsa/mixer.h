@@ -83,7 +83,7 @@ typedef int (*snd_mixer_compare_t)(const snd_mixer_elem_t *e1,
  * \return zero if success, otherwise a negative error value
  */
 typedef int (*snd_mixer_event_t)(snd_mixer_class_t *class_, unsigned int mask,
-				 snd_mixer_elem_t *helem, snd_mixer_elem_t *melem);
+				 snd_hctl_elem_t *helem, snd_mixer_elem_t *melem);
 
 
 /** Mixer element type */
@@ -134,8 +134,8 @@ int snd_mixer_elem_remove(snd_mixer_elem_t *elem);
 void snd_mixer_elem_free(snd_mixer_elem_t *elem);
 int snd_mixer_elem_info(snd_mixer_elem_t *elem);
 int snd_mixer_elem_value(snd_mixer_elem_t *elem);
-int snd_mixer_elem_attach(snd_mixer_elem_t *melem, snd_mixer_elem_t *helem);
-int snd_mixer_elem_detach(snd_mixer_elem_t *melem, snd_mixer_elem_t *helem);
+int snd_mixer_elem_attach(snd_mixer_elem_t *melem, snd_hctl_elem_t *helem);
+int snd_mixer_elem_detach(snd_mixer_elem_t *melem, snd_hctl_elem_t *helem);
 int snd_mixer_elem_empty(snd_mixer_elem_t *melem);
 void *snd_mixer_elem_get_private(const snd_mixer_elem_t *melem);
 

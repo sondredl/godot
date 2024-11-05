@@ -22,7 +22,7 @@
 #ifndef FFX_FSR2_DEPTH_CLIP_H
 #define FFX_FSR2_DEPTH_CLIP_H
 
-FFX_STATIC const FfxFloat32; DepthClipBaseScale = 4.0f;
+FFX_STATIC const FfxFloat32 DepthClipBaseScale = 4.0f;
 
 FfxFloat32 ComputeDepthClip(FfxFloat32x2 fUvSample, FfxFloat32 fCurrentDepthSample)
 {

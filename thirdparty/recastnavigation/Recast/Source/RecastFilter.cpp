@@ -19,7 +19,7 @@
 #include "Recast.h"
 #include "RecastAssert.h"
 
-#include <cstdlib>
+#include <stdlib.h>
 
 void rcFilterLowHangingWalkableObstacles(rcContext* context, const int walkableClimb, rcHeightfield& heightfield)
 {

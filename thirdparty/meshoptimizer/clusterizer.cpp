@@ -1,10 +1,10 @@
 // This file is part of meshoptimizer library; see meshoptimizer.h for version/license details
 #include "meshoptimizer.h"
 
-#include <cassert>
-#include <cfloat>
-#include <cmath>
-#include <cstring>
+#include <assert.h>
+#include <float.h>
+#include <math.h>
+#include <string.h>
 
 // This work is based on:
 // Graham Wihlidal. Optimizing the Graphics Pipeline with Compute. 2016
@@ -226,9 +226,8 @@ static void finishMeshlet(meshopt_Meshlet& meshlet, unsigned char* meshlet_trian
 	size_t offset = meshlet.triangle_offset + meshlet.triangle_count * 3;
 
 	// fill 4b padding with 0
-	while (offset & 3) {
+	while (offset & 3)
 		meshlet_triangles[offset++] = 0;
-}
 }
 
 static bool appendMeshlet(meshopt_Meshlet& meshlet, unsigned int a, unsigned int b, unsigned int c, unsigned char* used, meshopt_Meshlet* meshlets, unsigned int* meshlet_vertices, unsigned char* meshlet_triangles, size_t meshlet_offset, size_t max_vertices, size_t max_triangles)
@@ -245,9 +244,8 @@ static bool appendMeshlet(meshopt_Meshlet& meshlet, unsigned int a, unsigned int
 	{
 		meshlets[meshlet_offset] = meshlet;
 
-		for (size_t j = 0; j < meshlet.vertex_count; ++j) {
+		for (size_t j = 0; j < meshlet.vertex_count; ++j)
 			used[meshlet_vertices[meshlet.vertex_offset + j]] = 0xff;
-}
 
 		finishMeshlet(meshlet, meshlet_triangles);
 
@@ -309,23 +307,21 @@ static unsigned int getNeighborTriangle(const meshopt_Meshlet& meshlet, const Co
 			int priority = -1;
 
 			// triangles that don't add new vertices to meshlets are max. priority
-			if (extra == 0) {
+			if (extra == 0)
 				priority = 0;
 			// artificially increase the priority of dangling triangles as they're expensive to add to new meshlets
-			} else if (live_triangles[a] == 1 || live_triangles[b] == 1 || live_triangles[c] == 1) {
+			else if (live_triangles[a] == 1 || live_triangles[b] == 1 || live_triangles[c] == 1)
 				priority = 1;
 			// if two vertices have live count of 2, removing this triangle will make another triangle dangling which is good for overall flow
-			} else if ((live_triangles[a] == 2) + (live_triangles[b] == 2) + (live_triangles[c] == 2) >= 2) {
+			else if ((live_triangles[a] == 2) + (live_triangles[b] == 2) + (live_triangles[c] == 2) >= 2)
 				priority = 1 + extra;
 			// otherwise adjust priority to be after the above cases, 3 or 4 based on used[] count
-			} else {
+			else
 				priority = 2 + extra;
-}
 
 			// since topology-based priority is always more important than the score, we can skip scoring in some cases
-			if (priority > best_priority) {
+			if (priority > best_priority)
 				continue;
-}
 
 			float score = 0;
 
@@ -427,9 +423,8 @@ static size_t kdtreeBuild(size_t offset, KDNode* nodes, size_t node_count, const
 	assert(count > 0);
 	assert(offset < node_count);
 
-	if (count <= leaf_size) {
+	if (count <= leaf_size)
 		return kdtreeBuildLeaf(offset, nodes, node_count, indices, count);
-}
 
 	float mean[3] = {};
 	float vars[3] = {};
@@ -455,9 +450,8 @@ static size_t kdtreeBuild(size_t offset, KDNode* nodes, size_t node_count, const
 	size_t middle = kdtreePartition(indices, count, points, stride, axis, split);
 
 	// when the partition is degenerate simply consolidate the points into a single node
-	if (middle <= leaf_size / 2 || middle >= count - leaf_size / 2) {
+	if (middle <= leaf_size / 2 || middle >= count - leaf_size / 2)
 		return kdtreeBuildLeaf(offset, nodes, node_count, indices, count);
-}
 
 	KDNode& result = nodes[offset];
 
@@ -484,9 +478,8 @@ static void kdtreeNearest(KDNode* nodes, unsigned int root, const float* points,
 		{
 			unsigned int index = nodes[root + i].index;
 
-			if (emitted_flags[index]) {
+			if (emitted_flags[index])
 				continue;
-}
 
 			const float* point = points + index * stride;
 
@@ -513,9 +506,8 @@ static void kdtreeNearest(KDNode* nodes, unsigned int root, const float* points,
 		kdtreeNearest(nodes, root + 1 + first, points, stride, emitted_flags, position, result, limit);
 
 		// only process the other node if it can have a match based on closest distance so far
-		if (fabsf(delta) <= limit) {
+		if (fabsf(delta) <= limit)
 			kdtreeNearest(nodes, root + 1 + second, points, stride, emitted_flags, position, result, limit);
-}
 	}
 }
 
@@ -580,9 +572,8 @@ size_t meshopt_buildMeshlets(meshopt_Meshlet* meshlets, unsigned int* meshlet_ve
 
 	// build a kd-tree for nearest neighbor lookup
 	unsigned int* kdindices = allocator.allocate<unsigned int>(face_count);
-	for (size_t i = 0; i < face_count; ++i) {
+	for (size_t i = 0; i < face_count; ++i)
 		kdindices[i] = unsigned(i);
-}
 
 	KDNode* nodes = allocator.allocate<KDNode>(face_count * 2);
 	kdtreeBuild(0, nodes, face_count * 2, &triangles[0].px, sizeof(Cone) / sizeof(float), kdindices, face_count, /* leaf_size= */ 8);
@@ -621,9 +612,8 @@ size_t meshopt_buildMeshlets(meshopt_Meshlet* meshlets, unsigned int* meshlet_ve
 			best_triangle = index;
 		}
 
-		if (best_triangle == ~0u) {
+		if (best_triangle == ~0u)
 			break;
-}
 
 		unsigned int a = indices[best_triangle * 3 + 0], b = indices[best_triangle * 3 + 1], c = indices[best_triangle * 3 + 2];
 		assert(a < vertex_count && b < vertex_count && c < vertex_count);
@@ -759,9 +749,8 @@ meshopt_Bounds meshopt_computeClusterBounds(const unsigned int* indices, size_t 
 		float area = sqrtf(normalx * normalx + normaly * normaly + normalz * normalz);
 
 		// no need to include degenerate triangles - they will be invisible anyway
-		if (area == 0.f) {
+		if (area == 0.f)
 			continue;
-}
 
 		// record triangle normals & corners for future use; normal and corner 0 define a plane equation
 		normals[triangles][0] = normalx / area;
@@ -776,9 +765,8 @@ meshopt_Bounds meshopt_computeClusterBounds(const unsigned int* indices, size_t 
 	meshopt_Bounds bounds = {};
 
 	// degenerate cluster, no valid triangles => trivial reject (cone data is 0)
-	if (triangles == 0) {
+	if (triangles == 0)
 		return bounds;
-}
 
 	// compute cluster bounding sphere; we'll use the center to determine normal cone apex as well
 	float psphere[4] = {};
@@ -938,9 +926,8 @@ void meshopt_optimizeMeshlet(unsigned int* meshlet_vertices, unsigned char* mesh
 				next_match = aok + bok + cok;
 
 				// note that we could end up with all 3 vertices in the cache, but 2 is enough for ~strip traversal
-				if (next_match >= 2) {
+				if (next_match >= 2)
 					break;
-}
 			}
 		}
 

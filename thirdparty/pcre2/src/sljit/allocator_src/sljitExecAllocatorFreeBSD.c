@@ -66,9 +66,8 @@ static SLJIT_INLINE void* alloc_chunk(sljit_uw size)
 retry:
 	retval = mmap(NULL, size, prot, flags, fd, 0);
 	if (retval == MAP_FAILED) {
-		if (!SLJIT_IS_WX_BLOCK) {
+		if (!SLJIT_IS_WX_BLOCK)
 			goto retry;
-}
 
 		return NULL;
 	}

@@ -270,7 +270,7 @@ void snd_seq_port_info_copy(snd_seq_port_info_t *dst, const snd_seq_port_info_t 
 
 int snd_seq_port_info_get_client(const snd_seq_port_info_t *info);
 int snd_seq_port_info_get_port(const snd_seq_port_info_t *info);
-const snd_seq_type_t *snd_seq_port_info_get_addr(const snd_seq_port_info_t *info);
+const snd_seq_addr_t *snd_seq_port_info_get_addr(const snd_seq_port_info_t *info);
 const char *snd_seq_port_info_get_name(const snd_seq_port_info_t *info);
 unsigned int snd_seq_port_info_get_capability(const snd_seq_port_info_t *info);
 unsigned int snd_seq_port_info_get_type(const snd_seq_port_info_t *info);
@@ -286,7 +286,7 @@ int snd_seq_port_info_get_timestamp_queue(const snd_seq_port_info_t *info);
 
 void snd_seq_port_info_set_client(snd_seq_port_info_t *info, int client);
 void snd_seq_port_info_set_port(snd_seq_port_info_t *info, int port);
-void snd_seq_port_info_set_addr(snd_seq_port_info_t *info, const snd_seq_type_t *addr);
+void snd_seq_port_info_set_addr(snd_seq_port_info_t *info, const snd_seq_addr_t *addr);
 void snd_seq_port_info_set_name(snd_seq_port_info_t *info, const char *name);
 void snd_seq_port_info_set_capability(snd_seq_port_info_t *info, unsigned int capability);
 void snd_seq_port_info_set_type(snd_seq_port_info_t *info, unsigned int type);

@@ -21,7 +21,7 @@
 
 #include <algorithm>    // for max used inside SPD CPU code.
 #include <cmath>        // for fabs, abs, sinf, sqrt, etc.
-#include <cstring>     // for memset
+#include <string.h>     // for memset
 #include <cfloat>       // for FLT_EPSILON
 #include "ffx_fsr2.h"
 #define FFX_CPU
@@ -42,7 +42,7 @@
 #endif
 
 #ifndef _MSC_VER
-#include <cwchar>
+#include <wchar.h>
 #define wcscpy_s wcscpy
 #endif
 // -- GODOT end --
@@ -351,13 +351,11 @@ static FfxErrorCode patchResourceBindings(FfxPipelineState* inoutPipeline)
         int32_t mapIndex = 0;
         for (mapIndex = 0; mapIndex < _countof(srvResourceBindingTable); ++mapIndex)
         {
-            if (0 == wcscmp(srvResourceBindingTable[mapIndex].name, inoutPipeline->srvResourceBindings[srvIndex].name)) {
+            if (0 == wcscmp(srvResourceBindingTable[mapIndex].name, inoutPipeline->srvResourceBindings[srvIndex].name))
                 break;
-}
         }
-        if (mapIndex == _countof(srvResourceBindingTable)) {
+        if (mapIndex == _countof(srvResourceBindingTable))
             return FFX_ERROR_INVALID_ARGUMENT;
-}
 
         inoutPipeline->srvResourceBindings[srvIndex].resourceIdentifier = srvResourceBindingTable[mapIndex].index;
     }
@@ -367,13 +365,11 @@ static FfxErrorCode patchResourceBindings(FfxPipelineState* inoutPipeline)
         int32_t mapIndex = 0;
         for (mapIndex = 0; mapIndex < _countof(uavResourceBindingTable); ++mapIndex)
         {
-            if (0 == wcscmp(uavResourceBindingTable[mapIndex].name, inoutPipeline->uavResourceBindings[uavIndex].name)) {
+            if (0 == wcscmp(uavResourceBindingTable[mapIndex].name, inoutPipeline->uavResourceBindings[uavIndex].name))
                 break;
-}
         }
-        if (mapIndex == _countof(uavResourceBindingTable)) {
+        if (mapIndex == _countof(uavResourceBindingTable))
             return FFX_ERROR_INVALID_ARGUMENT;
-}
 
         inoutPipeline->uavResourceBindings[uavIndex].resourceIdentifier = uavResourceBindingTable[mapIndex].index;
     }
@@ -383,13 +379,11 @@ static FfxErrorCode patchResourceBindings(FfxPipelineState* inoutPipeline)
         int32_t mapIndex = 0;
         for (mapIndex = 0; mapIndex < _countof(cbResourceBindingTable); ++mapIndex)
         {
-            if (0 == wcscmp(cbResourceBindingTable[mapIndex].name, inoutPipeline->cbResourceBindings[cbIndex].name)) {
+            if (0 == wcscmp(cbResourceBindingTable[mapIndex].name, inoutPipeline->cbResourceBindings[cbIndex].name))
                 break;
-}
         }
-        if (mapIndex == _countof(cbResourceBindingTable)) {
+        if (mapIndex == _countof(cbResourceBindingTable))
             return FFX_ERROR_INVALID_ARGUMENT;
-}
 
         inoutPipeline->cbResourceBindings[cbIndex].resourceIdentifier = cbResourceBindingTable[mapIndex].index;
     }

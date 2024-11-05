@@ -53,41 +53,37 @@ static int readControlPoints(T *input, Point2 *output) {
                 return -1;
         }
         result = readCoord(input, output[1]);
-        if (result == 2 && readChar(input) == ')') {
+        if (result == 2 && readChar(input) == ')')
             return 2;
-}
-    } else if (result != 1 && readChar(input) == ')') {
+    } else if (result != 1 && readChar(input) == ')')
         return 0;
-}
     return -1;
 }
 
 template <typename T, int (*readChar)(T *), int (*readCoord)(T *, Point2 &)>
 static bool readContour(T *input, Contour &output, const Point2 *first, int terminator, bool &colorsSpecified) {
     Point2 p[4], start;
-    if (first) {
+    if (first)
         p[0] = *first;
-    } else {
+    else {
         int result = readCoord(input, p[0]);
-        if (result != 2) {
+        if (result != 2)
             return result != 1 && readChar(input) == terminator;
-}
     }
     start = p[0];
     int c = '\0';
     while ((c = readChar(input)) != terminator) {
-        if (c != ';') {
+        if (c != ';')
             return false;
-}
         EdgeColor color = WHITE;
         int result = readCoord(input, p[1]);
         if (result == 2) {
             output.addEdge(EdgeHolder(p[0], p[1], color));
             p[0] = p[1];
             continue;
-        } else if (result == 1) {
+        } else if (result == 1)
             return false;
-        } else {
+        else {
             int controlPoints = 0;
             switch ((c = readChar(input))) {
                 case '#':
@@ -122,27 +118,24 @@ static bool readContour(T *input, Contour &output, const Point2 *first, int term
                     goto FINISH_EDGE;
                 case '(':
                 READ_CONTROL_POINTS:
-                    if ((controlPoints = readControlPoints<T, readChar, readCoord>(input, p+1)) < 0) {
+                    if ((controlPoints = readControlPoints<T, readChar, readCoord>(input, p+1)) < 0)
                         return false;
-}
                     break;
                 default:
                     return false;
             }
-            if (readChar(input) != ';') {
+            if (readChar(input) != ';')
                 return false;
-}
         FINISH_EDGE:
             result = readCoord(input, p[1+controlPoints]);
             if (result != 2) {
-                if (result == 1) {
+                if (result == 1)
                     return false;
-                } else {
-                    if (readChar(input) == '#') {
+                else {
+                    if (readChar(input) == '#')
                         p[1+controlPoints] = start;
-                    } else {
+                    else
                         return false;
-}
                 }
             }
             switch (controlPoints) {
@@ -172,29 +165,24 @@ bool readShapeDescription(FILE *input, Shape &output, bool *colorsSpecified) {
     int result = readCoordF(input, p);
     if (result == 2) {
         return readContour<FILE, readCharF, readCoordF>(input, output.addContour(), &p, EOF, locColorsSpec);
-    } else if (result == 1) {
+    } else if (result == 1)
         return false;
-    } else {
+    else {
         int c = readCharF(input);
         if (c == '@') {
             char after = '\0';
-            if (fscanf(input, "invert-y%c", &after) != 1) {
+            if (fscanf(input, "invert-y%c", &after) != 1)
                 return feof(input) != 0;
-}
             output.inverseYAxis = true;
             c = after;
-            if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+            if (c == ' ' || c == '\t' || c == '\r' || c == '\n')
                 c = readCharF(input);
-}
         }
-        for (; c == '{'; c = readCharF(input)) {
-            if (!readContour<FILE, readCharF, readCoordF>(input, output.addContour(), NULL, '}', locColorsSpec)) {
+        for (; c == '{'; c = readCharF(input))
+            if (!readContour<FILE, readCharF, readCoordF>(input, output.addContour(), NULL, '}', locColorsSpec))
                 return false;
-}
-}
-        if (colorsSpecified) {
+        if (colorsSpecified)
             *colorsSpecified = locColorsSpec;
-}
         return c == EOF && feof(input);
     }
 }
@@ -207,28 +195,23 @@ bool readShapeDescription(const char *input, Shape &output, bool *colorsSpecifie
     int result = readCoordS(&input, p);
     if (result == 2) {
         return readContour<const char *, readCharS, readCoordS>(&input, output.addContour(), &p, EOF, locColorsSpec);
-    } else if (result == 1) {
+    } else if (result == 1)
         return false;
-    } else {
+    else {
         int c = readCharS(&input);
         if (c == '@') {
-            for (int i = 0; i < (int) sizeof("invert-y")-1; ++i) {
-                if (input[i] != "invert-y"[i]) {
+            for (int i = 0; i < (int) sizeof("invert-y")-1; ++i)
+                if (input[i] != "invert-y"[i])
                     return false;
-}
-}
             output.inverseYAxis = true;
             input += sizeof("invert-y")-1;
             c = readCharS(&input);
         }
-        for (; c == '{'; c = readCharS(&input)) {
-            if (!readContour<const char *, readCharS, readCoordS>(&input, output.addContour(), NULL, '}', locColorsSpec)) {
+        for (; c == '{'; c = readCharS(&input))
+            if (!readContour<const char *, readCharS, readCoordS>(&input, output.addContour(), NULL, '}', locColorsSpec))
                 return false;
-}
-}
-        if (colorsSpecified) {
+        if (colorsSpecified)
             *colorsSpecified = locColorsSpec;
-}
         return c == EOF;
     }
 }
@@ -242,13 +225,11 @@ static bool isColored(const Shape &shape) {
 }
 
 bool writeShapeDescription(FILE *output, const Shape &shape) {
-    if (!shape.validate()) {
+    if (!shape.validate())
         return false;
-}
     bool writeColors = isColored(shape);
-    if (shape.inverseYAxis) {
+    if (shape.inverseYAxis)
         fprintf(output, "@invert-y\n");
-}
     for (std::vector<Contour>::const_iterator contour = shape.contours.begin(); contour != shape.contours.end(); ++contour) {
         fprintf(output, "{\n");
         if (!contour->edges.empty()) {

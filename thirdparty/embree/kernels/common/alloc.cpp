@@ -38,15 +38,14 @@ namespace embree
           *ptrs[i] = size_t(threadalloc.talloc0) + i;
         }
         for (size_t i=0; i<1000; i++) {
-          if (*ptrs[i] != size_t(threadalloc.talloc0) + i) {
+          if (*ptrs[i] != size_t(threadalloc.talloc0) + i)
             This->numFailed++;
-}
         }
         This->barrier.wait();
       }
     }
 
-    bool run () override
+    bool run ()
     {
       alloc = make_unique(new FastAllocator(nullptr,false));
       numFailed.store(0);
@@ -56,9 +55,8 @@ namespace embree
 
       /* create threads */
       std::vector<thread_t> threads;
-      for (size_t i=0; i<numThreads; i++) {
+      for (size_t i=0; i<numThreads; i++)
         threads.push_back(createThread((thread_func)thread_alloc,this));
-}
 
       /* run test */
       for (size_t i=0; i<1000; i++)
@@ -69,9 +67,8 @@ namespace embree
       }
 
       /* destroy threads */
-      for (size_t i=0; i<numThreads; i++) {
+      for (size_t i=0; i<numThreads; i++)
         join(threads[i]);
-}
 
       alloc = nullptr;
 

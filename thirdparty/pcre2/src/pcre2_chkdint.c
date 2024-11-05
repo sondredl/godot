@@ -81,8 +81,7 @@ if (a < 0 || b < 0) abort();
 m = (INT64_OR_DOUBLE)a * (INT64_OR_DOUBLE)b;
 
 #if defined INT64_MAX || defined int64_t
-if (sizeof(m) > sizeof(*r) && m > (INT64_OR_DOUBLE)PCRE2_SIZE_MAX) { return TRUE;
-}
+if (sizeof(m) > sizeof(*r) && m > (INT64_OR_DOUBLE)PCRE2_SIZE_MAX) return TRUE;
 *r = (PCRE2_SIZE)m;
 #else
 if (m > PCRE2_SIZE_MAX) return TRUE;

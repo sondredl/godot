@@ -45,16 +45,15 @@ png_do_pack(png_row_infop row_info, png_bytep row, png_uint_32 bit_depth)
 
             for (i = 0; i < row_width; i++)
             {
-               if (*sp != 0) {
+               if (*sp != 0)
                   v |= mask;
-}
 
                sp++;
 
-               if (mask > 1) {
+               if (mask > 1)
                   mask >>= 1;
 
-               } else
+               else
                {
                   mask = 0x80;
                   *dp = (png_byte)v;
@@ -63,9 +62,8 @@ png_do_pack(png_row_infop row_info, png_bytep row, png_uint_32 bit_depth)
                }
             }
 
-            if (mask != 0x80) {
+            if (mask != 0x80)
                *dp = (png_byte)v;
-}
 
             break;
          }
@@ -98,16 +96,14 @@ png_do_pack(png_row_infop row_info, png_bytep row, png_uint_32 bit_depth)
                   v = 0;
                }
 
-               else {
+               else
                   shift -= 2;
-}
 
                sp++;
             }
 
-            if (shift != 6) {
+            if (shift != 6)
                *dp = (png_byte)v;
-}
 
             break;
          }
@@ -140,16 +136,14 @@ png_do_pack(png_row_infop row_info, png_bytep row, png_uint_32 bit_depth)
                   v = 0;
                }
 
-               else {
+               else
                   shift -= 4;
-}
 
                sp++;
             }
 
-            if (shift != 4) {
+            if (shift != 4)
                *dp = (png_byte)v;
-}
 
             break;
          }
@@ -222,15 +216,14 @@ png_do_shift(png_row_infop row_info, png_bytep row,
          unsigned int mask;
          size_t row_bytes = row_info->rowbytes;
 
-         if (bit_depth->gray == 1 && row_info->bit_depth == 2) {
+         if (bit_depth->gray == 1 && row_info->bit_depth == 2)
             mask = 0x55;
 
-         } else if (row_info->bit_depth == 4 && bit_depth->gray == 3) {
+         else if (row_info->bit_depth == 4 && bit_depth->gray == 3)
             mask = 0x11;
 
-         } else {
+         else
             mask = 0xff;
-}
 
          for (i = 0; i < row_bytes; i++, bp++)
          {
@@ -242,12 +235,11 @@ png_do_shift(png_row_infop row_info, png_bytep row,
 
             for (j = shift_start[0]; j > -shift_dec[0]; j -= shift_dec[0])
             {
-               if (j > 0) {
+               if (j > 0)
                   out |= v << j;
 
-               } else {
+               else
                   out |= (v >> (-j)) & mask;
-}
             }
 
             *bp = (png_byte)(out & 0xff);
@@ -271,12 +263,11 @@ png_do_shift(png_row_infop row_info, png_bytep row,
 
             for (j = shift_start[c]; j > -shift_dec[c]; j -= shift_dec[c])
             {
-               if (j > 0) {
+               if (j > 0)
                   out |= v << j;
 
-               } else {
+               else
                   out |= v >> (-j);
-}
             }
 
             *bp = (png_byte)(out & 0xff);
@@ -300,12 +291,11 @@ png_do_shift(png_row_infop row_info, png_bytep row,
 
             for (j = shift_start[c]; j > -shift_dec[c]; j -= shift_dec[c])
             {
-               if (j > 0) {
+               if (j > 0)
                   value |= v << j;
 
-               } else {
+               else
                   value |= v >> (-j);
-}
             }
             *bp++ = (png_byte)((value >> 8) & 0xff);
             *bp++ = (png_byte)(value & 0xff);
@@ -512,13 +502,12 @@ png_do_write_transformations(png_structrp png_ptr, png_row_infop row_info)
 {
    png_debug(1, "in png_do_write_transformations");
 
-   if (png_ptr == NULL) {
+   if (png_ptr == NULL)
       return;
-}
 
 #ifdef PNG_WRITE_USER_TRANSFORM_SUPPORTED
-   if ((png_ptr->transformations & PNG_USER_TRANSFORM) != 0) {
-      if (png_ptr->write_user_transform_fn != NULL) {
+   if ((png_ptr->transformations & PNG_USER_TRANSFORM) != 0)
+      if (png_ptr->write_user_transform_fn != NULL)
          (*(png_ptr->write_user_transform_fn)) /* User write transform
                                                  function */
              (png_ptr,  /* png_ptr */
@@ -530,67 +519,56 @@ png_do_write_transformations(png_structrp png_ptr, png_row_infop row_info)
                 /*  png_byte channels;       number of channels (1-4) */
                 /*  png_byte pixel_depth;    bits per pixel (depth*channels) */
              png_ptr->row_buf + 1);      /* start of pixel data for row */
-}
-}
 #endif
 
 #ifdef PNG_WRITE_FILLER_SUPPORTED
-   if ((png_ptr->transformations & PNG_FILLER) != 0) {
+   if ((png_ptr->transformations & PNG_FILLER) != 0)
       png_do_strip_channel(row_info, png_ptr->row_buf + 1,
           !(png_ptr->flags & PNG_FLAG_FILLER_AFTER));
-}
 #endif
 
 #ifdef PNG_WRITE_PACKSWAP_SUPPORTED
-   if ((png_ptr->transformations & PNG_PACKSWAP) != 0) {
+   if ((png_ptr->transformations & PNG_PACKSWAP) != 0)
       png_do_packswap(row_info, png_ptr->row_buf + 1);
-}
 #endif
 
 #ifdef PNG_WRITE_PACK_SUPPORTED
-   if ((png_ptr->transformations & PNG_PACK) != 0) {
+   if ((png_ptr->transformations & PNG_PACK) != 0)
       png_do_pack(row_info, png_ptr->row_buf + 1,
           (png_uint_32)png_ptr->bit_depth);
-}
 #endif
 
 #ifdef PNG_WRITE_SWAP_SUPPORTED
 #  ifdef PNG_16BIT_SUPPORTED
-   if ((png_ptr->transformations & PNG_SWAP_BYTES) != 0) {
+   if ((png_ptr->transformations & PNG_SWAP_BYTES) != 0)
       png_do_swap(row_info, png_ptr->row_buf + 1);
-}
 #  endif
 #endif
 
 #ifdef PNG_WRITE_SHIFT_SUPPORTED
-   if ((png_ptr->transformations & PNG_SHIFT) != 0) {
+   if ((png_ptr->transformations & PNG_SHIFT) != 0)
       png_do_shift(row_info, png_ptr->row_buf + 1,
            &(png_ptr->shift));
-}
 #endif
 
 #ifdef PNG_WRITE_SWAP_ALPHA_SUPPORTED
-   if ((png_ptr->transformations & PNG_SWAP_ALPHA) != 0) {
+   if ((png_ptr->transformations & PNG_SWAP_ALPHA) != 0)
       png_do_write_swap_alpha(row_info, png_ptr->row_buf + 1);
-}
 #endif
 
 #ifdef PNG_WRITE_INVERT_ALPHA_SUPPORTED
-   if ((png_ptr->transformations & PNG_INVERT_ALPHA) != 0) {
+   if ((png_ptr->transformations & PNG_INVERT_ALPHA) != 0)
       png_do_write_invert_alpha(row_info, png_ptr->row_buf + 1);
-}
 #endif
 
 #ifdef PNG_WRITE_BGR_SUPPORTED
-   if ((png_ptr->transformations & PNG_BGR) != 0) {
+   if ((png_ptr->transformations & PNG_BGR) != 0)
       png_do_bgr(row_info, png_ptr->row_buf + 1);
-}
 #endif
 
 #ifdef PNG_WRITE_INVERT_SUPPORTED
-   if ((png_ptr->transformations & PNG_INVERT_MONO) != 0) {
+   if ((png_ptr->transformations & PNG_INVERT_MONO) != 0)
       png_do_invert(row_info, png_ptr->row_buf + 1);
-}
 #endif
 }
 #endif /* WRITE_TRANSFORMS */

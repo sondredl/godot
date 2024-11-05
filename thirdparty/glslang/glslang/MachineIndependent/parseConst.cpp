@@ -48,8 +48,8 @@ public:
         constructorType(constructType), singleConstantParam(singleConstParam), error(false), isMatrix(false),
         matrixCols(0), matrixRows(0) {  index = 0; tOp = EOpNull; }
 
-    void visitConstantUnion(TIntermConstantUnion* node) override;
-    bool visitAggregate(TVisit, TIntermAggregate* node) override;
+    virtual void visitConstantUnion(TIntermConstantUnion* node);
+    virtual bool visitAggregate(TVisit, TIntermAggregate* node);
 
     int index;
     TConstUnionArray unionArray;
@@ -92,9 +92,8 @@ bool TConstTraverser::visitAggregate(TVisit /* visit */, TIntermAggregate* node)
     for (TIntermSequence::iterator p = node->getSequence().begin();
                                    p != node->getSequence().end(); p++) {
 
-        if (node->getOp() == EOpComma) {
+        if (node->getOp() == EOpComma)
             index = 0;
-}
 
         (*p)->traverse(this);
     }
@@ -116,18 +115,16 @@ void TConstTraverser::visitConstantUnion(TIntermConstantUnion* node)
     TConstUnionArray leftUnionArray(unionArray);
     int instanceSize = type.computeNumComponents();
 
-    if (index >= instanceSize) {
+    if (index >= instanceSize)
         return;
-}
 
     if (! singleConstantParam) {
         int rightUnionSize = node->getType().computeNumComponents();
 
         const TConstUnionArray& rightUnionArray = node->getConstArray();
         for (int i = 0; i < rightUnionSize; i++) {
-            if (index >= instanceSize) {
+            if (index >= instanceSize)
                 return;
-}
             leftUnionArray[index] = rightUnionArray[i];
 
             index++;
@@ -139,17 +136,15 @@ void TConstTraverser::visitConstantUnion(TIntermConstantUnion* node)
             int count = 0;
             int nodeComps = node->getType().computeNumComponents();
             for (int i = index; i < endIndex; i++) {
-                if (i >= instanceSize) {
+                if (i >= instanceSize)
                     return;
-}
 
                 leftUnionArray[i] = rightUnionArray[count];
 
                 (index)++;
 
-                if (nodeComps > 1) {
+                if (nodeComps > 1)
                     count++;
-}
             }
         } else {
             // constructing a matrix, but from what?
@@ -163,11 +158,10 @@ void TConstTraverser::visitConstantUnion(TIntermConstantUnion* node)
                         if (r < node->getType().getMatrixRows() && c < node->getType().getMatrixCols()) {
                             int srcOffset = c * node->getType().getMatrixRows() + r;
                             leftUnionArray[targetOffset] = rightUnionArray[srcOffset];
-                        } else if (r == c) {
+                        } else if (r == c)
                             leftUnionArray[targetOffset].setDConst(1.0);
-                        } else {
+                        else
                             leftUnionArray[targetOffset].setDConst(0.0);
-}
                     }
                 }
             } else {
@@ -176,20 +170,18 @@ void TConstTraverser::visitConstantUnion(TIntermConstantUnion* node)
                 if (nodeComps == 1) {
                     for (int c = 0; c < matrixCols; ++c) {
                         for (int r = 0; r < matrixRows; ++r) {
-                            if (r == c) {
+                            if (r == c)
                                 leftUnionArray[index] = rightUnionArray[0];
-                            } else {
+                            else
                                 leftUnionArray[index].setDConst(0.0);
-}
                             index++;
                         }
                     }
                 } else {
                     int count = 0;
                     for (int i = index; i < endIndex; i++) {
-                        if (i >= instanceSize) {
+                        if (i >= instanceSize)
                             return;
-}
 
                         // construct the matrix in column-major order, from
                         // the components provided, in order
@@ -206,14 +198,16 @@ void TConstTraverser::visitConstantUnion(TIntermConstantUnion* node)
 
 bool TIntermediate::parseConstTree(TIntermNode* root, TConstUnionArray unionArray, TOperator constructorType, const TType& t, bool singleConstantParam)
 {
-    if (root == nullptr) {
+    if (root == nullptr)
         return false;
-}
 
     TConstTraverser it(unionArray, singleConstantParam, constructorType, t);
 
     root->traverse(&it);
-    return it.error;
+    if (it.error)
+        return true;
+    else
+        return false;
 }
 
 } // end namespace glslang

@@ -88,15 +88,13 @@
 
       if ( GXV_OPBD_DATA( format ) )    /* format 1, value is ctrl pt. */
       {
-        if ( delta_value == -1 ) {
+        if ( delta_value == -1 )
           continue;
-}
 
         gxv_ctlPoint_validate( glyph, (FT_UShort)delta_value, gxvalid );
       }
-      else {                              /* format 0, value is distance */
+      else                              /* format 0, value is distance */
         continue;
-}
     }
   }
 

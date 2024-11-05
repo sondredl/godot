@@ -484,8 +484,7 @@ ubidi_writeReordered(UBiDi *pBiDi,
                     else if (markFlag & RLM_BEFORE) {
                         uc=RLM_CHAR;
                     }
-                    else {  uc=0;
-}
+                    else  uc=0;
                     if(uc) {
                         if(destSize>0) {
                             *dest++=uc;
@@ -514,8 +513,7 @@ ubidi_writeReordered(UBiDi *pBiDi,
                     else if (markFlag & RLM_AFTER) {
                         uc=RLM_CHAR;
                     }
-                    else {  uc=0;
-}
+                    else  uc=0;
                     if(uc) {
                         if(destSize>0) {
                             *dest++=uc;
@@ -533,8 +531,7 @@ ubidi_writeReordered(UBiDi *pBiDi,
                     else if (markFlag & RLM_BEFORE) {
                         uc=RLM_CHAR;
                     }
-                    else {  uc=0;
-}
+                    else  uc=0;
                     if(uc) {
                         if(destSize>0) {
                             *dest++=uc;
@@ -560,8 +557,7 @@ ubidi_writeReordered(UBiDi *pBiDi,
                     else if (markFlag & RLM_AFTER) {
                         uc=RLM_CHAR;
                     }
-                    else {  uc=0;
-}
+                    else  uc=0;
                     if(uc) {
                         if(destSize>0) {
                             *dest++=uc;

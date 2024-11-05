@@ -1120,8 +1120,8 @@ public:
      * @see begin
      * @see end
      */
-    inline U_HEADER_ONLY_NAMESPACE::USetCodePoints codePoints() const {
-        return U_HEADER_ONLY_NAMESPACE::USetCodePoints(toUSet());
+    inline U_HEADER_NESTED_NAMESPACE::USetCodePoints codePoints() const {
+        return U_HEADER_NESTED_NAMESPACE::USetCodePoints(toUSet());
     }
 
     /**
@@ -1146,8 +1146,8 @@ public:
      * @see begin
      * @see end
      */
-    inline U_HEADER_ONLY_NAMESPACE::USetRanges ranges() const {
-        return U_HEADER_ONLY_NAMESPACE::USetRanges(toUSet());
+    inline U_HEADER_NESTED_NAMESPACE::USetRanges ranges() const {
+        return U_HEADER_NESTED_NAMESPACE::USetRanges(toUSet());
     }
 
     /**
@@ -1170,8 +1170,8 @@ public:
      * @see begin
      * @see end
      */
-    inline U_HEADER_ONLY_NAMESPACE::USetStrings strings() const {
-        return U_HEADER_ONLY_NAMESPACE::USetStrings(toUSet());
+    inline U_HEADER_NESTED_NAMESPACE::USetStrings strings() const {
+        return U_HEADER_NESTED_NAMESPACE::USetStrings(toUSet());
     }
 
     /**
@@ -1197,8 +1197,8 @@ public:
      * @see ranges
      * @see strings
      */
-    inline U_HEADER_ONLY_NAMESPACE::USetElementIterator begin() const {
-        return U_HEADER_ONLY_NAMESPACE::USetElements(toUSet()).begin();
+    inline U_HEADER_NESTED_NAMESPACE::USetElementIterator begin() const {
+        return U_HEADER_NESTED_NAMESPACE::USetElements(toUSet()).begin();
     }
 
     /**
@@ -1209,8 +1209,8 @@ public:
      * @see ranges
      * @see strings
      */
-    inline U_HEADER_ONLY_NAMESPACE::USetElementIterator end() const {
-        return U_HEADER_ONLY_NAMESPACE::USetElements(toUSet()).end();
+    inline U_HEADER_NESTED_NAMESPACE::USetElementIterator end() const {
+        return U_HEADER_NESTED_NAMESPACE::USetElements(toUSet()).end();
     }
 #endif  // U_HIDE_DRAFT_API
 

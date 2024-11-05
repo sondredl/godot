@@ -58,8 +58,7 @@ int QuantizeLevels(uint8_t* const data, int width, int height,
     }
   }
 
-  if (num_levels_in <= num_levels) { goto End;  // nothing to do!
-}
+  if (num_levels_in <= num_levels) goto End;  // nothing to do!
 
   // Start with uniformly spread centroids.
   for (i = 0; i < num_levels; ++i) {
@@ -111,8 +110,7 @@ int QuantizeLevels(uint8_t* const data, int width, int height,
 
     // Check for convergence: we stop as soon as the error is no
     // longer improving.
-    if (last_err - err < err_threshold) { break;
-}
+    if (last_err - err < err_threshold) break;
     last_err = err;
   }
 

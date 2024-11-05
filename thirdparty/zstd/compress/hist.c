@@ -42,15 +42,12 @@ unsigned HIST_count_simple(unsigned* count, unsigned* maxSymbolValuePtr,
         count[*ip++]++;
     }
 
-    while (!count[maxSymbolValue]) { maxSymbolValue--;
-}
+    while (!count[maxSymbolValue]) maxSymbolValue--;
     *maxSymbolValuePtr = maxSymbolValue;
 
     {   U32 s;
-        for (s=0; s<=maxSymbolValue; s++) {
-            if (count[s] > largestCount) { largestCount = count[s];
-}
-}
+        for (s=0; s<=maxSymbolValue; s++)
+            if (count[s] > largestCount) largestCount = count[s];
     }
 
     return largestCount;
@@ -118,21 +115,17 @@ static size_t HIST_count_parallel_wksp(
     }
 
     /* finish last symbols */
-    while (ip<iend) { Counting1[*ip++]++;
-}
+    while (ip<iend) Counting1[*ip++]++;
 
     {   U32 s;
         for (s=0; s<256; s++) {
             Counting1[s] += Counting2[s] + Counting3[s] + Counting4[s];
-            if (Counting1[s] > max) { max = Counting1[s];
-}
+            if (Counting1[s] > max) max = Counting1[s];
     }   }
 
     {   unsigned maxSymbolValue = 255;
-        while (!Counting1[maxSymbolValue]) { maxSymbolValue--;
-}
-        if (check && maxSymbolValue > *maxSymbolValuePtr) { return ERROR(maxSymbolValue_tooSmall);
-}
+        while (!Counting1[maxSymbolValue]) maxSymbolValue--;
+        if (check && maxSymbolValue > *maxSymbolValuePtr) return ERROR(maxSymbolValue_tooSmall);
         *maxSymbolValuePtr = maxSymbolValue;
         ZSTD_memmove(count, Counting1, countSize);   /* in case count & Counting1 are overlapping */
     }
@@ -148,13 +141,10 @@ size_t HIST_countFast_wksp(unsigned* count, unsigned* maxSymbolValuePtr,
                           const void* source, size_t sourceSize,
                           void* workSpace, size_t workSpaceSize)
 {
-    if (sourceSize < 1500) { /* heuristic threshold */
+    if (sourceSize < 1500) /* heuristic threshold */
         return HIST_count_simple(count, maxSymbolValuePtr, source, sourceSize);
-}
-    if ((size_t)workSpace & 3) { return ERROR(GENERIC);  /* must be aligned on 4-bytes boundaries */
-}
-    if (workSpaceSize < HIST_WKSP_SIZE) { return ERROR(workSpace_tooSmall);
-}
+    if ((size_t)workSpace & 3) return ERROR(GENERIC);  /* must be aligned on 4-bytes boundaries */
+    if (workSpaceSize < HIST_WKSP_SIZE) return ERROR(workSpace_tooSmall);
     return HIST_count_parallel_wksp(count, maxSymbolValuePtr, source, sourceSize, trustInput, (U32*)workSpace);
 }
 
@@ -165,13 +155,10 @@ size_t HIST_count_wksp(unsigned* count, unsigned* maxSymbolValuePtr,
                        const void* source, size_t sourceSize,
                        void* workSpace, size_t workSpaceSize)
 {
-    if ((size_t)workSpace & 3) { return ERROR(GENERIC);  /* must be aligned on 4-bytes boundaries */
-}
-    if (workSpaceSize < HIST_WKSP_SIZE) { return ERROR(workSpace_tooSmall);
-}
-    if (*maxSymbolValuePtr < 255) {
+    if ((size_t)workSpace & 3) return ERROR(GENERIC);  /* must be aligned on 4-bytes boundaries */
+    if (workSpaceSize < HIST_WKSP_SIZE) return ERROR(workSpace_tooSmall);
+    if (*maxSymbolValuePtr < 255)
         return HIST_count_parallel_wksp(count, maxSymbolValuePtr, source, sourceSize, checkMaxSymbolValue, (U32*)workSpace);
-}
     *maxSymbolValuePtr = 255;
     return HIST_countFast_wksp(count, maxSymbolValuePtr, source, sourceSize, workSpace, workSpaceSize);
 }

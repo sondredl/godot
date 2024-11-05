@@ -396,7 +396,10 @@ bool SpoofImpl::isIllegalCombiningDotLeadCharacter(UChar32 cp) const {
     UnicodeString skelStr;
     fSpoofData->confusableLookup(cp, skelStr);
     UChar32 finalCp = skelStr.char32At(skelStr.moveIndex32(skelStr.length(), -1));
-    return finalCp != cp && isIllegalCombiningDotLeadCharacterNoLookup(finalCp);
+    if (finalCp != cp && isIllegalCombiningDotLeadCharacterNoLookup(finalCp)) {
+        return true;
+    }
+    return false;
 }
 
 

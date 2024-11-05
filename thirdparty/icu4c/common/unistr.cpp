@@ -718,7 +718,7 @@ UnicodeString::doEqualsSubstring( int32_t start,
 
   if(srcChars == nullptr) {
     // treat const char16_t *srcChars==nullptr as an empty string
-    return length == 0;
+    return length == 0 ? true : false;
   }
 
   // get the correct pointer
@@ -1665,12 +1665,9 @@ UnicodeString::doAppend(const char16_t *srcChars, int32_t srcStart, int32_t srcL
     if (srcLength <= 4) {
       char16_t *arr = getArrayStart();
       arr[oldLength] = srcChars[0];
-      if (srcLength > 1) { arr[oldLength+1] = srcChars[1];
-}
-      if (srcLength > 2) { arr[oldLength+2] = srcChars[2];
-}
-      if (srcLength > 3) { arr[oldLength+3] = srcChars[3];
-}
+      if (srcLength > 1) arr[oldLength+1] = srcChars[1];
+      if (srcLength > 2) arr[oldLength+2] = srcChars[2];
+      if (srcLength > 3) arr[oldLength+3] = srcChars[3];
       setLength(newLength);
       return *this;
     }

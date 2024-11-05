@@ -37,11 +37,10 @@ namespace
 
         _glat_iterator<W> & operator ++ () {
             ++_n; be::skip<uint16>(_v);
-            if (_n == run()) { advance_entry();
-}
+            if (_n == run()) advance_entry();
             return *this;
         }
-        const _glat_iterator<W>   operator ++ (int)   { _glat_iterator<W> tmp(*this); operator++(); return tmp; }
+        _glat_iterator<W>   operator ++ (int)   { _glat_iterator<W> tmp(*this); operator++(); return tmp; }
 
         // This is strictly a >= operator. A true == operator could be
         // implemented that test for overlap but it would be more expensive a
@@ -70,14 +69,14 @@ class GlyphCache::Loader
 public:
     Loader(const Face & face);    //return result indicates success. Do not use if failed.
 
-    operator bool () const noexcept;
-    unsigned short int units_per_em() const noexcept;
-    unsigned short int num_glyphs() const noexcept;
-    unsigned short int num_attrs() const noexcept;
-    bool has_boxes() const noexcept;
+    operator bool () const throw();
+    unsigned short int units_per_em() const throw();
+    unsigned short int num_glyphs() const throw();
+    unsigned short int num_attrs() const throw();
+    bool has_boxes() const throw();
 
-    const GlyphFace * read_glyph(unsigned short gid, GlyphFace &, int *numsubs) const noexcept;
-    GlyphBox * read_box(uint16 gid, GlyphBox *curr, const GlyphFace & face) const noexcept;
+    const GlyphFace * read_glyph(unsigned short gid, GlyphFace &, int *numsubs) const throw();
+    GlyphBox * read_box(uint16 gid, GlyphBox *curr, const GlyphFace & face) const throw();
 
     CLASS_NEW_DELETE;
 private:
@@ -112,9 +111,8 @@ GlyphCache::GlyphCache(const Face & face, const uint32 face_options)
     {
         int numsubs = 0;
         GlyphFace * const glyphs = new GlyphFace [_num_glyphs];
-        if (!glyphs) {
+        if (!glyphs)
             return;
-}
 
         // The 0 glyph is definately required.
         _glyphs[0] = _glyph_loader->read_glyph(0, glyphs[0], &numsubs);
@@ -176,13 +174,11 @@ GlyphCache::~GlyphCache()
         if (_glyph_loader)
         {
             const GlyphFace *  * g = _glyphs;
-            for(unsigned short n = _num_glyphs; n; --n, ++g) {
+            for(unsigned short n = _num_glyphs; n; --n, ++g)
                 delete *g;
-}
         }
-        else {
-            d
-}elete [] _glyphs[0];
+        else
+            delete [] _glyphs[0];
         free(_glyphs);
     }
     if (_boxes)
@@ -190,13 +186,11 @@ GlyphCache::~GlyphCache()
         if (_glyph_loader)
         {
             GlyphBox *  * g = _boxes;
-            for (uint16 n = _num_glyphs; n; --n, ++g) {
+            for (uint16 n = _num_glyphs; n; --n, ++g)
                 free(*g);
-}
         }
-        else {
+        else
             free(_boxes[0]);
-}
         free(_boxes);
     }
     delete _glyph_loader;
@@ -211,8 +205,7 @@ const GlyphFace *GlyphCache::glyph(unsigned short glyphid) const      //result m
     {
         int numsubs = 0;
         GlyphFace * g = new GlyphFace();
-        if (g) {  p = _glyph_loader->read_glyph(glyphid, *g, &numsubs);
-}
+        if (g)  p = _glyph_loader->read_glyph(glyphid, *g, &numsubs);
         if (!p)
         {
             delete g;
@@ -245,9 +238,8 @@ GlyphCache::Loader::Loader(const Face & face)
   _num_glyphs_attributes(0),
   _num_attrs(0)
 {
-    if (!operator bool()) {
+    if (!operator bool())
         return;
-}
 
     const Face::Table maxp = Face::Table(face, Tag::maxp);
     if (!maxp) { _head = Face::Table(); return; }
@@ -307,36 +299,36 @@ GlyphCache::Loader::Loader(const Face & face)
 }
 
 inline
-GlyphCache::Loader::operator bool () const noexcept
+GlyphCache::Loader::operator bool () const throw()
 {
     return _head && _hhea && _hmtx && !(bool(_glyf) != bool(_loca));
 }
 
 inline
-unsigned short int GlyphCache::Loader::units_per_em() const noexcept
+unsigned short int GlyphCache::Loader::units_per_em() const throw()
 {
     return _head ? TtfUtil::DesignUnits(_head) : 0;
 }
 
 inline
-unsigned short int GlyphCache::Loader::num_glyphs() const noexcept
+unsigned short int GlyphCache::Loader::num_glyphs() const throw()
 {
     return max(_num_glyphs_graphics, _num_glyphs_attributes);
 }
 
 inline
-unsigned short int GlyphCache::Loader::num_attrs() const noexcept
+unsigned short int GlyphCache::Loader::num_attrs() const throw()
 {
     return _num_attrs;
 }
 
 inline
-bool GlyphCache::Loader::has_boxes () const noexcept
+bool GlyphCache::Loader::has_boxes () const throw()
 {
     return _has_boxes;
 }
 
-const GlyphFace * GlyphCache::Loader::read_glyph(unsigned short glyphid, GlyphFace & glyph, int *numsubs) const noexcept
+const GlyphFace * GlyphCache::Loader::read_glyph(unsigned short glyphid, GlyphFace & glyph, int *numsubs) const throw()
 {
     Rect        bbox;
     Position    advance;
@@ -353,9 +345,8 @@ const GlyphFace * GlyphCache::Loader::read_glyph(unsigned short glyphid, GlyphFa
 
             if (pGlyph && TtfUtil::GlyfBox(pGlyph, xMin, yMin, xMax, yMax))
             {
-                if ((xMin > xMax) || (yMin > yMax)) {
+                if ((xMin > xMax) || (yMin > yMax))
                     return 0;
-}
                 bbox = Rect(Position(static_cast<float>(xMin), static_cast<float>(yMin)),
                     Position(static_cast<float>(xMax), static_cast<float>(yMax)));
             }
@@ -373,63 +364,54 @@ const GlyphFace * GlyphCache::Loader::read_glyph(unsigned short glyphid, GlyphFa
         be::skip<uint16>(gloc,2);
         if (_long_fmt)
         {
-            if (8 + glyphid * sizeof(uint32) > m_pGloc.size()) {
+            if (8 + glyphid * sizeof(uint32) > m_pGloc.size())
                 return 0;
-}
             be::skip<uint32>(gloc, glyphid);
             glocs = be::read<uint32>(gloc);
             gloce = be::peek<uint32>(gloc);
         }
         else
         {
-            if (8 + glyphid * sizeof(uint16) > m_pGloc.size()) {
+            if (8 + glyphid * sizeof(uint16) > m_pGloc.size())
                 return 0;
-}
             be::skip<uint16>(gloc, glyphid);
             glocs = be::read<uint16>(gloc);
             gloce = be::peek<uint16>(gloc);
         }
 
-        if (glocs >= m_pGlat.size() - 1 || gloce > m_pGlat.size()) {
+        if (glocs >= m_pGlat.size() - 1 || gloce > m_pGlat.size())
             return 0;
-}
 
         const uint32 glat_version = be::peek<uint32>(m_pGlat);
         if (glat_version >= 0x00030000)
         {
-            if (glocs >= gloce) {
+            if (glocs >= gloce)
                 return 0;
-}
             const byte * p = m_pGlat + glocs;
             uint16 bmap = be::read<uint16>(p);
             int num = bit_set_count((uint32)bmap);
-            if (numsubs) { *numsubs += num;
-}
+            if (numsubs) *numsubs += num;
             glocs += 6 + 8 * num;
-            if (glocs > gloce) {
+            if (glocs > gloce)
                 return 0;
-}
         }
         if (glat_version < 0x00020000)
         {
             if (gloce - glocs < 2*sizeof(byte)+sizeof(uint16)
-                || gloce - glocs > _num_attrs*(2*sizeof(byte)+sizeof(uint16))) {
+                || gloce - glocs > _num_attrs*(2*sizeof(byte)+sizeof(uint16)))
                     return 0;
-}
             new (&glyph) GlyphFace(bbox, advance, glat_iterator(m_pGlat + glocs), glat_iterator(m_pGlat + gloce));
         }
         else
         {
             if (gloce - glocs < 3*sizeof(uint16)        // can a glyph have no attributes? why not?
                 || gloce - glocs > _num_attrs*3*sizeof(uint16)
-                || glocs > m_pGlat.size() - 2*sizeof(uint16)) {
+                || glocs > m_pGlat.size() - 2*sizeof(uint16))
                     return 0;
-}
             new (&glyph) GlyphFace(bbox, advance, glat2_iterator(m_pGlat + glocs), glat2_iterator(m_pGlat + gloce));
         }
-        if (!glyph.attrs() || glyph.attrs().capacity() > _num_attrs) {
+        if (!glyph.attrs() || glyph.attrs().capacity() > _num_attrs)
             return 0;
-}
     }
     return &glyph;
 }
@@ -445,10 +427,9 @@ Rect readbox(Rect &b, uint8 zxmin, uint8 zymin, uint8 zxmax, uint8 zymax)
                 Position(scale_to(zxmax, b.bl.x, b.tr.x), scale_to(zymax, b.bl.y, b.tr.y)));
 }
 
-GlyphBox * GlyphCache::Loader::read_box(uint16 gid, GlyphBox *curr, const GlyphFace & glyph) const noexcept
+GlyphBox * GlyphCache::Loader::read_box(uint16 gid, GlyphBox *curr, const GlyphFace & glyph) const throw()
 {
-    if (gid >= _num_glyphs_attributes) { return 0;
-}
+    if (gid >= _num_glyphs_attributes) return 0;
 
     const byte * gloc = m_pGloc;
     size_t      glocs = 0, gloce = 0;
@@ -468,9 +449,8 @@ GlyphBox * GlyphCache::Loader::read_box(uint16 gid, GlyphBox *curr, const GlyphF
         gloce = be::peek<uint16>(gloc);
     }
 
-    if (gloce > m_pGlat.size() || glocs + 6 >= gloce) {
+    if (gloce > m_pGlat.size() || glocs + 6 >= gloce)
         return 0;
-}
 
     const byte * p = m_pGlat + glocs;
     uint16 bmap = be::read<uint16>(p);
@@ -482,9 +462,8 @@ GlyphBox * GlyphCache::Loader::read_box(uint16 gid, GlyphBox *curr, const GlyphF
     Rect diabound = readbox(diamax, p[0], p[2], p[1], p[3]);
     ::new (curr) GlyphBox(num, bmap, &diabound);
     be::skip<uint8>(p, 4);
-    if (glocs + 6 + num * 8 >= gloce) {
+    if (glocs + 6 + num * 8 >= gloce)
         return 0;
-}
 
     for (int i = 0; i < num * 2; ++i)
     {

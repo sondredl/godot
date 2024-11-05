@@ -606,7 +606,7 @@ void RBBITableBuilder::buildStateTable() {
         for (tx=1; tx<fDStates->size(); tx++) {
             RBBIStateDescriptor *temp;
             temp = static_cast<RBBIStateDescriptor*>(fDStates->elementAt(tx));
-            if (!static_cast<bool>(temp->fMarked)) {
+            if (temp->fMarked == false) {
                 T = temp;
                 break;
             }

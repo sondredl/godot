@@ -56,7 +56,12 @@ bool PngLoader::open(const string& path)
 {
     image->opaque = NULL;
 
-    return !!png_image_begin_read_from_file(image, path.c_str());
+    if (!png_image_begin_read_from_file(image, path.c_str())) return false;
+
+    w = (float)image->width;
+    h = (float)image->height;
+
+    return true;
 }
 
 
@@ -64,17 +69,20 @@ bool PngLoader::open(const char* data, uint32_t size, bool copy)
 {
     image->opaque = NULL;
 
-    return !!png_image_begin_read_from_memory(image, data, size);
+    if (!png_image_begin_read_from_memory(image, data, size)) return false;
+
+    w = (float)image->width;
+    h = (float)image->height;
+
+    return true;
 }
 
 
 bool PngLoader::read()
 {
-    if (!LoadModule::read()) { return true;
-}
+    if (!LoadModule::read()) return true;
 
-    if (w == 0 || h == 0) { return false;
-}
+    if (w == 0 || h == 0) return false;
 
     if (cs == ColorSpace::ARGB8888 || cs == ColorSpace::ARGB8888S) {
         image->format = PNG_FORMAT_BGRA;

@@ -77,14 +77,12 @@ namespace embree
         size_t items = Primitive::blocks(current.prims.size());
         size_t start = current.prims.begin();
         size_t end   = current.prims.end();
-        for (size_t i=start; i<end; i++) { assert((*current.prims.prims)[start].geomID() == (*current.prims.prims)[i].geomID()); // assert that all geomIDs are identical
-}
+        for (size_t i=start; i<end; i++) assert((*current.prims.prims)[start].geomID() == (*current.prims.prims)[i].geomID()); // assert that all geomIDs are identical
         Primitive* accel = (Primitive*) alloc.malloc1(items*sizeof(Primitive),BVH::byteNodeAlignment);
         NodeRef node = bvh->encodeLeaf((char*)accel,items);
         LBBox3fa allBounds = empty;
-        for (size_t i=0; i<items; i++) {
+        for (size_t i=0; i<items; i++)
           allBounds.extend(accel[i].fillMB(current.prims.prims->data(), start, current.prims.end(), bvh->scene, current.prims.time_range));
-}
         return NodeRecordMB4D(node,allBounds,current.prims.time_range);
       }
 
@@ -111,7 +109,7 @@ namespace embree
       BVHNBuilderMBlurSAH (BVH* bvh, Scene* scene, const size_t sahBlockSize, const float intCost, const size_t minLeafSize, const size_t maxLeafSize, const Geometry::GTypeMask gtype)
         : bvh(bvh), scene(scene), sahBlockSize(sahBlockSize), intCost(intCost), minLeafSize(minLeafSize), maxLeafSize(min(maxLeafSize,Primitive::max_size()*BVH::maxLeafBlocks)), gtype_(gtype) {}
 
-      void build() override
+      void build()
       {
 	/* skip build for empty scene */
         const size_t numPrimitives = scene->getNumPrimitives(gtype_,true);
@@ -214,7 +212,7 @@ namespace embree
         bvh->set(root.ref,root.lbounds,pinfo.num_time_segments);
       }
 
-      void clear() override {
+      void clear() {
       }
     };
 
@@ -284,13 +282,11 @@ namespace embree
         {
           bool found = false;
           const unsigned int new_geomID = prims[start+i].geomID();
-          for (size_t j=0;j<num_geomIDs;j++) {
+          for (size_t j=0;j<num_geomIDs;j++)
             if (new_geomID == geomIDs[j])
             { found = true; break; }
-}
-          if (!found) {
+          if (!found)
             geomIDs[num_geomIDs++] = new_geomID;
-}
         }
 
         /* allocate all leaf memory in one single block */
@@ -310,8 +306,7 @@ namespace embree
           unsigned int pos = 0;
           for (size_t i=0;i<items;i++)
           {
-            if (unlikely(prims[start+i].geomID() != geomIDs[g])) { continue;
-}
+            if (unlikely(prims[start+i].geomID() != geomIDs[g])) continue;
 
             const SubGridBuildData  &sgrid_bd = sgrids[prims[start+i].primID()];
             x[pos] = sgrid_bd.sx;
@@ -450,8 +445,7 @@ namespace embree
             PrimInfo pinfo(empty);
             for (size_t j=r.begin(); j<r.end(); j++)
             {
-              if (!mesh->valid(j,range<size_t>(0,1))) { continue;
-}
+              if (!mesh->valid(j,range<size_t>(0,1))) continue;
               BBox3fa bounds = empty;
               const PrimRef prim(bounds,unsigned(geomID),unsigned(j));
               pinfo.add_center2(prim,mesh->getNumSubGrids(j));
@@ -460,8 +454,7 @@ namespace embree
           }, [](const PrimInfo& a, const PrimInfo& b) -> PrimInfo { return PrimInfo::merge(a,b); });
 
         size_t numPrimitives = pinfo.size();
-        if (numPrimitives == 0) { return pinfo;
-}
+        if (numPrimitives == 0) return pinfo;
 
         /* resize arrays */
         sgrids.resize(numPrimitives);
@@ -476,21 +469,18 @@ namespace embree
             for (size_t j=r.begin(); j<r.end(); j++)
             {
               const GridMesh::Grid &g = mesh->grid(j);
-              if (!mesh->valid(j,range<size_t>(0,1))) { continue;
-}
+              if (!mesh->valid(j,range<size_t>(0,1))) continue;
 
-              for (unsigned int y=0; y<g.resY-1u; y+=2) {
+              for (unsigned int y=0; y<g.resY-1u; y+=2)
                 for (unsigned int x=0; x<g.resX-1u; x+=2)
                 {
                   BBox3fa bounds = empty;
-                  if (!mesh->buildBounds(g,x,y,itime,bounds)) { continue; // get bounds of subgrid
-}
+                  if (!mesh->buildBounds(g,x,y,itime,bounds)) continue; // get bounds of subgrid
                   const PrimRef prim(bounds,unsigned(geomID),unsigned(p_index));
                   pinfo.add_center2(prim);
                   sgrids[p_index] = SubGridBuildData(x | g.get3x3FlagsX(x), y | g.get3x3FlagsY(y), unsigned(j));
                                                       prims[p_index++] = prim;
                 }
-}
             }
             return pinfo;
           }, [](const PrimInfo& a, const PrimInfo& b) -> PrimInfo { return PrimInfo::merge(a,b); });
@@ -512,8 +502,7 @@ namespace embree
             PrimInfoMB pinfoMB(empty);
             for (size_t j=r.begin(); j<r.end(); j++)
             {
-              if (!mesh->valid(j, mesh->timeSegmentRange(t0t1))) { continue;
-}
+              if (!mesh->valid(j, mesh->timeSegmentRange(t0t1))) continue;
               LBBox3fa bounds(empty);
               PrimInfoMB gridMB(0,mesh->getNumSubGrids(j));
               pinfoMB.merge(gridMB);
@@ -522,8 +511,7 @@ namespace embree
           }, [](const PrimInfoMB& a, const PrimInfoMB& b) -> PrimInfoMB { return PrimInfoMB::merge2(a,b); });
 
         size_t numPrimitives = pinfoMB.size();
-        if (numPrimitives == 0) { return pinfoMB;
-}
+        if (numPrimitives == 0) return pinfoMB;
 
         /* resize arrays */
         sgrids.resize(numPrimitives);
@@ -536,11 +524,10 @@ namespace embree
             PrimInfoMB pinfoMB(empty);
             for (size_t j=r.begin(); j<r.end(); j++)
             {
-              if (!mesh->valid(j, mesh->timeSegmentRange(t0t1))) { continue;
-}
+              if (!mesh->valid(j, mesh->timeSegmentRange(t0t1))) continue;
               const GridMesh::Grid &g = mesh->grid(j);
 
-              for (unsigned int y=0; y<g.resY-1u; y+=2) {
+              for (unsigned int y=0; y<g.resY-1u; y+=2)
                 for (unsigned int x=0; x<g.resX-1u; x+=2)
                 {
                   const PrimRefMB prim(mesh->linearBounds(g,x,y,t0t1),mesh->numTimeSegments(),mesh->time_range,mesh->numTimeSegments(),unsigned(geomID),unsigned(p_index));
@@ -548,7 +535,6 @@ namespace embree
                   sgrids[p_index] = SubGridBuildData(x | g.get3x3FlagsX(x), y | g.get3x3FlagsY(y), unsigned(j));
                   prims[p_index++] = prim;
                 }
-}
             }
             return pinfoMB;
           }, [](const PrimInfoMB& a, const PrimInfoMB& b) -> PrimInfoMB { return PrimInfoMB::merge2(a,b); });
@@ -558,7 +544,7 @@ namespace embree
         return pinfoMB;
       }
 
-      void build() override
+      void build()
       {
 	/* skip build for empty scene */
         const size_t numPrimitives = scene->getNumPrimitives(GridMesh::geom_type,true);
@@ -663,7 +649,7 @@ namespace embree
         bvh->set(root.ref,root.lbounds,pinfo.num_time_segments);
       }
 
-      void clear() override {
+      void clear() {
       }
     };
 

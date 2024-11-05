@@ -39,6 +39,7 @@
 #include <cctype>
 #include <climits>
 #include <iostream>
+#include <sstream>
 #include <memory>
 #include "SymbolTable.h"
 #include "ParseHelper.h"

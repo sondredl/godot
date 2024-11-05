@@ -117,11 +117,10 @@ namespace basisu
 		BASISU_NOTE_UNUSED(limit);
 		assert((diff < 2) && (inten < 8) && (selector < 4) && (packed_c < limit));
 		int c;
-		if (diff) {
+		if (diff)
 			c = (packed_c >> 2) | (packed_c << 3);
-		} else {
+		else
 			c = packed_c | (packed_c << 4);
-}
 		c += g_etc1_inten_tables[inten][selector];
 		c = clamp<int>(c, 0, 255);
 		return c;
@@ -149,9 +148,8 @@ namespace basisu
 							{
 								best_error = err;
 								best_packed_c = packed_c;
-								if (!best_error) {
+								if (!best_error)
 									break;
-}
 							}
 						}
 						assert(best_error <= 255);
@@ -200,13 +198,12 @@ namespace basisu
 				const int c_plus_delta = clamp<int>(pColor[i] + delta, 0, 255);
 
 				const uint16_t* pTable;
-				if (!c_plus_delta) {
+				if (!c_plus_delta)
 					pTable = g_etc1_color8_to_etc_block_config_0_255[0];
-				} else if (c_plus_delta == 255) {
+				else if (c_plus_delta == 255)
 					pTable = g_etc1_color8_to_etc_block_config_0_255[1];
-				} else {
+				else
 					pTable = g_etc1_color8_to_etc_block_config_1_to_254[c_plus_delta - 1];
-}
 
 				do
 				{
@@ -231,9 +228,8 @@ namespace basisu
 						best_packed_c1 = p1 & 0xFF;
 						best_packed_c2 = p2 & 0xFF;
 						best_i = i;
-						if (!best_error) {
+						if (!best_error)
 							goto found_perfect_match;
-}
 					}
 				} while (*pTable != 0xFFFF);
 			}
@@ -462,12 +458,9 @@ namespace basisu
 		assert((r >= cETC1ColorDeltaMin) && (r <= cETC1ColorDeltaMax));
 		assert((g >= cETC1ColorDeltaMin) && (g <= cETC1ColorDeltaMax));
 		assert((b >= cETC1ColorDeltaMin) && (b <= cETC1ColorDeltaMax));
-		if (r < 0) { r += 8;
-}
-		if (g < 0) { g += 8;
-}
-		if (b < 0) { b += 8;
-}
+		if (r < 0) r += 8;
+		if (g < 0) g += 8;
+		if (b < 0) b += 8;
 		return static_cast<uint16_t>(b | (g << 3) | (r << 6));
 	}
 
@@ -476,12 +469,9 @@ namespace basisu
 		int r = (packed_delta3 >> 6) & 7;
 		int g = (packed_delta3 >> 3) & 7;
 		int b = packed_delta3 & 7;
-		if (r >= 4) { r -= 8;
-}
-		if (g >= 4) { g -= 8;
-}
-		if (b >= 4) { b -= 8;
-}
+		if (r >= 4) r -= 8;
+		if (g >= 4) g -= 8;
+		if (b >= 4) b -= 8;
 		return color_rgba_i16(r, g, b, 255);
 	}
 
@@ -490,12 +480,9 @@ namespace basisu
 		r = (packed_delta3 >> 6) & 7;
 		g = (packed_delta3 >> 3) & 7;
 		b = packed_delta3 & 7;
-		if (r >= 4) { r -= 8;
-}
-		if (g >= 4) { g -= 8;
-}
-		if (b >= 4) { b -= 8;
-}
+		if (r >= 4) r -= 8;
+		if (g >= 4) g -= 8;
+		if (b >= 4) b -= 8;
 	}
 
 	uint16_t etc_block::pack_color4(const color_rgba& color, bool scaled, uint32_t bias)
@@ -630,9 +617,8 @@ namespace basisu
 			const uint16_t delta_color3 = block.get_delta3_color();
 			etc_block::get_diff_subblock_colors(subblock_colors0, base_color5, table_index0);
 
-			if (!etc_block::get_diff_subblock_colors(subblock_colors1, base_color5, delta_color3, table_index1)) {
+			if (!etc_block::get_diff_subblock_colors(subblock_colors1, base_color5, delta_color3, table_index1))
 				return false;
-}
 		}
 		else
 		{
@@ -748,9 +734,8 @@ namespace basisu
 
 		if (subblock_index < 0)
 		{
-			for (uint32_t i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++)
 				total_error += color_distance(perceptual, pBlock_pixels[i], unpacked_block[i], false);
-}
 		}
 		else
 		{
@@ -769,9 +754,9 @@ namespace basisu
 
 	void etc_block::get_subblock_pixels(color_rgba* pPixels, int subblock_index) const
 	{
-		if (subblock_index < 0) {
+		if (subblock_index < 0)
 			unpack_etc1(*this, pPixels);
-		} else
+		else
 		{
 			color_rgba unpacked_block[16];
 
@@ -795,28 +780,25 @@ namespace basisu
 		if (m_pParams->m_pForce_selectors)
 		{
 			assert(m_pParams->m_quality >= cETCQualitySlow);
-			if (m_pParams->m_quality < cETCQualitySlow) {
+			if (m_pParams->m_quality < cETCQualitySlow)
 				return false;
-}
 		}
 
 		const uint32_t n = m_pParams->m_num_src_pixels;
 
 		if (m_pParams->m_cluster_fit)
 		{
-			if (m_pParams->m_quality == cETCQualityFast) {
+			if (m_pParams->m_quality == cETCQualityFast)
 				compute_internal_cluster_fit(4);
-			} else if (m_pParams->m_quality == cETCQualityMedium) {
+			else if (m_pParams->m_quality == cETCQualityMedium)
 				compute_internal_cluster_fit(16);
-			} else if (m_pParams->m_quality == cETCQualitySlow) {
+			else if (m_pParams->m_quality == cETCQualitySlow)
 				compute_internal_cluster_fit(64);
-			} else {
+			else
 				compute_internal_cluster_fit(BASISU_ETC1_CLUSTER_FIT_ORDER_TABLE_SIZE);
-}
 		}
-		else {
+		else
 			compute_internal_neighborhood(m_br, m_bg, m_bb);
-}
 
 		if (!m_best_solution.m_valid)
 		{
@@ -825,7 +807,7 @@ namespace basisu
 		}
 
 		//const uint8_t* pSelectors = &m_best_solution.m_selectors[0];
-		const uint8_t* pSelectors = m_pParams->m_pForce_selectors ? m_pParams->m_pForce_selectors : (m_best_solution.m_selectors).data();
+		const uint8_t* pSelectors = m_pParams->m_pForce_selectors ? m_pParams->m_pForce_selectors : &m_best_solution.m_selectors[0];
 
 #if defined(DEBUG) || defined(_DEBUG)
 		{
@@ -884,7 +866,7 @@ namespace basisu
 
 		for (uint32_t refinement_trial = 0; refinement_trial < max_refinement_trials; refinement_trial++)
 		{
-			const uint8_t* pSelectors = (m_best_solution.m_selectors).data();
+			const uint8_t* pSelectors = &m_best_solution.m_selectors[0];
 			const int* pInten_table = g_etc1_inten_tables[m_best_solution.m_coords.m_inten_table];
 
 			int delta_sum_r = 0, delta_sum_g = 0, delta_sum_b = 0;
@@ -899,9 +881,8 @@ namespace basisu
 				delta_sum_b += clamp<int>(base_color.b + yd_temp, 0, 255) - base_color.b;
 			}
 
-			if ((!delta_sum_r) && (!delta_sum_g) && (!delta_sum_b)) {
+			if ((!delta_sum_r) && (!delta_sum_g) && (!delta_sum_b))
 				break;
-}
 
 			const float avg_delta_r_f = static_cast<float>(delta_sum_r) / n;
 			const float avg_delta_g_f = static_cast<float>(delta_sum_g) / n;
@@ -914,18 +895,16 @@ namespace basisu
 			printf("Refinement trial %u, avg_delta %f %f %f\n", refinement_trial, avg_delta_r_f, avg_delta_g_f, avg_delta_b_f);
 #endif
 
-			if (!evaluate_solution(etc1_solution_coordinates(br1, bg1, bb1, 0, m_pParams->m_use_color4), m_trial_solution, &m_best_solution)) {
+			if (!evaluate_solution(etc1_solution_coordinates(br1, bg1, bb1, 0, m_pParams->m_use_color4), m_trial_solution, &m_best_solution))
 				break;
-}
 
 		}  // refinement_trial
 	}
 
 	void etc1_optimizer::compute_internal_neighborhood(int scan_r, int scan_g, int scan_b)
 	{
-		if (m_best_solution.m_error == 0) {
+		if (m_best_solution.m_error == 0)
 			return;
-}
 
 		//const uint32_t n = m_pParams->m_num_src_pixels;
 		const int scan_delta_size = m_pParams->m_scan_delta_size;
@@ -936,28 +915,24 @@ namespace basisu
 		{
 			const int zd = m_pParams->m_pScan_deltas[zdi];
 			const int mbb = scan_b + zd;
-			if (mbb < 0) { continue; } else if (mbb > m_limit) { break;
-}
+			if (mbb < 0) continue; else if (mbb > m_limit) break;
 
 			for (int ydi = 0; ydi < scan_delta_size; ydi++)
 			{
 				const int yd = m_pParams->m_pScan_deltas[ydi];
 				const int mbg = scan_g + yd;
-				if (mbg < 0) { continue; } else if (mbg > m_limit) { break;
-}
+				if (mbg < 0) continue; else if (mbg > m_limit) break;
 
 				for (int xdi = 0; xdi < scan_delta_size; xdi++)
 				{
 					const int xd = m_pParams->m_pScan_deltas[xdi];
 					const int mbr = scan_r + xd;
-					if (mbr < 0) { continue; } else if (mbr > m_limit) { break;
-}
+					if (mbr < 0) continue; else if (mbr > m_limit) break;
 
 					etc1_solution_coordinates coords(mbr, mbg, mbb, 0, m_pParams->m_use_color4);
 
-					if (!evaluate_solution(coords, m_trial_solution, &m_best_solution)) {
+					if (!evaluate_solution(coords, m_trial_solution, &m_best_solution))
 						continue;
-}
 
 					if (m_pParams->m_refinement)
 					{
@@ -976,9 +951,8 @@ namespace basisu
 			evaluate_solution(etc1_solution_coordinates(m_br, m_bg, m_bb, 0, m_pParams->m_use_color4), m_trial_solution, &m_best_solution);
 		}
 
-		if ((m_best_solution.m_error == 0) || (!m_best_solution.m_valid)) {
+		if ((m_best_solution.m_error == 0) || (!m_best_solution.m_valid))
 			return;
-}
 
 		for (uint32_t i = 0; i < total_perms_to_try; i++)
 		{
@@ -998,9 +972,8 @@ namespace basisu
 				delta_sum_b += pNum_selectors[q] * (clamp<int>(base_color.b + yd_temp, 0, 255) - base_color.b);
 			}
 
-			if ((!delta_sum_r) && (!delta_sum_g) && (!delta_sum_b)) {
+			if ((!delta_sum_r) && (!delta_sum_g) && (!delta_sum_b))
 				continue;
-}
 
 			const float avg_delta_r_f = static_cast<float>(delta_sum_r) / 8;
 			const float avg_delta_g_f = static_cast<float>(delta_sum_g) / 8;
@@ -1016,9 +989,8 @@ namespace basisu
 
 			evaluate_solution(etc1_solution_coordinates(br1, bg1, bb1, 0, m_pParams->m_use_color4), m_trial_solution, &m_best_solution);
 
-			if (m_best_solution.m_error == 0) {
+			if (m_best_solution.m_error == 0)
 				break;
-}
 		}
 	}
 
@@ -1079,14 +1051,13 @@ namespace basisu
 
 		if (m_pParams->m_quality == cETCQualityFast)
 		{
-			indirect_sort(n, (m_sorted_luma_indices).data(), (m_luma).data());
+			indirect_sort(n, &m_sorted_luma_indices[0], &m_luma[0]);
 
-			m_pSorted_luma = (m_sorted_luma).data();
-			m_pSorted_luma_indices = (m_sorted_luma_indices).data();
+			m_pSorted_luma = &m_sorted_luma[0];
+			m_pSorted_luma_indices = &m_sorted_luma_indices[0];
 
-			for (uint32_t i = 0; i < n; i++) {
+			for (uint32_t i = 0; i < n; i++)
 				m_pSorted_luma[i] = m_luma[m_pSorted_luma_indices[i]];
-}
 		}
 
 		m_best_solution.m_coords.clear();
@@ -1107,9 +1078,8 @@ namespace basisu
 
 		// Simple Bloom filter lookup with k=2
 		if ( ((m_solutions_tried[h0 >> 3] & (1 << (h0 & 7))) != 0) &&
-		     ((m_solutions_tried[h1 >> 3] & (1 << (h1 & 7))) != 0) ) {
+		     ((m_solutions_tried[h1 >> 3] & (1 << (h1 & 7))) != 0) )
 			return false;
-}
 
 		m_solutions_tried[h0 >> 3] |= (1 << (h0 & 7));
 		m_solutions_tried[h1 >> 3] |= (1 << (h1 & 7));
@@ -1132,9 +1102,8 @@ namespace basisu
 
 	bool etc1_optimizer::evaluate_solution_slow(const etc1_solution_coordinates& coords, potential_solution& trial_solution, potential_solution* pBest_solution)
 	{
-		if (!check_for_redundant_solution(coords)) {
+		if (!check_for_redundant_solution(coords))
 			return false;
-}
 
 #if BASISU_DEBUG_ETC_ENCODER_DEEPER
 		printf("Eval solution: %u %u %u\n", coords.m_unscaled_color.r, coords.m_unscaled_color.g, coords.m_unscaled_color.b);
@@ -1170,9 +1139,8 @@ namespace basisu
 		{
 			if (m_pParams->m_quality <= cETCQualityMedium)
 			{
-				if (!g_eval_dist_tables[inten_table][m_max_comp_spread]) {
+				if (!g_eval_dist_tables[inten_table][m_max_comp_spread])
 					continue;
-}
 			}
 
 #if 0
@@ -1253,9 +1221,8 @@ namespace basisu
 					m_temp_selectors[c] = static_cast<uint8_t>(best_selector_index);
 
 					total_error += best_error;
-					if (total_error >= trial_solution.m_error) {
+					if (total_error >= trial_solution.m_error)
 						break;
-}
 				}
 			}
 			else
@@ -1308,9 +1275,8 @@ namespace basisu
 
 	bool etc1_optimizer::evaluate_solution_fast(const etc1_solution_coordinates& coords, potential_solution& trial_solution, potential_solution* pBest_solution)
 	{
-		if (!check_for_redundant_solution(coords)) {
+		if (!check_for_redundant_solution(coords))
 			return false;
-}
 
 #if BASISU_DEBUG_ETC_ENCODER_DEEPER
 		printf("Eval solution fast: %u %u %u\n", coords.m_unscaled_color.r, coords.m_unscaled_color.g, coords.m_unscaled_color.b);
@@ -1372,32 +1338,28 @@ namespace basisu
 					if (block_inten[0] > m_pSorted_luma[n - 1])
 					{
 						const uint32_t min_error = iabs((int)block_inten[0] - (int)m_pSorted_luma[n - 1]);
-						if (min_error >= trial_solution.m_error) {
+						if (min_error >= trial_solution.m_error)
 							continue;
-}
 					}
 
-					memset((m_temp_selectors).data(), 0, n);
+					memset(&m_temp_selectors[0], 0, n);
 
-					for (uint32_t c = 0; c < n; c++) {
+					for (uint32_t c = 0; c < n; c++)
 						total_error += color_distance(true, block_colors[0], pSrc_pixels[c], false);
-}
 				}
 				else if ((m_pSorted_luma[0] * 2) >= block_inten_midpoints[2])
 				{
 					if (m_pSorted_luma[0] > block_inten[3])
 					{
 						const uint32_t min_error = iabs((int)m_pSorted_luma[0] - (int)block_inten[3]);
-						if (min_error >= trial_solution.m_error) {
+						if (min_error >= trial_solution.m_error)
 							continue;
-}
 					}
 
-					memset((m_temp_selectors).data(), 3, n);
+					memset(&m_temp_selectors[0], 3, n);
 
-					for (uint32_t c = 0; c < n; c++) {
+					for (uint32_t c = 0; c < n; c++)
 						total_error += color_distance(true, block_colors[3], pSrc_pixels[c], false);
-}
 				}
 				else
 				{
@@ -1407,11 +1369,9 @@ namespace basisu
 						for (c = 0; c < n; c++)
 						{
 							const uint32_t y = m_pSorted_luma[c];
-							while ((y * 2) >= block_inten_midpoints[cur_selector]) {
-								if (++cur_selector > 2) {
+							while ((y * 2) >= block_inten_midpoints[cur_selector])
+								if (++cur_selector > 2)
 									goto done;
-}
-}
 							const uint32_t sorted_pixel_index = m_pSorted_luma_indices[c];
 							m_temp_selectors[sorted_pixel_index] = static_cast<uint8_t>(cur_selector);
 							total_error += color_distance(true, block_colors[cur_selector], pSrc_pixels[sorted_pixel_index], false);
@@ -1464,32 +1424,28 @@ namespace basisu
 					if (block_inten[0] > m_pSorted_luma[n - 1])
 					{
 						const uint32_t min_error = iabs((int)block_inten[0] - (int)m_pSorted_luma[n - 1]);
-						if (min_error >= trial_solution.m_error) {
+						if (min_error >= trial_solution.m_error)
 							continue;
-}
 					}
 
-					memset((m_temp_selectors).data(), 0, n);
+					memset(&m_temp_selectors[0], 0, n);
 
-					for (uint32_t c = 0; c < n; c++) {
+					for (uint32_t c = 0; c < n; c++)
 						total_error += color_distance(block_colors[0], pSrc_pixels[c], false);
-}
 				}
 				else if ((m_pSorted_luma[0] * 2) >= block_inten_midpoints[2])
 				{
 					if (m_pSorted_luma[0] > block_inten[3])
 					{
 						const uint32_t min_error = iabs((int)m_pSorted_luma[0] - (int)block_inten[3]);
-						if (min_error >= trial_solution.m_error) {
+						if (min_error >= trial_solution.m_error)
 							continue;
-}
 					}
 
-					memset((m_temp_selectors).data(), 3, n);
+					memset(&m_temp_selectors[0], 3, n);
 
-					for (uint32_t c = 0; c < n; c++) {
+					for (uint32_t c = 0; c < n; c++)
 						total_error += color_distance(block_colors[3], pSrc_pixels[c], false);
-}
 				}
 				else
 				{
@@ -1497,11 +1453,9 @@ namespace basisu
 					for (c = 0; c < n; c++)
 					{
 						const uint32_t y = m_pSorted_luma[c];
-						while ((y * 2) >= block_inten_midpoints[cur_selector]) {
-							if (++cur_selector > 2) {
+						while ((y * 2) >= block_inten_midpoints[cur_selector])
+							if (++cur_selector > 2)
 								goto done2;
-}
-}
 						const uint32_t sorted_pixel_index = m_pSorted_luma_indices[c];
 						m_temp_selectors[sorted_pixel_index] = static_cast<uint8_t>(cur_selector);
 						total_error += color_distance(block_colors[cur_selector], pSrc_pixels[sorted_pixel_index], false);
@@ -1523,9 +1477,8 @@ namespace basisu
 				trial_solution.m_coords.m_inten_table = inten_table;
 				trial_solution.m_selectors.swap(m_temp_selectors);
 				trial_solution.m_valid = true;
-				if (!total_error) {
+				if (!total_error)
 					break;
-}
 			}
 		}
 		trial_solution.m_coords.m_unscaled_color = coords.m_unscaled_color;
@@ -1557,10 +1510,8 @@ namespace basisu
 		for (uint32_t i = 0; i < num_pixels; i++)
 		{
 			const uint32_t a = pPixels[i];
-			if (a < min_alpha) { min_alpha = a;
-}
-			if (a > max_alpha) { max_alpha = a;
-}
+			if (a < min_alpha) min_alpha = a;
+			if (a > max_alpha) max_alpha = a;
 		}
 
 		if (min_alpha == max_alpha)
@@ -1568,9 +1519,8 @@ namespace basisu
 			results.m_base = min_alpha;
 			results.m_table = 13;
 			results.m_multiplier = 1;
-			for (uint32_t i = 0; i < num_pixels; i++) {
+			for (uint32_t i = 0; i < num_pixels; i++)
 				results.m_selectors[i] = 4;
-}
 			return 0;
 		}
 
@@ -1580,9 +1530,8 @@ namespace basisu
 
 		for (uint32_t table = 0; table < 16; table++)
 		{
-			if ((table_mask & (1U << table)) == 0) {
+			if ((table_mask & (1U << table)) == 0)
 				continue;
-}
 
 			const float range = (float)(g_etc2_eac_tables[table][ETC2_EAC_MAX_VALUE_SELECTOR] - g_etc2_eac_tables[table][ETC2_EAC_MIN_VALUE_SELECTOR]);
 			const int center = (int)roundf(lerp((float)min_alpha, (float)max_alpha, (float)(0 - g_etc2_eac_tables[table][ETC2_EAC_MIN_VALUE_SELECTOR]) / range));
@@ -1621,9 +1570,8 @@ namespace basisu
 						results.m_selectors_temp[i] = static_cast<uint8_t>(best_s);
 
 						total_err += best_s_err * best_s_err;
-						if (total_err >= best_err) {
+						if (total_err >= best_err)
 							break;
-}
 					}
 
 					if (total_err < best_err)
@@ -1633,9 +1581,8 @@ namespace basisu
 						results.m_multiplier = multiplier;
 						results.m_table = table;
 						results.m_selectors.swap(results.m_selectors_temp);
-						if (!best_err) {
+						if (!best_err)
 							return best_err;
-}
 					}
 
 				} // table
@@ -1655,11 +1602,9 @@ namespace basisu
 		pBlock->m_base = results.m_base;
 		pBlock->m_multiplier = results.m_multiplier;
 		pBlock->m_table = results.m_table;
-		for (uint32_t y = 0; y < 4; y++) {
-			for (uint32_t x = 0; x < 4; x++) {
+		for (uint32_t y = 0; y < 4; y++)
+			for (uint32_t x = 0; x < 4; x++)
 				pBlock->set_selector(x, y, results.m_selectors[x + y * 4]);
-}
-}
 	}
 
 } // namespace basisu

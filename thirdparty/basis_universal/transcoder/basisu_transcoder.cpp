@@ -14,7 +14,7 @@
 // limitations under the License.
 
 #include "basisu_transcoder.h"
-#include <climits>
+#include <limits.h>
 #include "basisu_containers_impl.h"
 
 #define BASISU_ASTC_HELPERS_IMPLEMENTATION
@@ -221,10 +221,8 @@ namespace basist
 		return static_cast<uint16_t>((v >> 8) | (v << 8));
 	}
 
-	static inline int32_t clampi(int32_t value, int32_t low, int32_t high) { if (value < low) { value = low; } else if (value > high) { value = high;
-}return value; }
-	static inline float clampf(float value, float low, float high) { if (value < low) { value = low; } else if (value > high) { value = high;
-}return value; }
+	static inline int32_t clampi(int32_t value, int32_t low, int32_t high) { if (value < low) value = low; else if (value > high) value = high;	return value; }
+	static inline float clampf(float value, float low, float high) { if (value < low) value = low; else if (value > high) value = high;	return value; }
 	static inline float saturate(float value) { return clampf(value, 0, 1.0f); }
 
 	static inline uint8_t mul_8(uint32_t v, uint32_t q) { v = v * q + 128; return (uint8_t)((v + (v >> 8)) >> 8); }
@@ -354,7 +352,7 @@ namespace basist
 
 		inline void clear()
 		{
-			static_assert(sizeof(*this) == 8, "");
+			assert(sizeof(*this) == 8);
 			basisu::clear_obj(*this);
 		}
 
@@ -451,7 +449,10 @@ namespace basist
 		{
 			uint32_t v = *reinterpret_cast<const uint32_t*>(&m_bytes[4]);
 
-			return (v == 0xFFFFFFFF) || (v == 0xFFFF) || (!v) || (v == 0xFFFF0000);
+			if ((v == 0xFFFFFFFF) || (v == 0xFFFF) || (!v) || (v == 0xFFFF0000))
+				return true;
+
+			return false;
 		}
 
 		inline void set_raw_selector_bits(uint8_t byte0, uint8_t byte1, uint8_t byte2, uint8_t byte3)
@@ -530,9 +531,8 @@ namespace basist
 
 			if (((dr < cETC1ColorDeltaMin) || (dr > cETC1ColorDeltaMax)) ||
 				((dg < cETC1ColorDeltaMin) || (dg > cETC1ColorDeltaMax)) ||
-				((db < cETC1ColorDeltaMin) || (db > cETC1ColorDeltaMax))) {
+				((db < cETC1ColorDeltaMin) || (db > cETC1ColorDeltaMax)))
 				return false;
-}
 
 			set_delta3_color(pack_delta3(dr, dg, db));
 
@@ -611,11 +611,10 @@ namespace basist
 
 			if (get_diff_bit())
 			{
-				if (subblock_index) {
+				if (subblock_index)
 					unpack_color5(b, get_base5_color(), get_delta3_color(), true, 255);
-				} else {
+				else
 					unpack_color5(b, get_base5_color(), true);
-}
 			}
 			else
 			{
@@ -682,12 +681,9 @@ namespace basist
 			assert((r >= cETC1ColorDeltaMin) && (r <= cETC1ColorDeltaMax));
 			assert((g >= cETC1ColorDeltaMin) && (g <= cETC1ColorDeltaMax));
 			assert((b >= cETC1ColorDeltaMin) && (b <= cETC1ColorDeltaMax));
-			if (r < 0) { r += 8;
-}
-			if (g < 0) { g += 8;
-}
-			if (b < 0) { b += 8;
-}
+			if (r < 0) r += 8;
+			if (g < 0) g += 8;
+			if (b < 0) b += 8;
 			return static_cast<uint16_t>(b | (g << 3) | (r << 6));
 		}
 
@@ -696,12 +692,9 @@ namespace basist
 			r = (packed_delta3 >> 6) & 7;
 			g = (packed_delta3 >> 3) & 7;
 			b = packed_delta3 & 7;
-			if (r >= 4) { r -= 8;
-}
-			if (g >= 4) { g -= 8;
-}
-			if (b >= 4) { b -= 8;
-}
+			if (r >= 4) r -= 8;
+			if (g >= 4) g -= 8;
+			if (b >= 4) b -= 8;
 		}
 
 		static color32 unpack_color5(uint16_t packed_color5, bool scaled, uint32_t alpha)
@@ -815,11 +808,10 @@ namespace basist
 		{
 			if (x & 0xFFFFFF00)
 			{
-				if (x < 0) {
+				if (x < 0)
 					x = 0;
-				} else if (x > 255) {
+				else if (x > 255)
 					x = 255;
-}
 			}
 
 			return x;
@@ -1915,7 +1907,7 @@ namespace basist
 #endif
 
 #if BASISD_SUPPORT_UASTC
-
+	void uastc_init();
 #endif
 
 	static bool g_transcoder_initialized;
@@ -1982,16 +1974,14 @@ namespace basist
 
 #if BASISD_SUPPORT_DXT1 || BASISD_SUPPORT_UASTC
 		uint8_t bc1_expand5[32];
-		for (int i = 0; i < 32; i++) {
+		for (int i = 0; i < 32; i++)
 			bc1_expand5[i] = static_cast<uint8_t>((i << 3) | (i >> 2));
-}
 		prepare_bc1_single_color_table(g_bc1_match5_equals_1, bc1_expand5, 32, 32, 1);
 		prepare_bc1_single_color_table(g_bc1_match5_equals_0, bc1_expand5, 1, 32, 0);
 
 		uint8_t bc1_expand6[64];
-		for (int i = 0; i < 64; i++) {
+		for (int i = 0; i < 64; i++)
 			bc1_expand6[i] = static_cast<uint8_t>((i << 2) | (i >> 4));
-}
 		prepare_bc1_single_color_table(g_bc1_match6_equals_1, bc1_expand6, 64, 64, 1);
 		prepare_bc1_single_color_table(g_bc1_match6_equals_0, bc1_expand6, 1, 64, 0);
 
@@ -2086,9 +2076,9 @@ namespace basist
 				mask = 0;
 
 				// Make l > h
-				if (min16 > 0) {
+				if (min16 > 0)
 					min16--;
-				} else
+				else
 				{
 					// l = h = 0
 					assert(min16 == max16 && max16 == 0);
@@ -2192,7 +2182,7 @@ namespace basist
 		uint32_t best_err = UINT_MAX;
 		uint32_t best_mapping = 0;
 
-		static_assert(NUM_ETC1_TO_DXT1_SELECTOR_MAPPINGS == 10, "");
+		assert(NUM_ETC1_TO_DXT1_SELECTOR_MAPPINGS == 10);
 #define DO_ITER(m) { uint32_t total_err = pTable_r[m].m_err + pTable_g[m].m_err + pTable_b[m].m_err; if (total_err < best_err) { best_err = total_err; best_mapping = m; } }
 		DO_ITER(0); DO_ITER(1); DO_ITER(2); DO_ITER(3); DO_ITER(4);
 		DO_ITER(5); DO_ITER(6); DO_ITER(7); DO_ITER(8); DO_ITER(9);
@@ -2221,9 +2211,9 @@ namespace basist
 				// This is an annoying edge case that impacts BC3.
 
 				// Make l > h
-				if (h > 0) {
+				if (h > 0)
 					h--;
-				} else
+				else
 				{
 					// l = h = 0
 					assert(l == h && h == 0);
@@ -2647,9 +2637,8 @@ namespace basist
 			uint32_t bit_ofs = bit_index & 7;
 
 			uint32_t v = m_selectors[byte_index];
-			if (byte_index < (cTotalSelectorBytes - 1)) {
+			if (byte_index < (cTotalSelectorBytes - 1))
 				v |= (m_selectors[byte_index + 1] << 8);
-}
 
 			return (v >> bit_ofs) & 7;
 		}
@@ -2665,17 +2654,15 @@ namespace basist
 			uint32_t bit_ofs = bit_index & 7;
 
 			uint32_t v = m_selectors[byte_index];
-			if (byte_index < (cTotalSelectorBytes - 1)) {
+			if (byte_index < (cTotalSelectorBytes - 1))
 				v |= (m_selectors[byte_index + 1] << 8);
-}
 
 			v &= (~(7 << bit_ofs));
 			v |= (val << bit_ofs);
 
 			m_selectors[byte_index] = static_cast<uint8_t>(v);
-			if (byte_index < (cTotalSelectorBytes - 1)) {
+			if (byte_index < (cTotalSelectorBytes - 1))
 				m_selectors[byte_index + 1] = static_cast<uint8_t>(v >> 8);
-}
 		}
 
 		enum { cMaxSelectorValues = 8 };
@@ -2708,11 +2695,10 @@ namespace basist
 
 		static uint32_t get_block_values(color32* pDst, uint32_t l, uint32_t h)
 		{
-			if (l > h) {
+			if (l > h)
 				return get_block_values8(pDst, l, h);
-			} else {
+			else
 				return get_block_values6(pDst, l, h);
-}
 		}
 	};
 
@@ -2765,14 +2751,11 @@ namespace basist
 		}
 
 		uint32_t selector_range_table = 0;
-		for (selector_range_table = 0; selector_range_table < NUM_DXT5A_SELECTOR_RANGES; selector_range_table++) {
-			if ((low_selector == s_dxt5a_selector_ranges[selector_range_table].m_low) && (high_selector == s_dxt5a_selector_ranges[selector_range_table].m_high)) {
+		for (selector_range_table = 0; selector_range_table < NUM_DXT5A_SELECTOR_RANGES; selector_range_table++)
+			if ((low_selector == s_dxt5a_selector_ranges[selector_range_table].m_low) && (high_selector == s_dxt5a_selector_ranges[selector_range_table].m_high))
 				break;
-}
-}
-		if (selector_range_table >= NUM_DXT5A_SELECTOR_RANGES) {
+		if (selector_range_table >= NUM_DXT5A_SELECTOR_RANGES)
 			selector_range_table = 0;
-}
 
 		const etc1_g_to_dxt5a_conversion* pTable_entry = &g_etc1_g_to_dxt5a[base_color.r + inten_table * 32][selector_range_table];
 
@@ -2949,11 +2932,10 @@ namespace basist
 		{
 			assert(endpoint_index < 2);
 			static const uint32_t s_bitmasks[2] = { 0x8000U, 0x80000000U };
-			if (opaque) {
+			if (opaque)
 				m_endpoints |= s_bitmasks[endpoint_index];
-			} else {
+			else
 				m_endpoints &= ~s_bitmasks[endpoint_index];
-}
 		}
 
 		inline color32 get_endpoint_5554(uint32_t endpoint_index) const
@@ -2970,9 +2952,8 @@ namespace basist
 				g = (packed >> 5) & 31;
 				b = packed & 31;
 
-				if (!endpoint_index) {
+				if (!endpoint_index)
 					b |= (b >> 4);
-}
 
 				a = 0xF;
 			}
@@ -2986,11 +2967,10 @@ namespace basist
 				r |= (r >> 4);
 				g |= (g >> 4);
 
-				if (!endpoint_index) {
+				if (!endpoint_index)
 					b |= (b >> 3);
-				} else {
+				else
 					b |= (b >> 4);
-}
 
 				a = (packed >> 11) & 0xE;
 			}
@@ -3019,11 +2999,10 @@ namespace basist
 				r = g_pvrtc_5[r];
 				g = g_pvrtc_5[g];
 
-				if (!endpoint_index) {
+				if (!endpoint_index)
 					b = g_pvrtc_4[b >> 1];
-				} else {
+				else
 					b = g_pvrtc_5[b];
-}
 
 				a = 255;
 			}
@@ -3040,11 +3019,10 @@ namespace basist
 				r = g_pvrtc_4[r];
 				g = g_pvrtc_4[g];
 
-				if (!endpoint_index) {
+				if (!endpoint_index)
 					b = g_pvrtc_3[b >> 1];
-				} else {
+				else
 					b = g_pvrtc_4[b];
-}
 
 				a = g_pvrtc_alpha[a];
 			}
@@ -3118,11 +3096,10 @@ namespace basist
 
 			uint32_t r = g_pvrtc_5_floor[c[0]], g = g_pvrtc_5_floor[c[1]], b = c[2];
 
-			if (!endpoint_index) {
+			if (!endpoint_index)
 				b = g_pvrtc_4_floor[b] << 1;
-			} else {
+			else
 				b = g_pvrtc_5_floor[b];
-}
 
 			// rgba=555 here
 			assert((r < 32) && (g < 32) && (b < 32));
@@ -3132,17 +3109,15 @@ namespace basist
 
 			// opaque 554 or 555
 			uint32_t packed = 0x8000 | (r << 10) | (g << 5) | b;
-			if (!endpoint_index) {
+			if (!endpoint_index)
 				packed = (packed & ~1) | m;
-}
 
 			assert(packed <= 0xFFFF);
 
-			if (endpoint_index) {
+			if (endpoint_index)
 				m_endpoints = (m_endpoints & 0xFFFFU) | (packed << 16);
-			} else {
+			else
 				m_endpoints = (m_endpoints & 0xFFFF0000U) | packed;
-}
 		}
 
 		inline void set_opaque_endpoint_ceil(uint32_t endpoint_index, const color32& c)
@@ -3152,11 +3127,10 @@ namespace basist
 
 			uint32_t r = g_pvrtc_5_ceil[c[0]], g = g_pvrtc_5_ceil[c[1]], b = c[2];
 
-			if (!endpoint_index) {
+			if (!endpoint_index)
 				b = g_pvrtc_4_ceil[b] << 1;
-			} else {
+			else
 				b = g_pvrtc_5_ceil[b];
-}
 
 			// rgba=555 here
 			assert((r < 32) && (g < 32) && (b < 32));
@@ -3166,17 +3140,15 @@ namespace basist
 
 			// opaque 554 or 555
 			uint32_t packed = 0x8000 | (r << 10) | (g << 5) | b;
-			if (!endpoint_index) {
+			if (!endpoint_index)
 				packed |= m;
-}
 
 			assert(packed <= 0xFFFF);
 
-			if (endpoint_index) {
+			if (endpoint_index)
 				m_endpoints = (m_endpoints & 0xFFFFU) | (packed << 16);
-			} else {
+			else
 				m_endpoints = (m_endpoints & 0xFFFF0000U) | packed;
-}
 		}
 
 		// opaque endpoints:	554 or 555
@@ -3226,11 +3198,10 @@ namespace basist
 
 			assert(packed <= 0xFFFF);
 
-			if (endpoint_index) {
+			if (endpoint_index)
 				m_endpoints = (m_endpoints & 0xFFFFU) | (packed << 16);
-			} else {
+			else
 				m_endpoints = (m_endpoints & 0xFFFF0000U) | packed;
-}
 		}
 
 		inline void set_endpoint_floor(uint32_t endpoint_index, const color32& c)
@@ -3243,11 +3214,10 @@ namespace basist
 				// 554 or 555
 				uint32_t r = g_pvrtc_5_floor[c[0]], g = g_pvrtc_5_floor[c[1]], b = c[2];
 
-				if (!endpoint_index) {
+				if (!endpoint_index)
 					b = g_pvrtc_4_floor[b];
-				} else {
+				else
 					b = g_pvrtc_5_floor[b];
-}
 
 				set_endpoint_raw(endpoint_index, color32(r, g, b, a), true);
 			}
@@ -3256,11 +3226,10 @@ namespace basist
 				// 4433 or 4443
 				uint32_t r = g_pvrtc_4_floor[c[0]], g = g_pvrtc_4_floor[c[1]], b = c[2];
 
-				if (!endpoint_index) {
+				if (!endpoint_index)
 					b = g_pvrtc_3_floor[b];
-				} else {
+				else
 					b = g_pvrtc_4_floor[b];
-}
 
 				set_endpoint_raw(endpoint_index, color32(r, g, b, a), false);
 			}
@@ -3276,11 +3245,10 @@ namespace basist
 				// 554 or 555
 				uint32_t r = g_pvrtc_5_ceil[c[0]], g = g_pvrtc_5_ceil[c[1]], b = c[2];
 
-				if (!endpoint_index) {
+				if (!endpoint_index)
 					b = g_pvrtc_4_ceil[b];
-				} else {
+				else
 					b = g_pvrtc_5_ceil[b];
-}
 
 				set_endpoint_raw(endpoint_index, color32(r, g, b, a), true);
 			}
@@ -3289,11 +3257,10 @@ namespace basist
 				// 4433 or 4443
 				uint32_t r = g_pvrtc_4_ceil[c[0]], g = g_pvrtc_4_ceil[c[1]], b = c[2];
 
-				if (!endpoint_index) {
+				if (!endpoint_index)
 					b = g_pvrtc_3_ceil[b];
-				} else {
+				else
 					b = g_pvrtc_4_ceil[b];
-}
 
 				set_endpoint_raw(endpoint_index, color32(r, g, b, a), false);
 			}
@@ -3400,11 +3367,10 @@ namespace basist
 			r = g_pvrtc_5[r];
 			g = g_pvrtc_5[g];
 
-			if (!endpoint_index) {
+			if (!endpoint_index)
 				b = g_pvrtc_4[b >> 1];
-			} else {
+			else
 				b = g_pvrtc_5[b];
-}
 
 			a = 255;
 		}
@@ -3421,11 +3387,10 @@ namespace basist
 			r = g_pvrtc_4[r];
 			g = g_pvrtc_4[g];
 
-			if (!endpoint_index) {
+			if (!endpoint_index)
 				b = g_pvrtc_3[b >> 1];
-			} else {
+			else
 				b = g_pvrtc_4[b];
-}
 
 			a = g_pvrtc_alpha[a];
 		}
@@ -3493,11 +3458,10 @@ namespace basist
 				{
 					swizzled &= swizzle_mask;
 
-					if (num_blocks_x > num_blocks_y) {
+					if (num_blocks_x > num_blocks_y)
 						swizzled |= ((x >> min_bits) << (min_bits * 2));
-					} else {
+					else
 						swizzled |= ((y >> min_bits) << (min_bits * 2));
-}
 				}
 
 				pvrtc4_block* pDst_block = static_cast<pvrtc4_block*>(pDst_blocks) + swizzled;
@@ -3679,11 +3643,10 @@ namespace basist
 				{
 					swizzled &= swizzle_mask;
 
-					if (num_blocks_x > num_blocks_y) {
+					if (num_blocks_x > num_blocks_y)
 						swizzled |= ((x >> min_bits) << (min_bits * 2));
-					} else {
+					else
 						swizzled |= ((y >> min_bits) << (min_bits * 2));
-}
 				}
 
 				pvrtc4_block* pDst_block = static_cast<pvrtc4_block*>(pDst_blocks) + swizzled;
@@ -4321,7 +4284,7 @@ namespace basist
 		uint32_t best_err = UINT_MAX;
 		uint32_t best_mapping = 0;
 
-		static_assert(NUM_ETC1_TO_BC7_M5_SELECTOR_MAPPINGS == 10, "");
+		assert(NUM_ETC1_TO_BC7_M5_SELECTOR_MAPPINGS == 10);
 #define DO_ITER(m) { uint32_t total_err = pTable_r[m].m_err + pTable_g[m].m_err + pTable_b[m].m_err; if (total_err < best_err) { best_err = total_err; best_mapping = m; } }
 		DO_ITER(0); DO_ITER(1); DO_ITER(2); DO_ITER(3); DO_ITER(4);
 		DO_ITER(5); DO_ITER(6); DO_ITER(7); DO_ITER(8); DO_ITER(9);
@@ -4513,14 +4476,11 @@ namespace basist
 		}
 
 		uint32_t selector_range_table = 0;
-		for (selector_range_table = 0; selector_range_table < NUM_ETC2_EAC_SELECTOR_RANGES; selector_range_table++) {
-			if ((low_selector == s_etc2_eac_selector_ranges[selector_range_table].m_low) && (high_selector == s_etc2_eac_selector_ranges[selector_range_table].m_high)) {
+		for (selector_range_table = 0; selector_range_table < NUM_ETC2_EAC_SELECTOR_RANGES; selector_range_table++)
+			if ((low_selector == s_etc2_eac_selector_ranges[selector_range_table].m_low) && (high_selector == s_etc2_eac_selector_ranges[selector_range_table].m_high))
 				break;
-}
-}
-		if (selector_range_table >= NUM_ETC2_EAC_SELECTOR_RANGES) {
+		if (selector_range_table >= NUM_ETC2_EAC_SELECTOR_RANGES)
 			selector_range_table = 0;
-}
 
 		const etc1_g_to_eac_conversion* pTable_entry = &s_etc1_g_to_etc2_a8[base_color.r + inten_table * 32][selector_range_table];
 
@@ -4835,14 +4795,11 @@ namespace basist
 		}
 
 		uint32_t selector_range_table = 0;
-		for (selector_range_table = 0; selector_range_table < NUM_ETC2_EAC_SELECTOR_RANGES; selector_range_table++) {
-			if ((low_selector == s_etc2_eac_selector_ranges[selector_range_table].m_low) && (high_selector == s_etc2_eac_selector_ranges[selector_range_table].m_high)) {
+		for (selector_range_table = 0; selector_range_table < NUM_ETC2_EAC_SELECTOR_RANGES; selector_range_table++)
+			if ((low_selector == s_etc2_eac_selector_ranges[selector_range_table].m_low) && (high_selector == s_etc2_eac_selector_ranges[selector_range_table].m_high))
 				break;
-}
-}
-		if (selector_range_table >= NUM_ETC2_EAC_SELECTOR_RANGES) {
+		if (selector_range_table >= NUM_ETC2_EAC_SELECTOR_RANGES)
 			selector_range_table = 0;
-}
 
 		const etc1_g_to_eac_conversion* pTable_entry = &s_etc1_g_to_etc2_r11[base_color.r + inten_table * 32][selector_range_table];
 
@@ -5245,9 +5202,8 @@ namespace basist
 
 		// Pack 8 endpoints (each ranging between [0,255]) as 8-bits starting at bit 17
 		int bit_pos = 17;
-		for (uint32_t i = 0; i < 8; i++) {
+		for (uint32_t i = 0; i < 8; i++)
 			astc_set_bits(pOutput, bit_pos, pBlock->m_endpoints[i], 8);
-}
 
 		// Pack 32 1-bit weights, which are stored from the top down into the block in opposite bit order.
 		for (uint32_t i = 0; i < 32; i++)
@@ -5275,9 +5231,8 @@ namespace basist
 
 		// Pack 4 endpoints (each ranging between [0,255]) as 8-bits starting at bit 17
 		int bit_pos = 17;
-		for (uint32_t i = 0; i < 4; i++) {
+		for (uint32_t i = 0; i < 4; i++)
 			astc_set_bits(pOutput, bit_pos, pBlock->m_endpoints[i], 8);
-}
 
 		// Pack 32 2-bit weights, which are stored from the top down into the block in opposite bit order.
 		for (uint32_t i = 0; i < 32; i++)
@@ -5303,9 +5258,8 @@ namespace basist
 
 		// Pack 6 endpoints (each ranging between [0,255]) as 8-bits starting at bit 17
 		int bit_pos = 17;
-		for (uint32_t i = 0; i < 6; i++) {
+		for (uint32_t i = 0; i < 6; i++)
 			astc_set_bits(pOutput, bit_pos, pBlock->m_endpoints[i], 8);
-}
 
 		// Pack 16 2-bit weights, which are stored from the top down into the block in opposite bit order.
 		for (uint32_t i = 0; i < 16; i++)
@@ -5578,9 +5532,8 @@ namespace basist
 				blk.m_endpoints[6] = 255;
 				blk.m_endpoints[7] = 255;
 
-				for (uint32_t i = 0; i < 16; i++) {
+				for (uint32_t i = 0; i < 16; i++)
 					blk.m_weights[i * 2 + 1] = 0;
-}
 			}
 
 			for (uint32_t y = 0; y < 4; y++)
@@ -5591,9 +5544,8 @@ namespace basist
 
 					s = (s == high_selector) ? 1 : 0;
 
-					if (invert) {
+					if (invert)
 						s = 1 - s;
-}
 
 					blk.m_weights[(x + y * 4) * 2] = static_cast<uint8_t>(s);
 				} // x
@@ -5671,9 +5623,8 @@ namespace basist
 				blk.m_endpoints[2] = 255;
 				blk.m_endpoints[3] = 255;
 
-				for (uint32_t i = 0; i < 16; i++) {
+				for (uint32_t i = 0; i < 16; i++)
 					blk.m_weights[i * 2 + 1] = 0;
-}
 			}
 
 			if (pSelector->m_num_unique_selectors <= 2)
@@ -5737,7 +5688,7 @@ namespace basist
 			uint32_t best_err = UINT_MAX;
 			uint32_t best_mapping = 0;
 
-			static_assert(NUM_ETC1_TO_ASTC_SELECTOR_MAPPINGS == 10, "");
+			assert(NUM_ETC1_TO_ASTC_SELECTOR_MAPPINGS == 10);
 #define DO_ITER(m) { uint32_t total_err = pTable_r[m].m_err + pTable_g[m].m_err + pTable_b[m].m_err; if (total_err < best_err) { best_err = total_err; best_mapping = m; } }
 			DO_ITER(0); DO_ITER(1); DO_ITER(2); DO_ITER(3); DO_ITER(4);
 			DO_ITER(5); DO_ITER(6); DO_ITER(7); DO_ITER(8); DO_ITER(9);
@@ -5772,9 +5723,8 @@ namespace basist
 				{
 					uint32_t s = pSelector->get_selector(x, y);
 					uint32_t as = pSelectors_xlat[s];
-					if (invert) {
+					if (invert)
 						as = 3 - as;
-}
 
 					blk.m_weights[x + y * 4] = static_cast<uint8_t>(as);
 				} // x
@@ -5810,9 +5760,8 @@ namespace basist
 				blk.m_endpoints[6] = g_astc_single_color_encoding_1[g].m_lo;
 				blk.m_endpoints[7] = g_astc_single_color_encoding_1[g].m_hi;
 
-				for (uint32_t i = 0; i < 16; i++) {
+				for (uint32_t i = 0; i < 16; i++)
 					blk.m_weights[i * 2 + 1] = 1;
-}
 			}
 			else if ((alpha_inten_table >= 7) && (alpha_selectors.m_num_unique_selectors == 2) && (alpha_low_selector == 0) && (alpha_high_selector == 3))
 			{
@@ -5872,9 +5821,8 @@ namespace basist
 			blk.m_endpoints[6] = 1;
 			blk.m_endpoints[7] = 1;
 
-			for (uint32_t i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++)
 				blk.m_weights[i * 2 + 1] = 0;
-}
 		}
 
 		if (low_selector == high_selector)
@@ -5909,9 +5857,8 @@ namespace basist
 				invert = true;
 			}
 
-			for (uint32_t i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++)
 				blk.m_weights[i * 2] = invert ? 2 : 1;
-}
 		}
 		else if ((inten_table >= 7) && (pSelector->m_num_unique_selectors == 2) && (pSelector->m_lo_selector == 0) && (pSelector->m_hi_selector == 3))
 		{
@@ -5956,9 +5903,8 @@ namespace basist
 					uint32_t s = pSelector->get_selector(x, y);
 					uint32_t as = (s == low_selector) ? 0 : 3;
 
-					if (invert) {
+					if (invert)
 						as = 3 - as;
-}
 
 					blk.m_weights[(x + y * 4) * 2] = static_cast<uint8_t>(as);
 				} // x
@@ -5977,7 +5923,7 @@ namespace basist
 			uint32_t best_err = UINT_MAX;
 			uint32_t best_mapping = 0;
 
-			static_assert(NUM_ETC1_TO_ASTC_SELECTOR_MAPPINGS == 10, "");
+			assert(NUM_ETC1_TO_ASTC_SELECTOR_MAPPINGS == 10);
 #define DO_ITER(m) { uint32_t total_err = pTable_r[m].m_err + pTable_g[m].m_err + pTable_b[m].m_err; if (total_err < best_err) { best_err = total_err; best_mapping = m; } }
 			DO_ITER(0); DO_ITER(1); DO_ITER(2); DO_ITER(3); DO_ITER(4);
 			DO_ITER(5); DO_ITER(6); DO_ITER(7); DO_ITER(8); DO_ITER(9);
@@ -6012,9 +5958,8 @@ namespace basist
 				{
 					uint32_t s = pSelector->get_selector(x, y);
 					uint32_t as = pSelectors_xlat[s];
-					if (invert) {
+					if (invert)
 						as = 3 - as;
-}
 
 					blk.m_weights[(x + y * 4) * 2] = static_cast<uint8_t>(as);
 				} // x
@@ -6107,11 +6052,10 @@ namespace basist
 					lo_e = (lo_e << 1) | (lo_e >> 3);
 					lo_e = (lo_e << 3) | (lo_e >> 2);
 				}
-				else if (size0 == 32) {
+				else if (size0 == 32)
 					lo_e = (lo_e << 3) | (lo_e >> 2);
-				} else {
+				else
 					lo_e = (lo_e << 2) | (lo_e >> 4);
-}
 
 				for (int hi = 0; hi < size1; hi++)
 				{
@@ -6122,11 +6066,10 @@ namespace basist
 						hi_e = (hi_e << 1) | (hi_e >> 3);
 						hi_e = (hi_e << 3) | (hi_e >> 2);
 					}
-					else if (size1 == 32) {
+					else if (size1 == 32)
 						hi_e = (hi_e << 3) | (hi_e >> 2);
-					} else {
+					else
 						hi_e = (hi_e << 2) | (hi_e >> 4);
-}
 
 					int e;
 
@@ -6256,7 +6199,7 @@ namespace basist
 		uint32_t best_err = UINT_MAX;
 		uint32_t best_mapping = 0;
 
-		static_assert(NUM_ETC1S_TO_ATC_SELECTOR_MAPPINGS == 10, "");
+		assert(NUM_ETC1S_TO_ATC_SELECTOR_MAPPINGS == 10);
 #define DO_ITER(m) { uint32_t total_err = pTable_r[m].m_err + pTable_g[m].m_err + pTable_b[m].m_err; if (total_err < best_err) { best_err = total_err; best_mapping = m; } }
 		DO_ITER(0); DO_ITER(1); DO_ITER(2); DO_ITER(3); DO_ITER(4);
 		DO_ITER(5); DO_ITER(6); DO_ITER(7); DO_ITER(8); DO_ITER(9);
@@ -6937,7 +6880,7 @@ namespace basist
 		uint32_t best_err = UINT_MAX;
 		uint32_t best_mapping = 0;
 
-		static_assert(NUM_ETC1S_TO_ATC_SELECTOR_MAPPINGS == 10, "");
+		assert(NUM_ETC1S_TO_ATC_SELECTOR_MAPPINGS == 10);
 #define DO_ITER(m) { uint32_t total_err = pTable_r[m].m_err + pTable_g[m].m_err + pTable_b[m].m_err; if (total_err < best_err) { best_err = total_err; best_mapping = m; } }
 		DO_ITER(0); DO_ITER(1); DO_ITER(2); DO_ITER(3); DO_ITER(4);
 		DO_ITER(5); DO_ITER(6); DO_ITER(7); DO_ITER(8); DO_ITER(9);
@@ -7278,9 +7221,8 @@ namespace basist
 
 			vec4F_normalize_in_place(&axis);
 
-			if (vec4F_dot(&axis, &axis) < .5f) {
+			if (vec4F_dot(&axis, &axis) < .5f)
 				vec4F_set_scalar(&axis, .5f);
-}
 
 			float l = 1e+9f, h = -1e+9f;
 
@@ -7666,13 +7608,12 @@ namespace basist
 			for (uint32_t c = 0; c < (endpoints_are_grayscale ? 1U : 3U); c++)
 			{
 				int delta;
-				if (prev_color5[c] <= basist::COLOR5_PAL0_PREV_HI) {
+				if (prev_color5[c] <= basist::COLOR5_PAL0_PREV_HI)
 					delta = sym_codec.decode_huffman(color5_delta_model0);
-				} else if (prev_color5[c] <= basist::COLOR5_PAL1_PREV_HI) {
+				else if (prev_color5[c] <= basist::COLOR5_PAL1_PREV_HI)
 					delta = sym_codec.decode_huffman(color5_delta_model1);
-				} else {
+				else
 					delta = sym_codec.decode_huffman(color5_delta_model2);
-}
 
 				int v = (prev_color5[c] + delta) & 31;
 
@@ -7727,9 +7668,8 @@ namespace basist
 					{
 						uint32_t cur_byte = sym_codec.get_bits(8);
 
-						for (uint32_t k = 0; k < 4; k++) {
+						for (uint32_t k = 0; k < 4; k++)
 							m_local_selectors[i].set_selector(k, j, (cur_byte >> (k * 2)) & 3);
-}
 					}
 
 					m_local_selectors[i].init_flags();
@@ -7760,9 +7700,8 @@ namespace basist
 							uint32_t cur_byte = sym_codec.get_bits(8);
 							prev_bytes[j] = static_cast<uint8_t>(cur_byte);
 
-							for (uint32_t k = 0; k < 4; k++) {
+							for (uint32_t k = 0; k < 4; k++)
 								m_local_selectors[i].set_selector(k, j, (cur_byte >> (k * 2)) & 3);
-}
 						}
 						m_local_selectors[i].init_flags();
 						continue;
@@ -7775,9 +7714,8 @@ namespace basist
 						uint32_t cur_byte = delta_byte ^ prev_bytes[j];
 						prev_bytes[j] = static_cast<uint8_t>(cur_byte);
 
-						for (uint32_t k = 0; k < 4; k++) {
+						for (uint32_t k = 0; k < 4; k++)
 							m_local_selectors[i].set_selector(k, j, (cur_byte >> (k * 2)) & 3);
-}
 					}
 					m_local_selectors[i].init_flags();
 				}
@@ -7804,7 +7742,7 @@ namespace basist
 			return false;
 		}
 
-		if (m_endpoint_pred_model.get_code_sizes().empty())
+		if (m_endpoint_pred_model.get_code_sizes().size() == 0)
 		{
 			BASISU_DEVEL_ERROR("basisu_lowlevel_etc1s_transcoder::decode_tables: fail 1a\n");
 			return false;
@@ -7816,7 +7754,7 @@ namespace basist
 			return false;
 		}
 
-		if (m_delta_endpoint_model.get_code_sizes().empty())
+		if (m_delta_endpoint_model.get_code_sizes().size() == 0)
 		{
 			BASISU_DEVEL_ERROR("basisu_lowlevel_etc1s_transcoder::decode_tables: fail 2a\n");
 			return false;
@@ -7828,7 +7766,7 @@ namespace basist
 			return false;
 		}
 
-		if (m_selector_model.get_code_sizes().empty())
+		if (m_selector_model.get_code_sizes().size() == 0)
 		{
 			BASISU_DEVEL_ERROR("basisu_lowlevel_etc1s_transcoder::decode_tables: fail 3a\n");
 			return false;
@@ -7840,7 +7778,7 @@ namespace basist
 			return false;
 		}
 
-		if (m_selector_history_buf_rle_model.get_code_sizes().empty())
+		if (m_selector_history_buf_rle_model.get_code_sizes().size() == 0)
 		{
 			BASISU_DEVEL_ERROR("basisu_lowlevel_etc1s_transcoder::decode_tables: fail 4a\n");
 			return false;
@@ -7877,31 +7815,28 @@ namespace basist
 			return false;
 		}
 
-		if (!pState) {
+		if (!pState)
 			pState = &m_def_state;
-}
 
 		const uint32_t total_blocks = num_blocks_x * num_blocks_y;
 
 		if (!output_row_pitch_in_blocks_or_pixels)
 		{
-			if (basis_block_format_is_uncompressed(fmt)) {
+			if (basis_block_format_is_uncompressed(fmt))
 				output_row_pitch_in_blocks_or_pixels = orig_width;
-			} else
+			else
 			{
-				if (fmt == block_format::cFXT1_RGB) {
+				if (fmt == block_format::cFXT1_RGB)
 					output_row_pitch_in_blocks_or_pixels = (orig_width + 7) / 8;
-				} else {
+				else
 					output_row_pitch_in_blocks_or_pixels = num_blocks_x;
-}
 			}
 		}
 
 		if (basis_block_format_is_uncompressed(fmt))
 		{
-			if (!output_rows_in_pixels) {
+			if (!output_rows_in_pixels)
 				output_rows_in_pixels = orig_height;
-}
 		}
 
 		basisu::vector<uint32_t>* pPrev_frame_indices = nullptr;
@@ -7918,9 +7853,8 @@ namespace basist
 			}
 
 			pPrev_frame_indices = &pState->m_prev_frame_indices[is_alpha_slice][level_index];
-			if (pPrev_frame_indices->size() < total_blocks) {
+			if (pPrev_frame_indices->size() < total_blocks)
 				pPrev_frame_indices->resize(total_blocks);
-}
 		}
 
 		basist::bitwise_decoder sym_codec;
@@ -7969,7 +7903,7 @@ namespace basist
 		uint32_t prev_endpoint_index = 0;
 		const endpoint_vec& endpoints = m_pGlobal_codebook ? m_pGlobal_codebook->m_local_endpoints : m_local_endpoints;
 		const selector_vec& selectors = m_pGlobal_codebook ? m_pGlobal_codebook->m_local_selectors : m_local_selectors;
-		if (endpoints.empty() || selectors.empty())
+		if (!endpoints.size() || !selectors.size())
 		{
 			BASISU_DEVEL_ERROR("basisu_lowlevel_etc1s_transcoder::transcode_slice: global codebooks must be unpacked first\n");
 			return false;
@@ -8029,9 +7963,8 @@ namespace basist
 					if (!block_x)
 					{
 						BASISU_DEVEL_ERROR("basisu_lowlevel_etc1s_transcoder::transcode_slice: invalid datastream (0)\n");
-						if (pPVRTC_work_mem) {
+						if (pPVRTC_work_mem)
 							free(pPVRTC_work_mem);
-}
 						return false;
 					}
 
@@ -8043,9 +7976,8 @@ namespace basist
 					if (!block_y)
 					{
 						BASISU_DEVEL_ERROR("basisu_lowlevel_etc1s_transcoder::transcode_slice: invalid datastream (1)\n");
-						if (pPVRTC_work_mem) {
+						if (pPVRTC_work_mem)
 							free(pPVRTC_work_mem);
-}
 						return false;
 					}
 
@@ -8066,9 +7998,8 @@ namespace basist
 						if ((!block_x) || (!block_y))
 						{
 							BASISU_DEVEL_ERROR("basisu_lowlevel_etc1s_transcoder::transcode_slice: invalid datastream (2)\n");
-							if (pPVRTC_work_mem) {
+							if (pPVRTC_work_mem)
 								free(pPVRTC_work_mem);
-}
 							return false;
 						}
 
@@ -8081,9 +8012,8 @@ namespace basist
 					const uint32_t delta_sym = sym_codec.decode_huffman(m_delta_endpoint_model);
 
 					endpoint_index = delta_sym + prev_endpoint_index;
-					if (endpoint_index >= endpoints.size()) {
+					if (endpoint_index >= endpoints.size())
 						endpoint_index -= (int)endpoints.size();
-}
 				}
 
 				pState->m_block_endpoint_preds[cur_block_endpoint_pred_array][block_x].m_endpoint_index = (uint16_t)endpoint_index;
@@ -8108,19 +8038,17 @@ namespace basist
 						{
 							int run_sym = sym_codec.decode_huffman(m_selector_history_buf_rle_model);
 
-							if (run_sym == (SELECTOR_HISTORY_BUF_RLE_COUNT_TOTAL - 1)) {
+							if (run_sym == (SELECTOR_HISTORY_BUF_RLE_COUNT_TOTAL - 1))
 								cur_selector_rle_count = sym_codec.decode_vlc(7) + SELECTOR_HISTORY_BUF_RLE_COUNT_THRESH;
-							} else {
+							else
 								cur_selector_rle_count = run_sym + SELECTOR_HISTORY_BUF_RLE_COUNT_THRESH;
-}
 
 							if (cur_selector_rle_count > total_blocks)
 							{
 								// The file is corrupted or we've got a bug.
 								BASISU_DEVEL_ERROR("basisu_lowlevel_etc1s_transcoder::transcode_slice: invalid datastream (3)\n");
-								if (pPVRTC_work_mem) {
+								if (pPVRTC_work_mem)
 									free(pPVRTC_work_mem);
-}
 								return false;
 							}
 
@@ -8140,25 +8068,22 @@ namespace basist
 						{
 							// The file is corrupted or we've got a bug.
 							BASISU_DEVEL_ERROR("basisu_lowlevel_etc1s_transcoder::transcode_slice: invalid datastream (4)\n");
-							if (pPVRTC_work_mem) {
+							if (pPVRTC_work_mem)
 								free(pPVRTC_work_mem);
-}
 							return false;
 						}
 
 						selector_index = selector_history_buf[history_buf_index];
 
-						if (history_buf_index != 0) {
+						if (history_buf_index != 0)
 							selector_history_buf.use(history_buf_index);
-}
 					}
 					else
 					{
 						selector_index = selector_sym;
 
-						if (m_selector_history_buf_size) {
+						if (m_selector_history_buf_size)
 							selector_history_buf.add(selector_index);
-}
 					}
 				}
 
@@ -8166,15 +8091,13 @@ namespace basist
 				{
 					// The file is corrupted or we've got a bug.
 					BASISU_DEVEL_ERROR("basisu_lowlevel_etc1s_transcoder::transcode_slice: invalid datastream (5)\n");
-					if (pPVRTC_work_mem) {
+					if (pPVRTC_work_mem)
 						free(pPVRTC_work_mem);
-}
 					return false;
 				}
 
-				if (is_video) {
+				if (is_video)
 					(*pPrev_frame_indices)[block_x + block_y * num_blocks_x] = endpoint_index | (selector_index << 16);
-}
 
 #if BASISD_ENABLE_DEBUG_FLAGS
 				if ((g_debug_flags & cDebugFlagVisCRs) && ((fmt == block_format::cETC1) || (fmt == block_format::cBC1)))
@@ -8353,7 +8276,7 @@ namespace basist
 				{
 #if BASISD_SUPPORT_ASTC
 					void* pDst_block = static_cast<uint8_t*>(pDst_blocks) + (block_x + block_y * output_row_pitch_in_blocks_or_pixels) * output_block_or_pixel_stride_in_bytes;
-					convert_etc1s_to_astc_4x4(pDst_block, pEndpoints, pSelector, transcode_alpha, endpoints.data(), selectors.data());
+					convert_etc1s_to_astc_4x4(pDst_block, pEndpoints, pSelector, transcode_alpha, &endpoints[0], &selectors[0]);
 #else
 					assert(0);
 #endif
@@ -8399,7 +8322,7 @@ namespace basist
 
 					void* pDst_block = static_cast<uint8_t*>(pDst_blocks) + (block_x + block_y * output_row_pitch_in_blocks_or_pixels) * output_block_or_pixel_stride_in_bytes;
 
-					convert_etc1s_to_pvrtc2_rgba(pDst_block, pEndpoints, pSelector, endpoints.data(), selectors.data());
+					convert_etc1s_to_pvrtc2_rgba(pDst_block, pEndpoints, pSelector, &endpoints[0], &selectors[0]);
 #endif
 					break;
 				}
@@ -8441,9 +8364,8 @@ namespace basist
 						{
 							const uint32_t s = pSelector->m_selectors[y];
 
-							for (uint32_t x = 0; x < max_x; x++) {
+							for (uint32_t x = 0; x < max_x; x++)
 								pDst_pixels[3 + 4 * x] = static_cast<uint8_t>(colors[(s >> (x * 2)) & 3]);
-}
 
 							pDst_pixels += output_row_pitch_in_blocks_or_pixels * sizeof(uint32_t);
 						}
@@ -8528,9 +8450,8 @@ namespace basist
 						for (uint32_t i = 0; i < 4; i++)
 						{
 							packed_colors[i] = static_cast<uint16_t>((mul_8(colors[i].r, 31) << 11) | (mul_8(colors[i].g, 63) << 5) | mul_8(colors[i].b, 31));
-							if (BASISD_IS_BIG_ENDIAN) {
+							if (BASISD_IS_BIG_ENDIAN)
 								packed_colors[i] = byteswap_uint16(packed_colors[i]);
-}
 						}
 					}
 					else
@@ -8538,9 +8459,8 @@ namespace basist
 						for (uint32_t i = 0; i < 4; i++)
 						{
 							packed_colors[i] = static_cast<uint16_t>((mul_8(colors[i].b, 31) << 11) | (mul_8(colors[i].g, 63) << 5) | mul_8(colors[i].r, 31));
-							if (BASISD_IS_BIG_ENDIAN) {
+							if (BASISD_IS_BIG_ENDIAN)
 								packed_colors[i] = byteswap_uint16(packed_colors[i]);
-}
 						}
 					}
 
@@ -8548,9 +8468,8 @@ namespace basist
 					{
 						const uint32_t s = pSelector->m_selectors[y];
 
-						for (uint32_t x = 0; x < max_x; x++) {
+						for (uint32_t x = 0; x < max_x; x++)
 							reinterpret_cast<uint16_t *>(pDst_pixels)[x] = packed_colors[(s >> (x * 2)) & 3];
-}
 
 						pDst_pixels += output_row_pitch_in_blocks_or_pixels * sizeof(uint16_t);
 					}
@@ -8581,15 +8500,13 @@ namespace basist
 						for (uint32_t x = 0; x < max_x; x++)
 						{
 							uint16_t cur = reinterpret_cast<uint16_t*>(pDst_pixels)[x];
-							if (BASISD_IS_BIG_ENDIAN) {
+							if (BASISD_IS_BIG_ENDIAN)
 								cur = byteswap_uint16(cur);
-}
 
 							cur = (cur & 0xF) | packed_colors[(s >> (x * 2)) & 3];
 
-							if (BASISD_IS_BIG_ENDIAN) {
+							if (BASISD_IS_BIG_ENDIAN)
 								cur = byteswap_uint16(cur);
-}
 
 							reinterpret_cast<uint16_t*>(pDst_pixels)[x] = cur;
 						}
@@ -8614,18 +8531,16 @@ namespace basist
 					for (uint32_t i = 0; i < 4; i++)
 					{
 						packed_colors[i] = static_cast<uint16_t>((mul_8(colors[i].r, 15) << 12) | (mul_8(colors[i].g, 15) << 8) | (mul_8(colors[i].b, 15) << 4) | 0xF);
-						if (BASISD_IS_BIG_ENDIAN) {
+						if (BASISD_IS_BIG_ENDIAN)
 							packed_colors[i] = byteswap_uint16(packed_colors[i]);
-}
 					}
 
 					for (uint32_t y = 0; y < max_y; y++)
 					{
 						const uint32_t s = pSelector->m_selectors[y];
 
-						for (uint32_t x = 0; x < max_x; x++) {
+						for (uint32_t x = 0; x < max_x; x++)
 							reinterpret_cast<uint16_t*>(pDst_pixels)[x] = packed_colors[(s >> (x * 2)) & 3];
-}
 
 						pDst_pixels += output_row_pitch_in_blocks_or_pixels * sizeof(uint16_t);
 					}
@@ -8647,9 +8562,8 @@ namespace basist
 					for (uint32_t i = 0; i < 4; i++)
 					{
 						packed_colors[i] = mul_8(colors[i].g, 15);
-						if (BASISD_IS_BIG_ENDIAN) {
+						if (BASISD_IS_BIG_ENDIAN)
 							packed_colors[i] = byteswap_uint16(packed_colors[i]);
-}
 					}
 
 					for (uint32_t y = 0; y < max_y; y++)
@@ -8697,16 +8611,14 @@ namespace basist
 
 #if BASISD_SUPPORT_PVRTC1
 		// PVRTC post process - create per-pixel modulation values.
-		if (fmt == block_format::cPVRTC1_4_RGB) {
+		if (fmt == block_format::cPVRTC1_4_RGB)
 			fixup_pvrtc1_4_modulation_rgb((decoder_etc_block*)pPVRTC_work_mem, pPVRTC_endpoints, pDst_blocks, num_blocks_x, num_blocks_y);
-		} else if (fmt == block_format::cPVRTC1_4_RGBA) {
-			fixup_pvrtc1_4_modulation_rgba((decoder_etc_block*)pPVRTC_work_mem, pPVRTC_endpoints, pDst_blocks, num_blocks_x, num_blocks_y, pAlpha_blocks, endpoints.data(), selectors.data());
-}
+		else if (fmt == block_format::cPVRTC1_4_RGBA)
+			fixup_pvrtc1_4_modulation_rgba((decoder_etc_block*)pPVRTC_work_mem, pPVRTC_endpoints, pDst_blocks, num_blocks_x, num_blocks_y, pAlpha_blocks, &endpoints[0], &selectors[0]);
 #endif // BASISD_SUPPORT_PVRTC1
 
-		if (pPVRTC_work_mem) {
+		if (pPVRTC_work_mem)
 			free(pPVRTC_work_mem);
-}
 
 		return true;
 	}
@@ -8721,13 +8633,11 @@ namespace basist
 		if (basis_transcoder_format_is_uncompressed(target_format))
 		{
 			// Assume the output buffer is orig_width by orig_height
-			if (!output_row_pitch_in_blocks_or_pixels) {
+			if (!output_row_pitch_in_blocks_or_pixels)
 				output_row_pitch_in_blocks_or_pixels = orig_width;
-}
 
-			if (!output_rows_in_pixels) {
+			if (!output_rows_in_pixels)
 				output_rows_in_pixels = orig_height;
-}
 
 			// Now make sure the output buffer is large enough, or we'll overwrite memory.
 			if (output_blocks_buf_size_in_blocks_or_pixels < (output_rows_in_pixels * output_row_pitch_in_blocks_or_pixels))
@@ -8904,7 +8814,7 @@ namespace basist
 
 			// First transcode alpha data to temp buffer
 			//status = transcode_slice(pData, data_size, slice_index + 1, &temp_block_indices[0], total_slice_blocks, block_format::cIndices, sizeof(uint32_t), decode_flags, pSlice_descs[slice_index].m_num_blocks_x, pState);
-			status = transcode_slice(temp_block_indices.data(), num_blocks_x, num_blocks_y, pCompressed_data + alpha_offset, alpha_length, block_format::cIndices, sizeof(uint32_t), false, is_video, true, level_index, orig_width, orig_height, num_blocks_x, pState, false, nullptr, 0);
+			status = transcode_slice(&temp_block_indices[0], num_blocks_x, num_blocks_y, pCompressed_data + alpha_offset, alpha_length, block_format::cIndices, sizeof(uint32_t), false, is_video, true, level_index, orig_width, orig_height, num_blocks_x, pState, false, nullptr, 0);
 			if (!status)
 			{
 				BASISU_DEVEL_ERROR("basisu_lowlevel_etc1s_transcoder::transcode_image: transcode_slice() to PVRTC1 4 RGBA failed (0)\n");
@@ -8913,7 +8823,7 @@ namespace basist
 			{
 				// output_row_pitch_in_blocks_or_pixels is actually ignored because we're transcoding to PVRTC1. (Print a dev warning if it's != 0?)
 				//status = transcode_slice(pData, data_size, slice_index, pOutput_blocks, output_blocks_buf_size_in_blocks_or_pixels, block_format::cPVRTC1_4_RGBA, bytes_per_block_or_pixel, decode_flags, output_row_pitch_in_blocks_or_pixels, pState, &temp_block_indices[0]);
-				status = transcode_slice(pOutput_blocks, num_blocks_x, num_blocks_y, pCompressed_data + rgb_offset, rgb_length, block_format::cPVRTC1_4_RGBA, bytes_per_block_or_pixel, false, is_video, false, level_index, orig_width, orig_height, output_row_pitch_in_blocks_or_pixels, pState, false, temp_block_indices.data(), 0);
+				status = transcode_slice(pOutput_blocks, num_blocks_x, num_blocks_y, pCompressed_data + rgb_offset, rgb_length, block_format::cPVRTC1_4_RGBA, bytes_per_block_or_pixel, false, is_video, false, level_index, orig_width, orig_height, output_row_pitch_in_blocks_or_pixels, pState, false, &temp_block_indices[0], 0);
 				if (!status)
 				{
 					BASISU_DEVEL_ERROR("basisu_lowlevel_etc1s_transcoder::transcode_image: transcode_slice() to PVRTC1 4 RGBA failed (1)\n");
@@ -9092,10 +9002,9 @@ namespace basist
 					status = transcode_slice(pOutput_blocks, num_blocks_x, num_blocks_y, pCompressed_data + rgb_offset, rgb_length, block_format::cASTC_4x4, bytes_per_block_or_pixel, false, is_video, false, level_index, orig_width, orig_height, output_row_pitch_in_blocks_or_pixels, pState, true, nullptr, output_rows_in_pixels);
 				}
 			}
-			else {
+			else
 				//status = transcode_slice(pData, data_size, slice_index, pOutput_blocks, output_blocks_buf_size_in_blocks_or_pixels, block_format::cASTC_4x4, 16, decode_flags, output_row_pitch_in_blocks_or_pixels, pState);
 				status = transcode_slice(pOutput_blocks, num_blocks_x, num_blocks_y, pCompressed_data + rgb_offset, rgb_length, block_format::cASTC_4x4, bytes_per_block_or_pixel, false, is_video, false, level_index, orig_width, orig_height, output_row_pitch_in_blocks_or_pixels, pState, false, nullptr, output_rows_in_pixels);
-}
 
 			if (!status)
 			{
@@ -9196,10 +9105,9 @@ namespace basist
 					status = transcode_slice(pOutput_blocks, num_blocks_x, num_blocks_y, pCompressed_data + rgb_offset, rgb_length, block_format::cPVRTC2_4_RGBA, bytes_per_block_or_pixel, false, is_video, false, level_index, orig_width, orig_height, output_row_pitch_in_blocks_or_pixels, pState, true, nullptr, output_rows_in_pixels);
 				}
 			}
-			else {
+			else
 				//status = transcode_slice(pData, data_size, slice_index, pOutput_blocks, output_blocks_buf_size_in_blocks_or_pixels, block_format::cPVRTC2_4_RGB, bytes_per_block_or_pixel, decode_flags, output_row_pitch_in_blocks_or_pixels, pState);
 				status = transcode_slice(pOutput_blocks, num_blocks_x, num_blocks_y, pCompressed_data + rgb_offset, rgb_length, block_format::cPVRTC2_4_RGB, bytes_per_block_or_pixel, false, is_video, false, level_index, orig_width, orig_height, output_row_pitch_in_blocks_or_pixels, pState, false, nullptr, output_rows_in_pixels);
-}
 
 			if (!status)
 			{
@@ -9214,12 +9122,11 @@ namespace basist
 			// Raw 32bpp pixels, decoded in the usual raster order (NOT block order) into an image in memory.
 
 			// First decode the alpha data
-			if (basis_file_has_alpha_slices) {
+			if (basis_file_has_alpha_slices)
 				//status = transcode_slice(pData, data_size, slice_index + 1, pOutput_blocks, output_blocks_buf_size_in_blocks_or_pixels, block_format::cA32, sizeof(uint32_t), decode_flags, output_row_pitch_in_blocks_or_pixels, pState, nullptr, output_rows_in_pixels);
 				status = transcode_slice(pOutput_blocks, num_blocks_x, num_blocks_y, pCompressed_data + alpha_offset, alpha_length, block_format::cA32, sizeof(uint32_t), false, is_video, true, level_index, orig_width, orig_height, output_row_pitch_in_blocks_or_pixels, pState, false, nullptr, output_rows_in_pixels);
-			} else {
+			else
 				status = true;
-}
 
 			if (status)
 			{
@@ -9256,12 +9163,11 @@ namespace basist
 			// Raw 16bpp pixels, decoded in the usual raster order (NOT block order) into an image in memory.
 
 			// First decode the alpha data
-			if (basis_file_has_alpha_slices) {
+			if (basis_file_has_alpha_slices)
 				//status = transcode_slice(pData, data_size, slice_index + 1, pOutput_blocks, output_blocks_buf_size_in_blocks_or_pixels, block_format::cRGBA4444_ALPHA, sizeof(uint16_t), decode_flags, output_row_pitch_in_blocks_or_pixels, pState, nullptr, output_rows_in_pixels);
 				status = transcode_slice(pOutput_blocks, num_blocks_x, num_blocks_y, pCompressed_data + alpha_offset, alpha_length, block_format::cRGBA4444_ALPHA, sizeof(uint16_t), false, is_video, true, level_index, orig_width, orig_height, output_row_pitch_in_blocks_or_pixels, pState, false, nullptr, output_rows_in_pixels);
-			} else {
+			else
 				status = true;
-}
 
 			if (status)
 			{
@@ -9386,23 +9292,21 @@ namespace basist
 
 		if (!output_row_pitch_in_blocks_or_pixels)
 		{
-			if (basis_block_format_is_uncompressed(fmt)) {
+			if (basis_block_format_is_uncompressed(fmt))
 				output_row_pitch_in_blocks_or_pixels = orig_width;
-			} else
+			else
 			{
-				if (fmt == block_format::cFXT1_RGB) {
+				if (fmt == block_format::cFXT1_RGB)
 					output_row_pitch_in_blocks_or_pixels = (orig_width + 7) / 8;
-				} else {
+				else
 					output_row_pitch_in_blocks_or_pixels = num_blocks_x;
-}
 			}
 		}
 
 		if (basis_block_format_is_uncompressed(fmt))
 		{
-			if (!output_rows_in_pixels) {
+			if (!output_rows_in_pixels)
 				output_rows_in_pixels = orig_height;
-}
 		}
 
 		uint32_t total_expected_block_bytes = sizeof(uastc_block) * total_blocks;
@@ -9420,11 +9324,10 @@ namespace basist
 		bool status = false;
 		if ((fmt == block_format::cPVRTC1_4_RGB) || (fmt == block_format::cPVRTC1_4_RGBA))
 		{
-			if (fmt == block_format::cPVRTC1_4_RGBA) {
+			if (fmt == block_format::cPVRTC1_4_RGBA)
 				transcode_uastc_to_pvrtc1_4_rgba((const uastc_block*)pImage_data, pDst_blocks, num_blocks_x, num_blocks_y, high_quality);
-			} else {
+			else
 				transcode_uastc_to_pvrtc1_4_rgb((const uastc_block *)pImage_data, pDst_blocks, num_blocks_x, num_blocks_y, high_quality, from_alpha);
-}
 		}
 		else
 		{
@@ -9444,11 +9347,10 @@ namespace basist
 					}
 					case block_format::cETC1:
 					{
-						if (from_alpha) {
+						if (from_alpha)
 							status = transcode_uastc_to_etc1(*pSource_block, pDst_block, 3);
-						} else {
+						else
 							status = transcode_uastc_to_etc1(*pSource_block, pDst_block);
-}
 						break;
 					}
 					case block_format::cETC2_RGBA:
@@ -9468,20 +9370,17 @@ namespace basist
 					}
 					case block_format::cBC4:
 					{
-						if (channel0 < 0) {
+						if (channel0 < 0)
 							channel0 = 0;
-}
 						status = transcode_uastc_to_bc4(*pSource_block, pDst_block, high_quality, channel0);
 						break;
 					}
 					case block_format::cBC5:
 					{
-						if (channel0 < 0) {
+						if (channel0 < 0)
 							channel0 = 0;
-}
-						if (channel1 < 0) {
+						if (channel1 < 0)
 							channel1 = 3;
-}
 						status = transcode_uastc_to_bc5(*pSource_block, pDst_block, high_quality, channel0, channel1);
 						break;
 					}
@@ -9498,20 +9397,17 @@ namespace basist
 					}
 					case block_format::cETC2_EAC_R11:
 					{
-						if (channel0 < 0) {
+						if (channel0 < 0)
 							channel0 = 0;
-}
 						status = transcode_uastc_to_etc2_eac_r11(*pSource_block, pDst_block, high_quality, channel0);
 						break;
 					}
 					case block_format::cETC2_EAC_RG11:
 					{
-						if (channel0 < 0) {
+						if (channel0 < 0)
 							channel0 = 0;
-}
-						if (channel1 < 0) {
+						if (channel1 < 0)
 							channel1 = 3;
-}
 						status = transcode_uastc_to_etc2_eac_rg11(*pSource_block, pDst_block, high_quality, channel0, channel1);
 						break;
 					}
@@ -9946,18 +9842,16 @@ namespace basist
 
 		if (!output_row_pitch_in_blocks_or_pixels)
 		{
-			if (basis_block_format_is_uncompressed(fmt)) {
+			if (basis_block_format_is_uncompressed(fmt))
 				output_row_pitch_in_blocks_or_pixels = orig_width;
-			} else {
+			else
 				output_row_pitch_in_blocks_or_pixels = num_blocks_x;
-}
 		}
 
 		if (basis_block_format_is_uncompressed(fmt))
 		{
-			if (!output_rows_in_pixels) {
+			if (!output_rows_in_pixels)
 				output_rows_in_pixels = orig_height;
-}
 		}
 
 		uint32_t total_expected_block_bytes = sizeof(astc_blk) * total_blocks;
@@ -10235,9 +10129,8 @@ namespace basist
 
 	bool basisu_transcoder::validate_file_checksums(const void* pData, uint32_t data_size, bool full_validation) const
 	{
-		if (!validate_header(pData, data_size)) {
+		if (!validate_header(pData, data_size))
 			return false;
-}
 
 		const basis_file_header* pHeader = reinterpret_cast<const basis_file_header*>(pData);
 
@@ -10263,9 +10156,8 @@ namespace basist
 
 	bool basisu_transcoder::validate_header_quick(const void* pData, uint32_t data_size) const
 	{
-		if (data_size <= sizeof(basis_file_header)) {
+		if (data_size <= sizeof(basis_file_header))
 			return false;
-}
 
 		const basis_file_header* pHeader = reinterpret_cast<const basis_file_header*>(pData);
 
@@ -10460,13 +10352,11 @@ namespace basist
 		const basis_slice_desc* pSlice_descs = reinterpret_cast<const basis_slice_desc*>(static_cast<const uint8_t*>(pData) + pHeader->m_slice_desc_file_ofs);
 
 		uint32_t total_levels = 1;
-		for (uint32_t i = slice_index + 1; i < pHeader->m_total_slices; i++) {
-			if (pSlice_descs[i].m_image_index == image_index) {
+		for (uint32_t i = slice_index + 1; i < pHeader->m_total_slices; i++)
+			if (pSlice_descs[i].m_image_index == image_index)
 				total_levels = basisu::maximum<uint32_t>(total_levels, pSlice_descs[i].m_level_index + 1);
-			} else {
+			else
 				break;
-}
-}
 
 		if (total_levels > 16)
 		{
@@ -10482,11 +10372,10 @@ namespace basist
 		image_info.m_alpha_flag = false;
 
 		// For ETC1S, if anything has alpha all images have alpha. For UASTC, we only report alpha when the image actually has alpha.
-		if (pHeader->m_tex_format == (int)basis_tex_format::cETC1S) {
+		if (pHeader->m_tex_format == (int)basis_tex_format::cETC1S)
 			image_info.m_alpha_flag = (pHeader->m_flags & cBASISHeaderFlagHasAlphaSlices) != 0;
-		} else {
+		else
 			image_info.m_alpha_flag = (slice_desc.m_flags & cSliceDescFlagsHasAlpha) != 0;
-}
 
 		image_info.m_iframe_flag = (slice_desc.m_flags & cSliceDescFlagsFrameIsIFrame) != 0;
 
@@ -10528,13 +10417,11 @@ namespace basist
 		const basis_slice_desc* pSlice_descs = reinterpret_cast<const basis_slice_desc*>(static_cast<const uint8_t*>(pData) + pHeader->m_slice_desc_file_ofs);
 
 		uint32_t total_levels = 1;
-		for (uint32_t i = slice_index + 1; i < pHeader->m_total_slices; i++) {
-			if (pSlice_descs[i].m_image_index == image_index) {
+		for (uint32_t i = slice_index + 1; i < pHeader->m_total_slices; i++)
+			if (pSlice_descs[i].m_image_index == image_index)
 				total_levels = basisu::maximum<uint32_t>(total_levels, pSlice_descs[i].m_level_index + 1);
-			} else {
+			else
 				break;
-}
-}
 
 		const uint32_t cMaxSupportedLevels = 16;
 		if (total_levels > cMaxSupportedLevels)
@@ -10611,11 +10498,10 @@ namespace basist
 		image_info.m_level_index = level_index;
 
 		// For ETC1S, if anything has alpha all images have alpha. For UASTC, we only report alpha when the image actually has alpha.
-		if (pHeader->m_tex_format == (int)basis_tex_format::cETC1S) {
+		if (pHeader->m_tex_format == (int)basis_tex_format::cETC1S)
 			image_info.m_alpha_flag = (pHeader->m_flags & cBASISHeaderFlagHasAlphaSlices) != 0;
-		} else {
+		else
 			image_info.m_alpha_flag = (slice_desc.m_flags & cSliceDescFlagsHasAlpha) != 0;
-}
 
 		image_info.m_iframe_flag = (slice_desc.m_flags & cSliceDescFlagsFrameIsIFrame) != 0;
 		image_info.m_width = slice_desc.m_num_blocks_x * 4;
@@ -10753,7 +10639,7 @@ namespace basist
 
 		if (pHeader->m_tex_format == (int)basis_tex_format::cETC1S)
 		{
-			if (!m_lowlevel_etc1s_decoder.m_local_endpoints.empty())
+			if (m_lowlevel_etc1s_decoder.m_local_endpoints.size())
 			{
 				m_lowlevel_etc1s_decoder.clear();
 			}
@@ -10765,7 +10651,7 @@ namespace basist
 					BASISU_DEVEL_ERROR("basisu_transcoder::start_transcoding: File uses global codebooks, but set_global_codebooks() has not been called\n");
 					return false;
 				}
-				if (m_lowlevel_etc1s_decoder.get_global_codebooks()->get_endpoints().empty())
+				if (!m_lowlevel_etc1s_decoder.get_global_codebooks()->get_endpoints().size())
 				{
 					BASISU_DEVEL_ERROR("basisu_transcoder::start_transcoding: Global codebooks must be unpacked first by calling start_transcoding()\n");
 					return false;
@@ -10842,7 +10728,7 @@ namespace basist
 		else
 		{
 			// Nothing special to do for UASTC/UASTC HDR.
-			if (!m_lowlevel_etc1s_decoder.m_local_endpoints.empty())
+			if (m_lowlevel_etc1s_decoder.m_local_endpoints.size())
 			{
 				m_lowlevel_etc1s_decoder.clear();
 			}
@@ -10901,13 +10787,11 @@ namespace basist
 		if (basis_block_format_is_uncompressed(fmt))
 		{
 			// Assume the output buffer is orig_width by orig_height
-			if (!output_row_pitch_in_blocks_or_pixels) {
+			if (!output_row_pitch_in_blocks_or_pixels)
 				output_row_pitch_in_blocks_or_pixels = slice_desc.m_orig_width;
-}
 
-			if (!output_rows_in_pixels) {
+			if (!output_rows_in_pixels)
 				output_rows_in_pixels = slice_desc.m_orig_height;
-}
 
 			// Now make sure the output buffer is large enough, or we'll overwrite memory.
 			if (output_blocks_buf_size_in_blocks_or_pixels < (output_rows_in_pixels * output_row_pitch_in_blocks_or_pixels))
@@ -10998,9 +10882,8 @@ namespace basist
 		for (uint32_t slice_iter = 0; slice_iter < pHeader->m_total_slices; slice_iter++)
 		{
 			const basis_slice_desc& slice_desc = reinterpret_cast<const basis_slice_desc*>(pDataU8 + pHeader->m_slice_desc_file_ofs)[slice_iter];
-			if ((slice_desc.m_image_index == image_index) && (slice_desc.m_level_index == level_index)) {
+			if ((slice_desc.m_image_index == image_index) && (slice_desc.m_level_index == level_index))
 				return slice_iter;
-}
 		}
 
 		BASISU_DEVEL_ERROR("basisu_transcoder::find_first_slice_index: didn't find slice\n");
@@ -11030,9 +10913,8 @@ namespace basist
 				if (pHeader->m_tex_format == (int)basis_tex_format::cETC1S)
 				{
 					const bool slice_alpha = (slice_desc.m_flags & cSliceDescFlagsHasAlpha) != 0;
-					if (slice_alpha == alpha_data) {
+					if (slice_alpha == alpha_data)
 						return slice_iter;
-}
 				}
 				else
 				{
@@ -11057,9 +10939,8 @@ namespace basist
 		BASISU_NOTE_UNUSED(pOutput_blocks);
 		BASISU_NOTE_UNUSED(block_stride_in_bytes);
 
-		if (!output_row_pitch_in_blocks_or_pixels) {
+		if (!output_row_pitch_in_blocks_or_pixels)
 			output_row_pitch_in_blocks_or_pixels = num_blocks_x;
-}
 
 		if ((fmt == block_format::cETC2_EAC_A8) || (fmt == block_format::cETC2_EAC_R11))
 		{
@@ -11719,30 +11600,26 @@ namespace basist
 		switch (k >> 1)
 		{
 		case 0:
-			if (p <= 1) {
+			if (p <= 1)
 				p = 0;
-			} else {
+			else
 				p = 1;
-}
 			break;
 		case 1:
-			if (p == 0) {
+			if (p == 0)
 				p = 0;
-			} else {
+			else
 				p = 1;
-}
 			break;
 		case 2:
-			if ((p == 0) || (p == 2)) {
+			if ((p == 0) || (p == 2))
 				p = 0;
-			} else {
+			else
 				p = 1;
-}
 			break;
 		}
-		if (k & 1) {
+		if (k & 1)
 			p = 1 - p;
-}
 		return p;
 	}
 
@@ -11915,9 +11792,8 @@ namespace basist
 
 	bool astc_is_valid_endpoint_range(uint32_t range)
 	{
-		if ((g_astc_bise_range_table[range][1] == 0) && (g_astc_bise_range_table[range][2] == 0)) {
+		if ((g_astc_bise_range_table[range][1] == 0) && (g_astc_bise_range_table[range][2] == 0))
 			return true;
-}
 
 		return g_astc_endpoint_unquant_params[range].m_c != 0;
 	}
@@ -11941,9 +11817,8 @@ namespace basist
 				uint32_t v = packed_bits;
 
 				int n = basisu::minimumi(bits_left, bits);
-				if (n < (int)bits) {
+				if (n < (int)bits)
 					v >>= (bits - n);
-}
 
 				assert(v < (1U << n));
 
@@ -11989,13 +11864,12 @@ namespace basist
 		const uint32_t trits = g_astc_bise_range_table[range][1];
 		const uint32_t quints = g_astc_bise_range_table[range][2];
 
-		if ((!trits) && (!quints)) {
+		if ((!trits) && (!quints))
 			return unquant_astc_endpoint(packed_val, 0, 0, range);
-		} else if (trits) {
+		else if (trits)
 			return unquant_astc_endpoint(packed_val & ((1 << bits) - 1), packed_val >> bits, 0, range);
-		} else {
+		else
 			return unquant_astc_endpoint(packed_val & ((1 << bits) - 1), 0, packed_val >> bits, range);
-}
 	}
 
 	// BC7 - Various BC7 tables/helpers
@@ -12084,13 +11958,12 @@ namespace basist
 		//const uint32_t num_index_selectors = (best_mode == 4) ? 2 : 1;
 
 		const uint8_t* pPartition;
-		if (total_subsets == 1) {
+		if (total_subsets == 1)
 			pPartition = &g_bc7_partition1[0];
-		} else if (total_subsets == 2) {
+		else if (total_subsets == 2)
 			pPartition = &g_bc7_partition2[pResults->m_partition * 16];
-		} else {
+		else
 			pPartition = &g_bc7_partition3[pResults->m_partition * 16];
-}
 
 		uint8_t color_selectors[16];
 		memcpy(color_selectors, pResults->m_selectors, 16);
@@ -12112,13 +11985,12 @@ namespace basist
 			uint32_t anchor_index = 0;
 			if (k)
 			{
-				if ((total_subsets == 3) && (k == 1)) {
+				if ((total_subsets == 3) && (k == 1))
 					anchor_index = g_bc7_table_anchor_index_third_subset_1[pResults->m_partition];
-				} else if ((total_subsets == 3) && (k == 2)) {
+				else if ((total_subsets == 3) && (k == 2))
 					anchor_index = g_bc7_table_anchor_index_third_subset_2[pResults->m_partition];
-				} else {
+				else
 					anchor_index = g_bc7_table_anchor_index_second_subset[pResults->m_partition];
-}
 			}
 
 			anchor[k] = anchor_index;
@@ -12128,11 +12000,9 @@ namespace basist
 
 			if (color_selectors[anchor_index] & (num_color_indices >> 1))
 			{
-				for (uint32_t i = 0; i < 16; i++) {
-					if (pPartition[i] == k) {
+				for (uint32_t i = 0; i < 16; i++)
+					if (pPartition[i] == k)
 						color_selectors[i] = (uint8_t)((num_color_indices - 1) - color_selectors[i]);
-}
-}
 
 				if (get_bc7_mode_has_seperate_alpha_selectors(best_mode))
 				{
@@ -12165,11 +12035,9 @@ namespace basist
 
 				if (alpha_selectors[anchor_index] & (num_alpha_indices >> 1))
 				{
-					for (uint32_t i = 0; i < 16; i++) {
-						if (pPartition[i] == k) {
+					for (uint32_t i = 0; i < 16; i++)
+						if (pPartition[i] == k)
 							alpha_selectors[i] = (uint8_t)((num_alpha_indices - 1) - alpha_selectors[i]);
-}
-}
 
 					uint8_t t = low[k].m_c[3];
 					low[k].m_c[3] = high[k].m_c[3];
@@ -12184,17 +12052,14 @@ namespace basist
 		uint32_t cur_bit_ofs = 0;
 		bc7_set_block_bits(pBlock_bytes, 1 << best_mode, best_mode + 1, &cur_bit_ofs);
 
-		if ((best_mode == 4) || (best_mode == 5)) {
+		if ((best_mode == 4) || (best_mode == 5))
 			bc7_set_block_bits(pBlock_bytes, pResults->m_rotation, 2, &cur_bit_ofs);
-}
 
-		if (best_mode == 4) {
+		if (best_mode == 4)
 			bc7_set_block_bits(pBlock_bytes, pResults->m_index_selector, 1, &cur_bit_ofs);
-}
 
-		if (total_partitions > 1) {
+		if (total_partitions > 1)
 			bc7_set_block_bits(pBlock_bytes, pResults->m_partition, (total_partitions == 64) ? 6 : 4, &cur_bit_ofs);
-}
 
 		const uint32_t total_comps = (best_mode >= 4) ? 4 : 3;
 		for (uint32_t comp = 0; comp < total_comps; comp++)
@@ -12211,9 +12076,8 @@ namespace basist
 			for (uint32_t subset = 0; subset < total_subsets; subset++)
 			{
 				bc7_set_block_bits(pBlock_bytes, pbits[subset][0], 1, &cur_bit_ofs);
-				if (!g_bc7_mode_has_shared_p_bits[best_mode]) {
+				if (!g_bc7_mode_has_shared_p_bits[best_mode])
 					bc7_set_block_bits(pBlock_bytes, pbits[subset][1], 1, &cur_bit_ofs);
-}
 			}
 		}
 
@@ -12225,9 +12089,8 @@ namespace basist
 
 				uint32_t n = pResults->m_index_selector ? get_bc7_alpha_index_size(best_mode, pResults->m_index_selector) : get_bc7_color_index_size(best_mode, pResults->m_index_selector);
 
-				if ((idx == anchor[0]) || (idx == anchor[1]) || (idx == anchor[2])) {
+				if ((idx == anchor[0]) || (idx == anchor[1]) || (idx == anchor[2]))
 					n--;
-}
 
 				bc7_set_block_bits(pBlock_bytes, pResults->m_index_selector ? alpha_selectors[idx] : color_selectors[idx], n, &cur_bit_ofs);
 			}
@@ -12243,9 +12106,8 @@ namespace basist
 
 					uint32_t n = pResults->m_index_selector ? get_bc7_color_index_size(best_mode, pResults->m_index_selector) : get_bc7_alpha_index_size(best_mode, pResults->m_index_selector);
 
-					if ((idx == anchor[0]) || (idx == anchor[1]) || (idx == anchor[2])) {
+					if ((idx == anchor[0]) || (idx == anchor[1]) || (idx == anchor[2]))
 						n--;
-}
 
 					bc7_set_block_bits(pBlock_bytes, pResults->m_index_selector ? color_selectors[idx] : alpha_selectors[idx], n, &cur_bit_ofs);
 				}
@@ -12269,9 +12131,8 @@ namespace basist
 			uint32_t index = bit_offset >> 3;
 			pBuf[index] |= (uint8_t)val;
 
-			if (codesize > (8 - byte_bit_offset)) {
+			if (codesize > (8 - byte_bit_offset))
 				pBuf[index + 1] |= (uint8_t)(val >> 8);
-}
 
 			bit_offset += codesize;
 		}
@@ -12416,11 +12277,10 @@ namespace basist
 		const int num_bits = g_astc_bise_range_table[range][0];
 
 		int group_size = 0;
-		if (g_astc_bise_range_table[range][1]) {
+		if (g_astc_bise_range_table[range][1])
 			group_size = 5;
-		} else if (g_astc_bise_range_table[range][2]) {
+		else if (g_astc_bise_range_table[range][2])
 			group_size = 3;
-}
 
 		if (group_size)
 		{
@@ -12432,22 +12292,19 @@ namespace basist
 				uint8_t vals[5] = { 0, 0, 0, 0, 0 };
 
 				const int limit = basisu::minimum(group_size, num_vals - group_index * group_size);
-				for (int i = 0; i < limit; i++) {
+				for (int i = 0; i < limit; i++)
 					vals[i] = pSrc_vals[group_index * group_size + i];
-}
 
-				if (group_size == 5) {
+				if (group_size == 5)
 					astc_encode_trits(temp, vals, bit_pos, num_bits);
-				} else {
+				else
 					astc_encode_quints(temp, vals, bit_pos, num_bits);
-}
 			}
 		}
 		else
 		{
-			for (int i = 0; i < num_vals; i++) {
+			for (int i = 0; i < num_vals; i++)
 				astc_set_bits_1_to_9(temp, bit_pos, pSrc_vals[i], num_bits);
-}
 		}
 
 		pDst[0] |= temp[0]; pDst[1] |= temp[1];
@@ -12485,9 +12342,9 @@ namespace basist
 		// See table 143 - PART
 		astc_set_bits_1_to_9(pDst, bit_pos, pBlock->m_subsets - 1, ASTC_PART_BITS);
 
-		if (pBlock->m_subsets == 1) {
+		if (pBlock->m_subsets == 1)
 			astc_set_bits_1_to_9(pDst, bit_pos, pBlock->m_cem, ASTC_CEM_BITS);
-		} else
+		else
 		{
 			// See table 145
 			astc_set_bits(pDst, bit_pos, pBlock->m_partition_seed, ASTC_PARTITION_INDEX_BITS);
@@ -12552,9 +12409,8 @@ namespace basist
 				uint32_t index = ofs >> 3;
 				assert(index < 16);
 				pDst_bytes[index++] |= rev & 0xFF;
-				if (index < 16) {
+				if (index < 16)
 					pDst_bytes[index++] |= (rev >> 8);
-}
 			}
 			break;
 		}
@@ -12583,9 +12439,8 @@ namespace basist
 				uint32_t index = ofs >> 3;
 				assert(index < 16);
 				pDst_bytes[index++] |= rev & 0xFF;
-				if (index < 16) {
+				if (index < 16)
 					pDst_bytes[index++] |= (rev >> 8);
-}
 			}
 
 			break;
@@ -12635,9 +12490,8 @@ namespace basist
 	static inline uint32_t read_bits1_to_9(const uint8_t* pBuf, uint32_t& bit_offset, uint32_t codesize)
 	{
 		assert(codesize <= 9);
-		if (!codesize) {
+		if (!codesize)
 			return 0;
-}
 
 		if ((BASISD_IS_BIG_ENDIAN) || (!BASISD_USE_UNALIGNED_WORD_READS) || (bit_offset >= 112))
 		{
@@ -12649,9 +12503,8 @@ namespace basist
 			uint32_t bits_read = basisu::minimum<int>(codesize, 8 - byte_bit_offset);
 
 			uint32_t bits_remaining = codesize - bits_read;
-			if (bits_remaining) {
+			if (bits_remaining)
 				bits |= ((uint32_t)pBytes[1]) << bits_read;
-}
 
 			bit_offset += codesize;
 
@@ -12690,9 +12543,8 @@ namespace basist
 	static inline uint32_t read_bits1_to_9_fst(const uint8_t* pBuf, uint32_t& bit_offset, uint32_t codesize)
 	{
 		assert(codesize <= 9);
-		if (!codesize) {
+		if (!codesize)
 			return 0;
-}
 		assert(bit_offset < 112);
 
 		if ((BASISD_IS_BIG_ENDIAN) || (!BASISD_USE_UNALIGNED_WORD_READS))
@@ -12705,9 +12557,8 @@ namespace basist
 			uint32_t bits_read = basisu::minimum<int>(codesize, 8 - byte_bit_offset);
 
 			uint32_t bits_remaining = codesize - bits_read;
-			if (bits_remaining) {
+			if (bits_remaining)
 				bits |= ((uint32_t)pBytes[1]) << bits_read;
-}
 
 			bit_offset += codesize;
 
@@ -12750,9 +12601,8 @@ namespace basist
 #endif
 
 		const int mode = g_uastc_huff_modes[blk.m_bytes[0] & 127];
-		if (mode >= (int)TOTAL_UASTC_MODES) {
+		if (mode >= (int)TOTAL_UASTC_MODES)
 			return false;
-}
 
 		unpacked.m_mode = mode;
 		unpacked.m_common_pattern = 0;
@@ -12785,41 +12635,36 @@ namespace basist
 
 		if (read_hints)
 		{
-			if (g_uastc_mode_has_bc1_hint0[mode]) {
+			if (g_uastc_mode_has_bc1_hint0[mode])
 				unpacked.m_bc1_hint0 = read_bit(blk.m_bytes, bit_ofs) != 0;
-			} else {
+			else
 				unpacked.m_bc1_hint0 = false;
-}
 
-			if (g_uastc_mode_has_bc1_hint1[mode]) {
+			if (g_uastc_mode_has_bc1_hint1[mode])
 				unpacked.m_bc1_hint1 = read_bit(blk.m_bytes, bit_ofs) != 0;
-			} else {
+			else
 				unpacked.m_bc1_hint1 = false;
-}
 
 			unpacked.m_etc1_flip = read_bit(blk.m_bytes, bit_ofs) != 0;
 			unpacked.m_etc1_diff = read_bit(blk.m_bytes, bit_ofs) != 0;
 			unpacked.m_etc1_inten0 = (uint32_t)read_bits1_to_9_fst(blk.m_bytes, bit_ofs, 3);
 			unpacked.m_etc1_inten1 = (uint32_t)read_bits1_to_9_fst(blk.m_bytes, bit_ofs, 3);
 
-			if (g_uastc_mode_has_etc1_bias[mode]) {
+			if (g_uastc_mode_has_etc1_bias[mode])
 				unpacked.m_etc1_bias = (uint32_t)read_bits1_to_9_fst(blk.m_bytes, bit_ofs, 5);
-			} else {
+			else
 				unpacked.m_etc1_bias = 0;
-}
 
 			if (g_uastc_mode_has_alpha[mode])
 			{
 				unpacked.m_etc2_hints = (uint32_t)read_bits1_to_9_fst(blk.m_bytes, bit_ofs, 8);
 				//assert(unpacked.m_etc2_hints > 0);
 			}
-			else {
+			else
 				unpacked.m_etc2_hints = 0;
-}
 		}
-		else {
+		else
 			bit_ofs += g_uastc_mode_total_hint_bits[mode];
-}
 
 		uint32_t subsets = 1;
 		switch (mode)
@@ -12847,23 +12692,20 @@ namespace basist
 		case 4:
 		case 9:
 		case 16:
-			if (unpacked.m_common_pattern >= TOTAL_ASTC_BC7_COMMON_PARTITIONS2) {
+			if (unpacked.m_common_pattern >= TOTAL_ASTC_BC7_COMMON_PARTITIONS2)
 				return false;
-}
 
 			part_seed = g_astc_bc7_common_partitions2[unpacked.m_common_pattern].m_astc;
 			break;
 		case 3:
-			if (unpacked.m_common_pattern >= TOTAL_ASTC_BC7_COMMON_PARTITIONS3) {
+			if (unpacked.m_common_pattern >= TOTAL_ASTC_BC7_COMMON_PARTITIONS3)
 				return false;
-}
 
 			part_seed = g_astc_bc7_common_partitions3[unpacked.m_common_pattern].m_astc;
 			break;
 		case 7:
-			if (unpacked.m_common_pattern >= TOTAL_BC7_3_ASTC2_COMMON_PARTITIONS) {
+			if (unpacked.m_common_pattern >= TOTAL_BC7_3_ASTC2_COMMON_PARTITIONS)
 				return false;
-}
 
 			part_seed = g_bc7_3_astc2_common_partitions[unpacked.m_common_pattern].m_astc2;
 			break;
@@ -13029,9 +12871,8 @@ namespace basist
 		if (mode == 18)
 		{
 			// Mode 18 is the only mode with more than 64 weight bits.
-			for (uint32_t i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++)
 				unpacked.m_astc.m_weights[i] = (uint8_t)read_bits1_to_9(blk.m_bytes, bit_ofs, i ? weight_bits : (weight_bits - 1));
-}
 		}
 		else
 		{
@@ -13039,16 +12880,16 @@ namespace basist
 			uint64_t bits;
 
 			// Read the weight bits
-			if ((BASISD_IS_BIG_ENDIAN) || (!BASISD_USE_UNALIGNED_WORD_READS)) {
+			if ((BASISD_IS_BIG_ENDIAN) || (!BASISD_USE_UNALIGNED_WORD_READS))
 				bits = read_bits64(blk.m_bytes, bit_ofs, basisu::minimum<int>(64, 128 - (int)bit_ofs));
-			} else
+			else
 			{
 				bits = blk.m_dwords[2];
 				bits |= (((uint64_t)blk.m_dwords[3]) << 32U);
 
-				if (bit_ofs >= 64U) {
+				if (bit_ofs >= 64U)
 					bits >>= (bit_ofs - 64U);
-				} else
+				else
 				{
 					assert(bit_ofs >= 56U);
 
@@ -13161,9 +13002,8 @@ namespace basist
 
 				if (s1 < s0)
 				{
-					for (uint32_t c = 0; c < total_comps; c++) {
+					for (uint32_t c = 0; c < total_comps; c++)
 						std::swap(unpacked.m_astc.m_endpoints[subset_index * total_comps * 2 + c * 2 + 0], unpacked.m_astc.m_endpoints[subset_index * total_comps * 2 + c * 2 + 1]);
-}
 
 					invert_subset[subset_index] = true;
 					any_flag = true;
@@ -13182,9 +13022,8 @@ namespace basist
 					{
 						unpacked.m_astc.m_weights[i * total_planes] = (uint8_t)(weight_mask - unpacked.m_astc.m_weights[i * total_planes]);
 
-						if (total_planes == 2) {
+						if (total_planes == 2)
 							unpacked.m_astc.m_weights[i * total_planes + 1] = (uint8_t)(weight_mask - unpacked.m_astc.m_weights[i * total_planes + 1]);
-}
 					}
 				}
 			}
@@ -13199,9 +13038,8 @@ namespace basist
 	{
 		if (mode == UASTC_MODE_INDEX_SOLID_COLOR)
 		{
-			for (uint32_t i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++)
 				pPixels[i] = solid_color;
-}
 			return true;
 		}
 
@@ -13260,13 +13098,11 @@ namespace basist
 				else
 				{
 					uint32_t comp_index;
-					for (comp_index = 0; comp_index < total_comps; comp_index++) {
+					for (comp_index = 0; comp_index < total_comps; comp_index++)
 						block_colors[subset_index][l][comp_index] = (uint8_t)astc_interpolate(endpoints[subset_index][0][comp_index], endpoints[subset_index][1][comp_index], pWeights[l], srgb);
-}
 
-					for (; comp_index < 4; comp_index++) {
+					for (; comp_index < 4; comp_index++)
 						block_colors[subset_index][l][comp_index] = 255;
-}
 				}
 			}
 		}
@@ -13275,13 +13111,12 @@ namespace basist
 
 		if (total_subsets >= 2)
 		{
-			if (total_subsets == 3) {
+			if (total_subsets == 3)
 				pPartition_pattern = &g_astc_bc7_patterns3[common_pattern][0];
-			} else if (mode == 7) {
+			else if (mode == 7)
 				pPartition_pattern = &g_bc7_3_astc2_patterns2[common_pattern][0];
-			} else {
+			else
 				pPartition_pattern = &g_astc_bc7_patterns2[common_pattern][0];
-}
 
 #ifdef _DEBUG
 			for (uint32_t i = 0; i < 16; i++)
@@ -13326,11 +13161,10 @@ namespace basist
 				color32& c = pPixels[i];
 				for (uint32_t comp = 0; comp < 4; comp++)
 				{
-					if ((int)comp == astc.m_ccs) {
+					if ((int)comp == astc.m_ccs)
 						c[comp] = block_colors[subset_index][weight_index1][comp];
-					} else {
+					else
 						c[comp] = block_colors[subset_index][weight_index0][comp];
-}
 				}
 			}
 		}
@@ -13347,9 +13181,8 @@ namespace basist
 	{
 		unpacked_uastc_block unpacked_blk;
 
-		if (!unpack_uastc(blk, unpacked_blk, false, false)) {
+		if (!unpack_uastc(blk, unpacked_blk, false, false))
 			return false;
-}
 
 		return unpack_uastc(unpacked_blk, pPixels, srgb);
 	}
@@ -13390,9 +13223,8 @@ namespace basist
 			}
 
 			float err = 0;
-			for (uint32_t i = 0; i < total_comps; i++) {
+			for (uint32_t i = 0; i < total_comps; i++)
 				err += basisu::squaref((scaledLow.m_c[i] / 255.0f) - xl[i]) + basisu::squaref((scaledHigh.m_c[i] / 255.0f) - xh[i]);
-}
 
 			if (err < best_err)
 			{
@@ -13476,9 +13308,8 @@ namespace basist
 	bool transcode_uastc_to_astc(const uastc_block& src_blk, void* pDst)
 	{
 		unpacked_uastc_block unpacked_src_blk;
-		if (!unpack_uastc(src_blk, unpacked_src_blk, true, false)) {
+		if (!unpack_uastc(src_blk, unpacked_src_blk, true, false))
 			return false;
-}
 
 		bool success = false;
 		if (unpacked_src_blk.m_mode == UASTC_MODE_INDEX_SOLID_COLOR)
@@ -13578,29 +13409,25 @@ namespace basist
 			if (mode == 18)
 			{
 				const uint8_t s_bc7_5_to_4[32] = { 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 6, 7, 8, 9, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15 };
-				for (uint32_t i = 0; i < 16; i++) {
+				for (uint32_t i = 0; i < 16; i++)
 					dst_blk.m_selectors[i] = s_bc7_5_to_4[unpacked_src_blk.m_astc.m_weights[i]];
-}
 			}
 			else if (mode == 14)
 			{
 				const uint8_t s_bc7_2_to_4[4] = { 0, 5, 10, 15 };
-				for (uint32_t i = 0; i < 16; i++) {
+				for (uint32_t i = 0; i < 16; i++)
 					dst_blk.m_selectors[i] = s_bc7_2_to_4[unpacked_src_blk.m_astc.m_weights[i]];
-}
 			}
 			else if ((mode == 5) || (mode == 12))
 			{
 				const uint8_t s_bc7_3_to_4[8] = { 0, 2, 4, 6, 9, 11, 13, 15 };
-				for (uint32_t i = 0; i < 16; i++) {
+				for (uint32_t i = 0; i < 16; i++)
 					dst_blk.m_selectors[i] = s_bc7_3_to_4[unpacked_src_blk.m_astc.m_weights[i]];
-}
 			}
 			else
 			{
-				for (uint32_t i = 0; i < 16; i++) {
+				for (uint32_t i = 0; i < 16; i++)
 					dst_blk.m_selectors[i] = unpacked_src_blk.m_astc.m_weights[i];
-}
 			}
 
 			break;
@@ -13640,9 +13467,8 @@ namespace basist
 			dst_blk.m_pbits[1][0] = best_pbits[0];
 			dst_blk.m_pbits[1][1] = best_pbits[1];
 
-			for (uint32_t i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++)
 				dst_blk.m_selectors[i] = unpacked_src_blk.m_astc.m_weights[i];
-}
 
 			break;
 		}
@@ -13688,9 +13514,8 @@ namespace basist
 				dst_blk.m_pbits[bc7_subset_index][0] = best_pbits[0];
 			} // subset
 
-			for (uint32_t i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++)
 				dst_blk.m_selectors[i] = unpacked_src_blk.m_astc.m_weights[i];
-}
 
 			break;
 		}
@@ -13720,9 +13545,8 @@ namespace basist
 				}
 			}
 
-			for (uint32_t i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++)
 				dst_blk.m_selectors[i] = unpacked_src_blk.m_astc.m_weights[i];
-}
 
 			break;
 		}
@@ -13767,9 +13591,8 @@ namespace basist
 
 			} // subset
 
-			for (uint32_t i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++)
 				dst_blk.m_selectors[i] = unpacked_src_blk.m_astc.m_weights[i];
-}
 
 			break;
 		}
@@ -13809,11 +13632,10 @@ namespace basist
 					// ASTC and BC7 handle dual plane component rotations differently:
 					// ASTC: 2nd plane separately interpolates the CCS channel.
 					// BC7: 2nd plane channel is swapped with alpha, 2nd plane controls alpha interpolation, then we swap alpha with the desired channel.
-					if (astc_comp == (uint32_t)unpacked_src_blk.m_astc.m_ccs) {
+					if (astc_comp == (uint32_t)unpacked_src_blk.m_astc.m_ccs)
 						bc7_comp = 3;
-					} else if (astc_comp == 3) {
+					else if (astc_comp == 3)
 						bc7_comp = unpacked_src_blk.m_astc.m_ccs;
-}
 
 					uint32_t l = 255, h = 255;
 					if (astc_comp < total_comps)
@@ -13871,9 +13693,8 @@ namespace basist
 				}
 			}
 
-			for (uint32_t i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++)
 				dst_blk.m_selectors[i] = unpacked_src_blk.m_astc.m_weights[i];
-}
 
 			break;
 		}
@@ -13910,9 +13731,8 @@ namespace basist
 				dst_blk.m_mode = 6;
 
 				uint32_t best_p = 0;
-				if (best_err1 < best_err0) {
+				if (best_err1 < best_err0)
 					best_p = 1;
-}
 
 				for (uint32_t c = 0; c < 4; c++)
 				{
@@ -13984,9 +13804,8 @@ namespace basist
 				dst_blk.m_pbits[bc7_subset_index][1] = best_pbits[1];
 			} // astc_subset
 
-			for (uint32_t i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++)
 				dst_blk.m_selectors[i] = unpacked_src_blk.m_astc.m_weights[i];
-}
 
 			break;
 		}
@@ -14000,9 +13819,8 @@ namespace basist
 	bool transcode_uastc_to_bc7(const uastc_block& src_blk, bc7_optimization_results& dst_blk)
 	{
 		unpacked_uastc_block unpacked_src_blk;
-		if (!unpack_uastc(src_blk, unpacked_src_blk, false, false)) {
+		if (!unpack_uastc(src_blk, unpacked_src_blk, false, false))
 			return false;
-}
 
 		return transcode_uastc_to_bc7(unpacked_src_blk, dst_blk);
 	}
@@ -14010,9 +13828,8 @@ namespace basist
 	bool transcode_uastc_to_bc7(const uastc_block& src_blk, void* pDst)
 	{
 		bc7_optimization_results temp;
-		if (!transcode_uastc_to_bc7(src_blk, temp)) {
+		if (!transcode_uastc_to_bc7(src_blk, temp))
 			return false;
-}
 
 		encode_bc7_block(pDst, &temp);
 		return true;
@@ -14062,11 +13879,10 @@ namespace basist
 			int v = block_color[c];
 			if (v == 0)
 			{
-				if (delta == -2) {
+				if (delta == -2)
 					v += 3;
-				} else {
+				else
 					v += delta + 1;
-}
 			}
 			else if (v == (int)limit)
 			{
@@ -14075,9 +13891,8 @@ namespace basist
 			else
 			{
 				v += delta;
-				if ((v < 0) || (v > (int)limit)) {
+				if ((v < 0) || (v > (int)limit))
 					v = (v - delta) - delta;
-}
 			}
 
 			assert(v >= 0);
@@ -14102,9 +13917,8 @@ namespace basist
 			dst_blk.get_block_colors(block_colors, subblock);
 
 			uint32_t block_y[4];
-			for (uint32_t i = 0; i < 4; i++) {
+			for (uint32_t i = 0; i < 4; i++)
 				block_y[i] = block_colors[i][0] * 54 + block_colors[i][1] * 183 + block_colors[i][2] * 19;
-}
 
 			const uint32_t block_y01 = block_y[0] + block_y[1];
 			const uint32_t block_y12 = block_y[1] + block_y[2];
@@ -14265,12 +14079,9 @@ namespace basist
 			dg = basisu::clamp<int>(dg, cETC1ColorDeltaMin, cETC1ColorDeltaMax);
 			db = basisu::clamp<int>(db, cETC1ColorDeltaMin, cETC1ColorDeltaMax);
 
-			if (dr < 0) { dr += 8;
-}
-			if (dg < 0) { dg += 8;
-}
-			if (db < 0) { db += 8;
-}
+			if (dr < 0) dr += 8;
+			if (dg < 0) dg += 8;
+			if (db < 0) db += 8;
 
 			dst_blk.m_bytes[0] = (uint8_t)((block_colors[0].r << 3) | dr);
 			dst_blk.m_bytes[1] = (uint8_t)((block_colors[0].g << 3) | dg);
@@ -14289,17 +14100,15 @@ namespace basist
 	bool transcode_uastc_to_etc1(const uastc_block& src_blk, void* pDst)
 	{
 		unpacked_uastc_block unpacked_src_blk;
-		if (!unpack_uastc(src_blk, unpacked_src_blk, false)) {
+		if (!unpack_uastc(src_blk, unpacked_src_blk, false))
 			return false;
-}
 
 		color32 block_pixels[4][4];
 		if (unpacked_src_blk.m_mode != UASTC_MODE_INDEX_SOLID_COLOR)
 		{
 			const bool unpack_srgb = false;
-			if (!unpack_uastc(unpacked_src_blk, &block_pixels[0][0], unpack_srgb)) {
+			if (!unpack_uastc(unpacked_src_blk, &block_pixels[0][0], unpack_srgb))
 				return false;
-}
 		}
 
 		transcode_uastc_to_etc1(unpacked_src_blk, block_pixels, pDst);
@@ -14407,9 +14216,8 @@ namespace basist
 	bool transcode_uastc_to_etc1(const uastc_block& src_blk, void* pDst, uint32_t channel)
 	{
 		unpacked_uastc_block unpacked_src_blk;
-		if (!unpack_uastc(src_blk, unpacked_src_blk, false)) {
+		if (!unpack_uastc(src_blk, unpacked_src_blk, false))
 			return false;
-}
 
 #if 0
 		for (uint32_t individ = 0; individ < 2; individ++)
@@ -14594,14 +14402,12 @@ namespace basist
 
 		color32 block_pixels[4][4];
 		const bool unpack_srgb = false;
-		if (!unpack_uastc(unpacked_src_blk, &block_pixels[0][0], unpack_srgb)) {
+		if (!unpack_uastc(unpacked_src_blk, &block_pixels[0][0], unpack_srgb))
 			return false;
-}
 
 		uint8_t block_y[4][4];
-		for (uint32_t i = 0; i < 16; i++) {
+		for (uint32_t i = 0; i < 16; i++)
 			((uint8_t*)block_y)[i] = ((color32*)block_pixels)[i][channel];
-}
 
 		int upper_avg, lower_avg, left_avg, right_avg;
 		bool flip = pack_etc1_y_estimate_flipped(&block_y[0][0], upper_avg, lower_avg, left_avg, right_avg);
@@ -14763,8 +14569,7 @@ namespace basist
 
 			y1 = y0 + dy;
 
-			if (dy < 0) { dy += 8;
-}
+			if (dy < 0) dy += 8;
 
 			dst_blk.m_bytes[0] = (uint8_t)((y0 << 3) | dy);
 			dst_blk.m_bytes[1] = (uint8_t)((y0 << 3) | dy);
@@ -14875,52 +14680,42 @@ namespace basist
 			{
 				inten_table_mask = 0xF;
 
-				if (er > 22) {
+				if (er > 22)
 					inten_table_mask &= ~(1 << 0);
-}
 
-				if ((er < 4) || (er > 39)) {
+				if ((er < 4) || (er > 39))
 					inten_table_mask &= ~(1 << 1);
-}
 
-				if (er < 9) {
+				if (er < 9)
 					inten_table_mask &= ~(1 << 2);
-}
 
-				if (er < 12) {
+				if (er < 12)
 					inten_table_mask &= ~(1 << 3);
-}
 			}
 			else
 			{
 				inten_table_mask &= ~((1 << 0) | (1 << 1));
 
-				if (er > 60) {
+				if (er > 60)
 					inten_table_mask &= ~(1 << 2);
-}
 
-				if (er > 89) {
+				if (er > 89)
 					inten_table_mask &= ~(1 << 3);
-}
 
-				if (er > 120) {
+				if (er > 120)
 					inten_table_mask &= ~(1 << 4);
-}
 
-				if (er > 136) {
+				if (er > 136)
 					inten_table_mask &= ~(1 << 5);
-}
 
-				if (er > 174) {
+				if (er > 174)
 					inten_table_mask &= ~(1 << 6);
-}
 			}
 
 			for (uint32_t inten = 0; inten < 8; inten++)
 			{
-				if ((inten_table_mask & (1 << inten)) == 0) {
+				if ((inten_table_mask & (1 << inten)) == 0)
 					continue;
-}
 
 				const int t0 = basisu::maximum(low_limit, g_etc1_inten_tables[inten][0]);
 				const int t1 = basisu::maximum(low_limit, g_etc1_inten_tables[inten][1]);
@@ -14958,9 +14753,8 @@ namespace basist
 								uint32_t e = basisu::iabs(tv[c] - delta);
 								total_err += e * e;
 							}
-							if (total_err >= best_err) {
+							if (total_err >= best_err)
 								break;
-}
 						}
 					}
 					else if (((int)low[subblock] - base) * 2 >= thresh23)
@@ -14978,9 +14772,8 @@ namespace basist
 								uint32_t e = basisu::iabs(tv[c] - delta);
 								total_err += e * e;
 							}
-							if (total_err >= best_err) {
+							if (total_err >= best_err)
 								break;
-}
 						}
 					}
 					else
@@ -14998,9 +14791,8 @@ namespace basist
 								uint32_t e = basisu::iabs(tv[c] - delta);
 								total_err += e * e;
 							}
-							if (total_err >= best_err) {
+							if (total_err >= best_err)
 								break;
-}
 						}
 					}
 				}
@@ -15021,9 +14813,8 @@ namespace basist
 								uint32_t e = basisu::iabs(tv[c] - delta);
 								total_err += e * e;
 							}
-							if (total_err >= best_err) {
+							if (total_err >= best_err)
 								break;
-}
 						}
 					}
 					else if (((int)low[subblock] - base) * 2 >= thresh23)
@@ -15041,9 +14832,8 @@ namespace basist
 								uint32_t e = basisu::iabs(tv[c] - delta);
 								total_err += e * e;
 							}
-							if (total_err >= best_err) {
+							if (total_err >= best_err)
 								break;
-}
 						}
 					}
 					else
@@ -15061,9 +14851,8 @@ namespace basist
 								uint32_t e = basisu::iabs(tv[c] - delta);
 								total_err += e * e;
 							}
-							if (total_err >= best_err) {
+							if (total_err >= best_err)
 								break;
-}
 						}
 					}
 				}
@@ -15179,9 +14968,8 @@ namespace basist
 		const int8_t* pTable = &g_eac_modifier_table[dst.m_table][0];
 
 		uint32_t vals[8];
-		for (uint32_t j = 0; j < 8; j++) {
+		for (uint32_t j = 0; j < 8; j++)
 			vals[j] = clamp255(center + (pTable[j] * multiplier));
-}
 
 		uint64_t sels = 0;
 		for (uint32_t i = 0; i < 16; i++)
@@ -15212,17 +15000,15 @@ namespace basist
 		decoder_etc_block& dst_etc1_blk = static_cast<decoder_etc_block*>(pDst)[1];
 
 		unpacked_uastc_block unpacked_src_blk;
-		if (!unpack_uastc(src_blk, unpacked_src_blk, false)) {
+		if (!unpack_uastc(src_blk, unpacked_src_blk, false))
 			return false;
-}
 
 		color32 block_pixels[4][4];
 		if (unpacked_src_blk.m_mode != UASTC_MODE_INDEX_SOLID_COLOR)
 		{
 			const bool unpack_srgb = false;
-			if (!unpack_uastc(unpacked_src_blk, &block_pixels[0][0], unpack_srgb)) {
+			if (!unpack_uastc(unpacked_src_blk, &block_pixels[0][0], unpack_srgb))
 				return false;
-}
 		}
 
 		transcode_uastc_to_etc2_eac_a8(unpacked_src_blk, block_pixels, &dst_etc2_eac_a8_blk);
@@ -15371,9 +15157,8 @@ namespace basist
 		int ar = block_r[3] - block_r[0], ag = block_g[3] - block_g[0], ab = block_b[3] - block_b[0];
 
 		int dots[4];
-		for (uint32_t i = 0; i < 4; i++) {
+		for (uint32_t i = 0; i < 4; i++)
 			dots[i] = (int)block_r[i] * ar + (int)block_g[i] * ag + (int)block_b[i] * ab;
-}
 
 		int t0 = dots[0] + dots[1], t1 = dots[1] + dots[2], t2 = dots[2] + dots[3];
 
@@ -15402,9 +15187,8 @@ namespace basist
 		int ar = block_r[3] - block_r[0], ag = block_g[3] - block_g[0], ab = block_b[3] - block_b[0];
 
 		int dots[4];
-		for (uint32_t i = 0; i < 4; i++) {
+		for (uint32_t i = 0; i < 4; i++)
 			dots[i] = (int)block_r[i] * ar + (int)block_g[i] * ag + (int)block_b[i] * ab;
-}
 
 		int t0 = dots[0] + dots[1], t1 = dots[1] + dots[2], t2 = dots[2] + dots[3];
 
@@ -15467,9 +15251,8 @@ namespace basist
 		float z01 = z10;
 
 		float det = z00 * z11 - z01 * z10;
-		if (fabs(det) < 1e-8f) {
+		if (fabs(det) < 1e-8f)
 			return false;
-}
 
 		det = 3.0f / det;
 
@@ -15521,9 +15304,9 @@ namespace basist
 			mask = 0;
 
 			// Make l > h
-			if (min16 > 0) {
+			if (min16 > 0)
 				min16--;
-			} else
+			else
 			{
 				// l = h = 0
 				assert(min16 == max16 && max16 == 0);
@@ -15571,20 +15354,17 @@ namespace basist
 
 			static const uint8_t s_sel_tran[4] = { 0, 3, 1, 2 };
 
-			for (uint32_t i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++)
 				sels[i] = s_sel_tran[(s >> (i * 2)) & 3];
-}
 		}
 		else
 		{
 			const uint32_t fr = pSrc_pixels[0].r, fg = pSrc_pixels[0].g, fb = pSrc_pixels[0].b;
 
 			uint32_t j;
-			for (j = 1; j < 16; j++) {
-				if ((pSrc_pixels[j].r != fr) || (pSrc_pixels[j].g != fg) || (pSrc_pixels[j].b != fb)) {
+			for (j = 1; j < 16; j++)
+				if ((pSrc_pixels[j].r != fr) || (pSrc_pixels[j].g != fg) || (pSrc_pixels[j].b != fb))
 					break;
-}
-}
 
 			if (j == 16)
 			{
@@ -15623,9 +15403,8 @@ namespace basist
 			}
 
 			float cov[6];
-			for (uint32_t i = 0; i < 6; i++) {
+			for (uint32_t i = 0; i < 6; i++)
 				cov[i] = static_cast<float>(icov[i])* (1.0f / 255.0f);
-}
 
 #if 0
 			// Seems silly to use full PCA to choose 2 colors. The diff in avg. PSNR between using PCA vs. not is small (~.025 difference).
@@ -15742,9 +15521,9 @@ namespace basist
 			uint8_t mask = 0;
 
 			// Make l > h
-			if (hc16 > 0) {
+			if (hc16 > 0)
 				hc16--;
-			} else
+			else
 			{
 				// lc16 = hc16 = 0
 				assert(lc16 == hc16 && hc16 == 0);
@@ -15778,9 +15557,8 @@ namespace basist
 
 			uint32_t packed_sels = 0;
 			static const uint8_t s_sel_trans[4] = { 0, 2, 3, 1 };
-			for (uint32_t i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++)
 				packed_sels |= ((uint32_t)s_sel_trans[sels[i]] << (i * 2));
-}
 
 			pDst_block->m_selectors[0] = (uint8_t)packed_sels ^ invert_mask;
 			pDst_block->m_selectors[1] = (uint8_t)(packed_sels >> 8) ^ invert_mask;
@@ -15806,20 +15584,17 @@ namespace basist
 
 			static const uint8_t s_sel_tran[4] = { 0, 3, 1, 2 };
 
-			for (uint32_t i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++)
 				sels[i] = s_sel_tran[(s >> (i * 2)) & 3];
-}
 		}
 		else
 		{
 			const uint32_t fr = pSrc_pixels[0].r, fg = pSrc_pixels[0].g, fb = pSrc_pixels[0].b;
 
 			uint32_t j;
-			for (j = 1; j < 16; j++) {
-				if ((pSrc_pixels[j].r != fr) || (pSrc_pixels[j].g != fg) || (pSrc_pixels[j].b != fb)) {
+			for (j = 1; j < 16; j++)
+				if ((pSrc_pixels[j].r != fr) || (pSrc_pixels[j].g != fg) || (pSrc_pixels[j].b != fb))
 					break;
-}
-}
 
 			if (j == 16)
 			{
@@ -16055,9 +15830,8 @@ namespace basist
 				hb = basisu::clamp((int)((xh.c[2]) * (31.0f / 255.0f) + .5f), 0, 31);
 			}
 
-			if ((prev_lr == lr) && (prev_lg == lg) && (prev_lb == lb) && (prev_hr == hr) && (prev_hg == hg) && (prev_hb == hb)) {
+			if ((prev_lr == lr) && (prev_lg == lg) && (prev_lb == lb) && (prev_hr == hr) && (prev_hg == hg) && (prev_hb == hb))
 				break;
-}
 
 			bc1_find_sels_2(pSrc_pixels, lr, lg, lb, hr, hg, hb, sels);
 		}
@@ -16071,9 +15845,9 @@ namespace basist
 			uint8_t mask = 0;
 
 			// Make l > h
-			if (hc16 > 0) {
+			if (hc16 > 0)
 				hc16--;
-			} else
+			else
 			{
 				// lc16 = hc16 = 0
 				assert(lc16 == hc16 && hc16 == 0);
@@ -16107,9 +15881,8 @@ namespace basist
 
 			uint32_t packed_sels = 0;
 			static const uint8_t s_sel_trans[4] = { 0, 2, 3, 1 };
-			for (uint32_t i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++)
 				packed_sels |= ((uint32_t)s_sel_trans[sels[i]] << (i * 2));
-}
 
 			pDst_block->m_selectors[0] = (uint8_t)packed_sels ^ invert_mask;
 			pDst_block->m_selectors[1] = (uint8_t)(packed_sels >> 8) ^ invert_mask;
@@ -16164,9 +15937,9 @@ namespace basist
 			uint8_t mask = 0;
 
 			// Make l > h
-			if (hc16 > 0) {
+			if (hc16 > 0)
 				hc16--;
-			} else
+			else
 			{
 				// lc16 = hc16 = 0
 				assert(lc16 == hc16 && hc16 == 0);
@@ -16204,9 +15977,8 @@ namespace basist
 			{
 				uint32_t s = pTran[astc_blk.m_weights[i << plane_shift]];
 
-				if (invert) {
+				if (invert)
 					s ^= 1;
-}
 
 				sels = (sels << 2) | s;
 			}
@@ -16251,9 +16023,8 @@ namespace basist
 	bool transcode_uastc_to_bc1(const uastc_block& src_blk, void* pDst, bool high_quality)
 	{
 		unpacked_uastc_block unpacked_src_blk;
-		if (!unpack_uastc(src_blk, unpacked_src_blk, false)) {
+		if (!unpack_uastc(src_blk, unpacked_src_blk, false))
 			return false;
-}
 
 		const uint32_t mode = unpacked_src_blk.m_mode;
 
@@ -16263,21 +16034,19 @@ namespace basist
 			return true;
 		}
 
-		if ((!high_quality) && (unpacked_src_blk.m_bc1_hint0)) {
+		if ((!high_quality) && (unpacked_src_blk.m_bc1_hint0))
 			transcode_uastc_to_bc1_hint0(unpacked_src_blk, pDst);
-		} else
+		else
 		{
 			color32 block_pixels[4][4];
 			const bool unpack_srgb = false;
-			if (!unpack_uastc(unpacked_src_blk, &block_pixels[0][0], unpack_srgb)) {
+			if (!unpack_uastc(unpacked_src_blk, &block_pixels[0][0], unpack_srgb))
 				return false;
-}
 
-			if (unpacked_src_blk.m_bc1_hint1) {
+			if (unpacked_src_blk.m_bc1_hint1)
 				transcode_uastc_to_bc1_hint1(unpacked_src_blk, block_pixels, pDst, high_quality);
-			} else {
+			else
 				encode_bc1(pDst, &block_pixels[0][0].r, high_quality ? cEncodeBC1HighQuality : 0);
-}
 		}
 
 		return true;
@@ -16293,9 +16062,8 @@ namespace basist
 	bool transcode_uastc_to_bc3(const uastc_block& src_blk, void* pDst, bool high_quality)
 	{
 		unpacked_uastc_block unpacked_src_blk;
-		if (!unpack_uastc(src_blk, unpacked_src_blk, false)) {
+		if (!unpack_uastc(src_blk, unpacked_src_blk, false))
 			return false;
-}
 
 		const uint32_t mode = unpacked_src_blk.m_mode;
 
@@ -16311,21 +16079,19 @@ namespace basist
 
 		color32 block_pixels[4][4];
 		const bool unpack_srgb = false;
-		if (!unpack_uastc(unpacked_src_blk, &block_pixels[0][0], unpack_srgb)) {
+		if (!unpack_uastc(unpacked_src_blk, &block_pixels[0][0], unpack_srgb))
 			return false;
-}
 
 		basist::encode_bc4(pBC4_block, &block_pixels[0][0].a, sizeof(color32));
 
-		if ((!high_quality) && (unpacked_src_blk.m_bc1_hint0)) {
+		if ((!high_quality) && (unpacked_src_blk.m_bc1_hint0))
 			transcode_uastc_to_bc1_hint0(unpacked_src_blk, pBC1_block);
-		} else
+		else
 		{
-			if (unpacked_src_blk.m_bc1_hint1) {
+			if (unpacked_src_blk.m_bc1_hint1)
 				transcode_uastc_to_bc1_hint1(unpacked_src_blk, block_pixels, pBC1_block, high_quality);
-			} else {
+			else
 				encode_bc1(pBC1_block, &block_pixels[0][0].r, high_quality ? cEncodeBC1HighQuality : 0);
-}
 		}
 
 		return true;
@@ -16336,9 +16102,8 @@ namespace basist
 		BASISU_NOTE_UNUSED(high_quality);
 
 		unpacked_uastc_block unpacked_src_blk;
-		if (!unpack_uastc(src_blk, unpacked_src_blk, false)) {
+		if (!unpack_uastc(src_blk, unpacked_src_blk, false))
 			return false;
-}
 
 		const uint32_t mode = unpacked_src_blk.m_mode;
 
@@ -16352,9 +16117,8 @@ namespace basist
 
 		color32 block_pixels[4][4];
 		const bool unpack_srgb = false;
-		if (!unpack_uastc(unpacked_src_blk, &block_pixels[0][0], unpack_srgb)) {
+		if (!unpack_uastc(unpacked_src_blk, &block_pixels[0][0], unpack_srgb))
 			return false;
-}
 
 		basist::encode_bc4(pBC4_block, &block_pixels[0][0].c[chan0], sizeof(color32));
 
@@ -16366,9 +16130,8 @@ namespace basist
 		BASISU_NOTE_UNUSED(high_quality);
 
 		unpacked_uastc_block unpacked_src_blk;
-		if (!unpack_uastc(src_blk, unpacked_src_blk, false)) {
+		if (!unpack_uastc(src_blk, unpacked_src_blk, false))
 			return false;
-}
 
 		const uint32_t mode = unpacked_src_blk.m_mode;
 
@@ -16384,9 +16147,8 @@ namespace basist
 
 		color32 block_pixels[4][4];
 		const bool unpack_srgb = false;
-		if (!unpack_uastc(unpacked_src_blk, &block_pixels[0][0], unpack_srgb)) {
+		if (!unpack_uastc(unpacked_src_blk, &block_pixels[0][0], unpack_srgb))
 			return false;
-}
 
 		basist::encode_bc4(pBC4_block0, &block_pixels[0][0].c[chan0], sizeof(color32));
 		basist::encode_bc4(pBC4_block1, &block_pixels[0][0].c[chan1], sizeof(color32));
@@ -16403,6 +16165,8 @@ namespace basist
 		blk.m_multiplier = 0;
 
 		memcpy(blk.m_selectors, g_etc2_eac_a8_sel4, sizeof(g_etc2_eac_a8_sel4));
+
+		return;
 	}
 
 	// Only checks 4 tables.
@@ -16412,10 +16176,8 @@ namespace basist
 		for (uint32_t i = 0; i < 16; i++)
 		{
 			const uint32_t a = pPixels[i * stride];
-			if (a < min_alpha) { min_alpha = a;
-}
-			if (a > max_alpha) { max_alpha = a;
-}
+			if (a < min_alpha) min_alpha = a;
+			if (a > max_alpha) max_alpha = a;
 		}
 
 		if (min_alpha == max_alpha)
@@ -16558,9 +16320,8 @@ namespace basist
 
 		uint64_t packed_sels = 0;
 		const uint8_t* pSels = &sels[min_index][0];
-		for (uint32_t i = 0; i < 16; i++) {
+		for (uint32_t i = 0; i < 16; i++)
 			packed_sels |= (static_cast<uint64_t>(pSels[i]) << s_etc2_eac_bit_ofs[i]);
-}
 
 		blk.set_selector_bits(packed_sels);
 	}
@@ -16572,10 +16333,8 @@ namespace basist
 		for (uint32_t i = 0; i < 16; i++)
 		{
 			const uint32_t a = pPixels[i * stride];
-			if (a < min_alpha) { min_alpha = a;
-}
-			if (a > max_alpha) { max_alpha = a;
-}
+			if (a < min_alpha) min_alpha = a;
+			if (a > max_alpha) max_alpha = a;
 		}
 
 		if (min_alpha == max_alpha)
@@ -16682,9 +16441,8 @@ namespace basist
 
 		uint64_t packed_sels = 0;
 		const uint8_t* pSels = &sels[min_index][0];
-		for (uint32_t i = 0; i < 16; i++) {
+		for (uint32_t i = 0; i < 16; i++)
 			packed_sels |= (static_cast<uint64_t>(pSels[i]) << s_etc2_eac_bit_ofs[i]);
-}
 
 		blk.set_selector_bits(packed_sels);
 	}
@@ -16692,9 +16450,8 @@ namespace basist
 	bool transcode_uastc_to_etc2_eac_r11(const uastc_block& src_blk, void* pDst, bool high_quality, uint32_t chan0)
 	{
 		unpacked_uastc_block unpacked_src_blk;
-		if (!unpack_uastc(src_blk, unpacked_src_blk, false)) {
+		if (!unpack_uastc(src_blk, unpacked_src_blk, false))
 			return false;
-}
 
 		const uint32_t mode = unpacked_src_blk.m_mode;
 
@@ -16706,15 +16463,13 @@ namespace basist
 
 		color32 block_pixels[4][4];
 		const bool unpack_srgb = false;
-		if (!unpack_uastc(unpacked_src_blk, &block_pixels[0][0], unpack_srgb)) {
+		if (!unpack_uastc(unpacked_src_blk, &block_pixels[0][0], unpack_srgb))
 			return false;
-}
 
-		if (chan0 == 3) {
+		if (chan0 == 3)
 			transcode_uastc_to_etc2_eac_a8(unpacked_src_blk, block_pixels, pDst);
-		} else {
+		else
 			(high_quality ? pack_eac_high_quality : pack_eac)(*static_cast<eac_block*>(pDst), &block_pixels[0][0].c[chan0], sizeof(color32));
-}
 
 		return true;
 	}
@@ -16722,9 +16477,8 @@ namespace basist
 	bool transcode_uastc_to_etc2_eac_rg11(const uastc_block& src_blk, void* pDst, bool high_quality, uint32_t chan0, uint32_t chan1)
 	{
 		unpacked_uastc_block unpacked_src_blk;
-		if (!unpack_uastc(src_blk, unpacked_src_blk, false)) {
+		if (!unpack_uastc(src_blk, unpacked_src_blk, false))
 			return false;
-}
 
 		const uint32_t mode = unpacked_src_blk.m_mode;
 
@@ -16737,21 +16491,18 @@ namespace basist
 
 		color32 block_pixels[4][4];
 		const bool unpack_srgb = false;
-		if (!unpack_uastc(unpacked_src_blk, &block_pixels[0][0], unpack_srgb)) {
+		if (!unpack_uastc(unpacked_src_blk, &block_pixels[0][0], unpack_srgb))
 			return false;
-}
 
-		if (chan0 == 3) {
+		if (chan0 == 3)
 			transcode_uastc_to_etc2_eac_a8(unpacked_src_blk, block_pixels, &static_cast<eac_block*>(pDst)[0]);
-		} else {
+		else
 			(high_quality ? pack_eac_high_quality : pack_eac)(static_cast<eac_block*>(pDst)[0], &block_pixels[0][0].c[chan0], sizeof(color32));
-}
 
-		if (chan1 == 3) {
+		if (chan1 == 3)
 			transcode_uastc_to_etc2_eac_a8(unpacked_src_blk, block_pixels, &static_cast<eac_block*>(pDst)[1]);
-		} else {
+		else
 			(high_quality ? pack_eac_high_quality : pack_eac)(static_cast<eac_block*>(pDst)[1], &block_pixels[0][0].c[chan1], sizeof(color32));
-}
 		return true;
 	}
 
@@ -16823,11 +16574,10 @@ namespace basist
 				{
 					swizzled &= swizzle_mask;
 
-					if (num_blocks_x > num_blocks_y) {
+					if (num_blocks_x > num_blocks_y)
 						swizzled |= ((x >> min_bits) << (min_bits * 2));
-					} else {
+					else
 						swizzled |= ((y >> min_bits) << (min_bits * 2));
-}
 				}
 
 				pvrtc4_block* pDst_block = static_cast<pvrtc4_block*>(pDst_blocks) + swizzled;
@@ -16981,11 +16731,10 @@ namespace basist
 				{
 					swizzled &= swizzle_mask;
 
-					if (num_blocks_x > num_blocks_y) {
+					if (num_blocks_x > num_blocks_y)
 						swizzled |= ((x >> min_bits) << (min_bits * 2));
-					} else {
+					else
 						swizzled |= ((y >> min_bits) << (min_bits * 2));
-}
 				}
 
 				pvrtc4_block* pDst_block = static_cast<pvrtc4_block*>(pDst_blocks) + swizzled;
@@ -17086,15 +16835,13 @@ namespace basist
 	{
 		BASISU_NOTE_UNUSED(high_quality);
 
-		if ((!num_blocks_x) || (!num_blocks_y)) {
+		if ((!num_blocks_x) || (!num_blocks_y))
 			return false;
-}
 
 		const uint32_t width = num_blocks_x * 4;
 		const uint32_t height = num_blocks_y * 4;
-		if (!basisu::is_pow2(width) || !basisu::is_pow2(height)) {
+		if (!basisu::is_pow2(width) || !basisu::is_pow2(height))
 			return false;
-}
 
 		basisu::vector<uint32_t> temp_endpoints(num_blocks_x * num_blocks_y);
 
@@ -17103,9 +16850,8 @@ namespace basist
 			for (uint32_t x = 0; x < num_blocks_x; x++)
 			{
 				color32 block_pixels[16];
-				if (!unpack_uastc(pSrc_blocks[x + y * num_blocks_x], block_pixels, false)) {
+				if (!unpack_uastc(pSrc_blocks[x + y * num_blocks_x], block_pixels, false))
 					return false;
-}
 
 				// Get block's RGB bounding box
 				color32 low_color(255, 255, 255, 255), high_color(0, 0, 0, 0);
@@ -17139,7 +16885,7 @@ namespace basist
 			}
 		}
 
-		fixup_pvrtc1_4_modulation_rgb(pSrc_blocks, temp_endpoints.data(), pDst_blocks, num_blocks_x, num_blocks_y, from_alpha);
+		fixup_pvrtc1_4_modulation_rgb(pSrc_blocks, &temp_endpoints[0], pDst_blocks, num_blocks_x, num_blocks_y, from_alpha);
 
 		return true;
 	}
@@ -17148,15 +16894,13 @@ namespace basist
 	{
 		BASISU_NOTE_UNUSED(high_quality);
 
-		if ((!num_blocks_x) || (!num_blocks_y)) {
+		if ((!num_blocks_x) || (!num_blocks_y))
 			return false;
-}
 
 		const uint32_t width = num_blocks_x * 4;
 		const uint32_t height = num_blocks_y * 4;
-		if (!basisu::is_pow2(width) || !basisu::is_pow2(height)) {
+		if (!basisu::is_pow2(width) || !basisu::is_pow2(height))
 			return false;
-}
 
 		basisu::vector<uint32_t> temp_endpoints(num_blocks_x * num_blocks_y);
 
@@ -17165,9 +16909,8 @@ namespace basist
 			for (uint32_t x = 0; x < num_blocks_x; x++)
 			{
 				color32 block_pixels[16];
-				if (!unpack_uastc(pSrc_blocks[x + y * num_blocks_x], block_pixels, false)) {
+				if (!unpack_uastc(pSrc_blocks[x + y * num_blocks_x], block_pixels, false))
 					return false;
-}
 
 				// Get block's RGBA bounding box
 				color32 low_color(255, 255, 255, 255), high_color(0, 0, 0, 0);
@@ -17187,7 +16930,7 @@ namespace basist
 			}
 		}
 
-		fixup_pvrtc1_4_modulation_rgba(pSrc_blocks, temp_endpoints.data(), pDst_blocks, num_blocks_x, num_blocks_y);
+		fixup_pvrtc1_4_modulation_rgba(pSrc_blocks, &temp_endpoints[0], pDst_blocks, num_blocks_x, num_blocks_y);
 
 		return true;
 	}
@@ -17196,16 +16939,14 @@ namespace basist
 	{
 		for (uint32_t range = 0; range < BC7ENC_TOTAL_ASTC_RANGES; range++)
 		{
-			if (!astc_is_valid_endpoint_range(range)) {
+			if (!astc_is_valid_endpoint_range(range))
 				continue;
-}
 
 			const uint32_t levels = astc_get_levels(range);
 
 			uint32_t vals[256];
-			for (uint32_t i = 0; i < levels; i++) {
+			for (uint32_t i = 0; i < levels; i++)
 				vals[i] = (unquant_astc_endpoint_val(i, range) << 8) | i;
-}
 
 			std::sort(vals, vals + levels);
 
@@ -17294,8 +17035,8 @@ namespace basist
 #if BASISD_SUPPORT_KTX2
 	const uint8_t g_ktx2_file_identifier[12] = { 0xAB, 0x4B, 0x54, 0x58, 0x20, 0x32, 0x30, 0xBB, 0x0D, 0x0A, 0x1A, 0x0A };
 
-	ktx2_transcoder::ktx2_transcoder()
-
+	ktx2_transcoder::ktx2_transcoder() :
+		m_etc1s_transcoder()
 	{
 		clear();
 	}
@@ -17454,7 +17195,7 @@ namespace basist
 			return false;
 		}
 
-		memcpy((m_levels).data(), m_pData + sizeof(ktx2_header), level_index_size_in_bytes);
+		memcpy(&m_levels[0], m_pData + sizeof(ktx2_header), level_index_size_in_bytes);
 
 		// Sanity check the level offsets and byte sizes
 		for (uint32_t i = 0; i < m_levels.size(); i++)
@@ -17641,11 +17382,9 @@ namespace basist
 
 	const basisu::uint8_vec* ktx2_transcoder::find_key(const std::string& key_name) const
 	{
-		for (uint32_t i = 0; i < m_key_values.size(); i++) {
-			if (strcmp((const char *)m_key_values[i].m_key.data(), key_name.c_str()) == 0) {
+		for (uint32_t i = 0; i < m_key_values.size(); i++)
+			if (strcmp((const char *)m_key_values[i].m_key.data(), key_name.c_str()) == 0)
 				return &m_key_values[i].m_value;
-}
-}
 
 		return nullptr;
 	}
@@ -17661,9 +17400,8 @@ namespace basist
 		if (m_header.m_supercompression_scheme == KTX2_SS_BASISLZ)
 		{
 			// Check if we've already decompressed the ETC1S global data. If so don't unpack it again.
-			if (!m_etc1s_transcoder.get_endpoints().empty()) {
+			if (!m_etc1s_transcoder.get_endpoints().empty())
 				return true;
-}
 
 			if (!decompress_etc1s_global_data())
 			{
@@ -17744,7 +17482,7 @@ namespace basist
 		level_info.m_total_blocks = num_blocks_x * num_blocks_y;
 		level_info.m_alpha_flag = m_has_alpha;
 		level_info.m_iframe_flag = false;
-		if (!m_etc1s_image_descs.empty())
+		if (m_etc1s_image_descs.size())
 		{
 			const uint32_t etc1s_image_index =
 				(level_index * basisu::maximum<uint32_t>(m_header.m_layer_count, 1) * m_header.m_face_count) +
@@ -17770,9 +17508,8 @@ namespace basist
 			return false;
 		}
 
-		if (!pState) {
+		if (!pState)
 			pState = &m_def_transcoder_state;
-}
 
 		if (level_index >= m_levels.size())
 		{
@@ -18217,19 +17954,18 @@ namespace basist
 		if (flt_e == 0xff)
 		{
 			e = 31;
-			if (flt_m != 0) { // NaN
+			if (flt_m != 0) // NaN
 				m = 1;
-}
 		}
 		// not zero or denormal
 		else if (flt_e != 0)
 		{
 			int new_exp = flt_e - 127;
-			if (new_exp > 15) {
+			if (new_exp > 15)
 				e = 31;
-			} else if (new_exp < -14) {
+			else if (new_exp < -14)
 				m = lrintf((1 << 24) * fabsf(fi.f));
-			} else
+			else
 			{
 				e = new_exp + 15;
 				m = lrintf(flt_m * (1.0f / ((float)(1 << 13))));
@@ -18380,9 +18116,8 @@ namespace basist
 		{
 			l |= (val << bit_pos);
 
-			if ((bit_pos + num_bits) > 64) {
+			if ((bit_pos + num_bits) > 64)
 				h |= (val >> (64 - bit_pos));
-}
 		}
 		else
 		{
@@ -18398,9 +18133,8 @@ namespace basist
 		assert((num_bits) && (num_bits < 64) && (bit_pos < 128));
 		assert(val < (1ULL << num_bits));
 
-		for (uint32_t i = 0; i < num_bits; i++) {
+		for (uint32_t i = 0; i < num_bits; i++)
 			write_bits((val >> (num_bits - 1u - i)) & 1, 1, bit_pos, l, h);
-}
 	}
 
 	static void pack_bc6h_block(bc6h_block& dst_blk, bc6h_logical_block& log_blk)
@@ -18444,11 +18178,10 @@ namespace basist
 				v >>= basisu::minimum(pLayout->m_first_bit, pLayout->m_last_bit);
 				v &= ((1 << total_bits) - 1);
 
-				if (pLayout->m_first_bit > pLayout->m_last_bit) {
+				if (pLayout->m_first_bit > pLayout->m_last_bit)
 					write_rev_bits(v, total_bits, bit_pos, l, h);
-				} else {
+				else
 					write_bits(v, total_bits, bit_pos, l, h);
-}
 			}
 
 			pLayout++;
@@ -18540,9 +18273,8 @@ namespace basist
 
 	void bc6h_enc_init()
 	{
-		if (g_bc6h_enc_initialized) {
+		if (g_bc6h_enc_initialized)
 			return;
-}
 
 		g_bc6h_enc_initialized = true;
 	}
@@ -18571,9 +18303,8 @@ namespace basist
 
 		if (log_blk.m_weights[0] & 8)
 		{
-			for (uint32_t i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++)
 				log_blk.m_weights[i] = 15 - log_blk.m_weights[i];
-}
 
 			for (uint32_t c = 0; c < 3; c++)
 			{
@@ -18627,9 +18358,8 @@ namespace basist
 			if (log_blk.m_weights[0] & 8)
 			{
 				// Invert weights
-				for (uint32_t i = 0; i < 16; i++) {
+				for (uint32_t i = 0; i < 16; i++)
 					log_blk.m_weights[i] = 15 - log_blk.m_weights[i];
-}
 
 				// Swap blog quantized endpoints
 				for (uint32_t c = 0; c < 3; c++)
@@ -18657,9 +18387,8 @@ namespace basist
 				log_blk.m_endpoints[c][1] = delta & delta_bitmask;
 			}
 
-			if (failed_flag) {
+			if (failed_flag)
 				continue;
-}
 
 			log_blk.m_mode = mode;
 			pack_bc6h_block(*pPacked_block, log_blk);
@@ -18701,28 +18430,22 @@ namespace basist
 
 		if (log_blk.m_weights[0] & 4)
 		{
-			for (uint32_t c = 0; c < 3; c++) {
+			for (uint32_t c = 0; c < 3; c++)
 				std::swap(log_blk.m_endpoints[c][0], log_blk.m_endpoints[c][1]);
-}
 
-			for (uint32_t i = 0; i < 16; i++) {
-				if ((pPat[i] & 0x7F) == 0) {
+			for (uint32_t i = 0; i < 16; i++)
+				if ((pPat[i] & 0x7F) == 0)
 					log_blk.m_weights[i] = 7 - log_blk.m_weights[i];
-}
-}
 		}
 
 		if (log_blk.m_weights[15] & 4)
 		{
-			for (uint32_t c = 0; c < 3; c++) {
+			for (uint32_t c = 0; c < 3; c++)
 				std::swap(log_blk.m_endpoints[c][2], log_blk.m_endpoints[c][3]);
-}
 
-			for (uint32_t i = 0; i < 16; i++) {
-				if ((pPat[i] & 0x7F) == 1) {
+			for (uint32_t i = 0; i < 16; i++)
+				if ((pPat[i] & 0x7F) == 1)
 					log_blk.m_weights[i] = 7 - log_blk.m_weights[i];
-}
-}
 		}
 
 		log_blk.m_mode = 9;
@@ -18777,29 +18500,23 @@ namespace basist
 			if (log_blk.m_weights[0] & 4)
 			{
 				// Swap part 0's endpoints/weights
-				for (uint32_t c = 0; c < 3; c++) {
+				for (uint32_t c = 0; c < 3; c++)
 					std::swap(blog_endpoints[c][0], blog_endpoints[c][1]);
-}
 
-				for (uint32_t i = 0; i < 16; i++) {
-					if ((pPat[i] & 0x7F) == 0) {
+				for (uint32_t i = 0; i < 16; i++)
+					if ((pPat[i] & 0x7F) == 0)
 						log_blk.m_weights[i] = 7 - log_blk.m_weights[i];
-}
-}
 			}
 
 			if (log_blk.m_weights[15] & 4)
 			{
 				// Swap part 1's endpoints/weights
-				for (uint32_t c = 0; c < 3; c++) {
+				for (uint32_t c = 0; c < 3; c++)
 					std::swap(blog_endpoints[c][2], blog_endpoints[c][3]);
-}
 
-				for (uint32_t i = 0; i < 16; i++) {
-					if ((pPat[i] & 0x7F) == 1) {
+				for (uint32_t i = 0; i < 16; i++)
+					if ((pPat[i] & 0x7F) == 1)
 						log_blk.m_weights[i] = 7 - log_blk.m_weights[i];
-}
-}
 			}
 
 			bool failed_flag = false;
@@ -18829,13 +18546,11 @@ namespace basist
 				log_blk.m_endpoints[c][2] = delta1 & delta_bitmasks[c];
 				log_blk.m_endpoints[c][3] = delta2 & delta_bitmasks[c];
 
-				if (failed_flag) {
+				if (failed_flag)
 					break;
-}
 			}
-			if (failed_flag) {
+			if (failed_flag)
 				continue;
-}
 
 			log_blk.m_mode = mode;
 			log_blk.m_partition_pattern = pat_index;
@@ -18894,9 +18609,8 @@ namespace basist
 		bool swap_flags[2] = { false, false };
 		for (uint32_t i = 0; i < 16; i++)
 		{
-			if ((pPat[i] & 0x80) == 0) {
+			if ((pPat[i] & 0x80) == 0)
 				continue;
-}
 
 			if (log_blk.m_weights[i] & 4)
 			{
@@ -18907,28 +18621,22 @@ namespace basist
 
 		if (swap_flags[0])
 		{
-			for (uint32_t c = 0; c < 3; c++) {
+			for (uint32_t c = 0; c < 3; c++)
 				std::swap(log_blk.m_endpoints[c][0], log_blk.m_endpoints[c][1]);
-}
 
-			for (uint32_t i = 0; i < 16; i++) {
-				if ((pPat[i] & 0x7F) == 0) {
+			for (uint32_t i = 0; i < 16; i++)
+				if ((pPat[i] & 0x7F) == 0)
 					log_blk.m_weights[i] = 7 - log_blk.m_weights[i];
-}
-}
 		}
 
 		if (swap_flags[1])
 		{
-			for (uint32_t c = 0; c < 3; c++) {
+			for (uint32_t c = 0; c < 3; c++)
 				std::swap(log_blk.m_endpoints[c][2], log_blk.m_endpoints[c][3]);
-}
 
-			for (uint32_t i = 0; i < 16; i++) {
-				if ((pPat[i] & 0x7F) == 1) {
+			for (uint32_t i = 0; i < 16; i++)
+				if ((pPat[i] & 0x7F) == 1)
 					log_blk.m_weights[i] = 7 - log_blk.m_weights[i];
-}
-}
 		}
 
 		log_blk.m_mode = 9;
@@ -18994,9 +18702,8 @@ namespace basist
 			bool swap_flags[2] = { false, false };
 			for (uint32_t i = 0; i < 16; i++)
 			{
-				if ((pPat[i] & 0x80) == 0) {
+				if ((pPat[i] & 0x80) == 0)
 					continue;
-}
 
 				if (log_blk.m_weights[i] & 4)
 				{
@@ -19007,28 +18714,22 @@ namespace basist
 
 			if (swap_flags[0])
 			{
-				for (uint32_t c = 0; c < 3; c++) {
+				for (uint32_t c = 0; c < 3; c++)
 					std::swap(blog_endpoints[c][0], blog_endpoints[c][1]);
-}
 
-				for (uint32_t i = 0; i < 16; i++) {
-					if ((pPat[i] & 0x7F) == 0) {
+				for (uint32_t i = 0; i < 16; i++)
+					if ((pPat[i] & 0x7F) == 0)
 						log_blk.m_weights[i] = 7 - log_blk.m_weights[i];
-}
-}
 			}
 
 			if (swap_flags[1])
 			{
-				for (uint32_t c = 0; c < 3; c++) {
+				for (uint32_t c = 0; c < 3; c++)
 					std::swap(blog_endpoints[c][2], blog_endpoints[c][3]);
-}
 
-				for (uint32_t i = 0; i < 16; i++) {
-					if ((pPat[i] & 0x7F) == 1) {
+				for (uint32_t i = 0; i < 16; i++)
+					if ((pPat[i] & 0x7F) == 1)
 						log_blk.m_weights[i] = 7 - log_blk.m_weights[i];
-}
-}
 			}
 
 			// Try packing the endpoints
@@ -19059,13 +18760,11 @@ namespace basist
 				log_blk.m_endpoints[c][2] = delta1 & delta_bitmasks[c];
 				log_blk.m_endpoints[c][3] = delta2 & delta_bitmasks[c];
 
-				if (failed_flag) {
+				if (failed_flag)
 					break;
-}
 			}
-			if (failed_flag) {
+			if (failed_flag)
 				continue;
-}
 
 			log_blk.m_mode = mode;
 			log_blk.m_partition_pattern = pat_index;
@@ -19084,9 +18783,8 @@ namespace basist
 	{
 		assert(g_bc6h_enc_initialized);
 
-		if ((pColor[0] | pColor[1] | pColor[2]) & 0x8000) {
+		if ((pColor[0] | pColor[1] | pColor[2]) & 0x8000)
 			return false;
-}
 
 		// ASTC block unpacker won't allow Inf/NaN's to come through.
 		//if (is_half_inf_or_nan(pColor[0]) || is_half_inf_or_nan(pColor[1]) || is_half_inf_or_nan(pColor[2]))
@@ -19120,9 +18818,8 @@ namespace basist
 
 	void astc_hdr_core_init()
 	{
-		if (g_astc_hdr_core_initialized) {
+		if (g_astc_hdr_core_initialized)
 			return;
-}
 
 		memset(g_astc_partition_id_to_common_bc7_pat_index, 0xFF, sizeof(g_astc_partition_id_to_common_bc7_pat_index));
 
@@ -19145,11 +18842,10 @@ namespace basist
 		assert(basisu::in_range(num_src_bits, 2, 31));
 
 		const bool negative = (src & (1 << (num_src_bits - 1))) != 0;
-		if (negative) {
+		if (negative)
 			return src | ~((1 << num_src_bits) - 1);
-		} else {
+		else
 			return src & ((1 << num_src_bits) - 1);
-}
 	}
 
 	static inline void astc_hdr_pack_bit(
@@ -19214,40 +18910,23 @@ namespace basist
 
 		// Now move the high-order xs into the right place.
 		const int ohm = 1 << mode;
-		if (ohm & 0x30) { green |= x0 << 6;
-}
-		if (ohm & 0x3A) { green |= x1 << 5;
-}
-		if (ohm & 0x30) { blue |= x2 << 6;
-}
-		if (ohm & 0x3A) { blue |= x3 << 5;
-}
-		if (ohm & 0x3D) { scale |= x6 << 5;
-}
-		if (ohm & 0x2D) { scale |= x5 << 6;
-}
-		if (ohm & 0x04) { scale |= x4 << 7;
-}
-		if (ohm & 0x3B) { red |= x4 << 6;
-}
-		if (ohm & 0x04) { red |= x3 << 6;
-}
-		if (ohm & 0x10) { red |= x5 << 7;
-}
-		if (ohm & 0x0F) { red |= x2 << 7;
-}
-		if (ohm & 0x05) { red |= x1 << 8;
-}
-		if (ohm & 0x0A) { red |= x0 << 8;
-}
-		if (ohm & 0x05) { red |= x0 << 9;
-}
-		if (ohm & 0x02) { red |= x6 << 9;
-}
-		if (ohm & 0x01) { red |= x3 << 10;
-}
-		if (ohm & 0x02) { red |= x5 << 10;
-}
+		if (ohm & 0x30) green |= x0 << 6;
+		if (ohm & 0x3A) green |= x1 << 5;
+		if (ohm & 0x30) blue |= x2 << 6;
+		if (ohm & 0x3A) blue |= x3 << 5;
+		if (ohm & 0x3D) scale |= x6 << 5;
+		if (ohm & 0x2D) scale |= x5 << 6;
+		if (ohm & 0x04) scale |= x4 << 7;
+		if (ohm & 0x3B) red |= x4 << 6;
+		if (ohm & 0x04) red |= x3 << 6;
+		if (ohm & 0x10) red |= x5 << 7;
+		if (ohm & 0x0F) red |= x2 << 7;
+		if (ohm & 0x05) red |= x1 << 8;
+		if (ohm & 0x0A) red |= x0 << 8;
+		if (ohm & 0x05) red |= x0 << 9;
+		if (ohm & 0x02) red |= x6 << 9;
+		if (ohm & 0x01) red |= x3 << 10;
+		if (ohm & 0x02) red |= x5 << 10;
 
 		// Shift the bits to the top of the 12-bit result.
 		static const int s_shamts[6] = { 1,1,2,3,4,5 };
@@ -19266,13 +18945,11 @@ namespace basist
 		}
 
 		// Swizzle major component into place
-		if (majcomp == 1) {
+		if (majcomp == 1)
 			std::swap(red, green);
-}
 
-		if (majcomp == 2) {
+		if (majcomp == 2)
 			std::swap(red, blue);
-}
 
 		// Clamp output values, set alpha to 1.0
 		e[1][0] = basisu::clamp(red, 0, 0xFFF);
@@ -19283,9 +18960,8 @@ namespace basist
 		e[0][1] = basisu::clamp(green - scale, 0, 0xFFF);
 		e[0][2] = basisu::clamp(blue - scale, 0, 0xFFF);
 
-		if (pScale) {
+		if (pScale)
 			*pScale = scale;
-}
 	}
 
 	//--------------------------------------------------------------------------------------------------------------------------
@@ -19306,26 +18982,22 @@ namespace basist
 		{
 			uint8_t dequantized_endpoints[NUM_MODE7_ENDPOINTS];
 
-			for (uint32_t i = 0; i < NUM_MODE7_ENDPOINTS; i++) {
+			for (uint32_t i = 0; i < NUM_MODE7_ENDPOINTS; i++)
 				dequantized_endpoints[i] = astc_helpers::g_dequant_tables.get_endpoint_tab(ise_endpoint_range).m_ISE_to_val[pEndpoints[i]];
-}
 
 			decode_mode7_to_qlog12_ise20(dequantized_endpoints, e, pScale);
 		}
 
 		for (uint32_t i = 0; i < 2; i++)
 		{
-			if (e[i][0] > (int)MAX_QLOG12) {
+			if (e[i][0] > (int)MAX_QLOG12)
 				return false;
-}
 
-			if (e[i][1] > (int)MAX_QLOG12) {
+			if (e[i][1] > (int)MAX_QLOG12)
 				return false;
-}
 
-			if (e[i][2] > (int)MAX_QLOG12) {
+			if (e[i][2] > (int)MAX_QLOG12)
 				return false;
-}
 		}
 
 		return true;
@@ -19393,32 +19065,19 @@ namespace basist
 			int x5 = basisu::get_bit(v5, 5);
 
 			const uint32_t ohm = 1U << mode;
-			if (ohm & 0xA4) { va |= (x0 << 9);
-}
-			if (ohm & 0x08) { va |= (x2 << 9);
-}
-			if (ohm & 0x50) { va |= (x4 << 9);
-}
-			if (ohm & 0x50) { va |= (x5 << 10);
-}
-			if (ohm & 0xA0) { va |= (x1 << 10);
-}
-			if (ohm & 0xC0) { va |= (x2 << 11);
-}
-			if (ohm & 0x04) { vc |= (x1 << 6);
-}
-			if (ohm & 0xE8) { vc |= (x3 << 6);
-}
-			if (ohm & 0x20) { vc |= (x2 << 7);
-}
-			if (ohm & 0x5B) { vb0 |= (x0 << 6);
-}
-			if (ohm & 0x5B) { vb1 |= (x1 << 6);
-}
-			if (ohm & 0x12) { vb0 |= (x2 << 7);
-}
-			if (ohm & 0x12) { vb1 |= (x3 << 7);
-}
+			if (ohm & 0xA4) va |= (x0 << 9);
+			if (ohm & 0x08) va |= (x2 << 9);
+			if (ohm & 0x50) va |= (x4 << 9);
+			if (ohm & 0x50) va |= (x5 << 10);
+			if (ohm & 0xA0) va |= (x1 << 10);
+			if (ohm & 0xC0) va |= (x2 << 11);
+			if (ohm & 0x04) vc |= (x1 << 6);
+			if (ohm & 0xE8) vc |= (x3 << 6);
+			if (ohm & 0x20) vc |= (x2 << 7);
+			if (ohm & 0x5B) vb0 |= (x0 << 6);
+			if (ohm & 0x5B) vb1 |= (x1 << 6);
+			if (ohm & 0x12) vb0 |= (x2 << 7);
+			if (ohm & 0x12) vb1 |= (x3 << 7);
 
 			const int shamt = (mode >> 1) ^ 3;
 
@@ -19464,26 +19123,22 @@ namespace basist
 		{
 			uint8_t dequantized_endpoints[NUM_MODE11_ENDPOINTS];
 
-			for (uint32_t i = 0; i < NUM_MODE11_ENDPOINTS; i++) {
+			for (uint32_t i = 0; i < NUM_MODE11_ENDPOINTS; i++)
 				dequantized_endpoints[i] = astc_helpers::g_dequant_tables.get_endpoint_tab(ise_endpoint_range).m_ISE_to_val[pEndpoints[i]];
-}
 
 			decode_mode11_to_qlog12_ise20(dequantized_endpoints, e);
 		}
 
 		for (uint32_t i = 0; i < 2; i++)
 		{
-			if (e[i][0] > (int)MAX_QLOG12) {
+			if (e[i][0] > (int)MAX_QLOG12)
 				return false;
-}
 
-			if (e[i][1] > (int)MAX_QLOG12) {
+			if (e[i][1] > (int)MAX_QLOG12)
 				return false;
-}
 
-			if (e[i][2] > (int)MAX_QLOG12) {
+			if (e[i][2] > (int)MAX_QLOG12)
 				return false;
-}
 		}
 
 		return true;
@@ -19510,54 +19165,48 @@ namespace basist
 				// weight ISE 1: 3 levels
 				static const uint8_t s_astc1_to_bc6h_3[3] = { 0, 8, 15 };
 
-				for (uint32_t i = 0; i < 16; i++) {
+				for (uint32_t i = 0; i < 16; i++)
 					bc6h_weights[i] = s_astc1_to_bc6h_3[best_blk.m_weights[i]];
-}
 			}
 			else if (best_blk.m_weight_ise_range == 2)
 			{
 				// weight ISE 2: 4 levels
 				static const uint8_t s_astc2_to_bc6h_4[4] = { 0, 5, 10, 15 };
 
-				for (uint32_t i = 0; i < 16; i++) {
+				for (uint32_t i = 0; i < 16; i++)
 					bc6h_weights[i] = s_astc2_to_bc6h_4[best_blk.m_weights[i]];
-}
 			}
 			else if (best_blk.m_weight_ise_range == 3)
 			{
 				// weight ISE 3: 5 levels
 				static const uint8_t s_astc3_to_bc6h_4[5] = { 0, 4, 7, 11, 15 };
 
-				for (uint32_t i = 0; i < 16; i++) {
+				for (uint32_t i = 0; i < 16; i++)
 					bc6h_weights[i] = s_astc3_to_bc6h_4[best_blk.m_weights[i]];
-}
 			}
 			else if (best_blk.m_weight_ise_range == 4)
 			{
 				// weight ISE 4: 6 levels
 				static const uint8_t s_astc4_to_bc6h_4[6] = { 0, 15, 3, 12, 6, 9 };
 
-				for (uint32_t i = 0; i < 16; i++) {
+				for (uint32_t i = 0; i < 16; i++)
 					bc6h_weights[i] = s_astc4_to_bc6h_4[best_blk.m_weights[i]];
-}
 			}
 			else if (best_blk.m_weight_ise_range == 6)
 			{
 				// weight ISE 6: 10 levels
 				static const uint8_t s_astc6_to_bc6h_4[10] = { 0, 15, 2, 13, 3, 12, 5, 10, 6, 9 };
 
-				for (uint32_t i = 0; i < 16; i++) {
+				for (uint32_t i = 0; i < 16; i++)
 					bc6h_weights[i] = s_astc6_to_bc6h_4[best_blk.m_weights[i]];
-}
 			}
 			else if (best_blk.m_weight_ise_range == 7)
 			{
 				// weight ISE 7: 12 levels
 				static const uint8_t s_astc7_to_bc6h_4[12] = { 0, 15, 4, 11, 1, 14, 5, 10, 2, 13, 6, 9 };
 
-				for (uint32_t i = 0; i < 16; i++) {
+				for (uint32_t i = 0; i < 16; i++)
 					bc6h_weights[i] = s_astc7_to_bc6h_4[best_blk.m_weights[i]];
-}
 			}
 			else if (best_blk.m_weight_ise_range == 8)
 			{
@@ -19588,12 +19237,10 @@ namespace basist
 
 		// UASTC HDR checks
 		// Both CEM's must be equal in 2-subset UASTC HDR.
-		if (best_blk.m_color_endpoint_modes[0] != best_blk.m_color_endpoint_modes[1]) {
+		if (best_blk.m_color_endpoint_modes[0] != best_blk.m_color_endpoint_modes[1])
 			return false;
-}
-		if ((best_blk.m_color_endpoint_modes[0] != 7) && (best_blk.m_color_endpoint_modes[0] != 11)) {
+		if ((best_blk.m_color_endpoint_modes[0] != 7) && (best_blk.m_color_endpoint_modes[0] != 11))
 			return false;
-}
 
 		if (best_blk.m_color_endpoint_modes[0] == 7)
 		{
@@ -19621,29 +19268,25 @@ namespace basist
 			if (best_blk.m_color_endpoint_modes[0] == 7)
 			{
 				bool success = decode_mode7_to_qlog12(best_blk.m_endpoints + s * NUM_MODE7_ENDPOINTS, e, nullptr, best_blk.m_endpoint_ise_range);
-				if (!success) {
+				if (!success)
 					return false;
-}
 			}
 			else
 			{
 				bool success = decode_mode11_to_qlog12(best_blk.m_endpoints + s * NUM_MODE11_ENDPOINTS, e, best_blk.m_endpoint_ise_range);
-				if (!success) {
+				if (!success)
 					return false;
-}
 			}
 
 			for (uint32_t c = 0; c < 3; c++)
 			{
 				bc6h_endpoints[s][c][0] = qlog_to_half_slow(e[0][c], 12);
-				if (is_half_inf_or_nan(bc6h_endpoints[s][c][0])) {
+				if (is_half_inf_or_nan(bc6h_endpoints[s][c][0]))
 					return false;
-}
 
 				bc6h_endpoints[s][c][1] = qlog_to_half_slow(e[1][c], 12);
-				if (is_half_inf_or_nan(bc6h_endpoints[s][c][1])) {
+				if (is_half_inf_or_nan(bc6h_endpoints[s][c][1]))
 					return false;
-}
 			}
 		}
 
@@ -19652,33 +19295,29 @@ namespace basist
 		{
 			static const uint8_t s_astc1_to_bc6h_3[3] = { 0, 4, 7 };
 
-			for (uint32_t i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++)
 				bc6h_weights[i] = s_astc1_to_bc6h_3[best_blk.m_weights[i]];
-}
 		}
 		else if (best_blk.m_weight_ise_range == 2)
 		{
 			static const uint8_t s_astc2_to_bc6h_3[4] = { 0, 2, 5, 7 };
 
-			for (uint32_t i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++)
 				bc6h_weights[i] = s_astc2_to_bc6h_3[best_blk.m_weights[i]];
-}
 		}
 		else if (best_blk.m_weight_ise_range == 3)
 		{
 			static const uint8_t s_astc3_to_bc6h_3[5] = { 0, 2, 4, 5, 7 };
 
-			for (uint32_t i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++)
 				bc6h_weights[i] = s_astc3_to_bc6h_3[best_blk.m_weights[i]];
-}
 		}
 		else if (best_blk.m_weight_ise_range == 4)
 		{
 			static const uint8_t s_astc4_to_bc6h_3[6] = { 0, 7, 1, 6, 3, 4 };
 
-			for (uint32_t i = 0; i < 16; i++) {
+			for (uint32_t i = 0; i < 16; i++)
 				bc6h_weights[i] = s_astc4_to_bc6h_3[best_blk.m_weights[i]];
-}
 		}
 		else if (best_blk.m_weight_ise_range == 5)
 		{
@@ -19741,32 +19380,28 @@ namespace basist
 		}
 
 		// Only support 4x4 grid sizes
-		if ((log_blk.m_grid_width != 4) || (log_blk.m_grid_height != 4)) {
+		if ((log_blk.m_grid_width != 4) || (log_blk.m_grid_height != 4))
 			return false;
-}
 
 		// Don't support dual plane encoding
-		if (log_blk.m_dual_plane) {
+		if (log_blk.m_dual_plane)
 			return false;
-}
 
 		if (log_blk.m_num_partitions == 1)
 		{
 			// Handle 1 partition (or subset)
 
 			// UASTC HDR checks
-			if ((log_blk.m_weight_ise_range < 1) || (log_blk.m_weight_ise_range > 8)) {
+			if ((log_blk.m_weight_ise_range < 1) || (log_blk.m_weight_ise_range > 8))
 				return false;
-}
 
 			int e[2][3];
 			bool success;
 
 			if (log_blk.m_color_endpoint_modes[0] == 7)
 			{
-				if (log_blk.m_endpoint_ise_range != 20) {
+				if (log_blk.m_endpoint_ise_range != 20)
 					return false;
-}
 
 				success = decode_mode7_to_qlog12(log_blk.m_endpoints, e, nullptr, log_blk.m_endpoint_ise_range);
 			}
@@ -19775,9 +19410,8 @@ namespace basist
 				// UASTC HDR checks
 				if (log_blk.m_weight_ise_range <= 7)
 				{
-					if (log_blk.m_endpoint_ise_range != 20) {
+					if (log_blk.m_endpoint_ise_range != 20)
 						return false;
-}
 				}
 				else if (log_blk.m_endpoint_ise_range != 19)
 				{
@@ -19791,9 +19425,8 @@ namespace basist
 				return false;
 			}
 
-			if (!success) {
+			if (!success)
 				return false;
-}
 
 			// Transform endpoints to half float
 			half_float h_e[3][2] =
@@ -19804,30 +19437,25 @@ namespace basist
 			};
 
 			// Sanity check for NaN/Inf
-			for (uint32_t i = 0; i < 2; i++) {
-				if (is_half_inf_or_nan(h_e[0][i]) || is_half_inf_or_nan(h_e[1][i]) || is_half_inf_or_nan(h_e[2][i])) {
+			for (uint32_t i = 0; i < 2; i++)
+				if (is_half_inf_or_nan(h_e[0][i]) || is_half_inf_or_nan(h_e[1][i]) || is_half_inf_or_nan(h_e[2][i]))
 					return false;
-}
-}
 
 			// Transcode to bc6h
-			if (!transcode_bc6h_1subset(h_e, log_blk, dst_blk)) {
+			if (!transcode_bc6h_1subset(h_e, log_blk, dst_blk))
 				return false;
-}
 		}
 		else if (log_blk.m_num_partitions == 2)
 		{
 			// Handle 2 partition (or subset)
 			int common_bc7_pat_index = g_astc_partition_id_to_common_bc7_pat_index[log_blk.m_partition_id];
-			if (common_bc7_pat_index < 0) {
+			if (common_bc7_pat_index < 0)
 				return false;
-}
 
 			assert(common_bc7_pat_index < (int)basist::TOTAL_ASTC_BC6H_COMMON_PARTITIONS2);
 
-			if (!transcode_bc6h_2subsets(common_bc7_pat_index, log_blk, dst_blk)) {
+			if (!transcode_bc6h_2subsets(common_bc7_pat_index, log_blk, dst_blk))
 				return false;
-}
 		}
 		else
 		{

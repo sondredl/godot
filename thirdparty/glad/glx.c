@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "glad/glx.h"
+#include <glad/glx.h>
 
 #ifndef GLAD_IMPL_UTIL_C_
 #define GLAD_IMPL_UTIL_C_
@@ -85,8 +85,7 @@ PFNGLXWAITXPROC glad_glXWaitX = NULL;
 
 
 static void glad_glx_load_GLX_VERSION_1_0( GLADuserptrloadfunc load, void* userptr) {
-    if(!GLAD_GLX_VERSION_1_0) { return;
-}
+    if(!GLAD_GLX_VERSION_1_0) return;
     glad_glXChooseVisual = (PFNGLXCHOOSEVISUALPROC) load(userptr, "glXChooseVisual");
     glad_glXCopyContext = (PFNGLXCOPYCONTEXTPROC) load(userptr, "glXCopyContext");
     glad_glXCreateContext = (PFNGLXCREATECONTEXTPROC) load(userptr, "glXCreateContext");
@@ -106,20 +105,17 @@ static void glad_glx_load_GLX_VERSION_1_0( GLADuserptrloadfunc load, void* userp
     glad_glXWaitX = (PFNGLXWAITXPROC) load(userptr, "glXWaitX");
 }
 static void glad_glx_load_GLX_VERSION_1_1( GLADuserptrloadfunc load, void* userptr) {
-    if(!GLAD_GLX_VERSION_1_1) { return;
-}
+    if(!GLAD_GLX_VERSION_1_1) return;
     glad_glXGetClientString = (PFNGLXGETCLIENTSTRINGPROC) load(userptr, "glXGetClientString");
     glad_glXQueryExtensionsString = (PFNGLXQUERYEXTENSIONSSTRINGPROC) load(userptr, "glXQueryExtensionsString");
     glad_glXQueryServerString = (PFNGLXQUERYSERVERSTRINGPROC) load(userptr, "glXQueryServerString");
 }
 static void glad_glx_load_GLX_VERSION_1_2( GLADuserptrloadfunc load, void* userptr) {
-    if(!GLAD_GLX_VERSION_1_2) { return;
-}
+    if(!GLAD_GLX_VERSION_1_2) return;
     glad_glXGetCurrentDisplay = (PFNGLXGETCURRENTDISPLAYPROC) load(userptr, "glXGetCurrentDisplay");
 }
 static void glad_glx_load_GLX_VERSION_1_3( GLADuserptrloadfunc load, void* userptr) {
-    if(!GLAD_GLX_VERSION_1_3) { return;
-}
+    if(!GLAD_GLX_VERSION_1_3) return;
     glad_glXChooseFBConfig = (PFNGLXCHOOSEFBCONFIGPROC) load(userptr, "glXChooseFBConfig");
     glad_glXCreateNewContext = (PFNGLXCREATENEWCONTEXTPROC) load(userptr, "glXCreateNewContext");
     glad_glXCreatePbuffer = (PFNGLXCREATEPBUFFERPROC) load(userptr, "glXCreatePbuffer");
@@ -139,34 +135,28 @@ static void glad_glx_load_GLX_VERSION_1_3( GLADuserptrloadfunc load, void* userp
     glad_glXSelectEvent = (PFNGLXSELECTEVENTPROC) load(userptr, "glXSelectEvent");
 }
 static void glad_glx_load_GLX_VERSION_1_4( GLADuserptrloadfunc load, void* userptr) {
-    if(!GLAD_GLX_VERSION_1_4) { return;
-}
+    if(!GLAD_GLX_VERSION_1_4) return;
     glad_glXGetProcAddress = (PFNGLXGETPROCADDRESSPROC) load(userptr, "glXGetProcAddress");
 }
 static void glad_glx_load_GLX_ARB_create_context( GLADuserptrloadfunc load, void* userptr) {
-    if(!GLAD_GLX_ARB_create_context) { return;
-}
+    if(!GLAD_GLX_ARB_create_context) return;
     glad_glXCreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC) load(userptr, "glXCreateContextAttribsARB");
 }
 static void glad_glx_load_GLX_ARB_get_proc_address( GLADuserptrloadfunc load, void* userptr) {
-    if(!GLAD_GLX_ARB_get_proc_address) { return;
-}
+    if(!GLAD_GLX_ARB_get_proc_address) return;
     glad_glXGetProcAddressARB = (PFNGLXGETPROCADDRESSARBPROC) load(userptr, "glXGetProcAddressARB");
 }
 static void glad_glx_load_GLX_EXT_swap_control( GLADuserptrloadfunc load, void* userptr) {
-    if(!GLAD_GLX_EXT_swap_control) { return;
-}
+    if(!GLAD_GLX_EXT_swap_control) return;
     glad_glXSwapIntervalEXT = (PFNGLXSWAPINTERVALEXTPROC) load(userptr, "glXSwapIntervalEXT");
 }
 static void glad_glx_load_GLX_MESA_swap_control( GLADuserptrloadfunc load, void* userptr) {
-    if(!GLAD_GLX_MESA_swap_control) { return;
-}
+    if(!GLAD_GLX_MESA_swap_control) return;
     glad_glXGetSwapIntervalMESA = (PFNGLXGETSWAPINTERVALMESAPROC) load(userptr, "glXGetSwapIntervalMESA");
     glad_glXSwapIntervalMESA = (PFNGLXSWAPINTERVALMESAPROC) load(userptr, "glXSwapIntervalMESA");
 }
 static void glad_glx_load_GLX_SGI_swap_control( GLADuserptrloadfunc load, void* userptr) {
-    if(!GLAD_GLX_SGI_swap_control) { return;
-}
+    if(!GLAD_GLX_SGI_swap_control) return;
     glad_glXSwapIntervalSGI = (PFNGLXSWAPINTERVALSGIPROC) load(userptr, "glXSwapIntervalSGI");
 }
 
@@ -194,9 +184,8 @@ static int glad_glx_has_extension(Display *display, int screen, const char *ext)
 
     while(1) {
         loc = strstr(extensions, ext);
-        if(loc == NULL) {
+        if(loc == NULL)
             break;
-}
 
         terminator = loc + strlen(ext);
         if((loc == extensions || *(loc - 1) == ' ') &&
@@ -250,8 +239,7 @@ static int glad_glx_find_core_glx(Display **display, int *screen) {
 int gladLoadGLXUserPtr(Display *display, int screen, GLADuserptrloadfunc load, void *userptr) {
     int version;
     glXQueryVersion = (PFNGLXQUERYVERSIONPROC) load(userptr, "glXQueryVersion");
-    if(glXQueryVersion == NULL) { return 0;
-}
+    if(glXQueryVersion == NULL) return 0;
     version = glad_glx_find_core_glx(&display, &screen);
 
     glad_glx_load_GLX_VERSION_1_0(load, userptr);
@@ -260,8 +248,7 @@ int gladLoadGLXUserPtr(Display *display, int screen, GLADuserptrloadfunc load, v
     glad_glx_load_GLX_VERSION_1_3(load, userptr);
     glad_glx_load_GLX_VERSION_1_4(load, userptr);
 
-    if (!glad_glx_find_extensions(display, screen)) { return 0;
-}
+    if (!glad_glx_find_extensions(display, screen)) return 0;
     glad_glx_load_GLX_ARB_create_context(load, userptr);
     glad_glx_load_GLX_ARB_get_proc_address(load, userptr);
     glad_glx_load_GLX_EXT_swap_control(load, userptr);

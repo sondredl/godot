@@ -11,7 +11,7 @@
 #define vfloat vfloat_impl
 #define vdouble vdouble_impl
 
-namespace embree;
+namespace embree
 {
   /* 8-wide AVX-512 64-bit double type */
   template<>

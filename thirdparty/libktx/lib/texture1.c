@@ -211,9 +211,8 @@ ktxTexture1_constructFromStreamAndHeader(ktxTexture1* This, ktxStream* pStream,
     stream = ktxTexture1_getStream(This);
 
     result = ktxCheckHeader1_(pHeader, &suppInfo);
-    if (result != KTX_SUCCESS) {
+    if (result != KTX_SUCCESS)
         goto cleanup;
-}
 
     /*
      * Initialize from pHeader info.
@@ -284,9 +283,8 @@ ktxTexture1_constructFromStreamAndHeader(ktxTexture1* This, ktxStream* pStream,
             }
 
             result = stream->read(stream, pKvd, kvdLen);
-            if (result != KTX_SUCCESS) {
+            if (result != KTX_SUCCESS)
                 goto cleanup;
-}
 
             if (private->_needSwap) {
                 /* Swap the counts inside the key & value data. */
@@ -353,14 +351,12 @@ ktxTexture1_constructFromStreamAndHeader(ktxTexture1* This, ktxStream* pStream,
      * Get the size of the image data.
      */
     result = stream->getsize(stream, &size);
-    if (result != KTX_SUCCESS) {
+    if (result != KTX_SUCCESS)
         goto cleanup;
-}
 
     result = stream->getpos(stream, &pos);
-    if (result != KTX_SUCCESS) {
+    if (result != KTX_SUCCESS)
         goto cleanup;
-}
 
                                 /* Remove space for faceLodSize fields */
     This->dataSize = size - pos - This->numLevels * sizeof(ktx_uint32_t);
@@ -671,9 +667,9 @@ ktxTexture1_CreateFromStdioStream(FILE* stdioStream,
 
     result = ktxTexture1_constructFromStdioStream(tex, stdioStream,
                                                   createFlags);
-    if (result == KTX_SUCCESS) {
+    if (result == KTX_SUCCESS)
         *newTex = (ktxTexture1*)tex;
-    } else {
+    else {
         free(tex);
         *newTex = NULL;
     }
@@ -727,9 +723,9 @@ ktxTexture1_CreateFromNamedFile(const char* const filename,
         return KTX_OUT_OF_MEMORY;
 
     result = ktxTexture1_constructFromNamedFile(tex, filename, createFlags);
-    if (result == KTX_SUCCESS) {
+    if (result == KTX_SUCCESS)
         *newTex = (ktxTexture1*)tex;
-    } else {
+    else {
         free(tex);
         *newTex = NULL;
     }
@@ -780,9 +776,9 @@ ktxTexture1_CreateFromMemory(const ktx_uint8_t* bytes, ktx_size_t size,
 
     result = ktxTexture1_constructFromMemory(tex, bytes, size,
                                              createFlags);
-    if (result == KTX_SUCCESS) {
+    if (result == KTX_SUCCESS)
         *newTex = (ktxTexture1*)tex;
-    } else {
+    else {
         free(tex);
         *newTex = NULL;
     }
@@ -829,9 +825,9 @@ ktxTexture1_CreateFromStream(ktxStream* pStream,
         return KTX_OUT_OF_MEMORY;
 
     result = ktxTexture1_constructFromStream(tex, pStream, createFlags);
-    if (result == KTX_SUCCESS) {
+    if (result == KTX_SUCCESS)
         *newTex = (ktxTexture1*)tex;
-    } else {
+    else {
         free(tex);
         *newTex = NULL;
     }

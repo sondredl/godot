@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace graphite2; {
+namespace graphite2 {
 
 class Position
 {

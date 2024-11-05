@@ -30,7 +30,7 @@ FT_BEGIN_HEADER
   (*FT_Properties_SetFunc)( FT_Module    module,
                             const char*  property_name,
                             const void*  value,
-                            _Bool      value_is_string );
+                            FT_Bool      value_is_string );
 
   typedef FT_Error
   (*FT_Properties_GetFunc)( FT_Module    module,
@@ -40,7 +40,7 @@ FT_BEGIN_HEADER
 
   FT_DEFINE_SERVICE( Properties )
   {
-    FT_Properties_GetFunc  set_property;
+    FT_Properties_SetFunc  set_property;
     FT_Properties_GetFunc  get_property;
   };
 

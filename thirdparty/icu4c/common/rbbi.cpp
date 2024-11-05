@@ -1182,8 +1182,7 @@ getLanguageBreakEngineFromFactory(UChar32 c, const char* locale)
 {
     UErrorCode status = U_ZERO_ERROR;
     ensureLanguageFactories(status);
-    if (U_FAILURE(status)) { return nullptr;
-}
+    if (U_FAILURE(status)) return nullptr;
 
     int32_t i = gLanguageBreakFactories->size();
     const LanguageBreakEngine *lbe = nullptr;
@@ -1269,11 +1268,9 @@ RuleBasedBreakIterator::getLanguageBreakEngine(UChar32 c, const char* locale) {
 void U_EXPORT2 RuleBasedBreakIterator::registerExternalBreakEngine(
                   ExternalBreakEngine* toAdopt, UErrorCode& status) {
     LocalPointer<ExternalBreakEngine> engine(toAdopt, status);
-    if (U_FAILURE(status)) { return;
-}
+    if (U_FAILURE(status)) return;
     ensureLanguageFactories(status);
-    if (U_FAILURE(status)) { return;
-}
+    if (U_FAILURE(status)) return;
     gICULanguageBreakFactory->addExternalEngine(engine.orphan(), status);
 }
 #endif  /* U_HIDE_DRAFT_API */

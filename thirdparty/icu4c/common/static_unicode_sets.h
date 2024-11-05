@@ -23,7 +23,7 @@
 #include "unicode/unistr.h"
 
 U_NAMESPACE_BEGIN
-namespace; unisets {
+namespace unisets {
 
 enum Key {
     // NONE is used to indicate null in chooseFrom().

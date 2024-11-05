@@ -56,18 +56,16 @@ namespace embree
       tray1.template init<K>(k, tray.org, tray.dir, tray.rdir, tray.nearXYZ, tray.tnear[k], tray.tfar[k]);
 
       /* pop loop */
-      while (true) { pop:
+      while (true) pop:
       {
         /* pop next node */
-        if (unlikely(stackPtr == stack)) { break;
-}
+        if (unlikely(stackPtr == stack)) break;
         stackPtr--;
         NodeRef cur = NodeRef(stackPtr->ptr);
 
         /* if popped node is too far, pop next one */
-        if (unlikely(*(float*)&stackPtr->dist > ray.tfar[k])) {
+        if (unlikely(*(float*)&stackPtr->dist > ray.tfar[k]))
           continue;
-}
 
         /* downtraversal loop */
         while (true)
@@ -79,9 +77,8 @@ namespace embree
           if (unlikely(!nodeIntersected)) { STAT3(normal.trav_nodes,-1,-1,-1); break; }
 
           /* if no child is hit, pop next node */
-          if (unlikely(mask == 0)) {
+          if (unlikely(mask == 0))
             goto pop;
-}
 
           /* select next child and push other children */
           BVHNNodeTraverser1Hit<N, types>::traverseClosestHit(cur, mask, tNear, stackPtr, stackEnd);
@@ -103,7 +100,6 @@ namespace embree
           stackPtr++;
         }
       }
-}
     }
 
     template<int N, int K, int types, bool robust, typename PrimitiveIntersectorK, bool single>
@@ -115,9 +111,8 @@ namespace embree
       BVH* __restrict__ bvh = (BVH*)This->ptr;
 
       /* we may traverse an empty BVH in case all geometry was invalid */
-      if (bvh->root == BVH::emptyNode) {
+      if (bvh->root == BVH::emptyNode)
         return;
-}
 
 #if ENABLE_FAST_COHERENT_CODEPATHS == 1
       assert(context);
@@ -141,8 +136,7 @@ namespace embree
       STAT3(normal.trav_hit_boxes[popcnt(movemask(valid))], 1, 1, 1);
 #endif
 
-      if (unlikely(valid_bits == 0)) { return;
-}
+      if (unlikely(valid_bits == 0)) return;
 
       /* verify correct input */
       assert(all(valid, ray.valid()));
@@ -185,8 +179,7 @@ namespace embree
           bits &= ~(size_t)movemask(octant_valid);
           vsplit |= vint<K>(octant[valid_index]) == (octant^vint<K>(0x7));
         } while (bits);
-        if (any(vsplit)) { split = true;
-}
+        if (any(vsplit)) split = true;
       }
 
       do
@@ -199,8 +192,7 @@ namespace embree
           ((diff_octant >> 0) & 1);
 
         vbool<K> octant_valid = (count_diff_octant <= 1) & (octant != vint<K>(0xffffffff));
-        if (!single || !split) { octant_valid = valid; // deactivate octant sorting in pure chunk mode, otherwise instance traversal performance goes down
-}
+        if (!single || !split) octant_valid = valid; // deactivate octant sorting in pure chunk mode, otherwise instance traversal performance goes down
 
 
         octant = select(octant_valid,vint<K>(0xffffffff),octant);
@@ -220,7 +212,7 @@ namespace embree
         NodeRef* __restrict__ sptr_node = stack_node + 2;
         vfloat<K>* __restrict__ sptr_near = stack_near + 2;
 
-        while (true) { pop:
+        while (1) pop:
         {
           /* pop next node from stack */
           assert(sptr_node > stack_node);
@@ -235,9 +227,8 @@ namespace embree
           /* cull node if behind closest hit point */
           vfloat<K> curDist = *sptr_near;
           const vbool<K> active = curDist < tray.tfar;
-          if (unlikely(none(active))) {
+          if (unlikely(none(active)))
             continue;
-}
 
           /* switch to single ray traversal */
 #if (!defined(__WIN32__) || defined(__X86_64__)) && ((defined(__aarch64__)) || defined(__SSE4_2__))
@@ -276,8 +267,7 @@ namespace embree
             for (unsigned i = 0; i < N; i++)
             {
               const NodeRef child = node->children[i];
-              if (unlikely(child == BVH::emptyNode)) { break;
-}
+              if (unlikely(child == BVH::emptyNode)) break;
               vfloat<K> lnearP;
               vbool<K> lhit = valid_node;
               BVHNNodeIntersectorK<N, K, types, robust>::intersect(nodeRef, i, tray, ray.time(), lnearP, lhit);
@@ -314,9 +304,8 @@ namespace embree
             //STAT3(normal.trav_hit_boxes[num_child_hits], 1, 1, 1);
 #endif
 
-            if (unlikely(cur == BVH::emptyNode)) {
+            if (unlikely(cur == BVH::emptyNode))
               goto pop;
-}
 
             /* improved distance sorting for 3 or more hits */
             if (unlikely(num_child_hits >= 2))
@@ -365,8 +354,7 @@ namespace embree
           assert(cur != BVH::emptyNode);
           const vbool<K> valid_leaf = tray.tfar > curDist;
           STAT3(normal.trav_leaves, 1, popcnt(valid_leaf), K);
-          if (unlikely(none(valid_leaf))) { continue;
-}
+          if (unlikely(none(valid_leaf))) continue;
           size_t items; const Primitive* prim = (Primitive*)cur.leaf(items);
 
           size_t lazy_node = 0;
@@ -378,7 +366,6 @@ namespace embree
             *sptr_near = neg_inf;   sptr_near++;
           }
         }
-}
       } while(valid_bits);
     }
 
@@ -399,8 +386,7 @@ namespace embree
 
       /* return if there are no valid rays */
       size_t valid_bits = movemask(valid);
-      if (unlikely(valid_bits == 0)) { return;
-}
+      if (unlikely(valid_bits == 0)) return;
 
       /* verify correct input */
       assert(all(valid, ray.valid()));
@@ -433,11 +419,10 @@ namespace embree
         stack[0].ptr  = bvh->root;
         stack[0].dist = neg_inf;
 
-        while (true) { pop:
+        while (1) pop:
         {
           /* pop next node from stack */
-          if (unlikely(stackPtr == stack)) { break;
-}
+          if (unlikely(stackPtr == stack)) break;
 
           stackPtr--;
           NodeRef cur = NodeRef(stackPtr->ptr);
@@ -445,8 +430,7 @@ namespace embree
           /* cull node if behind closest hit point */
           vfloat<K> curDist = *(float*)&stackPtr->dist;
           const vbool<K> active = curDist < tray.tfar;
-          if (unlikely(none(active))) { continue;
-}
+          if (unlikely(none(active))) continue;
 
           while (likely(!cur.isLeaf()))
           {
@@ -458,8 +442,7 @@ namespace embree
             vfloat<N> fmin;
             size_t m_frustum_node = intersectNodeFrustum<N>(node, frustum, fmin);
 
-            if (unlikely(!m_frustum_node)) { goto pop;
-}
+            if (unlikely(!m_frustum_node)) goto pop;
             cur = BVH::emptyNode;
             curDist = pos_inf;
 
@@ -500,23 +483,19 @@ namespace embree
               }
             } while(m_frustum_node);
 
-            if (unlikely(cur == BVH::emptyNode)) { goto pop;
-}
+            if (unlikely(cur == BVH::emptyNode)) goto pop;
 
             /* improved distance sorting for 3 or more hits */
             if (unlikely(num_child_hits >= 2))
             {
-              if (stackPtr[-2].dist < stackPtr[-1].dist) {
+              if (stackPtr[-2].dist < stackPtr[-1].dist)
                 std::swap(stackPtr[-2],stackPtr[-1]);
-}
               if (unlikely(num_child_hits >= 3))
               {
-                if (stackPtr[-3].dist < stackPtr[-1].dist) {
+                if (stackPtr[-3].dist < stackPtr[-1].dist)
                   std::swap(stackPtr[-3],stackPtr[-1]);
-}
-                if (stackPtr[-3].dist < stackPtr[-2].dist) {
+                if (stackPtr[-3].dist < stackPtr[-2].dist)
                   std::swap(stackPtr[-3],stackPtr[-2]);
-}
               }
             }
           }
@@ -526,8 +505,7 @@ namespace embree
           assert(cur != BVH::emptyNode);
           const vbool<K> valid_leaf = tray.tfar > curDist;
           STAT3(normal.trav_leaves, 1, popcnt(valid_leaf), K);
-          if (unlikely(none(valid_leaf))) { continue;
-}
+          if (unlikely(none(valid_leaf))) continue;
           size_t items; const Primitive* prim = (Primitive*)cur.leaf(items);
 
           size_t lazy_node = 0;
@@ -546,7 +524,6 @@ namespace embree
             stackPtr++;
           }
         }
-}
 
       } while(valid_bits);
     }
@@ -576,11 +553,10 @@ namespace embree
         tray1.template init<K>(k, tray.org, tray.dir, tray.rdir, tray.nearXYZ, tray.tnear[k], tray.tfar[k]);
 
 	/* pop loop */
-	while (true) { pop:
+	while (true) pop:
 	{
           /* pop next node */
-	  if (unlikely(stackPtr == stack)) { break;
-}
+	  if (unlikely(stackPtr == stack)) break;
 	  stackPtr--;
           NodeRef cur = (NodeRef)*stackPtr;
 
@@ -594,9 +570,8 @@ namespace embree
             if (unlikely(!nodeIntersected)) { STAT3(shadow.trav_nodes,-1,-1,-1); break; }
 
             /* if no child is hit, pop next node */
-            if (unlikely(mask == 0)) {
+            if (unlikely(mask == 0))
               goto pop;
-}
 
             /* select next child and push other children */
             BVHNNodeTraverser1Hit<N, types>::traverseAnyHit(cur, mask, tNear, stackPtr, stackEnd);
@@ -618,7 +593,6 @@ namespace embree
             stackPtr++;
           }
 	}
-}
 	return false;
       }
 
@@ -631,9 +605,8 @@ namespace embree
       BVH* __restrict__ bvh = (BVH*)This->ptr;
 
       /* we may traverse an empty BVH in case all geometry was invalid */
-      if (bvh->root == BVH::emptyNode) {
+      if (bvh->root == BVH::emptyNode)
         return;
-}
 
 #if ENABLE_FAST_COHERENT_CODEPATHS == 1
       assert(context);
@@ -652,8 +625,7 @@ namespace embree
 
       /* return if there are no valid rays */
       const size_t valid_bits = movemask(valid);
-      if (unlikely(valid_bits == 0)) { return;
-}
+      if (unlikely(valid_bits == 0)) return;
 
       /* verify correct input */
       assert(all(valid, ray.valid()));
@@ -686,7 +658,7 @@ namespace embree
       NodeRef* __restrict__ sptr_node = stack_node + 2;
       vfloat<K>* __restrict__ sptr_near = stack_near + 2;
 
-      while (true) { pop:
+      while (1) pop:
       {
         /* pop next node from stack */
         assert(sptr_node > stack_node);
@@ -701,9 +673,8 @@ namespace embree
         /* cull node if behind closest hit point */
         vfloat<K> curDist = *sptr_near;
         const vbool<K> active = curDist < tray.tfar;
-        if (unlikely(none(active))) {
+        if (unlikely(none(active)))
           continue;
-}
 
         /* switch to single ray traversal */
 #if (!defined(__WIN32__) || defined(__X86_64__)) && ((defined(__aarch64__)) || defined(__SSE4_2__))
@@ -743,8 +714,7 @@ namespace embree
           for (unsigned i = 0; i < N; i++)
           {
             const NodeRef child = node->children[i];
-            if (unlikely(child == BVH::emptyNode)) { break;
-}
+            if (unlikely(child == BVH::emptyNode)) break;
             vfloat<K> lnearP;
             vbool<K> lhit = valid_node;
             BVHNNodeIntersectorK<N, K, types, robust>::intersect(nodeRef, i, tray, ray.time(), lnearP, lhit);
@@ -765,9 +735,8 @@ namespace embree
               cur = child;
             }
           }
-          if (unlikely(cur == BVH::emptyNode)) {
+          if (unlikely(cur == BVH::emptyNode))
             goto pop;
-}
 
 #if SWITCH_DURING_DOWN_TRAVERSAL == 1
           if (single)
@@ -794,14 +763,12 @@ namespace embree
         assert(cur != BVH::emptyNode);
         const vbool<K> valid_leaf = tray.tfar > curDist;
         STAT3(shadow.trav_leaves, 1, popcnt(valid_leaf), K);
-        if (unlikely(none(valid_leaf))) { continue;
-}
+        if (unlikely(none(valid_leaf))) continue;
         size_t items; const Primitive* prim = (Primitive*) cur.leaf(items);
 
         size_t lazy_node = 0;
         terminated |= PrimitiveIntersectorK::occluded(!terminated, This, pre, ray, context, prim, items, tray, lazy_node);
-        if (all(terminated)) { break;
-}
+        if (all(terminated)) break;
         tray.tfar = select(terminated, vfloat<K>(neg_inf), tray.tfar); // ignore node intersections for terminated rays
 
         if (unlikely(lazy_node)) {
@@ -809,7 +776,6 @@ namespace embree
           *sptr_near = neg_inf;   sptr_near++;
         }
       }
-}
 
       vfloat<K>::store(valid & terminated, &ray.tfar, neg_inf);
     }
@@ -831,8 +797,7 @@ namespace embree
 
       /* return if there are no valid rays */
       size_t valid_bits = movemask(valid);
-      if (unlikely(valid_bits == 0)) { return;
-}
+      if (unlikely(valid_bits == 0)) return;
 
       /* verify correct input */
       assert(all(valid, ray.valid()));
@@ -867,11 +832,10 @@ namespace embree
         stack[0].ptr  = bvh->root;
         stack[0].mask = movemask(octant_valid);
 
-        while (true) { pop:
+        while (1) pop:
         {
           /* pop next node from stack */
-          if (unlikely(stackPtr == stack)) { break;
-}
+          if (unlikely(stackPtr == stack)) break;
 
           stackPtr--;
           NodeRef cur = NodeRef(stackPtr->ptr);
@@ -879,8 +843,7 @@ namespace embree
           /* cull node of active rays have already been terminated */
           size_t m_active = (size_t)stackPtr->mask & (~(size_t)movemask(terminated));
 
-          if (unlikely(m_active == 0)) { continue;
-}
+          if (unlikely(m_active == 0)) continue;
 
           while (likely(!cur.isLeaf()))
           {
@@ -892,8 +855,7 @@ namespace embree
             vfloat<N> fmin;
             size_t m_frustum_node = intersectNodeFrustum<N>(node, frustum, fmin);
 
-            if (unlikely(!m_frustum_node)) { goto pop;
-}
+            if (unlikely(!m_frustum_node)) goto pop;
             cur = BVH::emptyNode;
             m_active = 0;
 
@@ -924,8 +886,7 @@ namespace embree
               }
             } while(m_frustum_node);
 
-            if (unlikely(cur == BVH::emptyNode)) { goto pop;
-}
+            if (unlikely(cur == BVH::emptyNode)) goto pop;
           }
 
           /* intersect leaf */
@@ -934,15 +895,13 @@ namespace embree
 #if defined(__AVX__)
           STAT3(normal.trav_leaves, 1, popcnt(m_active), K);
 #endif
-          if (unlikely(!m_active)) { continue;
-}
+          if (unlikely(!m_active)) continue;
           size_t items; const Primitive* prim = (Primitive*)cur.leaf(items);
 
           size_t lazy_node = 0;
           terminated |= PrimitiveIntersectorK::occluded(!terminated, This, pre, ray, context, prim, items, tray, lazy_node);
           octant_valid &= !terminated;
-          if (unlikely(none(octant_valid))) { break;
-}
+          if (unlikely(none(octant_valid))) break;
           tray.tfar = select(terminated, vfloat<K>(neg_inf), tray.tfar); // ignore node intersections for terminated rays
 
           if (unlikely(lazy_node)) {
@@ -951,7 +910,6 @@ namespace embree
             stackPtr++;
           }
         }
-}
       } while(valid_bits);
 
       vfloat<K>::store(valid & terminated, &ray.tfar, neg_inf);

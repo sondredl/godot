@@ -34,7 +34,7 @@
 
 #pragma once
 
-namespace glslang; {
+namespace glslang {
 
 void RemoveAllTreeNodes(TIntermNode*);
 

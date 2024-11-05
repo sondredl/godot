@@ -27,7 +27,7 @@
 #include "spirv_glsl.hpp"
 #include <map>
 #include <set>
-#include <cstddef>
+#include <stddef.h>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -244,9 +244,8 @@ struct MSLConstexprSampler
 
 	MSLConstexprSampler()
 	{
-		for (uint32_t i = 0; i < 4; i++) {
+		for (uint32_t i = 0; i < 4; i++)
 			swizzle[i] = MSL_COMPONENT_SWIZZLE_IDENTITY;
-}
 	}
 	bool swizzle_is_identity() const
 	{

@@ -23,16 +23,13 @@
 #include "theora/theoradec.h"
 
 static void th_dec_api_clear(th_api_wrapper *_api){
-  if(_api->setup) {th_setup_free(_api->setup);
-}
-  if(_api->decode) {th_decode_free(_api->decode);
-}
+  if(_api->setup)th_setup_free(_api->setup);
+  if(_api->decode)th_decode_free(_api->decode);
   memset(_api,0,sizeof(*_api));
 }
 
 static void theora_decode_clear(theora_state *_td){
-  if(_td->i!=NULL) {theora_info_clear(_td->i);
-}
+  if(_td->i!=NULL)theora_info_clear(_td->i);
   memset(_td,0,sizeof(*_td));
 }
 
@@ -99,8 +96,7 @@ int theora_decode_init(theora_state *_td,theora_info *_ci){
     This avoids having to figure out whether or not we need to free the info
      struct in either theora_info_clear() or theora_clear().*/
   apiinfo=(th_api_info *)_ogg_calloc(1,sizeof(*apiinfo));
-  if(apiinfo==NULL) {return OC_FAULT;
-}
+  if(apiinfo==NULL)return OC_FAULT;
   /*Make our own copy of the info struct, since its lifetime should be
      independent of the one we were passed in.*/
   *&apiinfo->info=*_ci;
@@ -136,8 +132,7 @@ int theora_decode_header(theora_info *_ci,theora_comment *_cc,ogg_packet *_op){
      theora_info struct like the ones that are used in a theora_state struct.*/
   if(api==NULL){
     _ci->codec_setup=_ogg_calloc(1,sizeof(*api));
-    if(_ci->codec_setup==NULL) {return OC_FAULT;
-}
+    if(_ci->codec_setup==NULL)return OC_FAULT;
     api=(th_api_wrapper *)_ci->codec_setup;
     api->clear=(oc_setup_clear_func)th_dec_api_clear;
   }
@@ -156,8 +151,7 @@ int theora_decode_header(theora_info *_ci,theora_comment *_cc,ogg_packet *_op){
     them.
    Note that theora_decode_header() really can return OC_NOTFORMAT, even
     though it is not currently documented to do so.*/
-  if(ret<0) {return ret;
-}
+  if(ret<0)return ret;
   th_info2theora_info(_ci,&info);
   return 0;
 }
@@ -166,12 +160,10 @@ int theora_decode_packetin(theora_state *_td,ogg_packet *_op){
   th_api_wrapper *api;
   ogg_int64_t     gp;
   int             ret;
-  if(!_td||!_td->i||!_td->i->codec_setup) {return OC_FAULT;
-}
+  if(!_td||!_td->i||!_td->i->codec_setup)return OC_FAULT;
   api=(th_api_wrapper *)_td->i->codec_setup;
   ret=th_decode_packetin(api->decode,_op,&gp);
-  if(ret<0) {return OC_BADPACKET;
-}
+  if(ret<0)return OC_BADPACKET;
   _td->granulepos=gp;
   return 0;
 }
@@ -181,12 +173,10 @@ int theora_decode_YUVout(theora_state *_td,yuv_buffer *_yuv){
   th_dec_ctx      *decode;
   th_ycbcr_buffer  buf;
   int              ret;
-  if(!_td||!_td->i||!_td->i->codec_setup) {return OC_FAULT;
-}
+  if(!_td||!_td->i||!_td->i->codec_setup)return OC_FAULT;
   api=(th_api_wrapper *)_td->i->codec_setup;
   decode=(th_dec_ctx *)api->decode;
-  if(!decode) {return OC_FAULT;
-}
+  if(!decode)return OC_FAULT;
   ret=th_decode_ycbcr_out(decode,buf);
   if(ret>=0){
     _yuv->y_width=buf[0].width;

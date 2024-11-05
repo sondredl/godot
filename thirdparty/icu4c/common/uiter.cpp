@@ -287,7 +287,7 @@ static const UCharIterator utf16BEIterator={
     stringIteratorGetIndex,
     stringIteratorMove,
     stringIteratorHasNext,
-    utf16BEIteratorPrevious,
+    stringIteratorHasPrevious,
     utf16BEIteratorCurrent,
     utf16BEIteratorNext,
     utf16BEIteratorPrevious,

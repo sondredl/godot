@@ -126,21 +126,19 @@ static SLJIT_INLINE void sljit_insert_free_block(struct free_block *free_block, 
 
 	free_block->next = free_blocks;
 	free_block->prev = NULL;
-	if (free_blocks) {
+	if (free_blocks)
 		free_blocks->prev = free_block;
-}
 	free_blocks = free_block;
 }
 
 static SLJIT_INLINE void sljit_remove_free_block(struct free_block *free_block)
 {
-	if (free_block->next) {
+	if (free_block->next)
 		free_block->next->prev = free_block->prev;
-}
 
-	if (free_block->prev) {
+	if (free_block->prev)
 		free_block->prev->next = free_block->next;
-	} else {
+	else {
 		SLJIT_ASSERT(free_blocks == free_block);
 		free_blocks = free_block->next;
 	}

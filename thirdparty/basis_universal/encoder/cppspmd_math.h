@@ -21,7 +21,7 @@
 // I have chosen functions written by others, ported them to CppSPMD, then measured their abs/rel errors.
 // I compared each to the ones in DirectXMath and stdlib's for accuracy/performance.
 
-CPPSPMD_FORCE_INLINE vfloat; fmod_inv(const vfloat& a, const vfloat& b, const vfloat& b_inv)
+CPPSPMD_FORCE_INLINE vfloat fmod_inv(const vfloat& a, const vfloat& b, const vfloat& b_inv)
 {
 	vfloat c = frac(abs(a * b_inv)) * abs(b);
 	return spmd_ternaryf(a < 0, -c, c);

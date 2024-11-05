@@ -35,6 +35,7 @@
 #include "uinvchar.h"
 #include "uresimp.h"
 #include "ulist.h"
+#include "uresimp.h"
 #include "ureslocs.h"
 #include "ulocimp.h"
 

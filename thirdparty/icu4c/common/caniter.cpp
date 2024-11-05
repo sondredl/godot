@@ -156,8 +156,7 @@ UnicodeString CanonicalIterator::next() {
             break;
         }
         current[i]++;
-        if (current[i] < pieces_lengths[i]) { break; // got sequence
-}
+        if (current[i] < pieces_lengths[i]) break; // got sequence
         current[i] = 0;
     }
     return buffer;
@@ -582,9 +581,8 @@ Hashtable *CanonicalIterator::extract(Hashtable *fillinResult, UChar32 comp, con
             */
         }
     }
-    if (!ok) {
+    if (!ok)
         return nullptr; // we failed, characters left over
-}
 
     //if (PROGRESS) printf("Matches\n");
 

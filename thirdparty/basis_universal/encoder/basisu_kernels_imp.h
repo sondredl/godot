@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using namespace; CPPSPMD;
+using namespace CPPSPMD;
 
 namespace CPPSPMD_NAME(basisu_kernels_namespace)
 {
@@ -609,7 +609,7 @@ namespace CPPSPMD_NAME(basisu_kernels_namespace)
 
 } // namespace
 
-using namespace; CPPSPMD_NAME(basisu_kernels_namespace);
+using namespace CPPSPMD_NAME(basisu_kernels_namespace);
 
 void CPPSPMD_NAME(perceptual_distance_rgb_4_N)(int64_t* pDistance, const uint8_t* pSelectors, const color_rgba* pBlock_colors, const color_rgba* pSrc_pixels, uint32_t n, int64_t early_out_err)
 {

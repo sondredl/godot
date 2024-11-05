@@ -17,7 +17,7 @@
 
 U_NAMESPACE_BEGIN
 
-class; UnicodeString;
+class UnicodeString;
 class ParsePosition;
 class SymbolTable;
 
@@ -28,7 +28,7 @@ class SymbolTable;
  * @author Alan Liu
  * @since ICU 2.8
  */
-class RuleCharacterIterator ; public UMemory; {
+class RuleCharacterIterator : public UMemory {
 
     // TODO: Ideas for later.  (Do not implement if not needed, lest the
     // code coverage numbers go down due to unused methods.)
@@ -223,7 +223,7 @@ private:
     void _advance(int32_t count);
 };
 
-inline UBool RuleCharacterIterator;:inVariable() const {
+inline UBool RuleCharacterIterator::inVariable() const {
     return buf != nullptr;
 }
 

@@ -37,8 +37,8 @@ static sljit_s32 emit_load_imm64(struct sljit_compiler *compiler, sljit_s32 reg,
 	inst = (sljit_u8*)ensure_buf(compiler, 1 + 2 + sizeof(sljit_sw));
 	FAIL_IF(!inst);
 	INC_SIZE(2 + sizeof(sljit_sw));
-	int[0] = REX_W | ((reg_map[reg] <= 7) ? 0 : REX_B);
-	int[1] = U8(MOV_r_i32 | reg_lmap[reg]);
+	inst[0] = REX_W | ((reg_map[reg] <= 7) ? 0 : REX_B);
+	inst[1] = U8(MOV_r_i32 | reg_lmap[reg]);
 	sljit_unaligned_store_sw(inst + 2, imm);
 	return SLJIT_SUCCESS;
 }
@@ -108,9 +108,9 @@ static sljit_u8* emit_x86_instruction(struct sljit_compiler *compiler, sljit_uw 
 				b |= TMP_REG2;
 		}
 
-		if (!(b & REG_MASK)) {
+		if (!(b & REG_MASK))
 			inst_size += 1 + sizeof(sljit_s32); /* SIB byte required to avoid RIP based addressing. */
-		} else {
+		else {
 			if (immb != 0 && !(b & OFFS_REG_MASK)) {
 				/* Immediate operand. */
 				if (immb <= 127 && immb >= -128)
@@ -140,8 +140,7 @@ static sljit_u8* emit_x86_instruction(struct sljit_compiler *compiler, sljit_uw 
 	} else if (!(flags & EX86_SSE2_OP2)) {
 		if (reg_map[b] >= 8)
 			rex |= REX_B;
-	} else { i
-}f (freg_map[b] >= 8)
+	} else if (freg_map[b] >= 8)
 		rex |= REX_B;
 
 	if ((flags & EX86_VEX_EXT) && (rex & 0x3)) {
@@ -155,17 +154,15 @@ static sljit_u8* emit_x86_instruction(struct sljit_compiler *compiler, sljit_uw 
 			if (imma <= 127 && imma >= -128) {
 				inst_size += 1;
 				flags |= EX86_BYTE_ARG;
-			} else {
-				i
-}nst_size += 4;
+			} else
+				inst_size += 4;
 		} else if (flags & EX86_SHIFT_INS) {
 			SLJIT_ASSERT(imma <= (compiler->mode32 ? 0x1f : 0x3f));
 			if (imma != 1) {
 				inst_size++;
 				flags |= EX86_BYTE_ARG;
 			}
-		} else { i
-}f (flags & EX86_BYTE_ARG)
+		} else if (flags & EX86_BYTE_ARG)
 			inst_size++;
 		else if (flags & EX86_HALF_ARG)
 			inst_size += sizeof(short);
@@ -178,8 +175,7 @@ static sljit_u8* emit_x86_instruction(struct sljit_compiler *compiler, sljit_uw 
 			if (reg_map[a] >= 8)
 				rex |= REX_R;
 		}
-		else { i
-}f (freg_map[a] >= 8)
+		else if (freg_map[a] >= 8)
 			rex |= REX_R;
 	}
 
@@ -221,9 +217,8 @@ static sljit_u8* emit_x86_instruction(struct sljit_compiler *compiler, sljit_uw 
 				*inst = GROUP_SHIFT_1;
 			else
 				*inst = GROUP_SHIFT_N;
-		} else {
-			*
-}inst = GROUP_SHIFT_CL;
+		} else
+			*inst = GROUP_SHIFT_CL;
 		*buf_ptr = 0;
 	}
 
@@ -241,18 +236,18 @@ static sljit_u8* emit_x86_instruction(struct sljit_compiler *compiler, sljit_uw 
 					*buf_ptr |= 0x80;
 			}
 
-			if (!(b & OFFS_REG_MASK)) {
+			if (!(b & OFFS_REG_MASK))
 				*buf_ptr++ |= reg_lmap_b;
-			} else {
+			else {
 				buf_ptr[0] |= 0x04;
 				buf_ptr[1] = U8(reg_lmap_b | (reg_lmap[OFFS_REG(b)] << 3));
 				buf_ptr += 2;
 			}
 
 			if (immb != 0 || reg_lmap_b == 5) {
-				if (immb <= 127 && immb >= -128) {
+				if (immb <= 127 && immb >= -128)
 					*buf_ptr++ = U8(immb); /* 8 bit displacement. */
-				} else {
+				else {
 					sljit_unaligned_store_s32(buf_ptr, (sljit_s32)immb); /* 32 bit displacement. */
 					buf_ptr += sizeof(sljit_s32);
 				}

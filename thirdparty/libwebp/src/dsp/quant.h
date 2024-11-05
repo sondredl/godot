@@ -65,8 +65,7 @@ static WEBP_INLINE int IsFlat(const int16_t* levels, int num_blocks,
     int i;
     for (i = 1; i < 16; ++i) {    // omit DC, we're only interested in AC
       score += (levels[i] != 0);
-      if (score > thresh) { return 0;
-}
+      if (score > thresh) return 0;
     }
     levels += 16;
   }

@@ -245,7 +245,7 @@ _internal_toASCII(const char16_t* src, int32_t srcLength,
     }
 
     // step 2 is performed only if the source contains non ASCII
-    if(!static_cast<bool>(srcIsASCII)){
+    if(srcIsASCII == false){
 
         // step 2
         b1Len = usprep_prepare(nameprep, src, srcLength, b1, b1Capacity, namePrepOptions, parseError, status);
@@ -282,7 +282,7 @@ _internal_toASCII(const char16_t* src, int32_t srcLength,
         // check if output of usprep_prepare is all ASCII
         if(b1[j] > 0x7F){
             srcIsASCII = false;
-        }else if(!static_cast<bool>(isLDHChar(b1[j]))){  // if the char is in ASCII range verify that it is an LDH character
+        }else if(isLDHChar(b1[j])==false){  // if the char is in ASCII range verify that it is an LDH character
             srcIsLDH = false;
             failPos = j;
         }
@@ -294,12 +294,12 @@ _internal_toASCII(const char16_t* src, int32_t srcLength,
         // 3(b) Verify the absence of leading and trailing hyphen-minus; that
         //  is, the absence of U+002D at the beginning and end of the
         //  sequence.
-        if( !static_cast<bool>(srcIsLDH) /* source at this point should not contain anyLDH characters */
+        if( srcIsLDH == false /* source at this point should not contain anyLDH characters */
             || b1[0] ==  HYPHEN || b1[b1Len-1] == HYPHEN){
             *status = U_IDNA_STD3_ASCII_RULES_ERROR;
 
             /* populate the parseError struct */
-            if(!static_cast<bool>(srcIsLDH)){
+            if(srcIsLDH==false){
                 // failPos is always set the index of failure
                 uprv_syntaxError(b1,failPos, b1Len,parseError);
             }else if(b1[0] == HYPHEN){
@@ -452,7 +452,7 @@ _internal_toUnicode(const char16_t* src, int32_t srcLength,
         return 0;
     }
 
-    if(!static_cast<bool>(srcIsASCII)){
+    if(srcIsASCII == false){
         // step 2: process the string
         b1Len = usprep_prepare(nameprep, src, srcLength, b1, b1Capacity, namePrepOptions, parseError, status);
         if(*status == U_BUFFER_OVERFLOW_ERROR){

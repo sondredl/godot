@@ -169,8 +169,7 @@ namespace embree
             for (size_t j=r.begin(); j<r.end(); j++)
             {
               BBox3fa prim_bounds = empty;
-              if (unlikely(!mesh->buildBounds(j,&prim_bounds))) { continue;
-}
+              if (unlikely(!mesh->buildBounds(j,&prim_bounds))) continue;
               bounds.extend(center2(prim_bounds));
               num++;
             }
@@ -190,9 +189,8 @@ namespace embree
         BVHBuilderMorton::MortonCodeMapping mapping(centBounds);
         parallel_for( size_t(0), numPrimitives, size_t(1024), [&](const range<size_t>& r) -> void {
             BVHBuilderMorton::MortonCodeGenerator generator(mapping,&morton.data()[r.begin()]);
-            for (size_t j=r.begin(); j<r.end(); j++) {
+            for (size_t j=r.begin(); j<r.end(); j++)
               generator(mesh->bounds(j),unsigned(j));
-}
           });
       }
       else
@@ -206,8 +204,7 @@ namespace embree
             for (size_t j=r.begin(); j<r.end(); j++)
             {
               BBox3fa bounds = empty;
-              if (unlikely(!mesh->buildBounds(j,&bounds))) { continue;
-}
+              if (unlikely(!mesh->buildBounds(j,&bounds))) continue;
               generator(bounds,unsigned(j));
               num++;
             }
@@ -220,8 +217,7 @@ namespace embree
             for (size_t j=r.begin(); j<r.end(); j++)
             {
               BBox3fa bounds = empty;
-              if (!mesh->buildBounds(j,&bounds)) { continue;
-}
+              if (!mesh->buildBounds(j,&bounds)) continue;
               generator(bounds,unsigned(j));
               num++;
             }

@@ -18,9 +18,9 @@
 
 U_NAMESPACE_BEGIN
 
-class; UnicodeString;
+class UnicodeString;
 
-class U_COMMON_API PluralMapBase ; public UMemory; {
+class U_COMMON_API PluralMapBase : public UMemory {
 public:
     /**
      * The names of all the plural categories. NONE is not an actual plural

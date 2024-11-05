@@ -20,7 +20,7 @@
 #ifndef CPPSPMD_TYPES
 #define CPPSPMD_TYPES
 
-using exec_mask = CPPSPMD;:exec_mask;
+using exec_mask = CPPSPMD::exec_mask;
 
 #if CPPSPMD_INT16
 using vint16 = CPPSPMD::vint16;
@@ -30,10 +30,10 @@ using int16_vref = CPPSPMD::int16_vref;
 using lint16 = CPPSPMD::lint16;
 using vint16_vref = CPPSPMD::vint16_vref;
 #else
-using vint = CPPSPMD;:vint;
-using int_lref = CPPSPMD;:int_lref;
-using cint_vref = CPPSPMD;:cint_vref;
-using int_vref = CPPSPMD;:int_vref;
+using vint = CPPSPMD::vint;
+using int_lref = CPPSPMD::int_lref;
+using cint_vref = CPPSPMD::cint_vref;
+using int_vref = CPPSPMD::int_vref;
 using lint = CPPSPMD::lint;
 using vint_vref = CPPSPMD::vint_vref;
 #endif

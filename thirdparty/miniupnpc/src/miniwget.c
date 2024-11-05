@@ -88,8 +88,7 @@ getHTTPResponse(SOCKET s, int * size, int * status_code)
 	int reason_phrase_len = 0;
 #endif
 
-	if(status_code) { *status_code = -1;
-}
+	if(status_code) *status_code = -1;
 	header_buf = malloc(header_buf_len);
 	if(header_buf == NULL)
 	{
@@ -157,18 +156,16 @@ getHTTPResponse(SOCKET s, int * size, int * status_code)
 				}
 				i++;
 			}
-			if(endofheaders == 0) {
+			if(endofheaders == 0)
 				continue;
-}
 			/* parse header lines */
 			for(i = 0; i < endofheaders - 1; i++) {
 				if(linestart > 0 && colon <= linestart && header_buf[i]==':')
 				{
 					colon = i;
 					while(i < (endofheaders-1)
-					      && (header_buf[i+1] == ' ' || header_buf[i+1] == '\t')) {
+					      && (header_buf[i+1] == ' ' || header_buf[i+1] == '\t'))
 						i++;
-}
 					valuestart = i + 1;
 				}
 				/* detecting end of line */
@@ -179,14 +176,13 @@ getHTTPResponse(SOCKET s, int * size, int * status_code)
 						/* Status line
 						 * HTTP-Version SP Status-Code SP Reason-Phrase CRLF */
 						int sp;
-						for(sp = 0; sp < i - 1; sp++) {
+						for(sp = 0; sp < i - 1; sp++)
 							if(header_buf[sp] == ' ')
 							{
 								if(*status_code < 0)
 								{
-									if (header_buf[sp+1] >= '1' && header_buf[sp+1] <= '9') {
+									if (header_buf[sp+1] >= '1' && header_buf[sp+1] <= '9')
 										*status_code = atoi(header_buf + sp + 1);
-}
 								}
 								else
 								{
@@ -197,7 +193,6 @@ getHTTPResponse(SOCKET s, int * size, int * status_code)
 									break;
 								}
 							}
-}
 #ifdef DEBUG
 						printf("HTTP status code = %d, Reason phrase = %.*s\n",
 						       *status_code, reason_phrase_len, reason_phrase);
@@ -226,9 +221,8 @@ getHTTPResponse(SOCKET s, int * size, int * status_code)
 							chunked = 1;
 						}
 					}
-					while((i < (int)header_buf_used) && (header_buf[i]=='\r' || header_buf[i] == '\n')) {
+					while((i < (int)header_buf_used) && (header_buf[i]=='\r' || header_buf[i] == '\n'))
 						i++;
-}
 					linestart = i;
 					colon = linestart;
 					valuestart = 0;
@@ -252,10 +246,8 @@ getHTTPResponse(SOCKET s, int * size, int * status_code)
 					/* reading chunk size */
 					if(chunksize_buf_index == 0) {
 						/* skipping any leading CR LF */
-						if(buf[i] == '\r') { i++;
-}
-						if(i<n && buf[i] == '\n') { i++;
-}
+						if(buf[i] == '\r') i++;
+						if(i<n && buf[i] == '\n') i++;
 					}
 					while(i<n && isxdigit(buf[i])
 					     && chunksize_buf_index < (sizeof(chunksize_buf)-1))
@@ -264,20 +256,17 @@ getHTTPResponse(SOCKET s, int * size, int * status_code)
 						chunksize_buf[chunksize_buf_index] = '\0';
 						i++;
 					}
-					while(i<n && buf[i] != '\r' && buf[i] != '\n') {
+					while(i<n && buf[i] != '\r' && buf[i] != '\n')
 						i++; /* discarding chunk-extension */
-}
-					if(i<n && buf[i] == '\r') { i++;
-}
+					if(i<n && buf[i] == '\r') i++;
 					if(i<n && buf[i] == '\n') {
 						unsigned int j;
 						for(j = 0; j < chunksize_buf_index; j++) {
 						if(chunksize_buf[j] >= '0'
-						   && chunksize_buf[j] <= '9') {
+						   && chunksize_buf[j] <= '9')
 							chunksize = (chunksize << 4) + (chunksize_buf[j] - '0');
-						} else {
+						else
 							chunksize = (chunksize << 4) + ((chunksize_buf[j] | 32) - 'a' + 10);
-}
 						}
 						chunksize_buf[0] = '\0';
 						chunksize_buf_index = 0;
@@ -393,9 +382,8 @@ miniwget3(const char * host,
 
 	*size = 0;
 	s = connecthostport(host, port, scope_id);
-	if(ISINVALID(s)) {
+	if(ISINVALID(s))
 		return NULL;
-}
 
 	/* get address for caller ! */
 	if(addr_str)
@@ -501,18 +489,15 @@ parseURL(const char * url,
          char * * path, unsigned int * scope_id)
 {
 	char * p1, *p2, *p3;
-	if(!url) {
+	if(!url)
 		return 0;
-}
 	p1 = strstr(url, "://");
-	if(!p1) {
+	if(!p1)
 		return 0;
-}
 	p1 += 3;
 	if(  (url[0]!='h') || (url[1]!='t')
-	   ||(url[2]!='t') || (url[3]!='p')) {
+	   ||(url[2]!='t') || (url[3]!='p'))
 		return 0;
-}
 	memset(hostname, 0, MAXHOSTNAMELEN + 1);
 	if(*p1 == '[')
 	{
@@ -527,13 +512,11 @@ parseURL(const char * url,
 			int l;
 			scope++;
 			/* "%25" is just '%' in URL encoding */
-			if(scope[0] == '2' && scope[1] == '5') {
+			if(scope[0] == '2' && scope[1] == '5')
 				scope += 2;	/* skip "25" */
-}
 			l = p2 - scope;
-			if(l >= IF_NAMESIZE) {
+			if(l >= IF_NAMESIZE)
 				l = IF_NAMESIZE - 1;
-}
 			memcpy(tmp, scope, l);
 			tmp[l] = '\0';
 			*scope_id = if_nametoindex(tmp);
@@ -582,9 +565,8 @@ parseURL(const char * url,
 	}
 	p2 = strchr(p1, ':');
 	p3 = strchr(p1, '/');
-	if(!p3) {
+	if(!p3)
 		return 0;
-}
 	if(!p2 || (p2>p3))
 	{
 		strncpy(hostname, p1, MIN(MAXHOSTNAMELEN, (int)(p3-p1)));
@@ -615,9 +597,8 @@ miniwget(const char * url, int * size,
 	/* protocol://host:port/chemin */
 	char hostname[MAXHOSTNAMELEN+1];
 	*size = 0;
-	if(!parseURL(url, hostname, &port, &path, &scope_id)) {
+	if(!parseURL(url, hostname, &port, &path, &scope_id))
 		return NULL;
-}
 #ifdef DEBUG
 	printf("parsed url : hostname='%s' port=%hu path='%s' scope_id=%u\n",
 	       hostname, port, path, scope_id);
@@ -635,12 +616,10 @@ miniwget_getaddr(const char * url, int * size,
 	/* protocol://host:port/path */
 	char hostname[MAXHOSTNAMELEN+1];
 	*size = 0;
-	if(addr) {
+	if(addr)
 		addr[0] = '\0';
-}
-	if(!parseURL(url, hostname, &port, &path, &scope_id)) {
+	if(!parseURL(url, hostname, &port, &path, &scope_id))
 		return NULL;
-}
 #ifdef DEBUG
 	printf("parsed url : hostname='%s' port=%hu path='%s' scope_id=%u\n",
 	       hostname, port, path, scope_id);

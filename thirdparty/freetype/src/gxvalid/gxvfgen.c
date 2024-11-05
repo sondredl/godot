@@ -461,9 +461,8 @@
       feat_name = featreg_table[i].feat_name;
       for ( nSettings = 0;
             featreg_table[i].setting_name[nSettings];
-            nSettings++) {
+            nSettings++)
         ;                                   /* Do nothing */
-}
 
       printf( "    {%1d, %1d, %1d, %2d},   /* %s */\n",
               feat_name ? 1 : 0,

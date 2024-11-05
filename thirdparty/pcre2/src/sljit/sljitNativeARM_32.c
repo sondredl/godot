@@ -464,7 +464,7 @@ static sljit_s32 push_inst(struct sljit_compiler *compiler, sljit_ins inst)
 	return SLJIT_SUCCESS;
 }
 
-static SLJIT_INLINE sljit_s32; emit_imm(struct sljit_compiler *compiler, sljit_s32 reg, sljit_sw imm)
+static SLJIT_INLINE sljit_s32 emit_imm(struct sljit_compiler *compiler, sljit_s32 reg, sljit_sw imm)
 {
 	FAIL_IF(push_inst(compiler, MOVW | RD(reg) | ((imm << 4) & 0xf0000) | ((sljit_u32)imm & 0xfff)));
 	return push_inst(compiler, MOVT | RD(reg) | ((imm >> 12) & 0xf0000) | (((sljit_u32)imm >> 16) & 0xfff));
@@ -835,9 +835,8 @@ SLJIT_API_FUNC_ATTRIBUTE void* sljit_generate_code(struct sljit_compiler *compil
 						jump->addr = (sljit_uw)code_ptr;
 #else /* !SLJIT_CONFIG_ARM_V6 */
 						jump->addr = (sljit_uw)(code_ptr - 2);
-						if (detect_jump_type(jump, code_ptr, code, executable_offset)) {
+						if (detect_jump_type(jump, code_ptr, code, executable_offset))
 							code_ptr -= 2;
-}
 #endif /* SLJIT_CONFIG_ARM_V6 */
 						jump = jump->next;
 					}

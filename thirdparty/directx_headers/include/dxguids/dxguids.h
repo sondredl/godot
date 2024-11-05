@@ -7,7 +7,7 @@
 #error "This header requires C++"
 #endif
 
-constexpr inline bool; ConstexprIsEqualGUID(REFGUID a, REFGUID b)
+constexpr inline bool ConstexprIsEqualGUID(REFGUID a, REFGUID b)
 {
     return a.Data1 == b.Data1 &&
         a.Data2 == b.Data2 &&

@@ -201,17 +201,16 @@ void analysis(char *base,int i,float *v,int n,int bark,int dB){
     FILE *of;
     char buffer[80];
     sprintf(buffer,"%s_%d.m",base,i);
-    of=fopen(buffer,"we");
+    of=fopen(buffer,"w");
 
     for(j=0;j<n;j++){
-      if(dB && v[j]==0) {
+      if(dB && v[j]==0)
           fprintf(of,"\n\n");
-      } else{
-        if(bark) {
+      else{
+        if(bark)
           fprintf(of,"%g ",toBARK(22050.f*j/n));
-        } else {
+        else
           fprintf(of,"%g ",(float)j);
-}
 
         if(dB){
           fprintf(of,"%g\n",todB(v+j));
@@ -265,9 +264,8 @@ int main(int argc,char *argv[]){
         if(argv[0][1]=='v'){
           noisy=1;
         }
-      }else {
+      }else
         framesize=atoi(argv[0]);
-}
     argv++;
   }
 
@@ -304,9 +302,8 @@ int main(int argc,char *argv[]){
 
   while(!eos){
     long bytes=fread(buffer2,1,framesize*2,stdin);
-    if(bytes<framesize*2) {
+    if(bytes<framesize*2)
       memset(buffer2+bytes,0,framesize*2-bytes);
-}
 
     if(bytes!=0){
       int nonzero[2];
@@ -323,8 +320,7 @@ int main(int argc,char *argv[]){
         float secs=framesize/44100.;
 
         ampmax+=secs*ampmax_att_per_sec;
-        if(ampmax<-9999) {ampmax=-9999;
-}
+        if(ampmax<-9999)ampmax=-9999;
       }
 
       for(i=0;i<2;i++){
@@ -336,9 +332,8 @@ int main(int argc,char *argv[]){
         analysis("pre",frameno+i,pcm[i],framesize,0,0);
 
         /* fft and mdct transforms  */
-        for(j=0;j<framesize;j++) {
+        for(j=0;j<framesize;j++)
           fft[j]=pcm[i][j]*=window[j];
-}
 
         drft_forward(&f_look,fft);
 
@@ -348,16 +343,13 @@ int main(int argc,char *argv[]){
         for(j=1;j<framesize-1;j+=2){
           float temp=scale*FAST_HYPOT(fft[j],fft[j+1]);
           temp=fft[(j+1)>>1]=todB(&temp);
-          if(temp>local_ampmax[i]) {local_ampmax[i]=temp;
-}
+          if(temp>local_ampmax[i])local_ampmax[i]=temp;
         }
-        if(local_ampmax[i]>ampmax) {ampmax=local_ampmax[i];
-}
+        if(local_ampmax[i]>ampmax)ampmax=local_ampmax[i];
 
         mdct_forward(&m_look,pcm[i],mdct);
-        for(j=0;j<framesize/2;j++) {
+        for(j=0;j<framesize/2;j++)
           logmdct[j]=todB(mdct+j);
-}
 
         analysis("mdct",frameno+i,logmdct,framesize/2,1,0);
         analysis("fft",frameno+i,fft,framesize/2,1,0);
@@ -410,11 +402,9 @@ int main(int argc,char *argv[]){
                          pcm[i],
                          local_ampmax[i]);
 
-        for(j=0;j<framesize/2;j++) {
-          if(fabs(pcm[i][j])>1500) {
+        for(j=0;j<framesize/2;j++)
+          if(fabs(pcm[i][j])>1500)
             fprintf(stderr,"%ld ",frameno+i);
-}
-}
 
         analysis("res",frameno+i,pcm[i],framesize/2,1,0);
         analysis("codedflr",frameno+i,flr[i],framesize/2,1,1);
@@ -426,9 +416,8 @@ int main(int argc,char *argv[]){
                              pcm,
                              nonzero);
 
-      for(i=0;i<2;i++) {
+      for(i=0;i<2;i++)
         analysis("quant",frameno+i,pcm[i],framesize/2,1,0);
-}
 
       /* channel coupling / stereo quantization */
 
@@ -437,9 +426,8 @@ int main(int argc,char *argv[]){
                  pcm,
                  nonzero);
 
-      for(i=0;i<2;i++) {
+      for(i=0;i<2;i++)
         analysis("coupled",frameno+i,pcm[i],framesize/2,1,0);
-}
 
       /* decoupling */
       for(i=mapping_info.coupling_steps-1;i>=0;i--){
@@ -450,7 +438,7 @@ int main(int argc,char *argv[]){
           float mag=pcmM[j];
           float ang=pcmA[j];
 
-          if(mag>0) {
+          if(mag>0)
             if(ang>0){
               pcmM[j]=mag;
               pcmA[j]=mag-ang;
@@ -458,7 +446,7 @@ int main(int argc,char *argv[]){
               pcmA[j]=mag;
               pcmM[j]=mag+ang;
             }
-          } else
+          else
             if(ang>0){
               pcmM[j]=mag;
               pcmA[j]=mag+ang;
@@ -469,25 +457,22 @@ int main(int argc,char *argv[]){
         }
       }
 
-      for(i=0;i<2;i++) {
+      for(i=0;i<2;i++)
         analysis("decoupled",frameno+i,pcm[i],framesize/2,1,0);
-}
 
       for(i=0;i<2;i++){
         float amp;
 
-        for(j=0;j<framesize/2;j++) {
+        for(j=0;j<framesize/2;j++)
           pcm[i][j]*=flr[i][j];
-}
 
         analysis("final",frameno+i,pcm[i],framesize/2,1,1);
 
         /* take it back to time */
         mdct_backward(&m_look,pcm[i],pcm[i]);
 
-        for(j=0;j<framesize/2;j++) {
+        for(j=0;j<framesize/2;j++)
           out[i][j]+=pcm[i][j]*window[j];
-}
 
         analysis("out",frameno+i,out[i],framesize/2,0,0);
 
@@ -503,14 +488,12 @@ int main(int argc,char *argv[]){
           int val=mono[j]*32767.;
           /* might as well guard against clipping */
           if(val>32767){
-            if(!flag) {fprintf(stderr,"clipping in frame %ld ",frameno+i);
-}
+            if(!flag)fprintf(stderr,"clipping in frame %ld ",frameno+i);
             flag=1;
             val=32767;
           }
           if(val<-32768){
-            if(!flag) {fprintf(stderr,"clipping in frame %ld ",frameno+i);
-}
+            if(!flag)fprintf(stderr,"clipping in frame %ld ",frameno+i);
             flag=1;
             val=-32768;
           }
@@ -525,14 +508,12 @@ int main(int argc,char *argv[]){
       memmove(buffer,buffer2,framesize*2);
 
       for(i=0;i<2;i++){
-        for(j=0,k=framesize/2;j<framesize/2;j++,k++) {
+        for(j=0,k=framesize/2;j<framesize/2;j++,k++)
           out[i][j]=pcm[i][k]*window[k];
-}
       }
       frameno+=2;
-    }else {
+    }else
       eos=1;
-}
   }
   fprintf(stderr,"average raw bits of entropy: %.03g/sample\n",acc/tot);
   fprintf(stderr,"average nonzero samples: %.03g/%d\n",nonz/tot*framesize/2,

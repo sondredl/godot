@@ -58,8 +58,7 @@ WebpLoader::~WebpLoader()
 {
     this->done();
 
-    if (freeData) { free(data);
-}
+    if (freeData) free(data);
     data = nullptr;
     size = 0;
     freeData = false;
@@ -70,31 +69,24 @@ WebpLoader::~WebpLoader()
 bool WebpLoader::open(const string& path)
 {
     auto webpFile = fopen(path.c_str(), "rb");
-    if (!webpFile) { return false;
-}
+    if (!webpFile) return false;
 
     auto ret = false;
 
     //determine size
-    if (fseek(webpFile, 0, SEEK_END) < 0) { goto finalize;
-}
-    if (((size = ftell(webpFile)) < 1)) { goto finalize;
-}
-    if (fseek(webpFile, 0, SEEK_SET)) { goto finalize;
-}
+    if (fseek(webpFile, 0, SEEK_END) < 0) goto finalize;
+    if (((size = ftell(webpFile)) < 1)) goto finalize;
+    if (fseek(webpFile, 0, SEEK_SET)) goto finalize;
 
     data = (unsigned char *) malloc(size);
-    if (!data) { goto finalize;
-}
+    if (!data) goto finalize;
 
     freeData = true;
 
-    if (fread(data, size, 1, webpFile) < 1) { goto finalize;
-}
+    if (fread(data, size, 1, webpFile) < 1) goto finalize;
 
     int width, height;
-    if (!WebPGetInfo(data, size, &width, &height)) { goto finalize;
-}
+    if (!WebPGetInfo(data, size, &width, &height)) goto finalize;
 
     w = static_cast<float>(width);
     h = static_cast<float>(height);
@@ -111,8 +103,7 @@ bool WebpLoader::open(const char* data, uint32_t size, bool copy)
 {
     if (copy) {
         this->data = (unsigned char *) malloc(size);
-        if (!this->data) { return false;
-}
+        if (!this->data) return false;
         memcpy((unsigned char *)this->data, data, size);
         freeData = true;
     } else {
@@ -121,16 +112,25 @@ bool WebpLoader::open(const char* data, uint32_t size, bool copy)
     }
 
     int width, height;
-    return !!WebPGetInfo(this->data, size, &width, &height);
+    if (!WebPGetInfo(this->data, size, &width, &height)) return false;
+
+    w = static_cast<float>(width);
+    h = static_cast<float>(height);
+    surface.cs = ColorSpace::ARGB8888;
+    this->size = size;
+    return true;
 }
 
 
 bool WebpLoader::read()
 {
-    if (!LoadModule::read()) { return true;
-}
+    if (!LoadModule::read()) return true;
 
-    return !!data || w == 0 || h == 0;
+    if (!data || w == 0 || h == 0) return false;
+
+    TaskScheduler::request(this);
+
+    return true;
 }
 
 

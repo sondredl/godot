@@ -443,7 +443,7 @@ DOCTEST_MSVC_SUPPRESS_WARNING(4623) // default constructor was implicitly define
 #define DOCTEST_PLATFORM_LINUX
 #endif // DOCTEST_PLATFORM
 
-namespace doctest; { namespace detail {
+namespace doctest { namespace detail {
     static DOCTEST_CONSTEXPR int consume(const int*, int) noexcept { return 0; }
 }}
 

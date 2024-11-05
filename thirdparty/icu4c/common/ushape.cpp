@@ -668,9 +668,8 @@ int32_t destSize,uint32_t options) {
     if ((options&U_SHAPE_LETTERS_MASK) == U_SHAPE_LETTERS_UNSHAPE){
         if ( (options&U_SHAPE_LAMALEF_MASK) == U_SHAPE_LAMALEF_RESIZE){
             for(i=0;i<sourceLength;i++) {
-                if(isLamAlefChar(source[i])) {
+                if(isLamAlefChar(source[i]))
                 destSize++;
-}
             }
         }
     }
@@ -794,7 +793,7 @@ handleGeneratedSpaces(char16_t *dest, int32_t sourceLength,
         /* Lam+Alef is already shaped into LamAlef + FFFF */
         i = 0;
         while(i < sourceLength) {
-            if(dest[i] == LAMALEF_SPACE_SUB){
+            if(lamAlefOption&&dest[i] == LAMALEF_SPACE_SUB){
                 dest[i] = SPACE_CHAR;
             }
             i++;
@@ -1219,9 +1218,8 @@ shapeUnicode(char16_t *dest, int32_t sourceLength,
             char16_t inputChar  = dest[i];
             if ( (inputChar >= 0xFB50) && (inputChar <= 0xFBFF)) {
                 char16_t c = convertFBto06 [ (inputChar - 0xFB50) ];
-                if (c != 0) {
+                if (c != 0)
                     dest[i] = c;
-}
             } else if ( (inputChar >= 0xFE70) && (inputChar <= 0xFEFC)) {
                 dest[i] = convertFEto06 [ (inputChar - 0xFE70) ] ;
             } else {
@@ -1387,9 +1385,8 @@ deShapeUnicode(char16_t *dest, int32_t sourceLength,
         char16_t  inputChar = dest[i];
         if ( (inputChar >= 0xFB50) && (inputChar <= 0xFBFF)) { /* FBxx Arabic range */
             char16_t c = convertFBto06 [ (inputChar - 0xFB50) ];
-            if (c != 0) {
+            if (c != 0)
                 dest[i] = c;
-}
         } else if( (yehHamzaComposeEnabled == 1) && ((inputChar == HAMZA06_CHAR) || (inputChar == HAMZAFE_CHAR))
                 && (i < (sourceLength - 1)) && isAlefMaksouraChar(dest[i+1] )) {
                  dest[i] = SPACE_CHAR;
@@ -1403,9 +1400,8 @@ deShapeUnicode(char16_t *dest, int32_t sourceLength,
             dest[i] = inputChar ;
         }
 
-        if( isLamAlefChar(dest[i]) ) {
+        if( isLamAlefChar(dest[i]) )
             lamalef_found = 1;
-}
     }
 
    destSize = sourceLength;
@@ -1549,8 +1545,7 @@ u_shapeArabic(const char16_t *source, int32_t sourceLength,
 
         if(outputSize>destCapacity) {
             *pErrorCode=U_BUFFER_OVERFLOW_ERROR;
-                if (tempsource != nullptr) { uprv_free(tempsource);
-}
+                if (tempsource != nullptr) uprv_free(tempsource);
             return outputSize;
         }
 
@@ -1572,8 +1567,7 @@ u_shapeArabic(const char16_t *source, int32_t sourceLength,
             /*Test for nullptr*/
             if(tempbuffer == nullptr) {
                 *pErrorCode = U_MEMORY_ALLOCATION_ERROR;
-                if (tempsource != nullptr) { uprv_free(tempsource);
-}
+                if (tempsource != nullptr) uprv_free(tempsource);
                 return 0;
             }
         }

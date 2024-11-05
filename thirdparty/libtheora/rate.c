@@ -38,8 +38,7 @@ static int oc_warp_alpha(int _alpha){
   int t0;
   int t1;
   i=_alpha*36>>24;
-  if(i>=17) {i=16;
-}
+  if(i>=17)i=16;
   t0=OC_ROUGH_TAN_LOOKUP[i];
   t1=OC_ROUGH_TAN_LOOKUP[i+1];
   d=_alpha*36-(i<<24);
@@ -170,9 +169,8 @@ void oc_enc_calc_lambda(oc_enc_ctx *_enc,int _qti){
      to reach, and give the rate control a semblance of "fractional qi"
      precision.
     TODO: Add API for changing QI, and allow extra precision.*/
-  if(_enc->state.info.target_bitrate>0) {lq=_enc->rc.log_qtarget;
-  } else { lq=_enc->log_qavg[_qti][qi];
-}
+  if(_enc->state.info.target_bitrate>0)lq=_enc->rc.log_qtarget;
+  else lq=_enc->log_qavg[_qti][qi];
   /*The resulting lambda value is less than 0x500000.*/
   _enc->lambda=(int)oc_bexp64(2*lq-0x4780BD468D6B62BLL);
   /*Select additional quantizers.
@@ -196,12 +194,10 @@ void oc_enc_calc_lambda(oc_enc_ctx *_enc,int _qti){
    _enc->sp_level<OC_SP_LEVEL_FAST_ANALYSIS){
     qi1=oc_enc_find_qi_for_target(_enc,_qti,OC_MAXI(qi-1,0),0,
      lq+(OC_Q57(7)+5)/10);
-    if(qi1!=qi) {_enc->state.qis[nqis++]=qi1;
-}
+    if(qi1!=qi)_enc->state.qis[nqis++]=qi1;
     qi1=oc_enc_find_qi_for_target(_enc,_qti,OC_MINI(qi+1,63),0,
      lq-(OC_Q57(6)+5)/10);
-    if(qi1!=qi&&qi1!=_enc->state.qis[nqis-1]) {_enc->state.qis[nqis++]=qi1;
-}
+    if(qi1!=qi&&qi1!=_enc->state.qis[nqis-1])_enc->state.qis[nqis++]=qi1;
   }
   _enc->state.nqis=nqis;
 }
@@ -224,7 +220,7 @@ static ogg_int64_t oc_bexp_q24(ogg_int32_t _log_scale){
   _in: input in Q57 format.
   Return: same number in Q24 */
 static ogg_int32_t oc_q57_to_q24(ogg_int64_t _in){
-
+  ogg_int64_t ret;
   ret=_in+((ogg_int64_t)1<<32)>>33;
   /*0x80000000 is automatically converted to unsigned on 32-bit systems.
     -0x7FFFFFFF-1 is needed to avoid "promoting" the whole expression to
@@ -239,7 +235,7 @@ static ogg_int32_t oc_q57_to_q24(ogg_int64_t _in){
    _log_scale was too large.*/
 static ogg_int32_t oc_bexp64_q24(ogg_int64_t _log_scale){
   if(_log_scale<OC_Q57(8)){
-
+    ogg_int64_t ret;
     ret=oc_bexp64(_log_scale+OC_Q57(24));
     return ret<0x7FFFFFFF?(ogg_int32_t)ret:0x7FFFFFFF;
   }
@@ -260,8 +256,7 @@ static void oc_enc_rc_reset(oc_enc_ctx *_enc){
   if(_enc->rc.bits_per_frame>0x400000000000LL){
     _enc->rc.bits_per_frame=(ogg_int64_t)0x400000000000LL;
   }
-  else if(_enc->rc.bits_per_frame<32) {_enc->rc.bits_per_frame=32;
-}
+  else if(_enc->rc.bits_per_frame<32)_enc->rc.bits_per_frame=32;
   _enc->rc.buf_delay=OC_MAXI(_enc->rc.buf_delay,12);
   _enc->rc.max=_enc->rc.bits_per_frame*_enc->rc.buf_delay;
   /*Start with a buffer fullness of 50% plus 25% of the amount we plan to spend
@@ -350,8 +345,8 @@ void oc_rc_state_clear(oc_rc_state *_rc){
 
 void oc_enc_rc_resize(oc_enc_ctx *_enc){
   /*If encoding has not yet begun, reset the buffer state.*/
-  if(_enc->state.curframe_num<0) {oc_enc_rc_reset(_enc);
-  } else{
+  if(_enc->state.curframe_num<0)oc_enc_rc_reset(_enc);
+  else{
     int idt;
     /*Otherwise, update the bounds on the buffer, but not the current
        fullness.*/
@@ -363,8 +358,7 @@ void oc_enc_rc_resize(oc_enc_ctx *_enc){
     if(_enc->rc.bits_per_frame>0x400000000000LL){
       _enc->rc.bits_per_frame=(ogg_int64_t)0x400000000000LL;
     }
-    else if(_enc->rc.bits_per_frame<32) {_enc->rc.bits_per_frame=32;
-}
+    else if(_enc->rc.bits_per_frame<32)_enc->rc.bits_per_frame=32;
     _enc->rc.buf_delay=OC_MAXI(_enc->rc.buf_delay,12);
     _enc->rc.max=_enc->rc.bits_per_frame*_enc->rc.buf_delay;
     _enc->rc.target=(_enc->rc.max+1>>1)+(_enc->rc.bits_per_frame+2>>2)*
@@ -402,8 +396,7 @@ void oc_enc_rc_resize(oc_enc_ctx *_enc){
         /*We failed to allocate a finite buffer.*/
         /*If we don't have a valid 2-pass header yet, just return; we'll reset
            the buffer size when we read the header.*/
-        if(_enc->rc.frames_total[0]==0) {return;
-}
+        if(_enc->rc.frames_total[0]==0)return;
         /*Otherwise revert to the largest finite buffer previously set, or to
            whole-file buffering if we were still using that.*/
         _enc->rc.buf_delay=_enc->rc.frame_metrics!=NULL?
@@ -421,8 +414,7 @@ void oc_enc_rc_resize(oc_enc_ctx *_enc){
         int shift;
         shift=OC_MINI(fmh+nfm-cfm,buf_delay-cfm);
         memcpy(fm+cfm,fm,OC_MINI(fmh+nfm-cfm,buf_delay-cfm)*sizeof(*fm));
-        if(fmh+nfm>buf_delay) {memmove(fm,fm+shift,fmh+nfm-buf_delay);
-}
+        if(fmh+nfm>buf_delay)memmove(fm,fm+shift,fmh+nfm-buf_delay);
       }
     }
     /*We were using whole-file buffering; now we're not.*/
@@ -462,11 +454,9 @@ static int oc_rc_scale_drop(oc_rc_state *_rc,int _nframes){
     if(dup_scale<_nframes<<8){
       int dup_scalei;
       dup_scalei=(int)dup_scale;
-      if(dup_scalei>0) {_nframes=((_nframes<<8)+dup_scalei-1)/dup_scalei;
-}
+      if(dup_scalei>0)_nframes=((_nframes<<8)+dup_scalei-1)/dup_scalei;
     }
-    else { _nframes=!!_nframes;
-}
+    else _nframes=!!_nframes;
   }
   return _nframes;
 }
@@ -502,8 +492,7 @@ int oc_enc_select_qi(oc_enc_ctx *_enc,int _qti,int _clamp){
         nframes[0]--;
         buf_delay=next_key_frame+nframes[0]*_enc->keyframe_frequency_force;
       }
-      else { buf_delay=_enc->rc.buf_delay;
-}
+      else buf_delay=_enc->rc.buf_delay;
       nframes[1]=buf_delay-nframes[0];
       /*Downgrade the delta frame rate to correspond to the recent drop count
          history.*/
@@ -536,8 +525,8 @@ int oc_enc_select_qi(oc_enc_ctx *_enc,int _qti,int _clamp){
          of the file would be (for consistency with 1-pass mode).*/
       buf_pad=OC_MINI(_enc->rc.buf_delay,_enc->state.keyframe_num
        +_enc->keyframe_frequency_force-_enc->rc.scale_window0);
-      if(buf_delay<buf_pad) {buf_pad-=buf_delay;
-      } else{
+      if(buf_delay<buf_pad)buf_pad-=buf_delay;
+      else{
         /*Otherwise, search for the last keyframe in the buffer window and
            target that.*/
         buf_pad=0;
@@ -549,16 +538,13 @@ int oc_enc_select_qi(oc_enc_ctx *_enc,int _qti,int _clamp){
           int fmi;
           int fm_tail;
           fm_tail=_enc->rc.frame_metrics_head+_enc->rc.nframe_metrics;
-          if(fm_tail>=_enc->rc.cframe_metrics) {fm_tail-=_enc->rc.cframe_metrics;
-}
+          if(fm_tail>=_enc->rc.cframe_metrics)fm_tail-=_enc->rc.cframe_metrics;
           for(fmi=fm_tail;;){
             oc_frame_metrics *m;
             fmi--;
-            if(fmi<0) {fmi+=_enc->rc.cframe_metrics;
-}
+            if(fmi<0)fmi+=_enc->rc.cframe_metrics;
             /*Stop before we remove the first frame.*/
-            if(fmi==_enc->rc.frame_metrics_head) {break;
-}
+            if(fmi==_enc->rc.frame_metrics_head)break;
             m=_enc->rc.frame_metrics+fmi;
             /*If we find a keyframe, remove it and everything past it.*/
             if(m->frame_type==OC_INTRA_FRAME){
@@ -568,8 +554,7 @@ int oc_enc_select_qi(oc_enc_ctx *_enc,int _qti,int _clamp){
                 scale_sum[qti]-=oc_bexp_q24(m->log_scale);
                 buf_delay-=m->dup_count+1;
                 fmi++;
-                if(fmi>=_enc->rc.cframe_metrics) {fmi=0;
-}
+                if(fmi>=_enc->rc.cframe_metrics)fmi=0;
                 m=_enc->rc.frame_metrics+fmi;
               }
               while(fmi!=fm_tail);
@@ -612,13 +597,12 @@ int oc_enc_select_qi(oc_enc_ctx *_enc,int _qti,int _clamp){
         _enc->rc.log_scale[_qti]=oc_blog64(scale)
          -oc_blog64(nframes[qti])-OC_Q57(24);
       }
-      else { log_cur_scale=(ogg_int64_t)_enc->rc.cur_metrics.log_scale<<33;
-}
+      else log_cur_scale=(ogg_int64_t)_enc->rc.cur_metrics.log_scale<<33;
       /*Add the padding from above.
         This basically reverts to 1-pass estimations in the last keyframe
          interval.*/
       if(buf_pad>0){
-
+        ogg_int64_t scale;
         int         nextra_frames;
         /*Extend the buffer.*/
         buf_delay+=buf_pad;
@@ -643,8 +627,8 @@ int oc_enc_select_qi(oc_enc_ctx *_enc,int _qti,int _clamp){
   log_scale0=_enc->rc.log_scale[_qti]+_enc->rc.log_npixels;
   /*If there aren't enough bits to achieve our desired fullness level, use the
      minimum quality permitted.*/
-  if(rate_total<=buf_delay) {log_qtarget=OC_QUANT_MAX_LOG;
-  } else{
+  if(rate_total<=buf_delay)log_qtarget=OC_QUANT_MAX_LOG;
+  else{
     static const ogg_int64_t LOG_KEY_RATIO=0x0137222BB70747BALL;
     ogg_int64_t log_scale1;
     ogg_int64_t rlo;
@@ -665,10 +649,9 @@ int oc_enc_select_qi(oc_enc_ctx *_enc,int _qti,int _clamp){
       log_rpow*=_enc->rc.exp[1-_qti];
       rscale=nframes[1-_qti]*oc_bexp64(log_scale1+log_rpow);
       rdiff=nframes[_qti]*curr+rscale-rate_total;
-      if(rdiff<0) {rlo=curr+1;
-      } else if(rdiff>0) {rhi=curr-1;
-      } else { break;
-}
+      if(rdiff<0)rlo=curr+1;
+      else if(rdiff>0)rhi=curr-1;
+      else break;
     }
     log_qtarget=OC_Q57(2)-((oc_blog64(rlo)-log_scale0+(_enc->rc.exp[_qti]>>1))/
      _enc->rc.exp[_qti]<<6);
@@ -765,7 +748,7 @@ int oc_enc_update_rc_state(oc_enc_ctx *_enc,
   }
   else{
     ogg_int64_t log_bits;
-
+    ogg_int64_t log_qexp;
     /*Compute the estimated scale factor for this frame type.*/
     log_bits=oc_blog64(_bits);
     log_qexp=_enc->rc.log_qtarget-OC_Q57(2);
@@ -859,12 +842,10 @@ int oc_enc_update_rc_state(oc_enc_ctx *_enc,
       }
     }
     /*Increment the INTER frame count, for filter adaptation purposes.*/
-    if(_enc->rc.inter_count<INT_MAX) {_enc->rc.inter_count+=_qti;
-}
+    if(_enc->rc.inter_count<INT_MAX)_enc->rc.inter_count+=_qti;
   }
   /*Increase the drop count.*/
-  else { _enc->rc.prev_drop_count+=1+_enc->dup_count;
-}
+  else _enc->rc.prev_drop_count+=1+_enc->dup_count;
   /*And update the buffer fullness level.*/
   if(!_trial){
     _enc->rc.fullness+=buf_delta-_bits;
@@ -955,7 +936,7 @@ static size_t oc_rc_buffer_fill(oc_rc_state *_rc,
 }
 
 static ogg_int64_t oc_rc_unbuffer_val(oc_rc_state *_rc,int _bytes){
-
+  ogg_int64_t ret;
   int         shift;
   ret=0;
   shift=0;
@@ -1066,8 +1047,7 @@ int oc_enc_rc_2pass_in(oc_enc_ctx *_enc,unsigned char *_buf,size_t _bytes){
     else if(_enc->rc.twopass_buffer_bytes==0){
       if(_enc->rc.frame_metrics==NULL){
         /*We're using a whole-file buffer:*/
-        if(!_buf) {return OC_RC_2PASS_PACKET_SZ-_enc->rc.twopass_buffer_fill;
-}
+        if(!_buf)return OC_RC_2PASS_PACKET_SZ-_enc->rc.twopass_buffer_fill;
         consumed=oc_rc_buffer_fill(&_enc->rc,
          _buf,_bytes,consumed,OC_RC_2PASS_PACKET_SZ);
         if(_enc->rc.twopass_buffer_fill>=OC_RC_2PASS_PACKET_SZ){
@@ -1120,8 +1100,7 @@ int oc_enc_rc_2pass_in(oc_enc_ctx *_enc,unsigned char *_buf,size_t _bytes){
             activity=oc_rc_unbuffer_val(&_enc->rc,4);
             /*Add the to the circular buffer.*/
             fmi=_enc->rc.frame_metrics_head+_enc->rc.nframe_metrics++;
-            if(fmi>=_enc->rc.cframe_metrics) {fmi-=_enc->rc.cframe_metrics;
-}
+            if(fmi>=_enc->rc.cframe_metrics)fmi-=_enc->rc.cframe_metrics;
             m=_enc->rc.frame_metrics+fmi;
             m->log_scale=log_scale;
             qti=(dup_count&0x80000000)>>31;
@@ -1144,8 +1123,7 @@ int oc_enc_rc_2pass_in(oc_enc_ctx *_enc,unsigned char *_buf,size_t _bytes){
             _enc->rc.twopass_buffer_bytes=0;
           }
           /*Go back for more data.*/
-          else { break;
-}
+          else break;
         }
         /*If we've got all the frames we need, fill in the current metrics.
           We're ready to go.*/

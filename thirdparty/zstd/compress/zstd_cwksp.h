@@ -225,9 +225,8 @@ MEM_STATIC size_t ZSTD_cwksp_align(size_t size, size_t const align) {
  * Do not use for sizing aligned buffers. Instead, use ZSTD_cwksp_aligned_alloc_size().
  */
 MEM_STATIC size_t ZSTD_cwksp_alloc_size(size_t size) {
-    if (size == 0) {
+    if (size == 0)
         return 0;
-}
 #if ZSTD_ADDRESS_SANITIZER && !defined (ZSTD_ASAN_DONT_POISON_WORKSPACE)
     return size + 2 * ZSTD_CWKSP_ASAN_REDZONE_SIZE;
 #else

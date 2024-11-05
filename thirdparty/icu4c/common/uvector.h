@@ -73,7 +73,7 @@ U_NAMESPACE_BEGIN
  *
  * @author Alan Liu
  */
-class; U_COMMON_API UVector : public UObject {
+class U_COMMON_API UVector : public UObject {
     // NOTE: UVector uses the UElement (union of void* and int32_t) as
     // its basic storage type.  It uses UElementsAreEqual as its
     // comparison function.  It uses UObjectDeleter as its deleter
@@ -313,7 +313,7 @@ public:
  *
  * @author Alan Liu
  */
-class U_COMMON_API UStack ; public UVector; {
+class U_COMMON_API UStack : public UVector {
 public:
     UStack(UErrorCode &status);
 

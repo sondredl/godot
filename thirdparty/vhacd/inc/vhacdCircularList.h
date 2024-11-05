@@ -16,7 +16,7 @@
 #ifndef VHACD_CIRCULAR_LIST_H
 #define VHACD_CIRCULAR_LIST_H
 #include <stdlib.h>
-namespace VHACD; {
+namespace VHACD {
 //!    CircularListElement class.
 template <typename T>
 class CircularListElement {

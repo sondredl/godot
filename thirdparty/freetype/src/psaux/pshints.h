@@ -71,8 +71,8 @@ FT_BEGIN_HEADER
   {
     FT_Error*  error;
 
-    _Bool  isValid;
-    _Bool  isNew;
+    FT_Bool  isValid;
+    FT_Bool  isNew;
 
     size_t  bitCount;
     size_t  byteCount;
@@ -84,7 +84,7 @@ FT_BEGIN_HEADER
 
   typedef struct  CF2_StemHintRec_
   {
-    _Bool  used;     /* DS positions are valid         */
+    FT_Bool  used;     /* DS positions are valid         */
 
     CF2_Fixed  min;    /* original character space value */
     CF2_Fixed  max;
@@ -133,8 +133,8 @@ FT_BEGIN_HEADER
     /* working storage for 2nd pass adjustHints */
     CF2_ArrStack  hintMoves;
 
-    _Bool  isValid;
-    _Bool  hinted;
+    FT_Bool  isValid;
+    FT_Bool  hinted;
 
     CF2_Fixed  scale;
     CF2_UInt   count;

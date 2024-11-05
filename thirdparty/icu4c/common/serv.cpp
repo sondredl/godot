@@ -276,7 +276,7 @@ public:
     const Locale locale;
 
     DNCache(const Locale& _locale)
-        :  locale(_locale)
+        : cache(), locale(_locale)
     {
         // cache.setKeyDeleter(uprv_deleteUObject);
     }
@@ -401,12 +401,10 @@ public:
         : fMutex(mutex)
         , fActive(!reentering)
     {
-        if (fActive) { umtx_lock(fMutex);
-}
+        if (fActive) umtx_lock(fMutex);
     }
     inline ~XMutex() {
-        if (fActive) { umtx_unlock(fMutex);
-}
+        if (fActive) umtx_unlock(fMutex);
     }
 
 private:
@@ -642,8 +640,7 @@ ICUService::getVisibleIDs(UVector& result, const UnicodeString* matchID, UErrorC
 
 const Hashtable*
 ICUService::getVisibleIDMap(UErrorCode& status) const {
-    if (U_FAILURE(status)) { return nullptr;
-}
+    if (U_FAILURE(status)) return nullptr;
 
     // must only be called when lock is already held
 

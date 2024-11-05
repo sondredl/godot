@@ -18,9 +18,8 @@ static void interpolate(T *output, const BitmapConstRef<T, N> &bitmap, Point2 po
     double bt = pos.y-b;
     l = clamp(l, bitmap.width-1), r = clamp(r, bitmap.width-1);
     b = clamp(b, bitmap.height-1), t = clamp(t, bitmap.height-1);
-    for (int i = 0; i < N; ++i) {
+    for (int i = 0; i < N; ++i)
         output[i] = mix(mix(bitmap(l, b)[i], bitmap(r, b)[i], lr), mix(bitmap(l, t)[i], bitmap(r, t)[i], lr), bt);
-}
 }
 
 }

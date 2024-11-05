@@ -78,7 +78,7 @@ typedef struct _XkbMods {
 } XkbModsRec,*XkbModsPtr;
 
 typedef struct _XkbKTMapEntry {
-	_Bool		active;
+	Bool		active;
 	unsigned char	level;
 	XkbModsRec	mods;
 } XkbKTMapEntryRec,*XkbKTMapEntryPtr;

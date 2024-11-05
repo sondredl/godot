@@ -31,9 +31,8 @@
     FT_ULong  count;
 
 
-    if ( state->in_eof ) {
+    if ( state->in_eof )
       return -1;
-}
 
     count = FT_Stream_TryRead( state->source,
                                state->buf_tab,
@@ -45,15 +44,13 @@
     state->buf_offset = 0;
 
     state->buf_size <<= 3;
-    if ( state->buf_size > state->num_bits ) {
+    if ( state->buf_size > state->num_bits )
       state->buf_size -= state->num_bits - 1;
-    } else {
+    else
       return -1; /* not enough data */
-}
 
-    if ( count == 0 ) {  /* end of file */
+    if ( count == 0 )  /* end of file */
       return -1;
-}
 
     return 0;
   }
@@ -75,9 +72,8 @@
       if ( state->free_ent >= state->free_bits )
       {
         state->num_bits = ++num_bits;
-        if ( num_bits > LZW_MAX_BITS ) {
+        if ( num_bits > LZW_MAX_BITS )
           return -1;
-}
 
         state->free_bits = state->num_bits < state->max_bits
                            ? (FT_UInt)( ( 1UL << num_bits ) - 256 )
@@ -91,9 +87,8 @@
         state->buf_clear = 0;
       }
 
-      if ( ft_lzwstate_refill( state ) < 0 ) {
+      if ( ft_lzwstate_refill( state ) < 0 )
         return -1;
-}
 
       offset = 0;
     }
@@ -144,19 +139,16 @@
       if ( new_size > ( 1 << LZW_MAX_BITS ) )
       {
         new_size = 1 << LZW_MAX_BITS;
-        if ( new_size == old_size ) {
+        if ( new_size == old_size )
           return -1;
-}
       }
 
-      if ( FT_QREALLOC( state->stack, old_size, new_size ) ) {
+      if ( FT_QREALLOC( state->stack, old_size, new_size ) )
         return -1;
-}
 
       /* if relocating to heap */
-      if ( old_size == 0 ) {
+      if ( old_size == 0 )
         FT_MEM_COPY( state->stack, state->stack_0, FT_LZW_DEFAULT_STACK_SIZE );
-}
 
       state->stack_size = new_size;
     }
@@ -188,9 +180,8 @@
      *
      */
     if ( FT_REALLOC_MULT( state->prefix, old_size, new_size,
-                          sizeof ( FT_UShort ) + sizeof ( FT_Byte ) ) ) {
+                          sizeof ( FT_UShort ) + sizeof ( FT_Byte ) ) )
       return -1;
-}
 
     /* now adjust `suffix' and move the data accordingly */
     state->suffix = (FT_Byte*)( state->prefix + new_size );

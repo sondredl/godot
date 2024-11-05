@@ -61,8 +61,7 @@ float _float32_unpack(long val){
   double mant=val&0x1fffff;
   int    sign=val&0x80000000;
   long   exp =(val&0x7fe00000L)>>VQ_FMAN;
-  if(sign) {mant= -mant;
-}
+  if(sign)mant= -mant;
   exp=exp-(VQ_FMAN-1)-VQ_FEXP_BIAS;
   /* clamp excessive exponent values */
   if (exp>63){
@@ -122,17 +121,14 @@ ogg_uint32_t *_make_words(char *l,long n,long sparsecount){
       /* prune the tree; the implicit invariant says all the longer
          markers were dangling from our just-taken node.  Dangle them
          from our *new* node. */
-      for(j=length+1;j<33;j++) {
+      for(j=length+1;j<33;j++)
         if((marker[j]>>1) == entry){
           entry=marker[j];
           marker[j]=marker[j-1]<<1;
-        }else {
+        }else
           break;
-}
-}
     }else
-      if(sparsecount==0) {count++;
-}
+      if(sparsecount==0)count++;
   }
 
   /* any underpopulated tree must be rejected. */
@@ -140,12 +136,11 @@ ogg_uint32_t *_make_words(char *l,long n,long sparsecount){
      They have a single codeword '0' of length 1 that results in an
      underpopulated tree.  Shield that case from the underformed tree check. */
   if(!(count==1 && marker[2]==2)){
-    for(i=1;i<33;i++) {
+    for(i=1;i<33;i++)
       if(marker[i] & (0xffffffffUL>>(32-i))){
         _ogg_free(r);
         return(NULL);
       }
-}
   }
 
   /* bitreverse the words because our bitwise packer/unpacker is LSb
@@ -160,9 +155,8 @@ ogg_uint32_t *_make_words(char *l,long n,long sparsecount){
     if(sparsecount){
       if(l[i])
         r[count++]=temp;
-    }else {
-      r
-}[count++]=temp;
+    }else
+      r[count++]=temp;
   }
 
   return(r);
@@ -191,12 +185,10 @@ long _book_maptype1_quantvals(const static_codebook *b){
     long acc1=1;
     int i;
     for(i=0;i<b->dim;i++){
-      if(b->entries/vals<acc) {break;
-}
+      if(b->entries/vals<acc)break;
       acc*=vals;
-      if(LONG_MAX/(vals+1)<acc1) {acc1=LONG_MAX;
-      } else { acc1*=vals+1;
-}
+      if(LONG_MAX/(vals+1)<acc1)acc1=LONG_MAX;
+      else acc1*=vals+1;
     }
     if(i>=b->dim && acc<=b->entries && acc1>b->entries){
       return(vals);
@@ -243,13 +235,11 @@ float *_book_unquantize(const static_codebook *b,int n,int *sparsemap){
             int index= (j/indexdiv)%quantvals;
             float val=b->quantlist[index];
             val=fabs(val)*delta+mindel+last;
-            if(b->q_sequencep) {last=val;
-}
-            if(sparsemap) {
+            if(b->q_sequencep)last=val;
+            if(sparsemap)
               r[sparsemap[count]*b->dim+k]=val;
-            } else {
+            else
               r[count*b->dim+k]=val;
-}
             indexdiv*=quantvals;
           }
           count++;
@@ -265,13 +255,11 @@ float *_book_unquantize(const static_codebook *b,int n,int *sparsemap){
           for(k=0;k<b->dim;k++){
             float val=b->quantlist[j*b->dim+k];
             val=fabs(val)*delta+mindel+last;
-            if(b->q_sequencep) {last=val;
-}
-            if(sparsemap) {
+            if(b->q_sequencep)last=val;
+            if(sparsemap)
               r[sparsemap[count]*b->dim+k]=val;
-            } else {
+            else
               r[count*b->dim+k]=val;
-}
           }
           count++;
         }
@@ -286,10 +274,8 @@ float *_book_unquantize(const static_codebook *b,int n,int *sparsemap){
 
 void vorbis_staticbook_destroy(static_codebook *b){
   if(b->allocedp){
-    if(b->quantlist) {_ogg_free(b->quantlist);
-}
-    if(b->lengthlist) {_ogg_free(b->lengthlist);
-}
+    if(b->quantlist)_ogg_free(b->quantlist);
+    if(b->lengthlist)_ogg_free(b->lengthlist);
     memset(b,0,sizeof(*b));
     _ogg_free(b);
   } /* otherwise, it is in static memory */
@@ -298,17 +284,12 @@ void vorbis_staticbook_destroy(static_codebook *b){
 void vorbis_book_clear(codebook *b){
   /* static book is not cleared; we're likely called on the lookup and
      the static codebook belongs to the info struct */
-  if(b->valuelist) {_ogg_free(b->valuelist);
-}
-  if(b->codelist) {_ogg_free(b->codelist);
-}
+  if(b->valuelist)_ogg_free(b->valuelist);
+  if(b->codelist)_ogg_free(b->codelist);
 
-  if(b->dec_index) {_ogg_free(b->dec_index);
-}
-  if(b->dec_codelengths) {_ogg_free(b->dec_codelengths);
-}
-  if(b->dec_firsttable) {_ogg_free(b->dec_firsttable);
-}
+  if(b->dec_index)_ogg_free(b->dec_index);
+  if(b->dec_codelengths)_ogg_free(b->dec_codelengths);
+  if(b->dec_firsttable)_ogg_free(b->dec_firsttable);
 
   memset(b,0,sizeof(*b));
 }
@@ -350,11 +331,9 @@ int vorbis_book_init_decode(codebook *c,const static_codebook *s){
   memset(c,0,sizeof(*c));
 
   /* count actually used entries and find max length */
-  for(i=0;i<s->entries;i++) {
-    if(s->lengthlist[i]>0) {
+  for(i=0;i<s->entries;i++)
+    if(s->lengthlist[i]>0)
       n++;
-}
-}
 
   c->entries=s->entries;
   c->used_entries=n;
@@ -375,8 +354,7 @@ int vorbis_book_init_decode(codebook *c,const static_codebook *s){
     ogg_uint32_t *codes=_make_words(s->lengthlist,s->entries,c->used_entries);
     ogg_uint32_t **codep=alloca(sizeof(*codep)*n);
 
-    if(codes==NULL) {goto err_out;
-}
+    if(codes==NULL)goto err_out;
 
     for(i=0;i<n;i++){
       codes[i]=bitreverse(codes[i]);
@@ -400,22 +378,18 @@ int vorbis_book_init_decode(codebook *c,const static_codebook *s){
     c->valuelist=_book_unquantize(s,n,sortindex);
     c->dec_index=_ogg_malloc(n*sizeof(*c->dec_index));
 
-    for(n=0,i=0;i<s->entries;i++) {
-      if(s->lengthlist[i]>0) {
+    for(n=0,i=0;i<s->entries;i++)
+      if(s->lengthlist[i]>0)
         c->dec_index[sortindex[n++]]=i;
-}
-}
 
     c->dec_codelengths=_ogg_malloc(n*sizeof(*c->dec_codelengths));
     c->dec_maxlength=0;
-    for(n=0,i=0;i<s->entries;i++) {
+    for(n=0,i=0;i<s->entries;i++)
       if(s->lengthlist[i]>0){
         c->dec_codelengths[sortindex[n++]]=s->lengthlist[i];
-        if(s->lengthlist[i]>c->dec_maxlength) {
+        if(s->lengthlist[i]>c->dec_maxlength)
           c->dec_maxlength=s->lengthlist[i];
-}
       }
-}
 
     if(n==1 && c->dec_maxlength==1){
       /* special case the 'single entry codebook' with a single bit
@@ -427,10 +401,8 @@ int vorbis_book_init_decode(codebook *c,const static_codebook *s){
 
     }else{
       c->dec_firsttablen=ov_ilog(c->used_entries)-4; /* this is magic */
-      if(c->dec_firsttablen<5) {c->dec_firsttablen=5;
-}
-      if(c->dec_firsttablen>8) {c->dec_firsttablen=8;
-}
+      if(c->dec_firsttablen<5)c->dec_firsttablen=5;
+      if(c->dec_firsttablen>8)c->dec_firsttablen=8;
 
       tabn=1<<c->dec_firsttablen;
       c->dec_firsttable=_ogg_calloc(tabn,sizeof(*c->dec_firsttable));
@@ -452,10 +424,8 @@ int vorbis_book_init_decode(codebook *c,const static_codebook *s){
         for(i=0;i<tabn;i++){
           ogg_uint32_t word=i<<(32-c->dec_firsttablen);
           if(c->dec_firsttable[bitreverse(word)]==0){
-            while((lo+1)<n && c->codelist[lo+1]<=word) {lo++;
-}
-            while(    hi<n && word>=(c->codelist[hi]&mask)) {hi++;
-}
+            while((lo+1)<n && c->codelist[lo+1]<=word)lo++;
+            while(    hi<n && word>=(c->codelist[hi]&mask))hi++;
 
             /* we only actually have 15 bits per hint to play with here.
                In order to overflow gracefully (nothing breaks, efficiency
@@ -464,10 +434,8 @@ int vorbis_book_init_decode(codebook *c,const static_codebook *s){
               unsigned long loval=lo;
               unsigned long hival=n-hi;
 
-              if(loval>0x7fff) {loval=0x7fff;
-}
-              if(hival>0x7fff) {hival=0x7fff;
-}
+              if(loval>0x7fff)loval=0x7fff;
+              if(hival>0x7fff)hival=0x7fff;
               c->dec_firsttable[bitreverse(word)]=
                 0x80000000UL | (loval<<15) | hival;
             }
@@ -484,18 +452,16 @@ int vorbis_book_init_decode(codebook *c,const static_codebook *s){
 }
 
 long vorbis_book_codeword(codebook *book,int entry){
-  if(book->c) { /* only use with encode; decode optimizations are
+  if(book->c) /* only use with encode; decode optimizations are
                  allowed to break this */
     return book->codelist[entry];
-}
   return -1;
 }
 
 long vorbis_book_codelen(codebook *book,int entry){
-  if(book->c) { /* only use with encode; decode optimizations are
+  if(book->c) /* only use with encode; decode optimizations are
                  allowed to break this */
     return book->c->lengthlist[entry];
-}
   return -1;
 }
 

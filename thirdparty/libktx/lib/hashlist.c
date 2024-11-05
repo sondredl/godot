@@ -224,9 +224,8 @@ ktxHashList_AddKVPair(ktxHashList* pHead, const char* key, unsigned int valueLen
 
         HASH_ADD_KEYPTR( hh, *pHead, kv->key, kv->keyLen-1, kv);
         return KTX_SUCCESS;
-    } else {
-        r
-}eturn KTX_INVALID_VALUE;
+    } else
+        return KTX_INVALID_VALUE;
 }
 
 
@@ -251,13 +250,11 @@ ktxHashList_DeleteKVPair(ktxHashList* pHead, const char* key)
         ktxKVListEntry* kv;
 
         HASH_FIND_STR( *pHead, key, kv );  /* kv: pointer to target entry. */
-        if (kv != NULL) {
+        if (kv != NULL)
             HASH_DEL(*pHead, kv);
-}
         return KTX_SUCCESS;
-    } else {
-        r
-}eturn KTX_INVALID_VALUE;
+    } else
+        return KTX_INVALID_VALUE;
 }
 
 
@@ -279,9 +276,8 @@ ktxHashList_DeleteEntry(ktxHashList* pHead, ktxHashListEntry* pEntry)
     if (pHead && pEntry) {
         HASH_DEL(*pHead, pEntry);
         return KTX_SUCCESS;
-    } else {
-        r
-}eturn KTX_INVALID_VALUE;
+    } else
+        return KTX_INVALID_VALUE;
 }
 
 
@@ -313,12 +309,10 @@ ktxHashList_FindEntry(ktxHashList* pHead, const char* key,
         if (kv) {
             *ppEntry = kv;
             return KTX_SUCCESS;
-        } else {
-            r
-}eturn KTX_NOT_FOUND;
-    } else {
-        r
-}eturn KTX_INVALID_VALUE;
+        } else
+            return KTX_NOT_FOUND;
+    } else
+        return KTX_INVALID_VALUE;
 }
 
 
@@ -351,12 +345,10 @@ ktxHashList_FindValue(ktxHashList *pHead, const char* key, unsigned int* pValueL
         if (result == KTX_SUCCESS) {
             ktxHashListEntry_GetValue(pEntry, pValueLen, ppValue);
             return KTX_SUCCESS;
-        } else {
-            r
-}eturn result;
-    } else {
-        r
-}eturn KTX_INVALID_VALUE;
+        } else
+            return result;
+    } else
+        return KTX_INVALID_VALUE;
 }
 
 #if !__clang__ && __GNUC__
@@ -390,9 +382,8 @@ ktxHashList_Next(ktxHashListEntry* entry)
 {
     if (entry) {
         return ((ktxKVListEntry*)entry)->hh.next;
-    } else {
+    } else
         return NULL;
-}
 }
 
 
@@ -457,9 +448,8 @@ ktxHashList_Serialize(ktxHashList* pHead,
                 sd += sizeof(ktx_uint32_t);
                 memcpy(sd, kv->key, kv->keyLen);
                 sd += kv->keyLen;
-                if (kv->valueLen > 0) {
+                if (kv->valueLen > 0)
                     memcpy(sd, kv->value, kv->valueLen);
-}
                 sd += kv->valueLen;
                 padLen = _KTX_PAD4_LEN(keyValueLen);
                 memcpy(sd, padding, padLen);
@@ -467,9 +457,8 @@ ktxHashList_Serialize(ktxHashList* pHead,
             }
         }
         return KTX_SUCCESS;
-    } else {
-        r
-}eturn KTX_INVALID_VALUE;
+    } else
+        return KTX_INVALID_VALUE;
 }
 
 
@@ -555,8 +544,7 @@ ktxHashList_Deserialize(ktxHashList* pHead, unsigned int kvdLen, void* pKvd)
         key = src;
         keyLen = 0;
 
-        while (keyLen < keyAndValueByteSize && key[keyLen] != '\0') { keyLen++;
-}
+        while (keyLen < keyAndValueByteSize && key[keyLen] != '\0') keyLen++;
 
         if (key[keyLen] != '\0') {
             // Missing NULL terminator
@@ -606,9 +594,8 @@ ktxHashListEntry_GetKey(ktxHashListEntry* This,
         *pKeyLen = kv->keyLen;
         *ppKey = kv->key;
         return KTX_SUCCESS;
-    } else {
-        r
-}eturn KTX_INVALID_VALUE;
+    } else
+        return KTX_INVALID_VALUE;
 }
 
 
@@ -636,7 +623,6 @@ ktxHashListEntry_GetValue(ktxHashListEntry* This,
         *pValueLen = kv->valueLen;
         *ppValue = kv->valueLen > 0 ? kv->value : NULL;
         return KTX_SUCCESS;
-    } else {
-        r
-}eturn KTX_INVALID_VALUE;
+    } else
+        return KTX_INVALID_VALUE;
 }

@@ -45,9 +45,8 @@ bool TAttributeArgs::getInt(int& value, int argNum) const
 {
     const TConstUnion* intConst = getConstUnion(EbtInt, argNum);
 
-    if (intConst == nullptr) {
+    if (intConst == nullptr)
         return false;
-}
 
     value = intConst->getIConst();
     return true;
@@ -60,16 +59,14 @@ bool TAttributeArgs::getString(TString& value, int argNum, bool convertToLower) 
 {
     const TConstUnion* stringConst = getConstUnion(EbtString, argNum);
 
-    if (stringConst == nullptr) {
+    if (stringConst == nullptr)
         return false;
-}
 
     value = *stringConst->getSConst();
 
     // Convenience.
-    if (convertToLower) {
+    if (convertToLower)
         std::transform(value.begin(), value.end(), value.begin(), ::tolower);
-}
 
     return true;
 }
@@ -83,22 +80,18 @@ int TAttributeArgs::size() const
 // Helper to get attribute const union.  Returns nullptr on failure.
 const TConstUnion* TAttributeArgs::getConstUnion(TBasicType basicType, int argNum) const
 {
-    if (args == nullptr) {
+    if (args == nullptr)
         return nullptr;
-}
 
-    if (argNum >= (int)args->getSequence().size()) {
+    if (argNum >= (int)args->getSequence().size())
         return nullptr;
-}
 
-    if (args->getSequence()[argNum]->getAsConstantUnion() == nullptr) {
+    if (args->getSequence()[argNum]->getAsConstantUnion() == nullptr)
         return nullptr;
-}
 
     const TConstUnion* constVal = &args->getSequence()[argNum]->getAsConstantUnion()->getConstArray()[0];
-    if (constVal == nullptr || constVal->getType() != basicType) {
+    if (constVal == nullptr || constVal->getType() != basicType)
         return nullptr;
-}
 
     return constVal;
 }
@@ -106,37 +99,36 @@ const TConstUnion* TAttributeArgs::getConstUnion(TBasicType basicType, int argNu
 // Implementation of TParseContext parts of attributes
 TAttributeType TParseContext::attributeFromName(const TString& name) const
 {
-    if (name == "branch" || name == "dont_flatten") {
+    if (name == "branch" || name == "dont_flatten")
         return EatBranch;
-    } else if (name == "flatten") {
+    else if (name == "flatten")
         return EatFlatten;
-    } else if (name == "unroll") {
+    else if (name == "unroll")
         return EatUnroll;
-    } else if (name == "loop" || name == "dont_unroll") {
+    else if (name == "loop" || name == "dont_unroll")
         return EatLoop;
-    } else if (name == "dependency_infinite") {
+    else if (name == "dependency_infinite")
         return EatDependencyInfinite;
-    } else if (name == "dependency_length") {
+    else if (name == "dependency_length")
         return EatDependencyLength;
-    } else if (name == "min_iterations") {
+    else if (name == "min_iterations")
         return EatMinIterations;
-    } else if (name == "max_iterations") {
+    else if (name == "max_iterations")
         return EatMaxIterations;
-    } else if (name == "iteration_multiple") {
+    else if (name == "iteration_multiple")
         return EatIterationMultiple;
-    } else if (name == "peel_count") {
+    else if (name == "peel_count")
         return EatPeelCount;
-    } else if (name == "partial_count") {
+    else if (name == "partial_count")
         return EatPartialCount;
-    } else if (name == "subgroup_uniform_control_flow") {
+    else if (name == "subgroup_uniform_control_flow")
         return EatSubgroupUniformControlFlow;
-    } else if (name == "export") {
+    else if (name == "export")
         return EatExport;
-    } else if (name == "maximally_reconverges") {
+    else if (name == "maximally_reconverges")
         return EatMaximallyReconverges;
-    } else {
+    else
         return EatNone;
-}
 }
 
 // Make an initial leaf for the grammar from a no-argument attribute
@@ -177,9 +169,8 @@ TAttributes* TParseContext::mergeAttributes(TAttributes* attr1, TAttributes* att
 void TParseContext::handleSelectionAttributes(const TAttributes& attributes, TIntermNode* node)
 {
     TIntermSelection* selection = node->getAsSelectionNode();
-    if (selection == nullptr) {
+    if (selection == nullptr)
         return;
-}
 
     for (auto it = attributes.begin(); it != attributes.end(); ++it) {
         if (it->size() > 0) {
@@ -207,9 +198,8 @@ void TParseContext::handleSelectionAttributes(const TAttributes& attributes, TIn
 void TParseContext::handleSwitchAttributes(const TAttributes& attributes, TIntermNode* node)
 {
     TIntermSwitch* selection = node->getAsSwitchNode();
-    if (selection == nullptr) {
+    if (selection == nullptr)
         return;
-}
 
     for (auto it = attributes.begin(); it != attributes.end(); ++it) {
         if (it->size() > 0) {
@@ -240,18 +230,15 @@ void TParseContext::handleLoopAttributes(const TAttributes& attributes, TIntermN
     if (loop == nullptr) {
         // the actual loop might be part of a sequence
         TIntermAggregate* agg = node->getAsAggregate();
-        if (agg == nullptr) {
+        if (agg == nullptr)
             return;
-}
         for (auto it = agg->getSequence().begin(); it != agg->getSequence().end(); ++it) {
             loop = (*it)->getAsLoopNode();
-            if (loop != nullptr) {
+            if (loop != nullptr)
                 break;
-}
         }
-        if (loop == nullptr) {
+        if (loop == nullptr)
             return;
-}
     }
 
     for (auto it = attributes.begin(); it != attributes.end(); ++it) {
@@ -303,63 +290,53 @@ void TParseContext::handleLoopAttributes(const TAttributes& attributes, TIntermN
         };
 
         const auto spirv14 = [&](const char* feature) {
-            if (spvVersion.spv > 0 && spvVersion.spv < EShTargetSpv_1_4) {
+            if (spvVersion.spv > 0 && spvVersion.spv < EShTargetSpv_1_4)
                 warn(node->getLoc(), "attribute requires a SPIR-V 1.4 target-env", feature, "");
-}
         };
 
         int value = 0;
         unsigned uiValue = 0;
         switch (it->name) {
         case EatUnroll:
-            if (noArgument("unroll")) {
+            if (noArgument("unroll"))
                 loop->setUnroll();
-}
             break;
         case EatLoop:
-            if (noArgument("dont_unroll")) {
+            if (noArgument("dont_unroll"))
                 loop->setDontUnroll();
-}
             break;
         case EatDependencyInfinite:
-            if (noArgument("dependency_infinite")) {
+            if (noArgument("dependency_infinite"))
                 loop->setLoopDependency(TIntermLoop::dependencyInfinite);
-}
             break;
         case EatDependencyLength:
-            if (positiveSignedArgument("dependency_length", value)) {
+            if (positiveSignedArgument("dependency_length", value))
                 loop->setLoopDependency(value);
-}
             break;
         case EatMinIterations:
             spirv14("min_iterations");
-            if (unsignedArgument("min_iterations", uiValue)) {
+            if (unsignedArgument("min_iterations", uiValue))
                 loop->setMinIterations(uiValue);
-}
             break;
         case EatMaxIterations:
             spirv14("max_iterations");
-            if (unsignedArgument("max_iterations", uiValue)) {
+            if (unsignedArgument("max_iterations", uiValue))
                 loop->setMaxIterations(uiValue);
-}
             break;
         case EatIterationMultiple:
             spirv14("iteration_multiple");
-            if (positiveUnsignedArgument("iteration_multiple", uiValue)) {
+            if (positiveUnsignedArgument("iteration_multiple", uiValue))
                 loop->setIterationMultiple(uiValue);
-}
             break;
         case EatPeelCount:
             spirv14("peel_count");
-            if (unsignedArgument("peel_count", uiValue)) {
+            if (unsignedArgument("peel_count", uiValue))
                 loop->setPeelCount(uiValue);
-}
             break;
         case EatPartialCount:
             spirv14("partial_count");
-            if (unsignedArgument("partial_count", uiValue)) {
+            if (unsignedArgument("partial_count", uiValue))
                 loop->setPartialCount(uiValue);
-}
             break;
         default:
             warn(node->getLoc(), "attribute does not apply to a loop", "", "");

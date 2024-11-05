@@ -73,14 +73,12 @@ if (dest > src)
   {
   dest += n;
   src += n;
-  for (i = 0; i < n; ++i) { *(--dest) = *(--src);
-}
+  for (i = 0; i < n; ++i) *(--dest) = *(--src);
   return (void *)dest;
   }
 else
   {
-  for (i = 0; i < n; ++i) { *dest++ = *src++;
-}
+  for (i = 0; i < n; ++i) *dest++ = *src++;
   return (void *)(dest - n);
   }
 #endif   /* not HAVE_BCOPY */
@@ -211,8 +209,7 @@ PCRE2_SIZE
 PRIV(strlen)(PCRE2_SPTR str)
 {
 PCRE2_SIZE c = 0;
-while (*str++ != 0) { c++;
-}
+while (*str++ != 0) c++;
 return c;
 }
 

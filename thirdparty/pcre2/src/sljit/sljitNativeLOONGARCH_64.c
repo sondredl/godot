@@ -26,7 +26,7 @@
 
 SLJIT_API_FUNC_ATTRIBUTE const char* sljit_get_platform_name(void)
 {
-	return "LOONGARCH"; SLJIT_CPUINFO;
+	return "LOONGARCH" SLJIT_CPUINFO;
 }
 
 typedef sljit_u32 sljit_ins;
@@ -341,7 +341,7 @@ lower parts in the instruction word, denoted by the “L” and “H” suffixes
 
 static sljit_u32 cpu_feature_list = 0;
 
-static SLJIT_INLINE sljit_u32; get_cpu_features(void)
+static SLJIT_INLINE sljit_u32 get_cpu_features(void)
 {
 	if (cpu_feature_list == 0)
 		__asm__ ("cpucfg %0, %1" : "+&r"(cpu_feature_list) : "r"(LOONGARCH_CFG2));
@@ -734,7 +734,7 @@ static sljit_s32 load_immediate(struct sljit_compiler *compiler, sljit_s32 dst_r
 
 static sljit_s32 emit_op_mem(struct sljit_compiler *compiler, sljit_s32 flags, sljit_s32 reg, sljit_s32 arg, sljit_sw argw);
 
-SLJIT_API_FUNC_ATTRIBUTE sljit_s32; sljit_emit_enter(struct sljit_compiler *compiler,
+SLJIT_API_FUNC_ATTRIBUTE sljit_s32 sljit_emit_enter(struct sljit_compiler *compiler,
 	sljit_s32 options, sljit_s32 arg_types, sljit_s32 scratches, sljit_s32 saveds,
 	sljit_s32 fscratches, sljit_s32 fsaveds, sljit_s32 local_size)
 {
@@ -1005,9 +1005,8 @@ static sljit_s32 getput_arg_fast(struct sljit_compiler *compiler, sljit_s32 flag
 	 * argw in [-2048, 2047] (ld/st rd, rj, imm) can be used. */
 	if (!argw || (!(arg & OFFS_REG_MASK) && (argw <= I12_MAX && argw >= I12_MIN))) {
 		/* Works for both absolute and relative addresses. */
-		if (SLJIT_UNLIKELY(flags & ARG_TEST)) {
+		if (SLJIT_UNLIKELY(flags & ARG_TEST))
 			return 1;
-}
 
 		FAIL_IF(push_mem_inst(compiler, flags, reg, arg, argw));
 		return -1;
@@ -1023,15 +1022,13 @@ static sljit_s32 can_cache(sljit_s32 arg, sljit_sw argw, sljit_s32 next_arg, slj
 {
 	SLJIT_ASSERT((arg & SLJIT_MEM) && (next_arg & SLJIT_MEM));
 
-	if (arg & OFFS_REG_MASK) {
+	if (arg & OFFS_REG_MASK)
 		return 0;
-}
 
 	if (arg == next_arg) {
 		if (((next_argw - argw) <= I12_MAX && (next_argw - argw) >= I12_MIN)
-				|| TO_ARGW_HI(argw) == TO_ARGW_HI(next_argw)) {
+				|| TO_ARGW_HI(argw) == TO_ARGW_HI(next_argw))
 			return 1;
-}
 		return 0;
 	}
 
@@ -1106,9 +1103,8 @@ static sljit_s32 emit_op_mem(struct sljit_compiler *compiler, sljit_s32 flags, s
 	sljit_s32 base = arg & REG_MASK;
 	sljit_s32 tmp_r = TMP_REG1;
 
-	if (getput_arg_fast(compiler, flags, reg, arg, argw)) {
+	if (getput_arg_fast(compiler, flags, reg, arg, argw))
 		return compiler->error;
-}
 
 	if ((flags & MEM_MASK) <= GPR_REG && (flags & LOAD_DATA))
 		tmp_r = reg;

@@ -20,10 +20,10 @@
 #include "RecastAlloc.h"
 #include "RecastAssert.h"
 
-#include <cmath>
-#include <cstring>
-#include <cstdio>
-#include <cstdarg>
+#include <math.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdarg.h>
 
 namespace
 {
@@ -316,7 +316,12 @@ bool rcCreateHeightfield(rcContext* context, rcHeightfield& heightfield, int siz
 	heightfield.cs = cellSize;
 	heightfield.ch = cellHeight;
 	heightfield.spans = (rcSpan**)rcAlloc(sizeof(rcSpan*) * heightfield.width * heightfield.height, RC_ALLOC_PERM);
-	return !!heightfield.spans;
+	if (!heightfield.spans)
+	{
+		return false;
+	}
+	memset(heightfield.spans, 0, sizeof(rcSpan*) * heightfield.width * heightfield.height);
+	return true;
 }
 
 static void calcTriNormal(const float* v0, const float* v1, const float* v2, float* faceNormal)

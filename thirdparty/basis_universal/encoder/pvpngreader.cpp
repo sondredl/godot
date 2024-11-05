@@ -19,12 +19,12 @@
 
 #include "pvpngreader.h"
 
-#include <cstdlib>
-#include <cstdio>
-#include <cmath>
-#include <cstring>
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
 #include <vector>
-#include <cassert>
+#include <assert.h>
 
 #define PVPNG_IDAT_CRC_CHECKING (1)
 #define PVPNG_ADLER32_CHECKING (1)
@@ -111,12 +111,12 @@ public:
 	uint64_t m_ofs;
 
 	png_memory_file() :
-
+		png_file(),
 		m_ofs(0)
 	{
 	}
 
-	~png_memory_file() override
+	virtual ~png_memory_file()
 	{
 	}
 
@@ -129,11 +129,10 @@ public:
 		m_buf.resize(0);
 	}
 
-	bool resize(uint64_t new_size) override
+	virtual bool resize(uint64_t new_size)
 	{
-		if ((sizeof(size_t) == sizeof(uint32_t)) && (new_size >= 0x7FFFFFFF)) {
+		if ((sizeof(size_t) == sizeof(uint32_t)) && (new_size >= 0x7FFFFFFF))
 			return false;
-}
 
 		m_buf.resize((size_t)new_size);
 		m_ofs = m_buf.size();
@@ -141,30 +140,29 @@ public:
 		return true;
 	}
 
-	uint64_t get_size() override
+	virtual uint64_t get_size()
 	{
 		return m_buf.size();
 	}
 
-	uint64_t tell() override
+	virtual uint64_t tell()
 	{
 		return m_ofs;
 	}
 
-	bool seek(uint64_t ofs) override
+	virtual bool seek(uint64_t ofs)
 	{
 		m_ofs = ofs;
 		return true;
 	}
 
-	size_t write(const void* pBuf, size_t len) override
+	virtual size_t write(const void* pBuf, size_t len)
 	{
 		uint64_t new_size = m_ofs + len;
 		if (new_size > m_buf.size())
 		{
-			if ((sizeof(size_t) == sizeof(uint32_t)) && (new_size > 0x7FFFFFFFUL)) {
+			if ((sizeof(size_t) == sizeof(uint32_t)) && (new_size > 0x7FFFFFFFUL))
 				return 0;
-}
 			m_buf.resize((size_t)new_size);
 		}
 
@@ -174,11 +172,10 @@ public:
 		return len;
 	}
 
-	size_t read(void* pBuf, size_t len) override
+	virtual size_t read(void* pBuf, size_t len)
 	{
-		if (m_ofs >= m_buf.size()) {
+		if (m_ofs >= m_buf.size())
 			return 0;
-}
 
 		uint64_t max_bytes = minimum<uint64_t>(len, m_buf.size() - m_ofs);
 		memcpy(pBuf, &m_buf[(size_t)m_ofs], (size_t)max_bytes);
@@ -197,14 +194,14 @@ public:
 	uint64_t m_ofs;
 
 	png_readonly_memory_file() :
-
+		png_file(),
 		m_pBuf(nullptr),
 		m_buf_size(0),
 		m_ofs(0)
 	{
 	}
 
-	~png_readonly_memory_file() override
+	virtual ~png_readonly_memory_file()
 	{
 	}
 
@@ -215,30 +212,30 @@ public:
 		m_ofs = 0;
 	}
 
-	bool resize(uint64_t new_size) override
+	virtual bool resize(uint64_t new_size)
 	{
 		(void)new_size;
 		assert(0);
 		return false;
 	}
 
-	uint64_t get_size() override
+	virtual uint64_t get_size()
 	{
 		return m_buf_size;
 	}
 
-	uint64_t tell() override
+	virtual uint64_t tell()
 	{
 		return m_ofs;
 	}
 
-	bool seek(uint64_t ofs) override
+	virtual bool seek(uint64_t ofs)
 	{
 		m_ofs = ofs;
 		return true;
 	}
 
-	size_t write(const void* pBuf, size_t len) override
+	virtual size_t write(const void* pBuf, size_t len)
 	{
 		(void)pBuf;
 		(void)len;
@@ -246,11 +243,10 @@ public:
 		return 0;
 	}
 
-	size_t read(void* pBuf, size_t len) override
+	virtual size_t read(void* pBuf, size_t len)
 	{
-		if (m_ofs >= m_buf_size) {
+		if (m_ofs >= m_buf_size)
 			return 0;
-}
 
 		uint64_t max_bytes = minimum<uint64_t>(len, m_buf_size - m_ofs);
 		memcpy(pBuf, &m_pBuf[(size_t)m_ofs], (size_t)max_bytes);
@@ -275,12 +271,12 @@ public:
 	FILE* m_pFile;
 
 	png_cfile() :
-
+		png_file(),
 		m_pFile(nullptr)
 	{
 	}
 
-	~png_cfile() override
+	virtual ~png_cfile()
 	{
 		close();
 	}
@@ -305,81 +301,72 @@ public:
 		bool status = true;
 		if (m_pFile)
 		{
-			if (fclose(m_pFile) == EOF) {
+			if (fclose(m_pFile) == EOF)
 				status = false;
-}
 			m_pFile = nullptr;
 		}
 		return status;
 	}
 
-	bool resize(uint64_t new_size) override
+	virtual bool resize(uint64_t new_size)
 	{
 		if (new_size)
 		{
-			if (!seek(new_size - 1)) {
+			if (!seek(new_size - 1))
 				return false;
-}
 
 			int v = 0;
-			if (write(&v, 1) != 1) {
+			if (write(&v, 1) != 1)
 				return false;
-}
 		}
 		else
 		{
-			if (!seek(0)) {
+			if (!seek(0))
 				return false;
-}
 		}
 
 		return true;
 	}
 
-	uint64_t get_size() override
+	virtual uint64_t get_size()
 	{
 		int64_t cur_ofs = ftell64(m_pFile);
-		if (cur_ofs < 0) {
+		if (cur_ofs < 0)
 			return 0;
-}
 
-		if (fseek64(m_pFile, 0, SEEK_END) != 0) {
+		if (fseek64(m_pFile, 0, SEEK_END) != 0)
 			return 0;
-}
 
 		const int64_t cur_size = ftell64(m_pFile);
-		if (cur_size < 0) {
+		if (cur_size < 0)
 			return 0;
-}
 
-		if (fseek64(m_pFile, cur_ofs, SEEK_SET) != 0) {
+		if (fseek64(m_pFile, cur_ofs, SEEK_SET) != 0)
 			return 0;
-}
 
 		return cur_size;
 	}
 
-	uint64_t tell() override
+	virtual uint64_t tell()
 	{
 		int64_t cur_ofs = ftell64(m_pFile);
-		if (cur_ofs < 0) {
+		if (cur_ofs < 0)
 			return 0;
-}
 
 		return cur_ofs;
 	}
 
-	bool seek(uint64_t ofs) override
+	virtual bool seek(uint64_t ofs)
 	{
 		return fseek64(m_pFile, ofs, SEEK_SET) == 0;
 	}
 
-	size_t write(const void* pBuf, size_t len) override
+	virtual size_t write(const void* pBuf, size_t len)
 	{
 		return (size_t)fwrite(pBuf, 1, len, m_pFile);
 	}
 
-	size_t read(void* pBuf, size_t len) override
+	virtual size_t read(void* pBuf, size_t len)
 	{
 		return (size_t)fread(pBuf, 1, len, m_pFile);
 	}
@@ -541,9 +528,8 @@ void png_decoder::uninitialize()
 
 int png_decoder::terminate(int status)
 {
-	if (m_terminate_status == 0) {
+	if (m_terminate_status == 0)
 		m_terminate_status = status;
-}
 
 	uninitialize();
 	return status;
@@ -551,26 +537,21 @@ int png_decoder::terminate(int status)
 
 void* png_decoder::png_malloc(uint32_t len)
 {
-	if (!len) {
+	if (!len)
 		len++;
-}
 
 	void* p = malloc(len);
 
-	if (!p) {
+	if (!p)
 		return nullptr;
-}
 
 	int j;
-	for (j = 0; j < PNG_MAX_ALLOC_BLOCKS; j++) {
-		if (!m_pMalloc_blocks[j]) {
+	for (j = 0; j < PNG_MAX_ALLOC_BLOCKS; j++)
+		if (!m_pMalloc_blocks[j])
 			break;
-}
-}
 
-	if (j == PNG_MAX_ALLOC_BLOCKS) {
+	if (j == PNG_MAX_ALLOC_BLOCKS)
 		return nullptr;
-}
 
 	m_pMalloc_blocks[j] = p;
 
@@ -580,13 +561,11 @@ void* png_decoder::png_malloc(uint32_t len)
 void* png_decoder::png_calloc(uint32_t len)
 {
 	void* p = png_malloc(len);
-	if (!p) {
+	if (!p)
 		return nullptr;
-}
 
-	if (p) {
+	if (p)
 		memset(p, 0, len);
-}
 
 	return p;
 }
@@ -594,9 +573,8 @@ void* png_decoder::png_calloc(uint32_t len)
 int png_decoder::block_read(void* buf, uint32_t len)
 {
 	size_t bytes_read = m_pFile->read(buf, len);
-	if (bytes_read != len) {
+	if (bytes_read != len)
 		return terminate(PNG_READPASTEOF);
-}
 	return 0;
 }
 
@@ -605,9 +583,8 @@ int64_t png_decoder::block_read_dword()
 	uint8_t buf[4];
 
 	int status = block_read(buf, 4);
-	if (status != 0) {
+	if (status != 0)
 		return status;
-}
 
 	uint32_t v = buf[3] + ((uint32_t)buf[2] << 8) + ((uint32_t)buf[1] << 16) + ((uint32_t)buf[0] << 24);
 	return (int64_t)v;
@@ -615,16 +592,14 @@ int64_t png_decoder::block_read_dword()
 
 int png_decoder::fetch_next_chunk_data(uint8_t* buf, int bytes)
 {
-	if (!m_chunk_flag) {
+	if (!m_chunk_flag)
 		return 0;
-}
 
 	bytes = minimum<int>(bytes, m_chunk_left);
 
 	int status = block_read(buf, bytes);
-	if (status != 0) {
+	if (status != 0)
 		return status;
-}
 
 #if PVPNG_IDAT_CRC_CHECKING
 	bool check_crc32 = true;
@@ -633,22 +608,19 @@ int png_decoder::fetch_next_chunk_data(uint8_t* buf, int bytes)
 	bool check_crc32 = !is_idat;
 #endif
 
-	if (check_crc32) {
+	if (check_crc32)
 		m_chunk_crc32 = buminiz::mz_crc32(m_chunk_crc32, buf, bytes);
-}
 
 	if ((m_chunk_left -= bytes) == 0)
 	{
 		int64_t res = block_read_dword();
-		if (res < 0) {
+		if (res < 0)
 			return (int)res;
-}
 
 		if (check_crc32)
 		{
-			if (m_chunk_crc32 != (uint32_t)res) {
+			if (m_chunk_crc32 != (uint32_t)res)
 				return terminate(PNG_BAD_CHUNK_CRC32);
-}
 		}
 
 		m_chunk_flag = FALSE;
@@ -662,13 +634,11 @@ int png_decoder::fetch_next_chunk_byte()
 	uint8_t buf[1];
 
 	int status = fetch_next_chunk_data(buf, 1);
-	if (status < 0) {
+	if (status < 0)
 		return status;
-}
 
-	if (status != 1) {
+	if (status != 1)
 		return terminate(PNG_BAD_CHUNK_SIZE);
-}
 
 	return buf[0];
 }
@@ -678,13 +648,11 @@ int png_decoder::fetch_next_chunk_word()
 	uint8_t buf[2];
 
 	int status = fetch_next_chunk_data(buf, 2);
-	if (status < 0) {
+	if (status < 0)
 		return status;
-}
 
-	if (status != 2) {
+	if (status != 2)
 		return terminate(PNG_BAD_CHUNK_SIZE);
-}
 
 	return buf[1] + ((uint32_t)buf[0] << 8);
 }
@@ -694,13 +662,11 @@ int64_t png_decoder::fetch_next_chunk_dword()
 	uint8_t buf[4];
 
 	int status = fetch_next_chunk_data(buf, 4);
-	if (status < 0) {
+	if (status < 0)
 		return status;
-}
 
-	if (status != 4) {
+	if (status != 4)
 		terminate(PNG_BAD_CHUNK_SIZE);
-}
 
 	uint32_t v = buf[3] + ((uint32_t)buf[2] << 8) + ((uint32_t)buf[1] << 16) + ((uint32_t)buf[0] << 24);
 	return (int64_t)v;
@@ -711,15 +677,13 @@ int png_decoder::fetch_next_chunk_init()
 	while (m_chunk_flag)
 	{
 		int status = fetch_next_chunk_data(m_temp_buf, TEMP_BUF_SIZE * 4);
-		if (status != 0) {
+		if (status != 0)
 			return status;
-}
 	}
 
 	int64_t n = block_read_dword();
-	if (n < 0) {
+	if (n < 0)
 		return (int)n;
-}
 
 	m_chunk_size = (uint32_t)n;
 
@@ -728,9 +692,8 @@ int png_decoder::fetch_next_chunk_init()
 	m_chunk_crc32 = 0;
 
 	int status = fetch_next_chunk_data(m_chunk_name, 4);
-	if (status < 0) {
+	if (status < 0)
 		return status;
-}
 
 	return 0;
 }
@@ -750,9 +713,8 @@ int png_decoder::unchunk_data(uint8_t* buf, uint32_t bytes, uint32_t* ptr_bytes_
 		if (!m_chunk_flag)
 		{
 			int res = fetch_next_chunk_init();
-			if (res < 0) {
+			if (res < 0)
 				return res;
-}
 
 			if ((m_chunk_name[0] != 'I') ||
 				(m_chunk_name[1] != 'D') ||
@@ -766,9 +728,8 @@ int png_decoder::unchunk_data(uint8_t* buf, uint32_t bytes, uint32_t* ptr_bytes_
 		}
 
 		int res = fetch_next_chunk_data(buf + bytes_read, bytes - bytes_read);
-		if (res < 0) {
+		if (res < 0)
 			return res;
-}
 
 		bytes_read += (uint32_t)res;
 	}
@@ -816,9 +777,8 @@ static void PixelDePack2(void* src, void* dst, int numbytes)
 	{
 		uint8_t v = *src8++;
 
-		for (uint32_t i = 0; i < 8; i++) {
+		for (uint32_t i = 0; i < 8; i++)
 			dst8[7 - i] = (v >> i) & 1;
-}
 
 		dst8 += 8;
 		numbytes--;
@@ -905,9 +865,8 @@ static int unpack_grey_4(uint8_t* src, uint8_t* dst, int pixels, png_decoder* pw
 
 	PixelDePack16(src, dst, pixels >> 1);
 
-	if (pixels & 1) {
+	if (pixels & 1)
 		dst[pixels & 0xFFFE] = (src[pixels >> 1] >> 4);
-}
 
 	return TRUE;
 }
@@ -1088,9 +1047,8 @@ static int unpack_true_alpha_16(uint8_t* src, uint8_t* dst, int pixels, png_deco
 void png_decoder::unpredict_sub(uint8_t* lst, uint8_t* cur, uint32_t bytes, int bpp)
 {
 	(void)lst;
-	if (bytes == (uint32_t)bpp) {
+	if (bytes == (uint32_t)bpp)
 		return;
-}
 
 	cur += bpp;
 	bytes -= bpp;
@@ -1105,22 +1063,19 @@ void png_decoder::unpredict_sub(uint8_t* lst, uint8_t* cur, uint32_t bytes, int 
 void png_decoder::unpredict_up(uint8_t* lst, uint8_t* cur, uint32_t bytes, int bpp)
 {
 	(void)bpp;
-	while (bytes--) {
+	while (bytes--)
 		*cur++ += *lst++;
-}
 }
 
 void png_decoder::unpredict_average(uint8_t* lst, uint8_t* cur, uint32_t bytes, int bpp)
 {
 	int i;
 
-	for (i = 0; i < bpp; i++) {
+	for (i = 0; i < bpp; i++)
 		*cur++ += (*lst++ >> 1);
-}
 
-	if (bytes == (uint32_t)bpp) {
+	if (bytes == (uint32_t)bpp)
 		return;
-}
 
 	bytes -= bpp;
 
@@ -1143,26 +1098,23 @@ inline uint8_t png_decoder::paeth_predictor(int a, int b, int c)
 	pb = abs(p - b);
 	pc = abs(p - c);
 
-	if ((pa <= pb) && (pa <= pc)) {
+	if ((pa <= pb) && (pa <= pc))
 		return (uint8_t)a;
-	} else if (pb <= pc) {
+	else if (pb <= pc)
 		return (uint8_t)b;
-	} else {
+	else
 		return (uint8_t)c;
-}
 }
 
 void png_decoder::unpredict_paeth(uint8_t* lst, uint8_t* cur, uint32_t bytes, int bpp)
 {
 	int i;
 
-	for (i = 0; i < bpp; i++) {
+	for (i = 0; i < bpp; i++)
 		*cur++ += paeth_predictor(0, *lst++, 0);
-}
 
-	if (bytes == (uint32_t)bpp) {
+	if (bytes == (uint32_t)bpp)
 		return;
-}
 
 	bytes -= bpp;
 
@@ -1180,13 +1132,12 @@ void png_decoder::unpredict_paeth(uint8_t* lst, uint8_t* cur, uint32_t bytes, in
 		pb = abs(p - b);
 		pc = abs(p - c);
 
-		if ((pa <= pb) && (pa <= pc)) {
+		if ((pa <= pb) && (pa <= pc))
 			*cur++ += (uint8_t)a;
-		} else if (pb <= pc) {
+		else if (pb <= pc)
 			*cur++ += (uint8_t)b;
-		} else {
+		else
 			*cur++ += (uint8_t)c;
-}
 
 		lst++;
 	}
@@ -1194,11 +1145,10 @@ void png_decoder::unpredict_paeth(uint8_t* lst, uint8_t* cur, uint32_t bytes, in
 
 int png_decoder::adam7_pass_size(int size, int start, int step)
 {
-	if (size > start) {
+	if (size > start)
 		return 1 + ((size - 1) - start) / step;
-	} else {
+	else
 		return 0;
-}
 }
 
 // TRUE if no more data, negative on error, FALSE if OK
@@ -1214,9 +1164,8 @@ int png_decoder::decompress_line(uint32_t* bytes_decoded)
 		if (m_inflate_src_buf_ofs == PNG_INFLATE_SRC_BUF_SIZE)
 		{
 			int res = unchunk_data(inflate_src_buf, PNG_INFLATE_SRC_BUF_SIZE, &temp);
-			if (res < 0) {
+			if (res < 0)
 				return res;
-}
 			m_inflate_eof_flag = res;
 
 			m_inflate_src_buf_size = temp;
@@ -1245,30 +1194,26 @@ int png_decoder::decompress_line(uint32_t* bytes_decoded)
 
 			if (status != buminiz::MZ_OK)
 			{
-				if (status != buminiz::MZ_STREAM_END) {
+				if (status != buminiz::MZ_STREAM_END)
 					return terminate(PNG_INVALID_DATA_STREAM);
-}
 
-				if (bytes_decoded) {
+				if (bytes_decoded)
 					*bytes_decoded = m_inflate_dst_buf_ofs;
-}
 
 				return TRUE;
 			}
 
 			if (m_inflate_dst_buf_ofs == m_dec_bytes_per_line)
 			{
-				if (bytes_decoded) {
+				if (bytes_decoded)
 					*bytes_decoded = m_inflate_dst_buf_ofs;
-}
 
 				return FALSE;
 			}
 
 			if ((m_inflate_src_buf_ofs == m_inflate_src_buf_size) &&
-				(m_inflate_eof_flag == FALSE)) {
+				(m_inflate_eof_flag == FALSE))
 				break;
-}
 		}
 	}
 }
@@ -1280,9 +1225,8 @@ int png_decoder::find_iend_chunk()
 	while (!m_end_of_idat_chunks)
 	{
 		int res = unchunk_data(m_temp_buf, TEMP_BUF_SIZE * 4, &dummy);
-		if (res < 0) {
+		if (res < 0)
 			return res;
-}
 	}
 
 	for (; ; )
@@ -1290,14 +1234,12 @@ int png_decoder::find_iend_chunk()
 		if ((m_chunk_name[0] == 'I') &&
 			(m_chunk_name[1] == 'E') &&
 			(m_chunk_name[2] == 'N') &&
-			(m_chunk_name[3] == 'D')) {
+			(m_chunk_name[3] == 'D'))
 			break;
-}
 
 		int res = fetch_next_chunk_init();
-		if (res < 0) {
+		if (res < 0)
 			return res;
-}
 	}
 
 	return 0;
@@ -1311,9 +1253,8 @@ int png_decoder::png_decode(void** ppImg_ptr, uint32_t* pImg_len)
 
 	if (m_adam7_decoded_flag)
 	{
-		if (m_pass_y_left == 0) {
+		if (m_pass_y_left == 0)
 			return PNG_ALLDONE;
-}
 
 		*ppImg_ptr = &m_adam7_image_buf[(m_ihdr.m_height - m_pass_y_left) * m_dst_bytes_per_line];
 		*pImg_len = m_dst_bytes_per_line;
@@ -1328,9 +1269,8 @@ int png_decoder::png_decode(void** ppImg_ptr, uint32_t* pImg_len)
 		if (m_ihdr.m_ilace_type == 0)
 		{
 			status = find_iend_chunk();
-			if (status < 0) {
+			if (status < 0)
 				return status;
-}
 
 			return PNG_ALLDONE;
 		}
@@ -1340,17 +1280,15 @@ int png_decoder::png_decode(void** ppImg_ptr, uint32_t* pImg_len)
 			if (++m_adam7_pass_num == 7)
 			{
 				status = find_iend_chunk();
-				if (status < 0) {
+				if (status < 0)
 					return status;
-}
 
 				return PNG_ALLDONE;
 			}
 
 			if (((m_pass_y_left = m_adam7_pass_size_y[m_adam7_pass_num]) != 0) &&
-				((m_pass_x_size = m_adam7_pass_size_x[m_adam7_pass_num]) != 0)) {
+				((m_pass_x_size = m_adam7_pass_size_x[m_adam7_pass_num]) != 0))
 				break;
-}
 		}
 
 		switch (m_adam7_pass_num)
@@ -1403,29 +1341,25 @@ int png_decoder::png_decode(void** ppImg_ptr, uint32_t* pImg_len)
 	}
 
 	int res = decompress_line(&bytes_decoded);
-	if (res < 0) {
+	if (res < 0)
 		return terminate(res);
-}
 
 	if (res)
 	{
 		if (m_ihdr.m_ilace_type == 0)
 		{
-			if (m_pass_y_left != 1) {
+			if (m_pass_y_left != 1)
 				return terminate(PNG_INCOMPLETE_IMAGE);
-}
 		}
 		else
 		{
-			if ((m_pass_y_left != 1) && (m_adam7_pass_num != 6)) {
+			if ((m_pass_y_left != 1) && (m_adam7_pass_num != 6))
 				return terminate(PNG_INCOMPLETE_IMAGE);
-}
 		}
 	}
 
-	if (bytes_decoded != m_dec_bytes_per_line) {
+	if (bytes_decoded != m_dec_bytes_per_line)
 		return terminate(PNG_INCOMPLETE_IMAGE);
-}
 
 	decoded_line = &m_pCur_line_buf[1];
 
@@ -1461,9 +1395,8 @@ int png_decoder::png_decode(void** ppImg_ptr, uint32_t* pImg_len)
 
 	if (m_pProcess_func)
 	{
-		if ((*m_pProcess_func)(m_pCur_line_buf + 1, m_pPro_line_buf, m_pass_x_size, this)) {
+		if ((*m_pProcess_func)(m_pCur_line_buf + 1, m_pPro_line_buf, m_pass_x_size, this))
 			decoded_line = m_pPro_line_buf;
-}
 	}
 
 	if (m_ihdr.m_ilace_type == 0)
@@ -1474,17 +1407,14 @@ int png_decoder::png_decode(void** ppImg_ptr, uint32_t* pImg_len)
 		if (--m_pass_y_left == 0)
 		{
 			res = decompress_line(&bytes_decoded);
-			if (res < 0) {
+			if (res < 0)
 				return terminate(res);
-}
 
-			if (res == FALSE) {
+			if (res == FALSE)
 				return terminate(PNG_TOO_MUCH_DATA);
-}
 
-			if (bytes_decoded) {
+			if (bytes_decoded)
 				return terminate(PNG_TOO_MUCH_DATA);
-}
 		}
 	}
 	else
@@ -1510,27 +1440,23 @@ int png_decoder::png_decode(void** ppImg_ptr, uint32_t* pImg_len)
 
 		if (m_dst_bytes_per_pixel == 1)
 		{
-			for (i = m_pass_x_size; i > 0; i--, x_ofs += x_stp) {
+			for (i = m_pass_x_size; i > 0; i--, x_ofs += x_stp)
 				adam7_write_pixel_8(x_ofs, y_ofs, *p++);
-}
 		}
 		else if (m_dst_bytes_per_pixel == 2)
 		{
-			for (i = m_pass_x_size; i > 0; i--, x_ofs += x_stp, p += 2) {
+			for (i = m_pass_x_size; i > 0; i--, x_ofs += x_stp, p += 2)
 				adam7_write_pixel_16(x_ofs, y_ofs, p[0], p[1]);
-}
 		}
 		else if (m_dst_bytes_per_pixel == 3)
 		{
-			for (i = m_pass_x_size; i > 0; i--, x_ofs += x_stp, p += 3) {
+			for (i = m_pass_x_size; i > 0; i--, x_ofs += x_stp, p += 3)
 				adam7_write_pixel_24(x_ofs, y_ofs, p[0], p[1], p[2]);
-}
 		}
 		else if (m_dst_bytes_per_pixel == 4)
 		{
-			for (i = m_pass_x_size; i > 0; i--, x_ofs += x_stp, p += 4) {
+			for (i = m_pass_x_size; i > 0; i--, x_ofs += x_stp, p += 4)
 				adam7_write_pixel_32(x_ofs, y_ofs, p[0], p[1], p[2], p[3]);
-}
 		}
 		else
 		{
@@ -1551,17 +1477,14 @@ int png_decoder::png_decode(void** ppImg_ptr, uint32_t* pImg_len)
 		if ((--m_pass_y_left == 0) && (m_adam7_pass_num == 6))
 		{
 			res = decompress_line(&bytes_decoded);
-			if (res < 0) {
+			if (res < 0)
 				return terminate(res);
-}
 
-			if (res == FALSE) {
+			if (res == FALSE)
 				return terminate(PNG_TOO_MUCH_DATA);
-}
 
-			if (bytes_decoded) {
+			if (bytes_decoded)
 				return terminate(PNG_TOO_MUCH_DATA);
-}
 		}
 	}
 
@@ -1577,9 +1500,8 @@ int png_decoder::png_decode_start()
 {
 	int status;
 
-	if (m_img_supported_flag != TRUE) {
+	if (m_img_supported_flag != TRUE)
 		return terminate(m_img_supported_flag);
-}
 
 	switch (m_ihdr.m_color_type)
 	{
@@ -1606,15 +1528,14 @@ int png_decoder::png_decode_start()
 			m_src_bytes_per_line = (((uint32_t)m_ihdr.m_width * m_ihdr.m_bit_depth) + 7) / 8;
 			m_dst_bytes_per_line = m_ihdr.m_width;
 
-			if (m_ihdr.m_bit_depth == 1) {
+			if (m_ihdr.m_bit_depth == 1)
 				m_pProcess_func = unpack_grey_1;
-			} else if (m_ihdr.m_bit_depth == 2) {
+			else if (m_ihdr.m_bit_depth == 2)
 				m_pProcess_func = unpack_grey_2;
-			} else if (m_ihdr.m_bit_depth == 4) {
+			else if (m_ihdr.m_bit_depth == 4)
 				m_pProcess_func = unpack_grey_4;
-			} else {
+			else
 				m_pProcess_func = unpack_grey_8;
-}
 		}
 
 		break;
@@ -1627,17 +1548,16 @@ int png_decoder::png_decode_start()
 		m_src_bytes_per_line = (((uint32_t)m_ihdr.m_width * m_ihdr.m_bit_depth) + 7) / 8;
 		m_dst_bytes_per_line = m_ihdr.m_width;
 
-		if (m_ihdr.m_bit_depth == 1) {
+		if (m_ihdr.m_bit_depth == 1)
 			m_pProcess_func = unpack_grey_1;
-		} else if (m_ihdr.m_bit_depth == 2) {
+		else if (m_ihdr.m_bit_depth == 2)
 			m_pProcess_func = unpack_grey_2;
-		} else if (m_ihdr.m_bit_depth == 4) {
+		else if (m_ihdr.m_bit_depth == 4)
 			m_pProcess_func = unpack_grey_4;
-		} else if (m_ihdr.m_bit_depth == 8) {
+		else if (m_ihdr.m_bit_depth == 8)
 			m_pProcess_func = unpack_grey_8;
-		} else if (m_ihdr.m_bit_depth == 16) {
+		else if (m_ihdr.m_bit_depth == 16)
 			m_pProcess_func = unpack_grey_16;
-}
 
 		break;
 	}
@@ -1650,11 +1570,10 @@ int png_decoder::png_decode_start()
 		m_src_bytes_per_line = ((uint32_t)m_ihdr.m_width * m_dec_bytes_per_pixel);
 		m_dst_bytes_per_line = 4 * m_ihdr.m_width;
 
-		if (m_ihdr.m_bit_depth == 8) {
+		if (m_ihdr.m_bit_depth == 8)
 			m_pProcess_func = unpack_true_8;
-		} else if (m_ihdr.m_bit_depth == 16) {
+		else if (m_ihdr.m_bit_depth == 16)
 			m_pProcess_func = unpack_true_16;
-}
 
 		break;
 	}
@@ -1666,11 +1585,10 @@ int png_decoder::png_decode_start()
 		m_src_bytes_per_line = ((uint32_t)m_ihdr.m_width * m_dec_bytes_per_pixel);
 		m_dst_bytes_per_line = m_ihdr.m_width * 2;
 
-		if (m_ihdr.m_bit_depth == 8) {
+		if (m_ihdr.m_bit_depth == 8)
 			m_pProcess_func = unpack_grey_alpha_8;
-		} else if (m_ihdr.m_bit_depth == 16) {
+		else if (m_ihdr.m_bit_depth == 16)
 			m_pProcess_func = unpack_grey_alpha_16;
-}
 
 		break;
 	}
@@ -1682,11 +1600,10 @@ int png_decoder::png_decode_start()
 		m_src_bytes_per_line = ((uint32_t)m_ihdr.m_width * m_dec_bytes_per_pixel);
 		m_dst_bytes_per_line = 4 * m_ihdr.m_width;
 
-		if (m_ihdr.m_bit_depth == 8) {
+		if (m_ihdr.m_bit_depth == 8)
 			m_pProcess_func = unpack_true_alpha_8;
-		} else {
+		else
 			m_pProcess_func = unpack_true_alpha_16;
-}
 
 		break;
 	}
@@ -1698,16 +1615,14 @@ int png_decoder::png_decode_start()
 	m_pCur_line_buf = (uint8_t*)png_calloc(m_dec_bytes_per_line);
 	m_pPro_line_buf = (uint8_t*)png_calloc(m_dst_bytes_per_line);
 
-	if (!m_pPre_line_buf || !m_pCur_line_buf || !m_pPro_line_buf) {
+	if (!m_pPre_line_buf || !m_pCur_line_buf || !m_pPro_line_buf)
 		return terminate(PNG_NOTENOUGHMEM);
-}
 
 	m_inflate_src_buf_ofs = PNG_INFLATE_SRC_BUF_SIZE;
 
 	int res = mz_inflateInit(&m_inflator);
-	if (res != 0) {
+	if (res != 0)
 		return terminate(PNG_DECERROR);
-}
 
 	if (m_ihdr.m_ilace_type == 1)
 	{
@@ -1752,9 +1667,9 @@ int png_decoder::png_decode_start()
 
 			if (status)
 			{
-				if (status == PNG_ALLDONE) {
+				if (status == PNG_ALLDONE)
 					break;
-				} else
+				else
 				{
 					uninitialize();
 
@@ -1781,9 +1696,8 @@ void png_decoder::calc_gamma_table()
 {
 	if (m_gama_value == 45000)
 	{
-		for (int i = 0; i < 256; i++) {
+		for (int i = 0; i < 256; i++)
 			m_gamma_table[i] = (uint8_t)i;
-}
 		return;
 	}
 
@@ -1797,11 +1711,10 @@ void png_decoder::calc_gamma_table()
 
 		int j = (int)(temp + .5f);
 
-		if (j < 0) {
+		if (j < 0)
 			j = 0;
-		} else if (j > 255) {
+		else if (j > 255)
 			j = 255;
-}
 
 		m_gamma_table[i] = (uint8_t)j;
 	}
@@ -1825,9 +1738,8 @@ void png_decoder::create_grey_palette()
 
 int png_decoder::read_signature()
 {
-	if (m_pFile->read(m_temp_buf, 8) != 8) {
+	if (m_pFile->read(m_temp_buf, 8) != 8)
 		return terminate(PNG_UNKNOWNTYPE);
-}
 
 	if ((m_temp_buf[0] != 137) ||
 		(m_temp_buf[1] != 80) ||
@@ -1847,75 +1759,61 @@ int png_decoder::read_signature()
 int png_decoder::read_ihdr_chunk()
 {
 	int res = fetch_next_chunk_init();
-	if (res < 0) {
+	if (res < 0)
 		return res;
-}
 
-	if ((m_chunk_name[0] != 'I') || (m_chunk_name[1] != 'H') || (m_chunk_name[2] != 'D') || (m_chunk_name[3] != 'R') || (m_chunk_size != 13)) {
+	if ((m_chunk_name[0] != 'I') || (m_chunk_name[1] != 'H') || (m_chunk_name[2] != 'D') || (m_chunk_name[3] != 'R') || (m_chunk_size != 13))
 		return terminate(PNG_NO_IHDR);
-}
 
 	int64_t v64 = fetch_next_chunk_dword();
-	if (v64 < 0) {
+	if (v64 < 0)
 		return (int)v64;
-}
 	m_ihdr.m_width = (uint32_t)v64;
 
 	v64 = fetch_next_chunk_dword();
-	if (v64 < 0) {
+	if (v64 < 0)
 		return (int)v64;
-}
 	m_ihdr.m_height = (uint32_t)v64;
 
-	if ((m_ihdr.m_width == 0) || (m_ihdr.m_width > MAX_SUPPORTED_RES)) {
+	if ((m_ihdr.m_width == 0) || (m_ihdr.m_width > MAX_SUPPORTED_RES))
 		return terminate(PNG_BAD_WIDTH);
-}
 
-	if ((m_ihdr.m_height == 0) || (m_ihdr.m_height > MAX_SUPPORTED_RES)) {
+	if ((m_ihdr.m_height == 0) || (m_ihdr.m_height > MAX_SUPPORTED_RES))
 		return terminate(PNG_BAD_HEIGHT);
-}
 
 	int v = fetch_next_chunk_byte();
-	if (v < 0) {
+	if (v < 0)
 		return v;
-}
 	m_ihdr.m_bit_depth = (uint8_t)v;
 
 	v = fetch_next_chunk_byte();
-	if (v < 0) {
+	if (v < 0)
 		return v;
-}
 	m_ihdr.m_color_type = (uint8_t)v;
 
 	v = fetch_next_chunk_byte();
-	if (v < 0) {
+	if (v < 0)
 		return v;
-}
 	m_ihdr.m_comp_type = (uint8_t)v;
 
 	v = fetch_next_chunk_byte();
-	if (v < 0) {
+	if (v < 0)
 		return v;
-}
 	m_ihdr.m_filter_type = (uint8_t)v;
 
 	v = fetch_next_chunk_byte();
-	if (v < 0) {
+	if (v < 0)
 		return v;
-}
 	m_ihdr.m_ilace_type = (uint8_t)v;
 
-	if (m_ihdr.m_comp_type != 0) {
+	if (m_ihdr.m_comp_type != 0)
 		m_img_supported_flag = PNG_UNS_COMPRESSION;
-}
 
-	if (m_ihdr.m_filter_type != 0) {
+	if (m_ihdr.m_filter_type != 0)
 		m_img_supported_flag = PNG_UNS_FILTER;
-}
 
-	if (m_ihdr.m_ilace_type > 1) {
+	if (m_ihdr.m_ilace_type > 1)
 		m_img_supported_flag = PNG_UNS_ILACE;
-}
 
 	switch (m_ihdr.m_color_type)
 	{
@@ -1985,37 +1883,32 @@ int png_decoder::read_bkgd_chunk()
 	if (m_ihdr.m_color_type == PNG_COLOR_TYPE_PALETTIZED)
 	{
 		int v = fetch_next_chunk_byte();
-		if (v < 0) {
+		if (v < 0)
 			return v;
-}
 		m_bkgd_value[0] = v;
 	}
 	else if ((m_ihdr.m_color_type == PNG_COLOR_TYPE_GREYSCALE) || (m_ihdr.m_color_type == PNG_COLOR_TYPE_GREYSCALE_ALPHA))
 	{
 		int v = fetch_next_chunk_word();
-		if (v < 0) {
+		if (v < 0)
 			return v;
-}
 		m_bkgd_value[0] = v;
 	}
 	else if ((m_ihdr.m_color_type == PNG_COLOR_TYPE_TRUECOLOR) || (m_ihdr.m_color_type == PNG_COLOR_TYPE_TRUECOLOR_ALPHA))
 	{
 		int v = fetch_next_chunk_word();
-		if (v < 0) {
+		if (v < 0)
 			return v;
-}
 		m_bkgd_value[0] = v;
 
 		v = fetch_next_chunk_word();
-		if (v < 0) {
+		if (v < 0)
 			return v;
-}
 		m_bkgd_value[1] = v;
 
 		v = fetch_next_chunk_word();
-		if (v < 0) {
+		if (v < 0)
 			return v;
-}
 		m_bkgd_value[2] = v;
 	}
 
@@ -2027,9 +1920,8 @@ int png_decoder::read_gama_chunk()
 	m_gama_flag = TRUE;
 
 	int64_t v = fetch_next_chunk_dword();
-	if (v < 0) {
+	if (v < 0)
 		return (int)v;
-}
 
 	m_gama_value = (uint32_t)v;
 
@@ -2044,50 +1936,43 @@ int png_decoder::read_trns_chunk()
 
 	if (m_ihdr.m_color_type == PNG_COLOR_TYPE_PALETTIZED)
 	{
-		for (i = 0; i < 256; i++) {
+		for (i = 0; i < 256; i++)
 			m_trns_value[i] = 255;
-}
 
 		const uint32_t img_colors = 1 << m_ihdr.m_bit_depth;
-		if (m_chunk_size > (uint32_t)img_colors) {
+		if (m_chunk_size > (uint32_t)img_colors)
 			return terminate(PNG_BAD_TRNS_CHUNK);
-}
 
 		for (i = 0; i < (int)m_chunk_size; i++)
 		{
 			int v = fetch_next_chunk_byte();
-			if (v < 0) {
+			if (v < 0)
 				return v;
-}
 			m_trns_value[i] = v;
 		}
 	}
 	else if (m_ihdr.m_color_type == PNG_COLOR_TYPE_GREYSCALE)
 	{
 		int v = fetch_next_chunk_word();
-		if (v < 0) {
+		if (v < 0)
 			return v;
-}
 		m_trns_value[0] = v;
 	}
 	else if (m_ihdr.m_color_type == PNG_COLOR_TYPE_TRUECOLOR)
 	{
 		int v = fetch_next_chunk_word();
-		if (v < 0) {
+		if (v < 0)
 			return v;
-}
 		m_trns_value[0] = v;
 
 		v = fetch_next_chunk_word();
-		if (v < 0) {
+		if (v < 0)
 			return v;
-}
 		m_trns_value[1] = v;
 
 		v = fetch_next_chunk_word();
-		if (v < 0) {
+		if (v < 0)
 			return v;
-}
 		m_trns_value[2] = v;
 	}
 	else
@@ -2102,50 +1987,43 @@ int png_decoder::read_plte_chunk()
 	int i, j;
 	uint8_t* p;
 
-	if (m_plte_flag) {
+	if (m_plte_flag)
 		return terminate(PNG_BAD_PLTE_CHUNK);
-}
 
 	m_plte_flag = TRUE;
 
 	memset(m_img_pal, 0, 768);
 
-	if (m_chunk_size % 3) {
+	if (m_chunk_size % 3)
 		return terminate(PNG_BAD_PLTE_CHUNK);
-}
 
 	j = m_chunk_size / 3;
 
 	const int img_colors = minimum(256, 1 << m_ihdr.m_bit_depth);
-	if (j > img_colors) {
+	if (j > img_colors)
 		return terminate(PNG_BAD_PLTE_CHUNK);
-}
 
 	if ((m_ihdr.m_color_type == PNG_COLOR_TYPE_GREYSCALE) ||
-		(m_ihdr.m_color_type == PNG_COLOR_TYPE_GREYSCALE_ALPHA)) {
+		(m_ihdr.m_color_type == PNG_COLOR_TYPE_GREYSCALE_ALPHA))
 		return terminate(PNG_BAD_PLTE_CHUNK);
-}
 
 	p = m_img_pal;
 
 	for (i = 0; i < j; i++)
 	{
 		int v = fetch_next_chunk_byte();
-		if (v < 0) {
+		if (v < 0)
 			return v;
-}
 		*p++ = (uint8_t)v;
 
 		v = fetch_next_chunk_byte();
-		if (v < 0) {
+		if (v < 0)
 			return v;
-}
 		*p++ = (uint8_t)v;
 
 		v = fetch_next_chunk_byte();
-		if (v < 0) {
+		if (v < 0)
 			return v;
-}
 		*p++ = (uint8_t)v;
 	}
 
@@ -2157,32 +2035,28 @@ int png_decoder::find_idat_chunk()
 	for (; ; )
 	{
 		int res = fetch_next_chunk_init();
-		if (res < 0) {
+		if (res < 0)
 			return res;
-}
 
 		if (m_chunk_name[0] & 32)  /* ancillary? */
 		{
 			if ((m_chunk_name[0] == 'b') && (m_chunk_name[1] == 'K') && (m_chunk_name[2] == 'G') && (m_chunk_name[3] == 'D'))
 			{
 				res = read_bkgd_chunk();
-				if (res < 0) {
+				if (res < 0)
 					return res;
-}
 			}
 			else if ((m_chunk_name[0] == 'g') && (m_chunk_name[1] == 'A') && (m_chunk_name[2] == 'M') && (m_chunk_name[3] == 'A'))
 			{
 				res = read_gama_chunk();
-				if (res < 0) {
+				if (res < 0)
 					return res;
-}
 			}
 			else if ((m_chunk_name[0] == 't') && (m_chunk_name[1] == 'R') && (m_chunk_name[2] == 'N') && (m_chunk_name[3] == 'S'))
 			{
 				res = read_trns_chunk();
-				if (res < 0) {
+				if (res < 0)
 					return res;
-}
 			}
 		}
 		else
@@ -2190,9 +2064,8 @@ int png_decoder::find_idat_chunk()
 			if ((m_chunk_name[0] == 'P') && (m_chunk_name[1] == 'L') && (m_chunk_name[2] == 'T') && (m_chunk_name[3] == 'E'))
 			{
 				res = read_plte_chunk();
-				if (res < 0) {
+				if (res < 0)
 					return res;
-}
 			}
 			else if ((m_chunk_name[0] == 'I') && (m_chunk_name[1] == 'D') && (m_chunk_name[2] == 'A') && (m_chunk_name[3] == 'T'))
 			{
@@ -2297,29 +2170,24 @@ int png_decoder::png_scan(png_file *pFile)
 	m_terminate_status = 0;
 
 	int res = read_signature();
-	if (res != 0) {
+	if (res != 0)
 		return res;
-}
 
 	res = read_ihdr_chunk();
-	if (res != 0) {
+	if (res != 0)
 		return res;
-}
 
 	res = find_idat_chunk();
-	if (res != 0) {
+	if (res != 0)
 		return res;
-}
 
-	if (m_gama_flag) {
+	if (m_gama_flag)
 		calc_gamma_table();
-}
 
 	if (m_ihdr.m_color_type == PNG_COLOR_TYPE_PALETTIZED)
 	{
-		if (!m_plte_flag) {
+		if (!m_plte_flag)
 			return terminate(PNG_MISSING_PALETTE);
-}
 	}
 	else if ((m_ihdr.m_color_type == PNG_COLOR_TYPE_GREYSCALE) || (m_ihdr.m_color_type == PNG_COLOR_TYPE_GREYSCALE_ALPHA))
 	{
@@ -2340,9 +2208,8 @@ bool get_png_info(const void* pImage_buf, size_t buf_size, png_info &info)
 {
 	memset(&info, 0, sizeof(info));
 
-	if ((!pImage_buf) || (buf_size < MIN_PNG_SIZE)) {
+	if ((!pImage_buf) || (buf_size < MIN_PNG_SIZE))
 		return false;
-}
 
 	png_readonly_memory_file mf;
 	mf.init(pImage_buf, buf_size);
@@ -2350,9 +2217,8 @@ bool get_png_info(const void* pImage_buf, size_t buf_size, png_info &info)
 	png_decoder dec;
 
 	int status = dec.png_scan(&mf);
-	if ((status != 0) || (dec.m_img_supported_flag != TRUE)) {
+	if ((status != 0) || (dec.m_img_supported_flag != TRUE))
 		return false;
-}
 
 	info.m_width = dec.m_ihdr.m_width;
 	info.m_height = dec.m_ihdr.m_height;
@@ -2409,9 +2275,8 @@ void* load_png(const void* pImage_buf, size_t buf_size, uint32_t desired_chans, 
 	png_decoder dec;
 
 	int status = dec.png_scan(&mf);
-	if ((status != 0) || (dec.m_img_supported_flag != TRUE)) {
+	if ((status != 0) || (dec.m_img_supported_flag != TRUE))
 		return nullptr;
-}
 
 	uint32_t colortype = dec.m_ihdr.m_color_type;
 	switch (colortype)
@@ -2434,9 +2299,8 @@ void* load_png(const void* pImage_buf, size_t buf_size, uint32_t desired_chans, 
 		break;
 	}
 
-	if (!desired_chans) {
+	if (!desired_chans)
 		desired_chans = num_chans;
-}
 
 #if 0
 	printf("lode_png: %ux%u bitdepth: %u colortype: %u trns: %u ilace: %u\n",
@@ -2454,14 +2318,12 @@ void* load_png(const void* pImage_buf, size_t buf_size, uint32_t desired_chans, 
 	uint32_t pitch = width * desired_chans;
 
 	uint64_t total_size = (uint64_t)pitch * height;
-	if (total_size > 0x7FFFFFFFULL) {
+	if (total_size > 0x7FFFFFFFULL)
 		return nullptr;
-}
 
 	uint8_t* pBuf = (uint8_t*)malloc((size_t)total_size);
-	if (!pBuf) {
+	if (!pBuf)
 		return nullptr;
-}
 
 	if (dec.png_decode_start() != 0)
 	{
@@ -2495,9 +2357,8 @@ void* load_png(const void* pImage_buf, size_t buf_size, uint32_t desired_chans, 
 				{
 					assert(line_bytes == width * 2);
 
-					for (uint32_t i = 0; i < width; i++) {
+					for (uint32_t i = 0; i < width; i++)
 						pDst[i] = dec.m_img_pal[pLine[i * 2 + 0] * 3];
-}
 				}
 				else if (bitdepth == 8)
 				{
@@ -2507,9 +2368,8 @@ void* load_png(const void* pImage_buf, size_t buf_size, uint32_t desired_chans, 
 				else
 				{
 					assert(line_bytes == width);
-					for (uint32_t i = 0; i < width; i++) {
+					for (uint32_t i = 0; i < width; i++)
 						pDst[i] = dec.m_img_pal[pLine[i] * 3];
-}
 				}
 				break;
 			case 2:
@@ -2614,15 +2474,14 @@ void* load_png(const void* pImage_buf, size_t buf_size, uint32_t desired_chans, 
 			switch (desired_chans)
 			{
 			case 1:
-				for (uint32_t i = 0; i < width; i++) {
+				for (uint32_t i = 0; i < width; i++)
 					pDst[i] = dec.m_img_pal[pLine[i * 2 + 0] * 3];
-}
 				break;
 			case 2:
 				assert(line_bytes == pitch);
-				if (bitdepth >= 8) {
+				if (bitdepth >= 8)
 					memcpy(pDst, pLine, pitch);
-				} else
+				else
 				{
 					for (uint32_t i = 0; i < width; i++)
 					{

@@ -501,7 +501,7 @@ typedef hb_bool_t (*hb_font_get_glyph_from_name_func_t) (hb_font_t *font, void *
  **/
 typedef void (*hb_font_draw_glyph_func_t) (hb_font_t *font, void *font_data,
                                            hb_codepoint_t glyph,
-                                           hb_font_funcs_t *draw_funcs, void *draw_data,
+                                           hb_draw_funcs_t *draw_funcs, void *draw_data,
                                            void *user_data);
 
 /**
@@ -899,7 +899,7 @@ hb_font_get_glyph_from_name (hb_font_t *font,
 HB_EXTERN void
 hb_font_draw_glyph (hb_font_t *font,
                     hb_codepoint_t glyph,
-                    hb_font_funcs_t *dfuncs, void *draw_data);
+                    hb_draw_funcs_t *dfuncs, void *draw_data);
 
 HB_EXTERN void
 hb_font_paint_glyph (hb_font_t *font,

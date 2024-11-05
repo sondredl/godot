@@ -132,9 +132,8 @@ RTC_NAMESPACE_BEGIN;
     Device* device = (Device*) hdevice;
     RTC_CATCH_BEGIN;
     RTC_TRACE(rtcGetDeviceError);
-    if (device == nullptr) { return Device::getThreadErrorCode();
-    } else {                   return device->getDeviceErrorCode();
-}
+    if (device == nullptr) return Device::getThreadErrorCode();
+    else                   return device->getDeviceErrorCode();
     RTC_CATCH_END(device);
     return RTC_ERROR_UNKNOWN;
   }
@@ -455,8 +454,7 @@ RTC_NAMESPACE_BEGIN;
     PointQuery4* query4 = (PointQuery4*)query;
     PointQuery query1;
     for (size_t i=0; i<4; i++) {
-      if (!valid[i]) { continue;
-}
+      if (!valid[i]) continue;
       query4->get(i,query1);
       changed |= pointQuery(scene, (RTCPointQuery*)&query1, userContext, queryFunc, userPtrN?userPtrN[i]:NULL);
       query4->set(i,query1);
@@ -484,8 +482,7 @@ RTC_NAMESPACE_BEGIN;
     PointQuery8* query8 = (PointQuery8*)query;
     PointQuery query1;
     for (size_t i=0; i<8; i++) {
-      if (!valid[i]) { continue;
-}
+      if (!valid[i]) continue;
       query8->get(i,query1);
       changed |= pointQuery(scene, (RTCPointQuery*)&query1, userContext, queryFunc, userPtrN?userPtrN[i]:NULL);
       query8->set(i,query1);
@@ -513,8 +510,7 @@ RTC_NAMESPACE_BEGIN;
     PointQuery16* query16 = (PointQuery16*)query;
     PointQuery query1;
     for (size_t i=0; i<16; i++) {
-      if (!valid[i]) { continue;
-}
+      if (!valid[i]) continue;
       PointQuery query1; query16->get(i,query1);
       changed |= pointQuery(scene, (RTCPointQuery*)&query1, userContext, queryFunc, userPtrN?userPtrN[i]:NULL);
       query16->set(i,query1);
@@ -623,14 +619,13 @@ RTC_NAMESPACE_BEGIN;
     }
     RayQueryContext context(scene,user_context,args);
 
-    if (likely(scene->intersectors.intersector4)) {
+    if (likely(scene->intersectors.intersector4))
       scene->intersectors.intersect4(valid,*rayhit,&context);
 
-    } else {
+    else {
       RayHit4* ray4 = (RayHit4*) rayhit;
       for (size_t i=0; i<4; i++) {
-        if (!valid[i]) { continue;
-}
+        if (!valid[i]) continue;
         RayHit ray1; ray4->get(i,ray1);
         scene->intersectors.intersect((RTCRayHit&)ray1,&context);
         ray4->set(i,ray1);
@@ -751,15 +746,14 @@ RTC_NAMESPACE_BEGIN;
     }
     RayQueryContext context(scene,user_context,args);
 
-    if (likely(scene->intersectors.intersector8)) {
+    if (likely(scene->intersectors.intersector8))
       scene->intersectors.intersect8(valid,*rayhit,&context);
 
-    } else
+    else
     {
       RayHit8* ray8 = (RayHit8*) rayhit;
       for (size_t i=0; i<8; i++) {
-        if (!valid[i]) { continue;
-}
+        if (!valid[i]) continue;
         RayHit ray1; ray8->get(i,ray1);
         scene->intersectors.intersect((RTCRayHit&)ray1,&context);
         ray8->set(i,ray1);
@@ -813,14 +807,13 @@ RTC_NAMESPACE_BEGIN;
     }
     RayQueryContext context(scene,user_context,args);
 
-    if (likely(scene->intersectors.intersector16)) {
+    if (likely(scene->intersectors.intersector16))
       scene->intersectors.intersect16(valid,*rayhit,&context);
 
-    } else {
+    else {
       RayHit16* ray16 = (RayHit16*) rayhit;
       for (size_t i=0; i<16; i++) {
-        if (!valid[i]) { continue;
-}
+        if (!valid[i]) continue;
         RayHit ray1; ray16->get(i,ray1);
         scene->intersectors.intersect((RTCRayHit&)ray1,&context);
         ray16->set(i,ray1);
@@ -943,14 +936,13 @@ RTC_NAMESPACE_BEGIN;
     }
     RayQueryContext context(scene,user_context,args);
 
-    if (likely(scene->intersectors.intersector4)) {
+    if (likely(scene->intersectors.intersector4))
        scene->intersectors.occluded4(valid,*ray,&context);
 
-    } else {
+    else {
       RayHit4* ray4 = (RayHit4*) ray;
       for (size_t i=0; i<4; i++) {
-        if (!valid[i]) { continue;
-}
+        if (!valid[i]) continue;
         RayHit ray1; ray4->get(i,ray1);
         scene->intersectors.occluded((RTCRay&)ray1,&context);
         ray4->geomID[i] = ray1.geomID;
@@ -1050,14 +1042,13 @@ RTC_NAMESPACE_BEGIN;
     }
     RayQueryContext context(scene,user_context,args);
 
-    if (likely(scene->intersectors.intersector8)) {
+    if (likely(scene->intersectors.intersector8))
       scene->intersectors.occluded8(valid,*ray,&context);
 
-    } else {
+    else {
       RayHit8* ray8 = (RayHit8*) ray;
       for (size_t i=0; i<8; i++) {
-        if (!valid[i]) { continue;
-}
+        if (!valid[i]) continue;
         RayHit ray1; ray8->get(i,ray1);
         scene->intersectors.occluded((RTCRay&)ray1,&context);
         ray8->set(i,ray1);
@@ -1111,14 +1102,13 @@ RTC_NAMESPACE_BEGIN;
     }
     RayQueryContext context(scene,user_context,args);
 
-    if (likely(scene->intersectors.intersector16)) {
+    if (likely(scene->intersectors.intersector16))
       scene->intersectors.occluded16(valid,*ray,&context);
 
-    } else {
+    else {
       RayHit16* ray16 = (RayHit16*) ray;
       for (size_t i=0; i<16; i++) {
-        if (!valid[i]) { continue;
-}
+        if (!valid[i]) continue;
         RayHit ray1; ray16->get(i,ray1);
         scene->intersectors.occluded((RTCRay&)ray1,&context);
         ray16->set(i,ray1);
@@ -1307,17 +1297,15 @@ RTC_API void rtcSetGeometryTransform(RTCGeometry hgeometry, unsigned int timeSte
   RTC_API void rtcInvokeIntersectFilterFromGeometry(const struct RTCIntersectFunctionNArguments* const args_i, const struct RTCFilterFunctionNArguments* filter_args)
   {
     IntersectFunctionNArguments* args = (IntersectFunctionNArguments*) args_i;
-    if (args->geometry->intersectionFilterN) {
+    if (args->geometry->intersectionFilterN)
         args->geometry->intersectionFilterN(filter_args);
-}
   }
 
   RTC_API void rtcInvokeOccludedFilterFromGeometry(const struct RTCOccludedFunctionNArguments* const args_i, const struct RTCFilterFunctionNArguments* filter_args)
   {
     OccludedFunctionNArguments* args = (OccludedFunctionNArguments*) args_i;
-    if (args->geometry->occlusionFilterN) {
+    if (args->geometry->occlusionFilterN)
       args->geometry->occlusionFilterN(filter_args);
-}
   }
 
   RTC_API RTCGeometry rtcNewGeometry (RTCDevice hdevice, RTCGeometryType type)
@@ -1696,9 +1684,8 @@ RTC_API void rtcSetGeometryTransform(RTCGeometry hgeometry, unsigned int timeSte
 
     /* vertex buffers need to get overallocated slightly as elements are accessed using SSE loads */
     size_t bytes = itemCount*byteStride;
-    if (type == RTC_BUFFER_TYPE_VERTEX || type == RTC_BUFFER_TYPE_VERTEX_ATTRIBUTE) {
+    if (type == RTC_BUFFER_TYPE_VERTEX || type == RTC_BUFFER_TYPE_VERTEX_ATTRIBUTE)
       bytes += (16 - (byteStride%16))%16;
-}
 
     Ref<Buffer> buffer = new Buffer(geometry->device, bytes);
     geometry->setBuffer(type, slot, format, buffer, 0, byteStride, (unsigned int)itemCount);

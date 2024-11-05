@@ -38,8 +38,7 @@ void ZSTD_fillHashTableForCDict(ZSTD_matchState_t* ms,
         {   size_t const hashAndTag = ZSTD_hashPtr(ip, hBits, mls);
             ZSTD_writeTaggedIndex(hashTable, hashAndTag, curr);   }
 
-        if (dtlm == ZSTD_dtlm_fast) { continue;
-}
+        if (dtlm == ZSTD_dtlm_fast) continue;
         /* Only load extra positions for ZSTD_dtlm_full */
         {   U32 p;
             for (p = 1; p < fastHashFillStep; ++p) {
@@ -75,8 +74,7 @@ void ZSTD_fillHashTableForCCtx(ZSTD_matchState_t* ms,
         U32 const curr = (U32)(ip - base);
         size_t const hash0 = ZSTD_hashPtr(ip, hBits, mls);
         hashTable[hash0] = curr;
-        if (dtlm == ZSTD_dtlm_fast) { continue;
-}
+        if (dtlm == ZSTD_dtlm_fast) continue;
         /* Only load extra positions for ZSTD_dtlm_full */
         {   U32 p;
             for (p = 1; p < fastHashFillStep; ++p) {
@@ -198,10 +196,8 @@ size_t ZSTD_compressBlock_fast_noDict_generic(
     {   U32 const curr = (U32)(ip0 - base);
         U32 const windowLow = ZSTD_getLowestPrefixIndex(ms, curr, cParams->windowLog);
         U32 const maxRep = curr - windowLow;
-        if (rep_offset2 > maxRep) { offsetSaved2 = rep_offset2, rep_offset2 = 0;
-}
-        if (rep_offset1 > maxRep) { offsetSaved1 = rep_offset1, rep_offset1 = 0;
-}
+        if (rep_offset2 > maxRep) offsetSaved2 = rep_offset2, rep_offset2 = 0;
+        if (rep_offset1 > maxRep) offsetSaved1 = rep_offset1, rep_offset1 = 0;
     }
 
     /* start each op */
@@ -404,7 +400,7 @@ _match: /* Requires: ip0, match0, offcode */
                 ip0 += rLength;
                 ZSTD_storeSeq(seqStore, 0 /*litLen*/, anchor, iend, REPCODE1_TO_OFFBASE, rLength);
                 anchor = ip0;
-/* faster when present (confirmed on gcc-8) ... (?) */
+                continue;   /* faster when present (confirmed on gcc-8) ... (?) */
     }   }   }
 
     goto _start;
@@ -611,8 +607,7 @@ size_t ZSTD_compressBlock_fast_dictMatchState_generic(
             }
             ip0 = ip1;
             ip1 = ip1 + step;
-            if (ip1 > ilimit) { goto _cleanup;
-}
+            if (ip1 > ilimit) goto _cleanup;
 
             curr = (U32)(ip0 - base);
             hash0 = hash1;
@@ -746,16 +741,13 @@ size_t ZSTD_compressBlock_fast_extDict_generic(
     DEBUGLOG(5, "ZSTD_compressBlock_fast_extDict_generic (offset_1=%u)", offset_1);
 
     /* switch to "regular" variant if extDict is invalidated due to maxDistance */
-    if (prefixStartIndex == dictStartIndex) {
+    if (prefixStartIndex == dictStartIndex)
         return ZSTD_compressBlock_fast(ms, seqStore, rep, src, srcSize);
-}
 
     {   U32 const curr = (U32)(ip0 - base);
         U32 const maxRep = curr - dictStartIndex;
-        if (offset_2 >= maxRep) { offsetSaved2 = offset_2, offset_2 = 0;
-}
-        if (offset_1 >= maxRep) { offsetSaved1 = offset_1, offset_1 = 0;
-}
+        if (offset_2 >= maxRep) offsetSaved2 = offset_2, offset_2 = 0;
+        if (offset_1 >= maxRep) offsetSaved1 = offset_1, offset_1 = 0;
     }
 
     /* start each op */

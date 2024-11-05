@@ -170,11 +170,10 @@ fileline_initialize (struct backtrace_state *state,
   const char *filename;
   char buf[64];
 
-  if (!state->threaded) {
+  if (!state->threaded)
     failed = state->fileline_initialization_failed;
-  } else {
+  else
     failed = backtrace_atomic_load_int (&state->fileline_initialization_failed);
-}
 
   if (failed)
     {
@@ -182,14 +181,12 @@ fileline_initialize (struct backtrace_state *state,
       return 0;
     }
 
-  if (!state->threaded) {
+  if (!state->threaded)
     fileline_fn = state->fileline_fn;
-  } else {
+  else
     fileline_fn = backtrace_atomic_load_pointer (&state->fileline_fn);
-}
-  if (fileline_fn != NULL) {
+  if (fileline_fn != NULL)
     return 1;
-}
 
   /* We have not initialized the information.  Do it now.  */
 
@@ -231,9 +228,8 @@ fileline_initialize (struct backtrace_state *state,
 	  abort ();
 	}
 
-      if (filename == NULL) {
+      if (filename == NULL)
 	continue;
-}
 
       descriptor = backtrace_open (filename, error_callback, data,
 				   &does_not_exist);
@@ -242,22 +238,20 @@ fileline_initialize (struct backtrace_state *state,
 	  called_error_callback = 1;
 	  break;
 	}
-      if (descriptor >= 0) {
+      if (descriptor >= 0)
 	break;
-}
     }
 
   if (descriptor < 0)
     {
       if (!called_error_callback)
 	{
-	  if (state->filename != NULL) {
+	  if (state->filename != NULL)
 	    error_callback (data, state->filename, ENOENT);
-	  } else {
+	  else
 	    error_callback (data,
 			    "libbacktrace could not find executable to open",
 			    0);
-}
 	}
       failed = 1;
     }
@@ -265,24 +259,22 @@ fileline_initialize (struct backtrace_state *state,
   if (!failed)
     {
       if (!backtrace_initialize (state, filename, descriptor, error_callback,
-				 data, &fileline_fn)) {
+				 data, &fileline_fn))
 	failed = 1;
-}
     }
 
   if (failed)
     {
-      if (!state->threaded) {
+      if (!state->threaded)
 	state->fileline_initialization_failed = 1;
-      } else {
+      else
 	backtrace_atomic_store_int (&state->fileline_initialization_failed, 1);
-}
       return 0;
     }
 
-  if (!state->threaded) {
+  if (!state->threaded)
     state->fileline_fn = fileline_fn;
-  } else
+  else
     {
       backtrace_atomic_store_pointer (&state->fileline_fn, fileline_fn);
 
@@ -300,13 +292,11 @@ backtrace_pcinfo (struct backtrace_state *state, uintptr_t pc,
 		  backtrace_full_callback callback,
 		  backtrace_error_callback error_callback, void *data)
 {
-  if (!fileline_initialize (state, error_callback, data)) {
+  if (!fileline_initialize (state, error_callback, data))
     return 0;
-}
 
-  if (state->fileline_initialization_failed) {
+  if (state->fileline_initialization_failed)
     return 0;
-}
 
   return state->fileline_fn (state, pc, callback, error_callback, data);
 }
@@ -318,13 +308,11 @@ backtrace_syminfo (struct backtrace_state *state, uintptr_t pc,
 		   backtrace_syminfo_callback callback,
 		   backtrace_error_callback error_callback, void *data)
 {
-  if (!fileline_initialize (state, error_callback, data)) {
+  if (!fileline_initialize (state, error_callback, data))
     return 0;
-}
 
-  if (state->fileline_initialization_failed) {
+  if (state->fileline_initialization_failed)
     return 0;
-}
 
   state->syminfo_fn (state, pc, callback, error_callback, data);
   return 1;

@@ -204,11 +204,9 @@ static WebPMuxError AddDataToChunkList(
   WebPMuxError err;
   ChunkInit(&chunk);
   err = ChunkAssignData(&chunk, data, copy_data, tag);
-  if (err != WEBP_MUX_OK) { goto Err;
-}
+  if (err != WEBP_MUX_OK) goto Err;
   err = ChunkSetHead(&chunk, chunk_list);
-  if (err != WEBP_MUX_OK) { goto Err;
-}
+  if (err != WEBP_MUX_OK) goto Err;
   return WEBP_MUX_OK;
  Err:
   ChunkRelease(&chunk);
@@ -252,13 +250,11 @@ WebPMuxError WebPMuxSetImage(WebPMux* mux, const WebPData* bitstream,
 
   MuxImageInit(&wpi);
   err = SetAlphaAndImageChunks(bitstream, copy_data, &wpi);
-  if (err != WEBP_MUX_OK) { goto Err;
-}
+  if (err != WEBP_MUX_OK) goto Err;
 
   // Add this WebPMuxImage to mux.
   err = MuxImagePush(&wpi, &mux->images_);
-  if (err != WEBP_MUX_OK) { goto Err;
-}
+  if (err != WEBP_MUX_OK) goto Err;
 
   // All is well.
   return WEBP_MUX_OK;
@@ -293,8 +289,7 @@ WebPMuxError WebPMuxPushFrame(WebPMux* mux, const WebPMuxFrameInfo* info,
 
   MuxImageInit(&wpi);
   err = SetAlphaAndImageChunks(&info->bitstream, copy_data, &wpi);
-  if (err != WEBP_MUX_OK) { goto Err;
-}
+  if (err != WEBP_MUX_OK) goto Err;
   assert(wpi.img_ != NULL);  // As SetAlphaAndImageChunks() was successful.
 
   {
@@ -311,19 +306,16 @@ WebPMuxError WebPMuxPushFrame(WebPMux* mux, const WebPMuxFrameInfo* info,
       goto Err;
     }
     err = CreateFrameData(wpi.width_, wpi.height_, &tmp, &frame);
-    if (err != WEBP_MUX_OK) { goto Err;
-}
+    if (err != WEBP_MUX_OK) goto Err;
     // Add frame chunk (with copy_data = 1).
     err = AddDataToChunkList(&frame, 1, tag, &wpi.header_);
     WebPDataClear(&frame);  // frame owned by wpi.header_ now.
-    if (err != WEBP_MUX_OK) { goto Err;
-}
+    if (err != WEBP_MUX_OK) goto Err;
   }
 
   // Add this WebPMuxImage to mux.
   err = MuxImagePush(&wpi, &mux->images_);
-  if (err != WEBP_MUX_OK) { goto Err;
-}
+  if (err != WEBP_MUX_OK) goto Err;
 
   // All is well.
   return WEBP_MUX_OK;

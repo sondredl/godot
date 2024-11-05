@@ -24,7 +24,7 @@
 #include "cmemory.h"
 #include "putilimp.h"
 #include "uassert.h"
-#include <cstdlib>
+#include <stdlib.h>
 
 /* uprv_malloc(0) returns a pointer to this read-only data. */
 static const int32_t zeroMem[] = {0, 0, 0, 0, 0, 0};

@@ -59,7 +59,7 @@ namespace tvg {
 
 #else //THORVG_THREAD_SUPPORT
 
-namespace tvg; {
+namespace tvg {
 
     struct Key {};
 

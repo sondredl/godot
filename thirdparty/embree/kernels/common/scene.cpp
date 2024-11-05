@@ -60,12 +60,10 @@ namespace embree
 #endif
 
     /* one can overwrite flags through device for debugging */
-    if (device->quality_flags != -1) {
+    if (device->quality_flags != -1)
       quality_flags = (RTCBuildQuality) device->quality_flags;
-}
-    if (device->scene_flags != -1) {
+    if (device->scene_flags != -1)
       scene_flags = (RTCSceneFlags) device->scene_flags;
-}
   }
 
   Scene::~Scene() noexcept
@@ -78,22 +76,19 @@ namespace embree
     /* calculate maximum number of time segments */
     unsigned max_time_steps = 0;
     for (size_t i=0; i<size(); i++) {
-      if (!get(i)) { continue;
-}
+      if (!get(i)) continue;
       max_time_steps = max(max_time_steps,get(i)->numTimeSteps);
     }
 
     /* initialize vectors*/
     std::vector<size_t> statistics[Geometry::GTY_END];
-    for (size_t i=0; i<Geometry::GTY_END; i++) {
+    for (size_t i=0; i<Geometry::GTY_END; i++)
       statistics[i].resize(max_time_steps);
-}
 
     /* gather statistics */
     for (size_t i=0; i<size(); i++)
     {
-      if (!get(i)) { continue;
-}
+      if (!get(i)) continue;
       int ty = get(i)->getType();
       assert(ty<Geometry::GTY_END);
       int timesegments = get(i)->numTimeSegments();
@@ -103,25 +98,21 @@ namespace embree
 
     /* print statistics */
     std::cout << std::setw(23) << "segments" << ": ";
-    for (size_t t=0; t<max_time_steps; t++) {
+    for (size_t t=0; t<max_time_steps; t++)
       std::cout << std::setw(10) << t;
-}
     std::cout << std::endl;
 
     std::cout << "-------------------------";
-    for (size_t t=0; t<max_time_steps; t++) {
+    for (size_t t=0; t<max_time_steps; t++)
       std::cout << "----------";
-}
     std::cout << std::endl;
 
     for (size_t p=0; p<Geometry::GTY_END; p++)
     {
-      if (std::string(Geometry::gtype_names[p]).empty()) { continue;
-}
+      if (std::string(Geometry::gtype_names[p]) == "") continue;
       std::cout << std::setw(23) << Geometry::gtype_names[p] << ": ";
-      for (size_t t=0; t<max_time_steps; t++) {
+      for (size_t t=0; t<max_time_steps; t++)
         std::cout << std::setw(10) << statistics[p][t];
-}
       std::cout << std::endl;
     }
   }
@@ -148,11 +139,10 @@ namespace embree
           else
 #endif
           {
-            if (quality_flags == RTC_BUILD_QUALITY_HIGH) {
+            if (quality_flags == RTC_BUILD_QUALITY_HIGH)
               accels_add(device->bvh4_factory->BVH4Triangle4(this,BVHFactory::BuildVariant::HIGH_QUALITY,BVHFactory::IntersectVariant::FAST));
-            } else {
+            else
               accels_add(device->bvh4_factory->BVH4Triangle4(this,BVHFactory::BuildVariant::STATIC,BVHFactory::IntersectVariant::FAST));
-}
           }
           break;
 
@@ -195,10 +185,10 @@ namespace embree
           }
       }
     }
-    else if (device->tri_accel == "bvh4.triangle4") {       accels_add(device->bvh4_factory->BVH4Triangle4 (this));
-    } else if (device->tri_accel == "bvh4.triangle4v") {      accels_add(device->bvh4_factory->BVH4Triangle4v(this));
-    } else if (device->tri_accel == "bvh4.triangle4i") {      accels_add(device->bvh4_factory->BVH4Triangle4i(this));
-    } else if (device->tri_accel == "qbvh4.triangle4i") {     accels_add(device->bvh4_factory->BVH4QuantizedTriangle4i(this));
+    else if (device->tri_accel == "bvh4.triangle4")       accels_add(device->bvh4_factory->BVH4Triangle4 (this));
+    else if (device->tri_accel == "bvh4.triangle4v")      accels_add(device->bvh4_factory->BVH4Triangle4v(this));
+    else if (device->tri_accel == "bvh4.triangle4i")      accels_add(device->bvh4_factory->BVH4Triangle4i(this));
+    else if (device->tri_accel == "qbvh4.triangle4i")     accels_add(device->bvh4_factory->BVH4QuantizedTriangle4i(this));
 
 #if defined (EMBREE_TARGET_SIMD8)
     else if (device->tri_accel == "bvh8.triangle4")       accels_add(device->bvh8_factory->BVH8Triangle4 (this));
@@ -207,7 +197,7 @@ namespace embree
     else if (device->tri_accel == "qbvh8.triangle4i")     accels_add(device->bvh8_factory->BVH8QuantizedTriangle4i(this));
     else if (device->tri_accel == "qbvh8.triangle4")      accels_add(device->bvh8_factory->BVH8QuantizedTriangle4(this));
 #endif
-    } else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown triangle acceleration structure "+device->tri_accel);
+    else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown triangle acceleration structure "+device->tri_accel);
 #endif
 
   }
@@ -241,13 +231,13 @@ namespace embree
         }
       }
     }
-    else if (device->tri_accel_mb == "bvh4.triangle4imb") { accels_add(device->bvh4_factory->BVH4Triangle4iMB(this));
-    } else if (device->tri_accel_mb == "bvh4.triangle4vmb") { accels_add(device->bvh4_factory->BVH4Triangle4vMB(this));
+    else if (device->tri_accel_mb == "bvh4.triangle4imb") accels_add(device->bvh4_factory->BVH4Triangle4iMB(this));
+    else if (device->tri_accel_mb == "bvh4.triangle4vmb") accels_add(device->bvh4_factory->BVH4Triangle4vMB(this));
 #if defined (EMBREE_TARGET_SIMD8)
     else if (device->tri_accel_mb == "bvh8.triangle4imb") accels_add(device->bvh8_factory->BVH8Triangle4iMB(this));
     else if (device->tri_accel_mb == "bvh8.triangle4vmb") accels_add(device->bvh8_factory->BVH8Triangle4vMB(this));
 #endif
-    } else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown motion blur triangle acceleration structure "+device->tri_accel_mb);
+    else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown motion blur triangle acceleration structure "+device->tri_accel_mb);
 #endif
   }
 
@@ -752,42 +742,24 @@ namespace embree
           geometryModCounters_[i] = 0;
         });
 
-      if (getNumPrimitives(TriangleMesh::geom_type,false)) { createTriangleAccel();
-}
-      if (getNumPrimitives(TriangleMesh::geom_type,true)) { createTriangleMBAccel();
-}
-      if (getNumPrimitives(QuadMesh::geom_type,false)) { createQuadAccel();
-}
-      if (getNumPrimitives(QuadMesh::geom_type,true)) { createQuadMBAccel();
-}
-      if (getNumPrimitives(GridMesh::geom_type,false)) { createGridAccel();
-}
-      if (getNumPrimitives(GridMesh::geom_type,true)) { createGridMBAccel();
-}
-      if (getNumPrimitives(SubdivMesh::geom_type,false)) { createSubdivAccel();
-}
-      if (getNumPrimitives(SubdivMesh::geom_type,true)) { createSubdivMBAccel();
-}
-      if (getNumPrimitives(Geometry::MTY_CURVES,false)) { createHairAccel();
-}
-      if (getNumPrimitives(Geometry::MTY_CURVES,true)) { createHairMBAccel();
-}
-      if (getNumPrimitives(UserGeometry::geom_type,false)) { createUserGeometryAccel();
-}
-      if (getNumPrimitives(UserGeometry::geom_type,true)) { createUserGeometryMBAccel();
-}
-      if (getNumPrimitives(Geometry::MTY_INSTANCE_CHEAP,false)) { createInstanceAccel();
-}
-      if (getNumPrimitives(Geometry::MTY_INSTANCE_CHEAP,true)) { createInstanceMBAccel();
-}
-      if (getNumPrimitives(Geometry::MTY_INSTANCE_EXPENSIVE,false)) { createInstanceExpensiveAccel();
-}
-      if (getNumPrimitives(Geometry::MTY_INSTANCE_EXPENSIVE,true)) { createInstanceExpensiveMBAccel();
-}
-      if (getNumPrimitives(Geometry::MTY_INSTANCE_ARRAY,false)) { createInstanceArrayAccel();
-}
-      if (getNumPrimitives(Geometry::MTY_INSTANCE_ARRAY,true)) { createInstanceArrayMBAccel();
-}
+      if (getNumPrimitives(TriangleMesh::geom_type,false)) createTriangleAccel();
+      if (getNumPrimitives(TriangleMesh::geom_type,true)) createTriangleMBAccel();
+      if (getNumPrimitives(QuadMesh::geom_type,false)) createQuadAccel();
+      if (getNumPrimitives(QuadMesh::geom_type,true)) createQuadMBAccel();
+      if (getNumPrimitives(GridMesh::geom_type,false)) createGridAccel();
+      if (getNumPrimitives(GridMesh::geom_type,true)) createGridMBAccel();
+      if (getNumPrimitives(SubdivMesh::geom_type,false)) createSubdivAccel();
+      if (getNumPrimitives(SubdivMesh::geom_type,true)) createSubdivMBAccel();
+      if (getNumPrimitives(Geometry::MTY_CURVES,false)) createHairAccel();
+      if (getNumPrimitives(Geometry::MTY_CURVES,true)) createHairMBAccel();
+      if (getNumPrimitives(UserGeometry::geom_type,false)) createUserGeometryAccel();
+      if (getNumPrimitives(UserGeometry::geom_type,true)) createUserGeometryMBAccel();
+      if (getNumPrimitives(Geometry::MTY_INSTANCE_CHEAP,false)) createInstanceAccel();
+      if (getNumPrimitives(Geometry::MTY_INSTANCE_CHEAP,true)) createInstanceMBAccel();
+      if (getNumPrimitives(Geometry::MTY_INSTANCE_EXPENSIVE,false)) createInstanceExpensiveAccel();
+      if (getNumPrimitives(Geometry::MTY_INSTANCE_EXPENSIVE,true)) createInstanceExpensiveMBAccel();
+      if (getNumPrimitives(Geometry::MTY_INSTANCE_ARRAY,false)) createInstanceArrayAccel();
+      if (getNumPrimitives(Geometry::MTY_INSTANCE_ARRAY,true)) createInstanceArrayMBAccel();
 
       flags_modified = false;
       enabled_geometry_types = new_enabled_geometry_types;
@@ -825,13 +797,11 @@ namespace embree
   void Scene::commit_task ()
   {
     checkIfModifiedAndSet();
-    if (!isModified()) { return;
-}
+    if (!isModified()) return;
 
     /* print scene statistics */
-    if (device->verbosity(2)) {
+    if (device->verbosity(2))
       printStatistics();
-}
 
     progress_monitor_counter = 0;
 
@@ -876,8 +846,7 @@ namespace embree
 
   void Scene::setBuildQuality(RTCBuildQuality quality_flags_i)
   {
-    if (quality_flags == quality_flags_i) { return;
-}
+    if (quality_flags == quality_flags_i) return;
     quality_flags = quality_flags_i;
     flags_modified = true;
   }
@@ -888,8 +857,7 @@ namespace embree
 
   void Scene::setSceneFlags(RTCSceneFlags scene_flags_i)
   {
-    if (scene_flags == scene_flags_i) { return;
-}
+    if (scene_flags == scene_flags_i) return;
     scene_flags = scene_flags_i;
     flags_modified = true;
   }

@@ -1,12 +1,12 @@
 #include "../public/VHACD.h"
-#include <cstdlib>
-#include <cstring>
-#include <cstdarg>
+#include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>
 #include <thread>
 #include <atomic>
 #include <mutex>
 #include <string>
-#include <cfloat>
+#include <float.h>
 
 #define ENABLE_ASYNC 1
 
@@ -20,12 +20,12 @@ namespace VHACD
 class MyHACD_API : public VHACD::IVHACD, public VHACD::IVHACD::IUserCallback, VHACD::IVHACD::IUserLogger
 {
 public:
-	MyHACD_API()
+	MyHACD_API(void)
 	{
 		mVHACD = VHACD::CreateVHACD();
 	}
 
-	~MyHACD_API() override
+	virtual ~MyHACD_API(void)
 	{
 		releaseHACD();
 		Cancel();
@@ -33,7 +33,7 @@ public:
 	}
 
 
-	bool Compute(const double* const _points,
+	virtual bool Compute(const double* const _points,
 		const uint32_t countPoints,
 		const uint32_t* const _triangles,
 		const uint32_t countTriangles,
@@ -112,7 +112,7 @@ public:
 		}
 
 		mHullCount = ret;
-		return ret != 0;
+		return ret ? true : false;
 	}
 
 	void releaseHull(VHACD::IVHACD::ConvexHull &h)
@@ -123,7 +123,7 @@ public:
 		h.m_points = nullptr;
 	}
 
-	void GetConvexHull(const uint32_t index, VHACD::IVHACD::ConvexHull& ch) const final
+	virtual void GetConvexHull(const uint32_t index, VHACD::IVHACD::ConvexHull& ch) const final
 	{
 		if ( index < mHullCount )
 		{
@@ -131,7 +131,7 @@ public:
 		}
 	}
 
-	void	releaseHACD() // release memory associated with the last HACD request
+	void	releaseHACD(void) // release memory associated with the last HACD request
 	{
 		for (uint32_t i=0; i<mHullCount; i++)
 		{
@@ -147,17 +147,17 @@ public:
 	}
 
 
-	virtual void release() // release the HACD_API interface
+	virtual void release(void) // release the HACD_API interface
 	{
 		delete this;
 	}
 
-	virtual uint32_t	getHullCount()
+	virtual uint32_t	getHullCount(void)
 	{
 		return mHullCount;
 	}
 
-	void Cancel() final
+	virtual void Cancel() final
 	{
 		if (mRunning)
 		{
@@ -173,7 +173,7 @@ public:
 		mCancel = false; // clear the cancel semaphore
 	}
 
-	bool Compute(const float* const points,
+	virtual bool Compute(const float* const points,
 		const uint32_t countPoints,
 		const uint32_t* const triangles,
 		const uint32_t countTriangles,
@@ -197,36 +197,36 @@ public:
 		return ret;
 	}
 
-	uint32_t GetNConvexHulls() const final
+	virtual uint32_t GetNConvexHulls() const final
 	{
 		processPendingMessages();
 		return mHullCount;
 	}
 
-	void Clean() final // release internally allocated memory
+	virtual void Clean(void) final // release internally allocated memory
 	{
 		Cancel();
 		releaseHACD();
 		mVHACD->Clean();
 	}
 
-	void Release() final  // release IVHACD
+	virtual void Release(void) final  // release IVHACD
 	{
 		delete this;
 	}
 
-	bool OCLInit(void* const oclDevice,
+	virtual bool OCLInit(void* const oclDevice,
 		IVHACD::IUserLogger* const logger = 0) final
 	{
 		return mVHACD->OCLInit(oclDevice, logger);
 	}
 
-	bool OCLRelease(IVHACD::IUserLogger* const logger = 0) final
+	virtual bool OCLRelease(IVHACD::IUserLogger* const logger = 0) final
 	{
 		return mVHACD->OCLRelease(logger);
 	}
 
-	void Update(const double overallProgress,
+	virtual void Update(const double overallProgress,
 		const double stageProgress,
 		const double operationProgress,
 		const char* const stage,
@@ -242,7 +242,7 @@ public:
 		mMessageMutex.unlock();
 	}
 
-	void Log(const char* const msg) final
+	virtual void Log(const char* const msg) final
 	{
 		mMessageMutex.lock();
 		mHaveLogMessage = true;
@@ -250,7 +250,7 @@ public:
 		mMessageMutex.unlock();
 	}
 
-	bool IsReady() const final
+	virtual bool IsReady(void) const final
 	{
 		processPendingMessages();
 		return !mRunning;
@@ -259,7 +259,7 @@ public:
 	// As a convenience for the calling application we only send it update and log messages from it's own main
 	// thread.  This reduces the complexity burden on the caller by making sure it only has to deal with log
 	// messages in it's main application thread.
-	void processPendingMessages() const
+	void processPendingMessages(void) const
 	{
 		// If we have a new update message and the user has specified a callback we send the message and clear the semaphore
 		if (mHaveUpdateMessage && mCallback)
@@ -281,7 +281,7 @@ public:
 
 	// Will compute the center of mass of the convex hull decomposition results and return it
 	// in 'centerOfMass'.  Returns false if the center of mass could not be computed.
-	bool ComputeCenterOfMass(double centerOfMass[3]) const override
+	virtual bool ComputeCenterOfMass(double centerOfMass[3]) const
 	{
 		bool ret = false;
 
@@ -323,7 +323,7 @@ private:
 	mutable std::string						mMessage;
 };
 
-IVHACD* CreateVHACD_ASYNC()
+IVHACD* CreateVHACD_ASYNC(void)
 {
 	MyHACD_API *m = new MyHACD_API;
 	return static_cast<IVHACD *>(m);

@@ -105,8 +105,7 @@ WebPChunk* ChunkSearchList(WebPChunk* first, uint32_t nth, uint32_t tag) {
 
   while (--iter != 0) {
     WebPChunk* next_chunk = ChunkSearchNextInList(first->next_, tag);
-    if (next_chunk == NULL) { break;
-}
+    if (next_chunk == NULL) break;
     first = next_chunk;
   }
   return ((nth > 0) && (iter > 0)) ? NULL : first;
@@ -284,15 +283,13 @@ static int SearchImageToGetOrDelete(WebPMuxImage** wpi_list, uint32_t nth,
 
   if (nth == 0) {
     nth = MuxImageCount(*wpi_list, WEBP_CHUNK_NIL);
-    if (nth == 0) { return 0;  // Not found.
-}
+    if (nth == 0) return 0;  // Not found.
   }
 
   while (*wpi_list != NULL) {
     WebPMuxImage* const cur_wpi = *wpi_list;
     ++count;
-    if (count == nth) { return 1;  // Found.
-}
+    if (count == nth) return 1;  // Found.
     wpi_list = &cur_wpi->next_;
     *location = wpi_list;
   }
@@ -307,8 +304,7 @@ WebPMuxError MuxImagePush(const WebPMuxImage* wpi, WebPMuxImage** wpi_list) {
 
   while (*wpi_list != NULL) {
     WebPMuxImage* const cur_wpi = *wpi_list;
-    if (cur_wpi->next_ == NULL) { break;
-}
+    if (cur_wpi->next_ == NULL) break;
     wpi_list = &cur_wpi->next_;
   }
 
@@ -408,8 +404,7 @@ uint8_t* MuxImageEmit(const WebPMuxImage* const wpi, uint8_t* dst) {
 
 int MuxHasAlpha(const WebPMuxImage* images) {
   while (images != NULL) {
-    if (images->has_alpha_) { return 1;
-}
+    if (images->has_alpha_) return 1;
     images = images->next_;
   }
   return 0;

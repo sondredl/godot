@@ -25,7 +25,7 @@
 #include "rbbinode.h"
 #include "rbbirpt.h"
 
-U_NAMESPACE_BEGIN;
+U_NAMESPACE_BEGIN
 
 class   RBBIRuleBuilder;
 class   RBBISymbolTable;

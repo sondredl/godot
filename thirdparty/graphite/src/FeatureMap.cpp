@@ -18,7 +18,7 @@ using namespace graphite2;
 
 namespace
 {
-    int cmpNameAndFeatures(const void *ap, const void *bp)
+    static int cmpNameAndFeatures(const void *ap, const void *bp)
     {
         const NameAndFeatureRef & a = *static_cast<const NameAndFeatureRef *>(ap),
                                 & b = *static_cast<const NameAndFeatureRef *>(bp);
@@ -39,8 +39,7 @@ namespace
         {
             const int16 value = be::read<int16>(p);
             ::new (s) FeatureSetting(value, be::read<uint16>(p));
-            if (uint16(value) > max_val) {    max_val = value;
-}
+            if (uint16(value) > max_val)    max_val = value;
         }
 
         return max_val;
@@ -50,7 +49,7 @@ namespace
 FeatureRef::FeatureRef(const Face & face,
     unsigned short & bits_offset, uint32 max_val,
     uint32 name, uint16 uiName, flags_t flags,
-    FeatureSetting *settings, uint16 num_set) noexcept
+    FeatureSetting *settings, uint16 num_set) throw()
 : m_face(&face),
   m_nameValues(settings),
   m_mask(mask_over_val(max_val)),
@@ -62,15 +61,14 @@ FeatureRef::FeatureRef(const Face & face,
 {
     const uint8 need_bits = bit_set_count(m_mask);
     m_index = (bits_offset + need_bits) / SIZEOF_CHUNK;
-    if (m_index > bits_offset / SIZEOF_CHUNK) {
+    if (m_index > bits_offset / SIZEOF_CHUNK)
         bits_offset = m_index*SIZEOF_CHUNK;
-}
     m_bits = bits_offset % SIZEOF_CHUNK;
     bits_offset += need_bits;
     m_mask <<= m_bits;
 }
 
-FeatureRef::~FeatureRef() noexcept
+FeatureRef::~FeatureRef() throw()
 {
     free(m_nameValues);
 }
@@ -79,10 +77,8 @@ bool FeatureMap::readFeats(const Face & face)
 {
     const Face::Table feat(face, TtfUtil::Tag::Feat);
     const byte * p = feat;
-    if (!p) { return true;
-}
-    if (feat.size() < FEAT_HEADER) { return false;
-}
+    if (!p) return true;
+    if (feat.size() < FEAT_HEADER) return false;
 
     const byte *const feat_start = p,
                *const feat_end = p + feat.size();
@@ -93,8 +89,7 @@ bool FeatureMap::readFeats(const Face & face)
     be::skip<uint32>(p);
 
     // Sanity checks
-    if (m_numFeats == 0) {    return true;
-}
+    if (m_numFeats == 0)    return true;
     if (version < 0x00010000 ||
         p + m_numFeats*FEATURE_SIZE > feat_end)
     {   //defensive
@@ -104,17 +99,15 @@ bool FeatureMap::readFeats(const Face & face)
 
     m_feats = new FeatureRef [m_numFeats];
     uint16 * const  defVals = gralloc<uint16>(m_numFeats);
-    if (!defVals || !m_feats) { return false;
-}
+    if (!defVals || !m_feats) return false;
     unsigned short bits = 0;     //to cause overflow on first Feature
 
     for (int i = 0, ie = m_numFeats; i != ie; i++)
     {
         const uint32    label   = version < 0x00020000 ? be::read<uint16>(p) : be::read<uint32>(p);
         const uint16    num_settings = be::read<uint16>(p);
-        if (version >= 0x00020000) {
+        if (version >= 0x00020000)
             be::skip<uint16>(p);
-}
         const uint32    settings_offset = be::read<uint32>(p);
         const uint16    flags  = be::read<uint16>(p),
                         uiName = be::read<uint16>(p);
@@ -173,10 +166,8 @@ bool FeatureMap::readFeats(const Face & face)
 
 bool SillMap::readFace(const Face & face)
 {
-    if (!m_FeatureMap.readFeats(face)) { return false;
-}
-    if (!readSill(face)) { return false;
-}
+    if (!m_FeatureMap.readFeats(face)) return false;
+    if (!readSill(face)) return false;
     return true;
 }
 
@@ -186,30 +177,24 @@ bool SillMap::readSill(const Face & face)
     const Face::Table sill(face, TtfUtil::Tag::Sill);
     const byte *p = sill;
 
-    if (!p) { return true;
-}
-    if (sill.size() < 12) { return false;
-}
-    if (be::read<uint32>(p) != 0x00010000UL) { return false;
-}
+    if (!p) return true;
+    if (sill.size() < 12) return false;
+    if (be::read<uint32>(p) != 0x00010000UL) return false;
     m_numLanguages = be::read<uint16>(p);
     m_langFeats = new LangFeaturePair[m_numLanguages];
     if (!m_langFeats || !m_FeatureMap.m_numFeats) { m_numLanguages = 0; return true; }        //defensive
 
     p += 6;     // skip the fast search
-    if (sill.size() < m_numLanguages * 8U + 12) { return false;
-}
+    if (sill.size() < m_numLanguages * 8U + 12) return false;
 
     for (int i = 0; i < m_numLanguages; i++)
     {
         uint32 langid = be::read<uint32>(p);
         uint16 numSettings = be::read<uint16>(p);
         uint16 offset = be::read<uint16>(p);
-        if (offset + 8U * numSettings > sill.size() && numSettings > 0) { return false;
-}
+        if (offset + 8U * numSettings > sill.size() && numSettings > 0) return false;
         Features* feats = new Features(m_FeatureMap.m_defaultFeatures);
-        if (!feats) { return false;
-}
+        if (!feats) return false;
         const byte *pLSet = sill + offset;
 
         // Apply langauge specific settings
@@ -219,13 +204,11 @@ bool SillMap::readSill(const Face & face)
             uint16 val = be::read<uint16>(pLSet);
             pLSet += 2;
             const FeatureRef* pRef = m_FeatureMap.findFeatureRef(name);
-            if (pRef) {   pRef->applyValToFeature(val, *feats);
-}
+            if (pRef)   pRef->applyValToFeature(val, *feats);
         }
         // Add the language id feature which is always feature id 1
         const FeatureRef* pRef = m_FeatureMap.findFeatureRef(1);
-        if (pRef) {   pRef->applyValToFeature(langid, *feats);
-}
+        if (pRef)   pRef->applyValToFeature(langid, *feats);
 
         m_langFeats[i].m_lang = langid;
         m_langFeats[i].m_pFeatures = feats;
@@ -242,9 +225,8 @@ Features* SillMap::cloneFeatures(uint32 langname/*0 means default*/) const
         // so this loop is not very expensive
         for (uint16 i = 0; i < m_numLanguages; i++)
         {
-            if (m_langFeats[i].m_lang == langname) {
+            if (m_langFeats[i].m_lang == langname)
                 return new Features(*m_langFeats[i].m_pFeatures);
-}
         }
     }
     return new Features (m_FeatureMap.m_defaultFeatures);
@@ -256,28 +238,23 @@ const FeatureRef *FeatureMap::findFeatureRef(uint32 name) const
 {
     NameAndFeatureRef *it;
 
-    for (it = m_pNamedFeats; it < m_pNamedFeats + m_numFeats; ++it) {
-        if (it->m_name == name) {
+    for (it = m_pNamedFeats; it < m_pNamedFeats + m_numFeats; ++it)
+        if (it->m_name == name)
             return it->m_pFRef;
-}
-}
     return NULL;
 }
 
 bool FeatureRef::applyValToFeature(uint32 val, Features & pDest) const
 {
-    if (val>maxVal() || !m_face) {
+    if (val>maxVal() || !m_face)
       return false;
-}
-    if (pDest.m_pMap==NULL) {
+    if (pDest.m_pMap==NULL)
       pDest.m_pMap = &m_face->theSill().theFeatureMap();
-    } else
-      if (pDest.m_pMap!=&m_face->theSill().theFeatureMap()) {
+    else
+      if (pDest.m_pMap!=&m_face->theSill().theFeatureMap())
         return false;       //incompatible
-}
-    if (m_index >= pDest.size()) {
+    if (m_index >= pDest.size())
         pDest.resize(m_index+1);
-}
     pDest[m_index] &= ~m_mask;
     pDest[m_index] |= (uint32(val) << m_bits);
     return true;
@@ -286,9 +263,8 @@ bool FeatureRef::applyValToFeature(uint32 val, Features & pDest) const
 uint32 FeatureRef::getFeatureVal(const Features& feats) const
 {
   if (m_index < feats.size() && m_face
-      && &m_face->theSill().theFeatureMap()==feats.m_pMap) {
+      && &m_face->theSill().theFeatureMap()==feats.m_pMap)
     return (feats[m_index] & m_mask) >> m_bits;
-  } else {
+  else
     return 0;
-}
 }

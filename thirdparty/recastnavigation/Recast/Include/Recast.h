@@ -111,7 +111,7 @@ enum rcTimerLabel
 /// class through the Recast build process.
 ///
 /// @ingroup recast
-class rcContext;
+class rcContext
 {
 public:
 	/// Constructor.
@@ -193,7 +193,7 @@ protected:
 
 /// A helper to first start a timer and then stop it when this helper goes out of scope.
 /// @see rcContext
-class rcScopedTimer;
+class rcScopedTimer
 {
 public:
 	/// Constructs an instance and starts the timer.
@@ -296,22 +296,22 @@ struct rcSpan
 	unsigned int smin : RC_SPAN_HEIGHT_BITS; ///< The lower limit of the span. [Limit: < #smax]
 	unsigned int smax : RC_SPAN_HEIGHT_BITS; ///< The upper limit of the span. [Limit: <= #RC_SPAN_MAX_HEIGHT]
 	unsigned int area : 6;                   ///< The area id assigned to the span.
-	struct rcSpan* next;                            ///< The next span higher up in column.
+	rcSpan* next;                            ///< The next span higher up in column.
 };
 
 /// A memory pool used for quick allocation of spans within a heightfield.
 /// @see rcHeightfield
 struct rcSpanPool
 {
-	struct rcSpanPool* next;					///< The next span pool.
-	struct rcSpan items[RC_SPANS_PER_POOL];	///< Array of spans in the pool.
+	rcSpanPool* next;					///< The next span pool.
+	rcSpan items[RC_SPANS_PER_POOL];	///< Array of spans in the pool.
 };
 
 /// A dynamic heightfield representing obstructed space.
 /// @ingroup recast
 struct rcHeightfield
 {
-	rcHeightfield();;
+	rcHeightfield();
 	~rcHeightfield();
 
 	int width;			///< The width of the heightfield. (Along the x-axis in cell units.)
@@ -320,14 +320,14 @@ struct rcHeightfield
 	float bmax[3];		///< The maximum bounds in world space. [(x, y, z)]
 	float cs;			///< The size of each cell. (On the xz-plane.)
 	float ch;			///< The height of each cell. (The minimum increment along the y-axis.)
-	struct rcSpan** spans;		///< Heightfield of spans (width*height).
-	struct rcSpanPool* pools;	///< Linked list of span pools.
-	struct rcSpan* freelist;	///< The next free span.
+	rcSpan** spans;		///< Heightfield of spans (width*height).
+	rcSpanPool* pools;	///< Linked list of span pools.
+	rcSpan* freelist;	///< The next free span.
 
 private:
 	// Explicitly-disabled copy constructor and copy assignment operator.
 	rcHeightfield(const rcHeightfield&);
-	struct rcHeightfield& operator=(const rcHeightfield&);
+	rcHeightfield& operator=(const rcHeightfield&);
 };
 
 /// Provides information on the content of a cell column in a compact heightfield.

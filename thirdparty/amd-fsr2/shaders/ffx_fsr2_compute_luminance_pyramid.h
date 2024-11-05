@@ -19,19 +19,19 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-FFX_GROUPSHARED FfxUInt32; spdCounter;
+FFX_GROUPSHARED FfxUInt32 spdCounter;
 
 #ifndef SPD_PACKED_ONLY
-FFX_GROUPSHARED FfxFloat32; spdIntermediateR[16][16];
-FFX_GROUPSHARED FfxFloat32; spdIntermediateG[16][16];
-FFX_GROUPSHARED FfxFloat32; spdIntermediateB[16][16];
-FFX_GROUPSHARED FfxFloat32; spdIntermediateA[16][16];
+FFX_GROUPSHARED FfxFloat32 spdIntermediateR[16][16];
+FFX_GROUPSHARED FfxFloat32 spdIntermediateG[16][16];
+FFX_GROUPSHARED FfxFloat32 spdIntermediateB[16][16];
+FFX_GROUPSHARED FfxFloat32 spdIntermediateA[16][16];
 
 FfxFloat32x4 SpdLoadSourceImage(FfxFloat32x2 tex, FfxUInt32 slice)
 {
-    FfxFloat32 fUv = (tex + 0.5f + Jitter()) / RenderSize();
+    FfxFloat32x2 fUv = (tex + 0.5f + Jitter()) / RenderSize();
     fUv = ClampUv(fUv, RenderSize(), InputColorResourceDimensions());
-    FfxFloat32 fRgb = SampleInputColor(fUv);
+    FfxFloat32x3 fRgb = SampleInputColor(fUv);
 
     fRgb /= PreExposure();
 

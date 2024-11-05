@@ -492,10 +492,9 @@
       GXV_SET_ERR_IF_PARANOID( FT_INVALID_GLYPH_ID );
     }
 
-    if ( flags != 0 ) {
+    if ( flags != 0 )
       GXV_TRACE(( "kern subtable fmt3 has nonzero value"
                   " (%d) in unused flag\n", flags ));
-}
     /*
      * just skip kernValue[kernValueCount]
      */
@@ -668,10 +667,9 @@
                 "override=%d, format=%d\n",
                 horizontal, minimum, cross_stream, override, *format ));
 
-    if ( *format == 2 ) {
+    if ( *format == 2 )
       GXV_TRACE((
         "kerning values in Microsoft format 2 subtable are ignored\n" ));
-}
 
     return TRUE;
   }
@@ -865,9 +863,9 @@
     GXV_TRACE(( "version 0x%04x (higher 16bit)\n",
                 GXV_KERN_DATA( version ) ));
 
-    if ( 0x0001 < GXV_KERN_DATA( version ) ) {
+    if ( 0x0001 < GXV_KERN_DATA( version ) )
       FT_INVALID_FORMAT;
-    } else if ( KERN_IS_CLASSIC( gxvalid ) )
+    else if ( KERN_IS_CLASSIC( gxvalid ) )
     {
       GXV_LIMIT_CHECK( 2 );
       nTables = FT_NEXT_USHORT( p );

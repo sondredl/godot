@@ -21,7 +21,7 @@
 #define JPGD_HUFF_TREE_MAX_LENGTH 512
 #define JPGD_HUFF_CODE_SIZE_MAX_LENGTH 256
 
-namespace jpgd;
+namespace jpgd
 {
 	typedef unsigned char  uint8;
 	typedef   signed short int16;

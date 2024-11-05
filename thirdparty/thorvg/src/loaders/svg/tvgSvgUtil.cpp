@@ -29,10 +29,9 @@
 
 static uint8_t _hexCharToDec(const char c)
 {
-    if (c >= 'a') { return c - 'a' + 10;
-    } else if (c >= 'A') { return c - 'A' + 10;
-    } else { return c - '0';
-}
+    if (c >= 'a') return c - 'a' + 10;
+    else if (c >= 'A') return c - 'A' + 10;
+    else return c - '0';
 }
 
 
@@ -42,12 +41,10 @@ static uint8_t _hexCharToDec(const char c)
 
 size_t svgUtilURLDecode(const char *src, char** dst)
 {
-    if (!src) { return 0;
-}
+    if (!src) return 0;
 
     auto length = strlen(src);
-    if (length == 0) { return 0;
-}
+    if (length == 0) return 0;
 
     char* decoded = (char*)malloc(sizeof(char) * length + 1);
 

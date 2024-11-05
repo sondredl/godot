@@ -41,13 +41,10 @@ static WEBP_INLINE int VP8RandomBits2(VP8Random* const rg, int num_bits,
   int diff;
   assert(num_bits + VP8_RANDOM_DITHER_FIX <= 31);
   diff = rg->tab_[rg->index1_] - rg->tab_[rg->index2_];
-  if (diff < 0) { diff += (1u << 31);
-}
+  if (diff < 0) diff += (1u << 31);
   rg->tab_[rg->index1_] = diff;
-  if (++rg->index1_ == VP8_RANDOM_TABLE_SIZE) { rg->index1_ = 0;
-}
-  if (++rg->index2_ == VP8_RANDOM_TABLE_SIZE) { rg->index2_ = 0;
-}
+  if (++rg->index1_ == VP8_RANDOM_TABLE_SIZE) rg->index1_ = 0;
+  if (++rg->index2_ == VP8_RANDOM_TABLE_SIZE) rg->index2_ = 0;
   // sign-extend, 0-center
   diff = (int)((uint32_t)diff << 1) >> (32 - num_bits);
   diff = (diff * amp) >> VP8_RANDOM_DITHER_FIX;  // restrict range

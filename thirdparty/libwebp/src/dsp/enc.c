@@ -663,12 +663,10 @@ static int QuantizeBlock_C(int16_t in[16], int16_t out[16],
       const uint32_t B = mtx->bias_[j];
       int level = QUANTDIV(coeff, iQ, B);
       if (level > MAX_LEVEL) level = MAX_LEVEL;
-      if (sign) { level = -level;
-}
+      if (sign) level = -level;
       in[j] = level * (int)Q;
       out[n] = level;
-      if (level) { last = n;
-}
+      if (level) last = n;
     } else {
       out[n] = 0;
       in[j] = 0;

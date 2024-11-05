@@ -59,8 +59,7 @@ UBool UnicodeSetIterator::next() {
         return true;
     }
 
-    if (nextString >= stringCount) { return false;
-}
+    if (nextString >= stringCount) return false;
     codepoint = static_cast<UChar32>(IS_STRING); // signal that value is actually a string
     string = static_cast<const UnicodeString*>(set->strings_->elementAt(nextString++));
     return true;
@@ -93,8 +92,7 @@ UBool UnicodeSetIterator::nextRange() {
         return true;
     }
 
-    if (nextString >= stringCount) { return false;
-}
+    if (nextString >= stringCount) return false;
     codepoint = static_cast<UChar32>(IS_STRING); // signal that value is actually a string
     string = static_cast<const UnicodeString*>(set->strings_->elementAt(nextString++));
     return true;

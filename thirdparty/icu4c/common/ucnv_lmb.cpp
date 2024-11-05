@@ -549,14 +549,12 @@ FindLMBCSLocale(const char *LocaleID)
       if (*pTable->LocaleID == *LocaleID) /* Check only first char for speed */
       {
          /* First char matches - check whole name, for entry-length */
-         if (uprv_strncmp(pTable->LocaleID, LocaleID, strlen(pTable->LocaleID)) == 0) {
+         if (uprv_strncmp(pTable->LocaleID, LocaleID, strlen(pTable->LocaleID)) == 0)
             return pTable->OptGroup;
-}
       }
       else
-      if (*pTable->LocaleID > *LocaleID) { /* Sorted alphabetically - exit */
+      if (*pTable->LocaleID > *LocaleID) /* Sorted alphabetically - exit */
          break;
-}
       pTable++;
    }
    return ULMBCS_GRP_L1;
@@ -678,9 +676,8 @@ _LMBCSClose(UConverter *   _this)
 
         for (Ix=0; Ix <= ULMBCS_GRP_LAST; Ix++)
         {
-           if (extraInfo->OptGrpConverter[Ix] != nullptr) {
+           if (extraInfo->OptGrpConverter[Ix] != nullptr)
               ucnv_unloadSharedDataIfReady(extraInfo->OptGrpConverter[Ix]);
-}
         }
         if (!_this->isExtraLocal) {
             uprv_free (_this->extraInfo);
@@ -795,9 +792,8 @@ LMBCSConversionWorker (
    }
 
   /* don't emit control chars */
-   if ( bytesConverted == 1 && firstByte < 0x20 ) {
+   if ( bytesConverted == 1 && firstByte < 0x20 )
       return 0;
-}
 
 
    /* then move over the converted data */

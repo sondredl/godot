@@ -48,8 +48,8 @@ SimpleLocaleKeyFactory::SimpleLocaleKeyFactory(UObject* objToAdopt,
                                                int32_t coverage)
   : LocaleKeyFactory(coverage)
   , _obj(objToAdopt)
-  ,
-   _kind(kind)
+  , _id()
+  , _kind(kind)
 {
     LocaleUtility::initNameFromLocale(locale, _id);
 }

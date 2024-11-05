@@ -15,10 +15,8 @@ namespace embree
 
   /* creates map for fast categorization of characters */
   static void createCharMap(bool map[256], const std::string& chrs) {
-    for (size_t i=0; i<256; i++) { map[i] = false;
-}
-    for (size_t i=0; i<chrs.size(); i++) { map[uint8_t(chrs[i])] = true;
-}
+    for (size_t i=0; i<256; i++) map[i] = false;
+    for (size_t i=0; i<chrs.size(); i++) map[uint8_t(chrs[i])] = true;
   }
 
   /* build full tokenizer that takes list of valid characters and keywords */
@@ -37,12 +35,10 @@ namespace embree
   {
     bool ok = false;
     std::string str;
-    if (cin->peek() == '+' || cin->peek() == '-') { str += (char)cin->get();
-}
+    if (cin->peek() == '+' || cin->peek() == '-') str += (char)cin->get();
     while (isDigit(cin->peek())) { ok = true; str += (char)cin->get(); }
-    if (ok) { str_o += str;
-    } else { cin->unget(str.size());
-}
+    if (ok) str_o += str;
+    else cin->unget(str.size());
     return ok;
   }
 
@@ -51,8 +47,7 @@ namespace embree
     bool ok = false;
     std::string str;
     while (isDigit(cin->peek())) { ok = true; str += (char)cin->get(); }
-    if (ok) { str_o += str; } else { cin->unget(str.size());
-}
+    if (ok) str_o += str; else cin->unget(str.size());
     return ok;
   }
 
@@ -69,8 +64,7 @@ namespace embree
   bool TokenStream::trySymbols(Token& token, const ParseLocation& loc)
   {
     for (size_t i=0; i<symbols.size(); i++) {
-      if (!trySymbol(symbols[i])) { continue;
-}
+      if (!trySymbol(symbols[i])) continue;
       token = Token(symbols[i],Token::TY_SYMBOL,loc);
       return true;
     }
@@ -101,16 +95,13 @@ namespace embree
         decDigits(str);
         if (cin->peek() == 'e' || cin->peek() == 'E') {
           str += (char)cin->get();
-          if (decDigits(str)) { ok = true; // 1.[2]E2
-}
+          if (decDigits(str)) ok = true; // 1.[2]E2
         }
-        else { ok = true; // 1.[2]
-}
+        else ok = true; // 1.[2]
       }
       else if (cin->peek() == 'e' || cin->peek() == 'E') {
         str += (char)cin->get();
-        if (decDigits(str)) { ok = true; // 1E2
-}
+        if (decDigits(str)) ok = true; // 1E2
       }
     }
     else
@@ -120,19 +111,16 @@ namespace embree
         if (decDigits(str)) {
           if (cin->peek() == 'e' || cin->peek() == 'E') {
             str += (char)cin->get();
-            if (decDigits(str)) { ok = true; // .3E2
-}
+            if (decDigits(str)) ok = true; // .3E2
           }
-          else { ok = true; // .3
-}
+          else ok = true; // .3
         }
       }
     }
     if (ok) {
       token = Token((float)atof(str.c_str()),loc);
     }
-    else { cin->unget(str.size());
-}
+    else cin->unget(str.size());
     return ok;
   }
 
@@ -148,8 +136,7 @@ namespace embree
   bool TokenStream::tryString(Token& token, const ParseLocation& loc)
   {
     std::string str;
-    if (cin->peek() != '\"') { return false;
-}
+    if (cin->peek() != '\"') return false;
     cin->drop();
     while (cin->peek() != '\"') {
       const int c = cin->get();
@@ -164,11 +151,9 @@ namespace embree
   bool TokenStream::tryIdentifier(Token& token, const ParseLocation& loc)
   {
     std::string str;
-    if (!isAlpha(cin->peek())) { return false;
-}
+    if (!isAlpha(cin->peek())) return false;
     str += (char)cin->get();
-    while (isAlphaNum(cin->peek())) { str += (char)cin->get();
-}
+    while (isAlphaNum(cin->peek())) str += (char)cin->get();
     token = Token(str,Token::TY_IDENTIFIER,loc);
     return true;
   }
@@ -176,9 +161,8 @@ namespace embree
   void TokenStream::skipSeparators()
   {
     /* skip separators */
-    while (cin->peek() != EOF && isSeparator(cin->peek())) {
+    while (cin->peek() != EOF && isSeparator(cin->peek()))
       cin->drop();
-}
   }
 
   Token TokenStream::next()
@@ -186,18 +170,12 @@ namespace embree
     Token token;
     skipSeparators();
     ParseLocation loc = cin->loc();
-    if (trySymbols   (token,loc)) { return token;      /**< try to parse a symbol */
-}
-    if (tryFloat     (token,loc)) { return token;      /**< try to parse float */
-}
-    if (tryInt       (token,loc)) { return token;      /**< try to parse integer */
-}
-    if (tryString    (token,loc)) { return token;      /**< try to parse string */
-}
-    if (tryIdentifier(token,loc)) { return token;      /**< try to parse identifier */
-}
-    if (cin->peek() == EOF  ) {     return Token(loc); /**< return EOF token */
-}
+    if (trySymbols   (token,loc)) return token;      /**< try to parse a symbol */
+    if (tryFloat     (token,loc)) return token;      /**< try to parse float */
+    if (tryInt       (token,loc)) return token;      /**< try to parse integer */
+    if (tryString    (token,loc)) return token;      /**< try to parse string */
+    if (tryIdentifier(token,loc)) return token;      /**< try to parse identifier */
+    if (cin->peek() == EOF  )     return Token(loc); /**< return EOF token */
     return Token((char)cin->get(),loc);              /**< return invalid character token */
   }
 }

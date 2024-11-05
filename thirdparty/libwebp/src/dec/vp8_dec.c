@@ -72,10 +72,8 @@ VP8StatusCode VP8Status(VP8Decoder* const dec) {
 }
 
 const char* VP8StatusMessage(VP8Decoder* const dec) {
-  if (dec == NULL) { return "no object";
-}
-  if (!dec->error_msg_) { return "OK";
-}
+  if (dec == NULL) return "no object";
+  if (!dec->error_msg_) return "OK";
   return dec->error_msg_;
 }
 
@@ -222,8 +220,7 @@ static VP8StatusCode ParsePartitions(VP8Decoder* const dec,
   size_left -= last_part * 3;
   for (p = 0; p < last_part; ++p) {
     size_t psize = sz[0] | (sz[1] << 8) | (sz[2] << 16);
-    if (psize > size_left) { psize = size_left;
-}
+    if (psize > size_left) psize = size_left;
     VP8InitBitReader(dec->parts_ + p, part_start, psize);
     part_start += psize;
     size_left -= psize;
@@ -453,8 +450,7 @@ static int GetCoeffsFast(VP8BitReader* const br,
     }
     while (!VP8GetBit(br, p[1], "coeffs")) {       // sequence of zero coeffs
       p = prob[++n]->probas_[0];
-      if (n == 16) { return 16;
-}
+      if (n == 16) return 16;
     }
     {        // non zero coeff
       const VP8ProbaArray* const p_ctx = &prob[n + 1]->probas_[0];
@@ -484,8 +480,7 @@ static int GetCoeffsAlt(VP8BitReader* const br,
     }
     while (!VP8GetBitAlt(br, p[1], "coeffs")) {       // sequence of zero coeffs
       p = prob[++n]->probas_[0];
-      if (n == 16) { return 16;
-}
+      if (n == 16) return 16;
     }
     {        // non zero coeff
       const VP8ProbaArray* const p_ctx = &prob[n + 1]->probas_[0];

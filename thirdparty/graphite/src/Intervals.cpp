@@ -13,6 +13,7 @@
 
 using namespace graphite2;
 
+#include <cmath>
 
 inline
 Zones::Exclusion  Zones::Exclusion::split_at(float p) {
@@ -68,15 +69,13 @@ void Zones::insert(Exclusion e)
 #endif
     e.x = max(e.x, _pos);
     e.xm = min(e.xm, _posm);
-    if (e.x >= e.xm) { return;
-}
+    if (e.x >= e.xm) return;
 
     for (iterator i = _exclusions.begin(), ie = _exclusions.end(); i != ie && e.x < e.xm; ++i)
     {
         const uint8 oca = e.outcode(i->x),
                     ocb = e.outcode(i->xm);
-        if ((oca & ocb) != 0) { continue;
-}
+        if ((oca & ocb) != 0) continue;
 
         switch (oca ^ ocb)  // What kind of overlap?
         {
@@ -91,8 +90,7 @@ void Zones::insert(Exclusion e)
             // split i at e->x into i1,i2
             // split e at i.mx into e1,e2
             // trim i1, insert i2+e1, e=e2
-            if (!separated(i->xm, e.x)) { break;
-}
+            if (!separated(i->xm, e.x)) break;
             if (separated(i->x,e.x))   { i = _exclusions.insert(i,i->split_at(e.x)); ++i; }
             *i += e;
             e.left_trim(i->xm);
@@ -101,18 +99,15 @@ void Zones::insert(Exclusion e)
             // split e at i->x into e1,e2
             // split i at e.mx into i1,i2
             // drop e1, insert e2+i1, trim i2
-            if (!separated(e.xm, i->x)) { return;
-}
-            if (separated(e.xm, i->xm)) { i = _exclusions.insert(i,i->split_at(e.xm));
-}
+            if (!separated(e.xm, i->x)) return;
+            if (separated(e.xm, i->xm)) i = _exclusions.insert(i,i->split_at(e.xm));
             *i += e;
             return;
         case 3:     // i completely covers e
             // split i at e.x into i1,i2
             // split i2 at e.mx into i2,i3
             // insert i1, insert e+i2
-            if (separated(e.xm, i->xm)) { i = _exclusions.insert(i,i->split_at(e.xm));
-}
+            if (separated(e.xm, i->xm)) i = _exclusions.insert(i,i->split_at(e.xm));
             i = _exclusions.insert(i, i->split_at(e.x));
             *++i += e;
             return;
@@ -130,15 +125,13 @@ void Zones::remove(float x, float xm)
 #endif
     x = max(x, _pos);
     xm = min(xm, _posm);
-    if (x >= xm) { return;
-}
+    if (x >= xm) return;
 
     for (iterator i = _exclusions.begin(), ie = _exclusions.end(); i != ie; ++i)
     {
         const uint8 oca = i->outcode(x),
                     ocb = i->outcode(xm);
-        if ((oca & ocb) != 0) {   continue;
-}
+        if ((oca & ocb) != 0)   continue;
 
         switch (oca ^ ocb)  // What kind of overlap?
         {
@@ -151,8 +144,7 @@ void Zones::remove(float x, float xm)
             return;
         case 2:     // i overlaps on the lhs of e
             i->xm = x;
-            if (separated(i->x, i->xm)) { break;
-}
+            if (separated(i->x, i->xm)) break;
             GR_FALLTHROUGH;
             // no break
         case 3:     // e completely covers i
@@ -194,18 +186,14 @@ float Zones::closest(float origin, float & cost) const
     const const_iterator start = find_exclusion_under(origin);
 
     // Forward scan looking for lowest cost
-    for (const_iterator i = start, ie = _exclusions.end(); i != ie; ++i) {
-        if (i->track_cost(best_c, best_x, origin)) { break;
-}
-}
+    for (const_iterator i = start, ie = _exclusions.end(); i != ie; ++i)
+        if (i->track_cost(best_c, best_x, origin)) break;
 
     // Backward scan looking for lowest cost
     //  We start from the exclusion to the immediate left of start since we've
     //  already tested start with the right most scan above.
-    for (const_iterator i = start-1, ie = _exclusions.begin()-1; i != ie; --i) {
-        if (i->track_cost(best_c, best_x, origin)) { break;
-}
-}
+    for (const_iterator i = start-1, ie = _exclusions.begin()-1; i != ie; --i)
+        if (i->track_cost(best_c, best_x, origin)) break;
 
     cost = (best_c == std::numeric_limits<float>::max() ? -1 : best_c);
     return best_x;
@@ -217,8 +205,7 @@ float Zones::closest(float origin, float & cost) const
 bool Zones::Exclusion::track_cost(float & best_cost, float & best_pos, float origin) const {
     const float p = test_position(origin),
                 localc = cost(p - origin);
-    if (open && localc > best_cost) { return true;
-}
+    if (open && localc > best_cost) return true;
 
     if (localc < best_cost)
     {
@@ -255,10 +242,9 @@ float Zones::Exclusion::test_position(float origin) const {
     else
     {
         float zerox = smx / sm + origin;
-        if (zerox < x) { return x;
-        } else if (zerox > xm) { return xm;
-        } else { return zerox;
-}
+        if (zerox < x) return x;
+        else if (zerox > xm) return xm;
+        else return zerox;
     }
 }
 

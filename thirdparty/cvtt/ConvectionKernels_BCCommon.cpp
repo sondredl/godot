@@ -38,9 +38,8 @@ http://go.microsoft.com/fwlink/?LinkId=248926
 
 int cvtt::Internal::BCCommon::TweakRoundsForRange(int range)
 {
-    if (range == 3) {
+    if (range == 3)
         return 3;
-}
     return 4;
 }
 

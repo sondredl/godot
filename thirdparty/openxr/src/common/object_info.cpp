@@ -46,7 +46,7 @@ void ObjectInfoCollection::AddObjectName(uint64_t object_handle, XrObjectType ob
     XrSdkLogObjectInfo new_obj = {object_handle, object_type};
 
     // If it already exists, update the name
-    auto *lookup_info = LookUpStoredObjectInfo(new_obj);
+    auto lookup_info = LookUpStoredObjectInfo(new_obj);
     if (lookup_info != nullptr) {
         lookup_info->name = object_name;
         return;
@@ -82,11 +82,15 @@ XrSdkLogObjectInfo* ObjectInfoCollection::LookUpStoredObjectInfo(XrSdkLogObjectI
 
 bool ObjectInfoCollection::LookUpObjectName(XrDebugUtilsObjectNameInfoEXT& info) const {
     auto info_lookup = LookUpStoredObjectInfo(info.objectHandle, info.objectType);
-    return info_lookup != nullptr;
+    if (info_lookup != nullptr) {
+        info.objectName = info_lookup->name.c_str();
+        return true;
+    }
+    return false;
 }
 
 bool ObjectInfoCollection::LookUpObjectName(XrSdkLogObjectInfo& info) const {
-    const auto *info_lookup = LookUpStoredObjectInfo(info);
+    auto info_lookup = LookUpStoredObjectInfo(info);
     if (info_lookup != nullptr) {
         info.name = info_lookup->name;
         return true;

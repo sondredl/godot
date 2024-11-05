@@ -29,8 +29,7 @@ int WebPRescalerInit(WebPRescaler* const rescaler,
   const int x_add = src_width, x_sub = dst_width;
   const int y_add = src_height, y_sub = dst_height;
   const uint64_t total_size = 2ull * dst_width * num_channels * sizeof(*work);
-  if (!CheckSizeOverflow(total_size)) { return 0;
-}
+  if (!CheckSizeOverflow(total_size)) return 0;
 
   rescaler->x_expand = (src_width < dst_width);
   rescaler->y_expand = (src_height < dst_height);

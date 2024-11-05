@@ -146,9 +146,8 @@ findCommonICUDataByName(const char *inBasename, UErrorCode &err)
     int32_t i;
 
     UDataMemory  *pData = udata_findCachedData(inBasename, err);
-    if (U_FAILURE(err) || pData == nullptr) {
+    if (U_FAILURE(err) || pData == nullptr)
         return false;
-}
 
     {
         Mutex lock;
@@ -764,7 +763,7 @@ openCommonData(const char *path,          /*  Path from OpenChoice?          */
 
     UDataPathIterator iter(u_getDataDirectory(), inBasename, path, ".dat", true, pErrorCode);
 
-    while ((!static_cast<bool>(UDataMemory_isLoaded(&tData))) && (pathBuffer = iter.next(pErrorCode)) != nullptr)
+    while ((UDataMemory_isLoaded(&tData)==false) && (pathBuffer = iter.next(pErrorCode)) != nullptr)
     {
 #ifdef UDATA_DEBUG
         fprintf(stderr, "ocd: trying path %s - ", pathBuffer);

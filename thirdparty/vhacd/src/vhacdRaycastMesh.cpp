@@ -1,6 +1,6 @@
 #include "vhacdRaycastMesh.h"
-#include <cmath>
-#include <cassert>
+#include <math.h>
+#include <assert.h>
 
 namespace RAYCAST_MESH
 {
@@ -32,32 +32,28 @@ static inline bool rayIntersectsTriangle(const double *p,const double *d,const d
 	crossProduct(h,d,e2);
 	a = innerProduct(e1,h);
 
-	if (a > -0.00001 && a < 0.00001) {
+	if (a > -0.00001 && a < 0.00001)
 		return(false);
-}
 
 	f = 1/a;
 	vector(s,p,v0);
 	u = f * (innerProduct(s,h));
 
-	if (u < 0.0 || u > 1.0) {
+	if (u < 0.0 || u > 1.0)
 		return(false);
-}
 
 	crossProduct(q,s,e1);
 	v = f * innerProduct(d,q);
-	if (v < 0.0 || u + v > 1.0) {
+	if (v < 0.0 || u + v > 1.0)
 		return(false);
-}
 	// at this stage we can compute t to find out where
 	// the intersection point is on the line
 	t = f * innerProduct(e2,q);
-	if (t > 0) { // ray intersection
+	if (t > 0) // ray intersection
 		return(true);
-	} else { // this means that there is a line intersection
+	else // this means that there is a line intersection
 		// but not a ray intersection
 		return (false);
-}
 }
 
 static double getPointDistance(const double *p1, const double *p2)
@@ -99,13 +95,13 @@ public:
 	}
 
 
-	~MyRaycastMesh()
+	~MyRaycastMesh(void)
 	{
         delete[]mVertices;
         delete[]mIndices;
 	}
 
-	virtual void release()
+	virtual void release(void)
 	{
 		delete this;
 	}
@@ -125,8 +121,7 @@ public:
 		dir[2] = to[2] - from[2];
 
 		double distance = sqrt( dir[0]*dir[0] + dir[1]*dir[1]+dir[2]*dir[2] );
-		if ( distance < 0.0000000001f ) { return false;
-}
+		if ( distance < 0.0000000001f ) return false;
 		double recipDistance = 1.0f / distance;
 		dir[0]*=recipDistance;
 		dir[1]*=recipDistance;

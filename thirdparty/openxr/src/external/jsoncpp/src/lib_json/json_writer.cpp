@@ -190,14 +190,12 @@ static unsigned int utf8ToCodepoint(const char*& s, const char* e) {
 
   unsigned int firstByte = static_cast<unsigned char>(*s);
 
-  if (firstByte < 0x80) {
+  if (firstByte < 0x80)
     return firstByte;
-}
 
   if (firstByte < 0xE0) {
-    if (e - s < 2) {
+    if (e - s < 2)
       return REPLACEMENT_CHARACTER;
-}
 
     unsigned int calculated =
         ((firstByte & 0x1F) << 6) | (static_cast<unsigned int>(s[1]) & 0x3F);
@@ -207,9 +205,8 @@ static unsigned int utf8ToCodepoint(const char*& s, const char* e) {
   }
 
   if (firstByte < 0xF0) {
-    if (e - s < 3) {
+    if (e - s < 3)
       return REPLACEMENT_CHARACTER;
-}
 
     unsigned int calculated = ((firstByte & 0x0F) << 12) |
                               ((static_cast<unsigned int>(s[1]) & 0x3F) << 6) |
@@ -217,17 +214,15 @@ static unsigned int utf8ToCodepoint(const char*& s, const char* e) {
     s += 2;
     // surrogates aren't valid codepoints itself
     // shouldn't be UTF-8 encoded
-    if (calculated >= 0xD800 && calculated <= 0xDFFF) {
+    if (calculated >= 0xD800 && calculated <= 0xDFFF)
       return REPLACEMENT_CHARACTER;
-}
     // oversized encoded characters are invalid
     return calculated < 0x800 ? REPLACEMENT_CHARACTER : calculated;
   }
 
   if (firstByte < 0xF8) {
-    if (e - s < 4) {
+    if (e - s < 4)
       return REPLACEMENT_CHARACTER;
-}
 
     unsigned int calculated = ((firstByte & 0x07) << 18) |
                               ((static_cast<unsigned int>(s[1]) & 0x3F) << 12) |
@@ -279,13 +274,11 @@ static void appendHex(String& result, unsigned ch) {
 
 static String valueToQuotedStringN(const char* value, size_t length,
                                    bool emitUTF8 = false) {
-  if (value == nullptr) {
+  if (value == nullptr)
     return "";
-}
 
-  if (!doesAnyCharRequireEscaping(value, length)) {
+  if (!doesAnyCharRequireEscaping(value, length))
     return String("\"") + value + "\"";
-}
   // We have to walk value and escape any special characters.
   // Appending to String is not efficient, but this should be rare.
   // (Note: forward slashes are *not* rare, but I am not escaping them.)
@@ -936,9 +929,8 @@ int BuiltStyledStreamWriter::write(Value const& root, OStream* sout) {
   indented_ = true;
   indentString_.clear();
   writeCommentBeforeValue(root);
-  if (!indented_) {
+  if (!indented_)
     writeIndent();
-}
   indented_ = true;
   writeValue(root);
   writeCommentAfterValueOnSameLine(root);
@@ -981,9 +973,9 @@ void BuiltStyledStreamWriter::writeValue(Value const& value) {
     break;
   case objectValue: {
     Value::Members members(value.getMemberNames());
-    if (members.empty()) {
+    if (members.empty())
       pushValue("{}");
-    } else {
+    else {
       writeWithIndent("{");
       indent();
       auto it = members.begin();
@@ -1011,9 +1003,9 @@ void BuiltStyledStreamWriter::writeValue(Value const& value) {
 
 void BuiltStyledStreamWriter::writeArrayValue(Value const& value) {
   unsigned size = value.size();
-  if (size == 0) {
+  if (size == 0)
     pushValue("[]");
-  } else {
+  else {
     bool isMultiLine = (cs_ == CommentStyle::All) || isMultilineArray(value);
     if (isMultiLine) {
       writeWithIndent("[");
@@ -1023,12 +1015,11 @@ void BuiltStyledStreamWriter::writeArrayValue(Value const& value) {
       for (;;) {
         Value const& childValue = value[index];
         writeCommentBeforeValue(childValue);
-        if (hasChildValue) {
+        if (hasChildValue)
           writeWithIndent(childValues_[index]);
-        } else {
-          if (!indented_) {
+        else {
+          if (!indented_)
             writeIndent();
-}
           indented_ = true;
           writeValue(childValue);
           indented_ = false;
@@ -1107,9 +1098,8 @@ void BuiltStyledStreamWriter::writeIndent() {
 }
 
 void BuiltStyledStreamWriter::writeWithIndent(String const& value) {
-  if (!indented_) {
+  if (!indented_)
     writeIndent();
-}
   *sout_ << value;
   indented_ = false;
 }
@@ -1122,16 +1112,13 @@ void BuiltStyledStreamWriter::unindent() {
 }
 
 void BuiltStyledStreamWriter::writeCommentBeforeValue(Value const& root) {
-  if (cs_ == CommentStyle::None) {
+  if (cs_ == CommentStyle::None)
     return;
-}
-  if (!root.hasComment(commentBefore)) {
+  if (!root.hasComment(commentBefore))
     return;
-}
 
-  if (!indented_) {
+  if (!indented_)
     writeIndent();
-}
   const String& comment = root.getComment(commentBefore);
   String::const_iterator iter = comment.begin();
   while (iter != comment.end()) {
@@ -1146,9 +1133,8 @@ void BuiltStyledStreamWriter::writeCommentBeforeValue(Value const& root) {
 
 void BuiltStyledStreamWriter::writeCommentAfterValueOnSameLine(
     Value const& root) {
-  if (cs_ == CommentStyle::None) {
+  if (cs_ == CommentStyle::None)
     return;
-}
   if (root.hasComment(commentAfterOnSameLine))
     *sout_ << " " + root.getComment(commentAfterOnSameLine);
 

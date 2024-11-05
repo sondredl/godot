@@ -61,10 +61,9 @@ static bool writeBmpHeader(FILE *file, int width, int height, int &paddedWidth) 
 }
 
 bool saveBmp(const BitmapConstRef<byte, 1> &bitmap, const char *filename) {
-    FILE *file = fopen(filename, "wbe");
-    if (!file) {
+    FILE *file = fopen(filename, "wb");
+    if (!file)
         return false;
-}
 
     int paddedWidth;
     writeBmpHeader(file, bitmap.width, bitmap.height, paddedWidth);
@@ -85,10 +84,9 @@ bool saveBmp(const BitmapConstRef<byte, 1> &bitmap, const char *filename) {
 }
 
 bool saveBmp(const BitmapConstRef<byte, 3> &bitmap, const char *filename) {
-    FILE *file = fopen(filename, "wbe");
-    if (!file) {
+    FILE *file = fopen(filename, "wb");
+    if (!file)
         return false;
-}
 
     int paddedWidth;
     writeBmpHeader(file, bitmap.width, bitmap.height, paddedWidth);
@@ -116,10 +114,9 @@ bool saveBmp(const BitmapConstRef<byte, 4> &bitmap, const char *filename) {
 }
 
 bool saveBmp(const BitmapConstRef<float, 1> &bitmap, const char *filename) {
-    FILE *file = fopen(filename, "wbe");
-    if (!file) {
+    FILE *file = fopen(filename, "wb");
+    if (!file)
         return false;
-}
 
     int paddedWidth;
     writeBmpHeader(file, bitmap.width, bitmap.height, paddedWidth);
@@ -140,10 +137,9 @@ bool saveBmp(const BitmapConstRef<float, 1> &bitmap, const char *filename) {
 }
 
 bool saveBmp(const BitmapConstRef<float, 3> &bitmap, const char *filename) {
-    FILE *file = fopen(filename, "wbe");
-    if (!file) {
+    FILE *file = fopen(filename, "wb");
+    if (!file)
         return false;
-}
 
     int paddedWidth;
     writeBmpHeader(file, bitmap.width, bitmap.height, paddedWidth);

@@ -16,9 +16,8 @@ namespace embree
   State::ErrorHandler::~ErrorHandler()
   {
     Lock<MutexSys> lock(errors_mutex);
-    for (size_t i=0; i<thread_errors.size(); i++) {
+    for (size_t i=0; i<thread_errors.size(); i++)
       delete thread_errors[i];
-}
     destroyTls(thread_error);
     thread_errors.clear();
   }
@@ -26,8 +25,7 @@ namespace embree
   RTCError* State::ErrorHandler::error()
   {
     RTCError* stored_error = (RTCError*) getTls(thread_error);
-    if (stored_error) { return stored_error;
-}
+    if (stored_error) return stored_error;
 
     Lock<MutexSys> lock(errors_mutex);
     stored_error = new RTCError(RTC_ERROR_NONE);
@@ -207,9 +205,8 @@ namespace embree
     // -- GODOT end --
 
     std::vector<std::string> syms;
-    for (size_t i=0; i<sizeof(symbols)/sizeof(void*); i++) {
-      syms.emplace_back(symbols[i]);
-}
+    for (size_t i=0; i<sizeof(symbols)/sizeof(void*); i++)
+      syms.push_back(symbols[i]);
 
     Ref<TokenStream> cin = new TokenStream(new LineCommentFilter(file,"#"),
                                            TokenStream::alpha+TokenStream::ALPHA+TokenStream::numbers+"_.",
@@ -220,13 +217,11 @@ namespace embree
 
   void State::parseString(const char* cfg)
   {
-    if (cfg == nullptr) { return;
-}
+    if (cfg == nullptr) return;
 
     std::vector<std::string> syms;
-    for (size_t i=0; i<sizeof(symbols)/sizeof(void*); i++) {
-      syms.emplace_back(symbols[i]);
-}
+    for (size_t i=0; i<sizeof(symbols)/sizeof(void*); i++)
+      syms.push_back(symbols[i]);
 
     Ref<TokenStream> cin = new TokenStream(new StrStream(cfg),
                                            TokenStream::alpha+TokenStream::ALPHA+TokenStream::numbers+"_.",
@@ -236,20 +231,19 @@ namespace embree
 
   int string_to_cpufeatures(const std::string& isa)
   {
-    if      (isa == "sse" ) { return SSE;
-    } else if (isa == "sse2") { return SSE2;
-    } else if (isa == "sse3") { return SSE3;
-    } else if (isa == "ssse3") { return SSSE3;
-    } else if (isa == "sse41") { return SSE41;
-    } else if (isa == "sse4.1") { return SSE41;
-    } else if (isa == "sse42") { return SSE42;
-    } else if (isa == "sse4.2") { return SSE42;
-    } else if (isa == "avx") { return AVX;
-    } else if (isa == "avxi") { return AVXI;
-    } else if (isa == "avx2") { return AVX2;
-    } else if (isa == "avx512") { return AVX512;
-    } else { return SSE2;
-}
+    if      (isa == "sse" ) return SSE;
+    else if (isa == "sse2") return SSE2;
+    else if (isa == "sse3") return SSE3;
+    else if (isa == "ssse3") return SSSE3;
+    else if (isa == "sse41") return SSE41;
+    else if (isa == "sse4.1") return SSE41;
+    else if (isa == "sse42") return SSE42;
+    else if (isa == "sse4.2") return SSE42;
+    else if (isa == "avx") return AVX;
+    else if (isa == "avxi") return AVXI;
+    else if (isa == "avx2") return AVX2;
+    else if (isa == "avx512") return AVX512;
+    else return SSE2;
   }
 
   void State::parse(Ref<TokenStream> cin)
@@ -259,22 +253,22 @@ namespace embree
     {
       const Token tok = cin->get();
 
-      if (tok == Token::Id("threads") && cin->trySymbol("=")) {
+      if (tok == Token::Id("threads") && cin->trySymbol("="))
         numThreads = cin->get().Int();
 
-      } else if (tok == Token::Id("user_threads")&& cin->trySymbol("=")) {
+      else if (tok == Token::Id("user_threads")&& cin->trySymbol("="))
         numUserThreads = cin->get().Int();
 
-      } else if (tok == Token::Id("set_affinity")&& cin->trySymbol("=")) {
+      else if (tok == Token::Id("set_affinity")&& cin->trySymbol("="))
         set_affinity = cin->get().Int();
 
-      } else if (tok == Token::Id("affinity")&& cin->trySymbol("=")) {
+      else if (tok == Token::Id("affinity")&& cin->trySymbol("="))
         set_affinity = cin->get().Int();
 
-      } else if (tok == Token::Id("start_threads")&& cin->trySymbol("=")) {
+      else if (tok == Token::Id("start_threads")&& cin->trySymbol("="))
         start_threads = cin->get().Int();
 
-      } else if (tok == Token::Id("isa") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("isa") && cin->trySymbol("=")) {
         std::string isa_str = toLowerCase(cin->get().Identifier());
         enabled_cpu_features = string_to_cpufeatures(isa_str);
         enabled_builder_cpu_features = enabled_cpu_features;
@@ -293,10 +287,9 @@ namespace embree
 
       else if (tok == Token::Id("frequency_level") && cin->trySymbol("=")) {
         std::string freq = cin->get().Identifier();
-        if      (freq == "simd128") { frequency_level = FREQUENCY_SIMD128;
-        } else if (freq == "simd256") { frequency_level = FREQUENCY_SIMD256;
-        } else if (freq == "simd512") { frequency_level = FREQUENCY_SIMD512;
-}
+        if      (freq == "simd128") frequency_level = FREQUENCY_SIMD128;
+        else if (freq == "simd256") frequency_level = FREQUENCY_SIMD256;
+        else if (freq == "simd512") frequency_level = FREQUENCY_SIMD512;
       }
 
       else if (tok == Token::Id("enable_selockmemoryprivilege") && cin->trySymbol("=")) {
@@ -306,120 +299,119 @@ namespace embree
         hugepages = cin->get().Int();
       }
 
-      else if (tok == Token::Id("float_exceptions") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("float_exceptions") && cin->trySymbol("="))
         float_exceptions = cin->get().Int();
 
-      } else if ((tok == Token::Id("tri_accel") || tok == Token::Id("accel")) && cin->trySymbol("=")) {
+      else if ((tok == Token::Id("tri_accel") || tok == Token::Id("accel")) && cin->trySymbol("="))
         tri_accel = cin->get().Identifier();
-      } else if ((tok == Token::Id("tri_builder") || tok == Token::Id("builder")) && cin->trySymbol("=")) {
+      else if ((tok == Token::Id("tri_builder") || tok == Token::Id("builder")) && cin->trySymbol("="))
         tri_builder = cin->get().Identifier();
-      } else if ((tok == Token::Id("tri_traverser") || tok == Token::Id("traverser")) && cin->trySymbol("=")) {
+      else if ((tok == Token::Id("tri_traverser") || tok == Token::Id("traverser")) && cin->trySymbol("="))
         tri_traverser = cin->get().Identifier();
 
-      } else if ((tok == Token::Id("tri_accel_mb") || tok == Token::Id("accel_mb")) && cin->trySymbol("=")) {
+      else if ((tok == Token::Id("tri_accel_mb") || tok == Token::Id("accel_mb")) && cin->trySymbol("="))
         tri_accel_mb = cin->get().Identifier();
-      } else if ((tok == Token::Id("tri_builder_mb") || tok == Token::Id("builder_mb")) && cin->trySymbol("=")) {
+      else if ((tok == Token::Id("tri_builder_mb") || tok == Token::Id("builder_mb")) && cin->trySymbol("="))
         tri_builder_mb = cin->get().Identifier();
-      } else if ((tok == Token::Id("tri_traverser_mb") || tok == Token::Id("traverser_mb")) && cin->trySymbol("=")) {
+      else if ((tok == Token::Id("tri_traverser_mb") || tok == Token::Id("traverser_mb")) && cin->trySymbol("="))
         tri_traverser_mb = cin->get().Identifier();
 
-      } else if ((tok == Token::Id("quad_accel")) && cin->trySymbol("=")) {
+      else if ((tok == Token::Id("quad_accel")) && cin->trySymbol("="))
         quad_accel = cin->get().Identifier();
-      } else if ((tok == Token::Id("quad_builder")) && cin->trySymbol("=")) {
+      else if ((tok == Token::Id("quad_builder")) && cin->trySymbol("="))
         quad_builder = cin->get().Identifier();
-      } else if ((tok == Token::Id("quad_traverser")) && cin->trySymbol("=")) {
+      else if ((tok == Token::Id("quad_traverser")) && cin->trySymbol("="))
         quad_traverser = cin->get().Identifier();
 
-      } else if ((tok == Token::Id("quad_accel_mb")) && cin->trySymbol("=")) {
+      else if ((tok == Token::Id("quad_accel_mb")) && cin->trySymbol("="))
         quad_accel_mb = cin->get().Identifier();
-      } else if ((tok == Token::Id("quad_builder_mb")) && cin->trySymbol("=")) {
+      else if ((tok == Token::Id("quad_builder_mb")) && cin->trySymbol("="))
         quad_builder_mb = cin->get().Identifier();
-      } else if ((tok == Token::Id("quad_traverser_mb")) && cin->trySymbol("=")) {
+      else if ((tok == Token::Id("quad_traverser_mb")) && cin->trySymbol("="))
         quad_traverser_mb = cin->get().Identifier();
 
-      } else if ((tok == Token::Id("line_accel")) && cin->trySymbol("=")) {
+      else if ((tok == Token::Id("line_accel")) && cin->trySymbol("="))
         line_accel = cin->get().Identifier();
-      } else if ((tok == Token::Id("line_builder")) && cin->trySymbol("=")) {
+      else if ((tok == Token::Id("line_builder")) && cin->trySymbol("="))
         line_builder = cin->get().Identifier();
-      } else if ((tok == Token::Id("line_traverser")) && cin->trySymbol("=")) {
+      else if ((tok == Token::Id("line_traverser")) && cin->trySymbol("="))
         line_traverser = cin->get().Identifier();
 
-      } else if ((tok == Token::Id("line_accel_mb")) && cin->trySymbol("=")) {
+      else if ((tok == Token::Id("line_accel_mb")) && cin->trySymbol("="))
         line_accel_mb = cin->get().Identifier();
-      } else if ((tok == Token::Id("line_builder_mb")) && cin->trySymbol("=")) {
+      else if ((tok == Token::Id("line_builder_mb")) && cin->trySymbol("="))
         line_builder_mb = cin->get().Identifier();
-      } else if ((tok == Token::Id("line_traverser_mb")) && cin->trySymbol("=")) {
+      else if ((tok == Token::Id("line_traverser_mb")) && cin->trySymbol("="))
         line_traverser_mb = cin->get().Identifier();
 
-      } else if (tok == Token::Id("hair_accel") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("hair_accel") && cin->trySymbol("="))
         hair_accel = cin->get().Identifier();
-      } else if (tok == Token::Id("hair_builder") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("hair_builder") && cin->trySymbol("="))
         hair_builder = cin->get().Identifier();
-      } else if (tok == Token::Id("hair_traverser") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("hair_traverser") && cin->trySymbol("="))
         hair_traverser = cin->get().Identifier();
 
-      } else if (tok == Token::Id("hair_accel_mb") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("hair_accel_mb") && cin->trySymbol("="))
         hair_accel_mb = cin->get().Identifier();
-      } else if (tok == Token::Id("hair_builder_mb") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("hair_builder_mb") && cin->trySymbol("="))
         hair_builder_mb = cin->get().Identifier();
-      } else if (tok == Token::Id("hair_traverser_mb") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("hair_traverser_mb") && cin->trySymbol("="))
         hair_traverser_mb = cin->get().Identifier();
 
-      } else if (tok == Token::Id("object_accel") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("object_accel") && cin->trySymbol("="))
         object_accel = cin->get().Identifier();
-      } else if (tok == Token::Id("object_builder") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("object_builder") && cin->trySymbol("="))
         object_builder = cin->get().Identifier();
-      } else if (tok == Token::Id("object_accel_min_leaf_size") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("object_accel_min_leaf_size") && cin->trySymbol("="))
         object_accel_min_leaf_size = cin->get().Int();
-      } else if (tok == Token::Id("object_accel_max_leaf_size") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("object_accel_max_leaf_size") && cin->trySymbol("="))
         object_accel_max_leaf_size = cin->get().Int();
 
-      } else if (tok == Token::Id("object_accel_mb") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("object_accel_mb") && cin->trySymbol("="))
         object_accel_mb = cin->get().Identifier();
-      } else if (tok == Token::Id("object_builder_mb") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("object_builder_mb") && cin->trySymbol("="))
         object_builder_mb = cin->get().Identifier();
-      } else if (tok == Token::Id("object_accel_mb_min_leaf_size") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("object_accel_mb_min_leaf_size") && cin->trySymbol("="))
         object_accel_mb_min_leaf_size = cin->get().Int();
-      } else if (tok == Token::Id("object_accel_mb_max_leaf_size") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("object_accel_mb_max_leaf_size") && cin->trySymbol("="))
         object_accel_mb_max_leaf_size = cin->get().Int();
 
-      } else if (tok == Token::Id("instancing_open_min") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("instancing_open_min") && cin->trySymbol("="))
         instancing_open_min = cin->get().Int();
-      } else if (tok == Token::Id("instancing_block_size") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("instancing_block_size") && cin->trySymbol("=")) {
         instancing_block_size = cin->get().Int();
         instancing_open_factor = 0.0f;
       }
-      else if (tok == Token::Id("instancing_open_max_depth") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("instancing_open_max_depth") && cin->trySymbol("="))
         instancing_open_max_depth = cin->get().Int();
-      } else if (tok == Token::Id("instancing_open_factor") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("instancing_open_factor") && cin->trySymbol("=")) {
         instancing_block_size = 0;
         instancing_open_factor = cin->get().Float();
       }
-      else if (tok == Token::Id("instancing_open_max") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("instancing_open_max") && cin->trySymbol("="))
         instancing_open_max = cin->get().Int();
 
-      } else if (tok == Token::Id("subdiv_accel") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("subdiv_accel") && cin->trySymbol("="))
         subdiv_accel = cin->get().Identifier();
-      } else if (tok == Token::Id("subdiv_accel_mb") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("subdiv_accel_mb") && cin->trySymbol("="))
         subdiv_accel_mb = cin->get().Identifier();
 
-      } else if (tok == Token::Id("grid_accel") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("grid_accel") && cin->trySymbol("="))
         grid_accel = cin->get().Identifier();
-      } else if (tok == Token::Id("grid_accel_mb") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("grid_accel_mb") && cin->trySymbol("="))
         grid_accel_mb = cin->get().Identifier();
 
-      } else if (tok == Token::Id("verbose") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("verbose") && cin->trySymbol("="))
         verbose = cin->get().Int();
-      } else if (tok == Token::Id("benchmark") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("benchmark") && cin->trySymbol("="))
         benchmark = cin->get().Int();
 
-      } else if (tok == Token::Id("quality")) {
+      else if (tok == Token::Id("quality")) {
         if (cin->trySymbol("=")) {
           Token flag = cin->get();
-          if      (flag == Token::Id("low")) {    quality_flags = RTC_BUILD_QUALITY_LOW;
-          } else if (flag == Token::Id("medium")) { quality_flags = RTC_BUILD_QUALITY_MEDIUM;
-          } else if (flag == Token::Id("high")) {   quality_flags = RTC_BUILD_QUALITY_HIGH;
-}
+          if      (flag == Token::Id("low"))    quality_flags = RTC_BUILD_QUALITY_LOW;
+          else if (flag == Token::Id("medium")) quality_flags = RTC_BUILD_QUALITY_MEDIUM;
+          else if (flag == Token::Id("high"))   quality_flags = RTC_BUILD_QUALITY_HIGH;
         }
       }
 
@@ -428,34 +420,32 @@ namespace embree
         if (cin->trySymbol("=")) {
           do {
             Token flag = cin->get();
-            if (flag == Token::Id("dynamic") ) { scene_flags |= RTC_SCENE_FLAG_DYNAMIC;
-            } else if (flag == Token::Id("compact")) { scene_flags |= RTC_SCENE_FLAG_COMPACT;
-            } else if (flag == Token::Id("robust")) { scene_flags |= RTC_SCENE_FLAG_ROBUST;
-}
+            if (flag == Token::Id("dynamic") ) scene_flags |= RTC_SCENE_FLAG_DYNAMIC;
+            else if (flag == Token::Id("compact")) scene_flags |= RTC_SCENE_FLAG_COMPACT;
+            else if (flag == Token::Id("robust")) scene_flags |= RTC_SCENE_FLAG_ROBUST;
           } while (cin->trySymbol("|"));
         }
       }
 
-      else if (tok == Token::Id("max_spatial_split_replications") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("max_spatial_split_replications") && cin->trySymbol("="))
         max_spatial_split_replications = cin->get().Float();
 
-      } else if (tok == Token::Id("presplits") && cin->trySymbol("=")) {
-        useSpatialPreSplits = cin->get().Int() != 0;
+      else if (tok == Token::Id("presplits") && cin->trySymbol("="))
+        useSpatialPreSplits = cin->get().Int() != 0 ? true : false;
 
-      } else if (tok == Token::Id("tessellation_cache_size") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("tessellation_cache_size") && cin->trySymbol("="))
         tessellation_cache_size = size_t(cin->get().Float()*1024.0f*1024.0f);
-      } else if (tok == Token::Id("cache_size") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("cache_size") && cin->trySymbol("="))
         tessellation_cache_size = size_t(cin->get().Float()*1024.0f*1024.0f);
 
-      } else if (tok == Token::Id("alloc_main_block_size") && cin->trySymbol("=")) {
+      else if (tok == Token::Id("alloc_main_block_size") && cin->trySymbol("="))
         alloc_main_block_size = cin->get().Int();
-       } else if (tok == Token::Id("alloc_num_main_slots") && cin->trySymbol("=")) {
+       else if (tok == Token::Id("alloc_num_main_slots") && cin->trySymbol("="))
         alloc_num_main_slots = cin->get().Int();
-       } else if (tok == Token::Id("alloc_thread_block_size") && cin->trySymbol("=")) {
+       else if (tok == Token::Id("alloc_thread_block_size") && cin->trySymbol("="))
          alloc_thread_block_size = cin->get().Int();
-       } else if (tok == Token::Id("alloc_single_thread_alloc") && cin->trySymbol("=")) {
+       else if (tok == Token::Id("alloc_single_thread_alloc") && cin->trySymbol("="))
          alloc_single_thread_alloc = cin->get().Int();
-}
 
       cin->trySymbol(","); // optional , separator
     }
@@ -481,10 +471,9 @@ namespace embree
     }
 
     std::cout << "  hugepages          = ";
-    if (!hugepages) { std::cout << "disabled" << std::endl;
-    } else if (hugepages_success) { std::cout << "enabled" << std::endl;
-    } else { std::cout << "failed" << std::endl;
-}
+    if (!hugepages) std::cout << "disabled" << std::endl;
+    else if (hugepages_success) std::cout << "enabled" << std::endl;
+    else std::cout << "failed" << std::endl;
 
     std::cout << "  verbosity          = " << verbose << std::endl;
     std::cout << "  cache_size         = " << float(tessellation_cache_size)*1E-6 << " MB" << std::endl;

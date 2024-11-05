@@ -32,7 +32,7 @@ struct spirv_cross_sampler_2d
 template <typename T>
 struct sampler2DBase : spirv_cross_sampler_2d
 {
-	sampler2DBase(const spirv_cross_sampler_2d *info)
+	sampler2DBase(const spirv_cross_sampler_info *info)
 	{
 		mips.insert(mips.end(), info->mipmaps, info->mipmaps + info->num_mipmaps);
 		format = info->format;

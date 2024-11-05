@@ -65,8 +65,7 @@ void Slot::update(int /*numGrSlots*/, int numCharInfo, Position &relpos)
 Position Slot::finalise(const Segment *seg, const Font *font, Position & base, Rect & bbox, uint8 attrLevel, float & clusterMin, bool rtl, bool isFinal, int depth)
 {
     SlotCollision *coll = NULL;
-    if (depth > 100 || (attrLevel && m_attLevel > attrLevel)) { return Position(0, 0);
-}
+    if (depth > 100 || (attrLevel && m_attLevel > attrLevel)) return Position(0, 0);
     float scale = font ? font->scale() : 1.0f;
     Position shift(m_shift.x * (rtl * -2 + 1) + m_just, m_shift.y);
     float tAdvance = m_advance.x + m_just;
@@ -81,11 +80,10 @@ Position Slot::finalise(const Segment *seg, const Font *font, Position & base, R
     {
         scale = font->scale();
         shift *= scale;
-        if (font->isHinted() && glyphFace) {
+        if (font->isHinted() && glyphFace)
             tAdvance = (m_advance.x - glyphFace->theAdvance().x + m_just) * scale + font->advance(glyph());
-        } else {
+        else
             tAdvance *= scale;
-}
     }
     Position res;
 
@@ -135,9 +133,8 @@ Position Slot::finalise(const Segment *seg, const Font *font, Position & base, R
 int32 Slot::clusterMetric(const Segment *seg, uint8 metric, uint8 attrLevel, bool rtl)
 {
     Position base;
-    if (glyph() >= seg->getFace()->glyphs().numGlyphs()) {
+    if (glyph() >= seg->getFace()->glyphs().numGlyphs())
         return 0;
-}
     Rect bbox = seg->theGlyphBBoxTemporary(glyph());
     float clusterMin = 0.;
     Position res = finalise(seg, NULL, base, bbox, attrLevel, clusterMin, rtl, false);
@@ -251,9 +248,8 @@ void Slot::setAttr(Segment *seg, attrCode ind, uint8 subindex, int16 value, cons
     {
         ind = gr_slatUserDefn;
         subindex = 0;
-        if (seg->numAttrs() == 0) {
+        if (seg->numAttrs() == 0)
             return;
-}
     }
     else if (ind >= gr_slatJStretch && ind < gr_slatJStretch + 20 && ind != gr_slatJWidth)
     {
@@ -271,8 +267,7 @@ void Slot::setAttr(Segment *seg, attrCode ind, uint8 subindex, int16 value, cons
         if (idx < map.size() && map[idx])
         {
             Slot *other = map[idx];
-            if (other == this || other == m_parent || other->isCopied()) { break;
-}
+            if (other == this || other == m_parent || other->isCopied()) break;
             if (m_parent) { m_parent->removeChild(this); attachTo(NULL); }
             Slot *pOther = other;
             int count = 0;
@@ -280,16 +275,13 @@ void Slot::setAttr(Segment *seg, attrCode ind, uint8 subindex, int16 value, cons
             while (pOther)
             {
                 ++count;
-                if (pOther == this) { foundOther = true;
-}
+                if (pOther == this) foundOther = true;
                 pOther = pOther->attachedTo();
             }
-            for (pOther = m_child; pOther; pOther = pOther->m_child) {
+            for (pOther = m_child; pOther; pOther = pOther->m_child)
                 ++count;
-}
-            for (pOther = m_sibling; pOther; pOther = pOther->m_sibling) {
+            for (pOther = m_sibling; pOther; pOther = pOther->m_sibling)
                 ++count;
-}
             if (count < 100 && !foundOther && other->child(this))
             {
                 attachTo(other);
@@ -359,14 +351,12 @@ void Slot::setAttr(Segment *seg, attrCode ind, uint8 subindex, int16 value, cons
 
 int Slot::getJustify(const Segment *seg, uint8 level, uint8 subindex) const
 {
-    if (level && level >= seg->silf()->numJustLevels()) { return 0;
-}
+    if (level && level >= seg->silf()->numJustLevels()) return 0;
 
     if (m_justs)
         return m_justs->values[level * SlotJustify::NUMJUSTPARAMS + subindex];
 
-    if (level >= seg->silf()->numJustLevels()) { return 0;
-}
+    if (level >= seg->silf()->numJustLevels()) return 0;
     Justinfo *jAttrs = seg->silf()->justAttrs() + level;
 
     switch (subindex) {
@@ -381,13 +371,11 @@ int Slot::getJustify(const Segment *seg, uint8 level, uint8 subindex) const
 
 void Slot::setJustify(Segment *seg, uint8 level, uint8 subindex, int16 value)
 {
-    if (level && level >= seg->silf()->numJustLevels()) { return;
-}
+    if (level && level >= seg->silf()->numJustLevels()) return;
     if (!m_justs)
     {
         SlotJustify *j = seg->newJustify();
-        if (!j) { return;
-}
+        if (!j) return;
         j->LoadSlot(this, seg);
         m_justs = j;
     }
@@ -396,32 +384,30 @@ void Slot::setJustify(Segment *seg, uint8 level, uint8 subindex, int16 value)
 
 bool Slot::child(Slot *ap)
 {
-    if (this == ap) { return false;
-    } else if (ap == m_child) { return true;
-    } else if (!m_child) {
+    if (this == ap) return false;
+    else if (ap == m_child) return true;
+    else if (!m_child)
         m_child = ap;
-    } else {
+    else
         return m_child->sibling(ap);
-}
     return true;
 }
 
 bool Slot::sibling(Slot *ap)
 {
-    if (this == ap) { return false;
-    } else if (ap == m_sibling) { return true;
-    } else if (!m_sibling || !ap) {
+    if (this == ap) return false;
+    else if (ap == m_sibling) return true;
+    else if (!m_sibling || !ap)
         m_sibling = ap;
-    } else {
+    else
         return m_sibling->sibling(ap);
-}
     return true;
 }
 
 bool Slot::removeChild(Slot *ap)
 {
-    if (this == ap || !m_child || !ap) { return false;
-    } else if (ap == m_child)
+    if (this == ap || !m_child || !ap) return false;
+    else if (ap == m_child)
     {
         Slot *nSibling = m_child->nextSibling();
         m_child->nextSibling(NULL);
@@ -461,24 +447,21 @@ void Slot::setGlyph(Segment *seg, uint16 glyphid, const GlyphFace * theGlyph)
     if (m_realglyphid)
     {
         aGlyph = seg->getFace()->glyphs().glyphSafe(m_realglyphid);
-        if (!aGlyph) { aGlyph = theGlyph;
-}
+        if (!aGlyph) aGlyph = theGlyph;
     }
     m_advance = Position(aGlyph->theAdvance().x, 0.);
     if (seg->silf()->aPassBits())
     {
         seg->mergePassBits(uint8(theGlyph->attrs()[seg->silf()->aPassBits()]));
-        if (seg->silf()->numPasses() > 16) {
+        if (seg->silf()->numPasses() > 16)
             seg->mergePassBits(theGlyph->attrs()[seg->silf()->aPassBits()+1] << 16);
-}
     }
 }
 
 void Slot::floodShift(Position adj, int depth)
 {
-    if (depth > 100) {
+    if (depth > 100)
         return;
-}
     m_position += adj;
     if (m_child) m_child->floodShift(adj, depth + 1);
     if (m_sibling) m_sibling->floodShift(adj, depth + 1);
@@ -500,17 +483,15 @@ void SlotJustify::LoadSlot(const Slot *s, const Segment *seg)
 Slot * Slot::nextInCluster(const Slot *s) const
 {
     Slot *base;
-    if (s->firstChild()) {
+    if (s->firstChild())
         return s->firstChild();
-    } else if (s->nextSibling()) {
+    else if (s->nextSibling())
         return s->nextSibling();
-}
     while ((base = s->attachedTo()))
     {
         // if (base->firstChild() == s && base->nextSibling())
-        if (base->nextSibling()) {
+        if (base->nextSibling())
             return base->nextSibling();
-}
         s = base;
     }
     return NULL;
@@ -518,10 +499,8 @@ Slot * Slot::nextInCluster(const Slot *s) const
 
 bool Slot::isChildOf(const Slot *base) const
 {
-    for (Slot *p = m_parent; p; p = p->m_parent) {
-        if (p == base) {
+    for (Slot *p = m_parent; p; p = p->m_parent)
+        if (p == base)
             return true;
-}
-}
     return false;
 }

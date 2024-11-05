@@ -16,9 +16,9 @@
 // 3. This notice may not be removed or altered from any source distribution.
 //
 
-#include <cmath>
-#include <cstring>
-#include <cstdio>
+#include <math.h>
+#include <string.h>
+#include <stdio.h>
 #include "Recast.h"
 #include "RecastAlloc.h"
 #include "RecastAssert.h"
@@ -38,9 +38,8 @@ static bool buildMeshAdjacency(unsigned short* polys, const int npolys,
 
 	int maxEdgeCount = npolys*vertsPerPoly;
 	unsigned short* firstEdge = (unsigned short*)rcAlloc(sizeof(unsigned short)*(nverts + maxEdgeCount), RC_ALLOC_TEMP);
-	if (!firstEdge) {
+	if (!firstEdge)
 		return false;
-}
 	unsigned short* nextEdge = firstEdge + nverts;
 	int edgeCount = 0;
 
@@ -59,8 +58,7 @@ static bool buildMeshAdjacency(unsigned short* polys, const int npolys,
 		unsigned short* t = &polys[i*vertsPerPoly*2];
 		for (int j = 0; j < vertsPerPoly; ++j)
 		{
-			if (t[j] == RC_MESH_NULL_IDX) { break;
-}
+			if (t[j] == RC_MESH_NULL_IDX) break;
 			unsigned short v0 = t[j];
 			unsigned short v1 = (j+1 >= vertsPerPoly || t[j+1] == RC_MESH_NULL_IDX) ? t[0] : t[j+1];
 			if (v0 < v1)
@@ -85,8 +83,7 @@ static bool buildMeshAdjacency(unsigned short* polys, const int npolys,
 		unsigned short* t = &polys[i*vertsPerPoly*2];
 		for (int j = 0; j < vertsPerPoly; ++j)
 		{
-			if (t[j] == RC_MESH_NULL_IDX) { break;
-}
+			if (t[j] == RC_MESH_NULL_IDX) break;
 			unsigned short v0 = t[j];
 			unsigned short v1 = (j+1 >= vertsPerPoly || t[j+1] == RC_MESH_NULL_IDX) ? t[0] : t[j+1];
 			if (v0 > v1)
@@ -145,9 +142,8 @@ static unsigned short addVertex(unsigned short x, unsigned short y, unsigned sho
 	while (i != -1)
 	{
 		const unsigned short* v = &verts[i*3];
-		if (v[0] == x && (rcAbs(v[1] - y) <= 2) && v[2] == z) {
+		if (v[0] == x && (rcAbs(v[1] - y) <= 2) && v[2] == z)
 			return (unsigned short)i;
-}
 		i = nextVert[i]; // next
 	}
 
@@ -205,9 +201,8 @@ static bool intersectProp(const int* a, const int* b, const int* c, const int* d
 {
 	// Eliminate improper cases.
 	if (collinear(a,b,c) || collinear(a,b,d) ||
-		collinear(c,d,a) || collinear(c,d,b)) {
+		collinear(c,d,a) || collinear(c,d,b))
 		return false;
-}
 
 	return xorb(left(a,b,c), left(a,b,d)) && xorb(left(c,d,a), left(c,d,b));
 }
@@ -216,28 +211,25 @@ static bool intersectProp(const int* a, const int* b, const int* c, const int* d
 // on the closed segement ab.
 static bool between(const int* a, const int* b, const int* c)
 {
-	if (!collinear(a, b, c)) {
+	if (!collinear(a, b, c))
 		return false;
-}
 	// If ab not vertical, check betweenness on x; else on y.
-	if (a[0] != b[0]) {
+	if (a[0] != b[0])
 		return	((a[0] <= c[0]) && (c[0] <= b[0])) || ((a[0] >= c[0]) && (c[0] >= b[0]));
-	} else {
+	else
 		return	((a[2] <= c[2]) && (c[2] <= b[2])) || ((a[2] >= c[2]) && (c[2] >= b[2]));
-}
 }
 
 // Returns true iff segments ab and cd intersect, properly or improperly.
 static bool intersect(const int* a, const int* b, const int* c, const int* d)
 {
-	if (intersectProp(a, b, c, d)) {
+	if (intersectProp(a, b, c, d))
 		return true;
-	} else if (between(a, b, c) || between(a, b, d) ||
-			 between(c, d, a) || between(c, d, b)) {
+	else if (between(a, b, c) || between(a, b, d) ||
+			 between(c, d, a) || between(c, d, b))
 		return true;
-	} else {
+	else
 		return false;
-}
 }
 
 static bool vequal(const int* a, const int* b)
@@ -262,13 +254,11 @@ static bool diagonalie(int i, int j, int n, const int* verts, int* indices)
 			const int* p0 = &verts[(indices[k] & 0x0fffffff) * 4];
 			const int* p1 = &verts[(indices[k1] & 0x0fffffff) * 4];
 
-			if (vequal(d0, p0) || vequal(d1, p0) || vequal(d0, p1) || vequal(d1, p1)) {
+			if (vequal(d0, p0) || vequal(d1, p0) || vequal(d0, p1) || vequal(d1, p1))
 				continue;
-}
 
-			if (intersect(d0, d1, p0, p1)) {
+			if (intersect(d0, d1, p0, p1))
 				return false;
-}
 		}
 	}
 	return true;
@@ -284,9 +274,8 @@ static bool	inCone(int i, int j, int n, const int* verts, int* indices)
 	const int* pin1 = &verts[(indices[prev(i, n)] & 0x0fffffff) * 4];
 
 	// If P[i] is a convex vertex [ i+1 left or on (i-1,i) ].
-	if (leftOn(pin1, pi, pi1)) {
+	if (leftOn(pin1, pi, pi1))
 		return left(pi, pj, pin1) && left(pj, pi, pi1);
-}
 	// Assume (i-1,i,i+1) not collinear.
 	// else P[i] is reflex.
 	return !(leftOn(pi, pj, pi1) && leftOn(pj, pi, pin1));
@@ -315,13 +304,11 @@ static bool diagonalieLoose(int i, int j, int n, const int* verts, int* indices)
 			const int* p0 = &verts[(indices[k] & 0x0fffffff) * 4];
 			const int* p1 = &verts[(indices[k1] & 0x0fffffff) * 4];
 
-			if (vequal(d0, p0) || vequal(d1, p0) || vequal(d0, p1) || vequal(d1, p1)) {
+			if (vequal(d0, p0) || vequal(d1, p0) || vequal(d0, p1) || vequal(d1, p1))
 				continue;
-}
 
-			if (intersectProp(d0, d1, p0, p1)) {
+			if (intersectProp(d0, d1, p0, p1))
 				return false;
-}
 		}
 	}
 	return true;
@@ -335,9 +322,8 @@ static bool	inConeLoose(int i, int j, int n, const int* verts, int* indices)
 	const int* pin1 = &verts[(indices[prev(i, n)] & 0x0fffffff) * 4];
 
 	// If P[i] is a convex vertex [ i+1 left or on (i-1,i) ].
-	if (leftOn(pin1, pi, pi1)) {
+	if (leftOn(pin1, pi, pi1))
 		return leftOn(pi, pj, pin1) && leftOn(pj, pi, pi1);
-}
 	// Assume (i-1,i,i+1) not collinear.
 	// else P[i] is reflex.
 	return !(leftOn(pi, pj, pi1) && leftOn(pj, pi, pin1));
@@ -359,9 +345,8 @@ static int triangulate(int n, const int* verts, int* indices, int* tris)
 	{
 		int i1 = next(i, n);
 		int i2 = next(i1, n);
-		if (diagonal(i, i2, n, verts, indices)) {
+		if (diagonal(i, i2, n, verts, indices))
 			indices[i1] |= 0x80000000;
-}
 	}
 
 	while (n > 3)
@@ -438,25 +423,21 @@ static int triangulate(int n, const int* verts, int* indices, int* tris)
 
 		// Removes P[i1] by copying P[i+1]...P[n-1] left one index.
 		n--;
-		for (int k = i1; k < n; k++) {
+		for (int k = i1; k < n; k++)
 			indices[k] = indices[k+1];
-}
 
-		if (i1 >= n) { i1 = 0;
-}
+		if (i1 >= n) i1 = 0;
 		i = prev(i1,n);
 		// Update diagonal flags.
-		if (diagonal(prev(i, n), i1, n, verts, indices)) {
+		if (diagonal(prev(i, n), i1, n, verts, indices))
 			indices[i] |= 0x80000000;
-		} else {
+		else
 			indices[i] &= 0x0fffffff;
-}
 
-		if (diagonal(i, next(i1, n), n, verts, indices)) {
+		if (diagonal(i, next(i1, n), n, verts, indices))
 			indices[i1] |= 0x80000000;
-		} else {
+		else
 			indices[i1] &= 0x0fffffff;
-}
 	}
 
 	// Append the remaining triangle.
@@ -470,11 +451,9 @@ static int triangulate(int n, const int* verts, int* indices, int* tris)
 
 static int countPolyVerts(const unsigned short* p, const int nvp)
 {
-	for (int i = 0; i < nvp; ++i) {
-		if (p[i] == RC_MESH_NULL_IDX) {
+	for (int i = 0; i < nvp; ++i)
+		if (p[i] == RC_MESH_NULL_IDX)
 			return i;
-}
-}
 	return nvp;
 }
 
@@ -492,9 +471,8 @@ static int getPolyMergeValue(unsigned short* pa, unsigned short* pb,
 	const int nb = countPolyVerts(pb, nvp);
 
 	// If the merged polygon would be too big, do not merge.
-	if (na+nb-2 > nvp) {
+	if (na+nb-2 > nvp)
 		return -1;
-}
 
 	// Check if the polygons share an edge.
 	ea = -1;
@@ -504,16 +482,14 @@ static int getPolyMergeValue(unsigned short* pa, unsigned short* pb,
 	{
 		unsigned short va0 = pa[i];
 		unsigned short va1 = pa[(i+1) % na];
-		if (va0 > va1) {
+		if (va0 > va1)
 			rcSwap(va0, va1);
-}
 		for (int j = 0; j < nb; ++j)
 		{
 			unsigned short vb0 = pb[j];
 			unsigned short vb1 = pb[(j+1) % nb];
-			if (vb0 > vb1) {
+			if (vb0 > vb1)
 				rcSwap(vb0, vb1);
-}
 			if (va0 == vb0 && va1 == vb1)
 			{
 				ea = i;
@@ -524,9 +500,8 @@ static int getPolyMergeValue(unsigned short* pa, unsigned short* pb,
 	}
 
 	// No common edge, cannot merge.
-	if (ea == -1 || eb == -1) {
+	if (ea == -1 || eb == -1)
 		return -1;
-}
 
 	// Check to see if the merged polygon would be convex.
 	unsigned short va, vb, vc;
@@ -534,16 +509,14 @@ static int getPolyMergeValue(unsigned short* pa, unsigned short* pb,
 	va = pa[(ea+na-1) % na];
 	vb = pa[ea];
 	vc = pb[(eb+2) % nb];
-	if (!uleft(&verts[va*3], &verts[vb*3], &verts[vc*3])) {
+	if (!uleft(&verts[va*3], &verts[vb*3], &verts[vc*3]))
 		return -1;
-}
 
 	va = pb[(eb+nb-1) % nb];
 	vb = pb[eb];
 	vc = pa[(ea+2) % na];
-	if (!uleft(&verts[va*3], &verts[vb*3], &verts[vc*3])) {
+	if (!uleft(&verts[va*3], &verts[vb*3], &verts[vc*3]))
 		return -1;
-}
 
 	va = pa[ea];
 	vb = pa[(ea+1)%na];
@@ -564,13 +537,11 @@ static void mergePolyVerts(unsigned short* pa, unsigned short* pb, int ea, int e
 	memset(tmp, 0xff, sizeof(unsigned short)*nvp);
 	int n = 0;
 	// Add pa
-	for (int i = 0; i < na-1; ++i) {
+	for (int i = 0; i < na-1; ++i)
 		tmp[n++] = pa[(ea+1+i) % na];
-}
 	// Add pb
-	for (int i = 0; i < nb-1; ++i) {
+	for (int i = 0; i < nb-1; ++i)
 		tmp[n++] = pb[(eb+1+i) % nb];
-}
 
 	memcpy(pa, tmp, sizeof(unsigned short)*nvp);
 }
@@ -579,8 +550,7 @@ static void mergePolyVerts(unsigned short* pa, unsigned short* pb, int ea, int e
 static void pushFront(int v, int* arr, int& an)
 {
 	an++;
-	for (int i = an-1; i > 0; --i) { arr[i] = arr[i-1];
-}
+	for (int i = an-1; i > 0; --i) arr[i] = arr[i-1];
 	arr[0] = v;
 }
 
@@ -622,9 +592,8 @@ static bool canRemoveVertex(rcContext* ctx, rcPolyMesh& mesh, const unsigned sho
 	// This can happen for example when a tip of a triangle is marked
 	// as deletion, but there are no other polys that share the vertex.
 	// In this case, the vertex should not be removed.
-	if (numRemainingEdges <= 2) {
+	if (numRemainingEdges <= 2)
 		return false;
-}
 
 	// Find edges which share the removed vertex.
 	const int maxEdges = numTouchedVerts*2;
@@ -682,11 +651,13 @@ static bool canRemoveVertex(rcContext* ctx, rcPolyMesh& mesh, const unsigned sho
 	int numOpenEdges = 0;
 	for (int i = 0; i < nedges; ++i)
 	{
-		if (edges[i*3+2] < 2) {
+		if (edges[i*3+2] < 2)
 			numOpenEdges++;
-}
 	}
-	return numOpenEdges <= 2;
+	if (numOpenEdges > 2)
+		return false;
+
+	return true;
 }
 
 static bool removeVertex(rcContext* ctx, rcPolyMesh& mesh, const unsigned short rem, const int maxTris)
@@ -795,9 +766,8 @@ static bool removeVertex(rcContext* ctx, rcPolyMesh& mesh, const unsigned short 
 		if (edges[i*4+1] > rem) edges[i*4+1]--;
 	}
 
-	if (nedges == 0) {
+	if (nedges == 0)
 		return true;
-}
 
 	// Start with one vertex, keep appending connected
 	// segments to the start and end of the hole.
@@ -845,9 +815,8 @@ static bool removeVertex(rcContext* ctx, rcPolyMesh& mesh, const unsigned short 
 			}
 		}
 
-		if (!match) {
+		if (!match)
 			break;
-}
 	}
 
 	rcScopedDelete<int> tris((int*)rcAlloc(sizeof(int)*nhole*3, RC_ALLOC_TEMP));
@@ -935,9 +904,8 @@ static bool removeVertex(rcContext* ctx, rcPolyMesh& mesh, const unsigned short 
 			npolys++;
 		}
 	}
-	if (!npolys) {
+	if (!npolys)
 		return true;
-}
 
 	// Merge polygons.
 	if (nvp > 3)
@@ -977,9 +945,8 @@ static bool removeVertex(rcContext* ctx, rcPolyMesh& mesh, const unsigned short 
 					pregs[bestPa] = RC_MULTIPLE_REGS;
 
 				unsigned short* last = &polys[(npolys-1)*nvp];
-				if (pb != last) {
+				if (pb != last)
 					memcpy(pb, last, sizeof(unsigned short)*nvp);
-}
 				pregs[bestPb] = pregs[npolys-1];
 				pareas[bestPb] = pareas[npolys-1];
 				npolys--;
@@ -995,8 +962,7 @@ static bool removeVertex(rcContext* ctx, rcPolyMesh& mesh, const unsigned short 
 	// Store polygons.
 	for (int i = 0; i < npolys; ++i)
 	{
-		if (mesh.npolys >= maxTris) { break;
-}
+		if (mesh.npolys >= maxTris) break;
 		unsigned short* p = &mesh.polys[mesh.npolys*nvp*2];
 		memset(p,0xff,sizeof(unsigned short)*nvp*2);
 		for (int j = 0; j < nvp; ++j)
@@ -1343,9 +1309,8 @@ bool rcMergePolyMeshes(rcContext* ctx, rcPolyMesh** meshes, const int nmeshes, r
 {
 	rcAssert(ctx);
 
-	if (!nmeshes || !meshes) {
+	if (!nmeshes || !meshes)
 		return true;
-}
 
 	rcScopedTimer timer(ctx, RC_TIMER_MERGE_POLYMESH);
 

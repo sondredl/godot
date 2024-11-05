@@ -78,9 +78,9 @@ bool
 isValidFormat(VkFormat format)
 {
     // On MSVC VkFormat can be a signed integer
-    if ((uint32_t) format <= VK_FORMAT_MAX_STANDARD_ENUM) {
+    if ((uint32_t) format <= VK_FORMAT_MAX_STANDARD_ENUM)
         return true;
-    } else { switch(format) {
+    else switch(format) {
         case VK_FORMAT_G8B8G8R8_422_UNORM:
         case VK_FORMAT_B8G8R8G8_422_UNORM:
         case VK_FORMAT_R10X6_UNORM_PACK16:
@@ -156,6 +156,5 @@ isValidFormat(VkFormat format)
       default:
         return false;
     }
-}
 }
 

@@ -32,7 +32,7 @@
 
 SLJIT_API_FUNC_ATTRIBUTE const char* sljit_get_platform_name(void)
 {
-	return "x86"; SLJIT_CPUINFO;
+	return "x86" SLJIT_CPUINFO;
 }
 
 /*
@@ -726,9 +726,9 @@ SLJIT_API_FUNC_ATTRIBUTE void* sljit_generate_code(struct sljit_compiler *compil
 					break;
 				case 1:
 					jump->addr = (sljit_uw)code_ptr;
-					if (!(jump->flags & SLJIT_REWRITABLE_JUMP)) {
+					if (!(jump->flags & SLJIT_REWRITABLE_JUMP))
 						code_ptr = generate_near_jump_code(jump, code_ptr, code, executable_offset);
-					} else {
+					else {
 #if (defined SLJIT_CONFIG_X86_32 && SLJIT_CONFIG_X86_32)
 						code_ptr = generate_far_jump_code(jump, code_ptr, executable_offset);
 #else

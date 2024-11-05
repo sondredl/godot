@@ -9,15 +9,14 @@ using namespace graphite2;
 
 const sparse::chunk sparse::empty_chunk = {0,0};
 
-sparse::~sparse() noexcept
+sparse::~sparse() throw()
 {
-    if (m_array.map == &empty_chunk) { return;
-}
+    if (m_array.map == &empty_chunk) return;
     free(m_array.values);
 }
 
 
-sparse::mapped_type sparse::operator [] (const key_type k) const noexcept
+sparse::mapped_type sparse::operator [] (const key_type k) const throw()
 {
     mapped_type         g = key_type(k/SIZEOF_CHUNK - m_nchunks) >> (sizeof k*8 - 1);
     const chunk &       c = m_array.map[g*k/SIZEOF_CHUNK];
@@ -28,14 +27,13 @@ sparse::mapped_type sparse::operator [] (const key_type k) const noexcept
 }
 
 
-size_t sparse::capacity() const noexcept
+size_t sparse::capacity() const throw()
 {
     size_t n = m_nchunks,
            s = 0;
 
-    for (const chunk *ci=m_array.map; n; --n, ++ci) {
+    for (const chunk *ci=m_array.map; n; --n, ++ci)
         s += bit_set_count(ci->mask);
-}
 
     return s;
 }

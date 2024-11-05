@@ -37,8 +37,8 @@
 // Linux/Apple fallback includes
 #include <sys/stat.h>
 #include <unistd.h>
-#include <climits>
-#include <cstdlib>
+#include <limits.h>
+#include <stdlib.h>
 #include <dirent.h>
 #endif
 

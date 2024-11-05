@@ -57,9 +57,8 @@ backtrace_alloc (struct backtrace_state *state ATTRIBUTE_UNUSED,
   ret = malloc (size);
   if (ret == NULL)
     {
-      if (error_callback) {
+      if (error_callback)
 	error_callback (data, "malloc", errno);
-}
     }
   return ret;
 }
@@ -89,17 +88,15 @@ backtrace_vector_grow (struct backtrace_state *state ATTRIBUTE_UNUSED,
       size_t alc;
       void *base;
 
-      if (vec->size == 0) {
+      if (vec->size == 0)
 	alc = 32 * size;
-      } else if (vec->size >= 4096) {
+      else if (vec->size >= 4096)
 	alc = vec->size + 4096;
-      } else {
+      else
 	alc = 2 * vec->size;
-}
 
-      if (alc < vec->size + size) {
+      if (alc < vec->size + size)
 	alc = vec->size + size;
-}
 
       base = realloc (vec->base, alc);
       if (base == NULL)
@@ -131,9 +128,8 @@ backtrace_vector_finish (struct backtrace_state *state,
   /* With this allocator we call realloc in backtrace_vector_grow,
      which means we can't easily reuse the memory here.  So just
      release it.  */
-  if (!backtrace_vector_release (state, vec, error_callback, data)) {
+  if (!backtrace_vector_release (state, vec, error_callback, data))
     return NULL;
-}
   ret = vec->base;
   vec->base = NULL;
   vec->size = 0;

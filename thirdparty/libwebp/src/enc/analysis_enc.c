@@ -33,8 +33,7 @@ static void SmoothSegmentMap(VP8Encoder* const enc) {
   uint8_t* const tmp = (uint8_t*)WebPSafeMalloc(w * h, sizeof(*tmp));
   assert((uint64_t)(w * h) == (uint64_t)w * h);   // no overflow, as per spec
 
-  if (tmp == NULL) { return;
-}
+  if (tmp == NULL) return;
   for (y = 1; y < h - 1; ++y) {
     for (x = 1; x < w - 1; ++x) {
       int cnt[NUM_MB_SEGMENTS] = { 0 };
@@ -87,8 +86,7 @@ static void SetSegmentAlphas(VP8Encoder* const enc,
       if (max < centers[n]) max = centers[n];
     }
   }
-  if (max == min) { max = min + 1;
-}
+  if (max == min) max = min + 1;
   assert(mid <= max && mid >= min);
   for (n = 0; n < nb; ++n) {
     const int alpha = 255 * (centers[n] - mid) / (max - min);
@@ -198,8 +196,7 @@ static void AssignSegments(VP8Encoder* const enc,
       }
     }
     weighted_average = (weighted_average + total_weight / 2) / total_weight;
-    if (displaced < 5) { break;   // no need to keep on looping...
-}
+    if (displaced < 5) break;   // no need to keep on looping...
   }
 
   // Map each original value to the closest centroid

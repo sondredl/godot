@@ -18,8 +18,8 @@
  * @author Mark Callow, www.edgewise-consulting.com
  */
 
-#include <cinttypes>
-#include <cstdio>
+#include <inttypes.h>
+#include <stdio.h>
 #include <KHR/khr_df.h>
 
 #include "dfdutils/dfd.h"
@@ -178,11 +178,10 @@ ktxTexture2_transcodeUastc(ktxTexture2* This,
         }
     } else {
         uint32_t channelId = KHR_DFDSVAL(BDB, 0, CHANNELID);
-        if (channelId == KHR_DF_CHANNEL_UASTC_RGBA) {
+        if (channelId == KHR_DF_CHANNEL_UASTC_RGBA)
             alphaContent = eAlpha;
-        } else if (channelId == KHR_DF_CHANNEL_UASTC_RRRG) {
+        else if (channelId == KHR_DF_CHANNEL_UASTC_RRRG)
             alphaContent = eGreen;
-}
     }
 
     VkFormat vkFormat;
@@ -574,9 +573,8 @@ ktxTexture2_transcodeLzEtc1s(ktxTexture2* This,
             // rather than a double loop of layers and faceSlices as this
             // works for 3d texture and non-array cube maps as well as
             // cube map arrays without special casing.
-            if (++stateIndex == xcoderStates.size()) {
+            if (++stateIndex == xcoderStates.size())
                 stateIndex = 0;
-}
 
             if (alphaContent != eNone)
             {
@@ -654,7 +652,7 @@ ktxTexture2_transcodeUastc(ktxTexture2* This,
     ktx_uint8_t* pXcodedData = prototype->pData;
     ktx_uint32_t outputBlockByteLength
                       = prototype->_protected->_formatSize.blockSizeInBits / 8;
-
+    ktx_size_t xcodedDataLength
                       = prototype->dataSize / outputBlockByteLength;
     DECLARE_PRIVATE(protoPriv, prototype);
     ktxLevelIndexEntry* protoLevelIndex = protoPriv._levelIndex;

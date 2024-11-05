@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace embree;
+namespace embree
 {
   /* adjust discret tessellation level for feature-adaptive pre-subdivision */
   __forceinline float adjustTessellationLevel(float l, const size_t sublevel)

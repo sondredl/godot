@@ -301,7 +301,7 @@ typedef void (*hb_paint_color_func_t) (hb_paint_funcs_t *funcs,
  */
 typedef hb_bool_t (*hb_paint_image_func_t) (hb_paint_funcs_t *funcs,
 					    void *paint_data,
-					    hb_bool_t *image,
+					    hb_blob_t *image,
 					    unsigned int width,
 					    unsigned int height,
 					    hb_tag_t format,
@@ -984,7 +984,7 @@ hb_paint_color (hb_paint_funcs_t *funcs, void *paint_data,
 
 HB_EXTERN void
 hb_paint_image (hb_paint_funcs_t *funcs, void *paint_data,
-                hb_bool_t *image,
+                hb_blob_t *image,
                 unsigned int width,
                 unsigned int height,
                 hb_tag_t format,

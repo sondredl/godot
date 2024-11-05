@@ -107,9 +107,8 @@ void TPpContext::TokenStream::putToken(int atom, TPpToken* ppToken)
 // Read the next token from a macro token stream.
 int TPpContext::TokenStream::getToken(TParseContextBase& parseContext, TPpToken *ppToken)
 {
-    if (atEnd()) {
+    if (atEnd())
         return EndOfInput;
-}
 
     int atom = stream[currentPos++].get(*ppToken);
     ppToken->loc = parseContext.getCurrentLoc();
@@ -138,9 +137,8 @@ bool TPpContext::TokenStream::peekTokenizedPasting(bool lastTokenPastes)
 
     size_t savePos = currentPos;
     // skip white space
-    while (peekToken(' ')) {
+    while (peekToken(' '))
         ++currentPos;
-}
     if (peekToken(PpAtomPaste)) {
         currentPos = savePos;
         return true;
@@ -148,18 +146,16 @@ bool TPpContext::TokenStream::peekTokenizedPasting(bool lastTokenPastes)
 
     // 2. last token and we've been told after this there will be a ##
 
-    if (! lastTokenPastes) {
+    if (! lastTokenPastes)
         return false;
-}
     // Getting here means the last token will be pasted, after this
 
     // Are we at the last non-whitespace token?
     savePos = currentPos;
     bool moreTokens = false;
     do {
-        if (atEnd()) {
+        if (atEnd())
             break;
-}
         if (!peekToken(' ')) {
             moreTokens = true;
             break;
@@ -178,17 +174,15 @@ bool TPpContext::TokenStream::peekUntokenizedPasting()
     size_t savePos = currentPos;
 
     // skip white-space
-    while (peekToken(' ')) {
+    while (peekToken(' '))
         ++currentPos;
-}
 
     // check for ##
     bool pasting = false;
     if (peekToken('#')) {
         ++currentPos;
-        if (peekToken('#')) {
+        if (peekToken('#'))
             pasting = true;
-}
     }
 
     currentPos = savePos;
@@ -204,9 +198,8 @@ void TPpContext::pushTokenStreamInput(TokenStream& ts, bool prepasting, bool exp
 
 int TPpContext::tUngotTokenInput::scan(TPpToken* ppToken)
 {
-    if (done) {
+    if (done)
         return EndOfInput;
-}
 
     int ret = token;
     *ppToken = lval;

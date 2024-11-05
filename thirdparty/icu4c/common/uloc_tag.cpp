@@ -419,7 +419,10 @@ _isAlphaNumericStringLimitedLength(const char* s, int32_t len, int32_t min, int3
     if (len < 0) {
         len = static_cast<int32_t>(uprv_strlen(s));
     }
-    return len >= min && len <= max && _isAlphaNumericString(s, len);
+    if (len >= min && len <= max && _isAlphaNumericString(s, len)) {
+        return true;
+    }
+    return false;
 }
 
 }  // namespace
@@ -434,7 +437,10 @@ ultag_isLanguageSubtag(const char* s, int32_t len) {
     if (len < 0) {
         len = static_cast<int32_t>(uprv_strlen(s));
     }
-    return len >= 2 && len <= 8 && _isAlphaString(s, len);
+    if (len >= 2 && len <= 8 && _isAlphaString(s, len)) {
+        return true;
+    }
+    return false;
 }
 
 namespace {
@@ -448,7 +454,10 @@ _isExtlangSubtag(const char* s, int32_t len) {
     if (len < 0) {
         len = static_cast<int32_t>(uprv_strlen(s));
     }
-    return len == 3 && _isAlphaString(s, len);
+    if (len == 3 && _isAlphaString(s, len)) {
+        return true;
+    }
+    return false;
 }
 
 }  // namespace
@@ -461,7 +470,10 @@ ultag_isScriptSubtag(const char* s, int32_t len) {
     if (len < 0) {
         len = static_cast<int32_t>(uprv_strlen(s));
     }
-    return len == 4 && _isAlphaString(s, len);
+    if (len == 4 && _isAlphaString(s, len)) {
+        return true;
+    }
+    return false;
 }
 
 bool
@@ -564,7 +576,10 @@ _isExtensionSingleton(const char* s, int32_t len) {
     if (len < 0) {
         len = static_cast<int32_t>(uprv_strlen(s));
     }
-    return len == 1 && (ISALPHA(*s) || ISNUMERIC(*s)) && (uprv_tolower(*s) != PRIVATEUSE);
+    if (len == 1 && (ISALPHA(*s) || ISNUMERIC(*s)) && (uprv_tolower(*s) != PRIVATEUSE)) {
+        return true;
+    }
+    return false;
 }
 
 bool
@@ -620,7 +635,10 @@ ultag_isUnicodeLocaleKey(const char* s, int32_t len) {
     if (len < 0) {
         len = static_cast<int32_t>(uprv_strlen(s));
     }
-    return len == 2 && (ISALPHA(*s) || ISNUMERIC(*s)) && ISALPHA(s[1]);
+    if (len == 2 && (ISALPHA(*s) || ISNUMERIC(*s)) && ISALPHA(s[1])) {
+        return true;
+    }
+    return false;
 }
 
 bool
@@ -650,7 +668,10 @@ _isTKey(const char* s, int32_t len)
     if (len < 0) {
         len = static_cast<int32_t>(uprv_strlen(s));
     }
-    return len == 2 && ISALPHA(*s) && ISNUMERIC(*(s + 1));
+    if (len == 2 && ISALPHA(*s) && ISNUMERIC(*(s + 1))) {
+        return true;
+    }
+    return false;
 }
 
 }  // namespace
@@ -747,7 +768,10 @@ _isTransformedExtensionSubtag(int32_t& state, const char* s, int32_t len)
                 state = kGotTKey;
                 return true;
             }
-            return _isTValue(s, len);
+            if (_isTValue(s, len)) {
+                return true;
+            }
+            return false;
     }
     return false;
 }
@@ -765,7 +789,10 @@ _isUnicodeExtensionSubtag(int32_t& state, const char* s, int32_t len)
                 state = kGotKey;
                 return true;
             }
-            return ultag_isUnicodeLocaleAttribute(s, len);
+            if (ultag_isUnicodeLocaleAttribute(s, len)) {
+                return true;
+            }
+            return false;
         case kGotKey:
             if (ultag_isUnicodeLocaleKey(s, len)) {
                 return true;
@@ -812,7 +839,10 @@ _isStatefulSepListOf(bool (*test)(int32_t&, const char*, int32_t), const char* s
         }
     }
 
-    return test(state, start, subtagLen) && state >= 0;
+    if (test(state, start, subtagLen) && state >= 0) {
+        return true;
+    }
+    return false;
 }
 
 }  // namespace
@@ -1046,8 +1076,7 @@ _appendLanguageToLanguageTag(const char* localeID, icu::ByteSink& sink, bool str
             // ones in DEPRECATEDLANGS[]. Get out of loop on coming
             // across the 1st 3-letter subtag, if the input is a 2-letter code.
             // to avoid continuing to try when there's no match.
-            if (buf.length() < static_cast<int32_t>(uprv_strlen(DEPRECATEDLANGS[i]))) { break;
-}
+            if (buf.length() < static_cast<int32_t>(uprv_strlen(DEPRECATEDLANGS[i]))) break;
             if (uprv_compareInvCharsAsAscii(buf.data(), DEPRECATEDLANGS[i]) == 0) {
                 const char* const resolved = DEPRECATEDLANGS[i + 1];
                 sink.Append(resolved, static_cast<int32_t>(uprv_strlen(resolved)));
@@ -1519,8 +1548,7 @@ _appendLDMLExtensionAsKeywords(const char* ldmlext, ExtensionListEntry** appendT
         /* Iterate through u extension attributes */
         while (*pTag) {
             /* locate next separator char */
-            for (len = 0; *(pTag + len) && *(pTag + len) != SEP; len++) {;
-}
+            for (len = 0; *(pTag + len) && *(pTag + len) != SEP; len++);
 
             if (ultag_isUnicodeLocaleKey(pTag, len)) {
                 pKwds = pTag;
@@ -1608,8 +1636,7 @@ _appendLDMLExtensionAsKeywords(const char* ldmlext, ExtensionListEntry** appendT
 
             if (*pTag) {
                 /* locate next separator char */
-                for (len = 0; *(pTag + len) && *(pTag + len) != SEP; len++) {;
-}
+                for (len = 0; *(pTag + len) && *(pTag + len) != SEP; len++);
 
                 if (ultag_isUnicodeLocaleKey(pTag, len)) {
                     if (pBcpKey) {
@@ -2117,9 +2144,8 @@ ultag_parse(const char* tag, int32_t tagLen, int32_t* parsedLen, UErrorCode& sta
 
                 pLastGoodPosition = pSep;
                 next = SCRT | REGN | VART | EXTS | PRIV;
-                if (subtagLen <= 3) {
+                if (subtagLen <= 3)
                   next |= EXTL;
-}
                 continue;
             }
         }

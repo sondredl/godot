@@ -115,37 +115,37 @@ IDNA::nameToUnicodeUTF8(StringPiece name, ByteSink &dest,
 class UTS46 : public IDNA {
 public:
     UTS46(uint32_t options, UErrorCode &errorCode);
-    ~UTS46() override;
+    virtual ~UTS46();
 
-    UnicodeString &
+    virtual UnicodeString &
     labelToASCII(const UnicodeString &label, UnicodeString &dest,
                  IDNAInfo &info, UErrorCode &errorCode) const override;
 
-    UnicodeString &
+    virtual UnicodeString &
     labelToUnicode(const UnicodeString &label, UnicodeString &dest,
                    IDNAInfo &info, UErrorCode &errorCode) const override;
 
-    UnicodeString &
+    virtual UnicodeString &
     nameToASCII(const UnicodeString &name, UnicodeString &dest,
                 IDNAInfo &info, UErrorCode &errorCode) const override;
 
-    UnicodeString &
+    virtual UnicodeString &
     nameToUnicode(const UnicodeString &name, UnicodeString &dest,
                   IDNAInfo &info, UErrorCode &errorCode) const override;
 
-    void
+    virtual void
     labelToASCII_UTF8(StringPiece label, ByteSink &dest,
                       IDNAInfo &info, UErrorCode &errorCode) const override;
 
-    void
+    virtual void
     labelToUnicodeUTF8(StringPiece label, ByteSink &dest,
                        IDNAInfo &info, UErrorCode &errorCode) const override;
 
-    void
+    virtual void
     nameToASCII_UTF8(StringPiece name, ByteSink &dest,
                      IDNAInfo &info, UErrorCode &errorCode) const override;
 
-    void
+    virtual void
     nameToUnicodeUTF8(StringPiece name, ByteSink &dest,
                       IDNAInfo &info, UErrorCode &errorCode) const override;
 

@@ -2,7 +2,7 @@
 #ifndef __CVTT_COVARIANCEMATRIX_H__
 #define __CVTT_COVARIANCEMATRIX_H__
 
-namespace cvtt;
+namespace cvtt
 {
     namespace Internal
     {

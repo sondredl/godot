@@ -35,8 +35,8 @@
 #include "image.hpp"
 #include "sampler.hpp"
 #include "thread_group.hpp"
-#include <cassert>
-#include <cstdint>
+#include <assert.h>
+#include <stdint.h>
 
 namespace internal
 {
@@ -330,11 +330,10 @@ struct spirv_cross_shader
 		assert(size >= resources[set][binding].size);
 
 		// We're using the regular PointerInterface, dereference ahead of time.
-		if (resources[set][binding].pre_dereference) {
+		if (resources[set][binding].pre_dereference)
 			*resources[set][binding].ptr = *data;
-		} else {
+		else
 			*resources[set][binding].ptr = data;
-}
 	}
 };
 

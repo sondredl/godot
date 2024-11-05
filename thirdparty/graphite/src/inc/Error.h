@@ -5,7 +5,7 @@
 
 // numbers are explicitly assigned for future proofing
 
-namespace graphite2;
+namespace graphite2
 {
 
 class Error

@@ -2,7 +2,7 @@
  * Generated automatically by crc32.c
  */
 
-local const z_crc_t; FAR crc_table[] = {
+local const z_crc_t FAR crc_table[] = {
     0x00000000, 0x77073096, 0xee0e612c, 0x990951ba, 0x076dc419,
     0x706af48f, 0xe963a535, 0x9e6495a3, 0x0edb8832, 0x79dcb8a4,
     0xe0d5e91e, 0x97d2d988, 0x09b64c2b, 0x7eb17cbd, 0xe7b82d07,
@@ -9436,7 +9436,7 @@ local const z_word_t FAR crc_braid_big_table[][256] = {
 
 #endif
 
-local const z_crc_t; FAR x2n_table[] = {
+local const z_crc_t FAR x2n_table[] = {
     0x40000000, 0x20000000, 0x08000000, 0x00800000, 0x00008000,
     0xedb88320, 0xb1e6b092, 0xa06a2517, 0xed627dae, 0x88d14467,
     0xd7bbfe6a, 0xec447f11, 0x8e7ea170, 0x6427800e, 0x4d47bae0,

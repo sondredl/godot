@@ -12,6 +12,7 @@
 #if !UCONFIG_NO_BREAK_ITERATION
 
 #include "unicode/ucptrie.h"
+#include "unicode/utypes.h"
 #include "rbbidata.h"
 #include "rbbirb.h"
 #include "udatamem.h"

@@ -257,17 +257,15 @@ ovecsave[0] = ovecsave[1] = ovecsave[2] = PCRE2_UNSET;
 /* Partial matching is not valid. This must come after setting *blength to
 PCRE2_UNSET, so as not to imply an offset in the replacement. */
 
-if ((options & (PCRE2_PARTIAL_HARD|PCRE2_PARTIAL_SOFT)) != 0) {
+if ((options & (PCRE2_PARTIAL_HARD|PCRE2_PARTIAL_SOFT)) != 0)
   return PCRE2_ERROR_BADOPTION;
-}
 
 /* Validate length and find the end of the replacement. A NULL replacement of
 zero length is interpreted as an empty string. */
 
 if (replacement == NULL)
   {
-  if (rlength != 0) { return PCRE2_ERROR_NULL;
-}
+  if (rlength != 0) return PCRE2_ERROR_NULL;
   replacement = (PCRE2_SPTR)"";
   }
 
@@ -291,15 +289,13 @@ external match data block. */
 if (match_data == NULL)
   {
   pcre2_general_context *gcontext;
-  if (use_existing_match) { return PCRE2_ERROR_NULL;
-}
+  if (use_existing_match) return PCRE2_ERROR_NULL;
   gcontext = (mcontext == NULL)?
     (pcre2_general_context *)code :
     (pcre2_general_context *)mcontext;
   match_data = internal_match_data =
     pcre2_match_data_create_from_pattern(code, gcontext);
-  if (internal_match_data == NULL) { return PCRE2_ERROR_NOMEMORY;
-}
+  if (internal_match_data == NULL) return PCRE2_ERROR_NOMEMORY;
   }
 
 else if (use_existing_match)
@@ -311,8 +307,7 @@ else if (use_existing_match)
     code->top_bracket + 1 : match_data->oveccount;
   internal_match_data = pcre2_match_data_create(match_data->oveccount,
     gcontext);
-  if (internal_match_data == NULL) { return PCRE2_ERROR_NOMEMORY;
-}
+  if (internal_match_data == NULL) return PCRE2_ERROR_NOMEMORY;
   memcpy(internal_match_data, match_data, offsetof(pcre2_match_data, ovector)
     + 2*pairs*sizeof(PCRE2_SIZE));
   internal_match_data->heapframes = NULL;
@@ -336,8 +331,7 @@ scb.ovector = ovector;
 
 if (subject == NULL)
   {
-  if (length != 0) { return PCRE2_ERROR_NULL;
-}
+  if (length != 0) return PCRE2_ERROR_NULL;
   subject = (PCRE2_SPTR)"";
   }
 
@@ -392,8 +386,7 @@ do
     rc = match_data->rc;
     use_existing_match = FALSE;
     }
-  else { r
-}c = pcre2_match(code, subject, length, start_offset, options|goptions,
+  else rc = pcre2_match(code, subject, length, start_offset, options|goptions,
     match_data, mcontext);
 
 #ifdef SUPPORT_UNICODE
@@ -409,10 +402,8 @@ do
     {
     PCRE2_SIZE save_start;
 
-    if (rc != PCRE2_ERROR_NOMATCH) { goto EXIT;
-}
-    if (goptions == 0 || start_offset >= length) { break;
-}
+    if (rc != PCRE2_ERROR_NOMATCH) goto EXIT;
+    if (goptions == 0 || start_offset >= length) break;
 
     /* Advance by one code point. Then, if CRLF is a valid newline sequence and
     we have advanced into the middle of it, advance one more code point. In
@@ -424,12 +415,12 @@ do
         code->newline_convention != PCRE2_NEWLINE_CR &&
         code->newline_convention != PCRE2_NEWLINE_LF &&
         start_offset < length &&
-        subject[start_offset] == CHAR_LF) {
+        subject[start_offset] == CHAR_LF)
       start_offset++;
 
     /* Otherwise, in UTF mode, advance past any secondary code points. */
 
-    } else if ((code->overall_options & PCRE2_UTF) != 0)
+    else if ((code->overall_options & PCRE2_UTF) != 0)
       {
 #if PCRE2_CODE_UNIT_WIDTH == 8
       while (start_offset < length && (subject[start_offset] & 0xc0) == 0x80)
@@ -492,8 +483,7 @@ do
   /* Copy the text leading up to the match (unless not required), and remember
   where the insert begins and how many ovector pairs are set. */
 
-  if (rc == 0) { rc = ovector_count;
-}
+  if (rc == 0) rc = ovector_count;
   fraglength = ovector[0] - start_offset;
   if (!replacement_only) CHECKMEMCPY(subject + start_offset, fraglength);
   scb.output_offsets[0] = buff_offset;
@@ -513,7 +503,7 @@ do
   when backslashes are being interpreted. In extended mode we must handle
   nested substrings that are to be reprocessed. */
 
-  else { for (;;)
+  else for (;;)
     {
     uint32_t ch;
     unsigned int chlen;
@@ -522,8 +512,7 @@ do
 
     if (ptr >= repend)
       {
-      if (ptrstackptr == 0) { break;       /* End of replacement string */
-}
+      if (ptrstackptr == 0) break;       /* End of replacement string */
       repend = ptrstack[--ptrstackptr];
       ptr = ptrstack[--ptrstackptr];
       continue;
@@ -558,10 +547,8 @@ do
       PCRE2_UCHAR next;
       PCRE2_UCHAR name[33];
 
-      if (++ptr >= repend) { goto BAD;
-}
-      if ((next = *ptr) == CHAR_DOLLAR_SIGN) { goto LOADLITERAL;
-}
+      if (++ptr >= repend) goto BAD;
+      if ((next = *ptr) == CHAR_DOLLAR_SIGN) goto LOADLITERAL;
 
       group = -1;
       n = 0;
@@ -570,16 +557,14 @@ do
 
       if (next == CHAR_LEFT_CURLY_BRACKET)
         {
-        if (++ptr >= repend) { goto BAD;
-}
+        if (++ptr >= repend) goto BAD;
         next = *ptr;
         inparens = TRUE;
         }
 
       if (next == CHAR_ASTERISK)
         {
-        if (++ptr >= repend) { goto BAD;
-}
+        if (++ptr >= repend) goto BAD;
         next = *ptr;
         star = TRUE;
         }
@@ -590,8 +575,7 @@ do
         while (++ptr < repend)
           {
           next = *ptr;
-          if (next < CHAR_0 || next > CHAR_9) { break;
-}
+          if (next < CHAR_0 || next > CHAR_9) break;
           group = group * 10 + next - CHAR_0;
 
           /* A check for a number greater than the hightest captured group
@@ -603,8 +587,7 @@ do
             {
             if ((suboptions & PCRE2_SUBSTITUTE_UNKNOWN_UNSET) != 0)
               {
-              while (++ptr < repend && *ptr >= CHAR_0 && *ptr <= CHAR_9) {;
-}
+              while (++ptr < repend && *ptr >= CHAR_0 && *ptr <= CHAR_9);
               break;
               }
             else
@@ -621,14 +604,11 @@ do
         while (MAX_255(next) && (ctypes[next] & ctype_word) != 0)
           {
           name[n++] = next;
-          if (n > 32) { goto BAD;
-}
-          if (++ptr >= repend) { break;
-}
+          if (n > 32) goto BAD;
+          if (++ptr >= repend) break;
           next = *ptr;
           }
-        if (n == 0) { goto BAD;
-}
+        if (n == 0) goto BAD;
         name[n] = 0;
         }
 
@@ -649,16 +629,14 @@ do
 
           text1_start = ++ptr;
           rc = find_text_end(code, &ptr, repend, special == CHAR_MINUS);
-          if (rc != 0) { goto PTREXIT;
-}
+          if (rc != 0) goto PTREXIT;
           text1_end = ptr;
 
           if (special == CHAR_PLUS && *ptr == CHAR_COLON)
             {
             text2_start = ++ptr;
             rc = find_text_end(code, &ptr, repend, TRUE);
-            if (rc != 0) { goto PTREXIT;
-}
+            if (rc != 0) goto PTREXIT;
             text2_end = ptr;
             }
           }
@@ -691,8 +669,7 @@ do
             CHECKMEMCPY(mark_start, fraglength);
             }
           }
-        else { goto BAD;
-}
+        else goto BAD;
         }
 
       /* Substitute the contents of a group. We don't use substring_copy
@@ -718,8 +695,7 @@ do
             }
           else
             {
-            if (rc < 0) { goto PTREXIT;
-}
+            if (rc < 0) goto PTREXIT;
             for (entry = first; entry <= last; entry += rc)
               {
               uint32_t ng = GET2(entry, 0);
@@ -753,12 +729,10 @@ do
             {
             rc = PCRE2_ERROR_UNSET;
             }
-          if (rc != PCRE2_ERROR_UNSET) { goto PTREXIT;  /* Non-unset errors */
-}
+          if (rc != PCRE2_ERROR_UNSET) goto PTREXIT;  /* Non-unset errors */
           if (special == 0)                           /* Plain substitution */
             {
-            if ((suboptions & PCRE2_SUBSTITUTE_UNSET_EMPTY) != 0) { continue;
-}
+            if ((suboptions & PCRE2_SUBSTITUTE_UNSET_EMPTY) != 0) continue;
             goto PTREXIT;                             /* Else error */
             }
           }
@@ -771,14 +745,12 @@ do
           {
           if (special == CHAR_MINUS)
             {
-            if (rc == 0) { goto LITERAL_SUBSTITUTE;
-}
+            if (rc == 0) goto LITERAL_SUBSTITUTE;
             text2_start = text1_start;
             text2_end = text1_end;
             }
 
-          if (ptrstackptr >= PTR_STACK_SIZE) { goto BAD;
-}
+          if (ptrstackptr >= PTR_STACK_SIZE) goto BAD;
           ptrstack[ptrstackptr++] = ptr;
           ptrstack[ptrstackptr++] = repend;
 
@@ -849,7 +821,7 @@ do
       {
       int errorcode;
 
-      if (ptr < repend - 1) { switch (ptr[1])
+      if (ptr < repend - 1) switch (ptr[1])
         {
         case CHAR_L:
         forcecase = forcecasereset = -1;
@@ -876,13 +848,11 @@ do
         default:
         break;
         }
-}
 
       ptr++;  /* Point after \ */
       rc = PRIV(check_escape)(&ptr, repend, &ch, &errorcode,
         code->overall_options, code->extra_options, FALSE, NULL);
-      if (errorcode != 0) { goto BADESCAPE;
-}
+      if (errorcode != 0) goto BADESCAPE;
 
       switch(rc)
         {
@@ -941,7 +911,6 @@ do
       CHECKMEMCPY(temp, chlen);
       } /* End handling a literal code unit */
     }   /* End of loop for scanning the replacement. */
-}
 
   /* The replacement has been copied to the output, or its size has been
   remembered. Do the callout if there is one and we have done an actual
@@ -967,8 +936,7 @@ do
 
       /* A negative return means do not do any more. */
 
-      if (rc < 0) { suboptions &= (~PCRE2_SUBSTITUTE_GLOBAL);
-}
+      if (rc < 0) suboptions &= (~PCRE2_SUBSTITUTE_GLOBAL);
       }
     }
 

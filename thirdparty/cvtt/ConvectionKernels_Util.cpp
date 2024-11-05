@@ -53,18 +53,17 @@ namespace cvtt
 
                 for (size_t px = 0; px < 16; px++)
                 {
-                    for (size_t ch = 0; ch < 4; ch++) {
+                    for (size_t ch = 0; ch < 4; ch++)
                         inputNormalizedBlock.m_pixels[px][ch] = static_cast<uint8_t>(std::max<int>(inputSignedBlock.m_pixels[px][ch], -127) + 127);
-}
                 }
             }
         }
 
         void FillWeights(const Options &options, float channelWeights[4])
         {
-            if (options.flags & Flags::Uniform) {
+            if (options.flags & Flags::Uniform)
                 channelWeights[0] = channelWeights[1] = channelWeights[2] = channelWeights[3] = 1.0f;
-            } else
+            else
             {
                 channelWeights[0] = options.redWeight;
                 channelWeights[1] = options.greenWeight;

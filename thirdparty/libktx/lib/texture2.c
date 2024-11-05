@@ -292,18 +292,14 @@ ktxFormatSize_initFromDfd(ktxFormatSize* This, ktx_uint32_t* pDfd)
 
             result = interpretDFD(pDfd, &rgba[0], &rgba[1], &rgba[2], &rgba[3],
                                   &wordBytes);
-            if (result >= i_UNSUPPORTED_ERROR_BIT) {
+            if (result >= i_UNSUPPORTED_ERROR_BIT)
                 return false;
-}
-            if (result & i_PACKED_FORMAT_BIT) {
+            if (result & i_PACKED_FORMAT_BIT)
                 This->flags |= KTX_FORMAT_SIZE_PACKED_BIT;
-}
-            if (result & i_COMPRESSED_FORMAT_BIT) {
+            if (result & i_COMPRESSED_FORMAT_BIT)
                 This->flags |= KTX_FORMAT_SIZE_COMPRESSED_BIT;
-}
-            if (result & i_YUVSDA_FORMAT_BIT) {
+            if (result & i_YUVSDA_FORMAT_BIT)
                 This->flags |= KTX_FORMAT_SIZE_YUVSDA_BIT;
-}
         }
     }
     if (This->blockSizeInBits == 0) {
@@ -429,9 +425,8 @@ ktxTexture2_construct(ktxTexture2* This, ktxTextureCreateInfo* createInfo,
     if (result != KTX_SUCCESS)
         return result;
     result = ktxTexture2_constructCommon(This, createInfo->numLevels);
-    if (result != KTX_SUCCESS) {
-        goto cleanup;
-};
+    if (result != KTX_SUCCESS)
+        goto cleanup;;
 
     This->vkFormat = createInfo->vkFormat;
 
@@ -514,7 +509,7 @@ ktxTexture2_constructCopy(ktxTexture2* This, ktxTexture2* orig)
         ktxTexture2_LoadImageData(orig, NULL, 0);
     memcpy(This->_protected, orig->_protected, sizeof(ktxTexture_protected));
 
-    = sizeof(ktxTexture2_private)
+    ktx_size_t privateSize = sizeof(ktxTexture2_private)
                            + sizeof(ktxLevelIndexEntry) * (orig->numLevels - 1);
     This->_private = (ktxTexture2_private*)malloc(privateSize);
     if (This->_private == NULL) {
@@ -648,14 +643,12 @@ ktxTexture2_constructFromStreamAndHeader(ktxTexture2* This, ktxStream* pStream,
         return result;
 
     result = ktxCheckHeader2_(pHeader, &suppInfo);
-    if (result != KTX_SUCCESS) {
+    if (result != KTX_SUCCESS)
         goto cleanup;
-}
     // ktxCheckHeader2_ has done the max(1, levelCount) on pHeader->levelCount.
     result = ktxTexture2_constructCommon(This, pHeader->levelCount);
-    if (result != KTX_SUCCESS) {
+    if (result != KTX_SUCCESS)
         goto cleanup;
-}
     private = This->_private;
 
     stream = ktxTexture2_getStream(This);
@@ -704,9 +697,8 @@ ktxTexture2_constructFromStreamAndHeader(ktxTexture2* This, ktxStream* pStream,
     // Read level index
     levelIndexSize = sizeof(ktxLevelIndexEntry) * This->numLevels;
     result = stream->read(stream, &private->_levelIndex, levelIndexSize);
-    if (result != KTX_SUCCESS) {
+    if (result != KTX_SUCCESS)
         goto cleanup;
-}
     // Rebase index to start of data and save file offset.
     private->_firstLevelFileOffset
                     = private->_levelIndex[This->numLevels-1].byteOffset;
@@ -719,9 +711,8 @@ ktxTexture2_constructFromStreamAndHeader(ktxTexture2* This, ktxStream* pStream,
             result = KTX_FILE_DATA_ERROR;
         }
     }
-    if (result != KTX_SUCCESS) {
+    if (result != KTX_SUCCESS)
         goto cleanup;
-}
 
     // Read DFD
     if (pHeader->dataFormatDescriptor.byteOffset == 0 || pHeader->dataFormatDescriptor.byteLength < 16) {
@@ -737,9 +728,8 @@ ktxTexture2_constructFromStreamAndHeader(ktxTexture2* This, ktxStream* pStream,
     }
     result = stream->read(stream, This->pDfd,
                           pHeader->dataFormatDescriptor.byteLength);
-    if (result != KTX_SUCCESS) {
+    if (result != KTX_SUCCESS)
         goto cleanup;
-}
 
     if (pHeader->dataFormatDescriptor.byteLength != This->pDfd[0]) {
         // DFD byteLength does not match dfdTotalSize
@@ -846,9 +836,8 @@ ktxTexture2_constructFromStreamAndHeader(ktxTexture2* This, ktxStream* pStream,
             }
 
             result = stream->read(stream, pKvd, kvdLen);
-            if (result != KTX_SUCCESS) {
+            if (result != KTX_SUCCESS)
                 goto cleanup;
-}
 
             if (IS_BIG_ENDIAN) {
                 /* Swap the counts inside the key & value data. */
@@ -952,9 +941,8 @@ ktxTexture2_constructFromStreamAndHeader(ktxTexture2* This, ktxStream* pStream,
             result = KTX_UNSUPPORTED_FEATURE;
             break;
         }
-        if (result != KTX_SUCCESS) {
+        if (result != KTX_SUCCESS)
             goto cleanup;
-}
 
         // There could be padding here so seek to the next item.
         (void)stream->setpos(stream,
@@ -972,9 +960,8 @@ ktxTexture2_constructFromStreamAndHeader(ktxTexture2* This, ktxStream* pStream,
         result = stream->read(stream, private->_supercompressionGlobalData,
                               private->_sgdByteLength);
 
-        if (result != KTX_SUCCESS) {
+        if (result != KTX_SUCCESS)
             goto cleanup;
-}
     } else if (pHeader->supercompressionGlobalData.byteOffset != 0) {
         // Non-zero SGD byteOffset with zero byteLength
         result = KTX_FILE_DATA_ERROR;
@@ -995,9 +982,8 @@ ktxTexture2_constructFromStreamAndHeader(ktxTexture2* This, ktxStream* pStream,
     if (createFlags & KTX_TEXTURE_CREATE_LOAD_IMAGE_DATA_BIT) {
         result = ktxTexture2_LoadImageData(This, NULL, 0);
     }
-    if (result != KTX_SUCCESS) {
+    if (result != KTX_SUCCESS)
         goto cleanup;
-}
 
     return result;
 
@@ -1358,9 +1344,9 @@ ktxTexture2_CreateFromStdioStream(FILE* stdioStream,
 
     result = ktxTexture2_constructFromStdioStream(tex, stdioStream,
                                                   createFlags);
-    if (result == KTX_SUCCESS) {
+    if (result == KTX_SUCCESS)
         *newTex = (ktxTexture2*)tex;
-    } else {
+    else {
         free(tex);
         *newTex = NULL;
     }
@@ -1414,9 +1400,9 @@ ktxTexture2_CreateFromNamedFile(const char* const filename,
         return KTX_OUT_OF_MEMORY;
 
     result = ktxTexture2_constructFromNamedFile(tex, filename, createFlags);
-    if (result == KTX_SUCCESS) {
+    if (result == KTX_SUCCESS)
         *newTex = (ktxTexture2*)tex;
-    } else {
+    else {
         free(tex);
         *newTex = NULL;
     }
@@ -1467,9 +1453,9 @@ ktxTexture2_CreateFromMemory(const ktx_uint8_t* bytes, ktx_size_t size,
 
     result = ktxTexture2_constructFromMemory(tex, bytes, size,
                                              createFlags);
-    if (result == KTX_SUCCESS) {
+    if (result == KTX_SUCCESS)
         *newTex = (ktxTexture2*)tex;
-    } else {
+    else {
         free(tex);
         *newTex = NULL;
     }
@@ -1518,9 +1504,9 @@ ktxTexture2_CreateFromStream(ktxStream* stream,
         return KTX_OUT_OF_MEMORY;
 
     result = ktxTexture2_constructFromStream(tex, stream, createFlags);
-    if (result == KTX_SUCCESS) {
+    if (result == KTX_SUCCESS)
         *newTex = (ktxTexture2*)tex;
-    } else {
+    else {
         free(tex);
         *newTex = NULL;
     }
@@ -1650,9 +1636,8 @@ ktx_uint64_t ktxTexture2_levelFileOffset(ktxTexture2* This, ktx_uint32_t level)
 // Recursive function to return the greatest common divisor of a and b.
 static uint32_t
 gcd(uint32_t a, uint32_t b) {
-    if (a == 0) {
+    if (a == 0)
         return b;
-}
     return gcd(b % a, a);
 }
 
@@ -1660,9 +1645,8 @@ gcd(uint32_t a, uint32_t b) {
 uint32_t
 lcm4(uint32_t a)
 {
-    if (!(a & 0x03)) {
+    if (!(a & 0x03))
         return a;  // a is a multiple of 4.
-}
     return (a*4) / gcd(a, 4);
 }
 
@@ -1766,17 +1750,16 @@ ktxTexture2_GetNumComponents(ktxTexture2* This)
           {
             uint32_t channel0Id = KHR_DFDSVAL(pBdb, 0, CHANNELID);
             if (dfdNumComponents == 1) {
-                if (channel0Id == KHR_DF_CHANNEL_ETC1S_RGB) {
+                if (channel0Id == KHR_DF_CHANNEL_ETC1S_RGB)
                     return 3;
-                } else {
+                else
                     return 1;
-}
             } else {
                 uint32_t channel1Id = KHR_DFDSVAL(pBdb, 1, CHANNELID);
                 if (channel0Id == KHR_DF_CHANNEL_ETC1S_RGB
-                    && channel1Id == KHR_DF_CHANNEL_ETC1S_AAA) {
+                    && channel1Id == KHR_DF_CHANNEL_ETC1S_AAA)
                     return 4;
-                } else {
+                else {
                     // An invalid combination of channel Ids should never
                     // have been set during creation or should have been
                     // caught when the file was loaded.
@@ -1945,13 +1928,12 @@ ktxTexture2_GetPremultipliedAlpha(ktxTexture2* This)
 ktx_bool_t
 ktxTexture2_NeedsTranscoding(ktxTexture2* This)
 {
-    if (KHR_DFDVAL(This->pDfd + 1, MODEL) == KHR_DF_MODEL_ETC1S) {
+    if (KHR_DFDVAL(This->pDfd + 1, MODEL) == KHR_DF_MODEL_ETC1S)
         return true;
-    } else if (KHR_DFDVAL(This->pDfd + 1, MODEL) == KHR_DF_MODEL_UASTC) {
+    else if (KHR_DFDVAL(This->pDfd + 1, MODEL) == KHR_DF_MODEL_UASTC)
         return true;
-    } else {
+    else
         return false;
-}
 }
 
 /**
@@ -2643,7 +2625,7 @@ ktxTexture2_inflateZLIBInt(ktxTexture2* This, ktx_uint8_t* pDeflatedData,
         nindex[level].byteOffset = levelOffset;
         nindex[level].uncompressedByteLength = nindex[level].byteLength =
                                                             levelByteLength;
-
+        ktx_size_t paddedLevelByteLength
               = _KTX_PADN(uncompressedLevelAlignment, levelByteLength);
         inflatedByteLength += paddedLevelByteLength;
         levelOffset += paddedLevelByteLength;

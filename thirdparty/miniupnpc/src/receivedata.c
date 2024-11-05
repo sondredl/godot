@@ -97,9 +97,8 @@ receivedata(SOCKET socket,
 			*scope_id = 0;
 	}
 #else	/* MINIUPNPC_GET_SRC_ADDR */
-	if(scope_id) {
+	if(scope_id)
 		*scope_id = 0;
-}
 #endif	/* MINIUPNPC_GET_SRC_ADDR */
 	return n;
 }

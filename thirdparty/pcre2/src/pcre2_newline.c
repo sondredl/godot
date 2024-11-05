@@ -88,7 +88,7 @@ if (utf) { GETCHAR(c, ptr); } else c = *ptr;
 c = *ptr;
 #endif  /* SUPPORT_UNICODE */
 
-if (type == NLTYPE_ANYCRLF) { switch(c)
+if (type == NLTYPE_ANYCRLF) switch(c)
   {
   case CHAR_LF:
   *lenptr = 1;
@@ -104,7 +104,7 @@ if (type == NLTYPE_ANYCRLF) { switch(c)
 
 /* NLTYPE_ANY */
 
-} else { switch(c)
+else switch(c)
   {
 #ifdef EBCDIC
   case CHAR_NEL:
@@ -142,7 +142,6 @@ if (type == NLTYPE_ANYCRLF) { switch(c)
   default:
   return FALSE;
   }
-}
 }
 
 
@@ -185,7 +184,7 @@ else c = *ptr;
 c = *ptr;
 #endif  /* SUPPORT_UNICODE */
 
-if (type == NLTYPE_ANYCRLF) { switch(c)
+if (type == NLTYPE_ANYCRLF) switch(c)
   {
   case CHAR_LF:
   *lenptr = (ptr > startptr && ptr[-1] == CHAR_CR)? 2 : 1;
@@ -201,7 +200,7 @@ if (type == NLTYPE_ANYCRLF) { switch(c)
 
 /* NLTYPE_ANY */
 
-} else { switch(c)
+else switch(c)
   {
   case CHAR_LF:
   *lenptr = (ptr > startptr && ptr[-1] == CHAR_CR)? 2 : 1;
@@ -239,7 +238,6 @@ if (type == NLTYPE_ANYCRLF) { switch(c)
   default:
   return FALSE;
   }
-}
 }
 
 /* End of pcre2_newline.c */

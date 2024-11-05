@@ -304,8 +304,7 @@ static int PaletteSortModifiedZeng(const WebPPicture* const pic,
   uint32_t first, last;
   uint32_t num_sums;
   // TODO(vrabaud) check whether one color images should use palette or not.
-  if (num_colors <= 1) { return 1;
-}
+  if (num_colors <= 1) return 1;
   // Build the co-occurrence matrix.
   cooccurrence =
       (uint32_t*)WebPSafeCalloc(num_colors * num_colors, sizeof(*cooccurrence));

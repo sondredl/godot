@@ -91,9 +91,8 @@ TPpContext::TPpContext(TParseContextBase& pc, const std::string& rootFileName, T
     disableEscapeSequences(false)
 {
     ifdepth = 0;
-    for (elsetracker = 0; elsetracker < maxIfNesting; elsetracker++) {
+    for (elsetracker = 0; elsetracker < maxIfNesting; elsetracker++)
         elseSeen[elsetracker] = false;
-}
     elsetracker = 0;
 
     strtodStream.imbue(std::locale::classic());
@@ -104,14 +103,13 @@ TPpContext::~TPpContext()
     delete [] preamble;
 
     // free up the inputStack
-    while (! inputStack.empty()) {
+    while (! inputStack.empty())
         popInput();
-}
 }
 
 void TPpContext::setInput(TInputScanner& input, bool versionWillBeError)
 {
-    assert(inputStack.empty());
+    assert(inputStack.size() == 0);
 
     pushInput(new tStringInput(this, input));
 

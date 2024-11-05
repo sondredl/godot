@@ -144,8 +144,7 @@ void VP8IteratorImport(VP8EncIterator* const it, uint8_t* const tmp_32) {
   ImportBlock(usrc, pic->uv_stride, it->yuv_in_ + U_OFF_ENC, uv_w, uv_h, 8);
   ImportBlock(vsrc, pic->uv_stride, it->yuv_in_ + V_OFF_ENC, uv_w, uv_h, 8);
 
-  if (tmp_32 == NULL) { return;
-}
+  if (tmp_32 == NULL) return;
 
   // Import source (uncompressed) samples into boundary.
   if (x == 0) {
@@ -200,10 +199,8 @@ void VP8IteratorExport(const VP8EncIterator* const it) {
     int w = (pic->width - x * 16);
     int h = (pic->height - y * 16);
 
-    if (w > 16) { w = 16;
-}
-    if (h > 16) { h = 16;
-}
+    if (w > 16) w = 16;
+    if (h > 16) h = 16;
 
     // Luma plane
     ExportBlock(ysrc, ydst, pic->y_stride, w, h);

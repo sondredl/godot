@@ -109,7 +109,7 @@ namespace {
 #include "inc/opcode_table.h"
 }
 
-const opcode_t * Machine::getOpcodeTable() noexcept
+const opcode_t * Machine::getOpcodeTable() throw()
 {
     return opcode_table;
 }

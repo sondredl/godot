@@ -67,9 +67,8 @@ void TInputScanner::consumeWhiteSpace(bool& foundNonSpaceTab)
 {
     int c = peek();  // don't accidentally consume anything other than whitespace
     while (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
-        if (c == '\r' || c == '\n') {
+        if (c == '\r' || c == '\n')
             foundNonSpaceTab = true;
-}
         get();
         c = peek();
     }
@@ -78,9 +77,8 @@ void TInputScanner::consumeWhiteSpace(bool& foundNonSpaceTab)
 // return true if a comment was actually consumed
 bool TInputScanner::consumeComment()
 {
-    if (peek() != '/') {
+    if (peek() != '/')
         return false;
-}
 
     get();  // consume the '/'
     int c = peek();
@@ -90,14 +88,12 @@ bool TInputScanner::consumeComment()
         get();  // consume the second '/'
         c = get();
         do {
-            while (c != EndOfInput && c != '\\' && c != '\r' && c != '\n') {
+            while (c != EndOfInput && c != '\\' && c != '\r' && c != '\n')
                 c = get();
-}
 
             if (c == EndOfInput || c == '\r' || c == '\n') {
-                while (c == '\r' || c == '\n') {
+                while (c == '\r' || c == '\n')
                     c = get();
-}
 
                 // we reached the end of the comment
                 break;
@@ -108,17 +104,15 @@ bool TInputScanner::consumeComment()
                 c = get();
 
                 // if it's a two-character newline, skip both characters
-                if (c == '\r' && peek() == '\n') {
+                if (c == '\r' && peek() == '\n')
                     get();
-}
                 c = get();
             }
         } while (true);
 
         // put back the last non-comment character
-        if (c != EndOfInput) {
+        if (c != EndOfInput)
             unget();
-}
 
         return true;
     } else if (c == '*') {
@@ -127,18 +121,15 @@ bool TInputScanner::consumeComment()
         get();  // consume the '*'
         c = get();
         do {
-            while (c != EndOfInput && c != '*') {
+            while (c != EndOfInput && c != '*')
                 c = get();
-}
             if (c == '*') {
                 c = get();
-                if (c == '/') {
+                if (c == '/')
                     break;  // end of comment
-}
                 // not end of comment
-            } else { // end of input
+            } else // end of input
                 break;
-}
         } while (true);
 
         return true;
@@ -158,15 +149,13 @@ void TInputScanner::consumeWhitespaceComment(bool& foundNonSpaceTab)
 
         // if not starting a comment now, then done
         int c = peek();
-        if (c != '/' || c == EndOfInput) {
+        if (c != '/' || c == EndOfInput)
             return;
-}
 
         // skip potential comment
         foundNonSpaceTab = true;
-        if (! consumeComment()) {
+        if (! consumeComment())
             return;
-}
 
     } while (true);
 }
@@ -205,21 +194,18 @@ bool TInputScanner::scanVersion(int& version, EProfile& profile, bool& notFirstT
                     c = get();
                 } while (c != EndOfInput && c != '\n' && c != '\r');
             }
-            while (peek() == '\n' || peek() == '\r') {
+            while (peek() == '\n' || peek() == '\r')
                 get();
-}
-            if (peek() == EndOfInput) {
+            if (peek() == EndOfInput)
                 return true;
-}
         }
         lookingInMiddle = true;
 
         // Nominal start, skipping the desktop allowed comments and white space, but tracking if
         // something else was found for ES:
         consumeWhitespaceComment(foundNonSpaceTab);
-        if (foundNonSpaceTab) {
+        if (foundNonSpaceTab)
             versionNotFirst = true;
-}
 
         // "#"
         if (get() != '#') {
@@ -260,18 +246,16 @@ bool TInputScanner::scanVersion(int& version, EProfile& profile, bool& notFirstT
         }
 
         // whitespace
-        while (c == ' ' || c == '\t') {
+        while (c == ' ' || c == '\t')
             c = get();
-}
 
         // profile
         const int maxProfileLength = 13;  // not including any 0
         char profileString[maxProfileLength];
         int profileLength;
         for (profileLength = 0; profileLength < maxProfileLength; ++profileLength) {
-            if (c == EndOfInput || c == ' ' || c == '\t' || c == '\n' || c == '\r') {
+            if (c == EndOfInput || c == ' ' || c == '\t' || c == '\n' || c == '\r')
                 break;
-}
             profileString[profileLength] = (char)c;
             c = get();
         }
@@ -280,13 +264,12 @@ bool TInputScanner::scanVersion(int& version, EProfile& profile, bool& notFirstT
             continue;
         }
 
-        if (profileLength == 2 && strncmp(profileString, "es", profileLength) == 0) {
+        if (profileLength == 2 && strncmp(profileString, "es", profileLength) == 0)
             profile = EEsProfile;
-        } else if (profileLength == 4 && strncmp(profileString, "core", profileLength) == 0) {
+        else if (profileLength == 4 && strncmp(profileString, "core", profileLength) == 0)
             profile = ECoreProfile;
-        } else if (profileLength == 13 && strncmp(profileString, "compatibility", profileLength) == 0) {
+        else if (profileLength == 13 && strncmp(profileString, "compatibility", profileLength) == 0)
             profile = ECompatibilityProfile;
-}
 
         return versionNotFirst;
     } while (true);
@@ -331,9 +314,8 @@ struct str_hash
         unsigned long hash = 5381;
         int c;
 
-        while ((c = *str++) != 0) {
+        while ((c = *str++) != 0)
             hash = ((hash << 5) + hash) + c;
-}
 
         return hash;
     }
@@ -845,9 +827,8 @@ int TScanContext::tokenize(TPpContext* pp, TParserToken& token)
         parserToken = &token;
         TPpToken ppToken;
         int token = pp->tokenize(ppToken);
-        if (token == EndOfInput) {
+        if (token == EndOfInput)
             return 0;
-}
 
         tokenText = ppToken.name;
         loc = ppToken.loc;
@@ -943,9 +924,8 @@ int TScanContext::tokenize(TPpContext* pp, TParserToken& token)
 
 int TScanContext::tokenizeIdentifier()
 {
-    if (ReservedSet->find(tokenText) != ReservedSet->end()) {
+    if (ReservedSet->find(tokenText) != ReservedSet->end())
         return reservedWord();
-}
 
     auto it = KeywordMap->find(tokenText);
     if (it == KeywordMap->end()) {
@@ -974,25 +954,22 @@ int TScanContext::tokenizeIdentifier()
         return keyword;
 
     case TERMINATE_INVOCATION:
-        if (!parseContext.extensionTurnedOn(E_GL_EXT_terminate_invocation)) {
+        if (!parseContext.extensionTurnedOn(E_GL_EXT_terminate_invocation))
             return identifierOrType();
-}
         return keyword;
 
     case TERMINATE_RAY:
     case IGNORE_INTERSECTION:
-        if (!parseContext.extensionTurnedOn(E_GL_EXT_ray_tracing)) {
+        if (!parseContext.extensionTurnedOn(E_GL_EXT_ray_tracing))
             return identifierOrType();
-}
         return keyword;
 
     case BUFFER:
         afterBuffer = true;
         if ((parseContext.isEsProfile() && parseContext.version < 310) ||
             (!parseContext.isEsProfile() && (parseContext.version < 430 &&
-            !parseContext.extensionTurnedOn(E_GL_ARB_shader_storage_buffer_object)))) {
+            !parseContext.extensionTurnedOn(E_GL_ARB_shader_storage_buffer_object))))
             return identifierOrType();
-}
         return keyword;
 
     case STRUCT:
@@ -1002,9 +979,8 @@ int TScanContext::tokenizeIdentifier()
     case SWITCH:
     case DEFAULT:
         if ((parseContext.isEsProfile() && parseContext.version < 300) ||
-            (!parseContext.isEsProfile() && parseContext.version < 130)) {
+            (!parseContext.isEsProfile() && parseContext.version < 130))
             reservedWord();
-}
         return keyword;
 
     case VOID:
@@ -1029,37 +1005,35 @@ int TScanContext::tokenizeIdentifier()
         return keyword;
 
     case BOOLCONSTANT:
-        parserToken->sType.lex.b = strcmp("true", tokenText) == 0;
+        if (strcmp("true", tokenText) == 0)
+            parserToken->sType.lex.b = true;
+        else
+            parserToken->sType.lex.b = false;
         return keyword;
 
     case SMOOTH:
         if ((parseContext.isEsProfile() && parseContext.version < 300) ||
-            (!parseContext.isEsProfile() && parseContext.version < 130)) {
+            (!parseContext.isEsProfile() && parseContext.version < 130))
             return identifierOrType();
-}
         return keyword;
     case FLAT:
-        if (parseContext.isEsProfile() && parseContext.version < 300) {
+        if (parseContext.isEsProfile() && parseContext.version < 300)
             reservedWord();
-        } else if (!parseContext.isEsProfile() && parseContext.version < 130) {
+        else if (!parseContext.isEsProfile() && parseContext.version < 130)
             return identifierOrType();
-}
         return keyword;
     case CENTROID:
-        if (parseContext.version < 120) {
+        if (parseContext.version < 120)
             return identifierOrType();
-}
         return keyword;
     case INVARIANT:
-        if (!parseContext.isEsProfile() && parseContext.version < 120) {
+        if (!parseContext.isEsProfile() && parseContext.version < 120)
             return identifierOrType();
-}
         return keyword;
     case PACKED:
         if ((parseContext.isEsProfile() && parseContext.version < 300) ||
-            (!parseContext.isEsProfile() && parseContext.version < 140)) {
+            (!parseContext.isEsProfile() && parseContext.version < 140))
             return reservedWord();
-}
         return identifierOrType();
 
     case RESOURCE:
@@ -1075,22 +1049,19 @@ int TScanContext::tokenizeIdentifier()
     }
 
     case NOPERSPECTIVE:
-        if (parseContext.extensionTurnedOn(E_GL_NV_shader_noperspective_interpolation)) {
+        if (parseContext.extensionTurnedOn(E_GL_NV_shader_noperspective_interpolation))
             return keyword;
-}
         return es30ReservedFromGLSL(130);
 
     case NONUNIFORM:
-        if (parseContext.extensionTurnedOn(E_GL_EXT_nonuniform_qualifier)) {
+        if (parseContext.extensionTurnedOn(E_GL_EXT_nonuniform_qualifier))
             return keyword;
-        } else {
+        else
             return identifierOrType();
-}
     case ATTRIBUTE:
     case VARYING:
-        if (parseContext.isEsProfile() && parseContext.version >= 300) {
+        if (parseContext.isEsProfile() && parseContext.version >= 300)
             reservedWord();
-}
         return keyword;
     case PAYLOADNV:
     case PAYLOADINNV:
@@ -1099,17 +1070,15 @@ int TScanContext::tokenizeIdentifier()
     case CALLDATAINNV:
     case ACCSTRUCTNV:
         if (parseContext.symbolTable.atBuiltInLevel() ||
-            parseContext.extensionTurnedOn(E_GL_NV_ray_tracing)) {
+            parseContext.extensionTurnedOn(E_GL_NV_ray_tracing))
             return keyword;
-}
         return identifierOrType();
     case ACCSTRUCTEXT:
         if (parseContext.symbolTable.atBuiltInLevel() ||
             parseContext.extensionTurnedOn(E_GL_EXT_ray_tracing) ||
             parseContext.extensionTurnedOn(E_GL_EXT_ray_query) ||
-            parseContext.extensionTurnedOn(E_GL_NV_displacement_micromap)) {
+            parseContext.extensionTurnedOn(E_GL_NV_displacement_micromap))
             return keyword;
-}
         return identifierOrType();
     case PAYLOADEXT:
     case PAYLOADINEXT:
@@ -1118,22 +1087,19 @@ int TScanContext::tokenizeIdentifier()
     case CALLDATAINEXT:
         if (parseContext.symbolTable.atBuiltInLevel() ||
             parseContext.extensionTurnedOn(E_GL_EXT_ray_tracing) ||
-            parseContext.extensionTurnedOn(E_GL_EXT_ray_query)) {
+            parseContext.extensionTurnedOn(E_GL_EXT_ray_query))
             return keyword;
-}
         return identifierOrType();
     case RAYQUERYEXT:
         if (parseContext.symbolTable.atBuiltInLevel() ||
             (!parseContext.isEsProfile() && parseContext.version >= 460
-                 && parseContext.extensionTurnedOn(E_GL_EXT_ray_query))) {
+                 && parseContext.extensionTurnedOn(E_GL_EXT_ray_query)))
             return keyword;
-}
         return identifierOrType();
     case ATOMIC_UINT:
         if ((parseContext.isEsProfile() && parseContext.version >= 310) ||
-            parseContext.extensionTurnedOn(E_GL_ARB_shader_atomic_counters)) {
+            parseContext.extensionTurnedOn(E_GL_ARB_shader_atomic_counters))
             return keyword;
-}
         return es30ReservedFromGLSL(420);
 
     case COHERENT:
@@ -1146,35 +1112,30 @@ int TScanContext::tokenizeIdentifier()
     case RESTRICT:
     case READONLY:
     case WRITEONLY:
-        if (parseContext.isEsProfile() && parseContext.version >= 310) {
+        if (parseContext.isEsProfile() && parseContext.version >= 310)
             return keyword;
-}
         return es30ReservedFromGLSL(parseContext.extensionTurnedOn(E_GL_ARB_shader_image_load_store) ? 130 : 420);
     case VOLATILE:
-        if (parseContext.isEsProfile() && parseContext.version >= 310) {
+        if (parseContext.isEsProfile() && parseContext.version >= 310)
             return keyword;
-}
         if (! parseContext.symbolTable.atBuiltInLevel() && (parseContext.isEsProfile() ||
-            (parseContext.version < 420 && ! parseContext.extensionTurnedOn(E_GL_ARB_shader_image_load_store)))) {
+            (parseContext.version < 420 && ! parseContext.extensionTurnedOn(E_GL_ARB_shader_image_load_store))))
             reservedWord();
-}
         return keyword;
     case PATCH:
         if (parseContext.symbolTable.atBuiltInLevel() ||
             (parseContext.isEsProfile() &&
              (parseContext.version >= 320 ||
               parseContext.extensionsTurnedOn(Num_AEP_tessellation_shader, AEP_tessellation_shader))) ||
-            (!parseContext.isEsProfile() && parseContext.extensionTurnedOn(E_GL_ARB_tessellation_shader))) {
+            (!parseContext.isEsProfile() && parseContext.extensionTurnedOn(E_GL_ARB_tessellation_shader)))
             return keyword;
-}
 
         return es30ReservedFromGLSL(400);
 
     case SAMPLE:
         if ((parseContext.isEsProfile() && parseContext.version >= 320) ||
-            parseContext.extensionsTurnedOn(1, &E_GL_OES_shader_multisample_interpolation)) {
+            parseContext.extensionsTurnedOn(1, &E_GL_OES_shader_multisample_interpolation))
             return keyword;
-}
         return es30ReservedFromGLSL(400);
 
     case SUBROUTINE:
@@ -1182,9 +1143,8 @@ int TScanContext::tokenizeIdentifier()
 
     case SHARED:
         if ((parseContext.isEsProfile() && parseContext.version < 300) ||
-            (!parseContext.isEsProfile() && parseContext.version < 140)) {
+            (!parseContext.isEsProfile() && parseContext.version < 140))
             return identifierOrType();
-}
         return keyword;
     case LAYOUT:
     {
@@ -1193,9 +1153,8 @@ int TScanContext::tokenizeIdentifier()
                                                   E_GL_ARB_explicit_attrib_location };
         if ((parseContext.isEsProfile() && parseContext.version < 300) ||
             (!parseContext.isEsProfile() && parseContext.version < 140 &&
-            ! parseContext.extensionsTurnedOn(numLayoutExts, layoutExts))) {
+            ! parseContext.extensionsTurnedOn(numLayoutExts, layoutExts)))
             return identifierOrType();
-}
         return keyword;
     }
 
@@ -1260,9 +1219,8 @@ int TScanContext::tokenizeIdentifier()
     case UIMAGEBUFFER:
         afterType = true;
         if ((parseContext.isEsProfile() && parseContext.version >= 320) ||
-            parseContext.extensionsTurnedOn(Num_AEP_texture_buffer, AEP_texture_buffer)) {
+            parseContext.extensionsTurnedOn(Num_AEP_texture_buffer, AEP_texture_buffer))
             return keyword;
-}
         return firstGenerationImage(false);
 
     case I64IMAGEBUFFER:
@@ -1271,9 +1229,8 @@ int TScanContext::tokenizeIdentifier()
         if (parseContext.symbolTable.atBuiltInLevel() ||
             parseContext.extensionTurnedOn(E_GL_EXT_shader_image_int64)) {
             if ((parseContext.isEsProfile() && parseContext.version >= 320) ||
-                parseContext.extensionsTurnedOn(Num_AEP_texture_buffer, AEP_texture_buffer)) {
+                parseContext.extensionsTurnedOn(Num_AEP_texture_buffer, AEP_texture_buffer))
                 return keyword;
-}
             return firstGenerationImage(false);
         }
         return identifierOrType();
@@ -1303,9 +1260,8 @@ int TScanContext::tokenizeIdentifier()
     case U64IMAGE2DARRAY:
         afterType = true;
         if (parseContext.symbolTable.atBuiltInLevel() ||
-            parseContext.extensionTurnedOn(E_GL_EXT_shader_image_int64)) {
+            parseContext.extensionTurnedOn(E_GL_EXT_shader_image_int64))
             return firstGenerationImage(true);
-}
         return identifierOrType();
 
     case IMAGECUBEARRAY:
@@ -1313,9 +1269,8 @@ int TScanContext::tokenizeIdentifier()
     case UIMAGECUBEARRAY:
         afterType = true;
         if ((parseContext.isEsProfile() && parseContext.version >= 320) ||
-            parseContext.extensionsTurnedOn(Num_AEP_texture_cube_map_array, AEP_texture_cube_map_array)) {
+            parseContext.extensionsTurnedOn(Num_AEP_texture_cube_map_array, AEP_texture_cube_map_array))
             return keyword;
-}
         return secondGenerationImage();
 
     case I64IMAGECUBEARRAY:
@@ -1324,9 +1279,8 @@ int TScanContext::tokenizeIdentifier()
         if (parseContext.symbolTable.atBuiltInLevel() ||
             parseContext.extensionTurnedOn(E_GL_EXT_shader_image_int64)) {
             if ((parseContext.isEsProfile() && parseContext.version >= 320) ||
-                parseContext.extensionsTurnedOn(Num_AEP_texture_cube_map_array, AEP_texture_cube_map_array)) {
+                parseContext.extensionsTurnedOn(Num_AEP_texture_cube_map_array, AEP_texture_cube_map_array))
                 return keyword;
-}
             return secondGenerationImage();
         }
         return identifierOrType();
@@ -1359,9 +1313,8 @@ int TScanContext::tokenizeIdentifier()
         if (parseContext.isEsProfile() || parseContext.version < 150 ||
             (!parseContext.symbolTable.atBuiltInLevel() &&
               (parseContext.version < 400 && !parseContext.extensionTurnedOn(E_GL_ARB_gpu_shader_fp64) &&
-              (parseContext.version < 410 && !parseContext.extensionTurnedOn(E_GL_ARB_vertex_attrib_64bit))))) {
+              (parseContext.version < 410 && !parseContext.extensionTurnedOn(E_GL_ARB_vertex_attrib_64bit)))))
             reservedWord();
-}
         return keyword;
 
     case INT64_T:
@@ -1376,9 +1329,8 @@ int TScanContext::tokenizeIdentifier()
         if (parseContext.symbolTable.atBuiltInLevel() ||
             parseContext.extensionTurnedOn(E_GL_ARB_gpu_shader_int64) ||
             parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types) ||
-            parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types_int64)) {
+            parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types_int64))
             return keyword;
-}
         return identifierOrType();
 
     case INT8_T:
@@ -1393,9 +1345,8 @@ int TScanContext::tokenizeIdentifier()
         if (parseContext.symbolTable.atBuiltInLevel() ||
             parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types) ||
             parseContext.extensionTurnedOn(E_GL_EXT_shader_8bit_storage) ||
-            parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types_int8)) {
+            parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types_int8))
             return keyword;
-}
         return identifierOrType();
 
     case INT16_T:
@@ -1411,9 +1362,8 @@ int TScanContext::tokenizeIdentifier()
             parseContext.extensionTurnedOn(E_GL_AMD_gpu_shader_int16) ||
             parseContext.extensionTurnedOn(E_GL_EXT_shader_16bit_storage) ||
             parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types) ||
-            parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types_int16)) {
+            parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types_int16))
             return keyword;
-}
         return identifierOrType();
     case INT32_T:
     case UINT32_T:
@@ -1426,9 +1376,8 @@ int TScanContext::tokenizeIdentifier()
         afterType = true;
         if (parseContext.symbolTable.atBuiltInLevel() ||
             parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types) ||
-            parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types_int32)) {
+            parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types_int32))
             return keyword;
-}
         return identifierOrType();
     case FLOAT32_T:
     case F32VEC2:
@@ -1449,9 +1398,8 @@ int TScanContext::tokenizeIdentifier()
         afterType = true;
         if (parseContext.symbolTable.atBuiltInLevel() ||
             parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types) ||
-            parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types_float32)) {
+            parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types_float32))
             return keyword;
-}
         return identifierOrType();
 
     case FLOAT64_T:
@@ -1473,9 +1421,8 @@ int TScanContext::tokenizeIdentifier()
         afterType = true;
         if (parseContext.symbolTable.atBuiltInLevel() ||
             parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types) ||
-            parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types_float64)) {
+            parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types_float64))
             return keyword;
-}
         return identifierOrType();
 
     case FLOAT16_T:
@@ -1487,9 +1434,8 @@ int TScanContext::tokenizeIdentifier()
             parseContext.extensionTurnedOn(E_GL_AMD_gpu_shader_half_float) ||
             parseContext.extensionTurnedOn(E_GL_EXT_shader_16bit_storage) ||
             parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types) ||
-            parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types_float16)) {
+            parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types_float16))
             return keyword;
-}
 
         return identifierOrType();
 
@@ -1509,9 +1455,8 @@ int TScanContext::tokenizeIdentifier()
         if (parseContext.symbolTable.atBuiltInLevel() ||
             parseContext.extensionTurnedOn(E_GL_AMD_gpu_shader_half_float) ||
             parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types) ||
-            parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types_float16)) {
+            parseContext.extensionTurnedOn(E_GL_EXT_shader_explicit_arithmetic_types_float16))
             return keyword;
-}
 
         return identifierOrType();
 
@@ -1521,22 +1466,19 @@ int TScanContext::tokenizeIdentifier()
     case USAMPLERCUBEARRAY:
         afterType = true;
         if ((parseContext.isEsProfile() && parseContext.version >= 320) ||
-            parseContext.extensionsTurnedOn(Num_AEP_texture_cube_map_array, AEP_texture_cube_map_array)) {
+            parseContext.extensionsTurnedOn(Num_AEP_texture_cube_map_array, AEP_texture_cube_map_array))
             return keyword;
-}
-        if (parseContext.isEsProfile() || (parseContext.version < 400 && ! parseContext.extensionTurnedOn(E_GL_ARB_texture_cube_map_array))) {
+        if (parseContext.isEsProfile() || (parseContext.version < 400 && ! parseContext.extensionTurnedOn(E_GL_ARB_texture_cube_map_array)))
             reservedWord();
-}
         return keyword;
 
     case TEXTURECUBEARRAY:
     case ITEXTURECUBEARRAY:
     case UTEXTURECUBEARRAY:
-        if (parseContext.spvVersion.vulkan > 0) {
+        if (parseContext.spvVersion.vulkan > 0)
             return keyword;
-        } else {
+        else
             return identifierOrType();
-}
 
     case UINT:
     case UVEC2:
@@ -1565,18 +1507,16 @@ int TScanContext::tokenizeIdentifier()
     case SAMPLER3D:
         afterType = true;
         if (parseContext.isEsProfile() && parseContext.version < 300) {
-            if (!parseContext.extensionTurnedOn(E_GL_OES_texture_3D)) {
+            if (!parseContext.extensionTurnedOn(E_GL_OES_texture_3D))
                 reservedWord();
-}
         }
         return keyword;
 
     case SAMPLER2DSHADOW:
         afterType = true;
         if (parseContext.isEsProfile() && parseContext.version < 300) {
-            if (!parseContext.extensionTurnedOn(E_GL_EXT_shadow_samplers)) {
+            if (!parseContext.extensionTurnedOn(E_GL_EXT_shadow_samplers))
                 reservedWord();
-}
         }
         return keyword;
 
@@ -1594,11 +1534,10 @@ int TScanContext::tokenizeIdentifier()
     case TEXTURE3D:
     case SAMPLER:
     case SAMPLERSHADOW:
-        if (parseContext.spvVersion.vulkan > 0) {
+        if (parseContext.spvVersion.vulkan > 0)
             return keyword;
-        } else {
+        else
             return identifierOrType();
-}
 
     case ISAMPLER1D:
     case ISAMPLER1DARRAY:
@@ -1621,31 +1560,27 @@ int TScanContext::tokenizeIdentifier()
     case SAMPLERBUFFER:
         afterType = true;
         if ((parseContext.isEsProfile() && parseContext.version >= 320) ||
-            parseContext.extensionsTurnedOn(Num_AEP_texture_buffer, AEP_texture_buffer)) {
+            parseContext.extensionsTurnedOn(Num_AEP_texture_buffer, AEP_texture_buffer))
             return keyword;
-}
         return es30ReservedFromGLSL(130);
 
     case ISAMPLERBUFFER:
     case USAMPLERBUFFER:
         afterType = true;
         if ((parseContext.isEsProfile() && parseContext.version >= 320) ||
-            parseContext.extensionsTurnedOn(Num_AEP_texture_buffer, AEP_texture_buffer)) {
+            parseContext.extensionsTurnedOn(Num_AEP_texture_buffer, AEP_texture_buffer))
             return keyword;
-}
         return es30ReservedFromGLSL(140);
 
     case SAMPLER2DMS:
     case ISAMPLER2DMS:
     case USAMPLER2DMS:
         afterType = true;
-        if (parseContext.isEsProfile() && parseContext.version >= 310) {
+        if (parseContext.isEsProfile() && parseContext.version >= 310)
             return keyword;
-}
         if (!parseContext.isEsProfile() && (parseContext.version > 140 ||
-            (parseContext.version == 140 && parseContext.extensionsTurnedOn(1, &E_GL_ARB_texture_multisample)))) {
+            (parseContext.version == 140 && parseContext.extensionsTurnedOn(1, &E_GL_ARB_texture_multisample))))
             return keyword;
-}
         return es30ReservedFromGLSL(150);
 
     case SAMPLER2DMSARRAY:
@@ -1653,64 +1588,57 @@ int TScanContext::tokenizeIdentifier()
     case USAMPLER2DMSARRAY:
         afterType = true;
         if ((parseContext.isEsProfile() && parseContext.version >= 320) ||
-            parseContext.extensionsTurnedOn(1, &E_GL_OES_texture_storage_multisample_2d_array)) {
+            parseContext.extensionsTurnedOn(1, &E_GL_OES_texture_storage_multisample_2d_array))
             return keyword;
-}
         if (!parseContext.isEsProfile() && (parseContext.version > 140 ||
-            (parseContext.version == 140 && parseContext.extensionsTurnedOn(1, &E_GL_ARB_texture_multisample)))) {
+            (parseContext.version == 140 && parseContext.extensionsTurnedOn(1, &E_GL_ARB_texture_multisample))))
             return keyword;
-}
         return es30ReservedFromGLSL(150);
 
     case SAMPLER1D:
     case SAMPLER1DSHADOW:
         afterType = true;
-        if (parseContext.isEsProfile()) {
+        if (parseContext.isEsProfile())
             reservedWord();
-}
         return keyword;
 
     case SAMPLER2DRECT:
     case SAMPLER2DRECTSHADOW:
         afterType = true;
-        if (parseContext.isEsProfile()) {
+        if (parseContext.isEsProfile())
             reservedWord();
-        } else if (parseContext.version < 140 && ! parseContext.symbolTable.atBuiltInLevel() && ! parseContext.extensionTurnedOn(E_GL_ARB_texture_rectangle)) {
-            if (parseContext.relaxedErrors()) {
+        else if (parseContext.version < 140 && ! parseContext.symbolTable.atBuiltInLevel() && ! parseContext.extensionTurnedOn(E_GL_ARB_texture_rectangle)) {
+            if (parseContext.relaxedErrors())
                 parseContext.requireExtensions(loc, 1, &E_GL_ARB_texture_rectangle, "texture-rectangle sampler keyword");
-            } else {
+            else
                 reservedWord();
-}
         }
         return keyword;
 
     case SAMPLER1DARRAY:
         afterType = true;
-        if (parseContext.isEsProfile() && parseContext.version == 300) {
+        if (parseContext.isEsProfile() && parseContext.version == 300)
             reservedWord();
-        } else if ((parseContext.isEsProfile() && parseContext.version < 300) ||
+        else if ((parseContext.isEsProfile() && parseContext.version < 300) ||
                  ((!parseContext.isEsProfile() && parseContext.version < 130) &&
                    !parseContext.symbolTable.atBuiltInLevel() &&
-                   !parseContext.extensionTurnedOn(E_GL_EXT_texture_array))) {
+                   !parseContext.extensionTurnedOn(E_GL_EXT_texture_array)))
             return identifierOrType();
-}
         return keyword;
 
     case SAMPLEREXTERNALOES:
         afterType = true;
         if (parseContext.symbolTable.atBuiltInLevel() ||
             parseContext.extensionTurnedOn(E_GL_OES_EGL_image_external) ||
-            parseContext.extensionTurnedOn(E_GL_OES_EGL_image_external_essl3)) {
+            parseContext.extensionTurnedOn(E_GL_OES_EGL_image_external_essl3))
             return keyword;
-}
         return identifierOrType();
 
     case SAMPLEREXTERNAL2DY2YEXT:
         afterType = true;
         if (parseContext.symbolTable.atBuiltInLevel() ||
-            parseContext.extensionTurnedOn(E_GL_EXT_YUV_target)) {
+            parseContext.extensionTurnedOn(E_GL_EXT_YUV_target))
             return keyword;
-}
         return identifierOrType();
 
     case ITEXTURE1DARRAY:
@@ -1731,11 +1659,10 @@ int TScanContext::tokenizeIdentifier()
     case TEXTURE1D:
     case TEXTURE2DRECT:
     case TEXTURE1DARRAY:
-        if (parseContext.spvVersion.vulkan > 0) {
+        if (parseContext.spvVersion.vulkan > 0)
             return keyword;
-        } else {
+        else
             return identifierOrType();
-}
 
     case SUBPASSINPUT:
     case SUBPASSINPUTMS:
@@ -1746,11 +1673,10 @@ int TScanContext::tokenizeIdentifier()
     case ATTACHMENTEXT:
     case IATTACHMENTEXT:
     case UATTACHMENTEXT:
-        if (parseContext.spvVersion.vulkan > 0) {
+        if (parseContext.spvVersion.vulkan > 0)
             return keyword;
-        } else {
+        else
             return identifierOrType();
-}
 
     case F16SAMPLER1D:
     case F16SAMPLER2D:
@@ -1799,37 +1725,32 @@ int TScanContext::tokenizeIdentifier()
     case F16SUBPASSINPUTMS:
         afterType = true;
         if (parseContext.symbolTable.atBuiltInLevel() ||
-            parseContext.extensionTurnedOn(E_GL_AMD_gpu_shader_half_float_fetch)) {
+            parseContext.extensionTurnedOn(E_GL_AMD_gpu_shader_half_float_fetch))
             return keyword;
-}
         return identifierOrType();
 
     case EXPLICITINTERPAMD:
-        if (parseContext.extensionTurnedOn(E_GL_AMD_shader_explicit_vertex_parameter)) {
+        if (parseContext.extensionTurnedOn(E_GL_AMD_shader_explicit_vertex_parameter))
             return keyword;
-}
         return identifierOrType();
 
     case PERVERTEXNV:
         if ((!parseContext.isEsProfile() && parseContext.version >= 450) ||
-            parseContext.extensionTurnedOn(E_GL_NV_fragment_shader_barycentric)) {
+            parseContext.extensionTurnedOn(E_GL_NV_fragment_shader_barycentric))
             return keyword;
-}
         return identifierOrType();
 
     case PERVERTEXEXT:
         if ((!parseContext.isEsProfile() && parseContext.version >= 450) ||
-            parseContext.extensionTurnedOn(E_GL_EXT_fragment_shader_barycentric)) {
+            parseContext.extensionTurnedOn(E_GL_EXT_fragment_shader_barycentric))
             return keyword;
-}
         return identifierOrType();
 
     case PRECISE:
         if ((parseContext.isEsProfile() &&
              (parseContext.version >= 320 || parseContext.extensionsTurnedOn(Num_AEP_gpu_shader5, AEP_gpu_shader5))) ||
-            (!parseContext.isEsProfile() && parseContext.version >= 400)) {
+            (!parseContext.isEsProfile() && parseContext.version >= 400))
             return keyword;
-}
         if (parseContext.isEsProfile() && parseContext.version == 310) {
             reservedWord();
             return keyword;
@@ -1840,50 +1761,44 @@ int TScanContext::tokenizeIdentifier()
     case PERVIEWNV:
     case PERTASKNV:
         if (parseContext.symbolTable.atBuiltInLevel() ||
-            parseContext.extensionTurnedOn(E_GL_NV_mesh_shader)) {
+            parseContext.extensionTurnedOn(E_GL_NV_mesh_shader))
             return keyword;
-}
         return identifierOrType();
 
     case PERPRIMITIVEEXT:
     case TASKPAYLOADWORKGROUPEXT:
         if (parseContext.symbolTable.atBuiltInLevel() ||
-            parseContext.extensionTurnedOn(E_GL_EXT_mesh_shader)) {
+            parseContext.extensionTurnedOn(E_GL_EXT_mesh_shader))
             return keyword;
-}
         return identifierOrType();
 
     case FCOOPMATNV:
         afterType = true;
         if (parseContext.symbolTable.atBuiltInLevel() ||
-            parseContext.extensionTurnedOn(E_GL_NV_cooperative_matrix)) {
+            parseContext.extensionTurnedOn(E_GL_NV_cooperative_matrix))
             return keyword;
-}
         return identifierOrType();
 
     case UCOOPMATNV:
     case ICOOPMATNV:
         afterType = true;
         if (parseContext.symbolTable.atBuiltInLevel() ||
-            parseContext.extensionTurnedOn(E_GL_NV_integer_cooperative_matrix)) {
+            parseContext.extensionTurnedOn(E_GL_NV_integer_cooperative_matrix))
             return keyword;
-}
         return identifierOrType();
 
     case COOPMAT:
         afterType = true;
         if (parseContext.symbolTable.atBuiltInLevel() ||
-            parseContext.extensionTurnedOn(E_GL_KHR_cooperative_matrix)) {
+            parseContext.extensionTurnedOn(E_GL_KHR_cooperative_matrix))
             return keyword;
-}
         return identifierOrType();
 
     case DEMOTE:
-        if (parseContext.extensionTurnedOn(E_GL_EXT_demote_to_helper_invocation)) {
+        if (parseContext.extensionTurnedOn(E_GL_EXT_demote_to_helper_invocation))
             return keyword;
-        } else {
+        else
             return identifierOrType();
-}
 
     case SPIRV_INSTRUCTION:
     case SPIRV_EXECUTION_MODE:
@@ -1896,25 +1811,22 @@ int TScanContext::tokenizeIdentifier()
     case SPIRV_BY_REFERENCE:
     case SPIRV_LITERAL:
         if (parseContext.symbolTable.atBuiltInLevel() ||
-            parseContext.extensionTurnedOn(E_GL_EXT_spirv_intrinsics)) {
+            parseContext.extensionTurnedOn(E_GL_EXT_spirv_intrinsics))
             return keyword;
-}
         return identifierOrType();
 
     case HITOBJECTNV:
         if (parseContext.symbolTable.atBuiltInLevel() ||
             (!parseContext.isEsProfile() && parseContext.version >= 460
-                 && parseContext.extensionTurnedOn(E_GL_NV_shader_invocation_reorder))) {
+                 && parseContext.extensionTurnedOn(E_GL_NV_shader_invocation_reorder)))
             return keyword;
-}
         return identifierOrType();
 
     case HITOBJECTATTRNV:
         if (parseContext.symbolTable.atBuiltInLevel() ||
             (!parseContext.isEsProfile() && parseContext.version >= 460
-                 && parseContext.extensionTurnedOn(E_GL_NV_shader_invocation_reorder))) {
+                 && parseContext.extensionTurnedOn(E_GL_NV_shader_invocation_reorder)))
             return keyword;
-}
         return identifierOrType();
 
     default:
@@ -1926,12 +1838,11 @@ int TScanContext::tokenizeIdentifier()
 int TScanContext::identifierOrType()
 {
     parserToken->sType.lex.string = NewPoolTString(tokenText);
-    if (field) {
+    if (field)
         return IDENTIFIER;
-}
 
     parserToken->sType.lex.symbol = parseContext.symbolTable.find(*parserToken->sType.lex.string);
-    if ((!afterType && !afterStruct) && parserToken->sType.lex.symbol != nullptr) {
+    if ((afterType == false && afterStruct == false) && parserToken->sType.lex.symbol != nullptr) {
         if (const TVariable* variable = parserToken->sType.lex.symbol->getAsVariable()) {
             if (variable->isUserType() &&
                 // treat redeclaration of forward-declared buffer/uniform reference as an identifier
@@ -1951,9 +1862,8 @@ int TScanContext::identifierOrType()
 // extension support before the extension is enabled.
 int TScanContext::reservedWord()
 {
-    if (! parseContext.symbolTable.atBuiltInLevel()) {
+    if (! parseContext.symbolTable.atBuiltInLevel())
         parseContext.error(loc, "Reserved word.", tokenText, "", "");
-}
 
     return 0;
 }
@@ -1966,9 +1876,8 @@ int TScanContext::identifierOrReserved(bool reserved)
         return 0;
     }
 
-    if (parseContext.isForwardCompatible()) {
+    if (parseContext.isForwardCompatible())
         parseContext.warn(loc, "using future reserved keyword", tokenText, "");
-}
 
     return identifierOrType();
 }
@@ -1977,20 +1886,17 @@ int TScanContext::identifierOrReserved(bool reserved)
 // but then got reserved by ES 3.0.
 int TScanContext::es30ReservedFromGLSL(int version)
 {
-    if (parseContext.symbolTable.atBuiltInLevel()) {
+    if (parseContext.symbolTable.atBuiltInLevel())
         return keyword;
-}
 
     if ((parseContext.isEsProfile() && parseContext.version < 300) ||
         (!parseContext.isEsProfile() && parseContext.version < version)) {
-            if (parseContext.isForwardCompatible()) {
+            if (parseContext.isForwardCompatible())
                 parseContext.warn(loc, "future reserved word in ES 300 and keyword in GLSL", tokenText, "");
-}
 
             return identifierOrType();
-    } else if (parseContext.isEsProfile() && parseContext.version >= 300) {
+    } else if (parseContext.isEsProfile() && parseContext.version >= 300)
         reservedWord();
-}
 
     return keyword;
 }
@@ -2001,9 +1907,8 @@ int TScanContext::nonreservedKeyword(int esVersion, int nonEsVersion)
 {
     if ((parseContext.isEsProfile() && parseContext.version < esVersion) ||
         (!parseContext.isEsProfile() && parseContext.version < nonEsVersion)) {
-        if (parseContext.isForwardCompatible()) {
+        if (parseContext.isForwardCompatible())
             parseContext.warn(loc, "using future keyword", tokenText, "");
-}
 
         return identifierOrType();
     }
@@ -2013,13 +1918,11 @@ int TScanContext::nonreservedKeyword(int esVersion, int nonEsVersion)
 
 int TScanContext::precisionKeyword()
 {
-    if (parseContext.isEsProfile() || parseContext.version >= 130) {
+    if (parseContext.isEsProfile() || parseContext.version >= 130)
         return keyword;
-}
 
-    if (parseContext.isForwardCompatible()) {
+    if (parseContext.isForwardCompatible())
         parseContext.warn(loc, "using ES precision qualifier keyword", tokenText, "");
-}
 
     return identifierOrType();
 }
@@ -2028,13 +1931,11 @@ int TScanContext::matNxM()
 {
     afterType = true;
 
-    if (parseContext.version > 110) {
+    if (parseContext.version > 110)
         return keyword;
-}
 
-    if (parseContext.isForwardCompatible()) {
+    if (parseContext.isForwardCompatible())
         parseContext.warn(loc, "using future non-square matrix type keyword", tokenText, "");
-}
 
     return identifierOrType();
 }
@@ -2053,13 +1954,11 @@ int TScanContext::dMat()
         parseContext.symbolTable.atBuiltInLevel() ||
         (parseContext.version >= 150 && parseContext.extensionTurnedOn(E_GL_ARB_gpu_shader_fp64)) ||
         (parseContext.version >= 150 && parseContext.extensionTurnedOn(E_GL_ARB_vertex_attrib_64bit)
-         && parseContext.language == EShLangVertex))) {
+         && parseContext.language == EShLangVertex)))
         return keyword;
-}
 
-    if (parseContext.isForwardCompatible()) {
+    if (parseContext.isForwardCompatible())
         parseContext.warn(loc, "using future type keyword", tokenText, "");
-}
 
     return identifierOrType();
 }
@@ -2069,9 +1968,8 @@ int TScanContext::firstGenerationImage(bool inEs310)
     if (parseContext.symbolTable.atBuiltInLevel() ||
         (!parseContext.isEsProfile() && (parseContext.version >= 420 ||
          parseContext.extensionTurnedOn(E_GL_ARB_shader_image_load_store))) ||
-        (inEs310 && parseContext.isEsProfile() && parseContext.version >= 310)) {
+        (inEs310 && parseContext.isEsProfile() && parseContext.version >= 310))
         return keyword;
-}
 
     if ((parseContext.isEsProfile() && parseContext.version >= 300) ||
         (!parseContext.isEsProfile() && parseContext.version >= 130)) {
@@ -2080,9 +1978,8 @@ int TScanContext::firstGenerationImage(bool inEs310)
         return keyword;
     }
 
-    if (parseContext.isForwardCompatible()) {
+    if (parseContext.isForwardCompatible())
         parseContext.warn(loc, "using future type keyword", tokenText, "");
-}
 
     return identifierOrType();
 }
@@ -2096,13 +1993,11 @@ int TScanContext::secondGenerationImage()
 
     if (parseContext.symbolTable.atBuiltInLevel() ||
         (!parseContext.isEsProfile() &&
-         (parseContext.version >= 420 || parseContext.extensionTurnedOn(E_GL_ARB_shader_image_load_store)))) {
+         (parseContext.version >= 420 || parseContext.extensionTurnedOn(E_GL_ARB_shader_image_load_store))))
         return keyword;
-}
 
-    if (parseContext.isForwardCompatible()) {
+    if (parseContext.isForwardCompatible())
         parseContext.warn(loc, "using future type keyword", tokenText, "");
-}
 
     return identifierOrType();
 }

@@ -22,9 +22,8 @@ namespace embree
 
   RegressionTest* getRegressionTest(size_t index)
   {
-    if (index >= get_regression_tests().size()) {
+    if (index >= get_regression_tests().size())
       return nullptr;
-}
 
     return get_regression_tests()[index];
   }

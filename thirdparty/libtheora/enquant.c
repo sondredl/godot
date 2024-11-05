@@ -53,8 +53,7 @@ int oc_quant_params_clone(th_quant_info *_dst,const th_quant_info *_src){
       sizes=(int *)_ogg_malloc(nranges*sizeof(*sizes));
       /*Note: The caller is responsible for cleaning up any partially
          constructed qinfo.*/
-      if(sizes==NULL) {return TH_EFAULT;
-}
+      if(sizes==NULL)return TH_EFAULT;
       memcpy(sizes,_src->qi_ranges[qti][pli].sizes,nranges*sizeof(*sizes));
       _dst->qi_ranges[qti][pli].sizes=sizes;
     }
@@ -74,8 +73,7 @@ int oc_quant_params_clone(th_quant_info *_dst,const th_quant_info *_src){
        (nranges+1)*sizeof(*base_matrices));
       /*Note: The caller is responsible for cleaning up any partially
          constructed qinfo.*/
-      if(base_matrices==NULL) {return TH_EFAULT;
-}
+      if(base_matrices==NULL)return TH_EFAULT;
       memcpy(base_matrices,_src->qi_ranges[qti][pli].base_matrices,
        (nranges+1)*sizeof(*base_matrices));
       _dst->qi_ranges[qti][pli].base_matrices=
@@ -101,8 +99,7 @@ void oc_quant_params_pack(oggpack_buffer *_opb,const th_quant_info *_qinfo){
   int                    bmi;
   int                    i;
   i=_qinfo->loop_filter_limits[0];
-  for(qi=1;qi<64;qi++) {i=OC_MAXI(i,_qinfo->loop_filter_limits[qi]);
-}
+  for(qi=1;qi<64;qi++)i=OC_MAXI(i,_qinfo->loop_filter_limits[qi]);
   nbits=OC_ILOG_32(i);
   oggpackB_write(_opb,nbits,3);
   for(qi=0;qi<64;qi++){
@@ -110,21 +107,19 @@ void oc_quant_params_pack(oggpack_buffer *_opb,const th_quant_info *_qinfo){
   }
   /*580 bits for VP3.*/
   i=1;
-  for(qi=0;qi<64;qi++) {i=OC_MAXI(_qinfo->ac_scale[qi],i);
-}
+  for(qi=0;qi<64;qi++)i=OC_MAXI(_qinfo->ac_scale[qi],i);
   nbits=OC_ILOGNZ_32(i);
   oggpackB_write(_opb,nbits-1,4);
   for(qi=0;qi<64;qi++)oggpackB_write(_opb,_qinfo->ac_scale[qi],nbits);
   /*516 bits for VP3.*/
   i=1;
-  for(qi=0;qi<64;qi++) {i=OC_MAXI(_qinfo->dc_scale[qi],i);
-}
+  for(qi=0;qi<64;qi++)i=OC_MAXI(_qinfo->dc_scale[qi],i);
   nbits=OC_ILOGNZ_32(i);
   oggpackB_write(_opb,nbits-1,4);
   for(qi=0;qi<64;qi++)oggpackB_write(_opb,_qinfo->dc_scale[qi],nbits);
   /*Consolidate any duplicate base matrices.*/
   nbase_mats=0;
-  for(qti=0;qti<2;qti++) {for(pli=0;pli<3;pli++){
+  for(qti=0;qti<2;qti++)for(pli=0;pli<3;pli++){
     qranges=_qinfo->qi_ranges[qti]+pli;
     for(qri=0;qri<=qranges->nranges;qri++){
       for(bmi=0;;bmi++){
@@ -141,7 +136,6 @@ void oc_quant_params_pack(oggpack_buffer *_opb,const th_quant_info *_qinfo){
       }
     }
   }
-}
   /*Write out the list of unique base matrices.
     1545 bits for VP3 matrices.*/
   oggpackB_write(_opb,nbase_mats-1,9);
@@ -218,12 +212,10 @@ void oc_enc_enquant_table_fixup_c(void *_enquant[3][3][2],int _nqis){
   int pli;
   int qii;
   int qti;
-  for(pli=0;pli<3;pli++) {for(qii=1;qii<_nqis;qii++) {for(qti=0;qti<2;qti++){
+  for(pli=0;pli<3;pli++)for(qii=1;qii<_nqis;qii++)for(qti=0;qti<2;qti++){
     *((oc_iquant *)_enquant[pli][qii][qti])=
      *((oc_iquant *)_enquant[pli][0][qti]);
   }
-}
-}
 }
 
 int oc_enc_quantize_c(ogg_int16_t _qdct[64],const ogg_int16_t _dct[64],
@@ -252,8 +244,7 @@ int oc_enc_quantize_c(ogg_int16_t _qdct[64],const ogg_int16_t _dct[64],
       _qdct[zzi]=(ogg_int16_t)val;
       nonzero=zzi;
     }
-    else { _
-}qdct[zzi]=0;
+    else _qdct[zzi]=0;
   }
   return nonzero;
 }
@@ -342,7 +333,7 @@ void oc_enquant_qavg_init(ogg_int64_t _log_qavg[2][64],
   int pli;
   int qti;
   int ci;
-  for(qti=0;qti<2;qti++) {for(qi=0;qi<64;qi++){
+  for(qti=0;qti<2;qti++)for(qi=0;qi<64;qi++){
     ogg_int64_t  q2;
     ogg_uint32_t qp[3];
     ogg_uint32_t cqp;
@@ -376,5 +367,4 @@ void oc_enquant_qavg_init(ogg_int64_t _log_qavg[2][64],
     /*qavg=1.0/sqrt(q2).*/
     _log_qavg[qti][qi]=OC_Q57(48)-oc_blog64(q2)>>1;
   }
-}
 }

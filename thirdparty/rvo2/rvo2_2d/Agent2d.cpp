@@ -383,7 +383,7 @@ namespace RVO2D {
 
 		if (distSq < rangeSq) {
 			if (agentNeighbors_.size() < maxNeighbors_) {
-				agentNeighbors_.emplace_back(distSq, agent);
+				agentNeighbors_.push_back(std::make_pair(distSq, agent));
 			}
 
 			size_t i = agentNeighbors_.size() - 1;
@@ -417,7 +417,7 @@ namespace RVO2D {
 		const float distSq = distSqPointLineSegment(obstacle->point_, nextObstacle->point_, position_);
 
 		if (distSq < rangeSq) {
-			obstacleNeighbors_.emplace_back(distSq, obstacle);
+			obstacleNeighbors_.push_back(std::make_pair(distSq, obstacle));
 
 			size_t i = obstacleNeighbors_.size() - 1;
 

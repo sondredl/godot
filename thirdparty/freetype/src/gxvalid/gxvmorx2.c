@@ -191,9 +191,8 @@
       { /* negative offset */
         gid_limit = gxvalid->face->num_glyphs -
                     (FT_Long)( offset & 0x0000FFFFUL );
-        if ( gid_limit > 0 ) {
+        if ( gid_limit > 0 )
           return;
-}
 
         GXV_TRACE(( "ligature action table includes"
                     " too negative offset moving all GID"
@@ -203,9 +202,8 @@
       }
       else if ( ( offset & 0x3FFF0000UL ) == 0x00000000UL )
       { /* positive offset */
-        if ( (FT_Long)offset < gxvalid->face->num_glyphs ) {
+        if ( (FT_Long)offset < gxvalid->face->num_glyphs )
           return;
-}
 
         GXV_TRACE(( "ligature action table includes"
                     " too large offset moving all GID"
@@ -252,9 +250,8 @@
     reserved       = (FT_UShort)( flags & 0x1FFF );
     ligActionIndex = glyphOffset_p->u;
 
-    if ( reserved > 0 ) {
+    if ( reserved > 0 )
       GXV_TRACE(( "  reserved 14bit is non-zero\n" ));
-}
 
     if ( 0 < ligActionIndex )
       gxv_morx_subtable_type2_ligActionIndex_validate(
@@ -286,9 +283,8 @@
 
         GXV_LIMIT_CHECK( 2 );
         lig_gid = FT_NEXT_USHORT( p );
-        if ( lig_gid < gxvalid->face->num_glyphs ) {
+        if ( lig_gid < gxvalid->face->num_glyphs )
           GXV_SET_ERR_IF_PARANOID( FT_INVALID_GLYPH_ID );
-}
       }
     }
 

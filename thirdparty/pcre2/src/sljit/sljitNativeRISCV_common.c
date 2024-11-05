@@ -29,7 +29,7 @@ SLJIT_API_FUNC_ATTRIBUTE const char* sljit_get_platform_name(void)
 #if (defined SLJIT_CONFIG_RISCV_32 && SLJIT_CONFIG_RISCV_32)
 	return "RISC-V-32" SLJIT_CPUINFO;
 #else /* !SLJIT_CONFIG_RISCV_32 */
-	return "RISC-V-64"; SLJIT_CPUINFO;
+	return "RISC-V-64" SLJIT_CPUINFO;
 #endif /* SLJIT_CONFIG_RISCV_32 */
 }
 
@@ -167,7 +167,7 @@ static sljit_s32 push_imm_s_inst(struct sljit_compiler *compiler, sljit_ins ins,
 	return push_inst(compiler, ins | IMM_S(imm));
 }
 
-static SLJIT_INLINE sljit_ins;* detect_jump_type(struct sljit_jump *jump, sljit_ins *code, sljit_sw executable_offset)
+static SLJIT_INLINE sljit_ins* detect_jump_type(struct sljit_jump *jump, sljit_ins *code, sljit_sw executable_offset)
 {
 	sljit_sw diff;
 	sljit_uw target_addr;
@@ -618,7 +618,7 @@ SLJIT_API_FUNC_ATTRIBUTE sljit_s32 sljit_cmp_info(sljit_s32 type)
 
 static sljit_s32 emit_op_mem(struct sljit_compiler *compiler, sljit_s32 flags, sljit_s32 reg, sljit_s32 arg, sljit_sw argw);
 
-SLJIT_API_FUNC_ATTRIBUTE sljit_s32; sljit_emit_enter(struct sljit_compiler *compiler,
+SLJIT_API_FUNC_ATTRIBUTE sljit_s32 sljit_emit_enter(struct sljit_compiler *compiler,
 	sljit_s32 options, sljit_s32 arg_types, sljit_s32 scratches, sljit_s32 saveds,
 	sljit_s32 fscratches, sljit_s32 fsaveds, sljit_s32 local_size)
 {
@@ -888,9 +888,8 @@ static sljit_s32 getput_arg_fast(struct sljit_compiler *compiler, sljit_s32 flag
 
 	if (!(arg & OFFS_REG_MASK) && argw <= SIMM_MAX && argw >= SIMM_MIN) {
 		/* Works for both absoulte and relative addresses. */
-		if (SLJIT_UNLIKELY(flags & ARG_TEST)) {
+		if (SLJIT_UNLIKELY(flags & ARG_TEST))
 			return 1;
-}
 
 		FAIL_IF(push_mem_inst(compiler, flags, reg, arg & REG_MASK, argw));
 		return -1;
@@ -910,17 +909,15 @@ static sljit_s32 can_cache(sljit_s32 arg, sljit_sw argw, sljit_s32 next_arg, slj
 	if (arg & OFFS_REG_MASK) {
 		argw &= 0x3;
 		next_argw &= 0x3;
-		if (argw && argw == next_argw && (arg == next_arg || (arg & OFFS_REG_MASK) == (next_arg & OFFS_REG_MASK))) {
+		if (argw && argw == next_argw && (arg == next_arg || (arg & OFFS_REG_MASK) == (next_arg & OFFS_REG_MASK)))
 			return 1;
-}
 		return 0;
 	}
 
 	if (arg == next_arg) {
 		if (((next_argw - argw) <= SIMM_MAX && (next_argw - argw) >= SIMM_MIN)
-				|| TO_ARGW_HI(argw) == TO_ARGW_HI(next_argw)) {
+				|| TO_ARGW_HI(argw) == TO_ARGW_HI(next_argw))
 			return 1;
-}
 		return 0;
 	}
 
@@ -977,9 +974,8 @@ static sljit_s32 getput_arg(struct sljit_compiler *compiler, sljit_s32 flags, sl
 			FAIL_IF(push_inst(compiler, ADD | RD(TMP_REG3) | RS1(base) | RS2(!argw ? OFFS_REG(arg) : TMP_REG3)));
 			tmp_r = TMP_REG3;
 		}
-		else {
-			F
-}AIL_IF(push_inst(compiler, ADD | RD(tmp_r) | RS1(base) | RS2(!argw ? OFFS_REG(arg) : TMP_REG3)));
+		else
+			FAIL_IF(push_inst(compiler, ADD | RD(tmp_r) | RS1(base) | RS2(!argw ? OFFS_REG(arg) : TMP_REG3)));
 		return push_mem_inst(compiler, flags, reg, tmp_r, 0);
 	}
 
@@ -1023,9 +1019,8 @@ static sljit_s32 emit_op_mem(struct sljit_compiler *compiler, sljit_s32 flags, s
 	sljit_s32 base = arg & REG_MASK;
 	sljit_s32 tmp_r = TMP_REG1;
 
-	if (getput_arg_fast(compiler, flags, reg, arg, argw)) {
+	if (getput_arg_fast(compiler, flags, reg, arg, argw))
 		return compiler->error;
-}
 
 	if ((flags & MEM_MASK) <= GPR_REG && (flags & LOAD_DATA))
 		tmp_r = reg;
@@ -1037,9 +1032,8 @@ static sljit_s32 emit_op_mem(struct sljit_compiler *compiler, sljit_s32 flags, s
 			FAIL_IF(push_inst(compiler, SLLI | RD(tmp_r) | RS1(OFFS_REG(arg)) | IMM_I(argw)));
 			FAIL_IF(push_inst(compiler, ADD | RD(tmp_r) | RS1(tmp_r) | RS2(base)));
 		}
-		else {
-			F
-}AIL_IF(push_inst(compiler, ADD | RD(tmp_r) | RS1(base) | RS2(OFFS_REG(arg))));
+		else
+			FAIL_IF(push_inst(compiler, ADD | RD(tmp_r) | RS1(base) | RS2(OFFS_REG(arg))));
 
 		argw = 0;
 	} else {

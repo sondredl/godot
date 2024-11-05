@@ -158,7 +158,7 @@ usprep_internal_flushCache(UBool noRefCount){
         profile = (UStringPrepProfile *) e->value.pointer;
         key  = (UStringPrepKey *) e->key.pointer;
 
-        if ((!static_cast<bool>(noRefCount) && profile->refCount == 0) ||
+        if ((noRefCount== false && profile->refCount == 0) ||
              noRefCount) {
             deletedNum++;
             uhash_removeElement(SHARED_DATA_HASHTABLE, e);
@@ -534,7 +534,7 @@ usprep_map(  const UStringPrepProfile* profile,
         type = getValues(result, value, isIndex);
 
         // check if the source codepoint is unassigned
-        if(type == USPREP_UNASSIGNED && !static_cast<bool>(allowUnassigned)){
+        if(type == USPREP_UNASSIGNED && allowUnassigned == false){
 
             uprv_syntaxError(src,srcIndex-U16_LENGTH(ch), srcLength,parseError);
             *status = U_STRINGPREP_UNASSIGNED_ERROR;

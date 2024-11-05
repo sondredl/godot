@@ -51,7 +51,7 @@
 #define _USE_MATH_DEFINES       //Math Constants are not defined in Standard C/C++.
 
 #include <cstring>
-#include <cctype>
+#include <ctype.h>
 #include "tvgMath.h"
 #include "tvgShape.h"
 #include "tvgSvgLoaderCommon.h"
@@ -67,8 +67,7 @@ static char* _skipComma(const char* content)
     while (*content && isspace(*content)) {
         content++;
     }
-    if (*content == ',') { return (char*)content + 1;
-}
+    if (*content == ',') return (char*)content + 1;
     return (char*)content;
 }
 
@@ -78,8 +77,7 @@ static bool _parseNumber(char** content, float* number)
     char* end = NULL;
     *number = strToFloat(*content, &end);
     //If the start of string is not number
-    if ((*content) == end) { return false;
-}
+    if ((*content) == end) return false;
     //Skip comma if any
     *content = _skipComma(end);
     return true;
@@ -89,8 +87,7 @@ static bool _parseNumber(char** content, float* number)
 static bool _parseFlag(char** content, int* number)
 {
     char* end = NULL;
-    if (*(*content) != '0' && *(*content) != '1') { return false;
-}
+    if (*(*content) != '0' && *(*content) != '1') return false;
     *number = *(*content) - '0';
     *content += 1;
     end = *content;
@@ -178,8 +175,7 @@ void _pathAppendArcTo(Array<PathCommand>* cmds, Array<Point>* pts, Point* cur, P
         //Complete c calculation
         c = sqrtf(c / ((rx2 * y1p2) + (ry2 * x1p2)));
         //Inverse sign if Fa == Fs
-        if (largeArc == sweep) { c = -c;
-}
+        if (largeArc == sweep) c = -c;
 
         //Step 2 (F6.5.2)
         cxp = c * (rx * y1p / ry);
@@ -503,11 +499,10 @@ static char* _nextCommand(char* path, char* cmd, float* arr, int* count, bool* c
         path++;
         *count = _numberCount(*cmd);
     } else {
-        if (*cmd == 'm') { *cmd = 'l';
-        } else if (*cmd == 'M') { *cmd = 'L';
-        } else {
-          if (*closed) { return nullptr;
-}
+        if (*cmd == 'm') *cmd = 'l';
+        else if (*cmd == 'M') *cmd = 'L';
+        else {
+          if (*closed) return nullptr;
         }
     }
     if (*count == 7) {
@@ -566,12 +561,11 @@ bool svgPathToShape(const char* svgPath, Shape* shape)
 
     while ((path[0] != '\0')) {
         path = _nextCommand(path, &cmd, numberArray, &numberCount, &closed);
-        if (!path) { break;
-}
+        if (!path) break;
         closed = false;
-        if (!_processCommand(&cmds, &pts, cmd, numberArray, numberCount, &cur, &curCtl, &startPoint, &isQuadratic, &closed)) { break;
-}
+        if (!_processCommand(&cmds, &pts, cmd, numberArray, numberCount, &cur, &curCtl, &startPoint, &isQuadratic, &closed)) break;
     }
 
-    return !cmds.count > lastCmds && cmds[lastCmds] != PathCommand::MoveTo;
+    if (cmds.count > lastCmds && cmds[lastCmds] != PathCommand::MoveTo) return false;
+    return true;
 }

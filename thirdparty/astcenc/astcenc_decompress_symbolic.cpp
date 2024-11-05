@@ -21,8 +21,8 @@
 
 #include "astcenc_internal.h"
 
-#include <cstdio>
-#include <cassert>
+#include <stdio.h>
+#include <assert.h>
 
 /**
  * @brief Compute the integer linear interpolation of two color endpoints.

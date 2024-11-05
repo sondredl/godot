@@ -18,27 +18,21 @@ namespace embree
   /*! create a valid filename from a string */
   FileName::FileName (const char* in) {
     filename = in;
-    for (size_t i=0; i<filename.size(); i++) {
-      if (filename[i] == '\\' || filename[i] == '/') {
+    for (size_t i=0; i<filename.size(); i++)
+      if (filename[i] == '\\' || filename[i] == '/')
         filename[i] = path_sep;
-}
-}
-    while (!filename.empty() && filename[filename.size()-1] == path_sep) {
+    while (!filename.empty() && filename[filename.size()-1] == path_sep)
       filename.resize(filename.size()-1);
-}
   }
 
   /*! create a valid filename from a string */
   FileName::FileName (const std::string& in) {
     filename = in;
-    for (size_t i=0; i<filename.size(); i++) {
-      if (filename[i] == '\\' || filename[i] == '/') {
+    for (size_t i=0; i<filename.size(); i++)
+      if (filename[i] == '\\' || filename[i] == '/')
         filename[i] = path_sep;
-}
-}
-    while (!filename.empty() && filename[filename.size()-1] == path_sep) {
+    while (!filename.empty() && filename[filename.size()-1] == path_sep)
       filename.resize(filename.size()-1);
-}
   }
 
   /*! returns path to home folder */
@@ -49,8 +43,7 @@ namespace embree
 #else
     const char* home = getenv("HOME");
 #endif
-    if (home) { return home;
-}
+    if (home) return home;
     return "";
   }
 
@@ -62,54 +55,46 @@ namespace embree
   /*! returns the path */
   FileName FileName::path() const {
     size_t pos = filename.find_last_of(path_sep);
-    if (pos == std::string::npos) { return FileName();
-}
+    if (pos == std::string::npos) return FileName();
     return filename.substr(0,pos);
   }
 
   /*! returns the basename */
   std::string FileName::base() const {
     size_t pos = filename.find_last_of(path_sep);
-    if (pos == std::string::npos) { return filename;
-}
+    if (pos == std::string::npos) return filename;
     return filename.substr(pos+1);
   }
 
   /*! returns the extension */
   std::string FileName::ext() const {
     size_t pos = filename.find_last_of('.');
-    if (pos == std::string::npos) { return "";
-}
+    if (pos == std::string::npos) return "";
     return filename.substr(pos+1);
   }
 
   /*! returns the extension */
   FileName FileName::dropExt() const {
     size_t pos = filename.find_last_of('.');
-    if (pos == std::string::npos) { return filename;
-}
+    if (pos == std::string::npos) return filename;
     return filename.substr(0,pos);
   }
 
   /*! returns the basename without extension */
   std::string FileName::name() const {
     size_t start = filename.find_last_of(path_sep);
-    if (start == std::string::npos) { start = 0; } else { start++;
-}
+    if (start == std::string::npos) start = 0; else start++;
     size_t end = filename.find_last_of('.');
-    if (end == std::string::npos || end < start) { end = filename.size();
-}
+    if (end == std::string::npos || end < start) end = filename.size();
     return filename.substr(start, end - start);
   }
 
   /*! replaces the extension */
   FileName FileName::setExt(const std::string& ext) const {
     size_t start = filename.find_last_of(path_sep);
-    if (start == std::string::npos) { start = 0; } else { start++;
-}
+    if (start == std::string::npos) start = 0; else start++;
     size_t end = filename.find_last_of('.');
-    if (end == std::string::npos || end < start) { return FileName(filename+ext);
-}
+    if (end == std::string::npos || end < start) return FileName(filename+ext);
     return FileName(filename.substr(0,end)+ext);
   }
 
@@ -120,9 +105,8 @@ namespace embree
 
   /*! concatenates two filenames to this/other */
   FileName FileName::operator +( const FileName& other ) const {
-    if (filename.empty()) { return FileName(other);
-    } else { return FileName(filename + path_sep + other.filename);
-}
+    if (filename == "") return FileName(other);
+    else return FileName(filename + path_sep + other.filename);
   }
 
   /*! concatenates two filenames to this/other */
@@ -133,8 +117,7 @@ namespace embree
   /*! removes the base from a filename (if possible) */
   FileName FileName::operator -( const FileName& base ) const {
     size_t pos = filename.find_first_of(base);
-    if (pos == std::string::npos) { return *this;
-}
+    if (pos == std::string::npos) return *this;
     return FileName(filename.substr(pos+1));
   }
 

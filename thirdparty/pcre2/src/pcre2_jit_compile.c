@@ -14790,13 +14790,11 @@ executable_functions *functions;
 static int executable_allocator_is_working = -1;
 #endif
 
-if (code == NULL) {
+if (code == NULL)
   return PCRE2_ERROR_NULL;
-}
 
-if ((options & ~PUBLIC_JIT_COMPILE_OPTIONS) != 0) {
+if ((options & ~PUBLIC_JIT_COMPILE_OPTIONS) != 0)
   return PCRE2_ERROR_JIT_BADOPTION;
-}
 
 /* Support for invalid UTF was first introduced in JIT, with the option
 PCRE2_JIT_INVALID_UTF. Later, support was added to the interpreter, and the

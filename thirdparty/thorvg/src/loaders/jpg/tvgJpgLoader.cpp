@@ -30,8 +30,7 @@
 void JpgLoader::clear()
 {
     jpgdDelete(decoder);
-    if (freeData) { free(data);
-}
+    if (freeData) free(data);
     decoder = nullptr;
     data = nullptr;
     freeData = false;
@@ -73,7 +72,12 @@ bool JpgLoader::open(const string& path)
 {
     int width, height;
     decoder = jpgdHeader(path.c_str(), &width, &height);
-    return decoder != nullptr;
+    if (!decoder) return false;
+
+    w = static_cast<float>(width);
+    h = static_cast<float>(height);
+
+    return true;
 }
 
 
@@ -81,8 +85,7 @@ bool JpgLoader::open(const char* data, uint32_t size, bool copy)
 {
     if (copy) {
         this->data = (char *) malloc(size);
-        if (!this->data) { return false;
-}
+        if (!this->data) return false;
         memcpy((char *)this->data, data, size);
         freeData = true;
     } else {
@@ -92,24 +95,31 @@ bool JpgLoader::open(const char* data, uint32_t size, bool copy)
 
     int width, height;
     decoder = jpgdHeader(this->data, size, &width, &height);
-    return decoder != nullptr;
+    if (!decoder) return false;
+
+    w = static_cast<float>(width);
+    h = static_cast<float>(height);
+
+    return true;
 }
 
 
 
 bool JpgLoader::read()
 {
-    if (!LoadModule::read()) { return true;
-}
+    if (!LoadModule::read()) return true;
 
-    return !!decoder || w == 0 || h == 0;
+    if (!decoder || w == 0 || h == 0) return false;
+
+    TaskScheduler::request(this);
+
+    return true;
 }
 
 
 bool JpgLoader::close()
 {
-    if (!LoadModule::close()) { return false;
-}
+    if (!LoadModule::close()) return false;
     this->done();
     return true;
 }

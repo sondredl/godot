@@ -159,9 +159,11 @@ static_assert((BLOCK_MAX_TEXELS % ASTCENC_SIMD_WIDTH) == 0,
 static_assert(BLOCK_MAX_TEXELS <= 216,
               "BLOCK_MAX_TEXELS must not be greater than 216");
 
+static_assert((BLOCK_MAX_WEIGHTS % ASTCENC_SIMD_WIDTH) == 0,
+              "BLOCK_MAX_WEIGHTS must be multiple of ASTCENC_SIMD_WIDTH");
 
-
-
+static_assert((WEIGHTS_MAX_BLOCK_MODES % ASTCENC_SIMD_WIDTH) == 0,
+              "WEIGHTS_MAX_BLOCK_MODES must be multiple of ASTCENC_SIMD_WIDTH");
 
 
 /* ============================================================================

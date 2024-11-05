@@ -238,8 +238,7 @@ void ZSTD_wildcopy(void* dst, const void* src, ptrdiff_t length, ZSTD_overlap_e 
          * at that point it is more likely to have a high trip count.
          */
         ZSTD_copy16(op, ip);
-        if (16 >= length) { return;
-}
+        if (16 >= length) return;
         op += 16;
         ip += 16;
         do {

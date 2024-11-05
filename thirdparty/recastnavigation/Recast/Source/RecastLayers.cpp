@@ -16,11 +16,11 @@
 // 3. This notice may not be removed or altered from any source distribution.
 //
 
-#include <cfloat>
-#include <cmath>
-#include <cstring>
-#include <cstdlib>
-#include <cstdio>
+#include <float.h>
+#include <math.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include "Recast.h"
 #include "RecastAlloc.h"
 #include "RecastAssert.h"
@@ -61,22 +61,19 @@ static bool contains(const unsigned char* a, const unsigned char an, const unsig
 	const int n = (int)an;
 	for (int i = 0; i < n; ++i)
 	{
-		if (a[i] == v) {
+		if (a[i] == v)
 			return true;
-}
 	}
 	return false;
 }
 
 static bool addUnique(unsigned char* a, unsigned char& an, int anMax, unsigned char v)
 {
-	if (contains(a, an, v)) {
+	if (contains(a, an, v))
 		return true;
-}
 
-	if ((int)an >= anMax) {
+	if ((int)an >= anMax)
 		return false;
-}
 
 	a[an] = v;
 	an++;
@@ -87,7 +84,7 @@ static bool addUnique(unsigned char* a, unsigned char& an, int anMax, unsigned c
 inline bool overlapRange(const unsigned short amin, const unsigned short amax,
 						 const unsigned short bmin, const unsigned short bmax)
 {
-	return !(amin > bmax || amax < bmin);
+	return (amin > bmax || amax < bmin) ? false : true;
 }
 
 
@@ -148,8 +145,7 @@ bool rcBuildHeightfieldLayers(rcContext* ctx, const rcCompactHeightfield& chf,
 			for (int i = (int)c.index, ni = (int)(c.index+c.count); i < ni; ++i)
 			{
 				const rcCompactSpan& s = chf.spans[i];
-				if (chf.areas[i] == RC_NULL_AREA) { continue;
-}
+				if (chf.areas[i] == RC_NULL_AREA) continue;
 
 				unsigned char sid = 0xff;
 
@@ -264,16 +260,14 @@ bool rcBuildHeightfieldLayers(rcContext* ctx, const rcCompactHeightfield& chf,
 			{
 				const rcCompactSpan& s = chf.spans[i];
 				const unsigned char ri = srcReg[i];
-				if (ri == 0xff) { continue;
-}
+				if (ri == 0xff) continue;
 
 				regs[ri].ymin = rcMin(regs[ri].ymin, s.y);
 				regs[ri].ymax = rcMax(regs[ri].ymax, s.y);
 
 				// Collect all region layers.
-				if (nlregs < RC_MAX_LAYERS) {
+				if (nlregs < RC_MAX_LAYERS)
 					lregs[nlregs++] = ri;
-}
 
 				// Update neighbours
 				for (int dir = 0; dir < 4; ++dir)
@@ -330,9 +324,8 @@ bool rcBuildHeightfieldLayers(rcContext* ctx, const rcCompactHeightfield& chf,
 	{
 		rcLayerRegion& root = regs[i];
 		// Skip already visited.
-		if (root.layerId != 0xff) {
+		if (root.layerId != 0xff)
 			continue;
-}
 
 		// Start search.
 		root.layerId = layerId;
@@ -346,9 +339,8 @@ bool rcBuildHeightfieldLayers(rcContext* ctx, const rcCompactHeightfield& chf,
 			// Pop front
 			rcLayerRegion& reg = regs[stack[0]];
 			nstack--;
-			for (int j = 0; j < nstack; ++j) {
+			for (int j = 0; j < nstack; ++j)
 				stack[j] = stack[j+1];
-}
 
 			const int nneis = (int)reg.nneis;
 			for (int j = 0; j < nneis; ++j)
@@ -356,19 +348,16 @@ bool rcBuildHeightfieldLayers(rcContext* ctx, const rcCompactHeightfield& chf,
 				const unsigned char nei = reg.neis[j];
 				rcLayerRegion& regn = regs[nei];
 				// Skip already visited.
-				if (regn.layerId != 0xff) {
+				if (regn.layerId != 0xff)
 					continue;
-}
 				// Skip if the neighbour is overlapping root region.
-				if (contains(root.layers, root.nlayers, nei)) {
+				if (contains(root.layers, root.nlayers, nei))
 					continue;
-}
 				// Skip if the height range would become too large.
 				const int ymin = rcMin(root.ymin, regn.ymin);
 				const int ymax = rcMax(root.ymax, regn.ymax);
-				if ((ymax - ymin) >= 255) {
+				if ((ymax - ymin) >= 255)
 					 continue;
-}
 
 				if (nstack < MAX_STACK)
 				{
@@ -401,8 +390,7 @@ bool rcBuildHeightfieldLayers(rcContext* ctx, const rcCompactHeightfield& chf,
 	for (int i = 0; i < nregs; ++i)
 	{
 		rcLayerRegion& ri = regs[i];
-		if (!ri.base) { continue;
-}
+		if (!ri.base) continue;
 
 		unsigned char newId = ri.layerId;
 
@@ -412,31 +400,26 @@ bool rcBuildHeightfieldLayers(rcContext* ctx, const rcCompactHeightfield& chf,
 
 			for (int j = 0; j < nregs; ++j)
 			{
-				if (i == j) { continue;
-}
+				if (i == j) continue;
 				rcLayerRegion& rj = regs[j];
-				if (!rj.base) { continue;
-}
+				if (!rj.base) continue;
 
 				// Skip if the regions are not close to each other.
-				if (!overlapRange(ri.ymin,ri.ymax+mergeHeight, rj.ymin,rj.ymax+mergeHeight)) {
+				if (!overlapRange(ri.ymin,ri.ymax+mergeHeight, rj.ymin,rj.ymax+mergeHeight))
 					continue;
-}
 				// Skip if the height range would become too large.
 				const int ymin = rcMin(ri.ymin, rj.ymin);
 				const int ymax = rcMax(ri.ymax, rj.ymax);
-				if ((ymax - ymin) >= 255) {
+				if ((ymax - ymin) >= 255)
 				  continue;
-}
 
 				// Make sure that there is no overlap when merging 'ri' and 'rj'.
 				bool overlap = false;
 				// Iterate over all regions which have the same layerId as 'rj'
 				for (int k = 0; k < nregs; ++k)
 				{
-					if (regs[k].layerId != rj.layerId) {
+					if (regs[k].layerId != rj.layerId)
 						continue;
-}
 					// Check if region 'k' is overlapping region 'ri'
 					// Index to 'regs' is the same as region id.
 					if (contains(ri.layers,ri.nlayers, (unsigned char)k))
@@ -446,9 +429,8 @@ bool rcBuildHeightfieldLayers(rcContext* ctx, const rcCompactHeightfield& chf,
 					}
 				}
 				// Cannot merge of regions overlap.
-				if (overlap) {
+				if (overlap)
 					continue;
-}
 
 				// Can merge i and j.
 				oldId = rj.layerId;
@@ -456,9 +438,8 @@ bool rcBuildHeightfieldLayers(rcContext* ctx, const rcCompactHeightfield& chf,
 			}
 
 			// Could not find anything to merge with, stop.
-			if (oldId == 0xff) {
+			if (oldId == 0xff)
 				break;
-}
 
 			// Merge
 			for (int j = 0; j < nregs; ++j)
@@ -497,20 +478,18 @@ bool rcBuildHeightfieldLayers(rcContext* ctx, const rcCompactHeightfield& chf,
 		remap[regs[i].layerId] = 1;
 	for (int i = 0; i < 256; ++i)
 	{
-		if (remap[i]) {
+		if (remap[i])
 			remap[i] = layerId++;
-		} else {
+		else
 			remap[i] = 0xff;
-}
 	}
 	// Remap ids.
 	for (int i = 0; i < nregs; ++i)
 		regs[i].layerId = remap[regs[i].layerId];
 
 	// No layers, return empty.
-	if (layerId == 0) {
+	if (layerId == 0)
 		return true;
-}
 
 	// Create layers.
 	rcAssert(lset.layers == 0);

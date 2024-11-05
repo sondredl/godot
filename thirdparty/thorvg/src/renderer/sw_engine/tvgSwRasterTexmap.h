@@ -29,7 +29,7 @@ struct AALine
 
 struct AASpans
 {
-   struct AALine *lines;
+   AALine *lines;
    int32_t yStart;
    int32_t yEnd;
 };
@@ -46,10 +46,10 @@ static bool _arrange(const SwImage* image, const SwBBox* region, int& yStart, in
     int32_t regionTop, regionBottom;
 
     if (region) {
-        region = region->min.y;
+        regionTop = region->min.y;
         regionBottom = region->max.y;
     } else {
-        region = image->rle->spans->y;
+        regionTop = image->rle->spans->y;
         regionBottom = image->rle->spans[image->rle->size - 1].y;
     }
 
@@ -273,8 +273,7 @@ static void _rasterBlendingPolygonImageSegment(SwSurface* surface, const SwImage
     uint32_t* buf;
     SwSpan* span = nullptr;         //used only when rle based.
 
-    if (!_arrange(image, region, yStart, yEnd)) { return;
-}
+    if (!_arrange(image, region, yStart, yEnd)) return;
 
     //Loop through all lines in the segment
     uint32_t spanIdx = 0;
@@ -331,11 +330,9 @@ static void _rasterBlendingPolygonImageSegment(SwSurface* surface, const SwImage
                 //Draw horizontal line
                 while (x++ < x2) {
                     uu = (int) u;
-                    if (uu >= sw) { continue;
-}
+                    if (uu >= sw) continue;
                     vv = (int) v;
-                    if (vv >= sh) { continue;
-}
+                    if (vv >= sh) continue;
 
                     ar = (int)(255 * (1 - modff(u, &iptr)));
                     ab = (int)(255 * (1 - modff(v, &iptr)));
@@ -370,18 +367,15 @@ static void _rasterBlendingPolygonImageSegment(SwSurface* surface, const SwImage
                     u += _dudx;
                     v += _dvdx;
                     //range over?
-                    if ((uint32_t)v >= image->h) { break;
-}
+                    if ((uint32_t)v >= image->h) break;
                 }
             } else {
                 //Draw horizontal line
                 while (x++ < x2) {
                     uu = (int) u;
-                    if (uu >= sw) { continue;
-}
+                    if (uu >= sw) continue;
                     vv = (int) v;
-                    if (vv >= sh) { continue;
-}
+                    if (vv >= sh) continue;
 
                     ar = (int)(255 * (1 - modff(u, &iptr)));
                     ab = (int)(255 * (1 - modff(v, &iptr)));
@@ -417,8 +411,7 @@ static void _rasterBlendingPolygonImageSegment(SwSurface* surface, const SwImage
                     u += _dudx;
                     v += _dvdx;
                     //range over?
-                    if ((uint32_t)v >= image->h) { break;
-}
+                    if ((uint32_t)v >= image->h) break;
                 }
             }
         }
@@ -429,8 +422,7 @@ static void _rasterBlendingPolygonImageSegment(SwSurface* surface, const SwImage
         _ua += _dudya;
         _va += _dvdya;
 
-        if (!region && spanIdx >= image->rle->size) { break;
-}
+        if (!region && spanIdx >= image->rle->size) break;
 
         ++y;
     }
@@ -463,8 +455,7 @@ static void _rasterPolygonImageSegment(SwSurface* surface, const SwImage* image,
     auto alpha = matting ? surface->alpha(surface->compositor->method) : nullptr;
     uint8_t* cmp = nullptr;
 
-    if (!_arrange(image, region, yStart, yEnd)) { return;
-}
+    if (!_arrange(image, region, yStart, yEnd)) return;
 
     //Loop through all lines in the segment
     uint32_t spanIdx = 0;
@@ -523,11 +514,9 @@ static void _rasterPolygonImageSegment(SwSurface* surface, const SwImage* image,
                 //Draw horizontal line
                 while (x++ < x2) {
                     uu = (int) u;
-                    if (uu >= sw) { continue;
-}
+                    if (uu >= sw) continue;
                     vv = (int) v;
-                    if (vv >= sh) { continue;
-}
+                    if (vv >= sh) continue;
 
                     ar = (int)(255.0f * (1.0f - modff(u, &iptr)));
                     ab = (int)(255.0f * (1.0f - modff(v, &iptr)));
@@ -569,8 +558,7 @@ static void _rasterPolygonImageSegment(SwSurface* surface, const SwImage* image,
                     u += _dudx;
                     v += _dvdx;
                     //range over?
-                    if ((uint32_t)v >= image->h) { break;
-}
+                    if ((uint32_t)v >= image->h) break;
                 }
             } else {
                 //Draw horizontal line
@@ -583,8 +571,7 @@ static void _rasterPolygonImageSegment(SwSurface* surface, const SwImage* image,
                     iru = uu + 1;
                     irv = vv + 1;
 
-                    if (vv >= sh) { continue;
-}
+                    if (vv >= sh) continue;
 
                     px = *(sbuf + (vv * sw) + uu);
 
@@ -621,8 +608,7 @@ static void _rasterPolygonImageSegment(SwSurface* surface, const SwImage* image,
                     u += _dudx;
                     v += _dvdx;
                     //range over?
-                    if ((uint32_t)v >= image->h) { break;
-}
+                    if ((uint32_t)v >= image->h) break;
                 }
             }
         }
@@ -633,8 +619,7 @@ static void _rasterPolygonImageSegment(SwSurface* surface, const SwImage* image,
         _ua += _dudya;
         _va += _dvdya;
 
-        if (!region && spanIdx >= image->rle->size) { break;
-}
+        if (!region && spanIdx >= image->rle->size) break;
 
         ++y;
     }
@@ -682,15 +667,13 @@ static void _rasterPolygonImage(SwSurface* surface, const SwImage* image, const 
     int yi[3] = {(int)y[0], (int)y[1], (int)y[2]};
 
     //Skip drawing if it's too thin to cover any pixels at all.
-    if ((yi[0] == yi[1] && yi[0] == yi[2]) || ((int) x[0] == (int) x[1] && (int) x[0] == (int) x[2])) { return;
-}
+    if ((yi[0] == yi[1] && yi[0] == yi[2]) || ((int) x[0] == (int) x[1] && (int) x[0] == (int) x[2])) return;
 
     //Calculate horizontal and vertical increments for UV axes (these calcs are certainly not optimal, although they're stable (handles any dy being 0)
     auto denom = ((x[2] - x[0]) * (y[1] - y[0]) - (x[1] - x[0]) * (y[2] - y[0]));
 
     //Skip poly if it's an infinitely thin line
-    if (mathZero(denom)) { return;
-}
+    if (mathZero(denom)) return;
 
     denom = 1 / denom;   //Reciprocal for speeding up
     dudx = ((u[2] - u[0]) * (y[1] - y[0]) - (u[1] - u[0]) * (y[2] - y[0])) * denom;
@@ -699,20 +682,15 @@ static void _rasterPolygonImage(SwSurface* surface, const SwImage* image, const 
     auto dvdy = ((v[1] - v[0]) * (x[2] - x[0]) - (v[2] - v[0]) * (x[1] - x[0])) * denom;
 
     //Calculate X-slopes along the edges
-    if (y[1] > y[0]) { dxdy[0] = (x[1] - x[0]) / (y[1] - y[0]);
-}
-    if (y[2] > y[0]) { dxdy[1] = (x[2] - x[0]) / (y[2] - y[0]);
-}
-    if (y[2] > y[1]) { dxdy[2] = (x[2] - x[1]) / (y[2] - y[1]);
-}
+    if (y[1] > y[0]) dxdy[0] = (x[1] - x[0]) / (y[1] - y[0]);
+    if (y[2] > y[0]) dxdy[1] = (x[2] - x[0]) / (y[2] - y[0]);
+    if (y[2] > y[1]) dxdy[2] = (x[2] - x[1]) / (y[2] - y[1]);
 
     //Determine which side of the polygon the longer edge is on
     auto side = (dxdy[1] > dxdy[0]) ? true : false;
 
-    if (mathEqual(y[0], y[1])) { side = x[0] > x[1];
-}
-    if (mathEqual(y[1], y[2])) { side = x[2] > x[1];
-}
+    if (mathEqual(y[0], y[1])) side = x[0] > x[1];
+    if (mathEqual(y[1], y[2])) side = x[2] > x[1];
 
     auto regionTop = region ? region->min.y : image->rle->spans->y;  //Normal Image or Rle Image?
     auto compositing = _compositing(surface);   //Composition required
@@ -806,8 +784,7 @@ static void _rasterPolygonImage(SwSurface* surface, const SwImage* image, const 
         //Draw lower segment if possibly visible
         if (yi[1] < yi[2]) {
             off_y = y[1] < regionTop ? (regionTop - y[1]) : 0;
-            if (!upper) { xb += (off_y *dxdyb);
-}
+            if (!upper) xb += (off_y *dxdyb);
 
             // Set slopes along left edge and perform subpixel pre-stepping
             dxdya = dxdy[2];

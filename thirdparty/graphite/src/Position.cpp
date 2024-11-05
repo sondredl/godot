@@ -8,14 +8,10 @@ using namespace graphite2;
 
 bool Rect::hitTest(Rect &other)
 {
-    if (bl.x > other.tr.x) { return false;
-}
-    if (tr.x < other.bl.x) { return false;
-}
-    if (bl.y > other.tr.y) { return false;
-}
-    if (tr.y < other.bl.y) { return false;
-}
+    if (bl.x > other.tr.x) return false;
+    if (tr.x < other.bl.x) return false;
+    if (bl.y > other.tr.y) return false;
+    if (tr.y < other.bl.y) return false;
     return true;
 }
 

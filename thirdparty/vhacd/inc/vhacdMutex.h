@@ -86,7 +86,7 @@
 #define VHACD_VERIFY(x) assert((x))
 #endif
 
-namespace VHACD; {
+namespace VHACD {
 class Mutex {
 public:
     Mutex(void)

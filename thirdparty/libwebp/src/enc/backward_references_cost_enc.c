@@ -64,8 +64,7 @@ static int CostModelBuild(CostModel* const m, int xsize, int cache_bits,
   int ok = 0;
   VP8LRefsCursor c = VP8LRefsCursorInit(refs);
   VP8LHistogram* const histo = VP8LAllocateHistogram(cache_bits);
-  if (histo == NULL) { goto Error;
-}
+  if (histo == NULL) goto Error;
 
   // The following code is similar to VP8LHistogramCreate but converts the
   // distance to plane code.
@@ -233,8 +232,7 @@ static void DeleteIntervalList(CostManager* const manager,
 }
 
 static void CostManagerClear(CostManager* const manager) {
-  if (manager == NULL) { return;
-}
+  if (manager == NULL) return;
 
   WebPSafeFree(manager->costs_);
   WebPSafeFree(manager->cache_intervals_);
@@ -319,8 +317,7 @@ static int CostManagerInit(CostManager* const manager,
     return 0;
   }
   // Set the initial costs_ high for every pixel as we will keep the minimum.
-  for (i = 0; i < pix_count; ++i) { manager->costs_[i] = FLT_MAX;
-}
+  for (i = 0; i < pix_count; ++i) manager->costs_[i] = FLT_MAX;
 
   return 1;
 }
@@ -357,15 +354,13 @@ static WEBP_INLINE void ConnectIntervals(CostManager* const manager,
     manager->head_ = next;
   }
 
-  if (next != NULL) { next->previous_ = prev;
-}
+  if (next != NULL) next->previous_ = prev;
 }
 
 // Pop an interval in the manager.
 static WEBP_INLINE void PopInterval(CostManager* const manager,
                                     CostInterval* const interval) {
-  if (interval == NULL) { return;
-}
+  if (interval == NULL) return;
 
   ConnectIntervals(manager, interval->previous_, interval->next_);
   if (CostIntervalIsInFreeList(manager, interval)) {
@@ -408,8 +403,7 @@ static WEBP_INLINE void PositionOrphanInterval(CostManager* const manager,
                                                CostInterval* previous) {
   assert(current != NULL);
 
-  if (previous == NULL) { previous = manager->head_;
-}
+  if (previous == NULL) previous = manager->head_;
   while (previous != NULL && current->start_ < previous->start_) {
     previous = previous->previous_;
   }
@@ -434,8 +428,7 @@ static WEBP_INLINE void InsertInterval(CostManager* const manager,
                                        int end) {
   CostInterval* interval_new;
 
-  if (start >= end) { return;
-}
+  if (start >= end) return;
   if (manager->count_ >= COST_CACHE_INTERVAL_SIZE_MAX) {
     // Serialize the interval if we cannot store it.
     UpdateCostPerInterval(manager, start, end, position, cost);
@@ -595,14 +588,12 @@ static int BackwardReferencesHashChainDistanceOnly(
   int first_offset_is_constant = -1;  // initialized with 'impossible' value
   int reach = 0;
 
-  if (cost_model == NULL || cost_manager == NULL) { goto Error;
-}
+  if (cost_model == NULL || cost_manager == NULL) goto Error;
 
   cost_model->literal_ = (float*)(cost_model + 1);
   if (use_color_cache) {
     cc_init = VP8LColorCacheInit(&hashers, cache_bits);
-    if (!cc_init) { goto Error;
-}
+    if (!cc_init) goto Error;
   }
 
   if (!CostModelBuild(cost_model, xsize, cache_bits, refs)) {
@@ -729,8 +720,7 @@ static int BackwardReferencesHashChainFollowChosenPath(
 
   if (use_color_cache) {
     cc_init = VP8LColorCacheInit(&hashers, cache_bits);
-    if (!cc_init) { goto Error;
-}
+    if (!cc_init) goto Error;
   }
 
   VP8LClearBackwardRefs(refs);
@@ -786,8 +776,7 @@ int VP8LBackwardReferencesTraceBackwards(int xsize, int ysize,
   uint16_t* dist_array =
       (uint16_t*)WebPSafeMalloc(dist_array_size, sizeof(*dist_array));
 
-  if (dist_array == NULL) { goto Error;
-}
+  if (dist_array == NULL) goto Error;
 
   if (!BackwardReferencesHashChainDistanceOnly(
           xsize, ysize, argb, cache_bits, hash_chain, refs_src, dist_array)) {

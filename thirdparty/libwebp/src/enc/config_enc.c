@@ -26,8 +26,7 @@ int WebPConfigInitInternal(WebPConfig* config,
   if (WEBP_ABI_IS_INCOMPATIBLE(version, WEBP_ENCODER_ABI_VERSION)) {
     return 0;   // caller/system version mismatch!
   }
-  if (config == NULL) { return 0;
-}
+  if (config == NULL) return 0;
 
   config->quality = quality;
   config->target_size = 0;
@@ -97,66 +96,39 @@ int WebPConfigInitInternal(WebPConfig* config,
 }
 
 int WebPValidateConfig(const WebPConfig* config) {
-  if (config == NULL) { return 0;
-}
-  if (config->quality < 0 || config->quality > 100) { return 0;
-}
-  if (config->target_size < 0) { return 0;
-}
-  if (config->target_PSNR < 0) { return 0;
-}
-  if (config->method < 0 || config->method > 6) { return 0;
-}
-  if (config->segments < 1 || config->segments > 4) { return 0;
-}
-  if (config->sns_strength < 0 || config->sns_strength > 100) { return 0;
-}
-  if (config->filter_strength < 0 || config->filter_strength > 100) { return 0;
-}
-  if (config->filter_sharpness < 0 || config->filter_sharpness > 7) { return 0;
-}
-  if (config->filter_type < 0 || config->filter_type > 1) { return 0;
-}
-  if (config->autofilter < 0 || config->autofilter > 1) { return 0;
-}
-  if (config->pass < 1 || config->pass > 10) { return 0;
-}
+  if (config == NULL) return 0;
+  if (config->quality < 0 || config->quality > 100) return 0;
+  if (config->target_size < 0) return 0;
+  if (config->target_PSNR < 0) return 0;
+  if (config->method < 0 || config->method > 6) return 0;
+  if (config->segments < 1 || config->segments > 4) return 0;
+  if (config->sns_strength < 0 || config->sns_strength > 100) return 0;
+  if (config->filter_strength < 0 || config->filter_strength > 100) return 0;
+  if (config->filter_sharpness < 0 || config->filter_sharpness > 7) return 0;
+  if (config->filter_type < 0 || config->filter_type > 1) return 0;
+  if (config->autofilter < 0 || config->autofilter > 1) return 0;
+  if (config->pass < 1 || config->pass > 10) return 0;
   if (config->qmin < 0 || config->qmax > 100 || config->qmin > config->qmax) {
     return 0;
   }
-  if (config->show_compressed < 0 || config->show_compressed > 1) { return 0;
-}
-  if (config->preprocessing < 0 || config->preprocessing > 7) { return 0;
-}
-  if (config->partitions < 0 || config->partitions > 3) { return 0;
-}
-  if (config->partition_limit < 0 || config->partition_limit > 100) { return 0;
-}
-  if (config->alpha_compression < 0) { return 0;
-}
-  if (config->alpha_filtering < 0) { return 0;
-}
-  if (config->alpha_quality < 0 || config->alpha_quality > 100) { return 0;
-}
-  if (config->lossless < 0 || config->lossless > 1) { return 0;
-}
-  if (config->near_lossless < 0 || config->near_lossless > 100) { return 0;
-}
-  if (config->image_hint >= WEBP_HINT_LAST) { return 0;
-}
-  if (config->emulate_jpeg_size < 0 || config->emulate_jpeg_size > 1) { return 0;
-}
-  if (config->thread_level < 0 || config->thread_level > 1) { return 0;
-}
-  if (config->low_memory < 0 || config->low_memory > 1) { return 0;
-}
-  if (config->exact < 0 || config->exact > 1) { return 0;
-}
+  if (config->show_compressed < 0 || config->show_compressed > 1) return 0;
+  if (config->preprocessing < 0 || config->preprocessing > 7) return 0;
+  if (config->partitions < 0 || config->partitions > 3) return 0;
+  if (config->partition_limit < 0 || config->partition_limit > 100) return 0;
+  if (config->alpha_compression < 0) return 0;
+  if (config->alpha_filtering < 0) return 0;
+  if (config->alpha_quality < 0 || config->alpha_quality > 100) return 0;
+  if (config->lossless < 0 || config->lossless > 1) return 0;
+  if (config->near_lossless < 0 || config->near_lossless > 100) return 0;
+  if (config->image_hint >= WEBP_HINT_LAST) return 0;
+  if (config->emulate_jpeg_size < 0 || config->emulate_jpeg_size > 1) return 0;
+  if (config->thread_level < 0 || config->thread_level > 1) return 0;
+  if (config->low_memory < 0 || config->low_memory > 1) return 0;
+  if (config->exact < 0 || config->exact > 1) return 0;
   if (config->use_delta_palette < 0 || config->use_delta_palette > 1) {
     return 0;
   }
-  if (config->use_sharp_yuv < 0 || config->use_sharp_yuv > 1) { return 0;
-}
+  if (config->use_sharp_yuv < 0 || config->use_sharp_yuv > 1) return 0;
 
   return 1;
 }
@@ -175,8 +147,7 @@ static const struct {
 };
 
 int WebPConfigLosslessPreset(WebPConfig* config, int level) {
-  if (config == NULL || level < 0 || level > MAX_LEVEL) { return 0;
-}
+  if (config == NULL || level < 0 || level > MAX_LEVEL) return 0;
   config->lossless = 1;
   config->method = kLosslessPresets[level].method_;
   config->quality = kLosslessPresets[level].quality_;

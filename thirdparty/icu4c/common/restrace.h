@@ -111,7 +111,7 @@ U_NAMESPACE_BEGIN
 /**
  * Default trivial implementation when --enable-tracing is not used.
  */
-class; U_COMMON_API ResourceTracer {
+class U_COMMON_API ResourceTracer {
 public:
     ResourceTracer() {}
 
@@ -135,7 +135,7 @@ public:
 /**
  * Default trivial implementation when --enable-tracing is not used.
  */
-class FileTracer; {
+class FileTracer {
 public:
     static void traceOpen(const char*, const char*, const char*) {}
 };

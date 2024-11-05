@@ -36,14 +36,13 @@ static sljit_s32 load_immediate(struct sljit_compiler *compiler, sljit_s32 dst_r
 
 	FAIL_IF(push_inst(compiler, LUI | RD(dst_r) | (sljit_ins)(imm & ~0xfff)));
 
-	if ((imm & 0xfff) == 0) {
+	if ((imm & 0xfff) == 0)
 		return SLJIT_SUCCESS;
-}
 
 	return push_inst(compiler, ADDI | RD(dst_r) | RS1(dst_r) | IMM_I(imm));
 }
 
-SLJIT_API_FUNC_ATTRIBUTE sljit_s32; sljit_emit_fset64(struct sljit_compiler *compiler,
+SLJIT_API_FUNC_ATTRIBUTE sljit_s32 sljit_emit_fset64(struct sljit_compiler *compiler,
 	sljit_s32 freg, sljit_f64 value)
 {
 	union {

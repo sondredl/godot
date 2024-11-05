@@ -158,7 +158,7 @@ private:
     UVector _ids;
     int32_t _pos;
 
-
+private:
     ServiceEnumeration(const ICULocaleService* service, UErrorCode &status)
         : _service(service)
         , _timestamp(service->getTimestamp())
@@ -200,9 +200,9 @@ public:
         return nullptr;
     }
 
-    ~ServiceEnumeration() override;
+    virtual ~ServiceEnumeration();
 
-    StringEnumeration *clone() const override {
+    virtual StringEnumeration *clone() const override {
         UErrorCode status = U_ZERO_ERROR;
         ServiceEnumeration *cl = new ServiceEnumeration(*this, status);
         if(U_FAILURE(status)) {
@@ -222,18 +222,18 @@ public:
         return false;
     }
 
-    int32_t count(UErrorCode& status) const override {
+    virtual int32_t count(UErrorCode& status) const override {
         return upToDate(status) ? _ids.size() : 0;
     }
 
-    const UnicodeString* snext(UErrorCode& status) override {
+    virtual const UnicodeString* snext(UErrorCode& status) override {
         if (upToDate(status) && (_pos < _ids.size())) {
             return static_cast<const UnicodeString*>(_ids[_pos++]);
         }
         return nullptr;
     }
 
-    void reset(UErrorCode& status) override {
+    virtual void reset(UErrorCode& status) override {
         if (status == U_ENUM_OUT_OF_SYNC_ERROR) {
             status = U_ZERO_ERROR;
         }
@@ -244,9 +244,9 @@ public:
         }
     }
 
-
+public:
     static UClassID U_EXPORT2 getStaticClassID();
-    UClassID getDynamicClassID() const override;
+    virtual UClassID getDynamicClassID() const override;
 };
 
 ServiceEnumeration::~ServiceEnumeration() {}

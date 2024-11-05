@@ -27,7 +27,7 @@ subject to the following restrictions:
 #endif //BT_USE_DOUBLE_PRECISION
 
 // -- GODOT start --
-namespace VHACD; {
+namespace VHACD {
 // -- GODOT end --
 
 /**@brief btVector3 can be used to represent 3D points and vectors.

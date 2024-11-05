@@ -883,9 +883,8 @@ static void yuv422_2_rgb8888(uint8_t  *dst_ptr,
 	v_ptr   += uv_span-(width>>1);
 	height = (height<<16)>>16;
 	height -= 1;
-	if (height == 0) {
+	if (height == 0)
 	    break;
-}
 	height -= width<<16;
 	height += 1<<16;
 	while (height < 0)
@@ -1057,9 +1056,8 @@ static void yuv444_2_rgb8888(uint8_t  *dst_ptr,
 	v_ptr   += uv_span-width;
 	height = (height<<16)>>16;
 	height -= 1;
-	if (height == 0) {
+	if (height == 0)
 	    break;
-}
 	height -= width<<16;
 	height += 1<<16;
 	while (height < 0)

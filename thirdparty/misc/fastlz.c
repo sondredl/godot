@@ -89,17 +89,14 @@ int fastlz1_compress(const void* input, int length, void* output) {
       /* create literal copy only */
       *op++ = length - 1;
       ip_bound++;
-      while (ip <= ip_bound) { *op++ = *ip++;
-}
+      while (ip <= ip_bound) *op++ = *ip++;
       return length + 1;
-    } else {
+    } else
       return 0;
-}
   }
 
   /* initializes hash table */
-  for (hval = 0; hval < HASH_SIZE; ++hval) { htab[hval] = ip;
-}
+  for (hval = 0; hval < HASH_SIZE; ++hval) htab[hval] = ip;
 
   /* we start with literal copy */
   copy = 2;
@@ -130,9 +127,8 @@ int fastlz1_compress(const void* input, int length, void* output) {
 
     /* is this a match? check the first 3 bytes */
     if (distance == 0 || (distance >= MAX_L1_DISTANCE) || *ref++ != *ip++ ||
-        *ref++ != *ip++ || *ref++ != *ip++) {
+        *ref++ != *ip++ || *ref++ != *ip++)
       goto literal;
-}
 
     /* last matched byte */
     ip = anchor + len;
@@ -143,47 +139,33 @@ int fastlz1_compress(const void* input, int length, void* output) {
     if (!distance) {
       /* zero distance means a run */
       uint8_t x = ip[-1];
-      while (ip < ip_bound) {
-        if (*ref++ != x) {
+      while (ip < ip_bound)
+        if (*ref++ != x)
           break;
-        } else {
+        else
           ip++;
-}
-}
-    } else {
+    } else
       for (;;) {
         /* safe because the outer check against ip limit */
-        if (*ref++ != *ip++) { break;
-}
-        if (*ref++ != *ip++) { break;
-}
-        if (*ref++ != *ip++) { break;
-}
-        if (*ref++ != *ip++) { break;
-}
-        if (*ref++ != *ip++) { break;
-}
-        if (*ref++ != *ip++) { break;
-}
-        if (*ref++ != *ip++) { break;
-}
-        if (*ref++ != *ip++) { break;
-}
-        while (ip < ip_bound) {
-          if (*ref++ != *ip++) { break;
-}
-}
+        if (*ref++ != *ip++) break;
+        if (*ref++ != *ip++) break;
+        if (*ref++ != *ip++) break;
+        if (*ref++ != *ip++) break;
+        if (*ref++ != *ip++) break;
+        if (*ref++ != *ip++) break;
+        if (*ref++ != *ip++) break;
+        if (*ref++ != *ip++) break;
+        while (ip < ip_bound)
+          if (*ref++ != *ip++) break;
         break;
       }
-}
 
     /* if we have copied something, adjust the copy count */
-    if (copy) { /* copy is biased, '0' means 1 byte copy */
+    if (copy) /* copy is biased, '0' means 1 byte copy */
       *(op - copy - 1) = copy - 1;
-    } else {
+    else
       /* back, to overwrite the copy count */
       op--;
-}
 
     /* reset literal counter */
     copy = 0;
@@ -193,14 +175,13 @@ int fastlz1_compress(const void* input, int length, void* output) {
     len = ip - anchor;
 
     /* encode the match */
-    if (FASTLZ_UNLIKELY(len > MAX_LEN - 2)) {
+    if (FASTLZ_UNLIKELY(len > MAX_LEN - 2))
       while (len > MAX_LEN - 2) {
         *op++ = (7 << 5) + (distance >> 8);
         *op++ = MAX_LEN - 2 - 7 - 2;
         *op++ = (distance & 255);
         len -= MAX_LEN - 2;
       }
-}
 
     if (len < 7) {
       *op++ = (len << 5) + (distance >> 8);
@@ -244,11 +225,10 @@ int fastlz1_compress(const void* input, int length, void* output) {
   }
 
   /* if we have copied something, adjust the copy length */
-  if (copy) {
+  if (copy)
     *(op - copy - 1) = copy - 1;
-  } else {
+  else
     op--;
-}
 
   return op - (uint8_t*)output;
 }
@@ -330,8 +310,7 @@ int fastlz1_decompress(const void* input, int length, void* output,
       op += ctrl;
     }
 
-    if (FASTLZ_UNLIKELY(ip > ip_bound)) { break;
-}
+    if (FASTLZ_UNLIKELY(ip > ip_bound)) break;
     ctrl = *ip++;
   }
 
@@ -355,17 +334,14 @@ int fastlz2_compress(const void* input, int length, void* output) {
       /* create literal copy only */
       *op++ = length - 1;
       ip_bound++;
-      while (ip <= ip_bound) { *op++ = *ip++;
-}
+      while (ip <= ip_bound) *op++ = *ip++;
       return length + 1;
-    } else {
+    } else
       return 0;
-}
   }
 
   /* initializes hash table */
-  for (hval = 0; hval < HASH_SIZE; ++hval) { htab[hval] = ip;
-}
+  for (hval = 0; hval < HASH_SIZE; ++hval) htab[hval] = ip;
 
   /* we start with literal copy */
   copy = 2;
@@ -404,14 +380,12 @@ int fastlz2_compress(const void* input, int length, void* output) {
 
     /* is this a match? check the first 3 bytes */
     if (distance == 0 || (distance >= MAX_FARDISTANCE) || *ref++ != *ip++ ||
-        *ref++ != *ip++ || *ref++ != *ip++) {
+        *ref++ != *ip++ || *ref++ != *ip++)
       goto literal;
-}
 
     /* far, needs at least 5-byte match */
     if (distance >= MAX_L2_DISTANCE) {
-      if (*ip++ != *ref++ || *ip++ != *ref++) { goto literal;
-}
+      if (*ip++ != *ref++ || *ip++ != *ref++) goto literal;
       len += 2;
     }
 
@@ -426,47 +400,33 @@ int fastlz2_compress(const void* input, int length, void* output) {
     if (!distance) {
       /* zero distance means a run */
       uint8_t x = ip[-1];
-      while (ip < ip_bound) {
-        if (*ref++ != x) {
+      while (ip < ip_bound)
+        if (*ref++ != x)
           break;
-        } else {
+        else
           ip++;
-}
-}
-    } else {
+    } else
       for (;;) {
         /* safe because the outer check against ip limit */
-        if (*ref++ != *ip++) { break;
-}
-        if (*ref++ != *ip++) { break;
-}
-        if (*ref++ != *ip++) { break;
-}
-        if (*ref++ != *ip++) { break;
-}
-        if (*ref++ != *ip++) { break;
-}
-        if (*ref++ != *ip++) { break;
-}
-        if (*ref++ != *ip++) { break;
-}
-        if (*ref++ != *ip++) { break;
-}
-        while (ip < ip_bound) {
-          if (*ref++ != *ip++) { break;
-}
-}
+        if (*ref++ != *ip++) break;
+        if (*ref++ != *ip++) break;
+        if (*ref++ != *ip++) break;
+        if (*ref++ != *ip++) break;
+        if (*ref++ != *ip++) break;
+        if (*ref++ != *ip++) break;
+        if (*ref++ != *ip++) break;
+        if (*ref++ != *ip++) break;
+        while (ip < ip_bound)
+          if (*ref++ != *ip++) break;
         break;
       }
-}
 
     /* if we have copied something, adjust the copy count */
-    if (copy) { /* copy is biased, '0' means 1 byte copy */
+    if (copy) /* copy is biased, '0' means 1 byte copy */
       *(op - copy - 1) = copy - 1;
-    } else {
+    else
       /* back, to overwrite the copy count */
       op--;
-}
 
     /* reset literal counter */
     copy = 0;
@@ -482,8 +442,7 @@ int fastlz2_compress(const void* input, int length, void* output) {
         *op++ = (distance & 255);
       } else {
         *op++ = (7 << 5) + (distance >> 8);
-        for (len -= 7; len >= 255; len -= 255) { *op++ = 255;
-}
+        for (len -= 7; len >= 255; len -= 255) *op++ = 255;
         *op++ = len;
         *op++ = (distance & 255);
       }
@@ -498,8 +457,7 @@ int fastlz2_compress(const void* input, int length, void* output) {
       } else {
         distance -= MAX_L2_DISTANCE;
         *op++ = (7 << 5) + 31;
-        for (len -= 7; len >= 255; len -= 255) { *op++ = 255;
-}
+        for (len -= 7; len >= 255; len -= 255) *op++ = 255;
         *op++ = len;
         *op++ = 255;
         *op++ = distance >> 8;
@@ -540,11 +498,10 @@ int fastlz2_compress(const void* input, int length, void* output) {
   }
 
   /* if we have copied something, adjust the copy length */
-  if (copy) {
+  if (copy)
     *(op - copy - 1) = copy - 1;
-  } else {
+  else
     op--;
-}
 
   /* marker for fastlz2 */
   *(uint8_t*)output |= (1 << 5);
@@ -568,25 +525,23 @@ int fastlz2_decompress(const void* input, int length, void* output,
       const uint8_t* ref = op - ofs - 1;
 
       uint8_t code;
-      if (len == 7 - 1) { do {
+      if (len == 7 - 1) do {
           FASTLZ_BOUND_CHECK(ip <= ip_bound);
           code = *ip++;
           len += code;
         } while (code == 255);
-}
       code = *ip++;
       ref -= code;
       len += 3;
 
       /* match from 16-bit distance */
-      if (FASTLZ_UNLIKELY(code == 255)) {
+      if (FASTLZ_UNLIKELY(code == 255))
         if (FASTLZ_LIKELY(ofs == (31 << 8))) {
           FASTLZ_BOUND_CHECK(ip < ip_bound);
           ofs = (*ip++) << 8;
           ofs += *ip++;
           ref = op - ofs - MAX_L2_DISTANCE - 1;
         }
-}
 
       FASTLZ_BOUND_CHECK(op + len <= op_limit);
       FASTLZ_BOUND_CHECK(ref >= (uint8_t*)output);
@@ -601,8 +556,7 @@ int fastlz2_decompress(const void* input, int length, void* output,
       op += ctrl;
     }
 
-    if (FASTLZ_UNLIKELY(ip >= ip_limit)) { break;
-}
+    if (FASTLZ_UNLIKELY(ip >= ip_limit)) break;
     ctrl = *ip++;
   }
 
@@ -611,8 +565,7 @@ int fastlz2_decompress(const void* input, int length, void* output,
 
 int fastlz_compress(const void* input, int length, void* output) {
   /* for short block, choose fastlz1 */
-  if (length < 65536) { return fastlz1_compress(input, length, output);
-}
+  if (length < 65536) return fastlz1_compress(input, length, output);
 
   /* else... */
   return fastlz2_compress(input, length, output);
@@ -622,10 +575,8 @@ int fastlz_decompress(const void* input, int length, void* output, int maxout) {
   /* magic identifier for compression level */
   int level = ((*(const uint8_t*)input) >> 5) + 1;
 
-  if (level == 1) { return fastlz1_decompress(input, length, output, maxout);
-}
-  if (level == 2) { return fastlz2_decompress(input, length, output, maxout);
-}
+  if (level == 1) return fastlz1_decompress(input, length, output, maxout);
+  if (level == 2) return fastlz2_decompress(input, length, output, maxout);
 
   /* unknown level, trigger error */
   return 0;
@@ -633,10 +584,8 @@ int fastlz_decompress(const void* input, int length, void* output, int maxout) {
 
 int fastlz_compress_level(int level, const void* input, int length,
                           void* output) {
-  if (level == 1) { return fastlz1_compress(input, length, output);
-}
-  if (level == 2) { return fastlz2_compress(input, length, output);
-}
+  if (level == 1) return fastlz1_compress(input, length, output);
+  if (level == 2) return fastlz2_compress(input, length, output);
 
   return 0;
 }

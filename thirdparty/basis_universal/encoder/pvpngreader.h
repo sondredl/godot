@@ -2,7 +2,7 @@
 #pragma once
 #include <stdint.h>
 
-namespace pv_png;
+namespace pv_png
 {
 	// PNG color types
 	enum

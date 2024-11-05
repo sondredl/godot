@@ -30,9 +30,8 @@ bool read_sequence(u8 const * &src, u8 const * const end, u8 const * &literal,
     src += literal_len;
 
     // Normal exit for end of stream, wrap arround check and parital match check.
-    if (src > end - sizeof(u16) || src < literal) {
+    if (src > end - sizeof(u16) || src < literal)
         return false;
-}
 
     match_dist  = *src++;
     match_dist |= *src++ << 8;
@@ -46,9 +45,8 @@ bool read_sequence(u8 const * &src, u8 const * const end, u8 const * &literal,
 
 int lz4::decompress(void const *in, size_t in_size, void *out, size_t out_size)
 {
-    if (out_size <= in_size || in_size < MINSRCSIZE) {
+    if (out_size <= in_size || in_size < MINSRCSIZE)
         return -1;
-}
 
     u8 const *       src     = static_cast<u8 const *>(in),
              *       literal = 0,
@@ -58,9 +56,8 @@ int lz4::decompress(void const *in, size_t in_size, void *out, size_t out_size)
        * const dst_end = dst + out_size;
 
     // Check the in and out size hasn't wrapped around.
-    if (src >= src_end || dst >= dst_end) {
+    if (src >= src_end || dst >= dst_end)
         return -1;
-}
 
     u32 literal_len = 0,
         match_len = 0,
@@ -75,9 +72,8 @@ int lz4::decompress(void const *in, size_t in_size, void *out, size_t out_size)
             // match plus the coda (1 + 2 + 5) must be 8 bytes or more allowing
             // us to remain within the src buffer for an overrun_copy on
             // machines upto 64 bits.
-            if (align(literal_len) > out_size) {
+            if (align(literal_len) > out_size)
                 return -1;
-}
             dst = overrun_copy(dst, literal, literal_len);
             out_size -= literal_len;
         }
@@ -88,21 +84,18 @@ int lz4::decompress(void const *in, size_t in_size, void *out, size_t out_size)
         if (pcpy < static_cast<u8*>(out)
               || match_len > unsigned(out_size - LASTLITERALS)
               // Wrap around checks:
-              || out_size < LASTLITERALS || pcpy >= dst) {
+              || out_size < LASTLITERALS || pcpy >= dst)
             return -1;
-}
         if (dst > pcpy+sizeof(unsigned long)
-            && align(match_len) <= out_size) {
+            && align(match_len) <= out_size)
             dst = overrun_copy(dst, pcpy, match_len);
-        } else {
+        else
             dst = safe_copy(dst, pcpy, match_len);
-}
         out_size -= match_len;
     }
 
-    if (literal > src_end - literal_len || literal_len > out_size) {
+    if (literal > src_end - literal_len || literal_len > out_size)
         return -1;
-}
     dst = fast_copy(dst, literal, literal_len);
 
     return int(dst - (u8*)out);

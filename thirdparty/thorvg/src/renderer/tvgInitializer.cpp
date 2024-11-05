@@ -60,13 +60,11 @@ static bool _buildVersionInfo(uint32_t* major, uint32_t* minor, uint32_t* micro)
     auto p = VER;
     const char* x;
 
-    if (!(x = strchr(p, '.'))) { return false;
-}
+    if (!(x = strchr(p, '.'))) return false;
     uint32_t majorVal = atoi(p);
     p = x + 1;
 
-    if (!(x = strchr(p, '.'))) { return false;
-}
+    if (!(x = strchr(p, '.'))) return false;
     uint32_t minorVal = atoi(p);
     p = x + 1;
 
@@ -76,12 +74,9 @@ static bool _buildVersionInfo(uint32_t* major, uint32_t* minor, uint32_t* micro)
     snprintf(sum, sizeof(sum), "%d%02d%02d", majorVal, minorVal, microVal);
     _version = atoi(sum);
 
-    if (major) { *major = majorVal;
-}
-    if (minor) { *minor = minorVal;
-}
-    if (micro) { *micro = microVal;
-}
+    if (major) *major = majorVal;
+    if (minor) *minor = minorVal;
+    if (micro) *micro = microVal;
 
     return true;
 }

@@ -14,8 +14,7 @@ extern "C" {
 
 gr_uint16 gr_fref_feature_value(const gr_feature_ref* pfeatureref, const gr_feature_val* feats)    //returns 0 if either pointer is NULL
 {
-    if (!pfeatureref || !feats) { return 0;
-}
+    if (!pfeatureref || !feats) return 0;
 
     return pfeatureref->getFeatureVal(*feats);
 }
@@ -23,8 +22,7 @@ gr_uint16 gr_fref_feature_value(const gr_feature_ref* pfeatureref, const gr_feat
 
 int gr_fref_set_feature_value(const gr_feature_ref* pfeatureref, gr_uint16 val, gr_feature_val* pDest)
 {
-    if (!pfeatureref || !pDest) { return 0;
-}
+    if (!pfeatureref || !pDest) return 0;
 
     return pfeatureref->applyValToFeature(val, *pDest);
 }
@@ -32,9 +30,8 @@ int gr_fref_set_feature_value(const gr_feature_ref* pfeatureref, gr_uint16 val, 
 
 gr_uint32 gr_fref_id(const gr_feature_ref* pfeatureref)    //returns 0 if pointer is NULL
 {
-  if (!pfeatureref) {
+  if (!pfeatureref)
     return 0;
-}
 
   return pfeatureref->getId();
 }
@@ -42,9 +39,8 @@ gr_uint32 gr_fref_id(const gr_feature_ref* pfeatureref)    //returns 0 if pointe
 
 gr_uint16 gr_fref_n_values(const gr_feature_ref* pfeatureref)
 {
-    if(!pfeatureref) {
+    if(!pfeatureref)
         return 0;
-}
     return pfeatureref->getNumSettings();
 }
 

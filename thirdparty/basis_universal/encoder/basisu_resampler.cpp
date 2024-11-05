@@ -43,15 +43,13 @@ namespace basisu
 			{
 				n = -j;
 
-				if (n >= src_x) {
+				if (n >= src_x)
 					n = src_x - 1;
-}
 			}
-			else if (boundary_op == BOUNDARY_WRAP) {
+			else if (boundary_op == BOUNDARY_WRAP)
 				n = posmod(j, src_x);
-			} else {
+			else
 				n = 0;
-}
 		}
 		else if (j >= src_x)
 		{
@@ -59,19 +57,16 @@ namespace basisu
 			{
 				n = (src_x - j) + (src_x - 1);
 
-				if (n < 0) {
+				if (n < 0)
 					n = 0;
-}
 			}
-			else if (boundary_op == BOUNDARY_WRAP) {
+			else if (boundary_op == BOUNDARY_WRAP)
 				n = posmod(j, src_x);
-			} else {
+			else
 				n = src_x - 1;
-}
 		}
-		else {
+		else
 			n = j;
-}
 
 		return n;
 	}
@@ -100,9 +95,8 @@ namespace basisu
 		Contrib* Pcpool_next;
 		Contrib_Bounds* Pcontrib_bounds;
 
-		if ((Pcontrib = (Contrib_List*)calloc(dst_x, sizeof(Contrib_List))) == NULL) {
+		if ((Pcontrib = (Contrib_List*)calloc(dst_x, sizeof(Contrib_List))) == NULL)
 			return NULL;
-}
 
 		Pcontrib_bounds = (Contrib_Bounds*)calloc(dst_x, sizeof(Contrib_Bounds));
 		if (!Pcontrib_bounds)
@@ -175,9 +169,8 @@ namespace basisu
 
 				total_weight = 0;
 
-				for (j = left; j <= right; j++) {
+				for (j = left; j <= right; j++)
 					total_weight += (*Pfilter)((center - (Resample_Real)j) * xscale * oo_filter_scale);
-}
 				const Resample_Real norm = static_cast<Resample_Real>(1.0f / total_weight);
 
 				total_weight = 0;
@@ -189,9 +182,8 @@ namespace basisu
 				for (j = left; j <= right; j++)
 				{
 					weight = (*Pfilter)((center - (Resample_Real)j) * xscale * oo_filter_scale) * norm;
-					if (weight == 0.0f) {
+					if (weight == 0.0f)
 						continue;
-}
 
 					n = reflect(j, src_x, boundary_op);
 
@@ -229,9 +221,8 @@ namespace basisu
 					return NULL;
 				}
 
-				if (total_weight != 1.0f) {
+				if (total_weight != 1.0f)
 					Pcontrib[i].p[max_k].weight += 1.0f - total_weight;
-}
 			}
 		}
 		else
@@ -288,9 +279,8 @@ namespace basisu
 				assert((Pcpool_next - Pcpool) <= total);
 
 				total_weight = 0;
-				for (j = left; j <= right; j++) {
+				for (j = left; j <= right; j++)
 					total_weight += (*Pfilter)((center - (Resample_Real)j) * oo_filter_scale);
-}
 
 				const Resample_Real norm = static_cast<Resample_Real>(1.0f / total_weight);
 
@@ -303,9 +293,8 @@ namespace basisu
 				for (j = left; j <= right; j++)
 				{
 					weight = (*Pfilter)((center - (Resample_Real)j) * oo_filter_scale) * norm;
-					if (weight == 0.0f) {
+					if (weight == 0.0f)
 						continue;
-}
 
 					n = reflect(j, src_x, boundary_op);
 
@@ -344,9 +333,8 @@ namespace basisu
 					return NULL;
 				}
 
-				if (total_weight != 1.0f) {
+				if (total_weight != 1.0f)
 					Pcontrib[i].p[max_k].weight += 1.0f - total_weight;
-}
 			}
 		}
 
@@ -375,9 +363,8 @@ namespace basisu
 			total_ops += Pclist->n;
 #endif
 
-			for (j = Pclist->n, p = Pclist->p, total = 0; j > 0; j--, p++) {
+			for (j = Pclist->n, p = Pclist->p, total = 0; j > 0; j--, p++)
 				total += Psrc[p->pixel] * p->weight;
-}
 
 			*Pdst++ = total;
 		}
@@ -392,9 +379,8 @@ namespace basisu
 #endif
 
 		// Not += because temp buf wasn't cleared.
-		for (i = dst_x; i > 0; i--) {
+		for (i = dst_x; i > 0; i--)
 			* Ptmp++ = *Psrc++ * weight;
-}
 	}
 
 	void Resampler::scale_y_add(Sample * Ptmp, const Sample * Psrc, Resample_Real weight, int dst_x)
@@ -403,9 +389,8 @@ namespace basisu
 		total_ops += dst_x;
 #endif
 
-		for (int i = dst_x; i > 0; i--) {
+		for (int i = dst_x; i > 0; i--)
 			(*Ptmp++) += *Psrc++ * weight;
-}
 	}
 
 	void Resampler::clamp(Sample * Pdst, int n)
@@ -432,21 +417,18 @@ namespace basisu
 		for (i = 0; i < Pclist->n; i++)
 		{
 			// locate the contributor's location in the scan buffer -- the contributor must always be found!
-			for (j = 0; j < MAX_SCAN_BUF_SIZE; j++) {
-				if (m_Pscan_buf->scan_buf_y[j] == Pclist->p[i].pixel) {
+			for (j = 0; j < MAX_SCAN_BUF_SIZE; j++)
+				if (m_Pscan_buf->scan_buf_y[j] == Pclist->p[i].pixel)
 					break;
-}
-}
 
 			assert(j < MAX_SCAN_BUF_SIZE);
 
 			Psrc = m_Pscan_buf->scan_buf_l[j];
 
-			if (!i) {
+			if (!i)
 				scale_y_mov(Ptmp, Psrc, Pclist->p[i].weight, m_intermediate_x);
-			} else {
+			else
 				scale_y_add(Ptmp, Psrc, Pclist->p[i].weight, m_intermediate_x);
-}
 
 			/* If this source line doesn't contribute to any
 			* more destination lines then mark the scanline buffer slot
@@ -474,18 +456,16 @@ namespace basisu
 			assert(Pdst == Ptmp);
 		}
 
-		if (m_lo < m_hi) {
+		if (m_lo < m_hi)
 			clamp(Pdst, m_resample_dst_x);
-}
 	}
 
 	bool Resampler::put_line(const Sample * Psrc)
 	{
 		int i;
 
-		if (m_cur_src_y >= m_resample_src_y) {
+		if (m_cur_src_y >= m_resample_src_y)
 			return false;
-}
 
 		/* Does this source line contribute
 		* to any destination line? if not,
@@ -500,11 +480,9 @@ namespace basisu
 
 		/* Find an empty slot in the scanline buffer. (FIXME: Perf. is terrible here with extreme scaling ratios.) */
 
-		for (i = 0; i < MAX_SCAN_BUF_SIZE; i++) {
-			if (m_Pscan_buf->scan_buf_y[i] == -1) {
+		for (i = 0; i < MAX_SCAN_BUF_SIZE; i++)
+			if (m_Pscan_buf->scan_buf_y[i] == -1)
 				break;
-}
-}
 
 		/* If the buffer is full, exit with an error. */
 
@@ -557,20 +535,17 @@ namespace basisu
 		* generated, then always return NULL.
 		*/
 
-		if (m_cur_dst_y == m_resample_dst_y) {
+		if (m_cur_dst_y == m_resample_dst_y)
 			return NULL;
-}
 
 		/* Check to see if all the required
 		* contributors are present, if not,
 		* return NULL.
 		*/
 
-		for (i = 0; i < m_Pclist_y[m_cur_dst_y].n; i++) {
-			if (!m_Psrc_y_flag[resampler_range_check(m_Pclist_y[m_cur_dst_y].p[i].pixel, m_resample_src_y)]) {
+		for (i = 0; i < m_Pclist_y[m_cur_dst_y].n; i++)
+			if (!m_Psrc_y_flag[resampler_range_check(m_Pclist_y[m_cur_dst_y].p[i].pixel, m_resample_src_y)])
 				return NULL;
-}
-}
 
 		resample_y(m_Pdst_buf);
 
@@ -622,9 +597,8 @@ namespace basisu
 
 		if (m_Pscan_buf)
 		{
-			for (i = 0; i < MAX_SCAN_BUF_SIZE; i++) {
+			for (i = 0; i < MAX_SCAN_BUF_SIZE; i++)
 				free(m_Pscan_buf->scan_buf_l[i]);
-}
 
 			free(m_Pscan_buf);
 			m_Pscan_buf = NULL;
@@ -633,9 +607,8 @@ namespace basisu
 
 	void Resampler::restart()
 	{
-		if (STATUS_OKAY != m_status) {
+		if (STATUS_OKAY != m_status)
 			return;
-}
 
 		m_cur_src_y = m_cur_dst_y = 0;
 
@@ -648,9 +621,8 @@ namespace basisu
 
 		for (i = 0; i < m_resample_dst_y; i++)
 		{
-			for (j = 0; j < m_Pclist_y[i].n; j++) {
+			for (j = 0; j < m_Pclist_y[i].n; j++)
 				m_Psrc_y_count[resampler_range_check(m_Pclist_y[i].p[j].pixel, m_resample_src_y)]++;
-}
 		}
 
 		for (i = 0; i < MAX_SCAN_BUF_SIZE; i++)
@@ -717,15 +689,12 @@ namespace basisu
 
 		// Find the specified filter.
 
-		if (Pfilter_name == NULL) {
+		if (Pfilter_name == NULL)
 			Pfilter_name = BASISU_RESAMPLER_DEFAULT_FILTER;
-}
 
-		for (i = 0; i < g_num_resample_filters; i++) {
-			if (strcmp(Pfilter_name, g_resample_filters[i].name) == 0) {
+		for (i = 0; i < g_num_resample_filters; i++)
+			if (strcmp(Pfilter_name, g_resample_filters[i].name) == 0)
 				break;
-}
-}
 
 		if (i == g_num_resample_filters)
 		{
@@ -782,11 +751,9 @@ namespace basisu
 
 		// Count how many times each source line contributes to a destination line.
 
-		for (i = 0; i < m_resample_dst_y; i++) {
-			for (j = 0; j < m_Pclist_y[i].n; j++) {
+		for (i = 0; i < m_resample_dst_y; i++)
+			for (j = 0; j < m_Pclist_y[i].n; j++)
 				m_Psrc_y_count[resampler_range_check(m_Pclist_y[i].p[j].pixel, m_resample_src_y)]++;
-}
-}
 
 		if ((m_Pscan_buf = (Scan_Buf*)malloc(sizeof(Scan_Buf))) == NULL)
 		{
@@ -854,13 +821,11 @@ namespace basisu
 
 	void Resampler::get_clists(Contrib_List * *ptr_clist_x, Contrib_List * *ptr_clist_y)
 	{
-		if (ptr_clist_x) {
+		if (ptr_clist_x)
 			* ptr_clist_x = m_Pclist_x;
-}
 
-		if (ptr_clist_y) {
+		if (ptr_clist_y)
 			* ptr_clist_y = m_Pclist_y;
-}
 	}
 
 	int Resampler::get_filter_num()
@@ -870,11 +835,10 @@ namespace basisu
 
 	const char* Resampler::get_filter_name(int filter_num)
 	{
-		if ((filter_num < 0) || (filter_num >= g_num_resample_filters)) {
+		if ((filter_num < 0) || (filter_num >= g_num_resample_filters))
 			return NULL;
-		} else {
+		else
 			return g_resample_filters[filter_num].name;
-}
 	}
 
 } // namespace basisu

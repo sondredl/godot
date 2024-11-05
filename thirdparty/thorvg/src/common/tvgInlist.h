@@ -23,7 +23,7 @@
 #ifndef _TVG_INLIST_H_
 #define _TVG_INLIST_H_
 
-namespace tvg; {
+namespace tvg {
 
 //NOTE: declare this in your list item
 #define INLIST_ITEM(T) \

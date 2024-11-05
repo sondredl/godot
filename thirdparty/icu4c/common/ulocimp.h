@@ -153,7 +153,15 @@ ulocimp_getSubtags(
         const char** pEnd,
         UErrorCode& status);
 
-
+U_EXPORT void
+ulocimp_getSubtags(
+        const char* localeID,
+        icu::ByteSink* language,
+        icu::ByteSink* script,
+        icu::ByteSink* region,
+        icu::ByteSink* variant,
+        const char** pEnd,
+        UErrorCode& status);
 
 inline void
 ulocimp_getSubtags(

@@ -50,9 +50,8 @@ static void brent_kung_prefix_sum(
 	size_t items,
 	int stride
 ) {
-	if (items < 2) {
+	if (items < 2)
 		return;
-}
 
 	size_t lc_stride = 2;
 	size_t log2_stride = 1;

@@ -327,79 +327,66 @@ void AddTabledBuiltin(TString& decls, const BuiltInFunction& function)
     const ArgClass ClassFixed = (ArgClass)(ClassLS | ClassXLS | ClassLS2 | ClassFS | ClassFS2);
     for (int fixed = 0; fixed < ((function.classes & ClassFixed) > 0 ? 2 : 1); ++fixed) {
 
-        if (fixed == 0 && (function.classes & ClassXLS)) {
+        if (fixed == 0 && (function.classes & ClassXLS))
             continue;
-}
 
         // walk the type strings in TypeString[]
         for (int type = 0; type < TypeStringCount; ++type) {
             // skip types not selected: go from type to row number to type bit
-            if ((function.types & (1 << (type >> TypeStringRowShift))) == 0) {
+            if ((function.types & (1 << (type >> TypeStringRowShift))) == 0)
                 continue;
-}
 
             // if we aren't on a scalar, and should be, skip
-            if ((function.classes & ClassV1) && !isScalarType(type)) {
+            if ((function.classes & ClassV1) && !isScalarType(type))
                 continue;
-}
 
             // if we aren't on a 3-vector, and should be, skip
-            if ((function.classes & ClassV3) && (type & TypeStringColumnMask) != 2) {
+            if ((function.classes & ClassV3) && (type & TypeStringColumnMask) != 2)
                 continue;
-}
 
             // skip replication of all arg scalars between the varying arg set and the fixed args
-            if (fixed == 1 && type == (type & TypeStringScalarMask) && (function.classes & ClassXLS) == 0) {
+            if (fixed == 1 && type == (type & TypeStringScalarMask) && (function.classes & ClassXLS) == 0)
                 continue;
-}
 
             // skip scalars when we are told to
-            if ((function.classes & ClassNS) && isScalarType(type)) {
+            if ((function.classes & ClassNS) && isScalarType(type))
                 continue;
-}
 
             // return type
-            if (function.classes & ClassB) {
+            if (function.classes & ClassB)
                 decls.append(TypeString[type & TypeStringColumnMask]);
-            } else if (function.classes & ClassRS) {
+            else if (function.classes & ClassRS)
                 decls.append(TypeString[type & TypeStringScalarMask]);
-            } else {
+            else
                 decls.append(TypeString[type]);
-}
             decls.append(" ");
             decls.append(function.name);
             decls.append("(");
 
             // arguments
             for (int arg = 0; arg < function.numArguments; ++arg) {
-                if (arg == function.numArguments - 1 && (function.classes & ClassLO)) {
+                if (arg == function.numArguments - 1 && (function.classes & ClassLO))
                     decls.append("out ");
-}
                 if (arg == 0) {
-                    if (function.classes & ClassCV) {
+                    if (function.classes & ClassCV)
                         decls.append("coherent volatile ");
-}
-                    if (function.classes & ClassFIO) {
+                    if (function.classes & ClassFIO)
                         decls.append("inout ");
-}
-                    if (function.classes & ClassFO) {
+                    if (function.classes & ClassFO)
                         decls.append("out ");
-}
                 }
-                if ((function.classes & ClassLB) && arg == function.numArguments - 1) {
+                if ((function.classes & ClassLB) && arg == function.numArguments - 1)
                     decls.append(TypeString[type & TypeStringColumnMask]);
-                } else if (fixed && ((arg == function.numArguments - 1 && (function.classes & (ClassLS | ClassXLS |
+                else if (fixed && ((arg == function.numArguments - 1 && (function.classes & (ClassLS | ClassXLS |
                                                                                                        ClassLS2))) ||
                                    (arg == function.numArguments - 2 && (function.classes & ClassLS2))             ||
                                    (arg == 0                         && (function.classes & (ClassFS | ClassFS2))) ||
-                                   (arg == 1                         && (function.classes & ClassFS2)))) {
+                                   (arg == 1                         && (function.classes & ClassFS2))))
                     decls.append(TypeString[type & TypeStringScalarMask]);
-                } else {
+                else
                     decls.append(TypeString[type]);
-}
-                if (arg < function.numArguments - 1) {
+                if (arg < function.numArguments - 1)
                     decls.append(",");
-}
             }
             decls.append(");\n");
         }
@@ -410,16 +397,14 @@ void AddTabledBuiltin(TString& decls, const BuiltInFunction& function)
 bool ValidVersion(const BuiltInFunction& function, int version, EProfile profile, const SpvVersion& /* spVersion */)
 {
     // nullptr means always valid
-    if (function.versioning.empty()) {
+    if (function.versioning.empty())
         return true;
-}
 
     // check for what is said about our current profile
     for (const auto& v : function.versioning) {
         if ((v.profiles & profile) != 0) {
-            if (v.minCoreVersion <= version || (v.numExtensions > 0 && v.minExtendedVersion <= version)) {
+            if (v.minCoreVersion <= version || (v.numExtensions > 0 && v.minExtendedVersion <= version))
                 return true;
-}
         }
     }
 
@@ -446,9 +431,8 @@ void TBuiltIns::addTabledBuiltins(int version, EProfile profile, const SpvVersio
 {
     const auto forEachFunction = [&](TString& decls, const span<const BuiltInFunction>& functions) {
         for (const auto& fn : functions) {
-            if (ValidVersion(fn, version, profile, spvVersion)) {
+            if (ValidVersion(fn, version, profile, spvVersion))
                 AddTabledBuiltin(decls, fn);
-}
         }
     };
 
@@ -4268,19 +4252,17 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
     //
     // Geometric Functions.
     //
-    if (spvVersion.vulkan == 0 && IncludeLegacy(version, profile, spvVersion)) {
+    if (spvVersion.vulkan == 0 && IncludeLegacy(version, profile, spvVersion))
         stageBuiltins[EShLangVertex].append("vec4 ftransform();");
-}
 
     //
     // Original-style texture Functions with lod.
     //
     TString* s;
-    if (version == 100) {
+    if (version == 100)
         s = &stageBuiltins[EShLangVertex];
-    } else {
+    else
         s = &commonBuiltins;
-}
     if ((profile == EEsProfile && version == 100) ||
          profile == ECompatibilityProfile ||
         (profile == ECoreProfile && version < 420) ||
@@ -4359,16 +4341,14 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
     //
     //============================================================================
     bool esBarrier = (profile == EEsProfile && version >= 310);
-    if ((profile != EEsProfile && version >= 150) || esBarrier) {
+    if ((profile != EEsProfile && version >= 150) || esBarrier)
         stageBuiltins[EShLangTessControl].append(
             "void barrier();"
             );
-}
-    if ((profile != EEsProfile && version >= 420) || esBarrier) {
+    if ((profile != EEsProfile && version >= 420) || esBarrier)
         stageBuiltins[EShLangCompute].append(
             "void barrier();"
             );
-}
     if ((profile != EEsProfile && version >= 450) || (profile == EEsProfile && version >= 320)) {
         stageBuiltins[EShLangMesh].append(
             "void barrier();"
@@ -4377,11 +4357,10 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
             "void barrier();"
             );
     }
-    if ((profile != EEsProfile && version >= 130) || esBarrier) {
+    if ((profile != EEsProfile && version >= 130) || esBarrier)
         commonBuiltins.append(
             "void memoryBarrier();"
             );
-}
     if ((profile != EEsProfile && version >= 420) || esBarrier) {
         commonBuiltins.append(
             "void memoryBarrierBuffer();"
@@ -4570,7 +4549,7 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
             "coopmat coopMatMulAdd(coopmat A, coopmat B, coopmat C);\n"
             "coopmat coopMatMulAdd(coopmat A, coopmat B, coopmat C, int matrixOperands);\n";
 
-        commonBuiltins.append(cooperativeMatrixFuncs);
+        commonBuiltins.append(cooperativeMatrixFuncs.c_str());
 
         commonBuiltins.append(
             "const int gl_MatrixUseA = 0;\n"
@@ -5319,11 +5298,10 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
                 "float gl_PointSize;" // needs qualifier fixed later
                 );
 
-            if (version == 130 || version == 140) {
+            if (version == 130 || version == 140)
                 stageBuiltins[EShLangVertex].append(
                     "out float gl_ClipDistance[];"
                     );
-}
         } else {
             // version >= 150
             stageBuiltins[EShLangVertex].append(
@@ -5332,7 +5310,7 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
                     "float gl_PointSize;"   // needs qualifier fixed later
                     "float gl_ClipDistance[];"
                     );
-            if (IncludeLegacy(version, profile, spvVersion)) {
+            if (IncludeLegacy(version, profile, spvVersion))
                 stageBuiltins[EShLangVertex].append(
                     "vec4 gl_ClipVertex;"   // needs qualifier fixed later
                     "vec4 gl_FrontColor;"
@@ -5342,39 +5320,33 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
                     "vec4 gl_TexCoord[];"
                     "float gl_FogFragCoord;"
                     );
-}
-            if (version >= 450) {
+            if (version >= 450)
                 stageBuiltins[EShLangVertex].append(
                     "float gl_CullDistance[];"
                     );
-}
             stageBuiltins[EShLangVertex].append(
                 "};"
                 "\n");
         }
-        if (version >= 130 && spvVersion.vulkan == 0) {
+        if (version >= 130 && spvVersion.vulkan == 0)
             stageBuiltins[EShLangVertex].append(
                 "int gl_VertexID;"            // needs qualifier fixed later
                 );
-}
-        if (spvVersion.vulkan == 0) {
+        if (spvVersion.vulkan == 0)
             stageBuiltins[EShLangVertex].append(
                 "int gl_InstanceID;"          // needs qualifier fixed later
                 );
-}
-        if (spvVersion.vulkan > 0 && version >= 140) {
+        if (spvVersion.vulkan > 0 && version >= 140)
             stageBuiltins[EShLangVertex].append(
                 "in int gl_VertexIndex;"
                 "in int gl_InstanceIndex;"
                 );
-}
 
-        if (spvVersion.vulkan > 0 && version >= 140 && spvVersion.vulkanRelaxed) {
+        if (spvVersion.vulkan > 0 && version >= 140 && spvVersion.vulkanRelaxed)
             stageBuiltins[EShLangVertex].append(
                 "in int gl_VertexID;"         // declare with 'in' qualifier
                 "in int gl_InstanceID;"
                 );
-}
 
         if (version >= 440) {
             stageBuiltins[EShLangVertex].append(
@@ -5397,20 +5369,18 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
                 );
         }
 
-        if (version >= 430) {
+        if (version >= 430)
             stageBuiltins[EShLangVertex].append(
                 "out int gl_ViewportMask[];"             // GL_NV_viewport_array2
                 );
-}
 
-        if (version >= 450) {
+        if (version >= 450)
             stageBuiltins[EShLangVertex].append(
                 "out int gl_SecondaryViewportMaskNV[];"  // GL_NV_stereo_view_rendering
                 "out vec4 gl_SecondaryPositionNV;"       // GL_NV_stereo_view_rendering
                 "out vec4 gl_PositionPerViewNV[];"       // GL_NVX_multiview_per_view_attributes
                 "out int  gl_ViewportMaskPerViewNV[];"   // GL_NVX_multiview_per_view_attributes
                 );
-}
     } else {
         // ES profile
         if (version == 100) {
@@ -5420,31 +5390,28 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
                 "highp int gl_InstanceID;" // needs qualifier fixed later
                 );
         } else {
-            if (spvVersion.vulkan == 0 || spvVersion.vulkanRelaxed) {
+            if (spvVersion.vulkan == 0 || spvVersion.vulkanRelaxed)
                 stageBuiltins[EShLangVertex].append(
                     "in highp int gl_VertexID;"      // needs qualifier fixed later
                     "in highp int gl_InstanceID;"    // needs qualifier fixed later
                     );
-}
-            if (spvVersion.vulkan > 0) {
+            if (spvVersion.vulkan > 0)
                 stageBuiltins[EShLangVertex].append(
                     "in highp int gl_VertexIndex;"
                     "in highp int gl_InstanceIndex;"
                     );
-}
-            if (version < 310) {
+            if (version < 310)
                 stageBuiltins[EShLangVertex].append(
                     "highp vec4  gl_Position;"    // needs qualifier fixed later
                     "highp float gl_PointSize;"   // needs qualifier fixed later
                     );
-            } else {
+            else
                 stageBuiltins[EShLangVertex].append(
                     "out gl_PerVertex {"
                         "highp vec4  gl_Position;"    // needs qualifier fixed later
                         "highp float gl_PointSize;"   // needs qualifier fixed later
                     "};"
                     );
-}
         }
     }
 
@@ -5481,7 +5448,7 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
                 "float gl_PointSize;"
                 "float gl_ClipDistance[];"
                 );
-        if (profile == ECompatibilityProfile) {
+        if (profile == ECompatibilityProfile)
             stageBuiltins[EShLangGeometry].append(
                 "vec4 gl_ClipVertex;"
                 "vec4 gl_FrontColor;"
@@ -5491,14 +5458,12 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
                 "vec4 gl_TexCoord[];"
                 "float gl_FogFragCoord;"
                 );
-}
-        if (version >= 450) {
+        if (version >= 450)
             stageBuiltins[EShLangGeometry].append(
                 "float gl_CullDistance[];"
                 "vec4 gl_SecondaryPositionNV;"   // GL_NV_stereo_view_rendering
                 "vec4 gl_PositionPerViewNV[];"   // GL_NVX_multiview_per_view_attributes
                 );
-}
         stageBuiltins[EShLangGeometry].append(
             "} gl_in[];"
 
@@ -5508,7 +5473,7 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
                 "float gl_PointSize;"
                 "float gl_ClipDistance[];"
                 "\n");
-        if (profile == ECompatibilityProfile && version >= 400) {
+        if (profile == ECompatibilityProfile && version >= 400)
             stageBuiltins[EShLangGeometry].append(
                 "vec4 gl_ClipVertex;"
                 "vec4 gl_FrontColor;"
@@ -5518,50 +5483,43 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
                 "vec4 gl_TexCoord[];"
                 "float gl_FogFragCoord;"
                 );
-}
-        if (version >= 450) {
+        if (version >= 450)
             stageBuiltins[EShLangGeometry].append(
                 "float gl_CullDistance[];"
                 );
-}
         stageBuiltins[EShLangGeometry].append(
             "};"
 
             "out int gl_PrimitiveID;"
             "out int gl_Layer;");
 
-        if (version >= 150) {
+        if (version >= 150)
             stageBuiltins[EShLangGeometry].append(
             "out int gl_ViewportIndex;"
             );
-}
 
-        if (profile == ECompatibilityProfile && version < 400) {
+        if (profile == ECompatibilityProfile && version < 400)
             stageBuiltins[EShLangGeometry].append(
             "out vec4 gl_ClipVertex;"
             );
-}
 
-        if (version >= 400) {
+        if (version >= 400)
             stageBuiltins[EShLangGeometry].append(
             "in int gl_InvocationID;"
             );
-}
 
-        if (version >= 430) {
+        if (version >= 430)
             stageBuiltins[EShLangGeometry].append(
                 "out int gl_ViewportMask[];"               // GL_NV_viewport_array2
             );
-}
 
-        if (version >= 450) {
+        if (version >= 450)
             stageBuiltins[EShLangGeometry].append(
                 "out int gl_SecondaryViewportMaskNV[];"    // GL_NV_stereo_view_rendering
                 "out vec4 gl_SecondaryPositionNV;"         // GL_NV_stereo_view_rendering
                 "out vec4 gl_PositionPerViewNV[];"         // GL_NVX_multiview_per_view_attributes
                 "out int  gl_ViewportMaskPerViewNV[];"     // GL_NVX_multiview_per_view_attributes
             );
-}
 
         stageBuiltins[EShLangGeometry].append("\n");
     } else if (profile == EEsProfile && version >= 310) {
@@ -5619,7 +5577,7 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
                 "float gl_PointSize;"
                 "float gl_ClipDistance[];"
                 );
-        if (profile == ECompatibilityProfile) {
+        if (profile == ECompatibilityProfile)
             stageBuiltins[EShLangTessControl].append(
                 "vec4 gl_ClipVertex;"
                 "vec4 gl_FrontColor;"
@@ -5629,25 +5587,21 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
                 "vec4 gl_TexCoord[];"
                 "float gl_FogFragCoord;"
                 );
-}
-        if (version >= 450) {
+        if (version >= 450)
             stageBuiltins[EShLangTessControl].append(
                 "float gl_CullDistance[];"
             );
-}
-        if (version >= 430) {
+        if (version >= 430)
             stageBuiltins[EShLangTessControl].append(
                 "int  gl_ViewportMask[];"             // GL_NV_viewport_array2
             );
-}
-        if (version >= 450) {
+        if (version >= 450)
             stageBuiltins[EShLangTessControl].append(
                 "vec4 gl_SecondaryPositionNV;"        // GL_NV_stereo_view_rendering
                 "int  gl_SecondaryViewportMaskNV[];"  // GL_NV_stereo_view_rendering
                 "vec4 gl_PositionPerViewNV[];"        // GL_NVX_multiview_per_view_attributes
                 "int  gl_ViewportMaskPerViewNV[];"    // GL_NVX_multiview_per_view_attributes
                 );
-}
         stageBuiltins[EShLangTessControl].append(
             "} gl_out[];"
 
@@ -5655,12 +5609,11 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
             "patch out float gl_TessLevelInner[2];"
             "\n");
 
-        if (version >= 410) {
+        if (version >= 410)
             stageBuiltins[EShLangTessControl].append(
                 "out int gl_ViewportIndex;"
                 "out int gl_Layer;"
                 "\n");
-}
 
     } else {
         // Note:  "in gl_PerVertex {...} gl_in[gl_MaxPatchVertices];" is declared in initialize() below,
@@ -5722,7 +5675,7 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
                 "float gl_PointSize;"
                 "float gl_ClipDistance[];"
             );
-        if (version >= 400 && profile == ECompatibilityProfile) {
+        if (version >= 400 && profile == ECompatibilityProfile)
             stageBuiltins[EShLangTessEvaluation].append(
                 "vec4 gl_ClipVertex;"
                 "vec4 gl_FrontColor;"
@@ -5732,37 +5685,32 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
                 "vec4 gl_TexCoord[];"
                 "float gl_FogFragCoord;"
                 );
-}
-        if (version >= 450) {
+        if (version >= 450)
             stageBuiltins[EShLangTessEvaluation].append(
                 "float gl_CullDistance[];"
                 );
-}
         stageBuiltins[EShLangTessEvaluation].append(
             "};"
             "\n");
 
-        if (version >= 410) {
+        if (version >= 410)
             stageBuiltins[EShLangTessEvaluation].append(
                 "out int gl_ViewportIndex;"
                 "out int gl_Layer;"
                 "\n");
-}
 
-        if (version >= 430) {
+        if (version >= 430)
             stageBuiltins[EShLangTessEvaluation].append(
                 "out int  gl_ViewportMask[];"             // GL_NV_viewport_array2
             );
-}
 
-        if (version >= 450) {
+        if (version >= 450)
             stageBuiltins[EShLangTessEvaluation].append(
                 "out vec4 gl_SecondaryPositionNV;"        // GL_NV_stereo_view_rendering
                 "out int  gl_SecondaryViewportMaskNV[];"  // GL_NV_stereo_view_rendering
                 "out vec4 gl_PositionPerViewNV[];"        // GL_NVX_multiview_per_view_attributes
                 "out int  gl_ViewportMaskPerViewNV[];"    // GL_NVX_multiview_per_view_attributes
                 );
-}
 
     } else if (profile == EEsProfile && version >= 310) {
         // Note:  "in gl_PerVertex {...} gl_in[gl_MaxPatchVertices];" is declared in initialize() below,
@@ -5806,21 +5754,18 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
             "bool  gl_FrontFacing;" // needs qualifier fixed later
             "float gl_FragDepth;"   // needs qualifier fixed later
             );
-        if (version >= 120) {
+        if (version >= 120)
             stageBuiltins[EShLangFragment].append(
                 "vec2 gl_PointCoord;"  // needs qualifier fixed later
                 );
-}
-        if (version >= 140) {
+        if (version >= 140)
             stageBuiltins[EShLangFragment].append(
                 "out int gl_FragStencilRefARB;"
                 );
-}
-        if (IncludeLegacy(version, profile, spvVersion) || (! ForwardCompatibility && version < 420)) {
+        if (IncludeLegacy(version, profile, spvVersion) || (! ForwardCompatibility && version < 420))
             stageBuiltins[EShLangFragment].append(
                 "vec4 gl_FragColor;"   // needs qualifier fixed later
                 );
-}
 
         if (version < 130) {
             stageBuiltins[EShLangFragment].append(
@@ -5835,14 +5780,14 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
                 );
 
             if (IncludeLegacy(version, profile, spvVersion)) {
-                if (version < 150) {
+                if (version < 150)
                     stageBuiltins[EShLangFragment].append(
                         "in float gl_FogFragCoord;"
                         "in vec4  gl_TexCoord[];"
                         "in vec4  gl_Color;"
                         "in vec4  gl_SecondaryColor;"
                         );
-                } else {
+                else
                     stageBuiltins[EShLangFragment].append(
                         "in gl_PerFragment {"
                             "in float gl_FogFragCoord;"
@@ -5851,15 +5796,13 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
                             "in vec4  gl_SecondaryColor;"
                         "};"
                         );
-}
             }
         }
 
-        if (version >= 150) {
+        if (version >= 150)
             stageBuiltins[EShLangFragment].append(
                 "flat in int gl_PrimitiveID;"
                 );
-}
 
         if (version >= 130) { // ARB_sample_shading
             stageBuiltins[EShLangFragment].append(
@@ -5875,34 +5818,30 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
             }
         }
 
-        if (version >= 400) {
+        if (version >= 400)
             stageBuiltins[EShLangFragment].append(
                 "flat in  int  gl_SampleMaskIn[];"
             );
-}
 
-        if (version >= 430) {
+        if (version >= 430)
             stageBuiltins[EShLangFragment].append(
                 "flat in int gl_Layer;"
                 "flat in int gl_ViewportIndex;"
                 );
-}
 
-        if (version >= 450) {
+        if (version >= 450)
             stageBuiltins[EShLangFragment].append(
                 "in float gl_CullDistance[];"
                 "bool gl_HelperInvocation;"     // needs qualifier fixed later
                 );
-}
 
-        if (version >= 450) {
+        if (version >= 450)
             stageBuiltins[EShLangFragment].append( // GL_EXT_fragment_invocation_density
                 "flat in ivec2 gl_FragSizeEXT;"
                 "flat in int   gl_FragInvocationCountEXT;"
                 );
-}
 
-        if (version >= 450) {
+        if (version >= 450)
             stageBuiltins[EShLangFragment].append(
                 "in vec2 gl_BaryCoordNoPerspAMD;"
                 "in vec2 gl_BaryCoordNoPerspCentroidAMD;"
@@ -5912,14 +5851,12 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
                 "in vec2 gl_BaryCoordSmoothSampleAMD;"
                 "in vec3 gl_BaryCoordPullModelAMD;"
                 );
-}
 
-        if (version >= 430) {
+        if (version >= 430)
             stageBuiltins[EShLangFragment].append(
                 "in bool gl_FragFullyCoveredNV;"
                 );
-}
-        if (version >= 450) {
+        if (version >= 450)
             stageBuiltins[EShLangFragment].append(
                 "flat in ivec2 gl_FragmentSizeNV;"          // GL_NV_shading_rate_image
                 "flat in int   gl_InvocationsPerPixelNV;"
@@ -5928,13 +5865,11 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
                 "in vec3 gl_BaryCoordEXT;"                  // GL_EXT_fragment_shader_barycentric
                 "in vec3 gl_BaryCoordNoPerspEXT;"
                 );
-}
 
-        if (version >= 450) {
+        if (version >= 450)
             stageBuiltins[EShLangFragment].append(
                 "flat in int gl_ShadingRateEXT;" // GL_EXT_fragment_shading_rate
             );
-}
 
     } else {
         // ES profile
@@ -5968,48 +5903,42 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
                 "flat  in highp    int gl_SampleMaskIn[];"
                 "     out highp    int gl_SampleMask[];"
                 );
-            if (spvVersion.spv == 0) {
+            if (spvVersion.spv == 0)
                 stageBuiltins[EShLangFragment].append(  // GL_OES_sample_variables
                     "uniform lowp int gl_NumSamples;"
                     );
-}
         }
         stageBuiltins[EShLangFragment].append(
             "highp float gl_FragDepthEXT;"       // GL_EXT_frag_depth
             );
 
-        if (version >= 310) {
+        if (version >= 310)
             stageBuiltins[EShLangFragment].append( // GL_EXT_fragment_invocation_density
                 "flat in ivec2 gl_FragSizeEXT;"
                 "flat in int   gl_FragInvocationCountEXT;"
             );
-}
-        if (version >= 320) {
+        if (version >= 320)
             stageBuiltins[EShLangFragment].append( // GL_NV_shading_rate_image
                 "flat in ivec2 gl_FragmentSizeNV;"
                 "flat in int   gl_InvocationsPerPixelNV;"
             );
-}
-        if (version >= 320) {
+        if (version >= 320)
             stageBuiltins[EShLangFragment].append(
                 "in vec3 gl_BaryCoordNV;"
                 "in vec3 gl_BaryCoordNoPerspNV;"
                 "in vec3 gl_BaryCoordEXT;"
                 "in vec3 gl_BaryCoordNoPerspEXT;"
             );
-}
-        if (version >= 310) {
+        if (version >= 310)
             stageBuiltins[EShLangFragment].append(
                 "flat in highp int gl_ShadingRateEXT;" // GL_EXT_fragment_shading_rate
             );
-}
     }
 
     stageBuiltins[EShLangFragment].append("\n");
 
-    if (version >= 130) {
+    if (version >= 130)
         add2ndGenerationSamplingImaging(version, profile, spvVersion);
-}
 
     if ((profile != EEsProfile && version >= 140) ||
         (profile == EEsProfile && version >= 310)) {
@@ -6378,17 +6307,14 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
         for (int ms = 0; ms <= 1; ++ms) { // loop over "bool" multisample or not
             for (int arrayed = 0; arrayed <= 1; ++arrayed) { // loop over "bool" arrayed or not
                 for (int dim = Esd1D; dim < EsdSubpass; ++dim) { // 1D, ..., buffer
-                    if ((dim == Esd1D || dim == EsdRect) && profile == EEsProfile) {
+                    if ((dim == Esd1D || dim == EsdRect) && profile == EEsProfile)
                         continue;
-}
 
-                    if ((dim == Esd3D || dim == EsdRect || dim == EsdBuffer) && arrayed) {
+                    if ((dim == Esd3D || dim == EsdRect || dim == EsdBuffer) && arrayed)
                         continue;
-}
 
-                    if (dim != Esd2D && ms) {
+                    if (dim != Esd2D && ms)
                         continue;
-}
 
                     // Loop over the bTypes
                     for (size_t bType = 0; bType < sizeof(bTypes)/sizeof(TBasicType); ++bType) {
@@ -6397,9 +6323,9 @@ void TBuiltIns::initialize(int version, EProfile profile, const SpvVersion& spvV
                         //
                         TSampler sampler;
 
-                        sampler.setImage(bTypes[bType], (TSamplerDim)dim, arrayed != 0,
+                        sampler.setImage(bTypes[bType], (TSamplerDim)dim, arrayed ? true : false,
                                                                           false,
-                                                                          ms != 0);
+                                                                          ms      ? true : false);
 
                         TString typeName = sampler.getString();
 
@@ -6437,92 +6363,71 @@ void TBuiltIns::add2ndGenerationSamplingImaging(int version, EProfile profile, c
         for (int shadow = 0; shadow <= 1; ++shadow) { // loop over "bool" shadow or not
             for (int ms = 0; ms <= 1; ++ms) // loop over "bool" multisample or not
             {
-                if ((ms || image) && shadow) {
+                if ((ms || image) && shadow)
                     continue;
-}
-                if (ms && profile != EEsProfile && version < 140) {
+                if (ms && profile != EEsProfile && version < 140)
                     continue;
-}
-                if (ms && image && profile == EEsProfile) {
+                if (ms && image && profile == EEsProfile)
                     continue;
-}
-                if (ms && profile == EEsProfile && version < 310) {
+                if (ms && profile == EEsProfile && version < 310)
                     continue;
-}
 
                 for (int arrayed = 0; arrayed <= 1; ++arrayed) { // loop over "bool" arrayed or not
                     for (int dim = Esd1D; dim < EsdNumDims; ++dim) { // 1D, ..., buffer, subpass
-                        if (dim == EsdAttachmentEXT) {
+                        if (dim == EsdAttachmentEXT)
                             continue;
-}
-                        if (dim == EsdSubpass && spvVersion.vulkan == 0) {
+                        if (dim == EsdSubpass && spvVersion.vulkan == 0)
                             continue;
-}
-                        if (dim == EsdSubpass && (image || shadow || arrayed)) {
+                        if (dim == EsdSubpass && (image || shadow || arrayed))
                             continue;
-}
-                        if ((dim == Esd1D || dim == EsdRect) && profile == EEsProfile) {
+                        if ((dim == Esd1D || dim == EsdRect) && profile == EEsProfile)
                             continue;
-}
-                        if (dim == EsdSubpass && spvVersion.vulkan == 0) {
+                        if (dim == EsdSubpass && spvVersion.vulkan == 0)
                             continue;
-}
-                        if (dim == EsdSubpass && (image || shadow || arrayed)) {
+                        if (dim == EsdSubpass && (image || shadow || arrayed))
                             continue;
-}
-                        if ((dim == Esd1D || dim == EsdRect) && profile == EEsProfile) {
+                        if ((dim == Esd1D || dim == EsdRect) && profile == EEsProfile)
                             continue;
-}
-                        if (dim != Esd2D && dim != EsdSubpass && ms) {
+                        if (dim != Esd2D && dim != EsdSubpass && ms)
                             continue;
-}
-                        if (dim == EsdBuffer && skipBuffer) {
+                        if (dim == EsdBuffer && skipBuffer)
                             continue;
-}
-                        if (dim == EsdBuffer && (shadow || arrayed || ms)) {
+                        if (dim == EsdBuffer && (shadow || arrayed || ms))
                             continue;
-}
-                        if (ms && arrayed && profile == EEsProfile && version < 310) {
+                        if (ms && arrayed && profile == EEsProfile && version < 310)
                             continue;
-}
-                        if (dim == Esd3D && shadow) {
+                        if (dim == Esd3D && shadow)
                             continue;
-}
-                        if (dim == EsdCube && arrayed && skipCubeArrayed) {
+                        if (dim == EsdCube && arrayed && skipCubeArrayed)
                             continue;
-}
-                        if ((dim == Esd3D || dim == EsdRect) && arrayed) {
+                        if ((dim == Esd3D || dim == EsdRect) && arrayed)
                             continue;
-}
 
                         // Loop over the bTypes
                         for (size_t bType = 0; bType < sizeof(bTypes)/sizeof(TBasicType); ++bType) {
-                            if (bTypes[bType] == EbtFloat16 && (profile == EEsProfile || version < 450)) {
+                            if (bTypes[bType] == EbtFloat16 && (profile == EEsProfile || version < 450))
                                 continue;
-}
-                            if (dim == EsdRect && version < 140 && bType > 0) {
+                            if (dim == EsdRect && version < 140 && bType > 0)
                                 continue;
-}
-                            if (shadow && (bTypes[bType] == EbtInt || bTypes[bType] == EbtUint)) {
+                            if (shadow && (bTypes[bType] == EbtInt || bTypes[bType] == EbtUint))
                                 continue;
-}
                             //
                             // Now, make all the function prototypes for the type we just built...
                             //
                             TSampler sampler;
                             if (dim == EsdSubpass) {
-                                sampler.setSubpass(bTypes[bType], ms != 0);
+                                sampler.setSubpass(bTypes[bType], ms ? true : false);
                             } else if (dim == EsdAttachmentEXT) {
                                 sampler.setAttachmentEXT(bTypes[bType]);
                             } else
                             if (image) {
-                                sampler.setImage(bTypes[bType], (TSamplerDim)dim, arrayed != 0,
-                                                                                  shadow != 0,
-                                                                                  ms != 0);
+                                sampler.setImage(bTypes[bType], (TSamplerDim)dim, arrayed ? true : false,
+                                                                                  shadow  ? true : false,
+                                                                                  ms      ? true : false);
                             } else {
-                                sampler.set(bTypes[bType], (TSamplerDim)dim, arrayed != 0,
-                                                                             shadow != 0,
-                                                                             ms != 0);
+                                sampler.set(bTypes[bType], (TSamplerDim)dim, arrayed ? true : false,
+                                                                             shadow  ? true : false,
+                                                                             ms      ? true : false);
                             }
 
                             TString typeName = sampler.getString();
@@ -6534,9 +6439,9 @@ void TBuiltIns::add2ndGenerationSamplingImaging(int version, EProfile profile, c
 
                             addQueryFunctions(sampler, typeName, version, profile);
 
-                            if (image) {
+                            if (image)
                                 addImageFunctions(sampler, typeName, version, profile);
-                            } else {
+                            else {
                                 addSamplingFunctions(sampler, typeName, version, profile);
                                 addGatherFunctions(sampler, typeName, version, profile);
                                 if (spvVersion.vulkan > 0 && sampler.isCombined() && !sampler.shadow) {
@@ -6583,30 +6488,26 @@ void TBuiltIns::addQueryFunctions(TSampler sampler, const TString& typeName, int
 
     int sizeDims = dimMap[sampler.dim] + (sampler.arrayed ? 1 : 0) - (sampler.dim == EsdCube ? 1 : 0);
 
-    if (sampler.isImage() && ((profile == EEsProfile && version < 310) || (profile != EEsProfile && version < 420))) {
+    if (sampler.isImage() && ((profile == EEsProfile && version < 310) || (profile != EEsProfile && version < 420)))
         return;
-}
 
-    if (profile == EEsProfile) {
+    if (profile == EEsProfile)
         commonBuiltins.append("highp ");
-}
-    if (sizeDims == 1) {
+    if (sizeDims == 1)
         commonBuiltins.append("int");
-    } else {
+    else {
         commonBuiltins.append("ivec");
         commonBuiltins.append(postfixes[sizeDims]);
     }
-    if (sampler.isImage()) {
+    if (sampler.isImage())
         commonBuiltins.append(" imageSize(readonly writeonly volatile coherent ");
-    } else {
+    else
         commonBuiltins.append(" textureSize(");
-}
     commonBuiltins.append(typeName);
-    if (! sampler.isImage() && ! sampler.isRect() && ! sampler.isBuffer() && ! sampler.isMultiSample()) {
+    if (! sampler.isImage() && ! sampler.isRect() && ! sampler.isBuffer() && ! sampler.isMultiSample())
         commonBuiltins.append(",int);\n");
-    } else {
+    else
         commonBuiltins.append(");\n");
-}
 
     //
     // textureSamples() and imageSamples()
@@ -6616,11 +6517,10 @@ void TBuiltIns::addQueryFunctions(TSampler sampler, const TString& typeName, int
     // TODO: spec issue? there are no memory qualifiers; how to query a writeonly/readonly image, etc?
     if (profile != EEsProfile && version >= 430 && sampler.isMultiSample()) {
         commonBuiltins.append("int ");
-        if (sampler.isImage()) {
+        if (sampler.isImage())
             commonBuiltins.append("imageSamples(readonly writeonly volatile coherent ");
-        } else {
+        else
             commonBuiltins.append("textureSamples(");
-}
         commonBuiltins.append(typeName);
         commonBuiltins.append(");\n");
     }
@@ -6637,23 +6537,20 @@ void TBuiltIns::addQueryFunctions(TSampler sampler, const TString& typeName, int
 
         for (int i = 0; i < 2; ++i){
             for (int f16TexAddr = 0; f16TexAddr < 2; ++f16TexAddr) {
-                if (f16TexAddr && sampler.type != EbtFloat16) {
+                if (f16TexAddr && sampler.type != EbtFloat16)
                     continue;
-}
                 stageBuiltins[EShLangFragment].append(funcName[i]);
                 stageBuiltins[EShLangFragment].append(typeName);
-                if (dimMap[sampler.dim] == 1) {
-                    if (f16TexAddr) {
+                if (dimMap[sampler.dim] == 1)
+                    if (f16TexAddr)
                         stageBuiltins[EShLangFragment].append(", float16_t");
-                    } else {
+                    else
                         stageBuiltins[EShLangFragment].append(", float");
-}
-                } else {
-                    if (f16TexAddr) {
+                else {
+                    if (f16TexAddr)
                         stageBuiltins[EShLangFragment].append(", f16vec");
-                    } else {
+                    else
                         stageBuiltins[EShLangFragment].append(", vec");
-}
                     stageBuiltins[EShLangFragment].append(postfixes[dimMap[sampler.dim]]);
                 }
                 stageBuiltins[EShLangFragment].append(");\n");
@@ -6661,9 +6558,9 @@ void TBuiltIns::addQueryFunctions(TSampler sampler, const TString& typeName, int
 
             stageBuiltins[EShLangCompute].append(funcName[i]);
             stageBuiltins[EShLangCompute].append(typeName);
-            if (dimMap[sampler.dim] == 1) {
+            if (dimMap[sampler.dim] == 1)
                 stageBuiltins[EShLangCompute].append(", float");
-            } else {
+            else {
                 stageBuiltins[EShLangCompute].append(", vec");
                 stageBuiltins[EShLangCompute].append(postfixes[dimMap[sampler.dim]]);
             }
@@ -6693,24 +6590,21 @@ void TBuiltIns::addImageFunctions(TSampler sampler, const TString& typeName, int
 {
     int dims = dimMap[sampler.dim];
     // most things with an array add a dimension, except for cubemaps
-    if (sampler.arrayed && sampler.dim != EsdCube) {
+    if (sampler.arrayed && sampler.dim != EsdCube)
         ++dims;
-}
 
     TString imageParams = typeName;
-    if (dims == 1) {
+    if (dims == 1)
         imageParams.append(", int");
-    } else {
+    else {
         imageParams.append(", ivec");
         imageParams.append(postfixes[dims]);
     }
-    if (sampler.isMultiSample()) {
+    if (sampler.isMultiSample())
         imageParams.append(", int");
-}
 
-    if (profile == EEsProfile) {
+    if (profile == EEsProfile)
         commonBuiltins.append("highp ");
-}
     commonBuiltins.append(prefixes[sampler.type]);
     commonBuiltins.append("vec4 imageLoad(readonly volatile coherent ");
     commonBuiltins.append(imageParams);
@@ -6880,18 +6774,16 @@ void TBuiltIns::addImageFunctions(TSampler sampler, const TString& typeName, int
         }
     }
 
-    if (sampler.dim == EsdRect || sampler.dim == EsdBuffer || sampler.shadow || sampler.isMultiSample()) {
+    if (sampler.dim == EsdRect || sampler.dim == EsdBuffer || sampler.shadow || sampler.isMultiSample())
         return;
-}
 
-    if (profile == EEsProfile || version < 450) {
+    if (profile == EEsProfile || version < 450)
         return;
-}
 
     TString imageLodParams = typeName;
-    if (dims == 1) {
+    if (dims == 1)
         imageLodParams.append(", int");
-    } else {
+    else {
         imageLodParams.append(", ivec");
         imageLodParams.append(postfixes[dims]);
     }
@@ -6929,10 +6821,9 @@ void TBuiltIns::addSubpassSampling(TSampler sampler, const TString& typeName, in
     stageBuiltins[EShLangFragment].append(prefixes[sampler.type]);
     stageBuiltins[EShLangFragment].append("vec4 subpassLoad");
     stageBuiltins[EShLangFragment].append("(");
-    stageBuiltins[EShLangFragment].append(typeName);
-    if (sampler.isMultiSample()) {
+    stageBuiltins[EShLangFragment].append(typeName.c_str());
+    if (sampler.isMultiSample())
         stageBuiltins[EShLangFragment].append(", int");
-}
     stageBuiltins[EShLangFragment].append(");\n");
 }
 
@@ -6950,78 +6841,61 @@ void TBuiltIns::addSamplingFunctions(TSampler sampler, const TString& typeName, 
     for (int proj = 0; proj <= 1; ++proj) { // loop over "bool" projective or not
 
         if (proj && (sampler.dim == EsdCube || sampler.isBuffer() || sampler.arrayed || sampler.isMultiSample()
-            || !sampler.isCombined())) {
+            || !sampler.isCombined()))
             continue;
-}
 
         for (int lod = 0; lod <= 1; ++lod) {
 
-            if (lod && (sampler.isBuffer() || sampler.isRect() || sampler.isMultiSample() || !sampler.isCombined())) {
+            if (lod && (sampler.isBuffer() || sampler.isRect() || sampler.isMultiSample() || !sampler.isCombined()))
                 continue;
-}
-            if (lod && sampler.dim == Esd2D && sampler.arrayed && sampler.shadow) {
+            if (lod && sampler.dim == Esd2D && sampler.arrayed && sampler.shadow)
                 continue;
-}
-            if (lod && sampler.dim == EsdCube && sampler.shadow) {
+            if (lod && sampler.dim == EsdCube && sampler.shadow)
                 continue;
-}
 
             for (int bias = 0; bias <= 1; ++bias) {
 
-                if (bias && (lod || sampler.isMultiSample() || !sampler.isCombined())) {
+                if (bias && (lod || sampler.isMultiSample() || !sampler.isCombined()))
                     continue;
-}
-                if (bias && (sampler.dim == Esd2D || sampler.dim == EsdCube) && sampler.shadow && sampler.arrayed) {
+                if (bias && (sampler.dim == Esd2D || sampler.dim == EsdCube) && sampler.shadow && sampler.arrayed)
                     continue;
-}
-                if (bias && (sampler.isRect() || sampler.isBuffer())) {
+                if (bias && (sampler.isRect() || sampler.isBuffer()))
                     continue;
-}
 
                 for (int offset = 0; offset <= 1; ++offset) { // loop over "bool" offset or not
 
-                    if (proj + offset + bias + lod > 3) {
+                    if (proj + offset + bias + lod > 3)
                         continue;
-}
-                    if (offset && (sampler.dim == EsdCube || sampler.isBuffer() || sampler.isMultiSample())) {
+                    if (offset && (sampler.dim == EsdCube || sampler.isBuffer() || sampler.isMultiSample()))
                         continue;
-}
 
                     for (int fetch = 0; fetch <= 1; ++fetch) { // loop over "bool" fetch or not
 
-                        if (proj + offset + fetch + bias + lod > 3) {
+                        if (proj + offset + fetch + bias + lod > 3)
                             continue;
-}
-                        if (fetch && (lod || bias)) {
+                        if (fetch && (lod || bias))
                             continue;
-}
-                        if (fetch && (sampler.shadow || sampler.dim == EsdCube)) {
+                        if (fetch && (sampler.shadow || sampler.dim == EsdCube))
                             continue;
-}
                         if (fetch == 0 && (sampler.isMultiSample() || sampler.isBuffer()
-                            || !sampler.isCombined())) {
+                            || !sampler.isCombined()))
                             continue;
-}
 
                         for (int grad = 0; grad <= 1; ++grad) { // loop over "bool" grad or not
 
-                            if (grad && (lod || bias || sampler.isMultiSample() || !sampler.isCombined())) {
+                            if (grad && (lod || bias || sampler.isMultiSample() || !sampler.isCombined()))
                                 continue;
-}
-                            if (grad && sampler.isBuffer()) {
+                            if (grad && sampler.isBuffer())
                                 continue;
-}
-                            if (proj + offset + fetch + grad + bias + lod > 3) {
+                            if (proj + offset + fetch + grad + bias + lod > 3)
                                 continue;
-}
 
                             for (int extraProj = 0; extraProj <= 1; ++extraProj) {
                                 bool compare = false;
                                 int totalDims = dimMap[sampler.dim] + (sampler.arrayed ? 1 : 0);
                                 // skip dummy unused second component for 1D non-array shadows
-                                if (sampler.shadow && totalDims < 2) {
+                                if (sampler.shadow && totalDims < 2)
                                     totalDims = 2;
-}
                                 totalDims += (sampler.shadow ? 1 : 0) + proj;
                                 if (totalDims > 4 && sampler.shadow) {
                                     compare = true;
@@ -7029,19 +6903,16 @@ void TBuiltIns::addSamplingFunctions(TSampler sampler, const TString& typeName, 
                                 }
                                 assert(totalDims <= 4);
 
-                                if (extraProj && ! proj) {
+                                if (extraProj && ! proj)
                                     continue;
-}
-                                if (extraProj && (sampler.dim == Esd3D || sampler.shadow || !sampler.isCombined())) {
+                                if (extraProj && (sampler.dim == Esd3D || sampler.shadow || !sampler.isCombined()))
                                     continue;
-}
 
                                 // loop over 16-bit floating-point texel addressing
                                 for (int f16TexAddr = 0; f16TexAddr <= 1; ++f16TexAddr)
                                 {
-                                    if (f16TexAddr && sampler.type != EbtFloat16) {
+                                    if (f16TexAddr && sampler.type != EbtFloat16)
                                         continue;
-}
                                     if (f16TexAddr && sampler.shadow && ! compare) {
                                         compare = true; // compare argument is always present
                                         totalDims--;
@@ -7049,38 +6920,33 @@ void TBuiltIns::addSamplingFunctions(TSampler sampler, const TString& typeName, 
                                     // loop over "bool" lod clamp
                                     for (int lodClamp = 0; lodClamp <= 1 ;++lodClamp)
                                     {
-                                        if (lodClamp && (profile == EEsProfile || version < 450)) {
+                                        if (lodClamp && (profile == EEsProfile || version < 450))
                                             continue;
-}
-                                        if (lodClamp && (proj || lod || fetch)) {
+                                        if (lodClamp && (proj || lod || fetch))
                                             continue;
-}
 
                                         // loop over "bool" sparse or not
                                         for (int sparse = 0; sparse <= 1; ++sparse)
                                         {
-                                            if (sparse && (profile == EEsProfile || version < 450)) {
+                                            if (sparse && (profile == EEsProfile || version < 450))
                                                 continue;
-}
                                             // Sparse sampling is not for 1D/1D array texture, buffer texture, and
                                             // projective texture
-                                            if (sparse && (sampler.is1D() || sampler.isBuffer() || proj)) {
+                                            if (sparse && (sampler.is1D() || sampler.isBuffer() || proj))
                                                 continue;
-}
 
                                             TString s;
 
                                             // return type
-                                            if (sparse) {
+                                            if (sparse)
                                                 s.append("int ");
-                                            } else {
-                                                if (sampler.shadow) {
-                                                    if (sampler.type == EbtFloat16) {
+                                            else {
+                                                if (sampler.shadow)
+                                                    if (sampler.type == EbtFloat16)
                                                         s.append("float16_t ");
-                                                    } else {
+                                                    else
                                                         s.append("float ");
-}
-                                                } else {
+                                                else {
                                                     s.append(prefixes[sampler.type]);
                                                     s.append("vec4 ");
                                                 }
@@ -7088,110 +6954,94 @@ void TBuiltIns::addSamplingFunctions(TSampler sampler, const TString& typeName, 
 
                                             // name
                                             if (sparse) {
-                                                if (fetch) {
+                                                if (fetch)
                                                     s.append("sparseTexel");
-                                                } else {
+                                                else
                                                     s.append("sparseTexture");
-}
                                             }
                                             else {
-                                                if (fetch) {
+                                                if (fetch)
                                                     s.append("texel");
-                                                } else {
+                                                else
                                                     s.append("texture");
-}
                                             }
-                                            if (proj) {
+                                            if (proj)
                                                 s.append("Proj");
-}
-                                            if (lod) {
+                                            if (lod)
                                                 s.append("Lod");
-}
-                                            if (grad) {
+                                            if (grad)
                                                 s.append("Grad");
-}
-                                            if (fetch) {
+                                            if (fetch)
                                                 s.append("Fetch");
-}
-                                            if (offset) {
+                                            if (offset)
                                                 s.append("Offset");
-}
-                                            if (lodClamp) {
+                                            if (lodClamp)
                                                 s.append("Clamp");
-}
-                                            if (lodClamp != 0 || sparse) {
+                                            if (lodClamp != 0 || sparse)
                                                 s.append("ARB");
-}
                                             s.append("(");
 
                                             // sampler type
                                             s.append(typeName);
                                             // P coordinate
                                             if (extraProj) {
-                                                if (f16TexAddr) {
+                                                if (f16TexAddr)
                                                     s.append(",f16vec4");
-                                                } else {
+                                                else
                                                     s.append(",vec4");
-}
                                             } else {
                                                 s.append(",");
                                                 TBasicType t = fetch ? EbtInt : (f16TexAddr ? EbtFloat16 : EbtFloat);
-                                                if (totalDims == 1) {
+                                                if (totalDims == 1)
                                                     s.append(TType::getBasicString(t));
-                                                } else {
+                                                else {
                                                     s.append(prefixes[t]);
                                                     s.append("vec");
                                                     s.append(postfixes[totalDims]);
                                                 }
                                             }
                                             // non-optional compare
-                                            if (compare) {
+                                            if (compare)
                                                 s.append(",float");
-}
 
                                             // non-optional lod argument (lod that's not driven by lod loop) or sample
                                             if ((fetch && !sampler.isBuffer() &&
                                                  !sampler.isRect() && !sampler.isMultiSample())
-                                                 || (sampler.isMultiSample() && fetch)) {
+                                                 || (sampler.isMultiSample() && fetch))
                                                 s.append(",int");
-}
                                             // non-optional lod
                                             if (lod) {
-                                                if (f16TexAddr) {
+                                                if (f16TexAddr)
                                                     s.append(",float16_t");
-                                                } else {
+                                                else
                                                     s.append(",float");
-}
                                             }
 
                                             // gradient arguments
                                             if (grad) {
                                                 if (dimMap[sampler.dim] == 1) {
-                                                    if (f16TexAddr) {
+                                                    if (f16TexAddr)
                                                         s.append(",float16_t,float16_t");
-                                                    } else {
+                                                    else
                                                         s.append(",float,float");
-}
                                                 } else {
-                                                    if (f16TexAddr) {
+                                                    if (f16TexAddr)
                                                         s.append(",f16vec");
-                                                    } else {
+                                                    else
                                                         s.append(",vec");
-}
                                                     s.append(postfixes[dimMap[sampler.dim]]);
-                                                    if (f16TexAddr) {
+                                                    if (f16TexAddr)
                                                         s.append(",f16vec");
-                                                    } else {
+                                                    else
                                                         s.append(",vec");
-}
                                                     s.append(postfixes[dimMap[sampler.dim]]);
                                                 }
                                             }
                                             // offset
                                             if (offset) {
-                                                if (dimMap[sampler.dim] == 1) {
+                                                if (dimMap[sampler.dim] == 1)
                                                     s.append(",int");
-                                                } else {
+                                                else {
                                                     s.append(",ivec");
                                                     s.append(postfixes[dimMap[sampler.dim]]);
                                                 }
@@ -7199,33 +7049,30 @@ void TBuiltIns::addSamplingFunctions(TSampler sampler, const TString& typeName, 
 
                                             // lod clamp
                                             if (lodClamp) {
-                                                if (f16TexAddr) {
+                                                if (f16TexAddr)
                                                     s.append(",float16_t");
-                                                } else {
+                                                else
                                                     s.append(",float");
-}
                                             }
                                             // texel out (for sparse texture)
                                             if (sparse) {
                                                 s.append(",out ");
-                                                if (sampler.shadow) {
-                                                    if (sampler.type == EbtFloat16) {
+                                                if (sampler.shadow)
+                                                    if (sampler.type == EbtFloat16)
                                                         s.append("float16_t");
-                                                    } else {
+                                                    else
                                                         s.append("float");
-}
-                                                } else {
+                                                else {
                                                     s.append(prefixes[sampler.type]);
                                                     s.append("vec4");
                                                 }
                                             }
                                             // optional bias
                                             if (bias) {
-                                                if (f16TexAddr) {
+                                                if (f16TexAddr)
                                                     s.append(",float16_t");
-                                                } else {
+                                                else
                                                     s.append(",float");
-}
                                             }
                                             s.append(");\n");
 
@@ -7233,9 +7080,8 @@ void TBuiltIns::addSamplingFunctions(TSampler sampler, const TString& typeName, 
                                             if (!grad && (bias || lodClamp != 0)) {
                                                 stageBuiltins[EShLangFragment].append(s);
                                                 stageBuiltins[EShLangCompute].append(s);
-                                            } else {
+                                            } else
                                                 commonBuiltins.append(s);
-}
 
                                         }
                                     }
@@ -7266,52 +7112,45 @@ void TBuiltIns::addGatherFunctions(TSampler sampler, const TString& typeName, in
         return;
     }
 
-    if (sampler.isMultiSample()) {
+    if (sampler.isMultiSample())
         return;
-}
 
-    if (version < 140 && sampler.dim == EsdRect && sampler.type != EbtFloat) {
+    if (version < 140 && sampler.dim == EsdRect && sampler.type != EbtFloat)
         return;
-}
 
     for (int f16TexAddr = 0; f16TexAddr <= 1; ++f16TexAddr) { // loop over 16-bit floating-point texel addressing
 
-        if (f16TexAddr && sampler.type != EbtFloat16) {
+        if (f16TexAddr && sampler.type != EbtFloat16)
             continue;
-}
         for (int offset = 0; offset < 3; ++offset) { // loop over three forms of offset in the call name:  none, Offset, and Offsets
 
             for (int comp = 0; comp < 2; ++comp) { // loop over presence of comp argument
 
-                if (comp > 0 && sampler.shadow) {
+                if (comp > 0 && sampler.shadow)
                     continue;
-}
 
-                if (offset > 0 && sampler.dim == EsdCube) {
+                if (offset > 0 && sampler.dim == EsdCube)
                     continue;
-}
 
                 for (int sparse = 0; sparse <= 1; ++sparse) { // loop over "bool" sparse or not
-                    if (sparse && (profile == EEsProfile || version < 450)) {
+                    if (sparse && (profile == EEsProfile || version < 450))
                         continue;
-}
 
                     TString s;
 
                     // return type
-                    if (sparse) {
+                    if (sparse)
                         s.append("int ");
-                    } else {
+                    else {
                         s.append(prefixes[sampler.type]);
                         s.append("vec4 ");
                     }
 
                     // name
-                    if (sparse) {
+                    if (sparse)
                         s.append("sparseTextureGather");
-                    } else {
+                    else
                         s.append("textureGather");
-}
                     switch (offset) {
                     case 1:
                         s.append("Offset");
@@ -7322,34 +7161,30 @@ void TBuiltIns::addGatherFunctions(TSampler sampler, const TString& typeName, in
                     default:
                         break;
                     }
-                    if (sparse) {
+                    if (sparse)
                         s.append("ARB");
-}
                     s.append("(");
 
                     // sampler type argument
                     s.append(typeName);
 
                     // P coordinate argument
-                    if (f16TexAddr) {
+                    if (f16TexAddr)
                         s.append(",f16vec");
-                    } else {
+                    else
                         s.append(",vec");
-}
                     int totalDims = dimMap[sampler.dim] + (sampler.arrayed ? 1 : 0);
                     s.append(postfixes[totalDims]);
 
                     // refZ argument
-                    if (sampler.shadow) {
+                    if (sampler.shadow)
                         s.append(",float");
-}
 
                     // offset argument
                     if (offset > 0) {
                         s.append(",ivec2");
-                        if (offset == 2) {
+                        if (offset == 2)
                             s.append("[4]");
-}
                     }
 
                     // texel out (for sparse texture)
@@ -7360,9 +7195,8 @@ void TBuiltIns::addGatherFunctions(TSampler sampler, const TString& typeName, in
                     }
 
                     // comp argument
-                    if (comp) {
+                    if (comp)
                         s.append(",int");
-}
 
                     s.append(");\n");
                     commonBuiltins.append(s);
@@ -7371,65 +7205,56 @@ void TBuiltIns::addGatherFunctions(TSampler sampler, const TString& typeName, in
         }
     }
 
-    if (sampler.dim == EsdRect || sampler.shadow) {
+    if (sampler.dim == EsdRect || sampler.shadow)
         return;
-}
 
-    if (profile == EEsProfile || version < 450) {
+    if (profile == EEsProfile || version < 450)
         return;
-}
 
     for (int bias = 0; bias < 2; ++bias) { // loop over presence of bias argument
 
         for (int lod = 0; lod < 2; ++lod) { // loop over presence of lod argument
 
-            if ((lod && bias) || (lod == 0 && bias == 0)) {
+            if ((lod && bias) || (lod == 0 && bias == 0))
                 continue;
-}
 
             for (int f16TexAddr = 0; f16TexAddr <= 1; ++f16TexAddr) { // loop over 16-bit floating-point texel addressing
 
-                if (f16TexAddr && sampler.type != EbtFloat16) {
+                if (f16TexAddr && sampler.type != EbtFloat16)
                     continue;
-}
 
                 for (int offset = 0; offset < 3; ++offset) { // loop over three forms of offset in the call name:  none, Offset, and Offsets
 
                     for (int comp = 0; comp < 2; ++comp) { // loop over presence of comp argument
 
-                        if (comp == 0 && bias) {
+                        if (comp == 0 && bias)
                             continue;
-}
 
-                        if (offset > 0 && sampler.dim == EsdCube) {
+                        if (offset > 0 && sampler.dim == EsdCube)
                             continue;
-}
 
                         for (int sparse = 0; sparse <= 1; ++sparse) { // loop over "bool" sparse or not
-                            if (sparse && (profile == EEsProfile || version < 450)) {
+                            if (sparse && (profile == EEsProfile || version < 450))
                                 continue;
-}
 
                             TString s;
 
                             // return type
-                            if (sparse) {
+                            if (sparse)
                                 s.append("int ");
-                            } else {
+                            else {
                                 s.append(prefixes[sampler.type]);
                                 s.append("vec4 ");
                             }
 
                             // name
-                            if (sparse) {
+                            if (sparse)
                                 s.append("sparseTextureGather");
-                            } else {
+                            else
                                 s.append("textureGather");
-}
 
-                            if (lod) {
+                            if (lod)
                                 s.append("Lod");
-}
 
                             switch (offset) {
                             case 1:
@@ -7442,11 +7267,10 @@ void TBuiltIns::addGatherFunctions(TSampler sampler, const TString& typeName, in
                                 break;
                             }
 
-                            if (lod) {
+                            if (lod)
                                 s.append("AMD");
-                            } else if (sparse) {
+                            else if (sparse)
                                 s.append("ARB");
-}
 
                             s.append("(");
 
@@ -7454,29 +7278,26 @@ void TBuiltIns::addGatherFunctions(TSampler sampler, const TString& typeName, in
                             s.append(typeName);
 
                             // P coordinate argument
-                            if (f16TexAddr) {
+                            if (f16TexAddr)
                                 s.append(",f16vec");
-                            } else {
+                            else
                                 s.append(",vec");
-}
                             int totalDims = dimMap[sampler.dim] + (sampler.arrayed ? 1 : 0);
                             s.append(postfixes[totalDims]);
 
                             // lod argument
                             if (lod) {
-                                if (f16TexAddr) {
+                                if (f16TexAddr)
                                     s.append(",float16_t");
-                                } else {
+                                else
                                     s.append(",float");
-}
                             }
 
                             // offset argument
                             if (offset > 0) {
                                 s.append(",ivec2");
-                                if (offset == 2) {
+                                if (offset == 2)
                                     s.append("[4]");
-}
                             }
 
                             // texel out (for sparse texture)
@@ -7487,25 +7308,22 @@ void TBuiltIns::addGatherFunctions(TSampler sampler, const TString& typeName, in
                             }
 
                             // comp argument
-                            if (comp) {
+                            if (comp)
                                 s.append(",int");
-}
 
                             // bias argument
                             if (bias) {
-                                if (f16TexAddr) {
+                                if (f16TexAddr)
                                     s.append(",float16_t");
-                                } else {
+                                else
                                     s.append(",float");
-}
                             }
 
                             s.append(");\n");
-                            if (bias) {
+                            if (bias)
                                 stageBuiltins[EShLangFragment].append(s);
-                            } else {
+                            else
                                 commonBuiltins.append(s);
-}
                         }
                     }
                 }
@@ -7854,7 +7672,7 @@ void TBuiltIns::initialize(const TBuiltInResource &resources, int version, EProf
                         "float gl_PointSize;"
                         "float gl_ClipDistance[];"
                     );
-                if (profile == ECompatibilityProfile) {
+                if (profile == ECompatibilityProfile)
                     s.append(
                         "vec4 gl_ClipVertex;"
                         "vec4 gl_FrontColor;"
@@ -7864,14 +7682,12 @@ void TBuiltIns::initialize(const TBuiltInResource &resources, int version, EProf
                         "vec4 gl_TexCoord[];"
                         "float gl_FogFragCoord;"
                         );
-}
-                if (profile != EEsProfile && version >= 450) {
+                if (profile != EEsProfile && version >= 450)
                     s.append(
                         "float gl_CullDistance[];"
                         "vec4 gl_SecondaryPositionNV;"  // GL_NV_stereo_view_rendering
                         "vec4 gl_PositionPerViewNV[];"  // GL_NVX_multiview_per_view_attributes
                        );
-}
                 s.append(
                     "} gl_in[gl_MaxPatchVertices];"
                     "\n");
@@ -8046,9 +7862,8 @@ void TBuiltIns::initialize(const TBuiltInResource &resources, int version, EProf
 static void SpecialQualifier(const char* name, TStorageQualifier qualifier, TBuiltInVariable builtIn, TSymbolTable& symbolTable)
 {
     TSymbol* symbol = symbolTable.find(name);
-    if (symbol == nullptr) {
+    if (symbol == nullptr)
         return;
-}
 
     TQualifier& symQualifier = symbol->getWritableType().getQualifier();
     symQualifier.storage = qualifier;
@@ -8065,9 +7880,8 @@ static void SpecialQualifier(const char* name, TStorageQualifier qualifier, TBui
 static void ModifyFlatDecoration(const char* name, bool flat, TSymbolTable& symbolTable)
 {
     TSymbol* symbol = symbolTable.find(name);
-    if (symbol == nullptr) {
+    if (symbol == nullptr)
         return;
-}
 
     TQualifier& symQualifier = symbol->getWritableType().getQualifier();
     symQualifier.flat = flat;
@@ -8086,9 +7900,8 @@ static void ModifyFlatDecoration(const char* name, bool flat, TSymbolTable& symb
 static void BuiltInVariable(const char* name, TBuiltInVariable builtIn, TSymbolTable& symbolTable)
 {
     TSymbol* symbol = symbolTable.find(name);
-    if (symbol == nullptr) {
+    if (symbol == nullptr)
         return;
-}
 
     TQualifier& symQualifier = symbol->getWritableType().getQualifier();
     symQualifier.builtIn = builtIn;
@@ -8109,13 +7922,12 @@ static void RetargetVariable(const char* from, const char* to, TSymbolTable& sym
 static void BuiltInVariable(const char* blockName, const char* name, TBuiltInVariable builtIn, TSymbolTable& symbolTable)
 {
     TSymbol* symbol = symbolTable.find(blockName);
-    if (symbol == nullptr) {
+    if (symbol == nullptr)
         return;
-}
 
     TTypeList& structure = *symbol->getWritableType().getWritableStruct();
     for (int i = 0; i < (int)structure.size(); ++i) {
-        if (structure[i].type->getFieldName() == name) {
+        if (structure[i].type->getFieldName().compare(name) == 0) {
             structure[i].type->getQualifier().builtIn = builtIn;
             return;
         }
@@ -8154,9 +7966,8 @@ void TBuiltIns::identifyBuiltIns(int version, EProfile profile, const SpvVersion
         if (spvVersion.vulkan == 0) {
             SpecialQualifier("gl_VertexID",   EvqVertexId,   EbvVertexId,   symbolTable);
             SpecialQualifier("gl_InstanceID", EvqInstanceId, EbvInstanceId, symbolTable);
-            if (version < 140) {
+            if (version < 140)
                 symbolTable.setVariableExtensions("gl_InstanceID", 1, &E_GL_EXT_draw_instanced);
-}
         }
 
         if (spvVersion.vulkan > 0 && spvVersion.vulkanRelaxed) {
@@ -8281,13 +8092,11 @@ void TBuiltIns::identifyBuiltIns(int version, EProfile profile, const SpvVersion
                 symbolTable.setFunctionExtensions("texture2DGradEXT",     1, &E_GL_EXT_shader_texture_lod);
                 symbolTable.setFunctionExtensions("texture2DProjGradEXT", 1, &E_GL_EXT_shader_texture_lod);
                 symbolTable.setFunctionExtensions("textureCubeGradEXT",   1, &E_GL_EXT_shader_texture_lod);
-                if (version == 310) {
+                if (version == 310)
                     symbolTable.setFunctionExtensions("textureGatherOffsets", Num_AEP_gpu_shader5, AEP_gpu_shader5);
-}
             }
-            if (version == 310) {
+            if (version == 310)
                 symbolTable.setFunctionExtensions("fma", Num_AEP_gpu_shader5, AEP_gpu_shader5);
-}
         }
 
         if (profile == EEsProfile && version < 320) {
@@ -8406,9 +8215,8 @@ void TBuiltIns::identifyBuiltIns(int version, EProfile profile, const SpvVersion
         BuiltInVariable("gl_TessLevelInner",  EbvTessLevelInner, symbolTable);
         BuiltInVariable("gl_TessCoord",       EbvTessCoord,      symbolTable);
 
-        if (version < 410) {
+        if (version < 410)
             symbolTable.setVariableExtensions("gl_ViewportIndex", 1, &E_GL_ARB_viewport_array);
-}
 
         // Compatibility variables
 
@@ -8468,13 +8276,11 @@ void TBuiltIns::identifyBuiltIns(int version, EProfile profile, const SpvVersion
             if (spvVersion.vulkan > 0) {
                 // Treat "gl_SubGroupSizeARB" as shader input instead of uniform for Vulkan
                 SpecialQualifier("gl_SubGroupSizeARB", EvqVaryingIn, EbvSubGroupSize, symbolTable);
-                if (language == EShLangFragment) {
+                if (language == EShLangFragment)
                     ModifyFlatDecoration("gl_SubGroupSizeARB", true, symbolTable);
-}
             }
-            else {
+            else
                 BuiltInVariable("gl_SubGroupSizeARB", EbvSubGroupSize, symbolTable);
-}
         }
 
         // GL_KHR_shader_subgroup
@@ -8538,9 +8344,9 @@ void TBuiltIns::identifyBuiltIns(int version, EProfile profile, const SpvVersion
         SpecialQualifier("gl_FrontFacing",      EvqFace,       EbvFace,             symbolTable);
         SpecialQualifier("gl_FragCoord",        EvqFragCoord,  EbvFragCoord,        symbolTable);
         SpecialQualifier("gl_PointCoord",       EvqPointCoord, EbvPointCoord,       symbolTable);
-        if (spvVersion.spv == 0) {
+        if (spvVersion.spv == 0)
             SpecialQualifier("gl_FragColor",    EvqFragColor,  EbvFragColor,        symbolTable);
-        } else {
+        else {
             TSymbol* symbol = symbolTable.find("gl_FragColor");
             if (symbol) {
                 symbol->getWritableType().getQualifier().storage = EvqVaryingOut;
@@ -8646,9 +8452,8 @@ void TBuiltIns::identifyBuiltIns(int version, EProfile profile, const SpvVersion
                 symbolTable.setFunctionExtensions("texture2DGradEXT",     1, &E_GL_EXT_shader_texture_lod);
                 symbolTable.setFunctionExtensions("texture2DProjGradEXT", 1, &E_GL_EXT_shader_texture_lod);
                 symbolTable.setFunctionExtensions("textureCubeGradEXT",   1, &E_GL_EXT_shader_texture_lod);
-                if (version < 320) {
+                if (version < 320)
                     symbolTable.setFunctionExtensions("textureGatherOffsets", Num_AEP_gpu_shader5, AEP_gpu_shader5);
-}
             }
             if (version == 100) {
                 symbolTable.setFunctionExtensions("dFdx",   1, &E_GL_OES_standard_derivatives);
@@ -8697,9 +8502,8 @@ void TBuiltIns::identifyBuiltIns(int version, EProfile profile, const SpvVersion
         }
 
         // E_GL_ARB_shader_image_load_store
-        if (profile != EEsProfile && version < 420) {
+        if (profile != EEsProfile && version < 420)
             symbolTable.setFunctionExtensions("memoryBarrier", 1, &E_GL_ARB_shader_image_load_store);
-}
         // All the image access functions are protected by checks on the type of the first argument.
 
         // E_GL_ARB_shader_atomic_counters
@@ -8921,13 +8725,11 @@ void TBuiltIns::identifyBuiltIns(int version, EProfile profile, const SpvVersion
             if (spvVersion.vulkan > 0) {
                 // Treat "gl_SubGroupSizeARB" as shader input instead of uniform for Vulkan
                 SpecialQualifier("gl_SubGroupSizeARB", EvqVaryingIn, EbvSubGroupSize, symbolTable);
-                if (language == EShLangFragment) {
+                if (language == EShLangFragment)
                     ModifyFlatDecoration("gl_SubGroupSizeARB", true, symbolTable);
-}
             }
-            else {
+            else
                 BuiltInVariable("gl_SubGroupSizeARB", EbvSubGroupSize, symbolTable);
-}
         }
 
         // GL_EXT_expect_assume
@@ -9189,13 +8991,11 @@ void TBuiltIns::identifyBuiltIns(int version, EProfile profile, const SpvVersion
             if (spvVersion.vulkan > 0) {
                 // Treat "gl_SubGroupSizeARB" as shader input instead of uniform for Vulkan
                 SpecialQualifier("gl_SubGroupSizeARB", EvqVaryingIn, EbvSubGroupSize, symbolTable);
-                if (language == EShLangFragment) {
+                if (language == EShLangFragment)
                     ModifyFlatDecoration("gl_SubGroupSizeARB", true, symbolTable);
-}
             }
-            else {
+            else
                 BuiltInVariable("gl_SubGroupSizeARB", EbvSubGroupSize, symbolTable);
-}
         }
 
         // GL_KHR_shader_subgroup
@@ -9448,13 +9248,11 @@ void TBuiltIns::identifyBuiltIns(int version, EProfile profile, const SpvVersion
             if (spvVersion.vulkan > 0) {
                 // Treat "gl_SubGroupSizeARB" as shader input instead of uniform for Vulkan
                 SpecialQualifier("gl_SubGroupSizeARB", EvqVaryingIn, EbvSubGroupSize, symbolTable);
-                if (language == EShLangFragment) {
+                if (language == EShLangFragment)
                     ModifyFlatDecoration("gl_SubGroupSizeARB", true, symbolTable);
-}
             }
-            else {
+            else
                 BuiltInVariable("gl_SubGroupSizeARB", EbvSubGroupSize, symbolTable);
-}
 
             // GL_KHR_shader_subgroup
             symbolTable.setVariableExtensions("gl_NumSubgroups",         1, &E_GL_KHR_shader_subgroup_basic);
@@ -9668,13 +9466,11 @@ void TBuiltIns::identifyBuiltIns(int version, EProfile profile, const SpvVersion
             if (spvVersion.vulkan > 0) {
                 // Treat "gl_SubGroupSizeARB" as shader input instead of uniform for Vulkan
                 SpecialQualifier("gl_SubGroupSizeARB", EvqVaryingIn, EbvSubGroupSize, symbolTable);
-                if (language == EShLangFragment) {
+                if (language == EShLangFragment)
                     ModifyFlatDecoration("gl_SubGroupSizeARB", true, symbolTable);
-}
             }
-            else {
+            else
                 BuiltInVariable("gl_SubGroupSizeARB", EbvSubGroupSize, symbolTable);
-}
         }
 
         // GL_KHR_shader_subgroup
@@ -9820,13 +9616,11 @@ void TBuiltIns::identifyBuiltIns(int version, EProfile profile, const SpvVersion
             if (spvVersion.vulkan > 0) {
                 // Treat "gl_SubGroupSizeARB" as shader input instead of uniform for Vulkan
                 SpecialQualifier("gl_SubGroupSizeARB", EvqVaryingIn, EbvSubGroupSize, symbolTable);
-                if (language == EShLangFragment) {
+                if (language == EShLangFragment)
                     ModifyFlatDecoration("gl_SubGroupSizeARB", true, symbolTable);
-}
             }
-            else {
+            else
                 BuiltInVariable("gl_SubGroupSizeARB", EbvSubGroupSize, symbolTable);
-}
         }
 
         // GL_KHR_shader_subgroup
@@ -10090,9 +9884,8 @@ void TBuiltIns::identifyBuiltIns(int version, EProfile profile, const SpvVersion
         symbolTable.relateToOperator("textureFootprintGradNV",      EOpImageSampleFootprintGradNV);
         symbolTable.relateToOperator("textureFootprintGradClampNV", EOpImageSampleFootprintGradClampNV);
 
-        if (spvVersion.spv == 0 && IncludeLegacy(version, profile, spvVersion)) {
+        if (spvVersion.spv == 0 && IncludeLegacy(version, profile, spvVersion))
             symbolTable.relateToOperator("ftransform", EOpFtransform);
-}
 
         if (spvVersion.spv == 0 && (IncludeLegacy(version, profile, spvVersion) ||
             (profile == EEsProfile && version == 100))) {
@@ -10410,9 +10203,8 @@ void TBuiltIns::identifyBuiltIns(int version, EProfile profile, const SpvVersion
         symbolTable.relateToOperator("interpolateAtSample",   EOpInterpolateAtSample);
         symbolTable.relateToOperator("interpolateAtOffset",   EOpInterpolateAtOffset);
 
-        if (profile != EEsProfile) {
+        if (profile != EEsProfile)
             symbolTable.relateToOperator("interpolateAtVertexAMD", EOpInterpolateAtVertex);
-}
 
         symbolTable.relateToOperator("beginInvocationInterlockARB", EOpBeginInvocationInterlock);
         symbolTable.relateToOperator("endInvocationInterlockARB",   EOpEndInvocationInterlock);
@@ -10570,9 +10362,8 @@ void TBuiltIns::identifyBuiltIns(int version, EProfile profile, const SpvVersion
         symbolTable.setVariableExtensions("gl_MinProgramTexelOffset", 1, &E_GL_ARB_shading_language_420pack);
         symbolTable.setVariableExtensions("gl_MaxProgramTexelOffset", 1, &E_GL_ARB_shading_language_420pack);
     }
-    if (profile != EEsProfile && version >= 150 && version < 410) {
+    if (profile != EEsProfile && version >= 150 && version < 410)
         symbolTable.setVariableExtensions("gl_MaxViewports", 1, &E_GL_ARB_viewport_array);
-}
 
     switch(language) {
     case EShLangFragment:

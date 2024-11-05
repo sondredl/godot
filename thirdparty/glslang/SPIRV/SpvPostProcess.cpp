@@ -66,24 +66,20 @@ void Builder::postProcessType(const Instruction& inst, Id typeId)
     // Characterize the type being questioned
     Id basicTypeOp = getMostBasicTypeClass(typeId);
     int width = 0;
-    if (basicTypeOp == OpTypeFloat || basicTypeOp == OpTypeInt) {
+    if (basicTypeOp == OpTypeFloat || basicTypeOp == OpTypeInt)
         width = getScalarTypeWidth(typeId);
-}
 
     // Do opcode-specific checks
     switch (inst.getOpCode()) {
     case OpLoad:
     case OpStore:
         if (basicTypeOp == OpTypeStruct) {
-            if (containsType(typeId, OpTypeInt, 8)) {
+            if (containsType(typeId, OpTypeInt, 8))
                 addCapability(CapabilityInt8);
-}
-            if (containsType(typeId, OpTypeInt, 16)) {
+            if (containsType(typeId, OpTypeInt, 16))
                 addCapability(CapabilityInt16);
-}
-            if (containsType(typeId, OpTypeFloat, 16)) {
+            if (containsType(typeId, OpTypeFloat, 16))
                 addCapability(CapabilityFloat16);
-}
         } else {
             StorageClass storageClass = getStorageClass(inst.getIdOperand(0));
             if (width == 8) {
@@ -107,12 +103,10 @@ void Builder::postProcessType(const Instruction& inst, Id typeId)
                 case StorageClassOutput:
                     break;
                 default:
-                    if (basicTypeOp == OpTypeInt) {
+                    if (basicTypeOp == OpTypeInt)
                         addCapability(CapabilityInt16);
-}
-                    if (basicTypeOp == OpTypeFloat) {
+                    if (basicTypeOp == OpTypeFloat)
                         addCapability(CapabilityFloat16);
-}
                     break;
                 }
             }
@@ -138,12 +132,10 @@ void Builder::postProcessType(const Instruction& inst, Id typeId)
                 }
             }
             if (!foundStorage) {
-                if (containsType(typeId, OpTypeFloat, 16)) {
+                if (containsType(typeId, OpTypeFloat, 16))
                     addCapability(CapabilityFloat16);
-}
-                if (containsType(typeId, OpTypeInt, 16)) {
+                if (containsType(typeId, OpTypeInt, 16))
                     addCapability(CapabilityInt16);
-}
             }
         }
         if (containsType(typeId, OpTypeInt, 8)) {
@@ -166,16 +158,14 @@ void Builder::postProcessType(const Instruction& inst, Id typeId)
         switch (inst.getImmediateOperand(1)) {
         case GLSLstd450Frexp:
         case GLSLstd450FrexpStruct:
-            if (getSpvVersion() < spv::Spv_1_3 && containsType(typeId, OpTypeInt, 16)) {
+            if (getSpvVersion() < spv::Spv_1_3 && containsType(typeId, OpTypeInt, 16))
                 addExtension(spv::E_SPV_AMD_gpu_shader_int16);
-}
             break;
         case GLSLstd450InterpolateAtCentroid:
         case GLSLstd450InterpolateAtSample:
         case GLSLstd450InterpolateAtOffset:
-            if (getSpvVersion() < spv::Spv_1_3 && containsType(typeId, OpTypeFloat, 16)) {
+            if (getSpvVersion() < spv::Spv_1_3 && containsType(typeId, OpTypeFloat, 16))
                 addExtension(spv::E_SPV_AMD_gpu_shader_half_float);
-}
             break;
         default:
             break;
@@ -183,32 +173,28 @@ void Builder::postProcessType(const Instruction& inst, Id typeId)
         break;
     case OpAccessChain:
     case OpPtrAccessChain:
-        if (isPointerType(typeId)) {
+        if (isPointerType(typeId))
             break;
-}
         if (basicTypeOp == OpTypeInt) {
-            if (width == 16) {
+            if (width == 16)
                 addCapability(CapabilityInt16);
-            } else if (width == 8) {
+            else if (width == 8)
                 addCapability(CapabilityInt8);
-}
         }
         break;
     default:
         if (basicTypeOp == OpTypeInt) {
-            if (width == 16) {
+            if (width == 16)
                 addCapability(CapabilityInt16);
-            } else if (width == 8) {
+            else if (width == 8)
                 addCapability(CapabilityInt8);
-            } else if (width == 64) {
+            else if (width == 64)
                 addCapability(CapabilityInt64);
-}
         } else if (basicTypeOp == OpTypeFloat) {
-            if (width == 16) {
+            if (width == 16)
                 addCapability(CapabilityFloat16);
-            } else if (width == 64) {
+            else if (width == 64)
                 addCapability(CapabilityFloat64);
-}
         }
         break;
     }
@@ -285,12 +271,12 @@ void Builder::postProcess(Instruction& inst)
                         unsigned int c = idx->getImmediateOperand(0);
 
                         const auto function = [&](const std::unique_ptr<Instruction>& decoration) {
-                            if (decoration->getOpCode() == OpMemberDecorate &&
-                                decoration->getIdOperand(0) == typeId &&
-                                decoration->getImmediateOperand(1) == c &&
-                                (decoration->getImmediateOperand(2) == DecorationOffset ||
-                                 decoration->getImmediateOperand(2) == DecorationMatrixStride)) {
-                                alignment |= decoration->getImmediateOperand(3);
+                            if (decoration.get()->getOpCode() == OpMemberDecorate &&
+                                decoration.get()->getIdOperand(0) == typeId &&
+                                decoration.get()->getImmediateOperand(1) == c &&
+                                (decoration.get()->getImmediateOperand(2) == DecorationOffset ||
+                                 decoration.get()->getImmediateOperand(2) == DecorationMatrixStride)) {
+                                alignment |= decoration.get()->getImmediateOperand(3);
                             }
                         };
                         std::for_each(decorations.begin(), decorations.end(), function);
@@ -300,10 +286,10 @@ void Builder::postProcess(Instruction& inst)
                     } else if (type->getOpCode() == OpTypeArray ||
                                type->getOpCode() == OpTypeRuntimeArray) {
                         const auto function = [&](const std::unique_ptr<Instruction>& decoration) {
-                            if (decoration->getOpCode() == OpDecorate &&
-                                decoration->getIdOperand(0) == typeId &&
-                                decoration->getImmediateOperand(1) == DecorationArrayStride) {
-                                alignment |= decoration->getImmediateOperand(2);
+                            if (decoration.get()->getOpCode() == OpDecorate &&
+                                decoration.get()->getIdOperand(0) == typeId &&
+                                decoration.get()->getImmediateOperand(1) == DecorationArrayStride) {
+                                alignment |= decoration.get()->getImmediateOperand(2);
                             }
                         };
                         std::for_each(decorations.begin(), decorations.end(), function);
@@ -321,9 +307,8 @@ void Builder::postProcess(Instruction& inst)
                 static_cast<void>(memoryAccess);
                 // Compute the index of the alignment operand.
                 int alignmentIdx = 2;
-                if (inst.getOpCode() == OpStore) {
+                if (inst.getOpCode() == OpStore)
                     alignmentIdx++;
-}
                 // Merge new and old (mis)alignment
                 alignment |= inst.getImmediateOperand(alignmentIdx);
                 // Pick the LSB
@@ -339,16 +324,14 @@ void Builder::postProcess(Instruction& inst)
     }
 
     // Checks based on type
-    if (inst.getTypeId() != NoType) {
+    if (inst.getTypeId() != NoType)
         postProcessType(inst, inst.getTypeId());
-}
     for (int op = 0; op < inst.getNumOperands(); ++op) {
         if (inst.isIdOperand(op)) {
             // In blocks, these are always result ids, but we are relying on
             // getTypeId() to return NoType for things like OpLabel.
-            if (getTypeId(inst.getIdOperand(op)) != NoType) {
+            if (getTypeId(inst.getIdOperand(op)) != NoType)
                 postProcessType(inst, getTypeId(inst.getIdOperand(op)));
-}
         }
     }
 }
@@ -372,24 +355,20 @@ void Builder::postProcessCFG()
             [&reachableBlocks, &unreachableMerges, &headerForUnreachableContinue]
             (Block* b, ReachReason why, Block* header) {
                reachableBlocks.insert(b);
-               if (why == ReachDeadContinue) { headerForUnreachableContinue[b] = header;
-}
-               if (why == ReachDeadMerge) { unreachableMerges.insert(b);
-}
+               if (why == ReachDeadContinue) headerForUnreachableContinue[b] = header;
+               if (why == ReachDeadMerge) unreachableMerges.insert(b);
             });
         for (auto bi = f->getBlocks().cbegin(); bi != f->getBlocks().cend(); bi++) {
             Block* b = *bi;
             if (unreachableMerges.count(b) != 0 || headerForUnreachableContinue.count(b) != 0) {
                 auto ii = b->getInstructions().cbegin();
                 ++ii; // Keep potential decorations on the label.
-                for (; ii != b->getInstructions().cend(); ++ii) {
+                for (; ii != b->getInstructions().cend(); ++ii)
                     unreachableDefinitions.insert(ii->get()->getResultId());
-}
             } else if (reachableBlocks.count(b) == 0) {
                 // The normal case for unreachable code.  All definitions are considered dead.
-                for (auto ii = b->getInstructions().cbegin(); ii != b->getInstructions().cend(); ++ii) {
+                for (auto ii = b->getInstructions().cbegin(); ii != b->getInstructions().cend(); ++ii)
                     unreachableDefinitions.insert(ii->get()->getResultId());
-}
             }
         }
     }
@@ -410,7 +389,7 @@ void Builder::postProcessCFG()
     // Remove unneeded decorations, for unreachable instructions
     decorations.erase(std::remove_if(decorations.begin(), decorations.end(),
         [&unreachableDefinitions](std::unique_ptr<Instruction>& I) -> bool {
-            Id decoration_id = I->getIdOperand(0);
+            Id decoration_id = I.get()->getIdOperand(0);
             return unreachableDefinitions.count(decoration_id) != 0;
         }),
         decorations.end());
@@ -443,23 +422,22 @@ void Builder::postProcessFeatures() {
         Function* f = *fi;
         for (auto bi = f->getBlocks().cbegin(); bi != f->getBlocks().cend(); bi++) {
             Block* b = *bi;
-            for (auto ii = b->getInstructions().cbegin(); ii != b->getInstructions().cend(); ii++) {
-                postProcess(**ii->);
-}
+            for (auto ii = b->getInstructions().cbegin(); ii != b->getInstructions().cend(); ii++)
+                postProcess(*ii->get());
 
             // For all local variables that contain pointers to PhysicalStorageBufferEXT, check whether
             // there is an existing restrict/aliased decoration. If we don't find one, add Aliased as the
             // default.
             for (auto vi = b->getLocalVariables().cbegin(); vi != b->getLocalVariables().cend(); vi++) {
-                const Instruction& inst = **vi->;
+                const Instruction& inst = *vi->get();
                 Id resultId = inst.getResultId();
                 if (containsPhysicalStorageBufferOrArray(getDerefTypeId(resultId))) {
                     bool foundDecoration = false;
                     const auto function = [&](const std::unique_ptr<Instruction>& decoration) {
-                        if (decoration->getIdOperand(0) == resultId &&
-                            decoration->getOpCode() == OpDecorate &&
-                            (decoration->getImmediateOperand(1) == spv::DecorationAliasedPointerEXT ||
-                             decoration->getImmediateOperand(1) == spv::DecorationRestrictPointerEXT)) {
+                        if (decoration.get()->getIdOperand(0) == resultId &&
+                            decoration.get()->getOpCode() == OpDecorate &&
+                            (decoration.get()->getImmediateOperand(1) == spv::DecorationAliasedPointerEXT ||
+                             decoration.get()->getImmediateOperand(1) == spv::DecorationRestrictPointerEXT)) {
                             foundDecoration = true;
                         }
                     };
@@ -486,25 +464,21 @@ void Builder::postProcessFeatures() {
 
         std::vector<Id> workgroup_variables;
         for (int i = 0; i < (int)ep->getNumOperands(); i++) {
-            if (!ep->isIdOperand(i)) {
+            if (!ep->isIdOperand(i))
                 continue;
-}
 
             const Id id = ep->getIdOperand(i);
             const Instruction *instr = module.getInstruction(id);
-            if (instr->getOpCode() != spv::OpVariable) {
+            if (instr->getOpCode() != spv::OpVariable)
                 continue;
-}
 
-            if (instr->getImmediateOperand(0) == spv::StorageClassWorkgroup) {
+            if (instr->getImmediateOperand(0) == spv::StorageClassWorkgroup)
                 workgroup_variables.push_back(id);
-}
         }
 
         if (workgroup_variables.size() > 1) {
-            for (size_t i = 0; i < workgroup_variables.size(); i++) {
+            for (size_t i = 0; i < workgroup_variables.size(); i++)
                 addDecoration(workgroup_variables[i], spv::DecorationAliased);
-}
         }
     }
 }
@@ -513,9 +487,8 @@ void Builder::postProcessFeatures() {
 void Builder::postProcess(bool compileOnly)
 {
     // postProcessCFG needs an entrypoint to determine what is reachable, but if we are not creating an "executable" shader, we don't have an entrypoint
-    if (!compileOnly) {
+    if (!compileOnly)
         postProcessCFG();
-}
 
     postProcessFeatures();
 }

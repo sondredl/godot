@@ -153,32 +153,27 @@ static int PutWebPHeaders(const VP8Encoder* const enc, size_t size0,
 
   // RIFF header.
   err = PutRIFFHeader(enc, riff_size);
-  if (err != VP8_ENC_OK) { goto Error;
-}
+  if (err != VP8_ENC_OK) goto Error;
 
   // VP8X.
   if (IsVP8XNeeded(enc)) {
     err = PutVP8XHeader(enc);
-    if (err != VP8_ENC_OK) { goto Error;
-}
+    if (err != VP8_ENC_OK) goto Error;
   }
 
   // Alpha.
   if (enc->has_alpha_) {
     err = PutAlphaChunk(enc);
-    if (err != VP8_ENC_OK) { goto Error;
-}
+    if (err != VP8_ENC_OK) goto Error;
   }
 
   // VP8 header.
   err = PutVP8Header(pic, vp8_size);
-  if (err != VP8_ENC_OK) { goto Error;
-}
+  if (err != VP8_ENC_OK) goto Error;
 
   // VP8 frame header.
   err = PutVP8FrameHeader(pic, enc->profile_, size0);
-  if (err != VP8_ENC_OK) { goto Error;
-}
+  if (err != VP8_ENC_OK) goto Error;
 
   // All OK.
   return 1;
@@ -334,8 +329,7 @@ int VP8EncWrite(VP8Encoder* const enc) {
 
   // Partition #0 with header and partition sizes
   ok = GeneratePartition0(enc);
-  if (!ok) { return 0;
-}
+  if (!ok) return 0;
 
   // Compute VP8 size
   vp8_size = VP8_FRAME_HEADER_SIZE +

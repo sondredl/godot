@@ -170,12 +170,9 @@ static void SubMem(void* ptr) {
 // Returns 0 in case of overflow of nmemb * size.
 static int CheckSizeArgumentsOverflow(uint64_t nmemb, size_t size) {
   const uint64_t total_size = nmemb * size;
-  if (nmemb == 0) { return 1;
-}
-  if ((uint64_t)size > WEBP_MAX_ALLOCABLE_MEMORY / nmemb) { return 0;
-}
-  if (!CheckSizeOverflow(total_size)) { return 0;
-}
+  if (nmemb == 0) return 1;
+  if ((uint64_t)size > WEBP_MAX_ALLOCABLE_MEMORY / nmemb) return 0;
+  if (!CheckSizeOverflow(total_size)) return 0;
 #if defined(PRINT_MEM_INFO) && defined(MALLOC_FAIL_AT)
   if (countdown_to_fail > 0 && --countdown_to_fail == 0) {
     return 0;    // fake fail!
@@ -197,8 +194,7 @@ static int CheckSizeArgumentsOverflow(uint64_t nmemb, size_t size) {
 void* WebPSafeMalloc(uint64_t nmemb, size_t size) {
   void* ptr;
   Increment(&num_malloc_calls);
-  if (!CheckSizeArgumentsOverflow(nmemb, size)) { return NULL;
-}
+  if (!CheckSizeArgumentsOverflow(nmemb, size)) return NULL;
   assert(nmemb * size > 0);
   ptr = malloc((size_t)(nmemb * size));
   AddMem(ptr, (size_t)(nmemb * size));
@@ -208,8 +204,7 @@ void* WebPSafeMalloc(uint64_t nmemb, size_t size) {
 void* WebPSafeCalloc(uint64_t nmemb, size_t size) {
   void* ptr;
   Increment(&num_calloc_calls);
-  if (!CheckSizeArgumentsOverflow(nmemb, size)) { return NULL;
-}
+  if (!CheckSizeArgumentsOverflow(nmemb, size)) return NULL;
   assert(nmemb * size > 0);
   ptr = calloc((size_t)nmemb, size);
   AddMem(ptr, (size_t)(nmemb * size));

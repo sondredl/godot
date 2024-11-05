@@ -177,7 +177,7 @@ psa_status_t psa_close_key(psa_key_handle_t handle);
  * \retval #PSA_SUCCESS \emptydescription
  * \retval #PSA_ERROR_NOT_SUPPORTED \emptydescription
  */
-static inline psa_status_t MBEDTLS_DEPRECATED; psa_set_key_domain_parameters(
+static inline psa_status_t MBEDTLS_DEPRECATED psa_set_key_domain_parameters(
     psa_key_attributes_t *attributes,
     psa_key_type_t type, const uint8_t *data, size_t data_length)
 {

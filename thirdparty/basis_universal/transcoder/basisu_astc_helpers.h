@@ -9,7 +9,7 @@
 #include <math.h>
 #include <fenv.h>
 
-namespace astc_helpers;
+namespace astc_helpers
 {
 	const uint32_t MAX_WEIGHT_VALUE = 64; // grid texel weights must range from [0,64]
 	const uint32_t MIN_GRID_DIM = 2; // the minimum dimension of a block's weight grid

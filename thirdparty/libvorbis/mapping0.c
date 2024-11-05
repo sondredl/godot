@@ -59,9 +59,8 @@ static void mapping0_pack(vorbis_info *vi,vorbis_info_mapping *vm,
   if(info->submaps>1){
     oggpack_write(opb,1,1);
     oggpack_write(opb,info->submaps-1,4);
-  }else {
-    o
-}ggpack_write(opb,0,1);
+  }else
+    oggpack_write(opb,0,1);
 
   if(info->coupling_steps>0){
     oggpack_write(opb,1,1);
@@ -71,9 +70,8 @@ static void mapping0_pack(vorbis_info *vi,vorbis_info_mapping *vm,
       oggpack_write(opb,info->coupling_mag[i],ov_ilog(vi->channels-1));
       oggpack_write(opb,info->coupling_ang[i],ov_ilog(vi->channels-1));
     }
-  }else {
-    o
-}ggpack_write(opb,0,1);
+  }else
+    oggpack_write(opb,0,1);
 
   oggpack_write(opb,0,2); /* 2,3:reserved */
 
@@ -94,27 +92,21 @@ static vorbis_info_mapping *mapping0_unpack(vorbis_info *vi,oggpack_buffer *opb)
   int i,b;
   vorbis_info_mapping0 *info=_ogg_calloc(1,sizeof(*info));
   codec_setup_info     *ci=vi->codec_setup;
-  if(vi->channels<=0) {goto err_out;
-}
+  if(vi->channels<=0)goto err_out;
 
   b=oggpack_read(opb,1);
-  if(b<0) {goto err_out;
-}
+  if(b<0)goto err_out;
   if(b){
     info->submaps=oggpack_read(opb,4)+1;
-    if(info->submaps<=0) {goto err_out;
-}
-  }else {
+    if(info->submaps<=0)goto err_out;
+  }else
     info->submaps=1;
-}
 
   b=oggpack_read(opb,1);
-  if(b<0) {goto err_out;
-}
+  if(b<0)goto err_out;
   if(b){
     info->coupling_steps=oggpack_read(opb,8)+1;
-    if(info->coupling_steps<=0) {goto err_out;
-}
+    if(info->coupling_steps<=0)goto err_out;
     for(i=0;i<info->coupling_steps;i++){
       /* vi->channels > 0 is enforced in the caller */
       int testM=info->coupling_mag[i]=
@@ -126,30 +118,25 @@ static vorbis_info_mapping *mapping0_unpack(vorbis_info *vi,oggpack_buffer *opb)
          testA<0 ||
          testM==testA ||
          testM>=vi->channels ||
-         testA>=vi->channels) { goto err_out;
-}
+         testA>=vi->channels) goto err_out;
     }
 
   }
 
-  if(oggpack_read(opb,2)!=0) {goto err_out; /* 2,3:reserved */
-}
+  if(oggpack_read(opb,2)!=0)goto err_out; /* 2,3:reserved */
 
   if(info->submaps>1){
     for(i=0;i<vi->channels;i++){
       info->chmuxlist[i]=oggpack_read(opb,4);
-      if(info->chmuxlist[i]>=info->submaps || info->chmuxlist[i]<0) {goto err_out;
-}
+      if(info->chmuxlist[i]>=info->submaps || info->chmuxlist[i]<0)goto err_out;
     }
   }
   for(i=0;i<info->submaps;i++){
     oggpack_read(opb,8); /* time submap unused */
     info->floorsubmap[i]=oggpack_read(opb,8);
-    if(info->floorsubmap[i]>=ci->floors || info->floorsubmap[i]<0) {goto err_out;
-}
+    if(info->floorsubmap[i]>=ci->floors || info->floorsubmap[i]<0)goto err_out;
     info->residuesubmap[i]=oggpack_read(opb,8);
-    if(info->residuesubmap[i]>=ci->residues || info->residuesubmap[i]<0) {goto err_out;
-}
+    if(info->residuesubmap[i]>=ci->residues || info->residuesubmap[i]<0)goto err_out;
   }
 
   return info;
@@ -164,6 +151,7 @@ static vorbis_info_mapping *mapping0_unpack(vorbis_info *vi,oggpack_buffer *opb)
 #include "lsp.h"
 #include "envelope.h"
 #include "mdct.h"
+#include "psy.h"
 #include "scales.h"
 
 #if 0
@@ -351,14 +339,11 @@ static int mapping0_forward(vorbis_block *vb){
                                      things back up here, and
                                      recalibrate the tunings in the
                                      next major model upgrade. */
-      if(temp>local_ampmax[i]) {local_ampmax[i]=temp;
-}
+      if(temp>local_ampmax[i])local_ampmax[i]=temp;
     }
 
-    if(local_ampmax[i]>0.f) {local_ampmax[i]=0.f;
-}
-    if(local_ampmax[i]>global_ampmax) {global_ampmax=local_ampmax[i];
-}
+    if(local_ampmax[i]>0.f)local_ampmax[i]=0.f;
+    if(local_ampmax[i]>global_ampmax)global_ampmax=local_ampmax[i];
 
 #if 0
     if(vi->channels==2){
@@ -396,9 +381,8 @@ static int mapping0_forward(vorbis_block *vb){
       floor_posts[i]=_vorbis_block_alloc(vb,PACKETBLOBS*sizeof(**floor_posts));
       memset(floor_posts[i],0,sizeof(**floor_posts)*PACKETBLOBS);
 
-      for(j=0;j<n/2;j++) {
-        logmdct[j]=todB(mdct+j)  + .345;
-}/* + .345 is a hack; the original
+      for(j=0;j<n/2;j++)
+        logmdct[j]=todB(mdct+j)  + .345; /* + .345 is a hack; the original
                                      todB estimation used on IEEE 754
                                      compliant machines had a bug that
                                      returned dB values about a third
@@ -511,8 +495,7 @@ static int mapping0_forward(vorbis_block *vb){
       /* this algorithm is hardwired to floor 1 for now; abort out if
          we're *not* floor1.  This won't happen unless someone has
          broken the encode setup lib.  Guard it anyway. */
-      if(ci->floor_type[info->floorsubmap[submap]]!=1) {return(-1);
-}
+      if(ci->floor_type[info->floorsubmap[submap]]!=1)return(-1);
 
       floor_posts[i][PACKETBLOBS/2]=
         floor1_fit(vb,b->flr[info->floorsubmap[submap]],
@@ -575,20 +558,18 @@ static int mapping0_forward(vorbis_block *vb){
 
         /* we also interpolate a range of intermediate curves for
            intermediate rates */
-        for(k=1;k<PACKETBLOBS/2;k++) {
+        for(k=1;k<PACKETBLOBS/2;k++)
           floor_posts[i][k]=
             floor1_interpolate_fit(vb,b->flr[info->floorsubmap[submap]],
                                    floor_posts[i][0],
                                    floor_posts[i][PACKETBLOBS/2],
                                    k*65536/(PACKETBLOBS/2));
-}
-        for(k=PACKETBLOBS/2+1;k<PACKETBLOBS-1;k++) {
+        for(k=PACKETBLOBS/2+1;k<PACKETBLOBS-1;k++)
           floor_posts[i][k]=
             floor1_interpolate_fit(vb,b->flr[info->floorsubmap[submap]],
                                    floor_posts[i][PACKETBLOBS/2],
                                    floor_posts[i][PACKETBLOBS-1],
                                    (k-PACKETBLOBS/2)*65536/(PACKETBLOBS/2));
-}
       }
     }
   }
@@ -684,8 +665,7 @@ static int mapping0_forward(vorbis_block *vb){
         for(j=0;j<vi->channels;j++){
           if(info->chmuxlist[j]==i){
             zerobundle[ch_in_bundle]=0;
-            if(nonzero[j]) {zerobundle[ch_in_bundle]=1;
-}
+            if(nonzero[j])zerobundle[ch_in_bundle]=1;
             couple_bundle[ch_in_bundle++]=iwork[j];
           }
         }
@@ -694,11 +674,9 @@ static int mapping0_forward(vorbis_block *vb){
           class(vb,b->residue[resnum],couple_bundle,zerobundle,ch_in_bundle);
 
         ch_in_bundle=0;
-        for(j=0;j<vi->channels;j++) {
-          if(info->chmuxlist[j]==i) {
+        for(j=0;j<vi->channels;j++)
+          if(info->chmuxlist[j]==i)
             couple_bundle[ch_in_bundle++]=iwork[j];
-}
-}
 
         _residue_P[ci->residue_type[resnum]]->
           forward(opb,vb,b->residue[resnum],
@@ -738,11 +716,10 @@ static int mapping0_inverse(vorbis_block *vb,vorbis_info_mapping *l){
     int submap=info->chmuxlist[i];
     floormemo[i]=_floor_P[ci->floor_type[info->floorsubmap[submap]]]->
       inverse1(vb,b->flr[info->floorsubmap[submap]]);
-    if(floormemo[i]) {
+    if(floormemo[i])
       nonzero[i]=1;
-    } else {
+    else
       nonzero[i]=0;
-}
     memset(vb->pcm[i],0,sizeof(*vb->pcm[i])*n/2);
   }
 
@@ -760,11 +737,10 @@ static int mapping0_inverse(vorbis_block *vb,vorbis_info_mapping *l){
     int ch_in_bundle=0;
     for(j=0;j<vi->channels;j++){
       if(info->chmuxlist[j]==i){
-        if(nonzero[j]) {
+        if(nonzero[j])
           zerobundle[ch_in_bundle]=1;
-        } else {
+        else
           zerobundle[ch_in_bundle]=0;
-}
         pcmbundle[ch_in_bundle++]=vb->pcm[j];
       }
     }
@@ -783,7 +759,7 @@ static int mapping0_inverse(vorbis_block *vb,vorbis_info_mapping *l){
       float mag=pcmM[j];
       float ang=pcmA[j];
 
-      if(mag>0) {
+      if(mag>0)
         if(ang>0){
           pcmM[j]=mag;
           pcmA[j]=mag-ang;
@@ -791,7 +767,7 @@ static int mapping0_inverse(vorbis_block *vb,vorbis_info_mapping *l){
           pcmA[j]=mag;
           pcmM[j]=mag+ang;
         }
-      } else
+      else
         if(ang>0){
           pcmM[j]=mag;
           pcmA[j]=mag+ang;

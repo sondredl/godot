@@ -60,14 +60,14 @@ struct FfxResource;
 // The private implementation of the FSR2 context.
 typedef struct FfxFsr2Context_Private {
 
-    struct FfxFsr2ContextDescription   contextDescription;
+    FfxFsr2ContextDescription   contextDescription;
     Fsr2Constants               constants;
     FfxDevice                   device;
-    struct FfxDeviceCapabilities       deviceCapabilities;
-    struct FfxPipelineState            pipelineDepthClip;
-    struct FfxPipelineState            pipelineReconstructPreviousDepth;
-    struct FfxPipelineState            pipelineLock;
-    struct FfxPipelineState            pipelineAccumulate;
+    FfxDeviceCapabilities       deviceCapabilities;
+    FfxPipelineState            pipelineDepthClip;
+    FfxPipelineState            pipelineReconstructPreviousDepth;
+    FfxPipelineState            pipelineLock;
+    FfxPipelineState            pipelineAccumulate;
     FfxPipelineState            pipelineAccumulateSharpen;
     FfxPipelineState            pipelineRCAS;
     FfxPipelineState            pipelineComputeLuminancePyramid;

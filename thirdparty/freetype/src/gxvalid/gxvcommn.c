@@ -269,11 +269,10 @@
     {
       if ( binSrchHeader->searchRange   == 0 &&
            binSrchHeader->entrySelector == 0 &&
-           binSrchHeader->rangeShift    == 0 ) {
+           binSrchHeader->rangeShift    == 0 )
         return;
-      } else {
-        F
-}T_INVALID_DATA;
+      else
+        FT_INVALID_DATA;
     }
 
     for ( searchRange = 1, entrySelector = 1;

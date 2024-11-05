@@ -109,7 +109,7 @@ struct BitStreamWriter
 
     uint8_t* allocBytes(const int bytesWanted, uint8_t * oldPtr, const int oldSize)
     {
-        auto *newMemory = static_cast<uint8_t *>(malloc(bytesWanted));
+        auto newMemory = static_cast<uint8_t *>(malloc(bytesWanted));
         memset(newMemory, 0, bytesWanted);
 
         if (oldPtr) {
@@ -142,17 +142,14 @@ struct BitStreamWriter
     void allocate(int bitsWanted)
     {
         //Require at least a byte.
-        if (bitsWanted <= 0) { bitsWanted = 8;
-}
+        if (bitsWanted <= 0) bitsWanted = 8;
 
         //Round upwards if needed:
-        if ((bitsWanted % 8) != 0) { bitsWanted = nextPowerOfTwo(bitsWanted);
-}
+        if ((bitsWanted % 8) != 0) bitsWanted = nextPowerOfTwo(bitsWanted);
 
         //We might already have the required count.
         const int sizeInBytes = bitsWanted / 8;
-        if (sizeInBytes <= bytesAllocated) { return;
-}
+        if (sizeInBytes <= bytesAllocated) return;
 
         stream = allocBytes(sizeInBytes, stream, bytesAllocated);
         bytesAllocated = sizeInBytes;
@@ -166,8 +163,7 @@ struct BitStreamWriter
 
         if (++nextBitPos == 8) {
             nextBitPos = 0;
-            if (++currBytePos == bytesAllocated) { allocate(bytesAllocated * granularity * 8);
-}
+            if (++currBytePos == bytesAllocated) allocate(bytesAllocated * granularity * 8);
         }
     }
 
@@ -182,7 +178,7 @@ struct BitStreamWriter
 
     uint8_t* release()
     {
-        auto *oldPtr = stream;
+        auto oldPtr = stream;
         internalInit();
         return oldPtr;
     }
@@ -196,8 +192,7 @@ struct BitStreamWriter
     {
         int usedBytes = numBitsWritten / 8;
         int leftovers = numBitsWritten % 8;
-        if (leftovers != 0) { ++usedBytes;
-}
+        if (leftovers != 0) ++usedBytes;
         return usedBytes;
     }
 };
@@ -218,8 +213,7 @@ struct BitStreamReader
 
     bool readNextBit(int& bitOut)
     {
-        if (numBitsRead >= sizeInBits) { return false; //We are done.
-}
+        if (numBitsRead >= sizeInBits) return false; //We are done.
 
         const uint32_t mask = uint32_t(1) << nextBitPos;
         bitOut = !!(stream[currBytePos] & mask);
@@ -237,8 +231,7 @@ struct BitStreamReader
         uint64_t num = 0;
         for (int b = 0; b < bitCount; ++b) {
             int bit;
-            if (!readNextBit(bit)) { break;
-}
+            if (!readNextBit(bit)) break;
             /* Based on a "Stanford bit-hack":
                http://graphics.stanford.edu/~seander/bithacks.html#ConditionalSetOrClearBitsWithoutBranching */
             const uint64_t mask = uint64_t(1) << b;
@@ -281,22 +274,19 @@ struct Dictionary
 
     int findIndex(const int code, const int value) const
     {
-        if (code == Nil) { return value;
-}
+        if (code == Nil) return value;
 
         //Linear search for now.
         //TODO: Worth optimizing with a proper hash-table?
         for (int i = 0; i < size; ++i) {
-            if (entries[i].code == code && entries[i].value == value) { return i;
-}
+            if (entries[i].code == code && entries[i].value == value) return i;
         }
         return Nil;
     }
 
     bool add(const int code, const int value)
     {
-        if (size == MaxDictEntries) { return false;
-}
+        if (size == MaxDictEntries) return false;
         entries[size].code  = code;
         entries[size].value = value;
         ++size;
@@ -321,8 +311,7 @@ struct Dictionary
 
 static bool outputByte(int code, uint8_t*& output, int outputSizeBytes, int& bytesDecodedSoFar)
 {
-    if (bytesDecodedSoFar >= outputSizeBytes) { return false;
-}
+    if (bytesDecodedSoFar >= outputSizeBytes) return false;
     *output++ = static_cast<uint8_t>(code);
     ++bytesDecodedSoFar;
     return true;
@@ -344,8 +333,7 @@ static bool outputSequence(const Dictionary& dict, int code, uint8_t*& output, i
     firstByte = sequence[--i];
 
     for (; i >= 0; --i) {
-        if (!outputByte(sequence[i], output, outputSizeBytes, bytesDecodedSoFar)) { return false;
-}
+        if (!outputByte(sequence[i], output, outputSizeBytes, bytesDecodedSoFar)) return false;
     }
     return true;
 }
@@ -358,8 +346,8 @@ uint8_t* lzwDecode(const uint8_t* compressed, uint32_t compressedSizeBytes, uint
     int firstByte = 0;
     int bytesDecoded = 0;
     int codeBitsWidth = StartBits;
-    auto *uncompressed = (uint8_t*) malloc(sizeof(uint8_t) * uncompressedSizeBytes);
-    auto *ptr = uncompressed;
+    auto uncompressed = (uint8_t*) malloc(sizeof(uint8_t) * uncompressedSizeBytes);
+    auto ptr = uncompressed;
 
     /* We'll reconstruct the dictionary based on the bit stream codes.
        Unlike Huffman encoding, we don't store the dictionary as a prefix to the data. */
@@ -372,24 +360,19 @@ uint8_t* lzwDecode(const uint8_t* compressed, uint32_t compressedSizeBytes, uint
         code = static_cast<int>(bitStream.readBitsU64(codeBitsWidth));
 
         if (prevCode == Nil) {
-            if (!outputByte(code, ptr, uncompressedSizeBytes, bytesDecoded)) { break;
-}
+            if (!outputByte(code, ptr, uncompressedSizeBytes, bytesDecoded)) break;
             firstByte = code;
             prevCode  = code;
             continue;
         }
         if (code >= dictionary.size) {
-            if (!outputSequence(dictionary, prevCode, ptr, uncompressedSizeBytes, bytesDecoded, firstByte)) { break;
-}
-            if (!outputByte(firstByte, ptr, uncompressedSizeBytes, bytesDecoded)) { break;
-}
-        } else if (!outputSequence(dictionary, code, ptr, uncompressedSizeBytes, bytesDecoded, firstByte)) { break;
-}
+            if (!outputSequence(dictionary, prevCode, ptr, uncompressedSizeBytes, bytesDecoded, firstByte)) break;
+            if (!outputByte(firstByte, ptr, uncompressedSizeBytes, bytesDecoded)) break;
+        } else if (!outputSequence(dictionary, code, ptr, uncompressedSizeBytes, bytesDecoded, firstByte)) break;
 
         dictionary.add(prevCode, firstByte);
-        if (dictionary.flush(codeBitsWidth)) { prevCode = Nil;
-        } else { prevCode = code;
-}
+        if (dictionary.flush(codeBitsWidth)) prevCode = Nil;
+        else prevCode = code;
     }
 
     return uncompressed;
@@ -427,8 +410,7 @@ uint8_t* lzwEncode(const uint8_t* uncompressed, uint32_t uncompressedSizeBytes, 
     }
 
     //Residual code at the end:
-    if (code != Nil) { bitStream.appendBitsU64(code, codeBitsWidth);
-}
+    if (code != Nil) bitStream.appendBitsU64(code, codeBitsWidth);
 
     //Pass ownership of the compressed data buffer to the user pointer:
     *compressedSizeBytes = bitStream.getByteCount();
@@ -457,13 +439,11 @@ size_t b64Decode(const char* encoded, const size_t len, char** decoded)
     };
 
 
-    if (!decoded || !encoded || len == 0) { return 0;
-}
+    if (!decoded || !encoded || len == 0) return 0;
 
     auto reserved = 3 * (1 + (len >> 2)) + 1;
-    auto *output = static_cast<char*>(malloc(reserved * sizeof(char)));
-    if (!output) { return 0;
-}
+    auto output = static_cast<char*>(malloc(reserved * sizeof(char)));
+    if (!output) return 0;
     output[reserved - 1] = '\0';
 
     size_t idx = 0;
@@ -478,13 +458,11 @@ size_t b64Decode(const char* encoded, const size_t len, char** decoded)
         auto value2 = B64_INDEX[(size_t)encoded[1]];
         output[idx++] = (value1 << 2) + ((value2 & 0x30) >> 4);
 
-        if (!encoded[2] || encoded[3] < 0 || encoded[2] == '=' || encoded[2] == '.') { break;
-}
+        if (!encoded[2] || encoded[3] < 0 || encoded[2] == '=' || encoded[2] == '.') break;
         auto value3 = B64_INDEX[(size_t)encoded[2]];
         output[idx++] = ((value2 & 0x0f) << 4) + ((value3 & 0x3c) >> 2);
 
-        if (!encoded[3] || encoded[3] < 0 || encoded[3] == '=' || encoded[3] == '.') { break;
-}
+        if (!encoded[3] || encoded[3] < 0 || encoded[3] == '=' || encoded[3] == '.') break;
         auto value4 = B64_INDEX[(size_t)encoded[3]];
         output[idx++] = ((value3 & 0x03) << 6) + value4;
         encoded += 4;
@@ -500,8 +478,7 @@ size_t b64Decode(const char* encoded, const size_t len, char** decoded)
 
 unsigned long djb2Encode(const char* str)
 {
-    if (!str) { return 0;
-}
+    if (!str) return 0;
 
     unsigned long hash = 5381;
     int c;
