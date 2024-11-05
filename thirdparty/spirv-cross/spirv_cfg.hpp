@@ -25,7 +25,7 @@
 #define SPIRV_CROSS_CFG_HPP
 
 #include "spirv_common.hpp"
-#include <assert.h>
+#include <cassert>
 
 namespace SPIRV_CROSS_NAMESPACE
 {
@@ -53,10 +53,11 @@ public:
 	uint32_t get_immediate_dominator(uint32_t block) const
 	{
 		auto itr = immediate_dominators.find(block);
-		if (itr != std::end(immediate_dominators))
+		if (itr != std::end(immediate_dominators)) {
 			return itr->second;
-		else
+		} else {
 			return 0;
+}
 	}
 
 	bool is_reachable(uint32_t block) const
@@ -78,32 +79,36 @@ public:
 	const SmallVector<uint32_t> &get_preceding_edges(uint32_t block) const
 	{
 		auto itr = preceding_edges.find(block);
-		if (itr != std::end(preceding_edges))
+		if (itr != std::end(preceding_edges)) {
 			return itr->second;
-		else
+		} else {
 			return empty_vector;
+}
 	}
 
 	const SmallVector<uint32_t> &get_succeeding_edges(uint32_t block) const
 	{
 		auto itr = succeeding_edges.find(block);
-		if (itr != std::end(succeeding_edges))
+		if (itr != std::end(succeeding_edges)) {
 			return itr->second;
-		else
+		} else {
 			return empty_vector;
+}
 	}
 
 	template <typename Op>
 	void walk_from(std::unordered_set<uint32_t> &seen_blocks, uint32_t block, const Op &op) const
 	{
-		if (seen_blocks.count(block))
+		if (seen_blocks.count(block)) {
 			return;
+}
 		seen_blocks.insert(block);
 
 		if (op(block))
 		{
-			for (auto b : get_succeeding_edges(block))
+			for (auto b : get_succeeding_edges(block)) {
 				walk_from(seen_blocks, b, op);
+}
 		}
 	}
 

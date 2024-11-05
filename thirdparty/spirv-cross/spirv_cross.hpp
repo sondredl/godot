@@ -546,19 +546,21 @@ protected:
 		// If we're not going to use any arguments, just return nullptr.
 		// We want to avoid case where we return an out of range pointer
 		// that trips debug assertions on some platforms.
-		if (!instr.length)
+		if (!instr.length) {
 			return nullptr;
+}
 
 		if (instr.is_embedded())
 		{
-			auto &embedded = static_cast<const EmbeddedInstruction &>(instr);
+			const auto &embedded = static_cast<const EmbeddedInstruction &>(instr);
 			assert(embedded.ops.size() == instr.length);
 			return embedded.ops.data();
 		}
 		else
 		{
-			if (instr.offset + instr.length > ir.spirv.size())
+			if (instr.offset + instr.length > ir.spirv.size()) {
 				SPIRV_CROSS_THROW("Compiler::stream() out of range.");
+}
 			return &ir.spirv[instr.offset];
 		}
 	}
@@ -613,12 +615,13 @@ protected:
 	template <typename T>
 	T *maybe_get(uint32_t id)
 	{
-		if (id >= ir.ids.size())
+		if (id >= ir.ids.size()) {
 			return nullptr;
-		else if (ir.ids[id].get_type() == static_cast<Types>(T::type))
+		} else if (ir.ids[id].get_type() == static_cast<Types>(T::type)) {
 			return &get<T>(id);
-		else
+		} else {
 			return nullptr;
+}
 	}
 
 	template <typename T>
@@ -630,12 +633,13 @@ protected:
 	template <typename T>
 	const T *maybe_get(uint32_t id) const
 	{
-		if (id >= ir.ids.size())
+		if (id >= ir.ids.size()) {
 			return nullptr;
-		else if (ir.ids[id].get_type() == static_cast<Types>(T::type))
+		} else if (ir.ids[id].get_type() == static_cast<Types>(T::type)) {
 			return &get<T>(id);
-		else
+		} else {
 			return nullptr;
+}
 	}
 
 	// Gets the id of SPIR-V type underlying the given type_id, which might be a pointer.
@@ -703,7 +707,7 @@ protected:
 
 	inline bool is_single_block_loop(uint32_t next) const
 	{
-		auto &block = get<SPIRBlock>(next);
+		const auto &block = get<SPIRBlock>(next);
 		return block.merge == SPIRBlock::MergeLoop && block.continue_block == ID(next);
 	}
 
@@ -776,8 +780,9 @@ protected:
 
 	void remap_variable_type_name(const SPIRType &type, const std::string &var_name, std::string &type_name) const
 	{
-		if (variable_remap_callback)
+		if (variable_remap_callback) {
 			variable_remap_callback(type, var_name, type_name);
+}
 	}
 
 	void set_ir(const ParsedIR &parsed);

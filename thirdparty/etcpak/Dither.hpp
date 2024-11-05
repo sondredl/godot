@@ -1,8 +1,8 @@
 #ifndef __DITHER_HPP__
 #define __DITHER_HPP__
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
 #ifdef __AVX2__
 #  ifdef _MSC_VER

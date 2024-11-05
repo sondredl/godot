@@ -10,7 +10,7 @@
 
 #include <algorithm>
 #include <array>     // ArrayWrapperND
-#include <string.h>  // strnlen
+#include <cstring>  // strnlen
 #include <string>    // std::string
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_hpp_macros.hpp>
@@ -891,7 +891,7 @@ namespace VULKAN_HPP_NAMESPACE
 
     UniqueHandle( UniqueHandle const & ) = delete;
 
-    UniqueHandle( UniqueHandle && other ) VULKAN_HPP_NOEXCEPT
+    UniqueHandle( UniqueHandle && other )  noexcept VULKAN_HPP_NOEXCEPT
       : Deleter( std::move( static_cast<Deleter &>( other ) ) )
       , m_value( other.release() )
     {
@@ -907,7 +907,7 @@ namespace VULKAN_HPP_NAMESPACE
 
     UniqueHandle & operator=( UniqueHandle const & ) = delete;
 
-    UniqueHandle & operator=( UniqueHandle && other ) VULKAN_HPP_NOEXCEPT
+    UniqueHandle & operator=( UniqueHandle && other )  noexcept VULKAN_HPP_NOEXCEPT
     {
       reset( other.release() );
       *static_cast<Deleter *>( this ) = std::move( static_cast<Deleter &>( other ) );
@@ -6171,7 +6171,7 @@ namespace VULKAN_HPP_NAMESPACE
   class ErrorCategoryImpl : public std::error_category
   {
   public:
-    virtual const char * name() const VULKAN_HPP_NOEXCEPT override
+    const char * name() const override VULKAN_HPP_NOEXCEPT override
     {
       return VULKAN_HPP_NAMESPACE_STRING "::Result";
     }
@@ -6201,11 +6201,11 @@ namespace VULKAN_HPP_NAMESPACE
     , public std::logic_error
   {
   public:
-    explicit LogicError( const std::string & what ) : Error(), std::logic_error( what ) {}
+    explicit LogicError( const std::string & what ) :  std::logic_error( what ) {}
 
-    explicit LogicError( char const * what ) : Error(), std::logic_error( what ) {}
+    explicit LogicError( char const * what ) :  std::logic_error( what ) {}
 
-    virtual const char * what() const VULKAN_HPP_NOEXCEPT
+    const char * what() const override VULKAN_HPP_NOEXCEPT
     {
       return std::logic_error::what();
     }
@@ -6216,19 +6216,19 @@ namespace VULKAN_HPP_NAMESPACE
     , public std::system_error
   {
   public:
-    SystemError( std::error_code ec ) : Error(), std::system_error( ec ) {}
+    SystemError( std::error_code ec ) :  std::system_error( ec ) {}
 
-    SystemError( std::error_code ec, std::string const & what ) : Error(), std::system_error( ec, what ) {}
+    SystemError( std::error_code ec, std::string const & what ) :  std::system_error( ec, what ) {}
 
-    SystemError( std::error_code ec, char const * what ) : Error(), std::system_error( ec, what ) {}
+    SystemError( std::error_code ec, char const * what ) :  std::system_error( ec, what ) {}
 
-    SystemError( int ev, std::error_category const & ecat ) : Error(), std::system_error( ev, ecat ) {}
+    SystemError( int ev, std::error_category const & ecat ) :  std::system_error( ev, ecat ) {}
 
-    SystemError( int ev, std::error_category const & ecat, std::string const & what ) : Error(), std::system_error( ev, ecat, what ) {}
+    SystemError( int ev, std::error_category const & ecat, std::string const & what ) :  std::system_error( ev, ecat, what ) {}
 
-    SystemError( int ev, std::error_category const & ecat, char const * what ) : Error(), std::system_error( ev, ecat, what ) {}
+    SystemError( int ev, std::error_category const & ecat, char const * what ) :  std::system_error( ev, ecat, what ) {}
 
-    virtual const char * what() const VULKAN_HPP_NOEXCEPT
+    const char * what() const override VULKAN_HPP_NOEXCEPT
     {
       return std::system_error::what();
     }
@@ -17912,7 +17912,7 @@ namespace VULKAN_HPP_NAMESPACE
     PFN_vkCmdSetDescriptorBufferOffsets2EXT           vkCmdSetDescriptorBufferOffsets2EXT           = 0;
     PFN_vkCmdBindDescriptorBufferEmbeddedSamplers2EXT vkCmdBindDescriptorBufferEmbeddedSamplers2EXT = 0;
 
-  public:
+
     DispatchLoaderDynamic() VULKAN_HPP_NOEXCEPT                                    = default;
     DispatchLoaderDynamic( DispatchLoaderDynamic const & rhs ) VULKAN_HPP_NOEXCEPT = default;
 

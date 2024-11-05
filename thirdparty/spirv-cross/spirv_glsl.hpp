@@ -260,7 +260,7 @@ public:
 	// require_extension("GL_KHR_my_extension");
 	void require_extension(const std::string &ext);
 
-	// Returns the list of required extensions. After compilation this will contains any other 
+	// Returns the list of required extensions. After compilation this will contains any other
 	// extensions that the compiler used automatically, in addition to the user specified ones.
 	const SmallVector<std::string> &get_required_extensions() const;
 
@@ -534,8 +534,9 @@ protected:
 		}
 		else
 		{
-			for (uint32_t i = 0; i < indent; i++)
+			for (uint32_t i = 0; i < indent; i++) {
 				buffer << "    ";
+}
 			statement_inner(std::forward<Ts>(ts)...);
 			buffer << '\n';
 		}

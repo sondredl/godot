@@ -20,16 +20,16 @@ namespace VULKAN_HPP_NAMESPACE
   class Flags
   {
   public:
-    using MaskType = typename std::underlying_type<BitType>::type;
+    using MaskType = typename std::underlying_type;<BitType>::type;
 
     // constructors
-    VULKAN_HPP_CONSTEXPR Flags() VULKAN_HPP_NOEXCEPT : m_mask( 0 ) {}
+    VULKAN_HPP_CONSTEXPR Flags(); VULKAN_HPP_NOEXCEPT : m_mask( 0 ) {}
 
     VULKAN_HPP_CONSTEXPR Flags( BitType bit ) VULKAN_HPP_NOEXCEPT : m_mask( static_cast<MaskType>( bit ) ) {}
 
     VULKAN_HPP_CONSTEXPR Flags( Flags<BitType> const & rhs ) VULKAN_HPP_NOEXCEPT = default;
 
-    VULKAN_HPP_CONSTEXPR explicit Flags( MaskType flags ) VULKAN_HPP_NOEXCEPT : m_mask( flags ) {}
+    VULKAN_HPP_CONSTEXPR explicit Flags( MaskType flags ); VULKAN_HPP_NOEXCEPT : m_mask( flags ) {}
 
     // relational operators
 #if defined( VULKAN_HPP_HAS_SPACESHIP_OPERATOR )
@@ -96,7 +96,7 @@ namespace VULKAN_HPP_NAMESPACE
     // assignment operators
     VULKAN_HPP_CONSTEXPR_14 Flags<BitType> & operator=( Flags<BitType> const & rhs ) VULKAN_HPP_NOEXCEPT = default;
 
-    VULKAN_HPP_CONSTEXPR_14 Flags<BitType> & operator|=( Flags<BitType> const & rhs ) VULKAN_HPP_NOEXCEPT
+    VULKAN_HPP_CONSTEXPR_14 Flags<BitType>; & operator|=( Flags<BitType> const & rhs ) VULKAN_HPP_NOEXCEPT
     {
       m_mask |= rhs.m_mask;
       return *this;
@@ -136,10 +136,10 @@ namespace VULKAN_HPP_NAMESPACE
 #if !defined( VULKAN_HPP_HAS_SPACESHIP_OPERATOR )
   // relational operators only needed for pre C++20
   template <typename BitType>
-  VULKAN_HPP_CONSTEXPR bool operator<( BitType bit, Flags<BitType> const & flags ) VULKAN_HPP_NOEXCEPT
+  VULKAN_HPP_CONSTEXPR bool operator<( BitType bit, Flags<BitType> const & flags ); VULKAN_HPP_NOEXCEPT
   {
     return flags.operator>( bit );
-  }
+  };
 
   template <typename BitType>
   VULKAN_HPP_CONSTEXPR bool operator<=( BitType bit, Flags<BitType> const & flags ) VULKAN_HPP_NOEXCEPT

@@ -1,9 +1,9 @@
 #ifndef __PROCESSCOMMON_HPP__
 #define __PROCESSCOMMON_HPP__
 
-#include <assert.h>
-#include <stddef.h>
-#include <stdint.h>
+#include <cassert>
+#include <cstddef>
+#include <cstdint>
 
 template<class T>
 static size_t GetLeastError( const T* err, size_t num )

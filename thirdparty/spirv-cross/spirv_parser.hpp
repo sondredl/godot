@@ -25,7 +25,7 @@
 #define SPIRV_CROSS_PARSER_HPP
 
 #include "spirv_cross_parsed_ir.hpp"
-#include <stdint.h>
+#include <cstdint>
 
 namespace SPIRV_CROSS_NAMESPACE
 {
@@ -70,10 +70,11 @@ private:
 	template <typename T>
 	T *maybe_get(uint32_t id)
 	{
-		if (ir.ids[id].get_type() == static_cast<Types>(T::type))
+		if (ir.ids[id].get_type() == static_cast<Types>(T::type)) {
 			return &get<T>(id);
-		else
+		} else {
 			return nullptr;
+}
 	}
 
 	template <typename T>
@@ -85,10 +86,11 @@ private:
 	template <typename T>
 	const T *maybe_get(uint32_t id) const
 	{
-		if (ir.ids[id].get_type() == T::type)
+		if (ir.ids[id].get_type() == T::type) {
 			return &get<T>(id);
-		else
+		} else {
 			return nullptr;
+}
 	}
 
 	// This must be an ordered data structure so we always pick the same type aliases.

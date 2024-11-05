@@ -25,7 +25,7 @@
 #define SPIRV_CROSS_PARSED_IR_HPP
 
 #include "spirv_common.hpp"
-#include <stdint.h>
+#include <cstdint>
 #include <unordered_map>
 
 namespace SPIRV_CROSS_NAMESPACE
@@ -189,8 +189,9 @@ public:
 		auto loop_lock = create_loop_hard_lock();
 		for (auto &id : ids_for_type[T::type])
 		{
-			if (ids[id].get_type() == static_cast<Types>(T::type))
+			if (ids[id].get_type() == static_cast<Types>(T::type)) {
 				op(id, get<T>(id));
+}
 		}
 	}
 
@@ -200,8 +201,9 @@ public:
 		auto loop_lock = create_loop_hard_lock();
 		for (auto &id : ids_for_type[T::type])
 		{
-			if (ids[id].get_type() == static_cast<Types>(T::type))
+			if (ids[id].get_type() == static_cast<Types>(T::type)) {
 				op(id, get<T>(id));
+}
 		}
 	}
 

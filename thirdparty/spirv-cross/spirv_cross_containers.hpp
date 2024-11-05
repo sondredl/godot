@@ -32,10 +32,10 @@
 #include <limits>
 #include <memory>
 #include <stack>
-#include <stddef.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
@@ -216,8 +216,9 @@ public:
 	{
 		auto count = size_t(arg_list_end - arg_list_begin);
 		reserve(count);
-		for (size_t i = 0; i < count; i++, arg_list_begin++)
+		for (size_t i = 0; i < count; i++, arg_list_begin++) {
 			new (&this->ptr[i]) T(*arg_list_begin);
+}
 		this->buffer_size = count;
 	}
 
@@ -242,8 +243,9 @@ public:
 		if (other.ptr != other.stack_storage.data())
 		{
 			// Pilfer allocated pointer.
-			if (this->ptr != stack_storage.data())
+			if (this->ptr != stack_storage.data()) {
 				free(this->ptr);
+}
 			this->ptr = other.ptr;
 			this->buffer_size = other.buffer_size;
 			buffer_capacity = other.buffer_capacity;
@@ -273,13 +275,15 @@ public:
 
 	SmallVector &operator=(const SmallVector &other) SPIRV_CROSS_NOEXCEPT
 	{
-		if (this == &other)
+		if (this == &other) {
 			return *this;
+}
 
 		clear();
 		reserve(other.buffer_size);
-		for (size_t i = 0; i < other.buffer_size; i++)
+		for (size_t i = 0; i < other.buffer_size; i++) {
 			new (&this->ptr[i]) T(other.ptr[i]);
+}
 		this->buffer_size = other.buffer_size;
 		return *this;
 	}
@@ -292,14 +296,16 @@ public:
 	~SmallVector()
 	{
 		clear();
-		if (this->ptr != stack_storage.data())
+		if (this->ptr != stack_storage.data()) {
 			free(this->ptr);
+}
 	}
 
 	void clear() SPIRV_CROSS_NOEXCEPT
 	{
-		for (size_t i = 0; i < this->buffer_size; i++)
+		for (size_t i = 0; i < this->buffer_size; i++) {
 			this->ptr[i].~T();
+}
 		this->buffer_size = 0;
 	}
 
@@ -321,8 +327,9 @@ public:
 	{
 		// Work around false positive warning on GCC 8.3.
 		// Calling pop_back on empty vector is undefined.
-		if (!this->empty())
+		if (!this->empty()) {
 			resize(this->buffer_size - 1);
+}
 	}
 
 	template <typename... Ts>
@@ -345,23 +352,26 @@ public:
 		if (count > buffer_capacity)
 		{
 			size_t target_capacity = buffer_capacity;
-			if (target_capacity == 0)
+			if (target_capacity == 0) {
 				target_capacity = 1;
+}
 
 			// Weird parens works around macro issues on Windows if NOMINMAX is not used.
 			target_capacity = (std::max)(target_capacity, N);
 
 			// Need to ensure there is a POT value of target capacity which is larger than count,
 			// otherwise this will overflow.
-			while (target_capacity < count)
+			while (target_capacity < count) {
 				target_capacity <<= 1u;
+}
 
 			T *new_buffer =
 			    target_capacity > N ? static_cast<T *>(malloc(target_capacity * sizeof(T))) : stack_storage.data();
 
 			// If we actually fail this malloc, we are hosed anyways, there is no reason to attempt recovery.
-			if (!new_buffer)
+			if (!new_buffer) {
 				std::terminate();
+}
 
 			// In case for some reason two allocations both come from same stack.
 			if (new_buffer != this->ptr)
@@ -374,8 +384,9 @@ public:
 				}
 			}
 
-			if (this->ptr != stack_storage.data())
+			if (this->ptr != stack_storage.data()) {
 				free(this->ptr);
+}
 			this->ptr = new_buffer;
 			buffer_capacity = target_capacity;
 		}
@@ -387,8 +398,9 @@ public:
 		if (itr == this->end())
 		{
 			reserve(this->buffer_size + count);
-			for (size_t i = 0; i < count; i++, insert_begin++)
+			for (size_t i = 0; i < count; i++, insert_begin++) {
 				new (&this->ptr[this->buffer_size + i]) T(*insert_begin);
+}
 			this->buffer_size += count;
 		}
 		else
@@ -396,21 +408,25 @@ public:
 			if (this->buffer_size + count > buffer_capacity)
 			{
 				auto target_capacity = this->buffer_size + count;
-				if (target_capacity == 0)
+				if (target_capacity == 0) {
 					target_capacity = 1;
-				if (target_capacity < N)
+}
+				if (target_capacity < N) {
 					target_capacity = N;
+}
 
-				while (target_capacity < count)
+				while (target_capacity < count) {
 					target_capacity <<= 1u;
+}
 
 				// Need to allocate new buffer. Move everything to a new buffer.
 				T *new_buffer =
 				    target_capacity > N ? static_cast<T *>(malloc(target_capacity * sizeof(T))) : stack_storage.data();
 
 				// If we actually fail this malloc, we are hosed anyways, there is no reason to attempt recovery.
-				if (!new_buffer)
+				if (!new_buffer) {
 					std::terminate();
+}
 
 				// First, move elements from source buffer to new buffer.
 				// We don't deal with types which can throw in move constructor.
@@ -429,8 +445,9 @@ public:
 				}
 
 				// Copy-construct new elements.
-				for (auto *source_itr = insert_begin; source_itr != insert_end; ++source_itr, ++target_itr)
+				for (auto *source_itr = insert_begin; source_itr != insert_end; ++source_itr, ++target_itr) {
 					new (target_itr) T(*source_itr);
+}
 
 				// Move over the other half.
 				if (new_buffer != this->ptr || insert_begin != insert_end)
@@ -444,8 +461,9 @@ public:
 					}
 				}
 
-				if (this->ptr != stack_storage.data())
+				if (this->ptr != stack_storage.data()) {
 					free(this->ptr);
+}
 				this->ptr = new_buffer;
 				buffer_capacity = target_capacity;
 			}
@@ -466,8 +484,9 @@ public:
 				std::move_backward(itr, source_itr, target_itr);
 
 				// For the inserts which go to already constructed elements, we can do a plain copy.
-				while (itr != this->end() && insert_begin != insert_end)
+				while (itr != this->end() && insert_begin != insert_end) {
 					*itr++ = *insert_begin++;
+}
 
 				// For inserts into newly allocated memory, we must copy-construct instead.
 				while (insert_begin != insert_end)
@@ -512,14 +531,16 @@ public:
 	{
 		if (new_size < this->buffer_size)
 		{
-			for (size_t i = new_size; i < this->buffer_size; i++)
+			for (size_t i = new_size; i < this->buffer_size; i++) {
 				this->ptr[i].~T();
+}
 		}
 		else if (new_size > this->buffer_size)
 		{
 			reserve(new_size);
-			for (size_t i = this->buffer_size; i < new_size; i++)
+			for (size_t i = this->buffer_size; i < new_size; i++) {
 				new (&this->ptr[i]) T();
+}
 		}
 
 		this->buffer_size = new_size;
@@ -573,12 +594,14 @@ public:
 		{
 			unsigned num_objects = start_object_count << memory.size();
 			T *ptr = static_cast<T *>(malloc(num_objects * sizeof(T)));
-			if (!ptr)
+			if (!ptr) {
 				return nullptr;
+}
 
 			vacants.reserve(num_objects);
-			for (unsigned i = 0; i < num_objects; i++)
+			for (unsigned i = 0; i < num_objects; i++) {
 				vacants.push_back(&ptr[i]);
+}
 
 			memory.emplace_back(ptr);
 		}
@@ -684,24 +707,29 @@ public:
 	{
 		std::string ret;
 		size_t target_size = 0;
-		for (auto &saved : saved_buffers)
+		for (auto &saved : saved_buffers) {
 			target_size += saved.offset;
+}
 		target_size += current_buffer.offset;
 		ret.reserve(target_size);
 
-		for (auto &saved : saved_buffers)
+		for (auto &saved : saved_buffers) {
 			ret.insert(ret.end(), saved.buffer, saved.buffer + saved.offset);
+}
 		ret.insert(ret.end(), current_buffer.buffer, current_buffer.buffer + current_buffer.offset);
 		return ret;
 	}
 
 	void reset()
 	{
-		for (auto &saved : saved_buffers)
-			if (saved.buffer != stack_buffer)
+		for (auto &saved : saved_buffers) {
+			if (saved.buffer != stack_buffer) {
 				free(saved.buffer);
-		if (current_buffer.buffer != stack_buffer)
+}
+}
+		if (current_buffer.buffer != stack_buffer) {
 			free(current_buffer.buffer);
+}
 
 		saved_buffers.clear();
 		current_buffer.buffer = stack_buffer;
@@ -736,8 +764,9 @@ private:
 			saved_buffers.push_back(current_buffer);
 			size_t target_size = len > BlockSize ? len : BlockSize;
 			current_buffer.buffer = static_cast<char *>(malloc(target_size));
-			if (!current_buffer.buffer)
+			if (!current_buffer.buffer) {
 				SPIRV_CROSS_THROW("Out of memory.");
+}
 
 			memcpy(current_buffer.buffer, s, len);
 			current_buffer.offset = len;

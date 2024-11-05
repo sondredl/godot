@@ -1,7 +1,7 @@
 #ifndef __TABLES_HPP__
 #define __TABLES_HPP__
 
-#include <stdint.h>
+#include <cstdint>
 
 #ifdef __AVX2__
 #  include <immintrin.h>

@@ -78,26 +78,29 @@ public:
 
 	inline bool get(uint32_t bit) const
 	{
-		if (bit < 64)
+		if (bit < 64) {
 			return (lower & (1ull << bit)) != 0;
-		else
+		} else {
 			return higher.count(bit) != 0;
+}
 	}
 
 	inline void set(uint32_t bit)
 	{
-		if (bit < 64)
+		if (bit < 64) {
 			lower |= 1ull << bit;
-		else
+		} else {
 			higher.insert(bit);
+}
 	}
 
 	inline void clear(uint32_t bit)
 	{
-		if (bit < 64)
+		if (bit < 64) {
 			lower &= ~(1ull << bit);
-		else
+		} else {
 			higher.erase(bit);
+}
 	}
 
 	inline uint64_t get_lower() const
@@ -115,30 +118,37 @@ public:
 	{
 		lower &= other.lower;
 		std::unordered_set<uint32_t> tmp_set;
-		for (auto &v : higher)
-			if (other.higher.count(v) != 0)
+		for (const auto &v : higher) {
+			if (other.higher.count(v) != 0) {
 				tmp_set.insert(v);
+}
+}
 		higher = std::move(tmp_set);
 	}
 
 	inline void merge_or(const Bitset &other)
 	{
 		lower |= other.lower;
-		for (auto &v : other.higher)
+		for (const auto &v : other.higher) {
 			higher.insert(v);
+}
 	}
 
 	inline bool operator==(const Bitset &other) const
 	{
-		if (lower != other.lower)
+		if (lower != other.lower) {
 			return false;
+}
 
-		if (higher.size() != other.higher.size())
+		if (higher.size() != other.higher.size()) {
 			return false;
+}
 
-		for (auto &v : higher)
-			if (other.higher.count(v) == 0)
+		for (const auto &v : higher) {
+			if (other.higher.count(v) == 0) {
 				return false;
+}
+}
 
 		return true;
 	}
@@ -154,23 +164,27 @@ public:
 		// TODO: Add ctz-based iteration.
 		for (uint32_t i = 0; i < 64; i++)
 		{
-			if (lower & (1ull << i))
+			if (lower & (1ull << i)) {
 				op(i);
+}
 		}
 
-		if (higher.empty())
+		if (higher.empty()) {
 			return;
+}
 
 		// Need to enforce an order here for reproducible results,
 		// but hitting this path should happen extremely rarely, so having this slow path is fine.
 		SmallVector<uint32_t> bits;
 		bits.reserve(higher.size());
-		for (auto &v : higher)
+		for (const auto &v : higher) {
 			bits.push_back(v);
+}
 		std::sort(std::begin(bits), std::end(bits));
 
-		for (auto &v : bits)
+		for (auto &v : bits) {
 			op(v);
+}
 	}
 
 	inline bool empty() const
@@ -198,11 +212,12 @@ std::string join(Ts &&... ts)
 inline std::string merge(const SmallVector<std::string> &list, const char *between = ", ")
 {
 	StringStream<> stream;
-	for (auto &elem : list)
+	for (const auto &elem : list)
 	{
 		stream << elem;
-		if (&elem != &list.back())
+		if (&elem != &list.back()) {
 			stream << between;
+}
 	}
 	return stream.str();
 }
@@ -220,10 +235,11 @@ static inline std::string convert_to_string(int32_t value)
 	// INT_MIN is ... special on some backends. If we use a decimal literal, and negate it, we
 	// could accidentally promote the literal to long first, then negate.
 	// To workaround it, emit int(0x80000000) instead.
-	if (value == (std::numeric_limits<int32_t>::min)())
+	if (value == (std::numeric_limits<int32_t>::min)()) {
 		return "int(0x80000000)";
-	else
+	} else {
 		return std::to_string(value);
+}
 }
 
 static inline std::string convert_to_string(int64_t value, const std::string &int64_type, bool long_long_literal_suffix)
@@ -231,10 +247,11 @@ static inline std::string convert_to_string(int64_t value, const std::string &in
 	// INT64_MIN is ... special on some backends.
 	// If we use a decimal literal, and negate it, we might overflow the representable numbers.
 	// To workaround it, emit int(0x80000000) instead.
-	if (value == (std::numeric_limits<int64_t>::min)())
+	if (value == (std::numeric_limits<int64_t>::min)()) {
 		return join(int64_type, "(0x8000000000000000u", (long_long_literal_suffix ? "ll" : "l"), ")");
-	else
+	} else {
 		return std::to_string(value) + (long_long_literal_suffix ? "ll" : "l");
+}
 }
 
 // Allow implementations to set a convenient standard precision
@@ -260,8 +277,9 @@ static inline void fixup_radix_point(char *str, char radix_point)
 	{
 		while (*str != '\0')
 		{
-			if (*str == radix_point)
+			if (*str == radix_point) {
 				*str = '.';
+}
 			str++;
 		}
 	}
@@ -276,8 +294,9 @@ inline std::string convert_to_string(float t, char locale_radix_point)
 	fixup_radix_point(buf, locale_radix_point);
 
 	// Ensure that the literal is float.
-	if (!strchr(buf, '.') && !strchr(buf, 'e'))
+	if (!strchr(buf, '.') && !strchr(buf, 'e')) {
 		strcat(buf, ".0");
+}
 	return buf;
 }
 
@@ -290,8 +309,9 @@ inline std::string convert_to_string(double t, char locale_radix_point)
 	fixup_radix_point(buf, locale_radix_point);
 
 	// Ensure that the literal is float.
-	if (!strchr(buf, '.') && !strchr(buf, 'e'))
+	if (!strchr(buf, '.') && !strchr(buf, 'e')) {
 		strcat(buf, ".0");
+}
 	return buf;
 }
 
@@ -530,8 +550,9 @@ struct SPIRConstantOp : IVariant
 	    , basetype(result_type)
 	{
 		arguments.reserve(length);
-		for (uint32_t i = 0; i < length; i++)
+		for (uint32_t i = 0; i < length; i++) {
 			arguments.push_back(args[i]);
+}
 	}
 
 	spv::Op opcode;
@@ -1304,21 +1325,27 @@ struct SPIRConstant : IVariant
 	{
 		m = {};
 		m.columns = constant_type_.columns;
-		for (auto &c : m.c)
+		for (auto &c : m.c) {
 			c.vecsize = constant_type_.vecsize;
+}
 	}
 
 	inline bool constant_is_null() const
 	{
-		if (specialization)
+		if (specialization) {
 			return false;
-		if (!subconstants.empty())
+}
+		if (!subconstants.empty()) {
 			return false;
+}
 
-		for (uint32_t col = 0; col < columns(); col++)
-			for (uint32_t row = 0; row < vector_size(); row++)
-				if (scalar_u64(col, row) != 0)
+		for (uint32_t col = 0; col < columns(); col++) {
+			for (uint32_t row = 0; row < vector_size(); row++) {
+				if (scalar_u64(col, row) != 0) {
 					return false;
+}
+}
+}
 
 		return true;
 	}
@@ -1335,8 +1362,9 @@ struct SPIRConstant : IVariant
 	    , specialization(specialized)
 	{
 		subconstants.reserve(num_elements);
-		for (uint32_t i = 0; i < num_elements; i++)
+		for (uint32_t i = 0; i < num_elements; i++) {
 			subconstants.push_back(elements[i]);
+}
 		specialization = specialized;
 	}
 
@@ -1375,8 +1403,9 @@ struct SPIRConstant : IVariant
 			for (uint32_t i = 0; i < num_elements; i++)
 			{
 				m.c[i] = vector_elements[i]->m.c[0];
-				if (vector_elements[i]->specialization)
+				if (vector_elements[i]->specialization) {
 					m.id[i] = vector_elements[i]->self;
+}
 			}
 		}
 		else
@@ -1387,8 +1416,9 @@ struct SPIRConstant : IVariant
 			for (uint32_t i = 0; i < num_elements; i++)
 			{
 				m.c[0].r[i] = vector_elements[i]->m.c[0].r[0];
-				if (vector_elements[i]->specialization)
+				if (vector_elements[i]->specialization) {
 					m.c[0].id[i] = vector_elements[i]->self;
+}
 			}
 		}
 	}
@@ -1432,8 +1462,9 @@ public:
 
 	~Variant()
 	{
-		if (holder)
+		if (holder) {
 			group->pools[type]->deallocate_opaque(holder);
+}
 	}
 
 	// Marking custom move constructor as noexcept is important.
@@ -1451,8 +1482,9 @@ public:
 	{
 		if (this != &other)
 		{
-			if (holder)
+			if (holder) {
 				group->pools[type]->deallocate_opaque(holder);
+}
 			holder = other.holder;
 			group = other.group;
 			type = other.type;
@@ -1475,13 +1507,15 @@ public:
 #endif
 		if (this != &other)
 		{
-			if (holder)
+			if (holder) {
 				group->pools[type]->deallocate_opaque(holder);
+}
 
-			if (other.holder)
+			if (other.holder) {
 				holder = other.holder->clone(group->pools[other.type].get());
-			else
+			} else {
 				holder = nullptr;
+}
 
 			type = other.type;
 			allow_type_rewrite = other.allow_type_rewrite;
@@ -1491,14 +1525,16 @@ public:
 
 	void set(IVariant *val, Types new_type)
 	{
-		if (holder)
+		if (holder) {
 			group->pools[type]->deallocate_opaque(holder);
+}
 		holder = nullptr;
 
 		if (!allow_type_rewrite && type != TypeNone && type != new_type)
 		{
-			if (val)
+			if (val) {
 				group->pools[new_type]->deallocate_opaque(val);
+}
 			SPIRV_CROSS_THROW("Overwriting a variant with new type.");
 		}
 
@@ -1518,20 +1554,24 @@ public:
 	template <typename T>
 	T &get()
 	{
-		if (!holder)
+		if (!holder) {
 			SPIRV_CROSS_THROW("nullptr");
-		if (static_cast<Types>(T::type) != type)
+}
+		if (static_cast<Types>(T::type) != type) {
 			SPIRV_CROSS_THROW("Bad cast");
+}
 		return *static_cast<T *>(holder);
 	}
 
 	template <typename T>
 	const T &get() const
 	{
-		if (!holder)
+		if (!holder) {
 			SPIRV_CROSS_THROW("nullptr");
-		if (static_cast<Types>(T::type) != type)
+}
+		if (static_cast<Types>(T::type) != type) {
 			SPIRV_CROSS_THROW("Bad cast");
+}
 		return *static_cast<const T *>(holder);
 	}
 
@@ -1552,8 +1592,9 @@ public:
 
 	void reset()
 	{
-		if (holder)
+		if (holder) {
 			group->pools[type]->deallocate_opaque(holder);
+}
 		holder = nullptr;
 		type = TypeNone;
 	}
@@ -1708,8 +1749,9 @@ struct Meta
 			Extended()
 			{
 				// MSVC 2013 workaround to init like this.
-				for (auto &v : values)
+				for (auto &v : values) {
 					v = 0;
+}
 			}
 
 			Bitset flags;

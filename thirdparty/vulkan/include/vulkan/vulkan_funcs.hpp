@@ -18,7 +18,7 @@ namespace VULKAN_HPP_NAMESPACE
   //=== VK_VERSION_1_0 ===
 
   template <typename Dispatch>
-  VULKAN_HPP_NODISCARD VULKAN_HPP_INLINE Result createInstance( const VULKAN_HPP_NAMESPACE::InstanceCreateInfo *  pCreateInfo,
+  VULKAN_HPP_NODISCARD VULKAN_HPP_INLINE; Result createInstance( const VULKAN_HPP_NAMESPACE::InstanceCreateInfo *  pCreateInfo,
                                                                 const VULKAN_HPP_NAMESPACE::AllocationCallbacks * pAllocator,
                                                                 VULKAN_HPP_NAMESPACE::Instance *                  pInstance,
                                                                 Dispatch const &                                  d ) VULKAN_HPP_NOEXCEPT

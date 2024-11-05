@@ -27,7 +27,7 @@
 #include "spirv_glsl.hpp"
 #include <map>
 #include <set>
-#include <stddef.h>
+#include <cstddef>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -244,8 +244,9 @@ struct MSLConstexprSampler
 
 	MSLConstexprSampler()
 	{
-		for (uint32_t i = 0; i < 4; i++)
+		for (uint32_t i = 0; i < 4; i++) {
 			swizzle[i] = MSL_COMPONENT_SWIZZLE_IDENTITY;
+}
 	}
 	bool swizzle_is_identity() const
 	{
@@ -502,7 +503,7 @@ public:
 		// Note: Only Apple's GPU compiler takes advantage of the lack of coherency, so make sure to test on Apple GPUs if you disable this.
 		bool readwrite_texture_fences = true;
 
-		// Metal 3.1 introduced a Metal regression bug which causes infinite recursion during 
+		// Metal 3.1 introduced a Metal regression bug which causes infinite recursion during
 		// Metal's analysis of an entry point input structure that is itself recursive. Enabling
 		// this option will replace the recursive input declaration with a alternate variable of
 		// type void*, and then cast to the correct type at the top of the entry point function.
