@@ -91,8 +91,8 @@ public:
 	~WebRTCPeerConnection();
 };
 
-
-
-
+VARIANT_ENUM_CAST(WebRTCPeerConnection::ConnectionState);
+VARIANT_ENUM_CAST(WebRTCPeerConnection::GatheringState);
+VARIANT_ENUM_CAST(WebRTCPeerConnection::SignalingState);
 
 #endif // WEBRTC_PEER_CONNECTION_H

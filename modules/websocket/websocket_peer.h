@@ -122,6 +122,6 @@ public:
 };
 
 VARIANT_ENUM_CAST(WebSocketPeer::WriteMode);
-
+VARIANT_ENUM_CAST(WebSocketPeer::State);
 
 #endif // WEBSOCKET_PEER_H

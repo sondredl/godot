@@ -49,7 +49,7 @@
 	} while (true)
 #endif
 
-namespace gdmono; {
+namespace gdmono {
 
 template <typename F>
 struct ScopeExit {

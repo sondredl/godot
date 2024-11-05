@@ -99,6 +99,6 @@ public:
 	void set_types(Variant::Type p_variant_type, GLTFObjectModelType p_obj_model_type);
 };
 
-
+VARIANT_ENUM_CAST(GLTFObjectModelProperty::GLTFObjectModelType);
 
 #endif // GLTF_OBJECT_MODEL_PROPERTY_H

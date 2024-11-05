@@ -34,7 +34,7 @@
 class GodotBody3D;
 class GodotSoftBody3D;
 
-class GodotConstraint3D; {
+class GodotConstraint3D {
 	GodotBody3D **_body_ptr;
 	int _body_count;
 	uint64_t island_step;

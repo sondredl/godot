@@ -260,6 +260,6 @@ public:
 };
 
 VARIANT_ENUM_CAST(Label3D::DrawFlags);
-
+VARIANT_ENUM_CAST(Label3D::AlphaCutMode);
 
 #endif // LABEL_3D_H
