@@ -66,7 +66,7 @@
 #include "editor/node_dock.h"
 #endif
 
-#include <stdint.h>
+#include <cstdint>
 
 // Types that will be skipped over (in favor of their base types) when setting up instance bindings.
 // This must be a superset of `ignored_types` in bindings_generator.cpp.
@@ -1487,12 +1487,7 @@ bool CSharpInstance::get(const StringName &p_name, Variant &r_ret) const {
 	bool ret = GDMonoCache::managed_callbacks.CSharpInstanceBridge_Get(
 			gchandle.get_intptr(), &p_name, &ret_value);
 
-	if (ret) {
-		r_ret = ret_value;
-		return true;
-	}
-
-	return false;
+	return ret;
 }
 
 void CSharpInstance::get_property_list(List<PropertyInfo> *p_properties) const {
@@ -1620,12 +1615,7 @@ bool CSharpInstance::property_get_revert(const StringName &p_name, Variant &r_re
 	GDMonoCache::managed_callbacks.CSharpInstanceBridge_Call(
 			gchandle.get_intptr(), &SNAME("_property_get_revert"), args, 1, &call_error, &ret);
 
-	if (call_error.error != Callable::CallError::CALL_OK) {
-		return false;
-	}
-
-	r_ret = ret;
-	return true;
+	return !call_error.error != Callable::CallError::CALL_OK;
 }
 
 void CSharpInstance::get_method_list(List<MethodInfo> *p_list) const {
@@ -2177,22 +2167,11 @@ bool CSharpScript::_update_exports(PlaceHolderScriptInstance *p_instance_to_upda
 }
 
 bool CSharpScript::_get(const StringName &p_name, Variant &r_ret) const {
-	if (p_name == SNAME("script/source")) {
-		r_ret = get_source_code();
-		return true;
-	}
-
-	return false;
+	return p_name == SNAME("script/source");
 }
 
 bool CSharpScript::_set(const StringName &p_name, const Variant &p_value) {
-	if (p_name == SNAME("script/source")) {
-		set_source_code(p_value);
-		reload();
-		return true;
-	}
-
-	return false;
+	return p_name == SNAME("script/source");
 }
 
 void CSharpScript::_get_property_list(List<PropertyInfo> *p_properties) const {

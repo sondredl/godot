@@ -1,8 +1,8 @@
 // This file is part of meshoptimizer library; see meshoptimizer.h for version/license details
 #include "meshoptimizer.h"
 
-#include <assert.h>
-#include <string.h>
+#include <cassert>
+#include <cstring>
 
 // This work is based on:
 // Tom Forsyth. Linear-Speed Vertex Cache Optimisation. 2006
@@ -94,15 +94,17 @@ static unsigned int getNextVertexDeadEnd(const unsigned int* dead_end, unsigned 
 	{
 		unsigned int vertex = dead_end[--dead_end_top];
 
-		if (live_triangles[vertex] > 0)
+		if (live_triangles[vertex] > 0) {
 			return vertex;
+}
 	}
 
 	// input order
 	while (input_cursor < vertex_count)
 	{
-		if (live_triangles[input_cursor] > 0)
+		if (live_triangles[input_cursor] > 0) {
 			return input_cursor;
+}
 
 		++input_cursor;
 	}
@@ -155,8 +157,9 @@ static unsigned int getNextTriangleDeadEnd(unsigned int& input_cursor, const uns
 	// input order
 	while (input_cursor < face_count)
 	{
-		if (!emitted_flags[input_cursor])
+		if (!emitted_flags[input_cursor]) {
 			return input_cursor;
+}
 
 		++input_cursor;
 	}
@@ -175,8 +178,9 @@ void meshopt_optimizeVertexCacheTable(unsigned int* destination, const unsigned 
 	meshopt_Allocator allocator;
 
 	// guard for empty meshes
-	if (index_count == 0 || vertex_count == 0)
+	if (index_count == 0 || vertex_count == 0) {
 		return;
+}
 
 	// support in-place optimization
 	if (destination == indices)
@@ -205,8 +209,9 @@ void meshopt_optimizeVertexCacheTable(unsigned int* destination, const unsigned 
 	// compute initial vertex scores
 	float* vertex_scores = allocator.allocate<float>(vertex_count);
 
-	for (size_t i = 0; i < vertex_count; ++i)
+	for (size_t i = 0; i < vertex_count; ++i) {
 		vertex_scores[i] = vertexScore(table, -1, live_triangles[i]);
+}
 
 	// compute triangle scores
 	float* triangle_scores = allocator.allocate<float>(face_count);
@@ -299,8 +304,9 @@ void meshopt_optimizeVertexCacheTable(unsigned int* destination, const unsigned 
 			unsigned int index = cache[i];
 
 			// no need to update scores if we are never going to use this vertex
-			if (adjacency.counts[index] == 0)
+			if (adjacency.counts[index] == 0) {
 				continue;
+}
 
 			int cache_position = i >= cache_size ? -1 : int(i);
 
@@ -362,8 +368,9 @@ void meshopt_optimizeVertexCacheFifo(unsigned int* destination, const unsigned i
 	meshopt_Allocator allocator;
 
 	// guard for empty meshes
-	if (index_count == 0 || vertex_count == 0)
+	if (index_count == 0 || vertex_count == 0) {
 		return;
+}
 
 	// support in-place optimization
 	if (destination == indices)
@@ -437,14 +444,17 @@ void meshopt_optimizeVertexCacheFifo(unsigned int* destination, const unsigned i
 
 				// update cache info
 				// if vertex is not in cache, put it in cache
-				if (timestamp - cache_timestamps[a] > cache_size)
+				if (timestamp - cache_timestamps[a] > cache_size) {
 					cache_timestamps[a] = timestamp++;
+}
 
-				if (timestamp - cache_timestamps[b] > cache_size)
+				if (timestamp - cache_timestamps[b] > cache_size) {
 					cache_timestamps[b] = timestamp++;
+}
 
-				if (timestamp - cache_timestamps[c] > cache_size)
+				if (timestamp - cache_timestamps[c] > cache_size) {
 					cache_timestamps[c] = timestamp++;
+}
 
 				// update emitted flags
 				emitted_flags[triangle] = true;

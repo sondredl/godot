@@ -1815,7 +1815,8 @@ addPoint(UBiDi *pBiDi, int32_t pos, int32_t flag)
             pInsertPoints->errorCode=U_MEMORY_ALLOCATION_ERROR;
             return;
         }
-        else  pInsertPoints->capacity*=2;
+        else {  pInsertPoints->capacity*=2;
+}
     }
     point.pos=pos;
     point.flag=flag;
@@ -1832,12 +1833,15 @@ setLevelsOutsideIsolates(UBiDi *pBiDi, int32_t start, int32_t limit, UBiDiLevel 
     int32_t isolateCount=0, k;
     for(k=start; k<limit; k++) {
         dirProp=dirProps[k];
-        if(dirProp==PDI)
+        if(dirProp==PDI) {
             isolateCount--;
-        if(isolateCount==0)
+}
+        if(isolateCount==0) {
             levels[k]=level;
-        if(dirProp==LRI || dirProp==RLI)
+}
+        if(dirProp==LRI || dirProp==RLI) {
             isolateCount++;
+}
     }
 }
 
@@ -1938,9 +1942,10 @@ processPropertySeq(UBiDi *pBiDi, LevState *pLevState, uint8_t _prop,
         case 6:                         /* R/AL after possible relevant EN/AN */
             /* just clean up */
             pInsertPoints=&(pBiDi->insertPoints);
-            if (pInsertPoints->capacity > 0)
+            if (pInsertPoints->capacity > 0) {
                 /* remove all non confirmed insert points */
                 pInsertPoints->size=pInsertPoints->confirmed;
+}
             pLevState->startON=-1;
             pLevState->startL2EN=-1;
             pLevState->lastStrongRTL=limit - 1;
@@ -1980,7 +1985,8 @@ processPropertySeq(UBiDi *pBiDi, LevState *pLevState, uint8_t _prop,
 
         case 9:                         /* L after R+ON/EN/AN */
             /* include possible adjacent number on the left */
-            for (k=start0-1; k>=0 && !(levels[k]&1); k--);
+            for (k=start0-1; k>=0 && !(levels[k]&1); k--) {;
+}
             if(k>=0) {
                 addPoint(pBiDi, k, RLM_BEFORE);             /* add RLM before */
                 pInsertPoints=&(pBiDi->insertPoints);
@@ -2010,8 +2016,9 @@ processPropertySeq(UBiDi *pBiDi, LevState *pLevState, uint8_t _prop,
         case 12:                        /* L after L+ON/AN */
             level=pLevState->runLevel + addLevel;
             for(k=pLevState->startON; k<start0; k++) {
-                if (levels[k]<level)
+                if (levels[k]<level) {
                     levels[k]=level;
+}
             }
             pInsertPoints=&(pBiDi->insertPoints);
             pInsertPoints->confirmed=pInsertPoints->size;   /* confirm inserts */
@@ -2172,10 +2179,11 @@ resolveImplicitLevels(UBiDi *pBiDi,
     } else {
         levState.startON=-1;
         start1=start;
-        if(dirProps[start]==NSM)
+        if(dirProps[start]==NSM) {
             stateImp = 1 + sor;
-        else
+        } else {
             stateImp=0;
+}
         levState.state=0;
         processPropertySeq(pBiDi, &levState, sor, start, start);
     }
@@ -2184,10 +2192,12 @@ resolveImplicitLevels(UBiDi *pBiDi,
     for(i=start; i<=limit; i++) {
         if(i>=limit) {
             int32_t k;
-            for(k=limit-1; k>start&&(DIRPROP_FLAG(dirProps[k])&MASK_BN_EXPLICIT); k--);
+            for(k=limit-1; k>start&&(DIRPROP_FLAG(dirProps[k])&MASK_BN_EXPLICIT); k--) {;
+}
             dirProp=dirProps[k];
-            if(dirProp==LRI || dirProp==RLI)
+            if(dirProp==LRI || dirProp==RLI) {
                 break;      /* no forced closing for sequence ending with LRI/RLI */
+}
             gprop=eor;
         } else {
             DirProp prop, prop1;
@@ -2264,7 +2274,8 @@ resolveImplicitLevels(UBiDi *pBiDi,
     }
 
     /* look for the last char not a BN or LRE/RLE/LRO/RLO/PDF */
-    for(i=limit-1; i>start&&(DIRPROP_FLAG(dirProps[i])&MASK_BN_EXPLICIT); i--);
+    for(i=limit-1; i>start&&(DIRPROP_FLAG(dirProps[i])&MASK_BN_EXPLICIT); i--) {;
+}
     dirProp=dirProps[i];
     if((dirProp==LRI || dirProp==RLI) && limit<pBiDi->length) {
         pBiDi->isolateCount++;
@@ -2273,8 +2284,9 @@ resolveImplicitLevels(UBiDi *pBiDi,
         pBiDi->isolates[pBiDi->isolateCount].start1=start1;
         pBiDi->isolates[pBiDi->isolateCount].startON=levState.startON;
     }
-    else
+    else {
         processPropertySeq(pBiDi, &levState, eor, limit, limit);
+}
 }
 
 /* perform (L1) and (X9) ---------------------------------------------------- */
@@ -2614,10 +2626,11 @@ ubidi_setPara(UBiDi *pBiDi, const char16_t *text, int32_t length,
     pBiDi->runCount=-1;
 
     /* allocate paras memory */
-    if(pBiDi->parasMemory)
+    if(pBiDi->parasMemory) {
         pBiDi->paras=pBiDi->parasMemory;
-    else
+    } else {
         pBiDi->paras=pBiDi->simpleParas;
+}
 
     /*
      * Get the directional properties,
@@ -2662,12 +2675,12 @@ ubidi_setPara(UBiDi *pBiDi, const char16_t *text, int32_t length,
     }
 
     /* allocate isolate memory */
-    if(pBiDi->isolateCount<=SIMPLE_ISOLATES_COUNT)
+    if(pBiDi->isolateCount<=SIMPLE_ISOLATES_COUNT) {
         pBiDi->isolates=pBiDi->simpleIsolates;
-    else
-        if((int32_t)(pBiDi->isolateCount*sizeof(Isolate))<=pBiDi->isolatesSize)
+    } else
+        if((int32_t)(pBiDi->isolateCount*sizeof(Isolate))<=pBiDi->isolatesSize) {
             pBiDi->isolates=pBiDi->isolatesMemory;
-        else {
+        } else {
             if(getInitialIsolatesMemory(pBiDi, pBiDi->isolateCount)) {
                 pBiDi->isolates=pBiDi->isolatesMemory;
             } else {
@@ -2825,8 +2838,9 @@ ubidi_setPara(UBiDi *pBiDi, const char16_t *text, int32_t length,
         for(i=0; i<pBiDi->paraCount; i++) {
             last=(pBiDi->paras[i].limit)-1;
             level= static_cast<UBiDiLevel>(pBiDi->paras[i].level);
-            if(level==0)
+            if(level==0) {
                 continue;           /* LTR paragraph */
+}
             start= i==0 ? 0 : pBiDi->paras[i-1].limit;
             for(j=last; j>=start; j--) {
                 dirProp=dirProps[j];
@@ -2976,7 +2990,8 @@ ubidi_getParagraph(const UBiDi *pBiDi, int32_t charIndex,
     pBiDi=pBiDi->pParaBiDi;             /* get Para object if Line object */
     RETURN_IF_BAD_RANGE(charIndex, 0, pBiDi->length, *pErrorCode, -1);
 
-    for(paraIndex=0; charIndex>=pBiDi->paras[paraIndex].limit; paraIndex++);
+    for(paraIndex=0; charIndex>=pBiDi->paras[paraIndex].limit; paraIndex++) {;
+}
     ubidi_getParagraphByIndex(pBiDi, paraIndex, pParaStart, pParaLimit, pParaLevel, pErrorCode);
     return paraIndex;
 }

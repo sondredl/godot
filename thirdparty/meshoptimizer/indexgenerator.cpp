@@ -1,8 +1,8 @@
 // This file is part of meshoptimizer library; see meshoptimizer.h for version/license details
 #include "meshoptimizer.h"
 
-#include <assert.h>
-#include <string.h>
+#include <cassert>
+#include <cstring>
 
 // This work is based on:
 // John McDonald, Mark Kilgard. Crack-Free Point-Normal Triangles using Adjacent Edge Normals. 2010
@@ -78,8 +78,9 @@ struct VertexStreamHasher
 			const meshopt_Stream& s = streams[i];
 			const unsigned char* data = static_cast<const unsigned char*>(s.data);
 
-			if (memcmp(data + lhs * s.stride, data + rhs * s.stride, s.size) != 0)
+			if (memcmp(data + lhs * s.stride, data + rhs * s.stride, s.size) != 0) {
 				return false;
+}
 		}
 
 		return true;
@@ -128,8 +129,9 @@ struct EdgeHasher
 static size_t hashBuckets(size_t count)
 {
 	size_t buckets = 1;
-	while (buckets < count + count / 4)
+	while (buckets < count + count / 4) {
 		buckets *= 2;
+}
 
 	return buckets;
 }
@@ -147,11 +149,13 @@ static T* hashLookup(T* table, size_t buckets, const Hash& hash, const T& key, c
 	{
 		T& item = table[bucket];
 
-		if (item == empty)
+		if (item == empty) {
 			return &item;
+}
 
-		if (hash.equal(item, key))
+		if (hash.equal(item, key)) {
 			return &item;
+}
 
 		// hash collision, quadratic probing
 		bucket = (bucket + probe + 1) & hashmod;
@@ -174,8 +178,9 @@ static void buildPositionRemap(unsigned int* remap, const float* vertex_position
 		unsigned int index = unsigned(i);
 		unsigned int* entry = hashLookup(vertex_table, vertex_table_size, vertex_hasher, index, ~0u);
 
-		if (*entry == ~0u)
+		if (*entry == ~0u) {
 			*entry = index;
+}
 
 		remap[index] = *entry;
 	}
@@ -189,12 +194,13 @@ static void remapVertices(void* destination, const void* vertices, size_t vertex
 	size_t block_size = BlockSize == 0 ? vertex_size : BlockSize;
 	assert(block_size == vertex_size);
 
-	for (size_t i = 0; i < vertex_count; ++i)
+	for (size_t i = 0; i < vertex_count; ++i) {
 		if (remap[i] != ~0u)
 		{
 			assert(remap[i] < vertex_count);
 			memcpy(static_cast<unsigned char*>(destination) + remap[i] * block_size, static_cast<const unsigned char*>(vertices) + i * block_size, block_size);
 		}
+}
 }
 
 } // namespace meshopt
@@ -381,8 +387,9 @@ void meshopt_generateShadowIndexBuffer(unsigned int* destination, const unsigned
 		{
 			unsigned int* entry = hashLookup(table, table_size, hasher, index, ~0u);
 
-			if (*entry == ~0u)
+			if (*entry == ~0u) {
 				*entry = index;
+}
 
 			remap[index] = *entry;
 		}
@@ -425,8 +432,9 @@ void meshopt_generateShadowIndexBufferMulti(unsigned int* destination, const uns
 		{
 			unsigned int* entry = hashLookup(table, table_size, hasher, index, ~0u);
 
-			if (*entry == ~0u)
+			if (*entry == ~0u) {
 				*entry = index;
+}
 
 			remap[index] = *entry;
 		}
@@ -540,8 +548,9 @@ void meshopt_generateTessellationIndexBuffer(unsigned int* destination, const un
 			unsigned long long edge = ((unsigned long long)i0 << 32) | i1;
 			unsigned long long* entry = hashLookup(edge_table, edge_table_size, edge_hasher, edge, ~0ull);
 
-			if (*entry == ~0ull)
+			if (*entry == ~0ull) {
 				*entry = edge;
+}
 		}
 	}
 
@@ -632,8 +641,9 @@ size_t meshopt_generateProvokingIndexBuffer(unsigned int* destination, unsigned 
 
 		// now remap[a] = ~0u or all three vertices are old
 		// recording remap[a] makes it possible to remap future references to the same index, conserving space
-		if (remap[a] == ~0u)
+		if (remap[a] == ~0u) {
 			remap[a] = newidx;
+}
 
 		// we need to clone the provoking vertex to get a unique index
 		// if all three are used the choice is arbitrary since no future triangle will be able to reuse any of these

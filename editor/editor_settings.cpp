@@ -220,11 +220,7 @@ bool EditorSettings::_get(const StringName &p_name, Variant &r_ret) const {
 	}
 
 	const VariantContainer *v = props.getptr(p_name);
-	if (!v) {
-		return false;
-	}
-	r_ret = v->variant;
-	return true;
+	return !!v;
 }
 
 void EditorSettings::_initial_set(const StringName &p_name, const Variant &p_value, bool p_basic) {
@@ -1433,11 +1429,7 @@ bool EditorSettings::_property_can_revert(const StringName &p_name) const {
 
 bool EditorSettings::_property_get_revert(const StringName &p_name, Variant &r_property) const {
 	const VariantContainer *value = props.getptr(p_name);
-	if (value && value->has_default_value) {
-		r_property = value->initial;
-		return true;
-	}
-	return false;
+	return value && value->has_default_value;
 }
 
 void EditorSettings::add_property_hint(const PropertyInfo &p_hint) {

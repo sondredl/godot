@@ -242,18 +242,11 @@ Color CollisionShape2D::get_debug_color() const {
 }
 
 bool CollisionShape2D::_property_can_revert(const StringName &p_name) const {
-	if (p_name == "debug_color") {
-		return true;
-	}
-	return false;
+	return p_name == "debug_color";
 }
 
 bool CollisionShape2D::_property_get_revert(const StringName &p_name, Variant &r_property) const {
-	if (p_name == "debug_color") {
-		r_property = _get_default_debug_color();
-		return true;
-	}
-	return false;
+	return p_name == "debug_color";
 }
 
 void CollisionShape2D::_validate_property(PropertyInfo &p_property) const {

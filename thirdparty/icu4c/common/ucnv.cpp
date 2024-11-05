@@ -83,7 +83,7 @@ ucnv_open (const char *name,
     return r;
 }
 
-U_CAPI UConverter* U_EXPORT2 
+U_CAPI UConverter* U_EXPORT2
 ucnv_openPackage   (const char *packageName, const char *converterName, UErrorCode * err)
 {
     return ucnv_createConverterFromPackage(packageName, converterName,  err);
@@ -96,10 +96,12 @@ ucnv_openU (const char16_t * name,
 {
     char asciiName[UCNV_MAX_CONVERTER_NAME_LENGTH];
 
-    if (err == nullptr || U_FAILURE(*err))
+    if (err == nullptr || U_FAILURE(*err)) {
         return nullptr;
-    if (name == nullptr)
+}
+    if (name == nullptr) {
         return ucnv_open (nullptr, err);
+}
     if (u_strlen(name) >= UCNV_MAX_CONVERTER_NAME_LENGTH)
     {
         *err = U_ILLEGAL_ARGUMENT_ERROR;
@@ -140,8 +142,9 @@ ucnv_openCCSID (int32_t codepage,
     char myName[UCNV_MAX_CONVERTER_NAME_LENGTH];
     int32_t myNameLen;
 
-    if (err == nullptr || U_FAILURE (*err))
+    if (err == nullptr || U_FAILURE (*err)) {
         return nullptr;
+}
 
     /* ucnv_copyPlatformString could return "ibm-" or "cp" */
     myNameLen = ucnv_copyPlatformString(myName, platform);
@@ -150,7 +153,7 @@ ucnv_openCCSID (int32_t codepage,
     return ucnv_createConverter(nullptr, myName, err);
 }
 
-/* Creating a temporary stack-based object that can be used in one thread, 
+/* Creating a temporary stack-based object that can be used in one thread,
 and created from a converter that is shared across threads.
 */
 
@@ -428,8 +431,9 @@ ucnv_getSubstChars (const UConverter * converter,
                     int8_t * len,
                     UErrorCode * err)
 {
-    if (U_FAILURE (*err))
+    if (U_FAILURE (*err)) {
         return;
+}
 
     if (converter->subCharLen <= 0) {
         /* Unicode string or empty string from ucnv_setSubstString(). */
@@ -453,9 +457,10 @@ ucnv_setSubstChars (UConverter * converter,
                     int8_t len,
                     UErrorCode * err)
 {
-    if (U_FAILURE (*err))
+    if (U_FAILURE (*err)) {
         return;
-    
+}
+
     /*Makes sure that the subChar is within the codepages char length boundaries */
     if ((len > converter->sharedData->staticData->maxBytesPerChar)
      || (len < converter->sharedData->staticData->minBytesPerChar))
@@ -463,7 +468,7 @@ ucnv_setSubstChars (UConverter * converter,
         *err = U_ILLEGAL_ARGUMENT_ERROR;
         return;
     }
-    
+
     uprv_memcpy (converter->subChars, mySubChar, len); /*copies the subchars */
     converter->subCharLen = len;  /*sets the new len */
 
@@ -662,14 +667,16 @@ ucnv_getMinCharSize (const UConverter * converter)
 
 U_CAPI const char*   U_EXPORT2
 ucnv_getName (const UConverter * converter, UErrorCode * err)
-     
+
 {
-    if (U_FAILURE (*err))
+    if (U_FAILURE (*err)) {
         return nullptr;
+}
     if(converter->sharedData->impl->getName){
         const char* temp= converter->sharedData->impl->getName(converter);
-        if(temp)
+        if(temp) {
             return temp;
+}
     }
     return converter->sharedData->staticData->name;
 }
@@ -679,8 +686,9 @@ ucnv_getCCSID(const UConverter * converter,
               UErrorCode * err)
 {
     int32_t ccsid;
-    if (U_FAILURE (*err))
+    if (U_FAILURE (*err)) {
         return -1;
+}
 
     ccsid = converter->sharedData->staticData->codepage;
     if (ccsid == 0) {
@@ -702,8 +710,9 @@ U_CAPI UConverterPlatform   U_EXPORT2
 ucnv_getPlatform (const UConverter * converter,
                                       UErrorCode * err)
 {
-    if (U_FAILURE (*err))
+    if (U_FAILURE (*err)) {
         return UCNV_UNKNOWN;
+}
 
     return (UConverterPlatform)converter->sharedData->staticData->platform;
 }
@@ -734,11 +743,14 @@ ucnv_setToUCallBack (UConverter * converter,
                             const void** oldContext,
                             UErrorCode * err)
 {
-    if (U_FAILURE (*err))
+    if (U_FAILURE (*err)) {
         return;
-    if (oldAction) *oldAction = converter->fromCharErrorBehaviour;
+}
+    if (oldAction) { *oldAction = converter->fromCharErrorBehaviour;
+}
     converter->fromCharErrorBehaviour = newAction;
-    if (oldContext) *oldContext = converter->toUContext;
+    if (oldContext) { *oldContext = converter->toUContext;
+}
     converter->toUContext = newContext;
 }
 
@@ -750,11 +762,14 @@ ucnv_setFromUCallBack (UConverter * converter,
                             const void** oldContext,
                             UErrorCode * err)
 {
-    if (U_FAILURE (*err))
+    if (U_FAILURE (*err)) {
         return;
-    if (oldAction) *oldAction = converter->fromUCharErrorBehaviour;
+}
+    if (oldAction) { *oldAction = converter->fromUCharErrorBehaviour;
+}
     converter->fromUCharErrorBehaviour = newAction;
-    if (oldContext) *oldContext = converter->fromUContext;
+    if (oldContext) { *oldContext = converter->fromUContext;
+}
     converter->fromUContext = newContext;
 }
 
@@ -1231,7 +1246,7 @@ ucnv_fromUnicode(UConverter *cnv,
         *err=U_ILLEGAL_ARGUMENT_ERROR;
         return;
     }
-    
+
     /* output the target overflow buffer */
     if( cnv->charErrorBufferLength>0 &&
         ucnv_outputOverflowFromUnicode(cnv, target, targetLimit, &offsets, err)
@@ -1677,7 +1692,7 @@ ucnv_toUnicode(UConverter *cnv,
         *err=U_ILLEGAL_ARGUMENT_ERROR;
         return;
     }
-    
+
     /* output the target overflow buffer */
     if( cnv->UCharErrorBufferLength>0 &&
         ucnv_outputOverflowToUnicode(cnv, target, targetLimit, &offsets, err)
@@ -2088,7 +2103,7 @@ ucnv_convertEx(UConverter *targetCnv, UConverter *sourceCnv,
         *pErrorCode=U_ILLEGAL_ARGUMENT_ERROR;
         return;
     }
-    
+
     if(pivotStart==nullptr) {
         if(!flush) {
             /* streaming conversion requires an explicit pivot buffer */
@@ -2337,7 +2352,7 @@ ucnv_convertEx(UConverter *targetCnv, UConverter *sourceCnv,
                 break;
             }
         }
-        
+
         /*
          * toUnicode(source -> pivot);
          *
@@ -2619,7 +2634,7 @@ ucnv_getType(const UConverter* converter)
 }
 
 U_CAPI void  U_EXPORT2
-ucnv_getStarters(const UConverter* converter, 
+ucnv_getStarters(const UConverter* converter,
                  UBool starters[256],
                  UErrorCode* err)
 {
@@ -2662,7 +2677,7 @@ static const UAmbiguousConverter *ucnv_getAmbiguous(const UConverter *cnv)
 }
 
 U_CAPI void  U_EXPORT2
-ucnv_fixFileSeparator(const UConverter *cnv, 
+ucnv_fixFileSeparator(const UConverter *cnv,
                       char16_t* source,
                       int32_t sourceLength) {
     const UAmbiguousConverter *a;
@@ -2761,7 +2776,7 @@ ucnv_detectUnicodeSignature( const char* source,
     int32_t dummy;
 
     /* initial 0xa5 bytes: make sure that if we read <SIG_MAX_LEN
-     * bytes we don't misdetect something 
+     * bytes we don't misdetect something
      */
     char start[SIG_MAX_LEN]={ '\xa5', '\xa5', '\xa5', '\xa5', '\xa5' };
     int i = 0;
@@ -2769,7 +2784,7 @@ ucnv_detectUnicodeSignature( const char* source,
     if((pErrorCode==nullptr) || U_FAILURE(*pErrorCode)){
         return nullptr;
     }
-    
+
     if(source == nullptr || sourceLength < -1){
         *pErrorCode = U_ILLEGAL_ARGUMENT_ERROR;
         return nullptr;
@@ -2783,7 +2798,7 @@ ucnv_detectUnicodeSignature( const char* source,
         sourceLength=(int32_t)uprv_strlen(source);
     }
 
-    
+
     while(i<sourceLength&& i<SIG_MAX_LEN){
         start[i]=source[i];
         i++;
@@ -2803,7 +2818,7 @@ ucnv_detectUnicodeSignature( const char* source,
     } else if(start[0] == '\xEF' && start[1] == '\xBB' && start[2] == '\xBF') {
         *signatureLength=3;
         return  "UTF-8";
-    } else if(start[0] == '\x00' && start[1] == '\x00' && 
+    } else if(start[0] == '\x00' && start[1] == '\x00' &&
               start[2] == '\xFE' && start[3]=='\xFF') {
         *signatureLength=4;
         return  "UTF-32BE";
@@ -2860,7 +2875,7 @@ ucnv_fromUCountPending(const UConverter* cnv, UErrorCode* status)
     }else if(cnv->fromUChar32 > 0){
         return 1;
     }
-    return 0; 
+    return 0;
 
 }
 

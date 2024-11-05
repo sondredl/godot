@@ -4,7 +4,7 @@
 #include "estring.h"
 
 #include <algorithm>
-#include <ctype.h>
+#include <cctype>
 
 namespace embree
 {
@@ -20,16 +20,16 @@ namespace embree
     const float y = std::stof(str,&next);
     return Vec2f(x,y);
   }
-  
+
   Vec3f string_to_Vec3f ( std::string str )
   {
     size_t next = 0;
     const float x = std::stof(str,&next); str = str.substr(next+1);
     const float y = std::stof(str,&next); str = str.substr(next+1);
-    const float z = std::stof(str,&next); 
+    const float z = std::stof(str,&next);
     return Vec3f(x,y,z);
   }
-  
+
   Vec4f string_to_Vec4f ( std::string str )
   {
     size_t next = 0;

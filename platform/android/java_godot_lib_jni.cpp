@@ -99,9 +99,9 @@ static void _terminate(JNIEnv *env, bool p_restart = false) {
 	if (java_class_wrapper) {
 		memdelete(java_class_wrapper);
 	}
-	if (input_handler) {
+
 		delete input_handler;
-	}
+
 	// Whether restarting is handled by 'Main::cleanup()'
 	bool restart_on_cleanup = false;
 	if (os_android) {
@@ -110,9 +110,9 @@ static void _terminate(JNIEnv *env, bool p_restart = false) {
 		Main::cleanup();
 		delete os_android;
 	}
-	if (godot_io_java) {
+
 		delete godot_io_java;
-	}
+
 
 	TTS_Android::terminate();
 	FileAccessAndroid::terminate();

@@ -1218,10 +1218,7 @@ bool VisualShader::can_connect_nodes(Type p_type, int p_from_node, int p_from_po
 		}
 	}
 
-	if (is_nodes_connected_relatively(g, p_from_node, p_to_node)) {
-		return false;
-	}
-	return true;
+	return !is_nodes_connected_relatively(g, p_from_node, p_to_node);
 }
 
 bool VisualShader::is_port_types_compatible(int p_a, int p_b) const {
@@ -4199,11 +4196,7 @@ bool VisualShaderNodeParameter::is_global_code_generated() const {
 #ifndef DISABLE_DEPRECATED
 // Kept for compatibility from 3.x to 4.0.
 bool VisualShaderNodeParameter::_set(const StringName &p_name, const Variant &p_value) {
-	if (p_name == "uniform_name") {
-		set_parameter_name(p_value);
-		return true;
-	}
-	return false;
+	return p_name == "uniform_name";
 }
 #endif
 

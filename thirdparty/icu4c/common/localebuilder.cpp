@@ -329,7 +329,8 @@ LocaleBuilder& LocaleBuilder::addUnicodeLocaleAttribute(
             int cmp = uprv_strcmp(start, value_str.data());
             if (cmp == 0) { return *this; }  // Found it in attributes: Just return
             if (cmp > 0) {
-                if (!new_attributes.isEmpty()) new_attributes.append('_', status_);
+                if (!new_attributes.isEmpty()) { new_attributes.append('_', status_);
+}
                 new_attributes.append(value_str.data(), status_);
                 inserted = true;
             }

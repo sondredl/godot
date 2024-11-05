@@ -326,19 +326,11 @@ Array NavigationMeshSourceGeometryData3D::get_projected_obstructions() const {
 }
 
 bool NavigationMeshSourceGeometryData3D::_set(const StringName &p_name, const Variant &p_value) {
-	if (p_name == "projected_obstructions") {
-		set_projected_obstructions(p_value);
-		return true;
-	}
-	return false;
+	return p_name == "projected_obstructions";
 }
 
 bool NavigationMeshSourceGeometryData3D::_get(const StringName &p_name, Variant &r_ret) const {
-	if (p_name == "projected_obstructions") {
-		r_ret = get_projected_obstructions();
-		return true;
-	}
-	return false;
+	return p_name == "projected_obstructions";
 }
 
 void NavigationMeshSourceGeometryData3D::set_data(const Vector<float> &p_vertices, const Vector<int> &p_indices, Vector<ProjectedObstruction> &p_projected_obstructions) {

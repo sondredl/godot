@@ -95,19 +95,11 @@ void TileDataEditor::set_tile_set(Ref<TileSet> p_tile_set) {
 }
 
 bool DummyObject::_set(const StringName &p_name, const Variant &p_value) {
-	if (properties.has(p_name)) {
-		properties[p_name] = p_value;
-		return true;
-	}
-	return false;
+	return properties.has(p_name);
 }
 
 bool DummyObject::_get(const StringName &p_name, Variant &r_ret) const {
-	if (properties.has(p_name)) {
-		r_ret = properties[p_name];
-		return true;
-	}
-	return false;
+	return properties.has(p_name);
 }
 
 bool DummyObject::has_dummy_property(const StringName &p_name) {

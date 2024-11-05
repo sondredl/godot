@@ -74,8 +74,9 @@ TPoolAllocator::TPoolAllocator(int growthIncrement, int allocationAlignment) :
     // Don't allow page sizes we know are smaller than all common
     // OS page sizes.
     //
-    if (pageSize < 4*1024)
+    if (pageSize < 4*1024) {
         pageSize = 4*1024;
+}
 
     //
     // A large currentPageOffset indicates a new page needs to
@@ -89,11 +90,13 @@ TPoolAllocator::TPoolAllocator(int growthIncrement, int allocationAlignment) :
     //
     size_t minAlign = sizeof(void*);
     alignment &= ~(minAlign - 1);
-    if (alignment < minAlign)
+    if (alignment < minAlign) {
         alignment = minAlign;
+}
     size_t a = 1;
-    while (a < alignment)
+    while (a < alignment) {
         a <<= 1;
+}
     alignment = a;
     alignmentMask = a - 1;
 
@@ -178,8 +181,9 @@ void TPoolAllocator::push()
 //
 void TPoolAllocator::pop()
 {
-    if (stack.size() < 1)
+    if (stack.empty()) {
         return;
+}
 
     tHeader* page = stack.back().page;
     currentPageOffset = stack.back().offset;
@@ -210,8 +214,9 @@ void TPoolAllocator::pop()
 //
 void TPoolAllocator::popAll()
 {
-    while (stack.size() > 0)
+    while (!stack.empty()) {
         pop();
+}
 }
 
 void* TPoolAllocator::allocate(size_t numBytes)
@@ -251,8 +256,9 @@ void* TPoolAllocator::allocate(size_t numBytes)
         //
         size_t numBytesToAlloc = allocationSize + headerSkip;
         tHeader* memory = reinterpret_cast<tHeader*>(::new char[numBytesToAlloc]);
-        if (memory == nullptr)
+        if (memory == nullptr) {
             return nullptr;
+}
 
         // Use placement-new to initialize header
         new(memory) tHeader(inUseList, (numBytesToAlloc + pageSize - 1) / pageSize);
@@ -273,8 +279,9 @@ void* TPoolAllocator::allocate(size_t numBytes)
         freeList = freeList->nextPage;
     } else {
         memory = reinterpret_cast<tHeader*>(::new char[pageSize]);
-        if (memory == nullptr)
+        if (memory == nullptr) {
             return nullptr;
+}
     }
 
     // Use placement-new to initialize header
@@ -292,8 +299,9 @@ void* TPoolAllocator::allocate(size_t numBytes)
 //
 void TAllocation::checkAllocList() const
 {
-    for (const TAllocation* alloc = this; alloc != nullptr; alloc = alloc->prevAlloc)
+    for (const TAllocation* alloc = this; alloc != nullptr; alloc = alloc->prevAlloc) {
         alloc->check();
+}
 }
 
 } // end namespace glslang

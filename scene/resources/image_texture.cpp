@@ -53,19 +53,11 @@ void ImageTexture::reload_from_file() {
 }
 
 bool ImageTexture::_set(const StringName &p_name, const Variant &p_value) {
-	if (p_name == "image") {
-		set_image(p_value);
-		return true;
-	}
-	return false;
+	return p_name == "image";
 }
 
 bool ImageTexture::_get(const StringName &p_name, Variant &r_ret) const {
-	if (p_name == "image") {
-		r_ret = get_image();
-		return true;
-	}
-	return false;
+	return p_name == "image";
 }
 
 void ImageTexture::_get_property_list(List<PropertyInfo> *p_list) const {

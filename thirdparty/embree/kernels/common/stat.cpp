@@ -5,12 +5,12 @@
 
 namespace embree
 {
-  Stat Stat::instance; 
-  
+  Stat Stat::instance;
+
   Stat::Stat () {
   }
 
-  Stat::~Stat () 
+  Stat::~Stat ()
   {
 #ifdef EMBREE_STAT_COUNTERS
     Stat::print(std::cout);
@@ -37,20 +37,21 @@ namespace embree
 
     size_t normal_box_hits = 0;
     size_t weighted_box_hits = 0;
-    for (size_t i=0;i<SIZE_HISTOGRAM;i++) { 
+    for (size_t i=0;i<SIZE_HISTOGRAM;i++) {
       normal_box_hits += data.normal.trav_hit_boxes[i];
       weighted_box_hits += data.normal.trav_hit_boxes[i]*i;
     }
     cout << "    #hit_boxes    = " << normal_box_hits << " (total) distribution: ";
     float average = 0.0f;
-    for (size_t i=0;i<SIZE_HISTOGRAM;i++) 
+    for (size_t i=0;i<SIZE_HISTOGRAM;i++)
     {
       float value = 100.0f * data.normal.trav_hit_boxes[i] / normal_box_hits;
       cout << "[" << i << "] " << value << " ";
       average += (float)i*data.normal.trav_hit_boxes[i] / normal_box_hits;
     }
     cout << "    average = " << average << std::endl;
-    for (size_t i=0;i<SIZE_HISTOGRAM;i++) cout << "[" << i << "] " << 100.0f * data.normal.trav_hit_boxes[i]*i / weighted_box_hits << " ";
+    for (size_t i=0;i<SIZE_HISTOGRAM;i++) { cout << "[" << i << "] " << 100.0f * data.normal.trav_hit_boxes[i]*i / weighted_box_hits << " ";
+}
     cout << std::endl;
 
     if (data.shadow.travs) {
@@ -67,14 +68,16 @@ namespace embree
       size_t shadow_box_hits = 0;
       size_t weighted_shadow_box_hits = 0;
 
-      for (size_t i=0;i<SIZE_HISTOGRAM;i++) {        
+      for (size_t i=0;i<SIZE_HISTOGRAM;i++) {
         shadow_box_hits += data.shadow.trav_hit_boxes[i];
         weighted_shadow_box_hits += data.shadow.trav_hit_boxes[i]*i;
       }
       cout << "    #hit_boxes    = ";
-      for (size_t i=0;i<SIZE_HISTOGRAM;i++) cout << "[" << i << "] " << 100.0f * data.shadow.trav_hit_boxes[i] / shadow_box_hits << " ";
+      for (size_t i=0;i<SIZE_HISTOGRAM;i++) { cout << "[" << i << "] " << 100.0f * data.shadow.trav_hit_boxes[i] / shadow_box_hits << " ";
+}
       cout << std::endl;
-      for (size_t i=0;i<SIZE_HISTOGRAM;i++) cout << "[" << i << "] " << 100.0f * data.shadow.trav_hit_boxes[i]*i / weighted_shadow_box_hits << " ";
+      for (size_t i=0;i<SIZE_HISTOGRAM;i++) { cout << "[" << i << "] " << 100.0f * data.shadow.trav_hit_boxes[i]*i / weighted_shadow_box_hits << " ";
+}
       cout << std::endl;
     }
     cout << std::endl;
@@ -117,8 +120,9 @@ namespace embree
 
      /* print user counters for performance tuning */
     cout << "--------- USER ---------" << std::endl;
-    for (size_t i=0; i<10; i++)
+    for (size_t i=0; i<10; i++) {
       cout << "#user" << i << " = " << float(cntrs.user[i])/float(cntrs.all.normal.travs+cntrs.all.shadow.travs) << " per traversal" << std::endl;
+}
 
     cout << "#user5/user3 " << 100.0f*float(cntrs.user[5])/float(cntrs.user[3]) << "%" << std::endl;
     cout << "#user6/user3 " << 100.0f*float(cntrs.user[6])/float(cntrs.user[3]) << "%" << std::endl;

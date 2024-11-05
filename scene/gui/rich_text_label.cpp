@@ -1721,11 +1721,7 @@ void RichTextLabel::_scroll_changed(double) {
 		return;
 	}
 
-	if (scroll_follow && vscroll->get_value() > (vscroll->get_max() - vscroll->get_page() - 1)) {
-		scroll_following = true;
-	} else {
-		scroll_following = false;
-	}
+	scroll_following = scroll_follow && vscroll->get_value() > (vscroll->get_max() - vscroll->get_page() - 1);
 
 	scroll_updated = true;
 
@@ -6103,11 +6099,7 @@ int RichTextLabel::get_content_width() const {
 // People will be very angry, if their texts get erased, because of #39148. (3.x -> 4.0)
 // Although some people may not used bbcode_text, so we only overwrite, if bbcode_text is not empty.
 bool RichTextLabel::_set(const StringName &p_name, const Variant &p_value) {
-	if (p_name == "bbcode_text" && !((String)p_value).is_empty()) {
-		set_text(p_value);
-		return true;
-	}
-	return false;
+	return p_name == "bbcode_text" && !((String)p_value).is_empty();
 }
 #endif
 

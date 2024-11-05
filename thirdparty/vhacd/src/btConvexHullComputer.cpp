@@ -3,8 +3,8 @@ Copyright (c) 2011 Ole Kniemeyer, MAXON, www.maxon.net
 
 This software is provided 'as-is', without any express or implied warranty.
 In no event will the authors be held liable for any damages arising from the use of this software.
-Permission is granted to anyone to use this software for any purpose, 
-including commercial applications, and to alter it and redistribute it freely, 
+Permission is granted to anyone to use this software for any purpose,
+including commercial applications, and to alter it and redistribute it freely,
 subject to the following restrictions:
 
 1. The origin of this software must not be misrepresented; you must not claim that you wrote the original software. If you use this software in a product, an acknowledgment in the product documentation would be appreciated but is not required.
@@ -12,7 +12,7 @@ subject to the following restrictions:
 3. This notice may not be removed or altered from any source distribution.
 */
 
-#include <string.h>
+#include <cstring>
 
 #include "btAlignedObjectArray.h"
 #include "btConvexHullComputer.h"
@@ -20,7 +20,7 @@ subject to the following restrictions:
 #include "btVector3.h"
 
 #ifdef __GNUC__
-#include <stdint.h>
+#include <cstdint>
 #elif defined(_MSC_VER)
 typedef __int32 int32_t;
 typedef __int64 int64_t;

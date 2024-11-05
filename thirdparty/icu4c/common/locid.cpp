@@ -416,14 +416,16 @@ Locale& Locale::operator=(const Locale& other) {
         fullName = nullptr;
     } else {
         fullName = uprv_strdup(other.fullName);
-        if (fullName == nullptr) return *this;
+        if (fullName == nullptr) { return *this;
+}
     }
 
     if (other.baseName == other.fullName) {
         baseName = fullName;
     } else if (other.baseName != nullptr) {
         baseName = uprv_strdup(other.baseName);
-        if (baseName == nullptr) return *this;
+        if (baseName == nullptr) { return *this;
+}
     }
 
     uprv_strcpy(language, other.language);
@@ -437,8 +439,10 @@ Locale& Locale::operator=(const Locale& other) {
 }
 
 Locale& Locale::operator=(Locale&& other) noexcept {
-    if ((baseName != fullName) && (baseName != fullNameBuffer)) uprv_free(baseName);
-    if (fullName != fullNameBuffer) uprv_free(fullName);
+    if ((baseName != fullName) && (baseName != fullNameBuffer)) { uprv_free(baseName);
+}
+    if (fullName != fullNameBuffer) { uprv_free(fullName);
+}
 
     if (other.fullName == other.fullNameBuffer || other.baseName == other.fullNameBuffer) {
         uprv_strcpy(fullNameBuffer, other.fullNameBuffer);
@@ -713,7 +717,8 @@ AliasDataBuilder::readAlias(
         const char* aliasFrom = ures_getKey(res.getAlias());
         const UChar* aliasTo =
             ures_getStringByKey(res.getAlias(), "replacement", nullptr, &status);
-        if (U_FAILURE(status)) return;
+        if (U_FAILURE(status)) { return;
+}
 
         checkType(aliasFrom);
         checkReplacement(aliasTo);
@@ -1576,10 +1581,7 @@ AliasReplacer::replaceTransformedExtensions(
              output.append(bcpTValue.has_value() ? *bcpTValue : tvalue, status);
         }
     }
-    if (U_FAILURE(status)) {
-        return false;
-    }
-    return true;
+    return U_FAILURE(status) == 0;
 }
 
 CharString&
@@ -1969,7 +1971,7 @@ Locale& Locale::init(const char* localeID, UBool canonicalize)
 
         // successful end of init()
         return *this;
-    } while(0); /*loop doesn't iterate*/
+    } while(false); /*loop doesn't iterate*/
 
     // when an error occurs, then set this object to "bogus" (there is no UErrorCode here)
     setToBogus();
@@ -2416,10 +2418,10 @@ private:
 
 public:
     static UClassID U_EXPORT2 getStaticClassID() { return (UClassID)&fgClassID; }
-    virtual UClassID getDynamicClassID() const override { return getStaticClassID(); }
-public:
+    UClassID getDynamicClassID() const override { return getStaticClassID(); }
+
     KeywordEnumeration(const char *keys, int32_t keywordLen, int32_t currentIndex, UErrorCode &status)
-        : keywords(), current(keywords.data()) {
+        :  current(keywords.data()) {
         if(U_SUCCESS(status) && keywordLen != 0) {
             if(keys == nullptr || keywordLen < 0) {
                 status = U_ILLEGAL_ARGUMENT_ERROR;
@@ -2430,9 +2432,9 @@ public:
         }
     }
 
-    virtual ~KeywordEnumeration();
+    ~KeywordEnumeration() override;
 
-    virtual StringEnumeration * clone() const override
+    StringEnumeration * clone() const override
     {
         UErrorCode status = U_ZERO_ERROR;
         return new KeywordEnumeration(
@@ -2440,7 +2442,7 @@ public:
                 static_cast<int32_t>(current - keywords.data()), status);
     }
 
-    virtual int32_t count(UErrorCode& status) const override {
+    int32_t count(UErrorCode& status) const override {
         if (U_FAILURE(status)) { return 0; }
         const char *kw = keywords.data();
         int32_t result = 0;
@@ -2451,7 +2453,7 @@ public:
         return result;
     }
 
-    virtual const char* next(int32_t* resultLength, UErrorCode& status) override {
+    const char* next(int32_t* resultLength, UErrorCode& status) override {
         const char* result;
         int32_t len;
         if(U_SUCCESS(status) && *current != 0) {
@@ -2470,14 +2472,14 @@ public:
         return result;
     }
 
-    virtual const UnicodeString* snext(UErrorCode& status) override {
+    const UnicodeString* snext(UErrorCode& status) override {
         if (U_FAILURE(status)) { return nullptr; }
         int32_t resultLength = 0;
         const char *s = next(&resultLength, status);
         return setChars(s, resultLength, status);
     }
 
-    virtual void reset(UErrorCode& status) override {
+    void reset(UErrorCode& status) override {
         if (U_FAILURE(status)) { return; }
         current = keywords.data();
     }
@@ -2493,9 +2495,9 @@ KeywordEnumeration::~KeywordEnumeration() = default;
 class UnicodeKeywordEnumeration : public KeywordEnumeration {
 public:
     using KeywordEnumeration::KeywordEnumeration;
-    virtual ~UnicodeKeywordEnumeration();
+    ~UnicodeKeywordEnumeration() override;
 
-    virtual const char* next(int32_t* resultLength, UErrorCode& status) override {
+    const char* next(int32_t* resultLength, UErrorCode& status) override {
         const char* legacy_key = KeywordEnumeration::next(nullptr, status);
         while (U_SUCCESS(status) && legacy_key != nullptr) {
             const char* key = uloc_toUnicodeLocaleKey(legacy_key);
@@ -2508,10 +2510,11 @@ public:
             // Not a Unicode keyword, could be a t, x or other, continue to look at the next one.
             legacy_key = KeywordEnumeration::next(nullptr, status);
         }
-        if (resultLength != nullptr) *resultLength = 0;
+        if (resultLength != nullptr) { *resultLength = 0;
+}
         return nullptr;
     }
-    virtual int32_t count(UErrorCode& status) const override {
+    int32_t count(UErrorCode& status) const override {
         if (U_FAILURE(status)) { return 0; }
         const char *kw = keywords.data();
         int32_t result = 0;

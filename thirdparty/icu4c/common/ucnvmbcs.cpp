@@ -35,7 +35,7 @@
 *   limitations and adds m:n character mappings and other features.
 *   See ucnv_ext.h for details.
 *
-*   Change history: 
+*   Change history:
 *
 *    5/6/2001       Ram       Moved  MBCS_SINGLE_RESULT_FROM_U,MBCS_STAGE_2_FROM_U,
 *                             MBCS_VALUE_2_FROM_STAGE_2, MBCS_VALUE_4_FROM_STAGE_2
@@ -411,9 +411,7 @@ ucnv_MBCSWriteSub(UConverterFromUnicodeArgs *pArgs,
               int32_t offsetIndex,
               UErrorCode *pErrorCode);
 
-static UChar32 U_CALLCONV
-ucnv_MBCSGetNextUChar(UConverterToUnicodeArgs *pArgs,
-                  UErrorCode *pErrorCode);
+
 
 static void U_CALLCONV
 ucnv_SBCSFromUTF8(UConverterFromUnicodeArgs *pFromUArgs,
@@ -849,7 +847,7 @@ ucnv_MBCSEnumToUnicode(UConverterMBCSTable *mbcsTable,
     }
 }
 
-U_CFUNC void 
+U_CFUNC void
 ucnv_MBCSGetFilteredUnicodeSetForUnicode(const UConverterSharedData *sharedData,
                                          const USetAdder *sa,
                                          UConverterUnicodeSet which,
@@ -3355,18 +3353,12 @@ ucnv_MBCSSimpleGetNextUChar(UConverterSharedData *sharedData,
                 c=0x10000+MBCS_ENTRY_FINAL_VALUE(entry);
                 break;
             } else if(action==MBCS_STATE_FALLBACK_DIRECT_16) {
-                if(!TO_U_USE_FALLBACK(useFallback)) {
-                    c=0xfffe;
-                    break;
-                }
+
                 /* output BMP code point */
                 c=(char16_t)MBCS_ENTRY_FINAL_VALUE_16(entry);
                 break;
             } else if(action==MBCS_STATE_FALLBACK_DIRECT_20) {
-                if(!TO_U_USE_FALLBACK(useFallback)) {
-                    c=0xfffe;
-                    break;
-                }
+
                 /* output supplementary code point */
                 c=0x10000+MBCS_ENTRY_FINAL_VALUE(entry);
                 break;

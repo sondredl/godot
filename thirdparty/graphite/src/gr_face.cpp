@@ -23,11 +23,13 @@ namespace
         telemetry::category _misc_cat(face.tele.misc);
 #endif
         Face::Table silf(face, Tag::Silf, 0x00050000);
-        if (!silf)
+        if (!silf) {
             return false;
+}
 
-        if (!face.readGlyphs(options))
+        if (!face.readGlyphs(options)) {
             return false;
+}
 
         if (silf)
         {
@@ -45,17 +47,20 @@ namespace
 #endif
                 return false;
             }
-            else
+            else {
                 return true;
+}
         }
-        else
+        else {
             return false;
+}
     }
 
     inline
     uint32 zeropad(const uint32 x)
     {
-        if (x == 0x20202020)                    return 0;
+        if (x == 0x20202020) {                    return 0;
+}
         if ((x & 0x00FFFFFF) == 0x00202020)     return x & 0xFF000000;
         if ((x & 0x0000FFFF) == 0x00002020)     return x & 0xFFFF0000;
         if ((x & 0x000000FF) == 0x00000020)     return x & 0xFFFFFF00;
@@ -68,11 +73,13 @@ extern "C" {
 gr_face* gr_make_face_with_ops(const void* appFaceHandle/*non-NULL*/, const gr_face_ops *ops, unsigned int faceOptions)
                   //the appFaceHandle must stay alive all the time when the gr_face is alive. When finished with the gr_face, call destroy_face
 {
-    if (ops == 0)   return 0;
+    if (ops == 0) {   return 0;
+}
 
     Face *res = new Face(appFaceHandle, *ops);
-    if (res && load_face(*res, faceOptions))
+    if (res && load_face(*res, faceOptions)) {
         return static_cast<gr_face *>(res);
+}
 
     delete res;
     return 0;
@@ -112,7 +119,8 @@ gr_uint32 gr_str_to_tag(const char *str)
 
 void gr_tag_to_str(gr_uint32 tag, char *str)
 {
-    if (!str) return;
+    if (!str) { return;
+}
 
     *str++ = char(tag >> 24);
     *str++ = char(tag >> 16);
@@ -141,9 +149,11 @@ unsigned short gr_face_n_fref(const gr_face* pFace)
 {
     assert(pFace);
     int res = 0;
-    for (int i = 0; i < pFace->numFeatures(); ++i)
-        if (!(pFace->feature(i)->getFlags() & FeatureRef::HIDDEN))
+    for (int i = 0; i < pFace->numFeatures(); ++i) {
+        if (!(pFace->feature(i)->getFlags() & FeatureRef::HIDDEN)) {
             ++res;
+}
+}
     return res;
 }
 
@@ -196,9 +206,11 @@ unsigned short gr_face_n_glyphs(const gr_face* pFace)
 
 const gr_faceinfo *gr_face_info(const gr_face *pFace, gr_uint32 script)
 {
-    if (!pFace) return 0;
+    if (!pFace) { return 0;
+}
     const Silf *silf = pFace->chooseSilf(script);
-    if (silf) return silf->silfInfo();
+    if (silf) { return silf->silfInfo();
+}
     return 0;
 }
 

@@ -53,12 +53,7 @@ void EditorTitleBar::gui_input(const Ref<InputEvent> &p_event) {
 		Window *w = Object::cast_to<Window>(get_viewport());
 		if (w) {
 			if (mb->get_button_index() == MouseButton::LEFT) {
-				if (mb->is_pressed()) {
-					click_pos = DisplayServer::get_singleton()->mouse_get_position() - w->get_position();
-					moving = true;
-				} else {
-					moving = false;
-				}
+				moving = mb->is_pressed();
 			}
 			if (mb->get_button_index() == MouseButton::LEFT && mb->is_double_click() && mb->is_pressed()) {
 				if (DisplayServer::get_singleton()->window_maximize_on_title_dbl_click()) {

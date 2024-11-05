@@ -1,8 +1,8 @@
 // This file is part of meshoptimizer library; see meshoptimizer.h for version/license details
 #include "meshoptimizer.h"
 
-#include <math.h>
-#include <string.h>
+#include <cmath>
+#include <cstring>
 
 // The block below auto-detects SIMD ISA that can be used on the target platform
 #ifndef MESHOPTIMIZER_NO_SIMD
@@ -39,7 +39,7 @@
 
 #ifdef SIMD_SSE
 #include <emmintrin.h>
-#include <stdint.h>
+#include <cstdint>
 #endif
 
 #ifdef _MSC_VER
@@ -832,10 +832,11 @@ void meshopt_decodeFilterOct(void* buffer, size_t count, size_t stride)
 	assert(stride == 4 || stride == 8);
 
 #if defined(SIMD_SSE) || defined(SIMD_NEON) || defined(SIMD_WASM)
-	if (stride == 4)
+	if (stride == 4) {
 		dispatchSimd(decodeFilterOctSimd, static_cast<signed char*>(buffer), count, 4);
-	else
+	} else {
 		dispatchSimd(decodeFilterOctSimd, static_cast<short*>(buffer), count, 4);
+}
 #else
 	if (stride == 4)
 		decodeFilterOct(static_cast<signed char*>(buffer), count);
@@ -967,8 +968,9 @@ void meshopt_encodeFilterExp(void* destination_, size_t count, size_t stride, in
 
 	if (mode == meshopt_EncodeExpSharedComponent)
 	{
-		for (size_t j = 0; j < stride_float; ++j)
+		for (size_t j = 0; j < stride_float; ++j) {
 			component_exp[j] = min_exp;
+}
 
 		for (size_t i = 0; i < count; ++i)
 		{

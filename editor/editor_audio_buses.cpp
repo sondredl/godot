@@ -673,13 +673,7 @@ bool EditorAudioBus::can_drop_data_fw(const Point2 &p_point, const Variant &p_da
 	}
 
 	TreeItem *item = effects->get_item_at_position(p_point);
-	if (!item) {
-		return false;
-	}
-
-	effects->set_drop_mode_flags(Tree::DROP_MODE_INBETWEEN);
-
-	return true;
+	return !!item;
 }
 
 void EditorAudioBus::drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) {

@@ -24,8 +24,8 @@ typedef cpuset_t cpu_set_t;
 namespace embree
 {
   NullTy null;
-  
-  std::string getPlatformName() 
+
+  std::string getPlatformName()
   {
 #if defined(__ANDROID__) && !defined(__64BIT__)
     return "Android (32bit)";
@@ -90,8 +90,8 @@ namespace embree
   std::string getCPUVendor()
   {
 #if defined(__X86_ASM__)
-    int cpuinfo[4]; 
-    __cpuid (cpuinfo, 0); 
+    int cpuinfo[4];
+    __cpuid (cpuinfo, 0);
     int name[4];
     name[0] = cpuinfo[1];
     name[1] = cpuinfo[3];
@@ -105,79 +105,121 @@ namespace embree
 #endif
   }
 
-  CPU getCPUModel() 
+  CPU getCPUModel()
   {
 #if defined(__X86_ASM__)
-    if (getCPUVendor() != "GenuineIntel")
+    if (getCPUVendor() != "GenuineIntel") {
       return CPU::UNKNOWN;
-    
+}
+
     int out[4];
     __cpuid(out, 0);
-    if (out[0] < 1) return CPU::UNKNOWN;
+    if (out[0] < 1) { return CPU::UNKNOWN;
+}
     __cpuid(out, 1);
 
     /* please see CPUID documentation for these formulas */
     uint32_t family_ID          = (out[0] >>  8) & 0x0F;
     uint32_t extended_family_ID = (out[0] >> 20) & 0xFF;
-    
+
     uint32_t model_ID           = (out[0] >>  4) & 0x0F;
     uint32_t extended_model_ID  = (out[0] >> 16) & 0x0F;
-    
+
     uint32_t DisplayFamily = family_ID;
-    if (family_ID == 0x0F)
+    if (family_ID == 0x0F) {
       DisplayFamily += extended_family_ID;
-    
+}
+
     uint32_t DisplayModel = model_ID;
-    if (family_ID == 0x06 || family_ID == 0x0F)
+    if (family_ID == 0x06 || family_ID == 0x0F) {
       DisplayModel += extended_model_ID << 4;
+}
 
     uint32_t DisplayFamily_DisplayModel = (DisplayFamily << 8) + (DisplayModel << 0);
 
     // Data from Intel® 64 and IA-32 Architectures, Volume 4, Chapter 2, Table 2-1 (CPUID Signature Values of DisplayFamily_DisplayModel)
-    if (DisplayFamily_DisplayModel == 0x067D) return CPU::CORE_ICE_LAKE;
-    if (DisplayFamily_DisplayModel == 0x067E) return CPU::CORE_ICE_LAKE;
-    if (DisplayFamily_DisplayModel == 0x068C) return CPU::CORE_TIGER_LAKE;
-    if (DisplayFamily_DisplayModel == 0x06A5) return CPU::CORE_COMET_LAKE;
-    if (DisplayFamily_DisplayModel == 0x06A6) return CPU::CORE_COMET_LAKE;
-    if (DisplayFamily_DisplayModel == 0x0666) return CPU::CORE_CANNON_LAKE;
-    if (DisplayFamily_DisplayModel == 0x068E) return CPU::CORE_KABY_LAKE;
-    if (DisplayFamily_DisplayModel == 0x069E) return CPU::CORE_KABY_LAKE;
-    if (DisplayFamily_DisplayModel == 0x066A) return CPU::XEON_ICE_LAKE;
-    if (DisplayFamily_DisplayModel == 0x066C) return CPU::XEON_ICE_LAKE;
-    if (DisplayFamily_DisplayModel == 0x0655) return CPU::XEON_SKY_LAKE;
-    if (DisplayFamily_DisplayModel == 0x064E) return CPU::CORE_SKY_LAKE;
-    if (DisplayFamily_DisplayModel == 0x065E) return CPU::CORE_SKY_LAKE;
-    if (DisplayFamily_DisplayModel == 0x0656) return CPU::XEON_BROADWELL;
-    if (DisplayFamily_DisplayModel == 0x064F) return CPU::XEON_BROADWELL;
-    if (DisplayFamily_DisplayModel == 0x0647) return CPU::CORE_BROADWELL;
-    if (DisplayFamily_DisplayModel == 0x063D) return CPU::CORE_BROADWELL;
-    if (DisplayFamily_DisplayModel == 0x063F) return CPU::XEON_HASWELL;
-    if (DisplayFamily_DisplayModel == 0x063C) return CPU::CORE_HASWELL;
-    if (DisplayFamily_DisplayModel == 0x0645) return CPU::CORE_HASWELL;
-    if (DisplayFamily_DisplayModel == 0x0646) return CPU::CORE_HASWELL;
-    if (DisplayFamily_DisplayModel == 0x063E) return CPU::XEON_IVY_BRIDGE;
-    if (DisplayFamily_DisplayModel == 0x063A) return CPU::CORE_IVY_BRIDGE;
-    if (DisplayFamily_DisplayModel == 0x062D) return CPU::SANDY_BRIDGE;
-    if (DisplayFamily_DisplayModel == 0x062F) return CPU::SANDY_BRIDGE;
-    if (DisplayFamily_DisplayModel == 0x062A) return CPU::SANDY_BRIDGE;
-    if (DisplayFamily_DisplayModel == 0x062E) return CPU::NEHALEM;
-    if (DisplayFamily_DisplayModel == 0x0625) return CPU::NEHALEM;
-    if (DisplayFamily_DisplayModel == 0x062C) return CPU::NEHALEM;
-    if (DisplayFamily_DisplayModel == 0x061E) return CPU::NEHALEM;
-    if (DisplayFamily_DisplayModel == 0x061F) return CPU::NEHALEM;
-    if (DisplayFamily_DisplayModel == 0x061A) return CPU::NEHALEM;
-    if (DisplayFamily_DisplayModel == 0x061D) return CPU::NEHALEM;
-    if (DisplayFamily_DisplayModel == 0x0617) return CPU::CORE2;
-    if (DisplayFamily_DisplayModel == 0x060F) return CPU::CORE2;
-    if (DisplayFamily_DisplayModel == 0x060E) return CPU::CORE1;
+    if (DisplayFamily_DisplayModel == 0x067D) { return CPU::CORE_ICE_LAKE;
+}
+    if (DisplayFamily_DisplayModel == 0x067E) { return CPU::CORE_ICE_LAKE;
+}
+    if (DisplayFamily_DisplayModel == 0x068C) { return CPU::CORE_TIGER_LAKE;
+}
+    if (DisplayFamily_DisplayModel == 0x06A5) { return CPU::CORE_COMET_LAKE;
+}
+    if (DisplayFamily_DisplayModel == 0x06A6) { return CPU::CORE_COMET_LAKE;
+}
+    if (DisplayFamily_DisplayModel == 0x0666) { return CPU::CORE_CANNON_LAKE;
+}
+    if (DisplayFamily_DisplayModel == 0x068E) { return CPU::CORE_KABY_LAKE;
+}
+    if (DisplayFamily_DisplayModel == 0x069E) { return CPU::CORE_KABY_LAKE;
+}
+    if (DisplayFamily_DisplayModel == 0x066A) { return CPU::XEON_ICE_LAKE;
+}
+    if (DisplayFamily_DisplayModel == 0x066C) { return CPU::XEON_ICE_LAKE;
+}
+    if (DisplayFamily_DisplayModel == 0x0655) { return CPU::XEON_SKY_LAKE;
+}
+    if (DisplayFamily_DisplayModel == 0x064E) { return CPU::CORE_SKY_LAKE;
+}
+    if (DisplayFamily_DisplayModel == 0x065E) { return CPU::CORE_SKY_LAKE;
+}
+    if (DisplayFamily_DisplayModel == 0x0656) { return CPU::XEON_BROADWELL;
+}
+    if (DisplayFamily_DisplayModel == 0x064F) { return CPU::XEON_BROADWELL;
+}
+    if (DisplayFamily_DisplayModel == 0x0647) { return CPU::CORE_BROADWELL;
+}
+    if (DisplayFamily_DisplayModel == 0x063D) { return CPU::CORE_BROADWELL;
+}
+    if (DisplayFamily_DisplayModel == 0x063F) { return CPU::XEON_HASWELL;
+}
+    if (DisplayFamily_DisplayModel == 0x063C) { return CPU::CORE_HASWELL;
+}
+    if (DisplayFamily_DisplayModel == 0x0645) { return CPU::CORE_HASWELL;
+}
+    if (DisplayFamily_DisplayModel == 0x0646) { return CPU::CORE_HASWELL;
+}
+    if (DisplayFamily_DisplayModel == 0x063E) { return CPU::XEON_IVY_BRIDGE;
+}
+    if (DisplayFamily_DisplayModel == 0x063A) { return CPU::CORE_IVY_BRIDGE;
+}
+    if (DisplayFamily_DisplayModel == 0x062D) { return CPU::SANDY_BRIDGE;
+}
+    if (DisplayFamily_DisplayModel == 0x062F) { return CPU::SANDY_BRIDGE;
+}
+    if (DisplayFamily_DisplayModel == 0x062A) { return CPU::SANDY_BRIDGE;
+}
+    if (DisplayFamily_DisplayModel == 0x062E) { return CPU::NEHALEM;
+}
+    if (DisplayFamily_DisplayModel == 0x0625) { return CPU::NEHALEM;
+}
+    if (DisplayFamily_DisplayModel == 0x062C) { return CPU::NEHALEM;
+}
+    if (DisplayFamily_DisplayModel == 0x061E) { return CPU::NEHALEM;
+}
+    if (DisplayFamily_DisplayModel == 0x061F) { return CPU::NEHALEM;
+}
+    if (DisplayFamily_DisplayModel == 0x061A) { return CPU::NEHALEM;
+}
+    if (DisplayFamily_DisplayModel == 0x061D) { return CPU::NEHALEM;
+}
+    if (DisplayFamily_DisplayModel == 0x0617) { return CPU::CORE2;
+}
+    if (DisplayFamily_DisplayModel == 0x060F) { return CPU::CORE2;
+}
+    if (DisplayFamily_DisplayModel == 0x060E) { return CPU::CORE1;
+}
 
-    if (DisplayFamily_DisplayModel == 0x0685) return CPU::XEON_PHI_KNIGHTS_MILL;
-    if (DisplayFamily_DisplayModel == 0x0657) return CPU::XEON_PHI_KNIGHTS_LANDING;
-    
+    if (DisplayFamily_DisplayModel == 0x0685) { return CPU::XEON_PHI_KNIGHTS_MILL;
+}
+    if (DisplayFamily_DisplayModel == 0x0657) { return CPU::XEON_PHI_KNIGHTS_LANDING;
+}
+
 #elif defined(__ARM_NEON)
     return CPU::ARM;
 #endif
-    
+
     return CPU::UNKNOWN;
   }
 
@@ -250,13 +292,13 @@ namespace embree
   static const int CPU_FEATURE_BIT_AVX512BW = 1 << 30;    // AVX512BW (byte and word instructions)
   static const int CPU_FEATURE_BIT_AVX512VL = 1 << 31;    // AVX512VL (vector length extensions)
   static const int CPU_FEATURE_BIT_AVX512IFMA = 1 << 21;  // AVX512IFMA (integer fused multiple-add instructions)
-  
+
   /* cpuid[eax=7,ecx=0].ecx */
   static const int CPU_FEATURE_BIT_AVX512VBMI = 1 << 1;   // AVX512VBMI (vector bit manipulation instructions)
 #endif
 
 #if defined(__X86_ASM__)
-  __noinline int64_t get_xcr0() 
+  __noinline int64_t get_xcr0()
   {
 #if defined (__WIN32__) && !defined (__MINGW32__) && defined(_XCR_XFEATURE_ENABLED_MASK)
     int64_t xcr0 = 0; // int64_t is workaround for compiler bug under VS2013, Win32
@@ -275,16 +317,17 @@ namespace embree
 #if defined(__X86_ASM__)
     /* cache CPU features access */
     static int cpu_features = 0;
-    if (cpu_features) 
+    if (cpu_features) {
       return cpu_features;
+}
 
     /* get number of CPUID leaves */
-    int cpuid_leaf0[4]; 
+    int cpuid_leaf0[4];
     __cpuid(cpuid_leaf0, 0x00000000);
-    unsigned nIds = cpuid_leaf0[EAX];  
+    unsigned nIds = cpuid_leaf0[EAX];
 
     /* get number of extended CPUID leaves */
-    int cpuid_leafe[4]; 
+    int cpuid_leafe[4];
     __cpuid(cpuid_leafe, 0x80000000);
     unsigned nExIds = cpuid_leafe[EAX];
 
@@ -292,16 +335,19 @@ namespace embree
     int cpuid_leaf_1[4] = { 0,0,0,0 };
     int cpuid_leaf_7[4] = { 0,0,0,0 };
     int cpuid_leaf_e1[4] = { 0,0,0,0 };
-    if (nIds >= 1) __cpuid (cpuid_leaf_1,0x00000001);
+    if (nIds >= 1) { __cpuid (cpuid_leaf_1,0x00000001);
+}
 #if _WIN32
 #if _MSC_VER && (_MSC_FULL_VER < 160040219)
 #elif defined(_MSC_VER)
     if (nIds >= 7) __cpuidex(cpuid_leaf_7,0x00000007,0);
 #endif
 #else
-    if (nIds >= 7) __cpuid_count(cpuid_leaf_7,0x00000007,0);
+    if (nIds >= 7) { __cpuid_count(cpuid_leaf_7,0x00000007,0);
+}
 #endif
-    if (nExIds >= 0x80000001) __cpuid(cpuid_leaf_e1,0x80000001);
+    if (nExIds >= 0x80000001) { __cpuid(cpuid_leaf_e1,0x80000001);
+}
 
     /* detect if OS saves XMM, YMM, and ZMM states */
     bool xmm_enabled = true;
@@ -313,36 +359,63 @@ namespace embree
       ymm_enabled = xmm_enabled && ((xcr0 & 0x04) == 0x04); /* checks if ymm state are enabled in XCR0 */
       zmm_enabled = ymm_enabled && ((xcr0 & 0xE0) == 0xE0); /* checks if OPMASK state, upper 256-bit of ZMM0-ZMM15 and ZMM16-ZMM31 state are enabled in XCR0 */
     }
-    if (xmm_enabled) cpu_features |= CPU_FEATURE_XMM_ENABLED;
-    if (ymm_enabled) cpu_features |= CPU_FEATURE_YMM_ENABLED;
-    if (zmm_enabled) cpu_features |= CPU_FEATURE_ZMM_ENABLED;
-    
-    if (cpuid_leaf_1[EDX] & CPU_FEATURE_BIT_SSE   ) cpu_features |= CPU_FEATURE_SSE;
-    if (cpuid_leaf_1[EDX] & CPU_FEATURE_BIT_SSE2  ) cpu_features |= CPU_FEATURE_SSE2;
-    if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_SSE3  ) cpu_features |= CPU_FEATURE_SSE3;
-    if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_SSSE3 ) cpu_features |= CPU_FEATURE_SSSE3;
-    if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_SSE4_1) cpu_features |= CPU_FEATURE_SSE41;
-    if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_SSE4_2) cpu_features |= CPU_FEATURE_SSE42;
-    if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_POPCNT) cpu_features |= CPU_FEATURE_POPCNT;
-    
-    if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_AVX   ) cpu_features |= CPU_FEATURE_AVX;
-    if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_F16C  ) cpu_features |= CPU_FEATURE_F16C;
-    if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_RDRAND) cpu_features |= CPU_FEATURE_RDRAND;
-    if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX2  ) cpu_features |= CPU_FEATURE_AVX2;
-    if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_FMA3  ) cpu_features |= CPU_FEATURE_FMA3;
-    if (cpuid_leaf_e1[ECX] & CPU_FEATURE_BIT_LZCNT) cpu_features |= CPU_FEATURE_LZCNT;
-    if (cpuid_leaf_7 [EBX] & CPU_FEATURE_BIT_BMI1 ) cpu_features |= CPU_FEATURE_BMI1;
-    if (cpuid_leaf_7 [EBX] & CPU_FEATURE_BIT_BMI2 ) cpu_features |= CPU_FEATURE_BMI2;
+    if (xmm_enabled) { cpu_features |= CPU_FEATURE_XMM_ENABLED;
+}
+    if (ymm_enabled) { cpu_features |= CPU_FEATURE_YMM_ENABLED;
+}
+    if (zmm_enabled) { cpu_features |= CPU_FEATURE_ZMM_ENABLED;
+}
 
-    if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512F   ) cpu_features |= CPU_FEATURE_AVX512F;
-    if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512DQ  ) cpu_features |= CPU_FEATURE_AVX512DQ;
-    if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512PF  ) cpu_features |= CPU_FEATURE_AVX512PF;
-    if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512ER  ) cpu_features |= CPU_FEATURE_AVX512ER; 
-    if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512CD  ) cpu_features |= CPU_FEATURE_AVX512CD;
-    if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512BW  ) cpu_features |= CPU_FEATURE_AVX512BW;
-    if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512IFMA) cpu_features |= CPU_FEATURE_AVX512IFMA;
-    if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512VL  ) cpu_features |= CPU_FEATURE_AVX512VL;
-    if (cpuid_leaf_7[ECX] & CPU_FEATURE_BIT_AVX512VBMI) cpu_features |= CPU_FEATURE_AVX512VBMI;
+    if (cpuid_leaf_1[EDX] & CPU_FEATURE_BIT_SSE   ) { cpu_features |= CPU_FEATURE_SSE;
+}
+    if (cpuid_leaf_1[EDX] & CPU_FEATURE_BIT_SSE2  ) { cpu_features |= CPU_FEATURE_SSE2;
+}
+    if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_SSE3  ) { cpu_features |= CPU_FEATURE_SSE3;
+}
+    if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_SSSE3 ) { cpu_features |= CPU_FEATURE_SSSE3;
+}
+    if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_SSE4_1) { cpu_features |= CPU_FEATURE_SSE41;
+}
+    if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_SSE4_2) { cpu_features |= CPU_FEATURE_SSE42;
+}
+    if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_POPCNT) { cpu_features |= CPU_FEATURE_POPCNT;
+}
+
+    if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_AVX   ) { cpu_features |= CPU_FEATURE_AVX;
+}
+    if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_F16C  ) { cpu_features |= CPU_FEATURE_F16C;
+}
+    if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_RDRAND) { cpu_features |= CPU_FEATURE_RDRAND;
+}
+    if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX2  ) { cpu_features |= CPU_FEATURE_AVX2;
+}
+    if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_FMA3  ) { cpu_features |= CPU_FEATURE_FMA3;
+}
+    if (cpuid_leaf_e1[ECX] & CPU_FEATURE_BIT_LZCNT) { cpu_features |= CPU_FEATURE_LZCNT;
+}
+    if (cpuid_leaf_7 [EBX] & CPU_FEATURE_BIT_BMI1 ) { cpu_features |= CPU_FEATURE_BMI1;
+}
+    if (cpuid_leaf_7 [EBX] & CPU_FEATURE_BIT_BMI2 ) { cpu_features |= CPU_FEATURE_BMI2;
+}
+
+    if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512F   ) { cpu_features |= CPU_FEATURE_AVX512F;
+}
+    if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512DQ  ) { cpu_features |= CPU_FEATURE_AVX512DQ;
+}
+    if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512PF  ) { cpu_features |= CPU_FEATURE_AVX512PF;
+}
+    if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512ER  ) { cpu_features |= CPU_FEATURE_AVX512ER;
+}
+    if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512CD  ) { cpu_features |= CPU_FEATURE_AVX512CD;
+}
+    if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512BW  ) { cpu_features |= CPU_FEATURE_AVX512BW;
+}
+    if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512IFMA) { cpu_features |= CPU_FEATURE_AVX512IFMA;
+}
+    if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512VL  ) { cpu_features |= CPU_FEATURE_AVX512VL;
+}
+    if (cpuid_leaf_7[ECX] & CPU_FEATURE_BIT_AVX512VBMI) { cpu_features |= CPU_FEATURE_AVX512VBMI;
+}
 
     return cpu_features;
 
@@ -372,75 +445,127 @@ namespace embree
   std::string stringOfCPUFeatures(int features)
   {
     std::string str;
-    if (features & CPU_FEATURE_XMM_ENABLED) str += "XMM ";
-    if (features & CPU_FEATURE_YMM_ENABLED) str += "YMM ";
-    if (features & CPU_FEATURE_ZMM_ENABLED) str += "ZMM ";
-    if (features & CPU_FEATURE_SSE   ) str += "SSE ";
-    if (features & CPU_FEATURE_SSE2  ) str += "SSE2 ";
-    if (features & CPU_FEATURE_SSE3  ) str += "SSE3 ";
-    if (features & CPU_FEATURE_SSSE3 ) str += "SSSE3 ";
-    if (features & CPU_FEATURE_SSE41 ) str += "SSE4.1 ";
-    if (features & CPU_FEATURE_SSE42 ) str += "SSE4.2 ";
-    if (features & CPU_FEATURE_POPCNT) str += "POPCNT ";
-    if (features & CPU_FEATURE_AVX   ) str += "AVX ";
-    if (features & CPU_FEATURE_F16C  ) str += "F16C ";
-    if (features & CPU_FEATURE_RDRAND) str += "RDRAND ";
-    if (features & CPU_FEATURE_AVX2  ) str += "AVX2 ";
-    if (features & CPU_FEATURE_FMA3  ) str += "FMA3 ";
-    if (features & CPU_FEATURE_LZCNT ) str += "LZCNT ";
-    if (features & CPU_FEATURE_BMI1  ) str += "BMI1 ";
-    if (features & CPU_FEATURE_BMI2  ) str += "BMI2 ";
-    if (features & CPU_FEATURE_AVX512F) str += "AVX512F ";
-    if (features & CPU_FEATURE_AVX512DQ) str += "AVX512DQ ";
-    if (features & CPU_FEATURE_AVX512PF) str += "AVX512PF ";
-    if (features & CPU_FEATURE_AVX512ER) str += "AVX512ER ";
-    if (features & CPU_FEATURE_AVX512CD) str += "AVX512CD ";
-    if (features & CPU_FEATURE_AVX512BW) str += "AVX512BW ";
-    if (features & CPU_FEATURE_AVX512VL) str += "AVX512VL ";
-    if (features & CPU_FEATURE_AVX512IFMA) str += "AVX512IFMA ";
-    if (features & CPU_FEATURE_AVX512VBMI) str += "AVX512VBMI ";
-    if (features & CPU_FEATURE_NEON) str += "NEON ";
-    if (features & CPU_FEATURE_NEON_2X) str += "2xNEON ";
+    if (features & CPU_FEATURE_XMM_ENABLED) { str += "XMM ";
+}
+    if (features & CPU_FEATURE_YMM_ENABLED) { str += "YMM ";
+}
+    if (features & CPU_FEATURE_ZMM_ENABLED) { str += "ZMM ";
+}
+    if (features & CPU_FEATURE_SSE   ) { str += "SSE ";
+}
+    if (features & CPU_FEATURE_SSE2  ) { str += "SSE2 ";
+}
+    if (features & CPU_FEATURE_SSE3  ) { str += "SSE3 ";
+}
+    if (features & CPU_FEATURE_SSSE3 ) { str += "SSSE3 ";
+}
+    if (features & CPU_FEATURE_SSE41 ) { str += "SSE4.1 ";
+}
+    if (features & CPU_FEATURE_SSE42 ) { str += "SSE4.2 ";
+}
+    if (features & CPU_FEATURE_POPCNT) { str += "POPCNT ";
+}
+    if (features & CPU_FEATURE_AVX   ) { str += "AVX ";
+}
+    if (features & CPU_FEATURE_F16C  ) { str += "F16C ";
+}
+    if (features & CPU_FEATURE_RDRAND) { str += "RDRAND ";
+}
+    if (features & CPU_FEATURE_AVX2  ) { str += "AVX2 ";
+}
+    if (features & CPU_FEATURE_FMA3  ) { str += "FMA3 ";
+}
+    if (features & CPU_FEATURE_LZCNT ) { str += "LZCNT ";
+}
+    if (features & CPU_FEATURE_BMI1  ) { str += "BMI1 ";
+}
+    if (features & CPU_FEATURE_BMI2  ) { str += "BMI2 ";
+}
+    if (features & CPU_FEATURE_AVX512F) { str += "AVX512F ";
+}
+    if (features & CPU_FEATURE_AVX512DQ) { str += "AVX512DQ ";
+}
+    if (features & CPU_FEATURE_AVX512PF) { str += "AVX512PF ";
+}
+    if (features & CPU_FEATURE_AVX512ER) { str += "AVX512ER ";
+}
+    if (features & CPU_FEATURE_AVX512CD) { str += "AVX512CD ";
+}
+    if (features & CPU_FEATURE_AVX512BW) { str += "AVX512BW ";
+}
+    if (features & CPU_FEATURE_AVX512VL) { str += "AVX512VL ";
+}
+    if (features & CPU_FEATURE_AVX512IFMA) { str += "AVX512IFMA ";
+}
+    if (features & CPU_FEATURE_AVX512VBMI) { str += "AVX512VBMI ";
+}
+    if (features & CPU_FEATURE_NEON) { str += "NEON ";
+}
+    if (features & CPU_FEATURE_NEON_2X) { str += "2xNEON ";
+}
     return str;
   }
-  
+
   std::string stringOfISA (int isa)
   {
-    if (isa == SSE) return "SSE";
-    if (isa == SSE2) return "SSE2";
-    if (isa == SSE3) return "SSE3";
-    if (isa == SSSE3) return "SSSE3";
-    if (isa == SSE41) return "SSE4.1";
-    if (isa == SSE42) return "SSE4.2";
-    if (isa == AVX) return "AVX";
-    if (isa == AVX2) return "AVX2";
-    if (isa == AVX512) return "AVX512";
+    if (isa == SSE) { return "SSE";
+}
+    if (isa == SSE2) { return "SSE2";
+}
+    if (isa == SSE3) { return "SSE3";
+}
+    if (isa == SSSE3) { return "SSSE3";
+}
+    if (isa == SSE41) { return "SSE4.1";
+}
+    if (isa == SSE42) { return "SSE4.2";
+}
+    if (isa == AVX) { return "AVX";
+}
+    if (isa == AVX2) { return "AVX2";
+}
+    if (isa == AVX512) { return "AVX512";
+}
 
-    if (isa == NEON) return "NEON";
-    if (isa == NEON_2X) return "2xNEON";
+    if (isa == NEON) { return "NEON";
+}
+    if (isa == NEON_2X) { return "2xNEON";
+}
     return "UNKNOWN";
   }
 
   bool hasISA(int features, int isa) {
     return (features & isa) == isa;
   }
-  
+
   std::string supportedTargetList (int features)
   {
     std::string v;
-    if (hasISA(features,SSE)) v += "SSE ";
-    if (hasISA(features,SSE2)) v += "SSE2 ";
-    if (hasISA(features,SSE3)) v += "SSE3 ";
-    if (hasISA(features,SSSE3)) v += "SSSE3 ";
-    if (hasISA(features,SSE41)) v += "SSE4.1 ";
-    if (hasISA(features,SSE42)) v += "SSE4.2 ";
-    if (hasISA(features,AVX)) v += "AVX ";
-    if (hasISA(features,AVXI)) v += "AVXI ";
-    if (hasISA(features,AVX2)) v += "AVX2 ";
-    if (hasISA(features,AVX512)) v += "AVX512 ";
+    if (hasISA(features,SSE)) { v += "SSE ";
+}
+    if (hasISA(features,SSE2)) { v += "SSE2 ";
+}
+    if (hasISA(features,SSE3)) { v += "SSE3 ";
+}
+    if (hasISA(features,SSSE3)) { v += "SSSE3 ";
+}
+    if (hasISA(features,SSE41)) { v += "SSE4.1 ";
+}
+    if (hasISA(features,SSE42)) { v += "SSE4.2 ";
+}
+    if (hasISA(features,AVX)) { v += "AVX ";
+}
+    if (hasISA(features,AVXI)) { v += "AVXI ";
+}
+    if (hasISA(features,AVX2)) { v += "AVX2 ";
+}
+    if (hasISA(features,AVX512)) { v += "AVX512 ";
+}
 
-    if (hasISA(features,NEON)) v += "NEON ";
-    if (hasISA(features,NEON_2X)) v += "2xNEON ";
+    if (hasISA(features,NEON)) { v += "NEON ";
+}
+    if (hasISA(features,NEON_2X)) { v += "2xNEON ";
+}
     return v;
   }
 }
@@ -464,7 +589,7 @@ namespace embree
     return std::string(filename);
   }
 
-  unsigned int getNumberOfLogicalThreads() 
+  unsigned int getNumberOfLogicalThreads()
   {
     static int nThreads = -1;
     if (nThreads != -1) return nThreads;
@@ -475,11 +600,11 @@ namespace embree
     GetActiveProcessorGroupCountFunc pGetActiveProcessorGroupCount = (GetActiveProcessorGroupCountFunc)GetProcAddress(hlib, "GetActiveProcessorGroupCount");
     GetActiveProcessorCountFunc      pGetActiveProcessorCount      = (GetActiveProcessorCountFunc)     GetProcAddress(hlib, "GetActiveProcessorCount");
 
-    if (pGetActiveProcessorGroupCount && pGetActiveProcessorCount) 
+    if (pGetActiveProcessorGroupCount && pGetActiveProcessorCount)
     {
       int groups = pGetActiveProcessorGroupCount();
       int totalProcessors = 0;
-      for (int i = 0; i < groups; i++) 
+      for (int i = 0; i < groups; i++)
         totalProcessors += pGetActiveProcessorCount(i);
       nThreads = totalProcessors;
     }
@@ -493,7 +618,7 @@ namespace embree
     return nThreads;
   }
 
-  int getTerminalWidth() 
+  int getTerminalWidth()
   {
     HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
     if (handle == INVALID_HANDLE_VALUE) return 80;
@@ -503,7 +628,7 @@ namespace embree
     return info.dwSize.X;
   }
 
-  double getSeconds() 
+  double getSeconds()
   {
     LARGE_INTEGER freq, val;
     QueryPerformanceFrequency(&freq);
@@ -537,18 +662,19 @@ namespace embree
 
 #if defined(__LINUX__)
 
-#include <stdio.h>
+#include <cstdio>
 #include <unistd.h>
 
 namespace embree
 {
-  std::string getExecutableFileName() 
+  std::string getExecutableFileName()
   {
     std::string pid = "/proc/" + toString(getpid()) + "/exe";
     char buf[4096];
     memset(buf,0,sizeof(buf));
-    if (readlink(pid.c_str(), buf, sizeof(buf)-1) == -1)
+    if (readlink(pid.c_str(), buf, sizeof(buf)-1) == -1) {
       return std::string();
+}
     return std::string(buf);
   }
 
@@ -595,7 +721,7 @@ namespace embree
   size_t getVirtualMemoryBytes() {
     return 0;
   }
-   
+
   size_t getResidentMemoryBytes() {
     return 0;
   }
@@ -625,7 +751,7 @@ namespace embree
   size_t getVirtualMemoryBytes() {
     return 0;
   }
-   
+
   size_t getResidentMemoryBytes() {
     return 0;
   }
@@ -639,7 +765,6 @@ namespace embree
 
 #if defined(__UNIX__)
 
-#include <unistd.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>
 #include <pthread.h>
@@ -656,10 +781,11 @@ extern int godot_js_os_hw_concurrency_get();
 
 namespace embree
 {
-  unsigned int getNumberOfLogicalThreads() 
+  unsigned int getNumberOfLogicalThreads()
   {
     static int nThreads = -1;
-    if (nThreads != -1) return nThreads;
+    if (nThreads != -1) { return nThreads;
+}
 
 #if defined(__MACOSX__) || defined(__ANDROID__)
     nThreads = sysconf(_SC_NPROCESSORS_ONLN); // does not work in Linux LXC container
@@ -670,18 +796,20 @@ namespace embree
     // -- GODOT end --
 #else
     cpu_set_t set;
-    if (pthread_getaffinity_np(pthread_self(), sizeof(set), &set) == 0)
+    if (pthread_getaffinity_np(pthread_self(), sizeof(set), &set) == 0) {
       nThreads = CPU_COUNT(&set);
+}
 #endif
-    
+
     assert(nThreads);
     return nThreads;
   }
 
-  int getTerminalWidth() 
+  int getTerminalWidth()
   {
     struct winsize info;
-    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &info) < 0) return 80;
+    if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &info) < 0) { return 80;
+}
     return info.ws_col;
   }
 

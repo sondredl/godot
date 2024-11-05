@@ -85,20 +85,23 @@ void cvtt::Internal::S3TCComputer::TestSingleColor(uint32_t flags, const MUInt15
 {
     float channelWeightsSq[3];
 
-    for (int ch = 0; ch < 3; ch++)
+    for (int ch = 0; ch < 3; ch++) {
         channelWeightsSq[ch] = channelWeights[ch] * channelWeights[ch];
+}
 
     MUInt15 totals[3] = { ParallelMath::MakeUInt15(0), ParallelMath::MakeUInt15(0), ParallelMath::MakeUInt15(0) };
 
     for (int px = 0; px < 16; px++)
     {
-        for (int ch = 0; ch < 3; ch++)
+        for (int ch = 0; ch < 3; ch++) {
             totals[ch] = totals[ch] + pixels[px][ch];
+}
     }
 
     MUInt15 average[3];
-    for (int ch = 0; ch < 3; ch++)
+    for (int ch = 0; ch < 3; ch++) {
         average[ch] = ParallelMath::RightShift(totals[ch] + ParallelMath::MakeUInt15(8), 4);
+}
 
     const Tables::S3TCSC::TableEntry* rbTable = NULL;
     const Tables::S3TCSC::TableEntry* gTable = NULL;
@@ -151,21 +154,24 @@ void cvtt::Internal::S3TCComputer::TestSingleColor(uint32_t flags, const MUInt15
     if (flags & cvtt::Flags::S3TC_Paranoid)
     {
         MFloat spanParanoidFactors[3];
-        for (int ch = 0; ch < 3; ch++)
+        for (int ch = 0; ch < 3; ch++) {
             spanParanoidFactors[ch] = ParanoidFactorForSpan(spans[ch]);
+}
 
         for (int px = 0; px < 16; px++)
         {
-            for (int ch = 0; ch < 3; ch++)
+            for (int ch = 0; ch < 3; ch++) {
                 error = error + ParanoidDiff(interpolated[ch], pixels[px][ch], spanParanoidFactors[ch]) * channelWeightsSq[ch];
+}
         }
     }
     else
     {
         for (int px = 0; px < 16; px++)
         {
-            for (int ch = 0; ch < 3; ch++)
+            for (int ch = 0; ch < 3; ch++) {
                 error = error + ParallelMath::ToFloat(ParallelMath::SqDiffUInt8(interpolated[ch], pixels[px][ch])) * channelWeightsSq[ch];
+}
         }
     }
 
@@ -175,13 +181,16 @@ void cvtt::Internal::S3TCComputer::TestSingleColor(uint32_t flags, const MUInt15
     if (ParallelMath::AnySet(better16))
     {
         bestError = ParallelMath::Min(bestError, error);
-        for (int epi = 0; epi < 2; epi++)
-            for (int ch = 0; ch < 3; ch++)
+        for (int epi = 0; epi < 2; epi++) {
+            for (int ch = 0; ch < 3; ch++) {
                 ParallelMath::ConditionalSet(bestEndpoints[epi][ch], better16, eps[epi][ch]);
+}
+}
 
         MUInt15 vindexes = ParallelMath::MakeUInt15(1);
-        for (int px = 0; px < 16; px++)
+        for (int px = 0; px < 16; px++) {
             ParallelMath::ConditionalSet(bestIndexes[px], better16, vindexes);
+}
 
         ParallelMath::ConditionalSet(bestRange, better16, ParallelMath::MakeUInt15(range));
     }
@@ -192,14 +201,17 @@ void cvtt::Internal::S3TCComputer::TestEndpoints(uint32_t flags, const MUInt15 p
 {
     float channelWeightsSq[3];
 
-    for (int ch = 0; ch < 3; ch++)
+    for (int ch = 0; ch < 3; ch++) {
         channelWeightsSq[ch] = channelWeights[ch] * channelWeights[ch];
+}
 
     MUInt15 endPoints[2][3];
 
-    for (int ep = 0; ep < 2; ep++)
-        for (int ch = 0; ch < 3; ch++)
+    for (int ep = 0; ep < 2; ep++) {
+        for (int ch = 0; ch < 3; ch++) {
             endPoints[ep][ch] = unquantizedEndPoints[ep][ch];
+}
+}
 
     QuantizeTo565(endPoints[0]);
     QuantizeTo565(endPoints[1]);
@@ -210,8 +222,9 @@ void cvtt::Internal::S3TCComputer::TestEndpoints(uint32_t flags, const MUInt15 p
     MUInt15 indexes[16];
 
     MFloat paranoidFactors[3];
-    for (int ch = 0; ch < 3; ch++)
+    for (int ch = 0; ch < 3; ch++) {
         paranoidFactors[ch] = ParanoidFactorForSpan(ParallelMath::LosslessCast<MSInt16>::Cast(endPoints[0][ch]) - ParallelMath::LosslessCast<MSInt16>::Cast(endPoints[1][ch]));
+}
 
     MFloat error = ParallelMath::MakeFloatZero();
     AggregatedError<3> aggError;
@@ -220,23 +233,27 @@ void cvtt::Internal::S3TCComputer::TestEndpoints(uint32_t flags, const MUInt15 p
         MUInt15 index = selector.SelectIndexLDR(floatPixels[px], rtn);
         indexes[px] = index;
 
-        if (refiner)
+        if (refiner) {
             refiner->ContributeUnweightedPW(preWeightedPixels[px], index);
+}
 
         MUInt15 reconstructed[3];
         selector.ReconstructLDRPrecise(index, reconstructed);
 
         if (flags & Flags::S3TC_Paranoid)
         {
-            for (int ch = 0; ch < 3; ch++)
+            for (int ch = 0; ch < 3; ch++) {
                 error = error + ParanoidDiff(reconstructed[ch], pixels[px][ch], paranoidFactors[ch]) * channelWeightsSq[ch];
+}
         }
-        else
+        else {
             BCCommon::ComputeErrorLDR<3>(flags, reconstructed, pixels[px], aggError);
+}
     }
 
-    if (!(flags & Flags::S3TC_Paranoid))
+    if (!(flags & Flags::S3TC_Paranoid)) {
         error = aggError.Finalize(flags, channelWeightsSq);
+}
 
     ParallelMath::FloatCompFlag better = ParallelMath::Less(error, bestError);
 
@@ -246,12 +263,15 @@ void cvtt::Internal::S3TCComputer::TestEndpoints(uint32_t flags, const MUInt15 p
 
         ParallelMath::ConditionalSet(bestError, better, error);
 
-        for (int ep = 0; ep < 2; ep++)
-            for (int ch = 0; ch < 3; ch++)
+        for (int ep = 0; ep < 2; ep++) {
+            for (int ch = 0; ch < 3; ch++) {
                 ParallelMath::ConditionalSet(bestEndpoints[ep][ch], betterInt16, endPoints[ep][ch]);
+}
+}
 
-        for (int px = 0; px < 16; px++)
+        for (int px = 0; px < 16; px++) {
             ParallelMath::ConditionalSet(bestIndexes[px], betterInt16, indexes[px]);
+}
 
         ParallelMath::ConditionalSet(bestRange, betterInt16, ParallelMath::MakeUInt15(static_cast<uint16_t>(range)));
     }
@@ -281,17 +301,18 @@ void cvtt::Internal::S3TCComputer::TestCounts(uint32_t flags, const int *counts,
                 break;
             }
 
-            if (ParallelMath::AllSet(valid))
+            if (ParallelMath::AllSet(valid)) {
                 refiner.ContributeUnweightedPW(preWeightedFloatSortedInputs[e++], ParallelMath::MakeUInt15(static_cast<uint16_t>(i)));
-            else
+            } else
             {
                 MFloat weight = ParallelMath::Select(ParallelMath::Int16FlagToFloat(valid), ParallelMath::MakeFloat(1.0f), ParallelMath::MakeFloat(0.0f));
                 refiner.ContributePW(preWeightedFloatSortedInputs[e++], ParallelMath::MakeUInt15(static_cast<uint16_t>(i)), weight);
             }
         }
 
-        if (escape)
+        if (escape) {
             break;
+}
     }
 
     MUInt15 endPoints[2][3];
@@ -323,8 +344,9 @@ void cvtt::Internal::S3TCComputer::PackExplicitAlpha(uint32_t flags, const Pixel
 
     MUInt15 indexes[16];
 
-    for (int px = 0; px < 16; px++)
+    for (int px = 0; px < 16; px++) {
         indexes[px] = selector.SelectIndexLDR(&floatPixels[px], &rtn);
+}
 
     for (int block = 0; block < ParallelMath::ParallelSize; block++)
     {
@@ -342,11 +364,13 @@ void cvtt::Internal::S3TCComputer::PackExplicitAlpha(uint32_t flags, const Pixel
 
 void cvtt::Internal::S3TCComputer::PackInterpolatedAlpha(uint32_t flags, const PixelBlockU8* inputs, int inputChannel, uint8_t* packedBlocks, size_t packedBlockStride, bool isSigned, int maxTweakRounds, int numRefineRounds)
 {
-    if (maxTweakRounds < 1)
+    if (maxTweakRounds < 1) {
         maxTweakRounds = 1;
+}
 
-    if (numRefineRounds < 1)
+    if (numRefineRounds < 1) {
         numRefineRounds = 1;
+}
 
     ParallelMath::RoundTowardNearestForScope rtn;
 
@@ -362,15 +386,17 @@ void cvtt::Internal::S3TCComputer::PackInterpolatedAlpha(uint32_t flags, const P
     {
         ParallelMath::ConvertLDRInputs(inputs, px, inputChannel, pixels[px]);
 
-        if (isSigned)
+        if (isSigned) {
             pixels[px] = ParallelMath::Min(pixels[px], highTerminal);
+}
 
         floatPixels[px] = ParallelMath::ToFloat(pixels[px]);
     }
 
     MUInt15 sortedPixels[16];
-    for (int px = 0; px < 16; px++)
+    for (int px = 0; px < 16; px++) {
         sortedPixels[px] = pixels[px];
+}
 
     for (int sortEnd = 15; sortEnd > 0; sortEnd--)
     {
@@ -408,8 +434,9 @@ void cvtt::Internal::S3TCComputer::PackInterpolatedAlpha(uint32_t flags, const P
         UnfinishedEndpoints<1> ufep = UnfinishedEndpoints<1>(base, offset);
 
         int numTweakRounds = BCCommon::TweakRoundsForRange(8);
-        if (numTweakRounds > maxTweakRounds)
+        if (numTweakRounds > maxTweakRounds) {
             numTweakRounds = maxTweakRounds;
+}
 
         for (int tweak = 0; tweak < numTweakRounds; tweak++)
         {
@@ -422,9 +449,11 @@ void cvtt::Internal::S3TCComputer::PackInterpolatedAlpha(uint32_t flags, const P
                 EndpointRefiner<1> refiner;
                 refiner.Init(8, oneWeight);
 
-                if (isSigned)
-                    for (int epi = 0; epi < 2; epi++)
+                if (isSigned) {
+                    for (int epi = 0; epi < 2; epi++) {
                         ep[epi][0] = ParallelMath::Min(ep[epi][0], highTerminal);
+}
+}
 
                 IndexSelector<1> indexSelector;
                 indexSelector.Init<false>(oneWeight, ep, 8);
@@ -441,8 +470,9 @@ void cvtt::Internal::S3TCComputer::PackInterpolatedAlpha(uint32_t flags, const P
                     indexSelector.ReconstructLDRPrecise(index, &reconstructedPixel);
                     BCCommon::ComputeErrorLDR<1>(flags, &reconstructedPixel, &pixels[px], aggError);
 
-                    if (refinePass != numRefineRounds - 1)
+                    if (refinePass != numRefineRounds - 1) {
                         refiner.ContributeUnweightedPW(&floatPixels[px], index);
+}
 
                     indexes[px] = index;
                 }
@@ -455,15 +485,18 @@ void cvtt::Internal::S3TCComputer::PackInterpolatedAlpha(uint32_t flags, const P
                 {
                     bestError = ParallelMath::Min(error, bestError);
                     ParallelMath::ConditionalSet(bestIsFullRange, errorBetter16, one);
-                    for (int px = 0; px < 16; px++)
+                    for (int px = 0; px < 16; px++) {
                         ParallelMath::ConditionalSet(bestIndexes[px], errorBetter16, indexes[px]);
+}
 
-                    for (int epi = 0; epi < 2; epi++)
+                    for (int epi = 0; epi < 2; epi++) {
                         ParallelMath::ConditionalSet(bestEP[epi], errorBetter16, ep[epi][0]);
+}
                 }
 
-                if (refinePass != numRefineRounds - 1)
+                if (refinePass != numRefineRounds - 1) {
                     refiner.GetRefinedEndpointsLDR(ep, &rtn);
+}
             }
         }
     }
@@ -516,8 +549,9 @@ void cvtt::Internal::S3TCComputer::PackInterpolatedAlpha(uint32_t flags, const P
 
                     ParallelMath::Int16CompFlag areMoreSkipped = ParallelMath::Less(bestSkipCount, numSkippedV);
 
-                    if (!ParallelMath::AnySet(areMoreSkipped))
+                    if (!ParallelMath::AnySet(areMoreSkipped)) {
                         continue;
+}
 
                     MUInt15 clearance = ParallelMath::Max(highClearances[numSkippedHigh], lowClearance);
                     MUInt15 clearanceTimes10 = (clearance << 2) + (clearance << 4);
@@ -544,12 +578,14 @@ void cvtt::Internal::S3TCComputer::PackInterpolatedAlpha(uint32_t flags, const P
         MUInt15 maxEPs[2] = { bestSimpleMax, bestHeuristicMax };
 
         int minEPRange = 2;
-        if (ParallelMath::AllSet(ParallelMath::Equal(minEPs[0], minEPs[1])))
+        if (ParallelMath::AllSet(ParallelMath::Equal(minEPs[0], minEPs[1]))) {
             minEPRange = 1;
+}
 
         int maxEPRange = 2;
-        if (ParallelMath::AllSet(ParallelMath::Equal(maxEPs[0], maxEPs[1])))
+        if (ParallelMath::AllSet(ParallelMath::Equal(maxEPs[0], maxEPs[1]))) {
             maxEPRange = 1;
+}
 
         for (int minEPIndex = 0; minEPIndex < minEPRange; minEPIndex++)
         {
@@ -561,8 +597,9 @@ void cvtt::Internal::S3TCComputer::PackInterpolatedAlpha(uint32_t flags, const P
                 UnfinishedEndpoints<1> ufep = UnfinishedEndpoints<1>(base, offset);
 
                 int numTweakRounds = BCCommon::TweakRoundsForRange(6);
-                if (numTweakRounds > maxTweakRounds)
+                if (numTweakRounds > maxTweakRounds) {
                     numTweakRounds = maxTweakRounds;
+}
 
                 for (int tweak = 0; tweak < numTweakRounds; tweak++)
                 {
@@ -575,9 +612,11 @@ void cvtt::Internal::S3TCComputer::PackInterpolatedAlpha(uint32_t flags, const P
                         EndpointRefiner<1> refiner;
                         refiner.Init(6, oneWeight);
 
-                        if (isSigned)
-                            for (int epi = 0; epi < 2; epi++)
+                        if (isSigned) {
+                            for (int epi = 0; epi < 2; epi++) {
                                 ep[epi][0] = ParallelMath::Min(ep[epi][0], highTerminal);
+}
+}
 
                         IndexSelector<1> indexSelector;
                         indexSelector.Init<false>(oneWeight, ep, 6);
@@ -607,15 +646,17 @@ void cvtt::Internal::S3TCComputer::PackInterpolatedAlpha(uint32_t flags, const P
 
                             if (ParallelMath::AllSet(selectedIndexBetter))
                             {
-                                if (refinePass != numRefineRounds - 1)
+                                if (refinePass != numRefineRounds - 1) {
                                     refiner.ContributeUnweightedPW(&floatPixels[px], selectedIndex);
+}
                             }
                             else
                             {
                                 MFloat refineWeight = ParallelMath::Select(selectedIndexBetter, ParallelMath::MakeFloat(1.0f), ParallelMath::MakeFloatZero());
 
-                                if (refinePass != numRefineRounds - 1)
+                                if (refinePass != numRefineRounds - 1) {
                                     refiner.ContributePW(&floatPixels[px], selectedIndex, refineWeight);
+}
                             }
 
                             ParallelMath::ConditionalSet(index, ParallelMath::FloatFlagToInt16(selectedIndexBetter), selectedIndex);
@@ -633,15 +674,18 @@ void cvtt::Internal::S3TCComputer::PackInterpolatedAlpha(uint32_t flags, const P
                         {
                             bestError = ParallelMath::Min(error, bestError);
                             ParallelMath::ConditionalSet(bestIsFullRange, errorBetter16, zero);
-                            for (int px = 0; px < 16; px++)
+                            for (int px = 0; px < 16; px++) {
                                 ParallelMath::ConditionalSet(bestIndexes[px], errorBetter16, indexes[px]);
+}
 
-                            for (int epi = 0; epi < 2; epi++)
+                            for (int epi = 0; epi < 2; epi++) {
                                 ParallelMath::ConditionalSet(bestEP[epi], errorBetter16, ep[epi][0]);
+}
                         }
 
-                        if (refinePass != numRefineRounds - 1)
+                        if (refinePass != numRefineRounds - 1) {
                             refiner.GetRefinedEndpointsLDR(ep, &rtn);
+}
                     }
                 }
             }
@@ -666,8 +710,9 @@ void cvtt::Internal::S3TCComputer::PackInterpolatedAlpha(uint32_t flags, const P
 
         bool swapEndpoints = (isFullRange != 0) != (ep0 > ep1);
 
-        if (swapEndpoints)
+        if (swapEndpoints) {
             std::swap(ep0, ep1);
+}
 
         uint16_t dumpBits = 0;
         int dumpBitsOffset = 0;
@@ -681,15 +726,17 @@ void cvtt::Internal::S3TCComputer::PackInterpolatedAlpha(uint32_t flags, const P
         {
             int index = ParallelMath::Extract(bestIndexes[px], block);
 
-            if (swapEndpoints && index <= maxValue)
+            if (swapEndpoints && index <= maxValue) {
                 index = maxValue - index;
+}
 
             if (index != 0)
             {
-                if (index == maxValue)
+                if (index == maxValue) {
                     index = 1;
-                else if (index < maxValue)
+                } else if (index < maxValue) {
                     index++;
+}
             }
 
             assert(index >= 0 && index < 8);
@@ -718,11 +765,13 @@ void cvtt::Internal::S3TCComputer::PackRGB(uint32_t flags, const PixelBlockU8* i
 {
     ParallelMath::RoundTowardNearestForScope rtn;
 
-    if (numRefineRounds < 1)
+    if (numRefineRounds < 1) {
         numRefineRounds = 1;
+}
 
-    if (maxTweakRounds < 1)
+    if (maxTweakRounds < 1) {
         maxTweakRounds = 1;
+}
 
     EndpointSelector<3, 8> endpointSelector;
 
@@ -733,14 +782,16 @@ void cvtt::Internal::S3TCComputer::PackRGB(uint32_t flags, const PixelBlockU8* i
 
     for (int px = 0; px < 16; px++)
     {
-        for (int ch = 0; ch < 4; ch++)
+        for (int ch = 0; ch < 4; ch++) {
             ParallelMath::ConvertLDRInputs(inputs, px, ch, pixels[px][ch]);
+}
     }
 
     for (int px = 0; px < 16; px++)
     {
-        for (int ch = 0; ch < 4; ch++)
+        for (int ch = 0; ch < 4; ch++) {
             floatPixels[px][ch] = ParallelMath::ToFloat(pixels[px][ch]);
+}
     }
 
     if (alphaTest)
@@ -758,8 +809,9 @@ void cvtt::Internal::S3TCComputer::PackRGB(uint32_t flags, const PixelBlockU8* i
 
     MUInt15 minAlpha = ParallelMath::MakeUInt15(255);
 
-    for (int px = 0; px < 16; px++)
+    for (int px = 0; px < 16; px++) {
         minAlpha = ParallelMath::Min(minAlpha, pixels[px][3]);
+}
 
     MFloat pixelWeights[16];
     for (int px = 0; px < 16; px++)
@@ -775,8 +827,9 @@ void cvtt::Internal::S3TCComputer::PackRGB(uint32_t flags, const PixelBlockU8* i
 
     for (int pass = 0; pass < NumEndpointSelectorPasses; pass++)
     {
-        for (int px = 0; px < 16; px++)
+        for (int px = 0; px < 16; px++) {
             endpointSelector.ContributePass(preWeightedPixels[px], pass, pixelWeights[px]);
+}
 
         endpointSelector.FinishPass(pass);
     }
@@ -788,12 +841,15 @@ void cvtt::Internal::S3TCComputer::PackRGB(uint32_t flags, const PixelBlockU8* i
     MUInt15 bestRange = ParallelMath::MakeUInt15(0);
     MFloat bestError = ParallelMath::MakeFloat(FLT_MAX);
 
-    for (int px = 0; px < 16; px++)
+    for (int px = 0; px < 16; px++) {
         bestIndexes[px] = ParallelMath::MakeUInt15(0);
+}
 
-    for (int ep = 0; ep < 2; ep++)
-        for (int ch = 0; ch < 3; ch++)
+    for (int ep = 0; ep < 2; ep++) {
+        for (int ch = 0; ch < 3; ch++) {
             bestEndpoints[ep][ch] = ParallelMath::MakeUInt15(0);
+}
+}
 
     if (exhaustive)
     {
@@ -844,8 +900,9 @@ void cvtt::Internal::S3TCComputer::PackRGB(uint32_t flags, const PixelBlockU8* i
         {
             ParallelMath::Int16CompFlag isInvalid = ParallelMath::Less(sortBins[e], ParallelMath::MakeSInt16(0));
             ParallelMath::ConditionalSet(firstElement, isInvalid, ParallelMath::MakeUInt15(e + 1));
-            if (!ParallelMath::AnySet(isInvalid))
+            if (!ParallelMath::AnySet(isInvalid)) {
                 break;
+}
         }
 
         MUInt15 numElements = ParallelMath::MakeUInt15(16) - firstElement;
@@ -856,8 +913,9 @@ void cvtt::Internal::S3TCComputer::PackRGB(uint32_t flags, const PixelBlockU8* i
 
         for (int e = 0; e < 16; e++)
         {
-            for (int ch = 0; ch < 4; ch++)
+            for (int ch = 0; ch < 4; ch++) {
                 sortedInputs[e][ch] = ParallelMath::MakeUInt15(0);
+}
         }
 
         for (int block = 0; block < ParallelMath::ParallelSize; block++)
@@ -867,8 +925,9 @@ void cvtt::Internal::S3TCComputer::PackRGB(uint32_t flags, const PixelBlockU8* i
                 ParallelMath::ScalarUInt16 sortBin = ParallelMath::Extract(sortBins[e], block);
                 int originalIndex = (sortBin & 15);
 
-                for (int ch = 0; ch < 4; ch++)
+                for (int ch = 0; ch < 4; ch++) {
                     ParallelMath::PutUInt15(sortedInputs[15 - e][ch], block, ParallelMath::Extract(pixels[originalIndex][ch], block));
+}
             }
         }
 
@@ -885,21 +944,24 @@ void cvtt::Internal::S3TCComputer::PackRGB(uint32_t flags, const PixelBlockU8* i
         for (int n0 = 0; n0 <= 15; n0++)
         {
             int remainingFor1 = 16 - n0;
-            if (remainingFor1 == 16)
+            if (remainingFor1 == 16) {
                 remainingFor1 = 15;
+}
 
             for (int n1 = 0; n1 <= remainingFor1; n1++)
             {
                 int remainingFor2 = 16 - n1 - n0;
-                if (remainingFor2 == 16)
+                if (remainingFor2 == 16) {
                     remainingFor2 = 15;
+}
 
                 for (int n2 = 0; n2 <= remainingFor2; n2++)
                 {
                     int n3 = 16 - n2 - n1 - n0;
 
-                    if (n3 == 16)
+                    if (n3 == 16) {
                         continue;
+}
 
                     int counts[4] = { n0, n1, n2, n3 };
 
@@ -915,15 +977,17 @@ void cvtt::Internal::S3TCComputer::PackRGB(uint32_t flags, const PixelBlockU8* i
             for (int n0 = 0; n0 <= 15; n0++)
             {
                 int remainingFor1 = 16 - n0;
-                if (remainingFor1 == 16)
+                if (remainingFor1 == 16) {
                     remainingFor1 = 15;
+}
 
                 for (int n1 = 0; n1 <= remainingFor1; n1++)
                 {
                     int n2 = 16 - n1 - n0;
 
-                    if (n2 == 16)
+                    if (n2 == 16) {
                         continue;
+}
 
                     int counts[3] = { n0, n1, n2 };
 
@@ -941,8 +1005,9 @@ void cvtt::Internal::S3TCComputer::PackRGB(uint32_t flags, const PixelBlockU8* i
         for (int range = minRange; range <= 4; range++)
         {
             int tweakRounds = BCCommon::TweakRoundsForRange(range);
-            if (tweakRounds > maxTweakRounds)
+            if (tweakRounds > maxTweakRounds) {
                 tweakRounds = maxTweakRounds;
+}
 
             for (int tweak = 0; tweak < tweakRounds; tweak++)
             {
@@ -957,8 +1022,9 @@ void cvtt::Internal::S3TCComputer::PackRGB(uint32_t flags, const PixelBlockU8* i
 
                     TestEndpoints(flags, pixels, floatPixels, preWeightedPixels, endPoints, range, channelWeights, bestError, bestEndpoints, bestIndexes, bestRange, &refiner, &rtn);
 
-                    if (refine != numRefineRounds - 1)
+                    if (refine != numRefineRounds - 1) {
                         refiner.GetRefinedEndpointsLDR(endPoints, &rtn);
+}
                 }
             }
         }
@@ -973,8 +1039,9 @@ void cvtt::Internal::S3TCComputer::PackRGB(uint32_t flags, const PixelBlockU8* i
         for (int ep = 0; ep < 2; ep++)
         {
             ParallelMath::ScalarUInt16 endPoint[3];
-            for (int ch = 0; ch < 3; ch++)
+            for (int ch = 0; ch < 3; ch++) {
                 endPoint[ch] = ParallelMath::Extract(bestEndpoints[ep][ch], block);
+}
 
             int compressed = (endPoint[0] & 0xf8) << 8;
             compressed |= (endPoint[1] & 0xfc) << 3;

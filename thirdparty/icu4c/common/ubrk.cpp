@@ -38,7 +38,8 @@ ubrk_open(UBreakIteratorType type,
       UErrorCode *status)
 {
 
-  if (U_FAILURE(*status)) return nullptr;
+  if (U_FAILURE(*status)) { return nullptr;
+}
 
   BreakIterator *result = nullptr;
 

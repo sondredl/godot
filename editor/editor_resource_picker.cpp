@@ -699,11 +699,7 @@ bool EditorResourcePicker::_is_type_valid(const String &p_type_name, const HashS
 bool EditorResourcePicker::_is_custom_type_script() const {
 	Ref<Script> resource_as_script = edited_resource;
 
-	if (resource_as_script.is_valid() && resource_owner && resource_owner->has_meta(SceneStringName(_custom_type_script))) {
-		return true;
-	}
-
-	return false;
+	return resource_as_script.is_valid() && resource_owner && resource_owner->has_meta(SceneStringName(_custom_type_script));
 }
 
 Variant EditorResourcePicker::get_drag_data_fw(const Point2 &p_point, Control *p_from) {

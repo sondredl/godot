@@ -1,8 +1,8 @@
 // This file is part of meshoptimizer library; see meshoptimizer.h for version/license details
 #include "meshoptimizer.h"
 
-#include <assert.h>
-#include <string.h>
+#include <cassert>
+#include <cstring>
 
 meshopt_VertexCacheStatistics meshopt_analyzeVertexCache(const unsigned int* indices, size_t index_count, size_t vertex_count, unsigned int cache_size, unsigned int warp_size, unsigned int primgroup_size)
 {
@@ -61,8 +61,9 @@ meshopt_VertexCacheStatistics meshopt_analyzeVertexCache(const unsigned int* ind
 
 	size_t unique_vertex_count = 0;
 
-	for (size_t i = 0; i < vertex_count; ++i)
+	for (size_t i = 0; i < vertex_count; ++i) {
 		unique_vertex_count += cache_timestamps[i] > 0;
+}
 
 	result.warps_executed += warp_offset > 0;
 

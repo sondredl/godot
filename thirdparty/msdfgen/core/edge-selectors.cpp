@@ -20,16 +20,18 @@ void TrueDistanceSelector::addEdge(EdgeCache &cache, const EdgeSegment *prevEdge
     if (cache.absDistance-delta <= fabs(minDistance.distance)) {
         double dummy;
         SignedDistance distance = edge->signedDistance(p, dummy);
-        if (distance < minDistance)
+        if (distance < minDistance) {
             minDistance = distance;
+}
         cache.point = p;
         cache.absDistance = fabs(distance.distance);
     }
 }
 
 void TrueDistanceSelector::merge(const TrueDistanceSelector &other) {
-    if (other.minDistance < minDistance)
+    if (other.minDistance < minDistance) {
         minDistance = other.minDistance;
+}
 }
 
 TrueDistanceSelector::DistanceType TrueDistanceSelector::distance() const {
@@ -86,10 +88,12 @@ void PseudoDistanceSelectorBase::addEdgeTrueDistance(const EdgeSegment *edge, co
 }
 
 void PseudoDistanceSelectorBase::addEdgePseudoDistance(double distance) {
-    if (distance <= 0 && distance > minNegativePseudoDistance)
+    if (distance <= 0 && distance > minNegativePseudoDistance) {
         minNegativePseudoDistance = distance;
-    if (distance >= 0 && distance < minPositivePseudoDistance)
+}
+    if (distance >= 0 && distance < minPositivePseudoDistance) {
         minPositivePseudoDistance = distance;
+}
 }
 
 void PseudoDistanceSelectorBase::merge(const PseudoDistanceSelectorBase &other) {
@@ -98,10 +102,12 @@ void PseudoDistanceSelectorBase::merge(const PseudoDistanceSelectorBase &other) 
         nearEdge = other.nearEdge;
         nearEdgeParam = other.nearEdgeParam;
     }
-    if (other.minNegativePseudoDistance > minNegativePseudoDistance)
+    if (other.minNegativePseudoDistance > minNegativePseudoDistance) {
         minNegativePseudoDistance = other.minNegativePseudoDistance;
-    if (other.minPositivePseudoDistance < minPositivePseudoDistance)
+}
+    if (other.minPositivePseudoDistance < minPositivePseudoDistance) {
         minPositivePseudoDistance = other.minPositivePseudoDistance;
+}
 }
 
 double PseudoDistanceSelectorBase::computeDistance(const Point2 &p) const {
@@ -109,8 +115,9 @@ double PseudoDistanceSelectorBase::computeDistance(const Point2 &p) const {
     if (nearEdge) {
         SignedDistance distance = minTrueDistance;
         nearEdge->distanceToPseudoDistance(distance, p, nearEdgeParam);
-        if (fabs(distance.distance) < fabs(minDistance))
+        if (fabs(distance.distance) < fabs(minDistance)) {
             minDistance = distance.distance;
+}
     }
     return minDistance;
 }
@@ -143,14 +150,16 @@ void PseudoDistanceSelector::addEdge(EdgeCache &cache, const EdgeSegment *prevEd
         double bdd = -dotProduct(bp, (bDir+nextDir).normalize(true));
         if (add > 0) {
             double pd = distance.distance;
-            if (getPseudoDistance(pd, ap, -aDir))
+            if (getPseudoDistance(pd, ap, -aDir)) {
                 addEdgePseudoDistance(pd = -pd);
+}
             cache.aPseudoDistance = pd;
         }
         if (bdd > 0) {
             double pd = distance.distance;
-            if (getPseudoDistance(pd, bp, bDir))
+            if (getPseudoDistance(pd, bp, bDir)) {
                 addEdgePseudoDistance(pd);
+}
             cache.bPseudoDistance = pd;
         }
         cache.aDomainDistance = add;
@@ -178,12 +187,15 @@ void MultiDistanceSelector::addEdge(EdgeCache &cache, const EdgeSegment *prevEdg
     ) {
         double param;
         SignedDistance distance = edge->signedDistance(p, param);
-        if (edge->color&RED)
+        if (edge->color&RED) {
             r.addEdgeTrueDistance(edge, distance, param);
-        if (edge->color&GREEN)
+}
+        if (edge->color&GREEN) {
             g.addEdgeTrueDistance(edge, distance, param);
-        if (edge->color&BLUE)
+}
+        if (edge->color&BLUE) {
             b.addEdgeTrueDistance(edge, distance, param);
+}
         cache.point = p;
         cache.absDistance = fabs(distance.distance);
 
@@ -199,24 +211,30 @@ void MultiDistanceSelector::addEdge(EdgeCache &cache, const EdgeSegment *prevEdg
             double pd = distance.distance;
             if (PseudoDistanceSelectorBase::getPseudoDistance(pd, ap, -aDir)) {
                 pd = -pd;
-                if (edge->color&RED)
+                if (edge->color&RED) {
                     r.addEdgePseudoDistance(pd);
-                if (edge->color&GREEN)
+}
+                if (edge->color&GREEN) {
                     g.addEdgePseudoDistance(pd);
-                if (edge->color&BLUE)
+}
+                if (edge->color&BLUE) {
                     b.addEdgePseudoDistance(pd);
+}
             }
             cache.aPseudoDistance = pd;
         }
         if (bdd > 0) {
             double pd = distance.distance;
             if (PseudoDistanceSelectorBase::getPseudoDistance(pd, bp, bDir)) {
-                if (edge->color&RED)
+                if (edge->color&RED) {
                     r.addEdgePseudoDistance(pd);
-                if (edge->color&GREEN)
+}
+                if (edge->color&GREEN) {
                     g.addEdgePseudoDistance(pd);
-                if (edge->color&BLUE)
+}
+                if (edge->color&BLUE) {
                     b.addEdgePseudoDistance(pd);
+}
             }
             cache.bPseudoDistance = pd;
         }
@@ -241,10 +259,12 @@ MultiDistanceSelector::DistanceType MultiDistanceSelector::distance() const {
 
 SignedDistance MultiDistanceSelector::trueDistance() const {
     SignedDistance distance = r.trueDistance();
-    if (g.trueDistance() < distance)
+    if (g.trueDistance() < distance) {
         distance = g.trueDistance();
-    if (b.trueDistance() < distance)
+}
+    if (b.trueDistance() < distance) {
         distance = b.trueDistance();
+}
     return distance;
 }
 

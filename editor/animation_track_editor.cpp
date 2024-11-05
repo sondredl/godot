@@ -4233,10 +4233,7 @@ bool AnimationTrackEditor::has_track(Node3D *p_node, const String &p_sub, const 
 	}
 
 	int track_id = animation->find_track(path, p_type);
-	if (track_id >= 0) {
-		return true;
-	}
-	return false;
+	return track_id >= 0;
 }
 
 void AnimationTrackEditor::_insert_animation_key(NodePath p_path, const Variant &p_value) {
@@ -4723,7 +4720,7 @@ AnimationTrackEditor::TrackIndices AnimationTrackEditor::_confirm_insert(InsertD
 				break;
 			}
 		}
-		if (create_reset_track) {
+
 			undo_redo->add_do_method(reset_anim, "add_track", p_id.type);
 			undo_redo->add_do_method(reset_anim, "track_set_path", p_next_tracks.reset, p_id.path);
 			if (p_id.type == Animation::TYPE_VALUE) {
@@ -4733,7 +4730,7 @@ AnimationTrackEditor::TrackIndices AnimationTrackEditor::_confirm_insert(InsertD
 			undo_redo->add_do_method(reset_anim, "track_insert_key", p_next_tracks.reset, 0.0f, value);
 			undo_redo->add_undo_method(reset_anim, "remove_track", reset_anim->get_track_count());
 			p_next_tracks.reset++;
-		}
+
 	}
 
 	return p_next_tracks;
@@ -9106,12 +9103,7 @@ bool AnimationMultiMarkerKeyEdit::_set(const StringName &p_name, const Variant &
 }
 
 bool AnimationMultiMarkerKeyEdit::_get(const StringName &p_name, Variant &r_ret) const {
-	if (p_name == "color") {
-		r_ret = animation->get_marker_color(marker_names[0]);
-		return true;
-	}
-
-	return false;
+	return p_name == "color";
 }
 
 void AnimationMultiMarkerKeyEdit::_get_property_list(List<PropertyInfo> *p_list) const {

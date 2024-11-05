@@ -66,9 +66,9 @@ public:
     TInductiveTraverser(long long id, TSymbolTable& st)
     : loopId(id), symbolTable(st), bad(false)  { }
 
-    virtual bool visitBinary(TVisit, TIntermBinary* node);
-    virtual bool visitUnary(TVisit, TIntermUnary* node);
-    virtual bool visitAggregate(TVisit, TIntermAggregate* node);
+    bool visitBinary(TVisit, TIntermBinary* node) override;
+    bool visitUnary(TVisit, TIntermUnary* node) override;
+    bool visitAggregate(TVisit, TIntermAggregate* node) override;
 
     long long loopId;           // unique ID of the symbol that's the loop inductive variable
     TSymbolTable& symbolTable;
@@ -133,13 +133,15 @@ void TParseContext::inductiveLoopBodyCheck(TIntermNode* body, long long loopId, 
 {
     TInductiveTraverser it(loopId, symbolTable);
 
-    if (body == nullptr)
+    if (body == nullptr) {
         return;
+}
 
     body->traverse(&it);
 
-    if (it.bad)
+    if (it.bad) {
         error(it.badLoc, "inductive loop index modified", "limitations", "");
+}
 }
 
 //
@@ -151,8 +153,8 @@ void TParseContext::inductiveLoopBodyCheck(TIntermNode* body, long long loopId, 
 class TIndexTraverser : public TIntermTraverser {
 public:
     TIndexTraverser(const TIdSetType& ids) : inductiveLoopIds(ids), bad(false) { }
-    virtual void visitSymbol(TIntermSymbol* symbol);
-    virtual bool visitAggregate(TVisit, TIntermAggregate* node);
+    void visitSymbol(TIntermSymbol* symbol) override;
+    bool visitAggregate(TVisit, TIntermAggregate* node) override;
     const TIdSetType& inductiveLoopIds;
     bool bad;
     TSourceLoc badLoc;
@@ -191,8 +193,9 @@ void TParseContext::constantIndexExpressionCheck(TIntermNode* index)
 
     index->traverse(&it);
 
-    if (it.bad)
+    if (it.bad) {
         error(it.badLoc, "Non-constant-index-expression", "limitations", "");
+}
 }
 
 } // end namespace glslang

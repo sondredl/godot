@@ -7,7 +7,7 @@
 #include "../../common/algorithms/parallel_for.h"
 
 namespace embree
-{ 
+{
   namespace isa
   {
 #define CSTAT(x)
@@ -35,7 +35,7 @@ namespace embree
       unsigned geomID1;
       unsigned primID1;
     };
-    
+
     template<int N>
     __forceinline size_t overlap(const BBox3fa& box0, const typename BVHN<N>::AABBNode& node1)
     {
@@ -79,36 +79,40 @@ namespace embree
       const TriangleMesh* mesh1 = scene1->get<TriangleMesh>(geomID1);
       const TriangleMesh::Triangle& tri0 = mesh0->triangle(primID0);
       const TriangleMesh::Triangle& tri1 = mesh1->triangle(primID1);
-      
+
       /* special culling for scene intersection with itself */
       if (scene0 == scene1 && geomID0 == geomID1)
       {
         /* ignore self intersections */
-        if (primID0 == primID1)
+        if (primID0 == primID1) {
           return false;
+}
       }
       CSTAT(bvh_collide_prim_intersections2++);
-      
+
       if (scene0 == scene1 && geomID0 == geomID1)
       {
         /* ignore intersection with topological neighbors */
         const vint4 t0(tri0.v[0],tri0.v[1],tri0.v[2],tri0.v[2]);
-        if (any(vint4(tri1.v[0]) == t0)) return false;
-        if (any(vint4(tri1.v[1]) == t0)) return false;
-        if (any(vint4(tri1.v[2]) == t0)) return false;
+        if (any(vint4(tri1.v[0]) == t0)) { return false;
+}
+        if (any(vint4(tri1.v[1]) == t0)) { return false;
+}
+        if (any(vint4(tri1.v[2]) == t0)) { return false;
+}
       }
       CSTAT(bvh_collide_prim_intersections3++);
-      
+
       const Vec3fa a0 = mesh0->vertex(tri0.v[0]);
       const Vec3fa a1 = mesh0->vertex(tri0.v[1]);
       const Vec3fa a2 = mesh0->vertex(tri0.v[2]);
       const Vec3fa b0 = mesh1->vertex(tri1.v[0]);
       const Vec3fa b1 = mesh1->vertex(tri1.v[1]);
       const Vec3fa b2 = mesh1->vertex(tri1.v[2]);
-      
+
       return TriangleTriangleIntersector::intersect_triangle_triangle(a0,a1,a2,b0,b1,b2);
     }
-    
+
     template<int N>
     __forceinline void BVHNColliderUserGeom<N>::processLeaf(NodeRef node0, NodeRef node1)
     {
@@ -123,7 +127,8 @@ namespace embree
           const unsigned primID0 = leaf0[i].primID();
           const unsigned geomID1 = leaf1[j].geomID();
           const unsigned primID1 = leaf1[j].primID();
-          if (this->scene0 == this->scene1 && geomID0 == geomID1 && primID0 == primID1) continue;
+          if (this->scene0 == this->scene1 && geomID0 == geomID1 && primID0 == primID1) { continue;
+}
           collisions[num_collisions++] = Collision(geomID0,primID0,geomID1,primID1);
           if (num_collisions == 16) {
             this->callback(this->userPtr,(RTCCollision*)&collisions,num_collisions);
@@ -131,8 +136,9 @@ namespace embree
           }
         }
       }
-      if (num_collisions)
+      if (num_collisions) {
         this->callback(this->userPtr,(RTCCollision*)&collisions,num_collisions);
+}
     }
 
     template<int N>
@@ -144,8 +150,9 @@ namespace embree
           CSTAT(bvh_collide_leaf_pairs++);
           processLeaf(ref0,ref1);
           return;
-        } else goto recurse_node1;
-        
+        } else { goto recurse_node1;
+}
+
       } else {
         if (unlikely(ref1.isLeaf())) {
           goto recurse_node0;
@@ -166,7 +173,7 @@ namespace embree
         //for (size_t m=mask, i=bsf(m); m!=0; m=btc(m,i), i=bsf(m)) {
         //for (size_t i=0; i<N; i++) {
 #if 0
-        if (depth0 < parallel_depth_threshold) 
+        if (depth0 < parallel_depth_threshold)
         {
           parallel_for(size_t(N), [&] ( size_t i ) {
               if (mask & ( 1 << i)) {
@@ -174,7 +181,7 @@ namespace embree
                 collide_recurse(node0->child(i),node0->bounds(i),ref1,bounds1,depth0+1,depth1);
               }
             });
-        } 
+        }
         else
 #endif
         {
@@ -185,7 +192,7 @@ namespace embree
         }
         return;
       }
-      
+
       {
       recurse_node1:
         AABBNode* node1 = ref1.getAABBNode();
@@ -193,7 +200,7 @@ namespace embree
         //for (size_t m=mask, i=bsf(m); m!=0; m=btc(m,i), i=bsf(m)) {
         //for (size_t i=0; i<N; i++) {
 #if 0
-        if (depth1 < parallel_depth_threshold) 
+        if (depth1 < parallel_depth_threshold)
         {
           parallel_for(size_t(N), [&] ( size_t i ) {
               if (mask & ( 1 << i)) {
@@ -221,7 +228,8 @@ namespace embree
         if (unlikely(job.ref1.isLeaf())) {
           jobs.push_back(job);
           return;
-        } else goto recurse_node1;
+        } else { goto recurse_node1;
+}
       } else {
         if (unlikely(job.ref1.isLeaf())) {
           goto recurse_node0;
@@ -234,7 +242,7 @@ namespace embree
           }
         }
       }
-      
+
       {
       recurse_node0:
         const AABBNode* node0 = job.ref0.getAABBNode();
@@ -244,7 +252,7 @@ namespace embree
         }
         return;
       }
-      
+
       {
       recurse_node1:
         const AABBNode* node1 = job.ref1.getAABBNode();
@@ -255,7 +263,7 @@ namespace embree
         return;
       }
     }
-    
+
     template<int N>
     void BVHNCollider<N>::collide_recurse_entry(NodeRef ref0, const BBox3fa& bounds0, NodeRef ref1, const BBox3fa& bounds1)
     {
@@ -294,8 +302,9 @@ namespace embree
         }
 
         /* stop splitting jobs if we reached only leaves and cannot make progress anymore */
-        if (jobs[target].size() == jobs[source].size())
+        if (jobs[target].size() == jobs[source].size()) {
           break;
+}
 
         jobs[source].resize(0);
         std::swap(source,target);
@@ -306,8 +315,8 @@ namespace embree
           CollideJob& j = jobs[source][i];
           collide_recurse(j.ref0,j.bounds0,j.ref1,j.bounds1,j.depth0,j.depth1);
         });
-      
-      
+
+
 #endif
       CSTAT(PRINT(bvh_collide_traversal_steps));
       CSTAT(PRINT(bvh_collide_leaf_pairs));
@@ -319,10 +328,10 @@ namespace embree
       CSTAT(PRINT(bvh_collide_prim_intersections5));
       CSTAT(PRINT(bvh_collide_prim_intersections));
     }
-   
+
     template<int N>
     void BVHNColliderUserGeom<N>::collide(BVH* __restrict__ bvh0, BVH* __restrict__ bvh1, RTCCollideFunc callback, void* userPtr)
-    { 
+    {
       BVHNColliderUserGeom<N>(bvh0->scene,bvh1->scene,callback,userPtr).
         collide_recurse_entry(bvh0->root,bvh0->bounds.bounds(),bvh1->root,bvh1->bounds.bounds());
     }
@@ -333,7 +342,7 @@ namespace embree
       collision_regression_test(const char* name) : RegressionTest(name) {
         registerRegressionTest(this);
       }
-    
+
       bool run ()
       {
         bool passed = true;
@@ -351,11 +360,11 @@ namespace embree
         passed &= TriangleTriangleIntersector::intersect_triangle_triangle (Vec3fa(0,0,0),Vec3fa(1,0,0),Vec3fa(0,1,0), Vec3fa(0.1f,0.1f,0),Vec3fa(0.5f,0.1f,0),Vec3fa(0.1f,0.5f,0)) == true;
         passed &= TriangleTriangleIntersector::intersect_triangle_triangle (Vec3fa(0,0,0),Vec3fa(1,0,0),Vec3fa(0,1,0), Vec3fa(0.1f,-0.1f,0),Vec3fa(0.5f,0.1f,0),Vec3fa(0.1f,0.5f,0)) == true;
         passed &= TriangleTriangleIntersector::intersect_triangle_triangle (Vec3fa(0,0,0),Vec3fa(1,0,0),Vec3fa(0,1,0), Vec3fa(-0.1f,0.1f,0),Vec3fa(0.5f,0.1f,0),Vec3fa(0.1f,0.5f,0)) == true;
-        passed &= TriangleTriangleIntersector::intersect_triangle_triangle (Vec3fa(0,0,0),Vec3fa(1,0,0),Vec3fa(0,1,0), 
+        passed &= TriangleTriangleIntersector::intersect_triangle_triangle (Vec3fa(0,0,0),Vec3fa(1,0,0),Vec3fa(0,1,0),
                                                Vec3fa(-1,1,0) + Vec3fa(0,0,0),Vec3fa(-1,1,0) + Vec3fa(0.1f,0,0),Vec3fa(-1,1,0) + Vec3fa(0,0.1f,0)) == false;
-        passed &= TriangleTriangleIntersector::intersect_triangle_triangle (Vec3fa(0,0,0),Vec3fa(1,0,0),Vec3fa(0,1,0), 
+        passed &= TriangleTriangleIntersector::intersect_triangle_triangle (Vec3fa(0,0,0),Vec3fa(1,0,0),Vec3fa(0,1,0),
                                                Vec3fa( 2,0.5f,0) + Vec3fa(0,0,0),Vec3fa( 2,0.5f,0) + Vec3fa(0.1f,0,0),Vec3fa( 2,0.5f,0) + Vec3fa(0,0.1f,0)) == false;
-        passed &= TriangleTriangleIntersector::intersect_triangle_triangle (Vec3fa(0,0,0),Vec3fa(1,0,0),Vec3fa(0,1,0), 
+        passed &= TriangleTriangleIntersector::intersect_triangle_triangle (Vec3fa(0,0,0),Vec3fa(1,0,0),Vec3fa(0,1,0),
                                                Vec3fa(0.5f,-2.0f,0) + Vec3fa(0,0,0),Vec3fa(0.5f,-2.0f,0) + Vec3fa(0.1f,0,0),Vec3fa(0.5f,-2.0f,0) + Vec3fa(0,0.1f,0)) == false;
         return passed;
       }

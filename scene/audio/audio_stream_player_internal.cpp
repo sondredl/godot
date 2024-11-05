@@ -209,23 +209,12 @@ void AudioStreamPlayerInternal::validate_property(PropertyInfo &p_property) cons
 
 bool AudioStreamPlayerInternal::set(const StringName &p_name, const Variant &p_value) {
 	ParameterData *pd = playback_parameters.getptr(p_name);
-	if (!pd) {
-		return false;
-	}
-	pd->value = p_value;
-	for (Ref<AudioStreamPlayback> &playback : stream_playbacks) {
-		playback->set_parameter(pd->path, pd->value);
-	}
-	return true;
+	return pd != nullptr;
 }
 
 bool AudioStreamPlayerInternal::get(const StringName &p_name, Variant &r_ret) const {
 	const ParameterData *pd = playback_parameters.getptr(p_name);
-	if (!pd) {
-		return false;
-	}
-	r_ret = pd->value;
-	return true;
+	return pd != nullptr;
 }
 
 void AudioStreamPlayerInternal::get_property_list(List<PropertyInfo> *p_list) const {

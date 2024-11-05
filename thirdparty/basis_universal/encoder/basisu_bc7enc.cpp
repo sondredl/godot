@@ -98,26 +98,28 @@ static void astc_init()
 {
 	for (uint32_t range = 0; range < BC7ENC_TOTAL_ASTC_RANGES; range++)
 	{
-		if (!astc_is_valid_endpoint_range(range))
+		if (!astc_is_valid_endpoint_range(range)) {
 			continue;
-				
+}
+
 		const uint32_t levels = astc_get_levels(range);
 
 		uint32_t vals[256];
 		// TODO
-		for (uint32_t i = 0; i < levels; i++)
+		for (uint32_t i = 0; i < levels; i++) {
 			vals[i] = (unquant_astc_endpoint_val(i, range) << 8) | i;
-		
+}
+
 		std::sort(vals, vals + levels);
 
 		for (uint32_t i = 0; i < levels; i++)
 		{
 			uint32_t order = vals[i] & 0xFF;
 			uint32_t unq = vals[i] >> 8;
-						
+
 			g_astc_sorted_order_unquant[range][i].m_unquant = (uint8_t)unq;
 			g_astc_sorted_order_unquant[range][i].m_index = (uint8_t)order;
-			
+
 		} // i
 
 #if 0
@@ -160,8 +162,9 @@ static void astc_init()
 			for (uint32_t j = 0; j < levels; j++)
 			{
 				int err = g_astc_sorted_order_unquant[range][j].m_unquant - i;
-				if (err < 0)
+				if (err < 0) {
 					err = -err;
+}
 				if (err < best_err)
 				{
 					best_err = err;
@@ -186,7 +189,7 @@ static inline uint32_t astc_interpolate_linear(uint32_t l, uint32_t h, uint32_t 
 void bc7enc_compress_block_init()
 {
 	astc_init();
-			
+
 	// BC7 666.1
 	for (int c = 0; c < 256; c++)
 	{
@@ -224,11 +227,11 @@ void bc7enc_compress_block_init()
 		for (uint32_t l = 0; l < 16; l++)
 		{
 			uint32_t low = (l << 4) | l;
-			
+
 			for (uint32_t h = 0; h < 16; h++)
 			{
 				uint32_t high = (h << 4) | h;
-				
+
 				const int k = astc_interpolate_linear(low, high, g_bc7_weights3[BC7ENC_ASTC_4BIT_3BIT_OPTIMAL_INDEX]);
 				const int err = (k - c) * (k - c);
 
@@ -240,9 +243,9 @@ void bc7enc_compress_block_init()
 				}
 			} // h
 		} // l
-		
+
 		g_astc_4bit_3bit_optimal_endpoints[c] = best;
-		
+
 	} // c
 
 	// ASTC [0,15] 2-bit
@@ -253,11 +256,11 @@ void bc7enc_compress_block_init()
 		for (uint32_t l = 0; l < 16; l++)
 		{
 			uint32_t low = (l << 4) | l;
-			
+
 			for (uint32_t h = 0; h < 16; h++)
 			{
 				uint32_t high = (h << 4) | h;
-				
+
 				const int k = astc_interpolate_linear(low, high, g_bc7_weights2[BC7ENC_ASTC_4BIT_2BIT_OPTIMAL_INDEX]);
 				const int err = (k - c) * (k - c);
 
@@ -269,9 +272,9 @@ void bc7enc_compress_block_init()
 				}
 			} // h
 		} // l
-		
+
 		g_astc_4bit_2bit_optimal_endpoints[c] = best;
-		
+
 	} // c
 
 	// ASTC range 7 [0,11] 2-bit
@@ -282,11 +285,11 @@ void bc7enc_compress_block_init()
 		for (uint32_t l = 0; l < 12; l++)
 		{
 			uint32_t low = g_astc_sorted_order_unquant[7][l].m_unquant;
-			
+
 			for (uint32_t h = 0; h < 12; h++)
 			{
 				uint32_t high = g_astc_sorted_order_unquant[7][h].m_unquant;
-				
+
 				const int k = astc_interpolate_linear(low, high, g_bc7_weights2[BC7ENC_ASTC_RANGE7_2BIT_OPTIMAL_INDEX]);
 				const int err = (k - c) * (k - c);
 
@@ -298,9 +301,9 @@ void bc7enc_compress_block_init()
 				}
 			} // h
 		} // l
-		
+
 		g_astc_range7_2bit_optimal_endpoints[c] = best;
-		
+
 	} // c
 
 	// ASTC range 13 [0,47] 4-bit
@@ -311,11 +314,11 @@ void bc7enc_compress_block_init()
 		for (uint32_t l = 0; l < 48; l++)
 		{
 			uint32_t low = g_astc_sorted_order_unquant[13][l].m_unquant;
-			
+
 			for (uint32_t h = 0; h < 48; h++)
 			{
 				uint32_t high = g_astc_sorted_order_unquant[13][h].m_unquant;
-				
+
 				const int k = astc_interpolate_linear(low, high, g_astc_weights4[BC7ENC_ASTC_RANGE13_4BIT_OPTIMAL_INDEX]);
 				const int err = (k - c) * (k - c);
 
@@ -327,9 +330,9 @@ void bc7enc_compress_block_init()
 				}
 			} // h
 		} // l
-		
+
 		g_astc_range13_4bit_optimal_endpoints[c] = best;
-		
+
 	} // c
 
 	// ASTC range 13 [0,47] 2-bit
@@ -340,11 +343,11 @@ void bc7enc_compress_block_init()
 		for (uint32_t l = 0; l < 48; l++)
 		{
 			uint32_t low = g_astc_sorted_order_unquant[13][l].m_unquant;
-			
+
 			for (uint32_t h = 0; h < 48; h++)
 			{
 				uint32_t high = g_astc_sorted_order_unquant[13][h].m_unquant;
-				
+
 				const int k = astc_interpolate_linear(low, high, g_bc7_weights2[BC7ENC_ASTC_RANGE13_2BIT_OPTIMAL_INDEX]);
 				const int err = (k - c) * (k - c);
 
@@ -356,9 +359,9 @@ void bc7enc_compress_block_init()
 				}
 			} // h
 		} // l
-		
+
 		g_astc_range13_2bit_optimal_endpoints[c] = best;
-		
+
 	} // c
 
 	// ASTC range 11 [0,31] 5-bit
@@ -393,7 +396,7 @@ void bc7enc_compress_block_init()
 
 static void compute_least_squares_endpoints_rgba(uint32_t N, const uint8_t *pSelectors, const bc7enc_vec4F* pSelector_weights, bc7enc_vec4F* pXl, bc7enc_vec4F* pXh, const color_quad_u8 *pColors)
 {
-	// Least squares using normal equations: http://www.cs.cornell.edu/~bindel/class/cs3220-s12/notes/lec10.pdf 
+	// Least squares using normal equations: http://www.cs.cornell.edu/~bindel/class/cs3220-s12/notes/lec10.pdf
 	// https://web.archive.org/web/20150319232457/http://www.cs.cornell.edu/~bindel/class/cs3220-s12/notes/lec10.pdf
 	// I did this in matrix form first, expanded out all the ops, then optimized it a bit.
 	double z00 = 0.0f, z01 = 0.0f, z10 = 0.0f, z11 = 0.0f;
@@ -401,7 +404,7 @@ static void compute_least_squares_endpoints_rgba(uint32_t N, const uint8_t *pSel
 	double q00_g = 0.0f, q10_g = 0.0f, t_g = 0.0f;
 	double q00_b = 0.0f, q10_b = 0.0f, t_b = 0.0f;
 	double q00_a = 0.0f, q10_a = 0.0f, t_a = 0.0f;
-	
+
 	for (uint32_t i = 0; i < N; i++)
 	{
 		const uint32_t sel = pSelectors[i];
@@ -423,8 +426,9 @@ static void compute_least_squares_endpoints_rgba(uint32_t N, const uint8_t *pSel
 	z01 = z10;
 
 	double det = z00 * z11 - z01 * z10;
-	if (det != 0.0f)
+	if (det != 0.0f) {
 		det = 1.0f / det;
+}
 
 	double iz00, iz01, iz10, iz11;
 	iz00 = z11 * det;
@@ -483,8 +487,9 @@ static void compute_least_squares_endpoints_rgb(uint32_t N, const uint8_t *pSele
 	z01 = z10;
 
 	double det = z00 * z11 - z01 * z10;
-	if (det != 0.0f)
+	if (det != 0.0f) {
 		det = 1.0f / det;
+}
 
 	double iz00, iz01, iz10, iz11;
 	iz00 = z11 * det;
@@ -617,8 +622,9 @@ static uint64_t pack_mode1_to_one_color(const color_cell_compressor_params *pPar
 	p.m_c[3] = 255;
 
 	uint64_t total_err = 0;
-	for (uint32_t i = 0; i < pParams->m_num_pixels; i++)
+	for (uint32_t i = 0; i < pParams->m_num_pixels; i++) {
 		total_err += compute_color_distance_rgb(&p, &pParams->m_pPixels[i], pParams->m_perceptual, pParams->m_weights);
+}
 
 	pResults->m_best_overall_err = total_err;
 
@@ -649,14 +655,15 @@ static uint64_t pack_astc_4bit_3bit_to_one_color(const color_cell_compressor_par
 	{
 		uint32_t low = (pResults->m_low_endpoint.m_c[i] << 4) | pResults->m_low_endpoint.m_c[i];
 		uint32_t high = (pResults->m_high_endpoint.m_c[i] << 4) | pResults->m_high_endpoint.m_c[i];
-		
+
 		p.m_c[i] = (uint8_t)astc_interpolate_linear(low, high, g_bc7_weights3[BC7ENC_ASTC_4BIT_3BIT_OPTIMAL_INDEX]);
 	}
 	p.m_c[3] = 255;
 
 	uint64_t total_err = 0;
-	for (uint32_t i = 0; i < pParams->m_num_pixels; i++)
+	for (uint32_t i = 0; i < pParams->m_num_pixels; i++) {
 		total_err += compute_color_distance_rgb(&p, &pParams->m_pPixels[i], pParams->m_perceptual, pParams->m_weights);
+}
 
 	pResults->m_best_overall_err = total_err;
 
@@ -688,13 +695,14 @@ static uint64_t pack_astc_4bit_2bit_to_one_color_rgba(const color_cell_compresso
 	{
 		uint32_t low = (pResults->m_low_endpoint.m_c[i] << 4) | pResults->m_low_endpoint.m_c[i];
 		uint32_t high = (pResults->m_high_endpoint.m_c[i] << 4) | pResults->m_high_endpoint.m_c[i];
-		
+
 		p.m_c[i] = (uint8_t)astc_interpolate_linear(low, high, g_bc7_weights2[BC7ENC_ASTC_4BIT_2BIT_OPTIMAL_INDEX]);
 	}
-	
+
 	uint64_t total_err = 0;
-	for (uint32_t i = 0; i < pParams->m_num_pixels; i++)
+	for (uint32_t i = 0; i < pParams->m_num_pixels; i++) {
 		total_err += compute_color_distance_rgba(&p, &pParams->m_pPixels[i], pParams->m_perceptual, pParams->m_weights);
+}
 
 	pResults->m_best_overall_err = total_err;
 
@@ -727,14 +735,15 @@ static uint64_t pack_astc_range7_2bit_to_one_color(const color_cell_compressor_p
 	{
 		uint32_t low = g_astc_sorted_order_unquant[7][pResults->m_low_endpoint.m_c[i]].m_unquant;
 		uint32_t high = g_astc_sorted_order_unquant[7][pResults->m_high_endpoint.m_c[i]].m_unquant;
-		
+
 		p.m_c[i] = (uint8_t)astc_interpolate_linear(low, high, g_bc7_weights2[BC7ENC_ASTC_RANGE7_2BIT_OPTIMAL_INDEX]);
 	}
 	p.m_c[3] = 255;
 
 	uint64_t total_err = 0;
-	for (uint32_t i = 0; i < pParams->m_num_pixels; i++)
+	for (uint32_t i = 0; i < pParams->m_num_pixels; i++) {
 		total_err += compute_color_distance_rgb(&p, &pParams->m_pPixels[i], pParams->m_perceptual, pParams->m_weights);
+}
 
 	pResults->m_best_overall_err = total_err;
 
@@ -748,7 +757,7 @@ static uint64_t pack_astc_range13_2bit_to_one_color(const color_cell_compressor_
 	const endpoint_err *pEr = &g_astc_range13_2bit_optimal_endpoints[r];
 	const endpoint_err *pEg = &g_astc_range13_2bit_optimal_endpoints[g];
 	const endpoint_err *pEb = &g_astc_range13_2bit_optimal_endpoints[b];
-	
+
 	color_quad_u8_set(&pResults->m_low_endpoint, pEr->m_lo, pEg->m_lo, pEb->m_lo, 47);
 	color_quad_u8_set(&pResults->m_high_endpoint, pEr->m_hi, pEg->m_hi, pEb->m_hi, 47);
 	pResults->m_pbits[0] = 0;
@@ -767,13 +776,14 @@ static uint64_t pack_astc_range13_2bit_to_one_color(const color_cell_compressor_
 	{
 		uint32_t low = g_astc_sorted_order_unquant[13][pResults->m_low_endpoint.m_c[i]].m_unquant;
 		uint32_t high = g_astc_sorted_order_unquant[13][pResults->m_high_endpoint.m_c[i]].m_unquant;
-		
+
 		p.m_c[i] = (uint8_t)astc_interpolate_linear(low, high, g_bc7_weights2[BC7ENC_ASTC_RANGE13_2BIT_OPTIMAL_INDEX]);
 	}
-	
+
 	uint64_t total_err = 0;
-	for (uint32_t i = 0; i < pParams->m_num_pixels; i++)
+	for (uint32_t i = 0; i < pParams->m_num_pixels; i++) {
 		total_err += compute_color_distance_rgb(&p, &pParams->m_pPixels[i], pParams->m_perceptual, pParams->m_weights);
+}
 
 	pResults->m_best_overall_err = total_err;
 
@@ -811,8 +821,9 @@ static uint64_t pack_astc_range11_5bit_to_one_color(const color_cell_compressor_
 	}
 
 	uint64_t total_err = 0;
-	for (uint32_t i = 0; i < pParams->m_num_pixels; i++)
+	for (uint32_t i = 0; i < pParams->m_num_pixels; i++) {
 		total_err += compute_color_distance_rgb(&p, &pParams->m_pPixels[i], pParams->m_perceptual, pParams->m_weights);
+}
 
 	pResults->m_best_overall_err = total_err;
 
@@ -828,9 +839,9 @@ static uint64_t evaluate_solution(const color_quad_u8 *pLow, const color_quad_u8
 	{
 		uint32_t minPBit, maxPBit;
 
-		if (pParams->m_endpoints_share_pbit)
+		if (pParams->m_endpoints_share_pbit) {
 			maxPBit = minPBit = pbits[0];
-		else
+		} else
 		{
 			minPBit = pbits[0];
 			maxPBit = pbits[1];
@@ -862,15 +873,18 @@ static uint64_t evaluate_solution(const color_quad_u8 *pLow, const color_quad_u8
 	{
 		for (uint32_t i = 1; i < (N - 1); i++)
 		{
-			for (uint32_t j = 0; j < nc; j++)
+			for (uint32_t j = 0; j < nc; j++) {
 				weightedColors[i].m_c[j] = (uint8_t)(astc_interpolate_linear(actualMinColor.m_c[j], actualMaxColor.m_c[j], pParams->m_pSelector_weights[i]));
+}
 		}
 	}
 	else
 	{
-		for (uint32_t i = 1; i < (N - 1); i++)
-			for (uint32_t j = 0; j < nc; j++)
+		for (uint32_t i = 1; i < (N - 1); i++) {
+			for (uint32_t j = 0; j < nc; j++) {
 				weightedColors[i].m_c[j] = (uint8_t)((actualMinColor.m_c[j] * (64 - pParams->m_pSelector_weights[i]) + actualMaxColor.m_c[j] * pParams->m_pSelector_weights[i] + 32) >> 6);
+}
+}
 	}
 
 	const int lr = actualMinColor.m_c[0];
@@ -879,18 +893,18 @@ static uint64_t evaluate_solution(const color_quad_u8 *pLow, const color_quad_u8
 	const int dr = actualMaxColor.m_c[0] - lr;
 	const int dg = actualMaxColor.m_c[1] - lg;
 	const int db = actualMaxColor.m_c[2] - lb;
-	
+
 	uint64_t total_err = 0;
-	
+
 	if (pParams->m_pForce_selectors)
 	{
 		for (uint32_t i = 0; i < pParams->m_num_pixels; i++)
 		{
 			const color_quad_u8* pC = &pParams->m_pPixels[i];
-			
+
 			const uint8_t sel = pParams->m_pForce_selectors[i];
 			assert(sel < N);
-			
+
 			total_err += (pParams->m_has_alpha ? compute_color_distance_rgba : compute_color_distance_rgb)(&weightedColors[sel], pC, pParams->m_perceptual, pParams->m_weights);
 
 			pResults->m_pSelectors_temp[i] = sel;
@@ -922,8 +936,9 @@ static uint64_t evaluate_solution(const color_quad_u8 *pLow, const color_quad_u8
 				if (err0 == err1)
 				{
 					// Prefer non-interpolation
-					if ((best_sel - 1) == 0)
+					if ((best_sel - 1) == 0) {
 						best_sel = 0;
+}
 				}
 				else if (err1 > err0)
 				{
@@ -931,7 +946,7 @@ static uint64_t evaluate_solution(const color_quad_u8 *pLow, const color_quad_u8
 					--best_sel;
 				}
 				total_err += err1;
-								
+
 				pResults->m_pSelectors_temp[i] = (uint8_t)best_sel;
 			}
 		}
@@ -957,8 +972,9 @@ static uint64_t evaluate_solution(const color_quad_u8 *pLow, const color_quad_u8
 				if (err0 == err1)
 				{
 					// Prefer non-interpolation
-					if ((best_sel - 1) == 0)
+					if ((best_sel - 1) == 0) {
 						best_sel = 0;
+}
 				}
 				else if (err0 < best_err)
 				{
@@ -990,8 +1006,9 @@ static uint64_t evaluate_solution(const color_quad_u8 *pLow, const color_quad_u8
 						best_sel = j;
 					}
 					// Prefer non-interpolation
-					else if ((err == best_err) && (j == (N - 1)))
+					else if ((err == best_err) && (j == (N - 1))) {
 						best_sel = j;
+}
 				}
 			}
 			else
@@ -1005,8 +1022,9 @@ static uint64_t evaluate_solution(const color_quad_u8 *pLow, const color_quad_u8
 						best_sel = j;
 					}
 					// Prefer non-interpolation
-					else if ((err == best_err) && (j == (N - 1)))
+					else if ((err == best_err) && (j == (N - 1))) {
 						best_sel = j;
+}
 				}
 			}
 
@@ -1028,7 +1046,7 @@ static uint64_t evaluate_solution(const color_quad_u8 *pLow, const color_quad_u8
 
 		memcpy(pResults->m_pSelectors, pResults->m_pSelectors_temp, sizeof(pResults->m_pSelectors[0]) * pParams->m_num_pixels);
 	}
-				
+
 	return total_err;
 }
 
@@ -1038,8 +1056,9 @@ static bool areDegenerateEndpoints(color_quad_u8* pTrialMinColor, color_quad_u8*
 	{
 		if (pTrialMinColor->m_c[i] == pTrialMaxColor->m_c[i])
 		{
-			if (fabs(pXl->m_c[i] - pXh->m_c[i]) > 0.0f)
+			if (fabs(pXl->m_c[i] - pXh->m_c[i]) > 0.0f) {
 				return true;
+}
 		}
 	}
 
@@ -1058,13 +1077,15 @@ static void fixDegenerateEndpoints(uint32_t mode, color_quad_u8 *pTrialMinColor,
 				{
 					if (flags & 1)
 					{
-						if (pTrialMinColor->m_c[i] > 0)
+						if (pTrialMinColor->m_c[i] > 0) {
 							pTrialMinColor->m_c[i]--;
+}
 					}
 					if (flags & 2)
 					{
-						if (pTrialMaxColor->m_c[i] < iscale)
+						if (pTrialMaxColor->m_c[i] < iscale) {
 							pTrialMaxColor->m_c[i]++;
+}
 					}
 				}
 			}
@@ -1081,18 +1102,20 @@ static void fixDegenerateEndpoints(uint32_t mode, color_quad_u8 *pTrialMinColor,
 				{
 					if (pTrialMinColor->m_c[i] > (iscale >> 1))
 					{
-						if (pTrialMinColor->m_c[i] > 0)
+						if (pTrialMinColor->m_c[i] > 0) {
 							pTrialMinColor->m_c[i]--;
-						else
-							if (pTrialMaxColor->m_c[i] < iscale)
+						} else
+							if (pTrialMaxColor->m_c[i] < iscale) {
 								pTrialMaxColor->m_c[i]++;
+}
 					}
 					else
 					{
-						if (pTrialMaxColor->m_c[i] < iscale)
+						if (pTrialMaxColor->m_c[i] < iscale) {
 							pTrialMaxColor->m_c[i]++;
-						else if (pTrialMinColor->m_c[i] > 0)
+						} else if (pTrialMinColor->m_c[i] > 0) {
 							pTrialMinColor->m_c[i]--;
+}
 					}
 				}
 			}
@@ -1126,26 +1149,30 @@ static uint64_t find_optimal_solution(uint32_t mode, bc7enc_vec4F xl, bc7enc_vec
 			color_quad_u8 trialMinColorOrig(trialMinColor), trialMaxColorOrig(trialMaxColor);
 
 			fixDegenerateEndpoints(mode, &trialMinColor, &trialMaxColor, &xl, &xh, levels - 1, 1);
-			if ((pResults->m_best_overall_err == UINT64_MAX) || color_quad_u8_notequals(&trialMinColor, &pResults->m_low_endpoint) || color_quad_u8_notequals(&trialMaxColor, &pResults->m_high_endpoint))
+			if ((pResults->m_best_overall_err == UINT64_MAX) || color_quad_u8_notequals(&trialMinColor, &pResults->m_low_endpoint) || color_quad_u8_notequals(&trialMaxColor, &pResults->m_high_endpoint)) {
 				evaluate_solution(&trialMinColor, &trialMaxColor, pResults->m_pbits, pParams, pResults);
+}
 
 			trialMinColor = trialMinColorOrig;
 			trialMaxColor = trialMaxColorOrig;
 			fixDegenerateEndpoints(mode, &trialMinColor, &trialMaxColor, &xl, &xh, levels - 1, 0);
-			if ((pResults->m_best_overall_err == UINT64_MAX) || color_quad_u8_notequals(&trialMinColor, &pResults->m_low_endpoint) || color_quad_u8_notequals(&trialMaxColor, &pResults->m_high_endpoint))
+			if ((pResults->m_best_overall_err == UINT64_MAX) || color_quad_u8_notequals(&trialMinColor, &pResults->m_low_endpoint) || color_quad_u8_notequals(&trialMaxColor, &pResults->m_high_endpoint)) {
 				evaluate_solution(&trialMinColor, &trialMaxColor, pResults->m_pbits, pParams, pResults);
+}
 
 			trialMinColor = trialMinColorOrig;
 			trialMaxColor = trialMaxColorOrig;
 			fixDegenerateEndpoints(mode, &trialMinColor, &trialMaxColor, &xl, &xh, levels - 1, 2);
-			if ((pResults->m_best_overall_err == UINT64_MAX) || color_quad_u8_notequals(&trialMinColor, &pResults->m_low_endpoint) || color_quad_u8_notequals(&trialMaxColor, &pResults->m_high_endpoint))
+			if ((pResults->m_best_overall_err == UINT64_MAX) || color_quad_u8_notequals(&trialMinColor, &pResults->m_low_endpoint) || color_quad_u8_notequals(&trialMaxColor, &pResults->m_high_endpoint)) {
 				evaluate_solution(&trialMinColor, &trialMaxColor, pResults->m_pbits, pParams, pResults);
+}
 
 			trialMinColor = trialMinColorOrig;
 			trialMaxColor = trialMaxColorOrig;
 			fixDegenerateEndpoints(mode, &trialMinColor, &trialMaxColor, &xl, &xh, levels - 1, 3);
-			if ((pResults->m_best_overall_err == UINT64_MAX) || color_quad_u8_notequals(&trialMinColor, &pResults->m_low_endpoint) || color_quad_u8_notequals(&trialMaxColor, &pResults->m_high_endpoint))
+			if ((pResults->m_best_overall_err == UINT64_MAX) || color_quad_u8_notequals(&trialMinColor, &pResults->m_low_endpoint) || color_quad_u8_notequals(&trialMaxColor, &pResults->m_high_endpoint)) {
 				evaluate_solution(&trialMinColor, &trialMaxColor, pResults->m_pbits, pParams, pResults);
+}
 		}
 		else
 		{
@@ -1242,8 +1269,9 @@ static uint64_t find_optimal_solution(uint32_t mode, bc7enc_vec4F xl, bc7enc_vec
 				color_quad_u8 scaledHigh = scale_color(&xMaxColor, pParams);
 
 				float err = 0;
-				for (int i = 0; i < totalComps; i++)
+				for (int i = 0; i < totalComps; i++) {
 					err += squaref((scaledLow.m_c[i] / 255.0f) - xl.m_c[i]) + squaref((scaledHigh.m_c[i] / 255.0f) - xh.m_c[i]);
+}
 
 				if (err < best_err)
 				{
@@ -1258,11 +1286,12 @@ static uint64_t find_optimal_solution(uint32_t mode, bc7enc_vec4F xl, bc7enc_vec
 				}
 			}
 		}
-						
+
 		fixDegenerateEndpoints(mode, &bestMinColor, &bestMaxColor, &xl, &xh, iscalep >> 1, 0);
 
-		if ((pResults->m_best_overall_err == UINT64_MAX) || color_quad_u8_notequals(&bestMinColor, &pResults->m_low_endpoint) || color_quad_u8_notequals(&bestMaxColor, &pResults->m_high_endpoint) || (best_pbits[0] != pResults->m_pbits[0]) || (best_pbits[1] != pResults->m_pbits[1]))
+		if ((pResults->m_best_overall_err == UINT64_MAX) || color_quad_u8_notequals(&bestMinColor, &pResults->m_low_endpoint) || color_quad_u8_notequals(&bestMaxColor, &pResults->m_high_endpoint) || (best_pbits[0] != pResults->m_pbits[0]) || (best_pbits[1] != pResults->m_pbits[1])) {
 			evaluate_solution(&bestMinColor, &bestMaxColor, best_pbits, pParams, pResults);
+}
 	}
 	else
 	{
@@ -1275,8 +1304,9 @@ static uint64_t find_optimal_solution(uint32_t mode, bc7enc_vec4F xl, bc7enc_vec
 
 		fixDegenerateEndpoints(mode, &trialMinColor, &trialMaxColor, &xl, &xh, iscale, 0);
 
-		if ((pResults->m_best_overall_err == UINT64_MAX) || color_quad_u8_notequals(&trialMinColor, &pResults->m_low_endpoint) || color_quad_u8_notequals(&trialMaxColor, &pResults->m_high_endpoint))
+		if ((pResults->m_best_overall_err == UINT64_MAX) || color_quad_u8_notequals(&trialMinColor, &pResults->m_low_endpoint) || color_quad_u8_notequals(&trialMaxColor, &pResults->m_high_endpoint)) {
 			evaluate_solution(&trialMinColor, &trialMaxColor, pResults->m_pbits, pParams, pResults);
+}
 	}
 
 	return pResults->m_best_overall_err;
@@ -1297,10 +1327,12 @@ void check_best_overall_error(const color_cell_compressor_params *pParams, color
 		colors[n-1].m_c[c] = g_astc_unquant[pParams->m_astc_endpoint_range][pResults->m_astc_high_endpoint.m_c[c]].m_unquant;
 		assert(colors[n-1].m_c[c] == g_astc_sorted_order_unquant[pParams->m_astc_endpoint_range][pResults->m_high_endpoint.m_c[c]].m_unquant);
 	}
-	
-	for (uint32_t i = 1; i < pParams->m_num_selector_weights - 1; i++)
-		for (uint32_t c = 0; c < 4; c++)
+
+	for (uint32_t i = 1; i < pParams->m_num_selector_weights - 1; i++) {
+		for (uint32_t c = 0; c < 4; c++) {
 			colors[i].m_c[c] = (uint8_t)astc_interpolate_linear(colors[0].m_c[c], colors[n - 1].m_c[c], pParams->m_pSelector_weights[i]);
+}
+}
 
 #ifdef _DEBUG
 	uint64_t total_err = 0;
@@ -1308,7 +1340,7 @@ void check_best_overall_error(const color_cell_compressor_params *pParams, color
 	{
 		const color_quad_u8 &orig = pParams->m_pPixels[p];
 		const color_quad_u8 &packed = colors[pResults->m_pSelectors[p]];
-				
+
 		if (pParams->m_has_alpha)
 			total_err += compute_color_distance_rgba(&orig, &packed, pParams->m_perceptual, pParams->m_weights);
 		else
@@ -1316,7 +1348,7 @@ void check_best_overall_error(const color_cell_compressor_params *pParams, color
 	}
 	assert(total_err == pResults->m_best_overall_err);
 #endif
-	
+
 	// HACK HACK
 	//if (total_err != pResults->m_best_overall_err)
 	//	printf("X");
@@ -1380,33 +1412,39 @@ uint64_t color_cell_compression(uint32_t mode, const color_cell_compressor_param
 	{
 		if (mode == 1)
 		{
-			if (is_solid_rgb(pParams, cr, cg, cb))
+			if (is_solid_rgb(pParams, cr, cg, cb)) {
 				return pack_mode1_to_one_color(pParams, pResults, cr, cg, cb, pResults->m_pSelectors);
+}
 		}
 		else if ((pParams->m_astc_endpoint_range == 8) && (pParams->m_num_selector_weights == 8) && (!pParams->m_has_alpha))
 		{
-			if (is_solid_rgb(pParams, cr, cg, cb))
+			if (is_solid_rgb(pParams, cr, cg, cb)) {
 				return pack_astc_4bit_3bit_to_one_color(pParams, pResults, cr, cg, cb, pResults->m_pSelectors);
+}
 		}
 		else if ((pParams->m_astc_endpoint_range == 7) && (pParams->m_num_selector_weights == 4) && (!pParams->m_has_alpha))
 		{
-			if (is_solid_rgb(pParams, cr, cg, cb))
+			if (is_solid_rgb(pParams, cr, cg, cb)) {
 				return pack_astc_range7_2bit_to_one_color(pParams, pResults, cr, cg, cb, pResults->m_pSelectors);
+}
 		}
 		else if ((pParams->m_astc_endpoint_range == 8) && (pParams->m_num_selector_weights == 4) && (pParams->m_has_alpha))
 		{
-			if (is_solid_rgba(pParams, cr, cg, cb, ca))
+			if (is_solid_rgba(pParams, cr, cg, cb, ca)) {
 				return pack_astc_4bit_2bit_to_one_color_rgba(pParams, pResults, cr, cg, cb, ca, pResults->m_pSelectors);
+}
 		}
 		else if ((pParams->m_astc_endpoint_range == 13) && (pParams->m_num_selector_weights == 4) && (!pParams->m_has_alpha))
 		{
-			if (is_solid_rgb(pParams, cr, cg, cb))
+			if (is_solid_rgb(pParams, cr, cg, cb)) {
 				return pack_astc_range13_2bit_to_one_color(pParams, pResults, cr, cg, cb, pResults->m_pSelectors);
+}
 		}
 		else if ((pParams->m_astc_endpoint_range == 11) && (pParams->m_num_selector_weights == 32) && (!pParams->m_has_alpha))
 		{
-			if (is_solid_rgb(pParams, cr, cg, cb))
+			if (is_solid_rgb(pParams, cr, cg, cb)) {
 				return pack_astc_range11_5bit_to_one_color(pParams, pResults, cr, cg, cb, pResults->m_pSelectors);
+}
 		}
 	}
 
@@ -1419,12 +1457,12 @@ uint64_t color_cell_compression(uint32_t mode, const color_cell_compressor_param
 		bc7enc_vec4F color = vec4F_from_color(&pParams->m_pPixels[i]);
 		meanColor = vec4F_add(&meanColor, &color);
 	}
-				
+
 	bc7enc_vec4F meanColorScaled = vec4F_mul(&meanColor, 1.0f / (float)(pParams->m_num_pixels));
 
 	meanColor = vec4F_mul(&meanColor, 1.0f / (float)(pParams->m_num_pixels * 255.0f));
 	vec4F_saturate_in_place(&meanColor);
-	
+
 	if (pParams->m_has_alpha)
 	{
 		// Use incremental PCA for RGBA PCA, because it's simple.
@@ -1478,25 +1516,26 @@ uint64_t color_cell_compression(uint32_t mode, const color_cell_compressor_param
 		}
 
 		float len = xr * xr + xg * xg + xb * xb;
-		if (len < 1e-10f)
+		if (len < 1e-10f) {
 			vec4F_set_scalar(&axis, 0.0f);
-		else
+		} else
 		{
 			len = 1.0f / sqrtf(len);
 			xr *= len; xg *= len; xb *= len;
 			vec4F_set(&axis, xr, xg, xb, 0);
 		}
 	}
-				
+
 	if (vec4F_dot(&axis, &axis) < .5f)
 	{
-		if (pParams->m_perceptual)
+		if (pParams->m_perceptual) {
 			vec4F_set(&axis, .213f, .715f, .072f, pParams->m_has_alpha ? .715f : 0);
-		else
+		} else {
 			vec4F_set(&axis, 1.0f, 1.0f, 1.0f, pParams->m_has_alpha ? 1.0f : 0);
+}
 		vec4F_normalize_in_place(&axis);
 	}
-			
+
 	bc7enc_vec4F minColor, maxColor;
 
 	float l = 1e+9f, h = -1e+9f;
@@ -1521,7 +1560,7 @@ uint64_t color_cell_compression(uint32_t mode, const color_cell_compressor_param
 	bc7enc_vec4F c1 = vec4F_add(&meanColor, &b1);
 	minColor = vec4F_saturate(&c0);
 	maxColor = vec4F_saturate(&c1);
-				
+
 	bc7enc_vec4F whiteVec;
 	vec4F_set_scalar(&whiteVec, 1.0f);
 	if (vec4F_dot(&minColor, &whiteVec) > vec4F_dot(&maxColor, &whiteVec))
@@ -1543,27 +1582,30 @@ uint64_t color_cell_compression(uint32_t mode, const color_cell_compressor_param
 	}
 
 	// First find a solution using the block's PCA.
-	if (!find_optimal_solution(mode, minColor, maxColor, pParams, pResults))
+	if (!find_optimal_solution(mode, minColor, maxColor, pParams, pResults)) {
 		return 0;
-	
+}
+
 	for (uint32_t i = 0; i < pComp_params->m_least_squares_passes; i++)
 	{
 		// Now try to refine the solution using least squares by computing the optimal endpoints from the current selectors.
 		bc7enc_vec4F xl, xh;
 		vec4F_set_scalar(&xl, 0.0f);
 		vec4F_set_scalar(&xh, 0.0f);
-		if (pParams->m_has_alpha)
+		if (pParams->m_has_alpha) {
 			compute_least_squares_endpoints_rgba(pParams->m_num_pixels, pResults->m_pSelectors, pParams->m_pSelector_weightsx, &xl, &xh, pParams->m_pPixels);
-		else
+		} else {
 			compute_least_squares_endpoints_rgb(pParams->m_num_pixels, pResults->m_pSelectors, pParams->m_pSelector_weightsx, &xl, &xh, pParams->m_pPixels);
+}
 
 		xl = vec4F_mul(&xl, (1.0f / 255.0f));
 		xh = vec4F_mul(&xh, (1.0f / 255.0f));
-				
-		if (!find_optimal_solution(mode, xl, xh, pParams, pResults))
+
+		if (!find_optimal_solution(mode, xl, xh, pParams, pResults)) {
 			return 0;
+}
 	}
-	
+
 	if ((!pParams->m_pForce_selectors) && (pComp_params->m_uber_level > 0))
 	{
 		// In uber level 1, try varying the selectors a little, somewhat like cluster fit would. First try incrementing the minimum selectors,
@@ -1585,64 +1627,73 @@ uint64_t color_cell_compression(uint32_t mode, const color_cell_compressor_param
 		for (uint32_t i = 0; i < pParams->m_num_pixels; i++)
 		{
 			uint32_t sel = selectors_temp[i];
-			if ((sel == min_sel) && (sel < (pParams->m_num_selector_weights - 1)))
+			if ((sel == min_sel) && (sel < (pParams->m_num_selector_weights - 1))) {
 				sel++;
+}
 			selectors_temp1[i] = (uint8_t)sel;
 		}
 
 		bc7enc_vec4F xl, xh;
 		vec4F_set_scalar(&xl, 0.0f);
 		vec4F_set_scalar(&xh, 0.0f);
-		if (pParams->m_has_alpha)
+		if (pParams->m_has_alpha) {
 			compute_least_squares_endpoints_rgba(pParams->m_num_pixels, selectors_temp1, pParams->m_pSelector_weightsx, &xl, &xh, pParams->m_pPixels);
-		else
+		} else {
 			compute_least_squares_endpoints_rgb(pParams->m_num_pixels, selectors_temp1, pParams->m_pSelector_weightsx, &xl, &xh, pParams->m_pPixels);
+}
 
 		xl = vec4F_mul(&xl, (1.0f / 255.0f));
 		xh = vec4F_mul(&xh, (1.0f / 255.0f));
-				
-		if (!find_optimal_solution(mode, xl, xh, pParams, pResults))
+
+		if (!find_optimal_solution(mode, xl, xh, pParams, pResults)) {
 			return 0;
+}
 
 		for (uint32_t i = 0; i < pParams->m_num_pixels; i++)
 		{
 			uint32_t sel = selectors_temp[i];
-			if ((sel == max_sel) && (sel > 0))
+			if ((sel == max_sel) && (sel > 0)) {
 				sel--;
+}
 			selectors_temp1[i] = (uint8_t)sel;
 		}
 
-		if (pParams->m_has_alpha)
+		if (pParams->m_has_alpha) {
 			compute_least_squares_endpoints_rgba(pParams->m_num_pixels, selectors_temp1, pParams->m_pSelector_weightsx, &xl, &xh, pParams->m_pPixels);
-		else
+		} else {
 			compute_least_squares_endpoints_rgb(pParams->m_num_pixels, selectors_temp1, pParams->m_pSelector_weightsx, &xl, &xh, pParams->m_pPixels);
+}
 
 		xl = vec4F_mul(&xl, (1.0f / 255.0f));
 		xh = vec4F_mul(&xh, (1.0f / 255.0f));
-				
-		if (!find_optimal_solution(mode, xl, xh, pParams, pResults))
+
+		if (!find_optimal_solution(mode, xl, xh, pParams, pResults)) {
 			return 0;
+}
 
 		for (uint32_t i = 0; i < pParams->m_num_pixels; i++)
 		{
 			uint32_t sel = selectors_temp[i];
-			if ((sel == min_sel) && (sel < (pParams->m_num_selector_weights - 1)))
+			if ((sel == min_sel) && (sel < (pParams->m_num_selector_weights - 1))) {
 				sel++;
-			else if ((sel == max_sel) && (sel > 0))
+			} else if ((sel == max_sel) && (sel > 0)) {
 				sel--;
+}
 			selectors_temp1[i] = (uint8_t)sel;
 		}
 
-		if (pParams->m_has_alpha)
+		if (pParams->m_has_alpha) {
 			compute_least_squares_endpoints_rgba(pParams->m_num_pixels, selectors_temp1, pParams->m_pSelector_weightsx, &xl, &xh, pParams->m_pPixels);
-		else
+		} else {
 			compute_least_squares_endpoints_rgb(pParams->m_num_pixels, selectors_temp1, pParams->m_pSelector_weightsx, &xl, &xh, pParams->m_pPixels);
+}
 
 		xl = vec4F_mul(&xl, (1.0f / 255.0f));
 		xh = vec4F_mul(&xh, (1.0f / 255.0f));
 
-		if (!find_optimal_solution(mode, xl, xh, pParams, pResults))
+		if (!find_optimal_solution(mode, xl, xh, pParams, pResults)) {
 			return 0;
+}
 
 		// In uber levels 2+, try taking more advantage of endpoint extrapolation by scaling the selectors in one direction or another.
 		const uint32_t uber_err_thresh = (pParams->m_num_pixels * 56) >> 4;
@@ -1653,30 +1704,34 @@ uint64_t color_cell_compression(uint32_t mode, const color_cell_compressor_param
 			{
 				for (int hy = max_selector - 1; hy <= (max_selector + Q); hy++)
 				{
-					if ((ly == 0) && (hy == max_selector))
+					if ((ly == 0) && (hy == max_selector)) {
 						continue;
+}
 
-					for (uint32_t i = 0; i < pParams->m_num_pixels; i++)
+					for (uint32_t i = 0; i < pParams->m_num_pixels; i++) {
 						selectors_temp1[i] = (uint8_t)clampf(floorf((float)max_selector * ((float)selectors_temp[i] - (float)ly) / ((float)hy - (float)ly) + .5f), 0, (float)max_selector);
+}
 
 					//bc7enc_vec4F xl, xh;
 					vec4F_set_scalar(&xl, 0.0f);
 					vec4F_set_scalar(&xh, 0.0f);
-					if (pParams->m_has_alpha)
+					if (pParams->m_has_alpha) {
 						compute_least_squares_endpoints_rgba(pParams->m_num_pixels, selectors_temp1, pParams->m_pSelector_weightsx, &xl, &xh, pParams->m_pPixels);
-					else
+					} else {
 						compute_least_squares_endpoints_rgb(pParams->m_num_pixels, selectors_temp1, pParams->m_pSelector_weightsx, &xl, &xh, pParams->m_pPixels);
+}
 
 					xl = vec4F_mul(&xl, (1.0f / 255.0f));
 					xh = vec4F_mul(&xh, (1.0f / 255.0f));
 
-					if (!find_optimal_solution(mode, xl, xh, pParams, pResults))
+					if (!find_optimal_solution(mode, xl, xh, pParams, pResults)) {
 						return 0;
+}
 				}
 			}
 		}
 	}
-	
+
 	if (!pParams->m_pForce_selectors)
 	{
 		// Try encoding the partition as a single color by using the optimal single colors tables to encode the block to its mean.
@@ -1757,13 +1812,13 @@ uint64_t color_cell_compression(uint32_t mode, const color_cell_compressor_param
 #if BC7ENC_CHECK_OVERALL_ERROR
 	check_best_overall_error(pParams, pResults);
 #endif
-		
+
 	return pResults->m_best_overall_err;
 }
 
 uint64_t color_cell_compression_est_astc(
 	uint32_t num_weights, uint32_t num_comps, const uint32_t *pWeight_table,
-	uint32_t num_pixels, const color_quad_u8* pPixels, 
+	uint32_t num_pixels, const color_quad_u8* pPixels,
 	uint64_t best_err_so_far, const uint32_t weights[4])
 {
 	assert(num_comps == 3 || num_comps == 4);
@@ -1778,15 +1833,23 @@ uint64_t color_cell_compression_est_astc(
 		for (uint32_t i = 0; i < num_pixels; i++)
 		{
 			const color_quad_u8* pC = &pPixels[i];
-			if (pC->m_c[0] < lr) lr = pC->m_c[0];
-			if (pC->m_c[1] < lg) lg = pC->m_c[1];
-			if (pC->m_c[2] < lb) lb = pC->m_c[2];
-			if (pC->m_c[3] < la) la = pC->m_c[3];
+			if (pC->m_c[0] < lr) { lr = pC->m_c[0];
+}
+			if (pC->m_c[1] < lg) { lg = pC->m_c[1];
+}
+			if (pC->m_c[2] < lb) { lb = pC->m_c[2];
+}
+			if (pC->m_c[3] < la) { la = pC->m_c[3];
+}
 
-			if (pC->m_c[0] > hr) hr = pC->m_c[0];
-			if (pC->m_c[1] > hg) hg = pC->m_c[1];
-			if (pC->m_c[2] > hb) hb = pC->m_c[2];
-			if (pC->m_c[3] > ha) ha = pC->m_c[3];
+			if (pC->m_c[0] > hr) { hr = pC->m_c[0];
+}
+			if (pC->m_c[1] > hg) { hg = pC->m_c[1];
+}
+			if (pC->m_c[2] > hb) { hb = pC->m_c[2];
+}
+			if (pC->m_c[3] > ha) { ha = pC->m_c[3];
+}
 		}
 	}
 	else
@@ -1794,13 +1857,19 @@ uint64_t color_cell_compression_est_astc(
 		for (uint32_t i = 0; i < num_pixels; i++)
 		{
 			const color_quad_u8* pC = &pPixels[i];
-			if (pC->m_c[0] < lr) lr = pC->m_c[0];
-			if (pC->m_c[1] < lg) lg = pC->m_c[1];
-			if (pC->m_c[2] < lb) lb = pC->m_c[2];
+			if (pC->m_c[0] < lr) { lr = pC->m_c[0];
+}
+			if (pC->m_c[1] < lg) { lg = pC->m_c[1];
+}
+			if (pC->m_c[2] < lb) { lb = pC->m_c[2];
+}
 
-			if (pC->m_c[0] > hr) hr = pC->m_c[0];
-			if (pC->m_c[1] > hg) hg = pC->m_c[1];
-			if (pC->m_c[2] > hb) hb = pC->m_c[2];
+			if (pC->m_c[0] > hr) { hr = pC->m_c[0];
+}
+			if (pC->m_c[1] > hg) { hg = pC->m_c[1];
+}
+			if (pC->m_c[2] > hb) { hb = pC->m_c[2];
+}
 		}
 		la = 255;
 		ha = 255;
@@ -1810,7 +1879,7 @@ uint64_t color_cell_compression_est_astc(
 	color_quad_u8_set(&lowColor, lr, lg, lb, la);
 	color_quad_u8_set(&highColor, hr, hg, hb, ha);
 
-	// Place endpoints at bbox diagonals and compute interpolated colors 
+	// Place endpoints at bbox diagonals and compute interpolated colors
 	color_quad_u8 weightedColors[32];
 
 	weightedColors[0] = lowColor;
@@ -1832,19 +1901,22 @@ uint64_t color_cell_compression_est_astc(
 	int dots[32];
 	if (num_comps == 4)
 	{
-		for (uint32_t i = 0; i < num_weights; i++)
+		for (uint32_t i = 0; i < num_weights; i++) {
 			dots[i] = weightedColors[i].m_c[0] * ar + weightedColors[i].m_c[1] * ag + weightedColors[i].m_c[2] * ab + weightedColors[i].m_c[3] * aa;
+}
 	}
 	else
 	{
 		assert(aa == 0);
-		for (uint32_t i = 0; i < num_weights; i++)
+		for (uint32_t i = 0; i < num_weights; i++) {
 			dots[i] = weightedColors[i].m_c[0] * ar + weightedColors[i].m_c[1] * ag + weightedColors[i].m_c[2] * ab;
+}
 	}
 
 	int thresh[32 - 1];
-	for (uint32_t i = 0; i < (num_weights - 1); i++)
+	for (uint32_t i = 0; i < (num_weights - 1); i++) {
 		thresh[i] = (dots[i] + dots[i + 1] + 1) >> 1;
+}
 
 	uint64_t total_err = 0;
 	if ((weights[0] | weights[1] | weights[2] | weights[3]) == 1)
@@ -1877,8 +1949,9 @@ uint64_t color_cell_compression_est_astc(
 				int da = (int)pE1->m_c[3] - (int)pC->m_c[3];
 
 				total_err += (dr * dr) + (dg * dg) + (db * db) + (da * da);
-				if (total_err > best_err_so_far)
+				if (total_err > best_err_so_far) {
 					break;
+}
 			}
 		}
 		else
@@ -1908,8 +1981,9 @@ uint64_t color_cell_compression_est_astc(
 				int db = (int)pE1->m_c[2] - (int)pC->m_c[2];
 
 				total_err += (dr * dr) + (dg * dg) + (db * db);
-				if (total_err > best_err_so_far)
+				if (total_err > best_err_so_far) {
 					break;
+}
 			}
 		}
 	}
@@ -1943,8 +2017,9 @@ uint64_t color_cell_compression_est_astc(
 				int da = (int)pE1->m_c[3] - (int)pC->m_c[3];
 
 				total_err += weights[0] * (dr * dr) + weights[1] * (dg * dg) + weights[2] * (db * db) + weights[3] * (da * da);
-				if (total_err > best_err_so_far)
+				if (total_err > best_err_so_far) {
 					break;
+}
 			}
 		}
 		else
@@ -1974,8 +2049,9 @@ uint64_t color_cell_compression_est_astc(
 				int db = (int)pE1->m_c[2] - (int)pC->m_c[2];
 
 				total_err += weights[0] * (dr * dr) + weights[1] * (dg * dg) + weights[2] * (db * db);
-				if (total_err > best_err_so_far)
+				if (total_err > best_err_so_far) {
 					break;
+}
 			}
 		}
 	}

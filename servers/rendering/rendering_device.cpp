@@ -240,7 +240,7 @@ RenderingDevice::Buffer *RenderingDevice::_get_buffer_from_owner(RID p_buffer) {
 	} else if (uniform_buffer_owner.owns(p_buffer)) {
 		buffer = uniform_buffer_owner.get_or_null(p_buffer);
 	} else if (texture_buffer_owner.owns(p_buffer)) {
-		DEV_ASSERT(false && "FIXME: Broken.");
+		DEV_ASSERT(false);
 		//buffer = texture_buffer_owner.get_or_null(p_buffer)->buffer;
 	} else if (storage_buffer_owner.owns(p_buffer)) {
 		buffer = storage_buffer_owner.get_or_null(p_buffer);
@@ -422,7 +422,7 @@ void RenderingDevice::_staging_buffer_execute_required_action(StagingRequiredAct
 			staging_buffer_blocks.write[staging_buffer_current].frame_used = frames_drawn;
 		} break;
 		default: {
-			DEV_ASSERT(false && "Unknown required action.");
+			DEV_ASSERT(false);
 		} break;
 	}
 }
@@ -1583,7 +1583,7 @@ void RenderingDevice::_texture_copy_shared(RID p_src_texture_rid, Texture *p_src
 			shared_buffer = p_dst_texture->shared_fallback->buffer;
 			shared_buffer_tracker = p_dst_texture->shared_fallback->buffer_tracker;
 		} else {
-			DEV_ASSERT(false && "This path should not be reachable.");
+			DEV_ASSERT(false);
 		}
 
 		// FIXME: When using reinterpretation buffers, the only texture aspect supported is color. Depth or stencil contents won't get copied.
@@ -5520,7 +5520,7 @@ bool RenderingDevice::_dependency_make_mutable(RID p_id, RID p_resource_id, RDG:
 		UniformSet *uniform_set = uniform_set_owner.get_or_null(p_id);
 		return _uniform_set_make_mutable(uniform_set, p_resource_id, p_resource_tracker);
 	} else {
-		DEV_ASSERT(false && "Unknown resource type to make mutable.");
+		DEV_ASSERT(false);
 		return false;
 	}
 }

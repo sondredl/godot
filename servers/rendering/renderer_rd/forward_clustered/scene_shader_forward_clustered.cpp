@@ -262,7 +262,7 @@ SceneShaderForwardClustered::ShaderVersion SceneShaderForwardClustered::ShaderDa
 			return ShaderVersion(SHADER_VERSION_DEPTH_PASS_WITH_MATERIAL + SHADER_VERSION_COLOR_PASS + shader_flags);
 		} break;
 		default: {
-			DEV_ASSERT(false && "Unknown pipeline version.");
+			DEV_ASSERT(false);
 			return ShaderVersion(0);
 		} break;
 	}

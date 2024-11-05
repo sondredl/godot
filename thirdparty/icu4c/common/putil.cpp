@@ -49,7 +49,7 @@
 /*
  * Cygwin with GCC requires inclusion of time.h after the above disabling strict asci mode statement.
  */
-#include <time.h>
+#include <ctime>
 
 #if !U_PLATFORM_USES_ONLY_WIN32_API
 #include <sys/time.h>
@@ -68,12 +68,12 @@
 #include "charstr.h"
 
 /* Include standard headers. */
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <math.h>
-#include <locale.h>
-#include <float.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cmath>
+#include <clocale>
+#include <cfloat>
 
 #ifndef U_COMMON_IMPLEMENTATION
 #error U_COMMON_IMPLEMENTATION not set - must be set for all ICU source files in common/ - see https://unicode-org.github.io/icu/userguide/howtouseicu
@@ -107,7 +107,7 @@
 #elif U_PLATFORM == U_PF_OS390
 #   include "unicode/ucnv.h"   /* Needed for UCNV_SWAP_LFNL_OPTION_STRING */
 #elif U_PLATFORM_IS_DARWIN_BASED || U_PLATFORM_IS_LINUX_BASED || U_PLATFORM == U_PF_BSD || U_PLATFORM == U_PF_SOLARIS
-#   include <limits.h>
+#   include <climits>
 #   include <unistd.h>
 #   if U_PLATFORM == U_PF_SOLARIS
 #       ifndef _XPG4_2
@@ -489,12 +489,14 @@ uprv_fmax(double x, double y)
 {
 #if IEEE_754
     /* first handle NaN*/
-    if(uprv_isNaN(x) || uprv_isNaN(y))
+    if(uprv_isNaN(x) || uprv_isNaN(y)) {
         return uprv_getNaN();
+}
 
     /* check for -0 and 0*/
-    if(x == 0.0 && y == 0.0 && u_signBit(x))
+    if(x == 0.0 && y == 0.0 && u_signBit(x)) {
         return y;
+}
 
 #endif
 
@@ -507,12 +509,14 @@ uprv_fmin(double x, double y)
 {
 #if IEEE_754
     /* first handle NaN*/
-    if(uprv_isNaN(x) || uprv_isNaN(y))
+    if(uprv_isNaN(x) || uprv_isNaN(y)) {
         return uprv_getNaN();
+}
 
     /* check for -0 and 0*/
-    if(x == 0.0 && y == 0.0 && u_signBit(y))
+    if(x == 0.0 && y == 0.0 && u_signBit(y)) {
         return y;
+}
 
 #endif
 
@@ -554,15 +558,18 @@ uprv_trunc(double d)
 {
 #if IEEE_754
     /* handle error cases*/
-    if(uprv_isNaN(d))
+    if(uprv_isNaN(d)) {
         return uprv_getNaN();
-    if(uprv_isInfinite(d))
+}
+    if(uprv_isInfinite(d)) {
         return uprv_getInfinity();
+}
 
-    if(u_signBit(d))    /* Signbit() picks up -0.0;  d<0 does not. */
+    if(u_signBit(d)) {    /* Signbit() picks up -0.0;  d<0 does not. */
         return ceil(d);
-    else
+    } else {
         return floor(d);
+}
 
 #else
     return d >= 0 ? floor(d) : ceil(d);
@@ -903,9 +910,9 @@ static UBool compareBinaryFiles(const char* defaultTZFileName, const char* TZFil
     UBool result = true;
 
     if (tzInfo->defaultTZFilePtr == nullptr) {
-        tzInfo->defaultTZFilePtr = fopen(defaultTZFileName, "r");
+        tzInfo->defaultTZFilePtr = fopen(defaultTZFileName, "re");
     }
-    file = fopen(TZFileName, "r");
+    file = fopen(TZFileName, "re");
 
     tzInfo->defaultTZPosition = 0; /* reset position to begin search */
 
@@ -1020,8 +1027,9 @@ static char* searchForTZFile(const char* path, DefaultTZInfo* tzInfo) {
                  It worked without this in most cases because we have a fallback of calling
                  localtime_r to figure out the default timezone.
                 */
-                if (result != nullptr)
+                if (result != nullptr) {
                     break;
+}
             } else {
                 if(compareBinaryFiles(TZDEFAULT, newpath.data(), tzInfo)) {
                     int32_t amountToSkip = sizeof(TZZONEINFO) - 1;
@@ -2372,7 +2380,8 @@ u_getVersion(UVersionInfo versionArray) {
 U_CAPI void * U_EXPORT2
 uprv_dl_open(const char *libName, UErrorCode *status) {
   void *ret = nullptr;
-  if(U_FAILURE(*status)) return ret;
+  if(U_FAILURE(*status)) { return ret;
+}
   ret =  dlopen(libName, RTLD_NOW|RTLD_GLOBAL);
   if(ret==nullptr) {
 #ifdef U_TRACE_DYLOAD
@@ -2385,7 +2394,8 @@ uprv_dl_open(const char *libName, UErrorCode *status) {
 
 U_CAPI void U_EXPORT2
 uprv_dl_close(void *lib, UErrorCode *status) {
-  if(U_FAILURE(*status)) return;
+  if(U_FAILURE(*status)) { return;
+}
   dlclose(lib);
 }
 
@@ -2396,7 +2406,8 @@ uprv_dlsym_func(void *lib, const char* sym, UErrorCode *status) {
       void *vp;
   } uret;
   uret.fp = nullptr;
-  if(U_FAILURE(*status)) return uret.fp;
+  if(U_FAILURE(*status)) { return uret.fp;
+}
   uret.vp = dlsym(lib, sym);
   if(uret.vp == nullptr) {
 #ifdef U_TRACE_DYLOAD

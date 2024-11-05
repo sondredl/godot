@@ -74,13 +74,14 @@ public:
         if (why == spv::ReachViaControlFlow) {
             reachableViaControlFlow_.insert(block);
         }
-        if (visited_.count(block) || delayed_.count(block))
+        if (visited_.count(block) || delayed_.count(block)) {
             return;
+}
         callback_(block, why, header);
         visited_.insert(block);
         Block* mergeBlock = nullptr;
         Block* continueBlock = nullptr;
-        auto mergeInst = block->getMergeInstruction();
+        const auto *mergeInst = block->getMergeInstruction();
         if (mergeInst) {
             Id mergeId = mergeInst->getIdOperand(0);
             mergeBlock = block->getParent().getParent().getInstruction(mergeId)->getBlock();
@@ -94,8 +95,9 @@ public:
         }
         if (why == spv::ReachViaControlFlow) {
             const auto& successors = block->getSuccessors();
-            for (auto it = successors.cbegin(); it != successors.cend(); ++it)
+            for (auto it = successors.cbegin(); it != successors.cend(); ++it) {
                 visit(*it, why, nullptr);
+}
         }
         if (continueBlock) {
             const spv::ReachReason continueWhy =

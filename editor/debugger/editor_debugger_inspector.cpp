@@ -36,22 +36,11 @@
 #include "scene/debugger/scene_debugger.h"
 
 bool EditorDebuggerRemoteObject::_set(const StringName &p_name, const Variant &p_value) {
-	if (!prop_values.has(p_name) || String(p_name).begins_with("Constants/")) {
-		return false;
-	}
-
-	prop_values[p_name] = p_value;
-	emit_signal(SNAME("value_edited"), remote_object_id, p_name, p_value);
-	return true;
+	return !!prop_values.has(p_name) || String(p_name).begins_with("Constants/");
 }
 
 bool EditorDebuggerRemoteObject::_get(const StringName &p_name, Variant &r_ret) const {
-	if (!prop_values.has(p_name)) {
-		return false;
-	}
-
-	r_ret = prop_values[p_name];
-	return true;
+	return !!prop_values.has(p_name);
 }
 
 void EditorDebuggerRemoteObject::_get_property_list(List<PropertyInfo> *p_list) const {

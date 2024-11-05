@@ -46,12 +46,12 @@ private:
 public:
 	static EditorDebuggerServer *create(const String &p_protocol);
 
-	virtual void poll() override {}
+	void poll() override {}
 	virtual String get_uri() const override;
 	virtual Error start(const String &p_uri) override;
-	virtual void stop() override;
-	virtual bool is_active() const override;
-	virtual bool is_connection_available() const override;
+	void stop() override;
+	bool is_active() const override;
+	bool is_connection_available() const override;
 	virtual Ref<RemoteDebuggerPeer> take_connection() override;
 
 	EditorDebuggerServerTCP();

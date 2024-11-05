@@ -1,9 +1,9 @@
 // This file is part of meshoptimizer library; see meshoptimizer.h for version/license details
 #include "meshoptimizer.h"
 
-#include <assert.h>
-#include <math.h>
-#include <string.h>
+#include <cassert>
+#include <cmath>
+#include <cstring>
 
 // This work is based on:
 // Pedro Sander, Diego Nehab and Joshua Barczak. Fast Triangle Reordering for Vertex Locality and Reduced Overdraw. 2007
@@ -278,8 +278,9 @@ void meshopt_optimizeOverdraw(unsigned int* destination, const unsigned int* ind
 	meshopt_Allocator allocator;
 
 	// guard for empty meshes
-	if (index_count == 0 || vertex_count == 0)
+	if (index_count == 0 || vertex_count == 0) {
 		return;
+}
 
 	// support in-place optimization
 	if (destination == indices)

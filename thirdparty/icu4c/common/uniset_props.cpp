@@ -37,7 +37,6 @@
 #include "propname.h"
 #include "normalizer2impl.h"
 #include "uinvchar.h"
-#include "uprops.h"
 #include "charstr.h"
 #include "cstring.h"
 #include "mutex.h"
@@ -169,7 +168,8 @@ UnicodeSet& UnicodeSet::applyPattern(const UnicodeString& pattern,
     // but without dependency on closeOver().
     ParsePosition pos(0);
     applyPatternIgnoreSpace(pattern, pos, nullptr, status);
-    if (U_FAILURE(status)) return *this;
+    if (U_FAILURE(status)) { return *this;
+}
 
     int32_t i = pos.getIndex();
     // Skip over trailing whitespace
@@ -197,7 +197,8 @@ UnicodeSet::applyPatternIgnoreSpace(const UnicodeString& pattern,
     UnicodeString rebuiltPat;
     RuleCharacterIterator chars(pattern, symbols, pos);
     applyPattern(chars, symbols, rebuiltPat, USET_IGNORE_SPACE, nullptr, 0, status);
-    if (U_FAILURE(status)) return;
+    if (U_FAILURE(status)) { return;
+}
     if (chars.inVariable()) {
         // syntaxError(chars, "Extra chars in variable value");
         status = U_MALFORMED_SET;
@@ -265,7 +266,8 @@ void UnicodeSet::applyPattern(RuleCharacterIterator& chars,
                               UnicodeSet& (UnicodeSet::*caseClosure)(int32_t attribute),
                               int32_t depth,
                               UErrorCode& ec) {
-    if (U_FAILURE(ec)) return;
+    if (U_FAILURE(ec)) { return;
+}
     if (depth > MAX_DEPTH) {
         ec = U_ILLEGAL_ARGUMENT_ERROR;
         return;
@@ -325,7 +327,8 @@ void UnicodeSet::applyPattern(RuleCharacterIterator& chars,
             // Prepare to backup if necessary
             chars.getPos(backup);
             c = chars.next(opts, literal, ec);
-            if (U_FAILURE(ec)) return;
+            if (U_FAILURE(ec)) { return;
+}
 
             if (c == u'[' && !literal) {
                 if (mode == 1) {
@@ -336,14 +339,16 @@ void UnicodeSet::applyPattern(RuleCharacterIterator& chars,
                     mode = 1;
                     patLocal.append(u'[');
                     chars.getPos(backup); // prepare to backup
-                    c = chars.next(opts, literal, ec); 
-                    if (U_FAILURE(ec)) return;
+                    c = chars.next(opts, literal, ec);
+                    if (U_FAILURE(ec)) { return;
+}
                     if (c == u'^' && !literal) {
                         invert = true;
                         patLocal.append(u'^');
                         chars.getPos(backup); // prepare to backup
                         c = chars.next(opts, literal, ec);
-                        if (U_FAILURE(ec)) return;
+                        if (U_FAILURE(ec)) { return;
+}
                     }
                     // Fall through to handle special leading '-';
                     // otherwise restart loop for nested [], \p{}, etc.
@@ -408,7 +413,8 @@ void UnicodeSet::applyPattern(RuleCharacterIterator& chars,
             case 2:
                 chars.skipIgnored(opts);
                 nested->applyPropertyPattern(chars, patLocal, ec);
-                if (U_FAILURE(ec)) return;
+                if (U_FAILURE(ec)) { return;
+}
                 break;
             case 3: // `nested' already parsed
                 nested->_toPattern(patLocal, false);
@@ -480,7 +486,8 @@ void UnicodeSet::applyPattern(RuleCharacterIterator& chars,
                         // Treat final trailing '-' as a literal
                         add(c, c);
                         c = chars.next(opts, literal, ec);
-                        if (U_FAILURE(ec)) return;
+                        if (U_FAILURE(ec)) { return;
+}
                         if (c == u']' && !literal) {
                             patLocal.append(u"-]", 2);
                             mode = 2;
@@ -519,7 +526,8 @@ void UnicodeSet::applyPattern(RuleCharacterIterator& chars,
                     UBool ok = false;
                     while (!chars.atEnd()) {
                         c = chars.next(opts, literal, ec);
-                        if (U_FAILURE(ec)) return;
+                        if (U_FAILURE(ec)) { return;
+}
                         if (c == u'}' && !literal) {
                             ok = true;
                             break;
@@ -550,7 +558,8 @@ void UnicodeSet::applyPattern(RuleCharacterIterator& chars,
                 {
                     chars.getPos(backup);
                     c = chars.next(opts, literal, ec);
-                    if (U_FAILURE(ec)) return;
+                    if (U_FAILURE(ec)) { return;
+}
                     UBool anchor = (c == u']' && !literal);
                     if (symbols == nullptr && !anchor) {
                         c = SymbolTable::SYMBOL_REF;
@@ -704,7 +713,8 @@ void UnicodeSet::applyFilter(UnicodeSet::Filter filter,
                              void* context,
                              const UnicodeSet* inclusions,
                              UErrorCode &status) {
-    if (U_FAILURE(status)) return;
+    if (U_FAILURE(status)) { return;
+}
 
     // Logically, walk through all Unicode characters, noting the start
     // and end of each range for which filter.contain(c) is
@@ -760,10 +770,12 @@ UBool mungeCharName(char* dst, const char* src, int32_t dstCapacity) {
         if (ch == ' ' && (j==0 || (j>0 && dst[j-1]==' '))) {
             continue;
         }
-        if (j >= dstCapacity) return false;
+        if (j >= dstCapacity) { return false;
+}
         dst[j++] = ch;
     }
-    if (j > 0 && dst[j-1] == ' ') --j;
+    if (j > 0 && dst[j-1] == ' ') { --j;
+}
     dst[j] = 0;
     return true;
 }
@@ -818,7 +830,8 @@ UnicodeSet&
 UnicodeSet::applyPropertyAlias(const UnicodeString& prop,
                                const UnicodeString& value,
                                UErrorCode& ec) {
-    if (U_FAILURE(ec) || isFrozen()) return *this;
+    if (U_FAILURE(ec) || isFrozen()) { return *this;
+}
 
     // prop and value used to be converted to char * using the default
     // converter instead of the invariant conversion.
@@ -834,7 +847,8 @@ UnicodeSet::applyPropertyAlias(const UnicodeString& prop,
     CharString pname, vname;
     pname.appendInvariantChars(prop, ec);
     vname.appendInvariantChars(value, ec);
-    if (U_FAILURE(ec)) return *this;
+    if (U_FAILURE(ec)) { return *this;
+}
 
     UProperty p;
     int32_t v;
@@ -842,7 +856,8 @@ UnicodeSet::applyPropertyAlias(const UnicodeString& prop,
 
     if (value.length() > 0) {
         p = u_getPropertyEnum(pname.data());
-        if (p == UCHAR_INVALID_CODE) FAIL(ec);
+        if (p == UCHAR_INVALID_CODE) { FAIL(ec);
+}
 
         // Treat gc as gcm
         if (p == UCHAR_GENERAL_CATEGORY) {
@@ -894,7 +909,8 @@ UnicodeSet::applyPropertyAlias(const UnicodeString& prop,
                     // Must munge name, since u_charFromName() does not do
                     // 'loose' matching.
                     char buf[128]; // it suffices that this be > uprv_getMaxCharNameLength
-                    if (!mungeCharName(buf, vname.data(), sizeof(buf))) FAIL(ec);
+                    if (!mungeCharName(buf, vname.data(), sizeof(buf))) { FAIL(ec);
+}
                     UChar32 ch = u_charFromName(U_EXTENDED_CHAR_NAME, buf, &ec);
                     if (U_SUCCESS(ec)) {
                         clear();
@@ -912,7 +928,8 @@ UnicodeSet::applyPropertyAlias(const UnicodeString& prop,
                     // Must munge name, since u_versionFromString() does not do
                     // 'loose' matching.
                     char buf[128];
-                    if (!mungeCharName(buf, vname.data(), sizeof(buf))) FAIL(ec);
+                    if (!mungeCharName(buf, vname.data(), sizeof(buf))) { FAIL(ec);
+}
                     UVersionInfo version;
                     u_versionFromString(version, buf);
                     applyFilter(versionFilter, &version,
@@ -1041,7 +1058,8 @@ UnicodeSet& UnicodeSet::applyPropertyPattern(const UnicodeString& pattern,
     UBool isName = false; // true for \N{pat}, o/w false
     UBool invert = false;
 
-    if (U_FAILURE(ec)) return *this;
+    if (U_FAILURE(ec)) { return *this;
+}
 
     // Minimum length is 5 characters, e.g. \p{L}
     if ((pos+5) > pattern.length()) {
@@ -1099,7 +1117,7 @@ UnicodeSet& UnicodeSet::applyPropertyPattern(const UnicodeString& pattern,
     else {
         // Handle case where no '=' is seen, and \N{}
         pattern.extractBetween(pos, close, propName);
-            
+
         // Handle \N{name}
         if (isName) {
             // This is a little inefficient since it means we have to
@@ -1139,12 +1157,14 @@ UnicodeSet& UnicodeSet::applyPropertyPattern(const UnicodeString& pattern,
 void UnicodeSet::applyPropertyPattern(RuleCharacterIterator& chars,
                                       UnicodeString& rebuiltPat,
                                       UErrorCode& ec) {
-    if (U_FAILURE(ec)) return;
+    if (U_FAILURE(ec)) { return;
+}
     UnicodeString pattern;
     chars.lookahead(pattern);
     ParsePosition pos(0);
     applyPropertyPattern(pattern, pos, ec);
-    if (U_FAILURE(ec)) return;
+    if (U_FAILURE(ec)) { return;
+}
     if (pos.getIndex() == 0) {
         // syntaxError(chars, "Invalid property pattern");
         ec = U_MALFORMED_SET;

@@ -96,7 +96,7 @@ RBBIRuleScanner::RBBIRuleScanner(RBBIRuleBuilder *rb)
     fLineNum            = 1;
     fCharNum            = 0;
     fLastChar           = 0;
-    
+
     fStateTable         = nullptr;
     fStack[0]           = 0;
     fStackPtr           = 0;
@@ -365,7 +365,7 @@ UBool RBBIRuleScanner::doParseActions(int32_t action)
         thisRule->fRuleRoot = true;
 
         // Flag if chaining into this rule is wanted.
-        //    
+        //
         if (fRB->fChainRules &&         // If rule chaining is enabled globally via !!chain
                 !fNoChainInRule) {      //     and no '^' chain-in inhibit was on this rule
             thisRule->fChainIn = true;
@@ -1046,7 +1046,7 @@ void RBBIRuleScanner::parse() {
             #ifdef RBBI_DEBUG
                 if (fRB->fDebugEnv && uprv_strstr(fRB->fDebugEnv, "scan")) { RBBIDebugPrintf("."); fflush(stdout);}
             #endif
-            if (tableEl->fCharClass < 127 && fC.fEscaped == false &&   tableEl->fCharClass == fC.fChar) {
+            if (tableEl->fCharClass < 127 && !static_cast<bool>(fC.fEscaped) &&   tableEl->fCharClass == fC.fChar) {
                 // Table row specified an individual character, not a set, and
                 //   the input character is not escaped, and
                 //   the input character matched it.
@@ -1071,7 +1071,7 @@ void RBBIRuleScanner::parse() {
             }
 
             if (tableEl->fCharClass >= 128 && tableEl->fCharClass < 240 &&   // Table specs a char class &&
-                fC.fEscaped == false &&                                      //   char is not escaped &&
+                !static_cast<bool>(fC.fEscaped) &&                                      //   char is not escaped &&
                 fC.fChar != static_cast<UChar32>(-1)) {                      //   char is not EOF
                 U_ASSERT((tableEl->fCharClass-128) < UPRV_LENGTHOF(fRuleSets));
                 if (fRuleSets[tableEl->fCharClass-128].contains(fC.fChar)) {
@@ -1090,7 +1090,7 @@ void RBBIRuleScanner::parse() {
         // We've found the row of the state table that matches the current input
         //   character from the rules string.
         // Perform any action specified  by this row in the state table.
-        if (doParseActions(static_cast<int32_t>(tableEl->fAction)) == false) {
+        if (!static_cast<bool>(doParseActions(static_cast<int32_t>(tableEl->fAction)))) {
             // Break out of the state machine loop if the
             //   the action signalled some kind of error, or
             //   the action was to exit, occurs on normal end-of-rules-input.
@@ -1130,7 +1130,7 @@ void RBBIRuleScanner::parse() {
     if (U_FAILURE(*fRB->fStatus)) {
         return;
     }
-    
+
     // If there are no forward rules set an error.
     //
     if (fRB->fForwardTree == nullptr) {

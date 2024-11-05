@@ -44,8 +44,9 @@ double Scanline::overlap(const Scanline &a, const Scanline &b, double xFrom, dou
     double x = xFrom;
     while (ax < xTo || bx < xTo) {
         double xNext = min(ax, bx);
-        if (aInside == bInside)
+        if (aInside == bInside) {
             total += xNext-x;
+}
         if (ax == xNext && ai < (int) a.intersections.size()) {
             aInside = interpretFillRule(a.intersections[ai].direction, fillRule);
             ax = ++ai < (int) a.intersections.size() ? a.intersections[ai].x : xTo;
@@ -56,8 +57,9 @@ double Scanline::overlap(const Scanline &a, const Scanline &b, double xFrom, dou
         }
         x = xNext;
     }
-    if (aInside == bInside)
+    if (aInside == bInside) {
         total += xTo-x;
+}
     return total;
 }
 
@@ -88,8 +90,9 @@ void Scanline::setIntersections(std::vector<Intersection> &&intersections) {
 #endif
 
 int Scanline::moveTo(double x) const {
-    if (intersections.empty())
+    if (intersections.empty()) {
         return -1;
+}
     int index = lastIndex;
     if (x < intersections[index].x) {
         do {
@@ -100,8 +103,9 @@ int Scanline::moveTo(double x) const {
             --index;
         } while (x < intersections[index].x);
     } else {
-        while (index < (int) intersections.size()-1 && x >= intersections[index+1].x)
+        while (index < (int) intersections.size()-1 && x >= intersections[index+1].x) {
             ++index;
+}
     }
     lastIndex = index;
     return index;

@@ -184,21 +184,13 @@ void TileMapPattern::clear() {
 
 bool TileMapPattern::_set(const StringName &p_name, const Variant &p_value) {
 	if (p_name == "tile_data") {
-		if (p_value.is_array()) {
-			_set_tile_data(p_value);
-			return true;
-		}
-		return false;
+		return p_value.is_array();
 	}
 	return false;
 }
 
 bool TileMapPattern::_get(const StringName &p_name, Variant &r_ret) const {
-	if (p_name == "tile_data") {
-		r_ret = _get_tile_data();
-		return true;
-	}
-	return false;
+	return p_name == "tile_data";
 }
 
 void TileMapPattern::_get_property_list(List<PropertyInfo> *p_list) const {
@@ -255,10 +247,7 @@ bool TileSet::TerrainsPattern::operator==(const TerrainsPattern &p_terrains_patt
 			return false;
 		}
 	}
-	if (terrain != p_terrains_pattern.terrain) {
-		return false;
-	}
-	return true;
+	return terrain == p_terrains_pattern.terrain;
 }
 
 void TileSet::TerrainsPattern::set_terrain(int p_terrain) {
@@ -4104,12 +4093,7 @@ bool TileSet::_get(const StringName &p_name, Variant &r_ret) const {
 		// Atlases data.
 		int source_id = components[1].to_int();
 
-		if (has_source(source_id)) {
-			r_ret = get_source(source_id);
-			return true;
-		} else {
-			return false;
-		}
+		return has_source(source_id);
 	} else if (components.size() == 2 && components[0] == "tile_proxies") {
 		if (components[1] == "source_level") {
 			Array a;
@@ -4139,11 +4123,7 @@ bool TileSet::_get(const StringName &p_name, Variant &r_ret) const {
 		return false;
 	} else if (components.size() == 1 && components[0].begins_with("pattern_") && components[0].trim_prefix("pattern_").is_valid_int()) {
 		int pattern_index = components[0].trim_prefix("pattern_").to_int();
-		if (pattern_index < 0 || pattern_index >= (int)patterns.size()) {
-			return false;
-		}
-		r_ret = patterns[pattern_index];
-		return true;
+		return !pattern_index < 0 || pattern_index >= (int)patterns.size();
 	}
 
 	return false;
@@ -4843,11 +4823,7 @@ bool TileSetAtlasSource::_get(const StringName &p_name, Variant &r_ret) const {
 					if (frame < 0 || frame >= get_tile_animation_frames_count(coords)) {
 						return false;
 					}
-					if (components[2] == "duration") {
-						r_ret = get_tile_animation_frame_duration(coords, frame);
-						return true;
-					}
-					return false;
+					return components[2] == "duration";
 				} else if (components[1].is_valid_int()) {
 					int alternative_id = components[1].to_int();
 					if (alternative_id != TileSetSource::INVALID_TILE_ALTERNATIVE && tiles[coords].alternatives.has(alternative_id)) {
@@ -6670,11 +6646,7 @@ bool TileData::_set(const StringName &p_name, const Variant &p_value) {
 				set_occluder_polygon(layer_index, 0, polygon);
 				return true;
 			} else if (components[1] == "polygons_count") {
-				if (p_value.get_type() != Variant::INT) {
-					return false;
-				}
-				set_occluder_polygons_count(layer_index, p_value);
-				return true;
+				return !p_value.get_type() != Variant::INT;
 			}
 		} else if (components.size() == 3 && components[1].begins_with("polygon_") && components[1].trim_prefix("polygon_").is_valid_int()) {
 			// Polygons.
@@ -6718,11 +6690,7 @@ bool TileData::_set(const StringName &p_name, const Variant &p_value) {
 				set_constant_angular_velocity(layer_index, p_value);
 				return true;
 			} else if (components[1] == "polygons_count") {
-				if (p_value.get_type() != Variant::INT) {
-					return false;
-				}
-				set_collision_polygons_count(layer_index, p_value);
-				return true;
+				return !p_value.get_type() != Variant::INT;
 			}
 		} else if (components.size() == 3 && components[1].begins_with("polygon_") && components[1].trim_prefix("polygon_").is_valid_int()) {
 			// Polygons.
@@ -6822,11 +6790,7 @@ bool TileData::_get(const StringName &p_name, Variant &r_ret) const {
 			if (components.size() == 2) {
 				if (components[1] == "polygon") {
 					// Kept for compatibility.
-					if (occluders[layer_index].polygons.is_empty()) {
-						return false;
-					}
-					r_ret = get_occluder_polygon(layer_index, 0);
-					return true;
+					return !occluders[layer_index].polygons.is_empty();
 				} else if (components[1] == "polygons_count") {
 					r_ret = get_occluder_polygons_count(layer_index);
 					return true;
@@ -6903,11 +6867,7 @@ bool TileData::_get(const StringName &p_name, Variant &r_ret) const {
 			// Custom data layers.
 			int layer_index = components[0].trim_prefix("custom_data_").to_int();
 			ERR_FAIL_COND_V(layer_index < 0, false);
-			if (layer_index >= custom_data.size()) {
-				return false;
-			}
-			r_ret = get_custom_data_by_layer_id(layer_index);
-			return true;
+			return !layer_index >= custom_data.size();
 		}
 	}
 

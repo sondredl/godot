@@ -138,10 +138,11 @@ namespace basisu
 			uastc_write_bits(buf, block_bit_offset, etc1_blk.get_selector(0, 0), 2, "ETC1S");
 
 			uint32_t r, g, b;
-			if (etc1_blk.get_diff_bit())
+			if (etc1_blk.get_diff_bit()) {
 				etc_block::unpack_color5(r, g, b, etc1_blk.get_base5_color(), false);
-			else
+			} else {
 				etc_block::unpack_color4(r, g, b, etc1_blk.get_base4_color(0), false);
+}
 
 			uastc_write_bits(buf, block_bit_offset, r, 5, "ETC1R");
 			uastc_write_bits(buf, block_bit_offset, g, 5, "ETC1G");
@@ -151,16 +152,16 @@ namespace basisu
 			return;
 		}
 
-		if (g_uastc_mode_has_bc1_hint0[result.m_uastc_mode])
+		if (g_uastc_mode_has_bc1_hint0[result.m_uastc_mode]) {
 			uastc_write_bits(buf, block_bit_offset, bc1_hint0, 1, "BC1H0");
-		else
+		} else
 		{
 			assert(bc1_hint0 == false);
 		}
 
-		if (g_uastc_mode_has_bc1_hint1[result.m_uastc_mode])
+		if (g_uastc_mode_has_bc1_hint1[result.m_uastc_mode]) {
 			uastc_write_bits(buf, block_bit_offset, bc1_hint1, 1, "BC1H1");
-		else
+		} else
 		{
 			assert(bc1_hint1 == false);
 		}
@@ -170,9 +171,9 @@ namespace basisu
 		uastc_write_bits(buf, block_bit_offset, etc1_blk.get_inten_table(0), 3, "ETC1I0");
 		uastc_write_bits(buf, block_bit_offset, etc1_blk.get_inten_table(1), 3, "ETC1I1");
 
-		if (g_uastc_mode_has_etc1_bias[result.m_uastc_mode])
+		if (g_uastc_mode_has_etc1_bias[result.m_uastc_mode]) {
 			uastc_write_bits(buf, block_bit_offset, etc1_bias, 5, "ETC1BIAS");
-		else
+		} else
 		{
 			assert(etc1_bias == 0);
 		}
@@ -223,7 +224,7 @@ namespace basisu
 		default:
 			break;
 		}
-#endif		
+#endif
 
 		uint32_t total_planes = 1;
 		switch (result.m_uastc_mode)
@@ -308,8 +309,9 @@ namespace basisu
 						}
 #endif
 
-						if (part_index == subset_index)
+						if (part_index == subset_index) {
 							weights[i * total_planes + plane_index] = ((1 << weight_bits) - 1) - weights[i * total_planes + plane_index];
+}
 					}
 
 					if (total_planes == 2)
@@ -318,14 +320,16 @@ namespace basisu
 						{
 							const uint32_t comp_plane = (total_comps == 2) ? c : ((c == result.m_astc.m_ccs) ? 1 : 0);
 
-							if (comp_plane == plane_index)
+							if (comp_plane == plane_index) {
 								std::swap(endpoints[c * 2 + 0], endpoints[c * 2 + 1]);
+}
 						}
 					}
 					else
 					{
-						for (uint32_t c = 0; c < total_comps; c++)
+						for (uint32_t c = 0; c < total_comps; c++) {
 							std::swap(endpoints[subset_index * total_comps * 2 + c * 2 + 0], endpoints[subset_index * total_comps * 2 + c * 2 + 1]);
+}
 					}
 				}
 			} // subset_index
@@ -394,21 +398,23 @@ namespace basisu
 			uint32_t num_bits;
 			if (ep_trits)
 			{
-				if (tq_mul == 3)
+				if (tq_mul == 3) {
 					num_bits = 2;
-				else if (tq_mul == 9)
+				} else if (tq_mul == 9) {
 					num_bits = 4;
-				else if (tq_mul == 27)
+				} else if (tq_mul == 27) {
 					num_bits = 5;
-				else //if (tq_mul == 81)
+				} else { //if (tq_mul == 81)
 					num_bits = 7;
+}
 			}
 			else
 			{
-				if (tq_mul == 5)
+				if (tq_mul == 5) {
 					num_bits = 3;
-				else //if (tq_mul == 25)
+				} else { //if (tq_mul == 25)
 					num_bits = 5;
+}
 			}
 			uastc_write_bits(buf, block_bit_offset, tq_accum, num_bits, "ETQ");
 			total_endpoint_bits += num_bits;
@@ -456,7 +462,7 @@ namespace basisu
 		printf("Total bits: %u, endpoint bits: %u, weight bits: %u\n", block_bit_offset, total_endpoint_bits, total_weight_bits);
 #endif
 	}
-	
+
 	// MODE 0
 	// 0. DualPlane: 0, WeightRange: 8 (16), Subsets: 1, CEM: 8 (RGB Direct       ), EndpointRange: 19 (192)       MODE6 RGB
 	// 18. DualPlane: 0, WeightRange: 11 (32), Subsets: 1, CEM: 8 (RGB Direct       ), EndpointRange: 11 (32)       MODE6 RGB
@@ -507,7 +513,7 @@ namespace basisu
 		astc_results.m_endpoints[3] = ccell_results.m_astc_high_endpoint.m_c[1];
 		astc_results.m_endpoints[4] = ccell_results.m_astc_low_endpoint.m_c[2];
 		astc_results.m_endpoints[5] = ccell_results.m_astc_high_endpoint.m_c[2];
-				
+
 		bool invert = false;
 
 		if (pForce_selectors == nullptr)
@@ -529,8 +535,9 @@ namespace basisu
 			{
 				astc_results.m_weights[x + y * 4] = ccell_result_selectors[x + y * 4];
 
-				if (invert)
+				if (invert) {
 					astc_results.m_weights[x + y * 4] = ((mode == 18) ? 31 : 15) - astc_results.m_weights[x + y * 4];
+}
 			}
 		}
 
@@ -612,8 +619,9 @@ namespace basisu
 			{
 				astc_results.m_weights[x + y * 4] = ccell_result_selectors[x + y * 4];
 
-				if (invert)
+				if (invert) {
 					astc_results.m_weights[x + y * 4] = 3 - astc_results.m_weights[x + y * 4];
+}
 			}
 		}
 
@@ -643,12 +651,14 @@ namespace basisu
 
 			color_quad_u8 subset_colors[2][16];
 			uint32_t subset_total_colors[2] = { 0, 0 };
-			for (uint32_t index = 0; index < 16; index++)
+			for (uint32_t index = 0; index < 16; index++) {
 				subset_colors[pPartition[index]][subset_total_colors[pPartition[index]]++] = ((const color_quad_u8*)block)[index];
+}
 
 			uint64_t total_subset_err = 0;
-			for (uint32_t subset = 0; (subset < 2) && (total_subset_err < best_err); subset++)
+			for (uint32_t subset = 0; (subset < 2) && (total_subset_err < best_err); subset++) {
 				total_subset_err += color_cell_compression_est_astc(num_weights, num_comps, pWeights, subset_total_colors[subset], &subset_colors[subset][0], best_err, weights);
+}
 
 			if (total_subset_err < best_err)
 			{
@@ -737,8 +747,9 @@ namespace basisu
 
 				uint32_t p0 = 0;
 				uint32_t p1 = 1;
-				if (g_astc_bc7_common_partitions2[common_pattern].m_invert)
+				if (g_astc_bc7_common_partitions2[common_pattern].m_invert) {
 					std::swap(p0, p1);
+}
 
 				astc_results.m_endpoints[0] = ccell_results[p0].m_astc_low_endpoint.m_c[0];
 				astc_results.m_endpoints[1] = ccell_results[p0].m_astc_high_endpoint.m_c[0];
@@ -788,11 +799,13 @@ namespace basisu
 						astc_results.m_weights[x + y * 4] = ccell_result_selectors[bc7_part][part_pixel_index[y][x]];
 
 						uint32_t astc_part = bc7_part;
-						if (g_astc_bc7_common_partitions2[common_pattern].m_invert)
+						if (g_astc_bc7_common_partitions2[common_pattern].m_invert) {
 							astc_part = 1 - astc_part;
+}
 
-						if (invert[astc_part])
+						if (invert[astc_part]) {
 							astc_results.m_weights[x + y * 4] = 7 - astc_results.m_weights[x + y * 4];
+}
 					}
 				}
 
@@ -832,12 +845,14 @@ namespace basisu
 
 				color_quad_u8 subset_colors[3][16];
 				uint32_t subset_total_colors[3] = { 0, 0 };
-				for (uint32_t index = 0; index < 16; index++)
+				for (uint32_t index = 0; index < 16; index++) {
 					subset_colors[pPartition[index]][subset_total_colors[pPartition[index]]++] = ((const color_quad_u8*)block)[index];
+}
 
 				uint64_t total_subset_err = 0;
-				for (uint32_t subset = 0; (subset < 3) && (total_subset_err < best_err); subset++)
+				for (uint32_t subset = 0; (subset < 3) && (total_subset_err < best_err); subset++) {
 					total_subset_err += color_cell_compression_est_astc(4, 3, g_bc7_weights2, subset_total_colors[subset], &subset_colors[subset][0], best_err, weights);
+}
 
 				if (total_subset_err < best_err)
 				{
@@ -960,8 +975,9 @@ namespace basisu
 							}
 						}
 
-						if (invert_astc_part[astc_part])
+						if (invert_astc_part[astc_part]) {
 							astc_results.m_weights[x + y * 4] = 3 - astc_results.m_weights[x + y * 4];
+}
 					}
 				}
 
@@ -1058,8 +1074,9 @@ namespace basisu
 
 			uint32_t p0 = 0;
 			uint32_t p1 = 1;
-			if (g_astc_bc7_common_partitions2[common_pattern].m_invert)
+			if (g_astc_bc7_common_partitions2[common_pattern].m_invert) {
 				std::swap(p0, p1);
+}
 
 			astc_results.m_endpoints[0] = ccell_results[p0].m_astc_low_endpoint.m_c[0];
 			astc_results.m_endpoints[1] = ccell_results[p0].m_astc_high_endpoint.m_c[0];
@@ -1107,11 +1124,13 @@ namespace basisu
 					astc_results.m_weights[x + y * 4] = ccell_result_selectors[bc7_part][part_pixel_index[y][x]];
 
 					uint32_t astc_part = bc7_part;
-					if (g_astc_bc7_common_partitions2[common_pattern].m_invert)
+					if (g_astc_bc7_common_partitions2[common_pattern].m_invert) {
 						astc_part = 1 - astc_part;
+}
 
-					if (invert[astc_part])
+					if (invert[astc_part]) {
 						astc_results.m_weights[x + y * 4] = 3 - astc_results.m_weights[x + y * 4];
+}
 				}
 			}
 
@@ -1128,7 +1147,7 @@ namespace basisu
 		} // common_pattern
 	}
 
-	// MODE 5 
+	// MODE 5
 	// DualPlane: 0, WeightRange: 5 (8), Subsets: 1, CEM: 8 (RGB Direct       ), EndpointRange: 20 (256) 		BC7 MODE 6 (or MODE 1 1-subset)
 	static void astc_mode5(const color_rgba block[4][4], uastc_encode_results* pResults, uint32_t& total_results, bc7enc_compress_block_params& comp_params)
 	{
@@ -1195,8 +1214,9 @@ namespace basisu
 			{
 				blk.m_weights[x + y * 4] = ccell_result_selectors[x + y * 4];
 
-				if (invert)
+				if (invert) {
 					blk.m_weights[x + y * 4] = 7 - blk.m_weights[x + y * 4];
+}
 			}
 		}
 
@@ -1259,7 +1279,7 @@ namespace basisu
 			ccell_results_rgb.m_pSelectors_temp = &ccell_result_selectors_temp[0];
 
 			uint64_t part_err_rgb = color_cell_compression(255, &ccell_params_rgb, &ccell_results_rgb, &comp_params);
-			
+
 			color_cell_compressor_params ccell_params_a;
 			memset(&ccell_params_a, 0, sizeof(ccell_params_a));
 
@@ -1380,12 +1400,14 @@ namespace basisu
 
 				color_quad_u8 subset_colors[2][16];
 				uint32_t subset_total_colors[2] = { 0, 0 };
-				for (uint32_t index = 0; index < 16; index++)
+				for (uint32_t index = 0; index < 16; index++) {
 					subset_colors[pPartition[index]][subset_total_colors[pPartition[index]]++] = ((const color_quad_u8*)block)[index];
+}
 
 				uint64_t total_subset_err = 0;
-				for (uint32_t subset = 0; (subset < 2) && (total_subset_err < best_err); subset++)
+				for (uint32_t subset = 0; (subset < 2) && (total_subset_err < best_err); subset++) {
 					total_subset_err += color_cell_compression_est_astc(4, 3, g_bc7_weights2, subset_total_colors[subset], &subset_colors[subset][0], best_err, weights);
+}
 
 				if (total_subset_err < best_err)
 				{
@@ -1416,9 +1438,9 @@ namespace basisu
 				for (uint32_t x = 0; x < 4; x++)
 				{
 					const uint32_t astc_part = bc7_convert_partition_index_3_to_2(g_bc7_partition3[16 * bc7_pattern + x + y * 4], common_pattern_k);
-#ifdef _DEBUG					
+#ifdef _DEBUG
 					assert((int)astc_part == astc_compute_texel_partition(astc_pattern, x, y, 0, 2, true));
-#endif					
+#endif
 
 					part_pixel_index[y][x] = num_part_pixels[astc_part];
 					part_pixels[astc_part][num_part_pixels[astc_part]++] = block[y][x];
@@ -1514,8 +1536,9 @@ namespace basisu
 
 					blk.m_weights[x + y * 4] = ccell_result_selectors[astc_part][part_pixel_index[y][x]];
 
-					if (invert[astc_part])
+					if (invert[astc_part]) {
 						blk.m_weights[x + y * 4] = 3 - blk.m_weights[x + y * 4];
+}
 				}
 			}
 
@@ -1551,12 +1574,14 @@ namespace basisu
 
 			color_quad_u8 subset_colors[2][16];
 			uint32_t subset_total_colors[2] = { 0, 0 };
-			for (uint32_t index = 0; index < 16; index++)
+			for (uint32_t index = 0; index < 16; index++) {
 				subset_colors[pPartition[index]][subset_total_colors[pPartition[index]]++] = ((const color_quad_u8*)block)[index];
+}
 
 			uint64_t total_subset_err = 0;
-			for (uint32_t subset = 0; subset < 2; subset++)
+			for (uint32_t subset = 0; subset < 2; subset++) {
 				total_subset_err += color_cell_compression_est_astc(num_weights, num_comps, pWeights, subset_total_colors[subset], &subset_colors[subset][0], UINT64_MAX, weights);
+}
 
 			for (int i = 0; i < (int)max_parts; i++)
 			{
@@ -1583,7 +1608,7 @@ namespace basisu
 		}
 #endif
 	}
-		
+
 	// 9. DualPlane: 0, WeightRange: 2 (4), Subsets: 2, CEM: 12 (RGBA Direct), EndpointRange: 8 (16) - BC7 MODE 7
 	// 16. DualPlane: 0, WeightRange : 2 (4), Subsets : 2, CEM: 4 (LA Direct), EndpointRange : 20 (256) - BC7 MODE 7
 	static void astc_mode9_or_16(uint32_t mode, const color_rgba source_block[4][4], uastc_encode_results* pResults, uint32_t& total_results, bc7enc_compress_block_params& comp_params, uint32_t estimate_partition_list_size)
@@ -1703,9 +1728,11 @@ namespace basisu
 						colors[3].m_comps[c] = g_astc_unquant[endpoint_range][ccell_results[subset].m_astc_high_endpoint.m_c[(c < 3) ? 0 : 3]].m_unquant;
 					}
 
-					for (uint32_t i = 1; i < 4 - 1; i++)
-						for (uint32_t c = 0; c < 4; c++)
+					for (uint32_t i = 1; i < 4 - 1; i++) {
+						for (uint32_t c = 0; c < 4; c++) {
 							colors[i].m_comps[c] = (uint8_t)astc_interpolate(colors[0].m_comps[c], colors[3].m_comps[c], g_bc7_weights2[i], false);
+}
+}
 
 					for (uint32_t p = 0; p < ccell_params[subset].m_num_pixels; p++)
 					{
@@ -1734,8 +1761,9 @@ namespace basisu
 			astc_results.m_cem = (mode == 16) ? 4 : 12;
 
 			uint32_t part[2] = { 0, 1 };
-			if (g_astc_bc7_common_partitions2[common_pattern].m_invert)
+			if (g_astc_bc7_common_partitions2[common_pattern].m_invert) {
 				std::swap(part[0], part[1]);
+}
 
 			bool invert[2] = { false, false };
 
@@ -1785,11 +1813,13 @@ namespace basisu
 					astc_results.m_weights[x + y * 4] = ccell_result_selectors[bc7_part][part_pixel_index[y][x]];
 
 					uint32_t astc_part = bc7_part;
-					if (g_astc_bc7_common_partitions2[common_pattern].m_invert)
+					if (g_astc_bc7_common_partitions2[common_pattern].m_invert) {
 						astc_part = 1 - astc_part;
+}
 
-					if (invert[astc_part])
+					if (invert[astc_part]) {
 						astc_results.m_weights[x + y * 4] = 3 - astc_results.m_weights[x + y * 4];
+}
 				}
 			}
 
@@ -1877,8 +1907,9 @@ namespace basisu
 			{
 				astc_results.m_weights[x + y * 4] = ccell_result_selectors[x + y * 4];
 
-				if (invert)
+				if (invert) {
 					astc_results.m_weights[x + y * 4] = 15 - astc_results.m_weights[x + y * 4];
+}
 			}
 		}
 
@@ -2155,8 +2186,9 @@ namespace basisu
 			{
 				astc_results.m_weights[x + y * 4] = ccell_result_selectors[x + y * 4];
 
-				if (invert)
+				if (invert) {
 					astc_results.m_weights[x + y * 4] = 7 - astc_results.m_weights[x + y * 4];
+}
 			}
 		}
 
@@ -2394,8 +2426,9 @@ namespace basisu
 			{
 				astc_results.m_weights[x + y * 4] = ccell_result_selectors[x + y * 4];
 
-				if (invert)
+				if (invert) {
 					astc_results.m_weights[x + y * 4] = 3 - astc_results.m_weights[x + y * 4];
+}
 			}
 		}
 
@@ -2470,9 +2503,11 @@ namespace basisu
 		astc_results.m_endpoints[2] = ccell_results.m_astc_low_endpoint.m_c[3];
 		astc_results.m_endpoints[3] = ccell_results.m_astc_high_endpoint.m_c[3];
 
-		for (uint32_t y = 0; y < 4; y++)
-			for (uint32_t x = 0; x < 4; x++)
+		for (uint32_t y = 0; y < 4; y++) {
+			for (uint32_t x = 0; x < 4; x++) {
 				astc_results.m_weights[x + y * 4] = ccell_result_selectors[x + y * 4];
+}
+}
 
 		color_rgba colors[16];
 		for (uint32_t c = 0; c < 4; c++)
@@ -2481,13 +2516,16 @@ namespace basisu
 			colors[15].m_comps[c] = g_astc_unquant[endpoint_range][ccell_results.m_astc_high_endpoint.m_c[(c < 3) ? 0 : 3]].m_unquant;
 		}
 
-		for (uint32_t i = 1; i < 16 - 1; i++)
-			for (uint32_t c = 0; c < 4; c++)
+		for (uint32_t i = 1; i < 16 - 1; i++) {
+			for (uint32_t c = 0; c < 4; c++) {
 				colors[i].m_comps[c] = (uint8_t)astc_interpolate(colors[0].m_comps[c], colors[15].m_comps[c], g_astc_weights4[i], false);
+}
+}
 
 		uint64_t total_err = 0;
-		for (uint32_t p = 0; p < 16; p++)
+		for (uint32_t p = 0; p < 16; p++) {
 			total_err += color_distance_la(((const color_rgba*)block)[p], colors[ccell_result_selectors[p]]);
+}
 
 		assert(total_results < MAX_ENCODE_RESULTS);
 		if (total_results < MAX_ENCODE_RESULTS)
@@ -2499,7 +2537,7 @@ namespace basisu
 			total_results++;
 		}
 	}
-		
+
 	static void compute_block_error(const color_rgba block[4][4], const color_rgba decoded_block[4][4], uint64_t &total_rgb_err, uint64_t &total_rgba_err, uint64_t &total_la_err)
 	{
 		uint64_t total_err_r = 0, total_err_g = 0, total_err_b = 0, total_err_a = 0;
@@ -2533,11 +2571,13 @@ namespace basisu
 		bc1_hint0 = false;
 		bc1_hint1 = false;
 
-		if (best_mode == UASTC_MODE_INDEX_SOLID_COLOR)
+		if (best_mode == UASTC_MODE_INDEX_SOLID_COLOR) {
 			return;
+}
 
-		if (!g_uastc_mode_has_bc1_hint0[best_mode] && !g_uastc_mode_has_bc1_hint1[best_mode])
+		if (!g_uastc_mode_has_bc1_hint0[best_mode] && !g_uastc_mode_has_bc1_hint1[best_mode]) {
 			return;
+}
 
 		color_rgba tblock_bc1[4][4];
 		dxt1_block tbc1_block[8];
@@ -2546,14 +2586,14 @@ namespace basisu
 
 		color_rgba tblock_hint0_bc1[4][4];
 		color_rgba tblock_hint1_bc1[4][4];
-		
+
 		etc_block etc1_blk;
 		memset(&etc1_blk, 0, sizeof(etc1_blk));
 
 		eac_a8_block etc2_blk;
 		memset(&etc2_blk, 0, sizeof(etc2_blk));
 		etc2_blk.m_multiplier = 1;
-		
+
 		// Pack to UASTC, then unpack, because the endpoints may be swapped.
 
 		uastc_block temp_ublock;
@@ -2561,7 +2601,7 @@ namespace basisu
 
 		unpacked_uastc_block temp_ublock_unpacked;
 		unpack_uastc(temp_ublock, temp_ublock_unpacked, false);
-										
+
 		unpacked_uastc_block ublock;
 		memset(&ublock, 0, sizeof(ublock));
 		ublock.m_mode = best_results.m_uastc_mode;
@@ -2590,7 +2630,7 @@ namespace basisu
 		else
 		{
 			transcode_uastc_to_bc1_hint0(ublock, &b);
-			
+
 			unpack_block(texture_format::cBC1, &b, &tblock_hint0_bc1[0][0]);
 		}
 
@@ -2612,12 +2652,14 @@ namespace basisu
 
 		const float err_thresh0 = 1.075f;
 		const float err_thresh1 = 1.075f;
-		
-		if ((g_uastc_mode_has_bc1_hint0[best_mode]) && (t_err_hint0 <= t_err * err_thresh0))
-			bc1_hint0 = true;
 
-		if ((g_uastc_mode_has_bc1_hint1[best_mode]) && (t_err_hint1 <= t_err * err_thresh1))
+		if ((g_uastc_mode_has_bc1_hint0[best_mode]) && (t_err_hint0 <= t_err * err_thresh0)) {
+			bc1_hint0 = true;
+}
+
+		if ((g_uastc_mode_has_bc1_hint1[best_mode]) && (t_err_hint1 <= t_err * err_thresh1)) {
 			bc1_hint1 = true;
+}
 	}
 
 	struct ycbcr
@@ -2779,7 +2821,7 @@ namespace basisu
 
 		uint32_t first_flip = 0, last_flip = 2;
 		uint32_t first_individ = 0, last_individ = 2;
-		
+
 		if (flags & cPackUASTCETC1DisableFlipAndIndividual)
 		{
 			last_flip = 1;
@@ -2787,11 +2829,12 @@ namespace basisu
 		}
 		else if (flip_estimate)
 		{
-			if (pack_etc1_estimate_flipped(&decoded_uastc_block[0][0]))
+			if (pack_etc1_estimate_flipped(&decoded_uastc_block[0][0])) {
 				first_flip = 1;
+}
 			last_flip = first_flip + 1;
 		}
-										
+
 		for (uint32_t flip = first_flip; flip < last_flip; flip++)
 		{
 			trial_block.set_flip_bit(flip != 0);
@@ -2799,7 +2842,7 @@ namespace basisu
 			for (uint32_t individ = first_individ; individ < last_individ; individ++)
 			{
 				const uint32_t mul = individ ? 15 : 31;
-				
+
 				trial_block.set_diff_bit(individ == 0);
 
 				color_rgba unbiased_block_colors[2];
@@ -2815,7 +2858,7 @@ namespace basisu
 					{
 						const etc_coord2 &c = g_etc1_pixel_coords[flip][subset][j];
 						const color_rgba& p = decoded_uastc_block[c.m_y][c.m_x];
-												
+
 						avg_color[0] += p.r;
 						avg_color[1] += p.g;
 						avg_color[2] += p.b;
@@ -2833,21 +2876,23 @@ namespace basisu
 					unbiased_block_colors[subset][1] = (uint8_t)((avg_color[1] * mul + 1020) / (8 * 255));
 					unbiased_block_colors[subset][2] = (uint8_t)((avg_color[2] * mul + 1020) / (8 * 255));
 					unbiased_block_colors[subset][3] = 0;
-										
+
 				} // subset
-												
+
 				for (uint32_t bias_iter = 0; bias_iter < last_bias; bias_iter++)
 				{
 					const uint32_t bias = use_faster_bias_mode_table ? s_sorted_bias_modes[bias_iter] : bias_iter;
-										
-					color_rgba block_colors[2];
-					for (uint32_t subset = 0; subset < 2; subset++)
-						block_colors[subset] = has_bias ? apply_etc1_bias((color32&)unbiased_block_colors[subset], bias, mul, subset) : unbiased_block_colors[subset];
 
-					if (individ)
+					color_rgba block_colors[2];
+					for (uint32_t subset = 0; subset < 2; subset++) {
+						block_colors[subset] = has_bias ? apply_etc1_bias((color32&)unbiased_block_colors[subset], bias, mul, subset) : unbiased_block_colors[subset];
+}
+
+					if (individ) {
 						trial_block.set_block_color4(block_colors[0], block_colors[1]);
-					else
+					} else {
 						trial_block.set_block_color5_clamp(block_colors[0], block_colors[1]);
+}
 
 					uint32_t range[2];
 					for (uint32_t subset = 0; subset < 2; subset++)
@@ -2873,7 +2918,7 @@ namespace basisu
 						uint64_t best_subset_err = UINT64_MAX;
 
 						const uint32_t inten_table_limit = (level == cPackUASTCLevelVerySlow) ? 8 : ((range[subset] > 51) ? 8 : (range[subset] >= 7 ? 4 : 2));
-						
+
 						for (uint32_t inten_table = 0; inten_table < inten_table_limit; inten_table++)
 						{
 							trial_block.set_inten_table(subset, inten_table);
@@ -2882,8 +2927,9 @@ namespace basisu
 							trial_block.get_block_colors(color_table, subset);
 
 							ycbcr color_table_ycbcr[4];
-							for (uint32_t i = 0; i < 4; i++)
+							for (uint32_t i = 0; i < 4; i++) {
 								rgb_to_y_cb_cr(color_table[i], color_table_ycbcr[i]);
+}
 
 							uint64_t total_error = 0;
 							if (flip)
@@ -2906,8 +2952,9 @@ namespace basisu
 										const ycbcr& c = decoded_uastc_block_ycbcr[subset * 2 + y][3];
 										total_error += minimum(color_diff(color_table_ycbcr[0], c), color_diff(color_table_ycbcr[1], c), color_diff(color_table_ycbcr[2], c), color_diff(color_table_ycbcr[3], c));
 									}
-									if (total_error >= best_subset_err)
+									if (total_error >= best_subset_err) {
 										break;
+}
 								}
 							}
 							else
@@ -2923,8 +2970,9 @@ namespace basisu
 										total_error += minimum(color_diff(color_table_ycbcr[0], c), color_diff(color_table_ycbcr[1], c), color_diff(color_table_ycbcr[2], c), color_diff(color_table_ycbcr[3], c));
 									}
 								}
-								if (total_error >= best_subset_err)
+								if (total_error >= best_subset_err) {
 									break;
+}
 							}
 
 							if (total_error < best_subset_err)
@@ -2949,8 +2997,9 @@ namespace basisu
 						trial_block.get_block_colors(color_table, subset);
 
 						ycbcr color_table_ycbcr[4];
-						for (uint32_t i = 0; i < 4; i++)
+						for (uint32_t i = 0; i < 4; i++) {
 							rgb_to_y_cb_cr(color_table[i], color_table_ycbcr[i]);
+}
 
 						if (flip)
 						{
@@ -2964,8 +3013,9 @@ namespace basisu
 									const uint32_t best_index = (uint32_t)best_index_err & 3;
 									err += color_diff(block_ycbcr[subset * 2 + y][x], color_table_ycbcr[best_index]);
 								}
-								if (err >= best_err)
+								if (err >= best_err) {
 									break;
+}
 							}
 						}
 						else
@@ -2980,8 +3030,9 @@ namespace basisu
 									const uint32_t best_index = (uint32_t)best_index_err & 3;
 									err += color_diff(block_ycbcr[y][subset * 2 + x], color_table_ycbcr[best_index]);
 								}
-								if (err >= best_err)
+								if (err >= best_err) {
 									break;
+}
 							}
 						}
 
@@ -3008,7 +3059,7 @@ namespace basisu
 		uint32_t m_table;
 		uint32_t m_multiplier;
 	};
-	
+
 	static uint64_t uastc_pack_eac_a8(uastc_pack_eac_a8_results& results, const uint8_t* pPixels, uint32_t num_pixels, uint32_t base_search_rad, uint32_t mul_search_rad, uint32_t table_mask)
 	{
 		assert(num_pixels <= 16);
@@ -3017,8 +3068,10 @@ namespace basisu
 		for (uint32_t i = 0; i < num_pixels; i++)
 		{
 			const uint32_t a = pPixels[i];
-			if (a < min_alpha) min_alpha = a;
-			if (a > max_alpha) max_alpha = a;
+			if (a < min_alpha) { min_alpha = a;
+}
+			if (a > max_alpha) { max_alpha = a;
+}
 		}
 
 		if (min_alpha == max_alpha)
@@ -3035,8 +3088,9 @@ namespace basisu
 
 		for (uint32_t table = 0; table < 16; table++)
 		{
-			if ((table_mask & (1U << table)) == 0)
+			if ((table_mask & (1U << table)) == 0) {
 				continue;
+}
 
 			const float range = (float)(g_etc2_eac_tables[table][ETC2_EAC_MAX_VALUE_SELECTOR] - g_etc2_eac_tables[table][ETC2_EAC_MIN_VALUE_SELECTOR]);
 			const int center = (int)roundf(lerp((float)min_alpha, (float)max_alpha, (float)(0 - g_etc2_eac_tables[table][ETC2_EAC_MIN_VALUE_SELECTOR]) / range));
@@ -3073,8 +3127,9 @@ namespace basisu
 						}
 
 						total_err += best_s_err * best_s_err;
-						if (total_err >= best_err)
+						if (total_err >= best_err) {
 							break;
+}
 					}
 
 					if (total_err < best_err)
@@ -3083,8 +3138,9 @@ namespace basisu
 						results.m_base = base;
 						results.m_multiplier = multiplier;
 						results.m_table = table;
-						if (!best_err)
+						if (!best_err) {
 							return best_err;
+}
 					}
 
 				} // table
@@ -3132,14 +3188,17 @@ namespace basisu
 		{
 			for (uint32_t x = 0; x < 4; x++)
 			{
-				if (block[y][x].a < 255)
+				if (block[y][x].a < 255) {
 					has_alpha = true;
+}
 
-				if (block[y][x] != first_color)
+				if (block[y][x] != first_color) {
 					solid_color = false;
+}
 
-				if ((block[y][x].r != block[y][x].g) || (block[y][x].r != block[y][x].b))
+				if ((block[y][x].r != block[y][x].g) || (block[y][x].r != block[y][x].b)) {
 					is_la = false;
+}
 			}
 		}
 
@@ -3152,7 +3211,7 @@ namespace basisu
 			solid_results.m_common_pattern = 0;
 			solid_results.m_solid_color = first_color;
 			memset(&solid_results.m_astc, 0, sizeof(solid_results.m_astc));
-						
+
 			etc_block etc1_blk;
 			uint32_t etc1_bias = 0;
 
@@ -3168,17 +3227,17 @@ namespace basisu
 
 			return;
 		}
-		
+
 		int level = flags & 7;
 		const bool favor_uastc_error = (flags & cPackUASTCFavorUASTCError) != 0;
 		const bool favor_bc7_error = !favor_uastc_error && ((flags & cPackUASTCFavorBC7Error) != 0);
 		//const bool etc1_perceptual = true;
-		
+
 		// TODO: This uses 64KB of stack space!
 		uastc_encode_results results[MAX_ENCODE_RESULTS];
-						
+
 		level = clampi(level, cPackUASTCLevelFastest, cPackUASTCLevelVerySlow);
-		
+
 		// Set all options to slowest, then configure from there depending on the selected level.
 		uint32_t mode_mask = UINT32_MAX;
 		uint32_t uber_level = 6;
@@ -3189,12 +3248,12 @@ namespace basisu
 		uint32_t least_squares_passes = 2;
 		bool bc1_hints = true;
 		bool only_use_la_on_transparent_blocks = false;
-		
+
 		switch (level)
 		{
 		case cPackUASTCLevelFastest:
 		{
-			mode_mask = (1 << 0) | (1 << 8) | 
+			mode_mask = (1 << 0) | (1 << 8) |
 				(1 << 11) | (1 << 12) |
 				(1 << 15);
 			always_try_alpha_modes = false;
@@ -3220,7 +3279,7 @@ namespace basisu
 			estimate_partition = true;
 			break;
 		}
-		case cPackUASTCLevelDefault: 
+		case cPackUASTCLevelDefault:
 		{
 			mode_mask = (1 << 0) | (1 << 1) | (1 << 4) | (1 << 5) | (1 << 6) | (1 << 8) |
 				(1 << 9) | (1 << 10) | (1 << 11) | (1 << 12) | (1 << 13) |
@@ -3258,17 +3317,18 @@ namespace basisu
 		// HACK HACK
 		//mode_mask &= ~(1 << 18);
 		//mode_mask = (1 << 18)| (1 << 10);
-																				
+
 		uint32_t total_results = 0;
-				
+
 		if (only_use_la_on_transparent_blocks)
 		{
-			if ((is_la) && (!has_alpha))
+			if ((is_la) && (!has_alpha)) {
 				is_la = false;
+}
 		}
 
 		const bool try_alpha_modes = has_alpha || always_try_alpha_modes;
-		
+
 		bc7enc_compress_block_params comp_params;
 		memset(&comp_params, 0, sizeof(comp_params));
 		comp_params.m_max_partitions_mode1 = 64;
@@ -3281,69 +3341,87 @@ namespace basisu
 
 		if (is_la)
 		{
-			if (mode_mask & (1U << 15))
+			if (mode_mask & (1U << 15)) {
 				astc_mode15(block, results, total_results, comp_params);
+}
 
-			if (mode_mask & (1U << 16))
+			if (mode_mask & (1U << 16)) {
 				astc_mode9_or_16(16, block, results, total_results, comp_params, estimate_partition ? 4 : 0);
+}
 
-			if (mode_mask & (1U << 17))
+			if (mode_mask & (1U << 17)) {
 				astc_mode11_or_17(17, block, results, total_results, comp_params);
+}
 		}
 
 		if (!has_alpha)
 		{
-			if (mode_mask & (1U << 0))
+			if (mode_mask & (1U << 0)) {
 				astc_mode0_or_18(0, block, results, total_results, comp_params);
+}
 
-			if (mode_mask & (1U << 1))
+			if (mode_mask & (1U << 1)) {
 				astc_mode1(block, results, total_results, comp_params);
+}
 
-			if (mode_mask & (1U << 2))
+			if (mode_mask & (1U << 2)) {
 				astc_mode2(block, results, total_results, comp_params, estimate_partition);
+}
 
-			if (mode_mask & (1U << 3))
+			if (mode_mask & (1U << 3)) {
 				astc_mode3(block, results, total_results, comp_params, estimate_partition);
+}
 
-			if (mode_mask & (1U << 4))
+			if (mode_mask & (1U << 4)) {
 				astc_mode4(block, results, total_results, comp_params, estimate_partition);
+}
 
-			if (mode_mask & (1U << 5))
+			if (mode_mask & (1U << 5)) {
 				astc_mode5(block, results, total_results, comp_params);
+}
 
-			if (mode_mask & (1U << 6))
+			if (mode_mask & (1U << 6)) {
 				astc_mode6(block, results, total_results, comp_params);
+}
 
-			if (mode_mask & (1U << 7))
+			if (mode_mask & (1U << 7)) {
 				astc_mode7(block, results, total_results, comp_params, estimate_partition);
+}
 
-			if (mode_mask & (1U << 18))
+			if (mode_mask & (1U << 18)) {
 				astc_mode0_or_18(18, block, results, total_results, comp_params);
+}
 		}
 
 		if (try_alpha_modes)
 		{
-			if (mode_mask & (1U << 9))
+			if (mode_mask & (1U << 9)) {
 				astc_mode9_or_16(9, block, results, total_results, comp_params, estimate_partition ? 4 : 0);
+}
 
-			if (mode_mask & (1U << 10))
+			if (mode_mask & (1U << 10)) {
 				astc_mode10(block, results, total_results, comp_params);
+}
 
-			if (mode_mask & (1U << 11))
+			if (mode_mask & (1U << 11)) {
 				astc_mode11_or_17(11, block, results, total_results, comp_params);
+}
 
-			if (mode_mask & (1U << 12))
+			if (mode_mask & (1U << 12)) {
 				astc_mode12(block, results, total_results, comp_params);
+}
 
-			if (mode_mask & (1U << 13))
+			if (mode_mask & (1U << 13)) {
 				astc_mode13(block, results, total_results, comp_params);
+}
 
-			if (mode_mask & (1U << 14))
+			if (mode_mask & (1U << 14)) {
 				astc_mode14(block, results, total_results, comp_params);
+}
 		}
 
 		assert(total_results);
-		
+
 		// Fix up the errors so we consistently have LA, RGB, or RGBA error.
 		for (uint32_t i = 0; i < total_results; i++)
 		{
@@ -3356,8 +3434,9 @@ namespace basisu
 					unpack_uastc(r.m_uastc_mode, r.m_common_pattern, r.m_solid_color.get_color32(), r.m_astc, (basist::color32 *)unpacked_block, false);
 
 					uint64_t total_err = 0;
-					for (uint32_t j = 0; j < 16; j++)
+					for (uint32_t j = 0; j < 16; j++) {
 						total_err += color_distance(unpacked_block[j], ((const color_rgba*)block)[j], true);
+}
 
 					r.m_astc_err = total_err;
 				}
@@ -3370,14 +3449,15 @@ namespace basisu
 					unpack_uastc(r.m_uastc_mode, r.m_common_pattern, r.m_solid_color.get_color32(), r.m_astc, (basist::color32 *)unpacked_block, false);
 
 					uint64_t total_err = 0;
-					for (uint32_t j = 0; j < 16; j++)
+					for (uint32_t j = 0; j < 16; j++) {
 						total_err += color_distance_la(unpacked_block[j], ((const color_rgba*)block)[j]);
+}
 
 					r.m_astc_err = total_err;
 				}
 			}
 		}
-				
+
 		unpacked_uastc_block unpacked_ublock;
 		memset(&unpacked_ublock, 0, sizeof(unpacked_ublock));
 
@@ -3510,8 +3590,9 @@ namespace basisu
 						{
 							best_err = w;
 							best_index = i;
-							if (!best_err)
+							if (!best_err) {
 								break;
+}
 						}
 					} // i
 				}
@@ -3532,8 +3613,9 @@ namespace basisu
 							{
 								best_err = w;
 								best_index = i;
-								if (!best_err)
+								if (!best_err) {
 									break;
+}
 							}
 						}
 					} // i
@@ -3544,7 +3626,7 @@ namespace basisu
 		const uastc_encode_results& best_results = results[best_index];
 		const uint32_t best_mode = best_results.m_uastc_mode;
 		const astc_block_desc& best_astc_results = best_results.m_astc;
-				
+
 		color_rgba decoded_uastc_block[4][4];
 		bool success = unpack_uastc(best_mode, best_results.m_common_pattern, best_results.m_solid_color.get_color32(), best_astc_results, (basist::color32 *)&decoded_uastc_block[0][0], false);
 		(void)success;
@@ -3562,14 +3644,14 @@ namespace basisu
 
 			basist::uastc_block temp_block;
 			pack_uastc(temp_block, best_results, etc1_blk, 0, etc_eac_a8_blk, false, false);
-			
+
 			basist::color32 temp_block_unpacked[4][4];
 			success = basist::unpack_uastc(temp_block, (basist::color32 *)temp_block_unpacked, false);
 			VALIDATE(success);
 
 			// Now round trip to packed ASTC and back, then decode to pixels.
 			uint32_t astc_data[4];
-			
+
 			if (best_results.m_uastc_mode == UASTC_MODE_INDEX_SOLID_COLOR)
 				pack_astc_solid_block(astc_data, (color32 &)best_results.m_solid_color);
 			else
@@ -3587,7 +3669,7 @@ namespace basisu
 				for (uint32_t x = 0; x < 4; x++)
 				{
 					VALIDATE(decoded_astc_block[y][x] == decoded_uastc_block[y][x]);
-					
+
 					VALIDATE(temp_block_unpacked[y][x].c[0] == decoded_uastc_block[y][x].r);
 					VALIDATE(temp_block_unpacked[y][x].c[1] == decoded_uastc_block[y][x].g);
 					VALIDATE(temp_block_unpacked[y][x].c[2] == decoded_uastc_block[y][x].b);
@@ -3599,21 +3681,23 @@ namespace basisu
 
 		// Compute BC1 hints
 		bool bc1_hint0 = false, bc1_hint1 = false;
-		if (bc1_hints)
+		if (bc1_hints) {
 			compute_bc1_hints(bc1_hint0, bc1_hint1, best_results, block, decoded_uastc_block);
-		
+}
+
 		eac_a8_block eac_a8_blk;
 		if ((g_uastc_mode_has_alpha[best_mode]) && (best_mode != UASTC_MODE_INDEX_SOLID_COLOR))
 		{
 			// Compute ETC2 hints
 			uint8_t decoded_uastc_block_alpha[16];
-			for (uint32_t i = 0; i < 16; i++)
+			for (uint32_t i = 0; i < 16; i++) {
 				decoded_uastc_block_alpha[i] = decoded_uastc_block[i >> 2][i & 3].a;
+}
 
 			uastc_pack_eac_a8_results eac8_a8_results;
 			memset(&eac8_a8_results, 0, sizeof(eac8_a8_results));
 			uastc_pack_eac_a8(eac8_a8_results, decoded_uastc_block_alpha, 16, 0, eac_a8_mul_search_rad, eac_a8_table_mask);
-						
+
 			// All we care about for hinting is the table and multiplier.
 			eac_a8_blk.m_table = eac8_a8_results.m_table;
 			eac_a8_blk.m_multiplier = eac8_a8_results.m_multiplier;
@@ -3641,16 +3725,18 @@ namespace basisu
 	{
 		unpacked_uastc_block unpacked_blk;
 
-		if (pUnpacked_blk)
+		if (pUnpacked_blk) {
 			unpacked_blk = *pUnpacked_blk;
-		else
+		} else
 		{
-			if (!unpack_uastc(*pBlock, unpacked_blk, false, true))
+			if (!unpack_uastc(*pBlock, unpacked_blk, false, true)) {
 				return false;
+}
 		}
 		color_rgba decoded_uastc_block[4][4];
-		if (!unpack_uastc(unpacked_blk, (basist::color32 *)decoded_uastc_block, false))
+		if (!unpack_uastc(unpacked_blk, (basist::color32 *)decoded_uastc_block, false)) {
 			return false;
+}
 		uastc_encode_results results;
 		results.m_uastc_mode = unpacked_blk.m_mode;
 		results.m_common_pattern = unpacked_blk.m_common_pattern;
@@ -3693,15 +3779,17 @@ namespace basisu
 		}
 		}
 		bool bc1_hint0 = false, bc1_hint1 = false;
-		if (bc1_hints)
+		if (bc1_hints) {
 			compute_bc1_hints(bc1_hint0, bc1_hint1, results, (color_rgba (*)[4])pBlock_pixels, decoded_uastc_block);
+}
 		const uint32_t best_mode = unpacked_blk.m_mode;
 		eac_a8_block eac_a8_blk;
 		if ((g_uastc_mode_has_alpha[best_mode]) && (best_mode != UASTC_MODE_INDEX_SOLID_COLOR))
 		{
 			uint8_t decoded_uastc_block_alpha[16];
-			for (uint32_t i = 0; i < 16; i++)
+			for (uint32_t i = 0; i < 16; i++) {
 				decoded_uastc_block_alpha[i] = decoded_uastc_block[i >> 2][i & 3].a;
+}
 			uastc_pack_eac_a8_results eac8_a8_results;
 			memset(&eac8_a8_results, 0, sizeof(eac8_a8_results));
 			uastc_pack_eac_a8(eac8_a8_results, decoded_uastc_block_alpha, 16, 0, eac_a8_mul_search_rad, eac_a8_table_mask);
@@ -3769,9 +3857,9 @@ namespace basisu
 	{
 		uint32_t len_cost = 7;
 		uint32_t dist_cost = 5;
-		if (dist < 512)
+		if (dist < 512) {
 			dist_cost += g_tdefl_small_dist_extra[dist & 511];
-		else
+		} else
 		{
 			dist_cost += g_tdefl_large_dist_extra[basisu::minimum<uint32_t>(dist, 32767) >> 8];
 			while (dist >= 32768)
@@ -3797,10 +3885,11 @@ namespace basisu
 
 		bool operator< (const selector_bitsequence& other) const
 		{
-			if (m_ofs < other.m_ofs)
+			if (m_ofs < other.m_ofs) {
 				return true;
-			else if (m_ofs == other.m_ofs)
+			} else if (m_ofs == other.m_ofs) {
 				return m_sel < other.m_sel;
+}
 
 			return false;
 		}
@@ -3838,8 +3927,8 @@ namespace basisu
 		uint64_t m_total;
 		uint64_t m_total2;
 	};
-		
-	static bool uastc_rdo_blocks(uint32_t first_index, uint32_t last_index, basist::uastc_block* pBlocks, const color_rgba* pBlock_pixels, const uastc_rdo_params& params, uint32_t flags, 
+
+	static bool uastc_rdo_blocks(uint32_t first_index, uint32_t last_index, basist::uastc_block* pBlocks, const color_rgba* pBlock_pixels, const uastc_rdo_params& params, uint32_t flags,
 		uint32_t &total_skipped, uint32_t &total_refined, uint32_t &total_modified, uint32_t &total_smooth)
 	{
 		debug_printf("uastc_rdo_blocks: Processing blocks %u to %u\n", first_index, last_index);
@@ -3848,19 +3937,21 @@ namespace basisu
 		const bool perceptual = false;
 
 		std::unordered_map<selector_bitsequence, uint32_t, selector_bitsequence_hash> selector_history;
-						
+
 		for (uint32_t block_index = first_index; block_index < last_index; block_index++)
 		{
 			const basist::uastc_block& blk = pBlocks[block_index];
 			const color_rgba* pPixels = &pBlock_pixels[16 * block_index];
 
 			unpacked_uastc_block unpacked_blk;
-			if (!unpack_uastc(blk, unpacked_blk, false, true))
+			if (!unpack_uastc(blk, unpacked_blk, false, true)) {
 				return false;
+}
 
 			const uint32_t block_mode = unpacked_blk.m_mode;
-			if (block_mode == UASTC_MODE_INDEX_SOLID_COLOR)
+			if (block_mode == UASTC_MODE_INDEX_SOLID_COLOR) {
 				continue;
+}
 
 			tracked_stat r_stats, g_stats, b_stats, a_stats;
 
@@ -3877,31 +3968,36 @@ namespace basisu
 			float yl = clamp<float>(max_std_dev / params.m_max_smooth_block_std_dev, 0.0f, 1.0f);
 			yl = yl * yl;
 			const float smooth_block_error_scale = lerp<float>(params.m_smooth_block_max_error_scale, 1.0f, yl);
-			if (smooth_block_error_scale > 1.0f)
+			if (smooth_block_error_scale > 1.0f) {
 				total_smooth++;
+}
 
 			color_rgba decoded_uastc_block[4][4];
-			if (!unpack_uastc(unpacked_blk, (basist::color32*)decoded_uastc_block, false))
+			if (!unpack_uastc(unpacked_blk, (basist::color32*)decoded_uastc_block, false)) {
 				return false;
+}
 
 			uint64_t uastc_err = 0;
-			for (uint32_t i = 0; i < 16; i++)
+			for (uint32_t i = 0; i < 16; i++) {
 				uastc_err += color_distance(perceptual, pPixels[i], ((color_rgba*)decoded_uastc_block)[i], true);
+}
 
 			// Transcode to BC7
 			bc7_optimization_results b7_results;
-			if (!transcode_uastc_to_bc7(unpacked_blk, b7_results))
+			if (!transcode_uastc_to_bc7(unpacked_blk, b7_results)) {
 				return false;
+}
 
 			basist::bc7_block b7_block;
 			basist::encode_bc7_block(&b7_block, &b7_results);
 
 			color_rgba decoded_b7_blk[4][4];
 			unpack_block(texture_format::cBC7, &b7_block, &decoded_b7_blk[0][0]);
-						
+
 			uint64_t bc7_err = 0;
-			for (uint32_t i = 0; i < 16; i++)
+			for (uint32_t i = 0; i < 16; i++) {
 				bc7_err += color_distance(perceptual, pPixels[i], ((color_rgba*)decoded_b7_blk)[i], true);
+}
 
 			uint64_t cur_err = (uastc_err + bc7_err) / 2;
 
@@ -3922,8 +4018,9 @@ namespace basisu
 				auto cur_search_res = selector_history.insert(std::make_pair(selector_bitsequence(first_sel_bit, cur_sel_bits), block_index));
 
 				// Block already has too much error, so don't mess with it.
-				if (!cur_search_res.second)
+				if (!cur_search_res.second) {
 					(*cur_search_res.first).second = block_index;
+}
 
 				total_skipped++;
 				continue;
@@ -3953,7 +4050,7 @@ namespace basisu
 
 			float best_t = cur_ms_err * smooth_block_error_scale + cur_bits * params.m_lambda;
 
-			// Now scan through previous blocks, insert their selector bit patterns into the current block, and find 
+			// Now scan through previous blocks, insert their selector bit patterns into the current block, and find
 			// selector bit patterns which don't increase the overall block error too much.
 			for (int prev_block_index = last_block_to_check; prev_block_index >= first_block_to_check; --prev_block_index)
 			{
@@ -3964,15 +4061,18 @@ namespace basisu
 
 				int match_block_index = prev_block_index;
 				auto res = selector_history.find(selector_bitsequence(first_sel_bit, sel_bits));
-				if (res != selector_history.end())
+				if (res != selector_history.end()) {
 					match_block_index = res->second;
+}
 				// Have we already checked this bit pattern? If so then skip this block.
-				if (match_block_index > prev_block_index)
+				if (match_block_index > prev_block_index) {
 					continue;
+}
 
 				unpacked_uastc_block unpacked_prev_blk;
-				if (!unpack_uastc(prev_blk, unpacked_prev_blk, false, true))
+				if (!unpack_uastc(prev_blk, unpacked_prev_blk, false, true)) {
 					return false;
+}
 
 				basist::uastc_block trial_blk(blk);
 
@@ -3986,21 +4086,25 @@ namespace basisu
 				}
 
 				unpacked_uastc_block unpacked_trial_blk;
-				if (!unpack_uastc(trial_blk, unpacked_trial_blk, false, true))
+				if (!unpack_uastc(trial_blk, unpacked_trial_blk, false, true)) {
 					continue;
+}
 
 				color_rgba decoded_trial_uastc_block[4][4];
-				if (!unpack_uastc(unpacked_trial_blk, (basist::color32*)decoded_trial_uastc_block, false))
+				if (!unpack_uastc(unpacked_trial_blk, (basist::color32*)decoded_trial_uastc_block, false)) {
 					continue;
+}
 
 				uint64_t trial_uastc_err = 0;
-				for (uint32_t i = 0; i < 16; i++)
+				for (uint32_t i = 0; i < 16; i++) {
 					trial_uastc_err += color_distance(perceptual, pPixels[i], ((color_rgba*)decoded_trial_uastc_block)[i], true);
+}
 
 				// Transcode trial to BC7, compute error
 				bc7_optimization_results trial_b7_results;
-				if (!transcode_uastc_to_bc7(unpacked_trial_blk, trial_b7_results))
+				if (!transcode_uastc_to_bc7(unpacked_trial_blk, trial_b7_results)) {
 					return false;
+}
 
 				basist::bc7_block trial_b7_block;
 				basist::encode_bc7_block(&trial_b7_block, &trial_b7_results);
@@ -4009,16 +4113,18 @@ namespace basisu
 				unpack_block(texture_format::cBC7, &trial_b7_block, &decoded_trial_b7_blk[0][0]);
 
 				uint64_t trial_bc7_err = 0;
-				for (uint32_t i = 0; i < 16; i++)
+				for (uint32_t i = 0; i < 16; i++) {
 					trial_bc7_err += color_distance(perceptual, pPixels[i], ((color_rgba*)decoded_trial_b7_blk)[i], true);
+}
 
 				uint64_t trial_err = (trial_uastc_err + trial_bc7_err) / 2;
 
 				const float trial_ms_err = (float)trial_err * (1.0f / 64.0f);
 				const float trial_rms_err = sqrtf(trial_ms_err);
 
-				if (trial_rms_err > cur_rms_err * params.m_max_allowed_rms_increase_ratio)
+				if (trial_rms_err > cur_rms_err * params.m_max_allowed_rms_increase_ratio) {
 					continue;
+}
 
 				const int block_dist_in_bytes = (block_index - match_block_index) * 16;
 				const int match_bits = compute_match_cost_estimate(block_dist_in_bytes);
@@ -4039,21 +4145,24 @@ namespace basisu
 				total_modified++;
 
 				unpacked_uastc_block unpacked_best_blk;
-				if (!unpack_uastc(best_block, unpacked_best_blk, false, false))
+				if (!unpack_uastc(best_block, unpacked_best_blk, false, false)) {
 					return false;
+}
 
 				if ((params.m_endpoint_refinement) && (block_mode == 0))
 				{
 					// Attempt to refine mode 0 block's endpoints, using the new selectors. This doesn't help much, but it does help.
 					// TODO: We could do this with the other modes too.
 					color_rgba decoded_best_uastc_block[4][4];
-					if (!unpack_uastc(unpacked_best_blk, (basist::color32*)decoded_best_uastc_block, false))
+					if (!unpack_uastc(unpacked_best_blk, (basist::color32*)decoded_best_uastc_block, false)) {
 						return false;
+}
 
 					// Compute the block's current error (with the modified selectors).
 					uint64_t best_uastc_err = 0;
-					for (uint32_t i = 0; i < 16; i++)
+					for (uint32_t i = 0; i < 16; i++) {
 						best_uastc_err += color_distance(perceptual, pPixels[i], ((color_rgba*)decoded_best_uastc_block)[i], true);
+}
 
 					bc7enc_compress_block_params comp_params;
 					memset(&comp_params, 0, sizeof(comp_params));
@@ -4075,20 +4184,22 @@ namespace basisu
 					color_rgba decoded_trial_uastc_block[4][4];
 					bool success = unpack_uastc(results.m_uastc_mode, results.m_common_pattern, results.m_solid_color.get_color32(), results.m_astc, (basist::color32*) & decoded_trial_uastc_block[0][0], false);
 					assert(success);
-					
+
 					BASISU_NOTE_UNUSED(success);
 
 					uint64_t trial_uastc_err = 0;
-					for (uint32_t i = 0; i < 16; i++)
+					for (uint32_t i = 0; i < 16; i++) {
 						trial_uastc_err += color_distance(perceptual, pPixels[i], ((color_rgba*)decoded_trial_uastc_block)[i], true);
+}
 
 					if (trial_uastc_err < best_uastc_err)
 					{
 						// The error went down, so accept the new endpoints.
 
 						// Ensure the selectors haven't changed, otherwise we'll invalidate the LZ matches.
-						for (uint32_t i = 0; i < 16; i++)
+						for (uint32_t i = 0; i < 16; i++) {
 							assert(unpacked_best_blk.m_astc.m_weights[i] == results.m_astc.m_weights[i]);
+}
 
 						unpacked_best_blk.m_astc = results.m_astc;
 
@@ -4097,12 +4208,13 @@ namespace basisu
 				} // if ((params.m_endpoint_refinement) && (block_mode == 0))
 
 				// The selectors have changed, so go recompute the block hints.
-				if (!uastc_recompute_hints(&best_block, pPixels, flags, &unpacked_best_blk))
+				if (!uastc_recompute_hints(&best_block, pPixels, flags, &unpacked_best_blk)) {
 					return false;
+}
 
 				// Write the modified block
 				pBlocks[block_index] = best_block;
-			
+
 			} // if (best_block_index != block_index)
 
 			{
@@ -4110,16 +4222,17 @@ namespace basisu
 				uint64_t sel_bits = read_bits((const uint8_t*)&best_block, bit_offset, basisu::minimum(64U, total_sel_bits));
 
 				auto res = selector_history.insert(std::make_pair(selector_bitsequence(first_sel_bit, sel_bits), block_index));
-				if (!res.second)
+				if (!res.second) {
 					(*res.first).second = block_index;
+}
 			}
 
 		} // block_index
 
 		return true;
 	}
-				
-	// This function implements a basic form of rate distortion optimization (RDO) for UASTC. 
+
+	// This function implements a basic form of rate distortion optimization (RDO) for UASTC.
 	// It only changes selectors and then updates the hints. It uses very approximate LZ bitprice estimation.
 	// There's A LOT that can be done better in here, but it's a start.
 	// One nice advantage of the method used here is that it works for any input, no matter which or how many modes it uses.
@@ -4160,7 +4273,7 @@ namespace basisu
 
 					{
 						std::lock_guard<std::mutex> lck(stat_mutex);
-						
+
 						all_succeeded = all_succeeded && status;
 						total_skipped += job_skipped;
 						total_modified += job_modified;
@@ -4183,7 +4296,7 @@ namespace basisu
 		}
 
 		debug_printf("uastc_rdo: Total modified: %3.2f%%, total skipped: %3.2f%%, total refined: %3.2f%%, total smooth: %3.2f%%\n", total_modified * 100.0f / num_blocks, total_skipped * 100.0f / num_blocks, total_refined * 100.0f / num_blocks, total_smooth * 100.0f / num_blocks);
-				
+
 		return status;
 	}
 } // namespace basisu

@@ -1277,13 +1277,7 @@ bool GodotSoftBodyShape3D::intersect_segment(const Vector3 &p_begin, const Vecto
 
 	soft_body->query_ray(p_begin, p_end, _SoftBodyIntersectSegmentInfo::process_hit, &query_info);
 
-	if (query_info.hit_dist_sq != INFINITY) {
-		r_result = query_info.hit_position;
-		r_normal = soft_body->get_face_normal(query_info.hit_face_index);
-		return true;
-	}
-
-	return false;
+	return query_info.hit_dist_sq != INFINITY;
 }
 
 bool GodotSoftBodyShape3D::intersect_point(const Vector3 &p_point) const {

@@ -340,11 +340,7 @@ bool EditorExportPlatformMacOS::get_export_option_visibility(const EditorExportP
 	}
 
 	// Hide unsupported .NET embedding option.
-	if (p_option == "dotnet/embed_build_outputs") {
-		return false;
-	}
-
-	return true;
+	return !p_option == "dotnet/embed_build_outputs";
 }
 
 List<String> EditorExportPlatformMacOS::get_binary_extensions(const Ref<EditorExportPreset> &p_preset) const {

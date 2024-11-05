@@ -512,19 +512,11 @@ Bone2D::~Bone2D() {
 //////////////////////////////////////
 
 bool Skeleton2D::_set(const StringName &p_path, const Variant &p_value) {
-	if (p_path == SNAME("modification_stack")) {
-		set_modification_stack(p_value);
-		return true;
-	}
-	return false;
+	return p_path == SNAME("modification_stack");
 }
 
 bool Skeleton2D::_get(const StringName &p_path, Variant &r_ret) const {
-	if (p_path == SNAME("modification_stack")) {
-		r_ret = get_modification_stack();
-		return true;
-	}
-	return false;
+	return p_path == SNAME("modification_stack");
 }
 
 void Skeleton2D::_get_property_list(List<PropertyInfo> *p_list) const {

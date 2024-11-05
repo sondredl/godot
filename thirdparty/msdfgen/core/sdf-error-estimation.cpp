@@ -10,8 +10,9 @@ void scanlineSDF(Scanline &line, const BitmapConstRef<float, 1> &sdf, const Proj
     if (!(sdf.width > 0 && sdf.height > 0))
         return line.setIntersections(std::vector<Scanline::Intersection>());
     double pixelY = clamp(projection.projectY(y)-.5, double(sdf.height-1));
-    if (inverseYAxis)
+    if (inverseYAxis) {
         pixelY = sdf.height-1-pixelY;
+}
     int b = (int) floor(pixelY);
     int t = b+1;
     double bt = pixelY-b;
@@ -50,8 +51,9 @@ void scanlineMSDF(Scanline &line, const BitmapConstRef<float, N> &sdf, const Pro
     if (!(sdf.width > 0 && sdf.height > 0))
         return line.setIntersections(std::vector<Scanline::Intersection>());
     double pixelY = clamp(projection.projectY(y)-.5, double(sdf.height-1));
-    if (inverseYAxis)
+    if (inverseYAxis) {
         pixelY = sdf.height-1-pixelY;
+}
     int b = (int) floor(pixelY);
     int t = b+1;
     double bt = pixelY-b;
@@ -96,12 +98,14 @@ void scanlineMSDF(Scanline &line, const BitmapConstRef<float, N> &sdf, const Pro
         }
         // Sort new intersections
         if (newIntersectionCount >= 2) {
-            if (newIntersections[0].x > newIntersections[1].x)
+            if (newIntersections[0].x > newIntersections[1].x) {
                 newIntersections[3] = newIntersections[0], newIntersections[0] = newIntersections[1], newIntersections[1] = newIntersections[3];
+}
             if (newIntersectionCount >= 3 && newIntersections[1].x > newIntersections[2].x) {
                 newIntersections[3] = newIntersections[1], newIntersections[1] = newIntersections[2], newIntersections[2] = newIntersections[3];
-                if (newIntersections[0].x > newIntersections[1].x)
+                if (newIntersections[0].x > newIntersections[1].x) {
                     newIntersections[3] = newIntersections[0], newIntersections[0] = newIntersections[1], newIntersections[1] = newIntersections[3];
+}
             }
         }
         for (int i = 0; i < newIntersectionCount; ++i) {
@@ -133,8 +137,9 @@ void scanlineSDF(Scanline &line, const BitmapConstRef<float, 4> &sdf, const Proj
 
 template <int N>
 double estimateSDFErrorInner(const BitmapConstRef<float, N> &sdf, const Shape &shape, const Projection &projection, int scanlinesPerRow, FillRule fillRule) {
-    if (sdf.width <= 1 || sdf.height <= 1 || scanlinesPerRow < 1)
+    if (sdf.width <= 1 || sdf.height <= 1 || scanlinesPerRow < 1) {
         return 0;
+}
     double subRowSize = 1./scanlinesPerRow;
     double xFrom = projection.unprojectX(.5);
     double xTo = projection.unprojectX(sdf.width-.5);

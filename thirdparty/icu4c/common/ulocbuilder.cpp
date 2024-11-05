@@ -24,12 +24,14 @@ ULocaleBuilder* ulocbld_open() {
 }
 
 void ulocbld_close(ULocaleBuilder* builder) {
-    if (builder == nullptr) return;
+    if (builder == nullptr) { return;
+}
     delete INTERNAL(builder);
 }
 
 void ulocbld_setLocale(ULocaleBuilder* builder, const char* locale, int32_t length) {
-    if (builder == nullptr) return;
+    if (builder == nullptr) { return;
+}
     icu::Locale l;
     if (length < 0 || locale[length] == '\0') {
         l = icu::Locale(locale);
@@ -50,7 +52,8 @@ void ulocbld_setLocale(ULocaleBuilder* builder, const char* locale, int32_t leng
 
 void
 ulocbld_adoptULocale(ULocaleBuilder* builder, ULocale* locale) {
-    if (builder == nullptr) return;
+    if (builder == nullptr) { return;
+}
     INTERNAL(builder)->setLocale(*(reinterpret_cast<const icu::Locale*>(locale)));
     ulocale_close(locale);
 }
@@ -72,25 +75,29 @@ IMPL_ULOCBLD_SETTER(addUnicodeLocaleAttribute)
 IMPL_ULOCBLD_SETTER(removeUnicodeLocaleAttribute)
 
 void ulocbld_setExtension(ULocaleBuilder* builder, char key, const char* value, int32_t length) {
-    if (builder == nullptr) return;
+    if (builder == nullptr) { return;
+}
     INTERNAL(builder)->setExtension(key, STRING_PIECE(value, length));
 }
 
 void ulocbld_setUnicodeLocaleKeyword(
     ULocaleBuilder* builder, const char* key, int32_t keyLength,
     const char* type, int32_t typeLength) {
-    if (builder == nullptr) return;
+    if (builder == nullptr) { return;
+}
     INTERNAL(builder)->setUnicodeLocaleKeyword(
         STRING_PIECE(key, keyLength), STRING_PIECE(type, typeLength));
 }
 
 void ulocbld_clear(ULocaleBuilder* builder) {
-    if (builder == nullptr) return;
+    if (builder == nullptr) { return;
+}
     INTERNAL(builder)->clear();
 }
 
 void ulocbld_clearExtensions(ULocaleBuilder* builder) {
-    if (builder == nullptr) return;
+    if (builder == nullptr) { return;
+}
     INTERNAL(builder)->clearExtensions();
 }
 
@@ -101,7 +108,8 @@ ULocale* ulocbld_buildULocale(ULocaleBuilder* builder, UErrorCode* err) {
         return nullptr;
     }
     icu::Locale l = INTERNAL(builder)->build(*err);
-    if (U_FAILURE(*err)) return nullptr;
+    if (U_FAILURE(*err)) { return nullptr;
+}
     icu::Locale* r = l.clone();
     if (r == nullptr) {
         *err = U_MEMORY_ALLOCATION_ERROR;

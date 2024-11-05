@@ -42,7 +42,7 @@ namespace embree
     GetActiveProcessorCountFunc pGetActiveProcessorCount = (GetActiveProcessorCountFunc)GetProcAddress(hlib, "GetActiveProcessorCount");
     SetThreadGroupAffinityFunc pSetThreadGroupAffinity = (SetThreadGroupAffinityFunc)GetProcAddress(hlib, "SetThreadGroupAffinity");
     SetThreadIdealProcessorExFunc pSetThreadIdealProcessorEx = (SetThreadIdealProcessorExFunc)GetProcAddress(hlib, "SetThreadIdealProcessorEx");
-    if (pGetActiveProcessorGroupCount && pGetActiveProcessorCount && pSetThreadGroupAffinity && pSetThreadIdealProcessorEx) 
+    if (pGetActiveProcessorGroupCount && pGetActiveProcessorCount && pSetThreadGroupAffinity && pSetThreadIdealProcessorEx)
     {
       int groups = pGetActiveProcessorGroupCount();
       int totalProcessors = 0, group = 0, number = 0;
@@ -55,7 +55,7 @@ namespace embree
         }
         totalProcessors += processors;
       }
-  
+
       GROUP_AFFINITY groupAffinity;
       groupAffinity.Group = (WORD)group;
       groupAffinity.Mask = (KAFFINITY)(uint64_t(1) << number);
@@ -64,15 +64,15 @@ namespace embree
       groupAffinity.Reserved[2] = 0;
       if (!pSetThreadGroupAffinity(thread, &groupAffinity, nullptr))
         WARNING("SetThreadGroupAffinity failed"); // on purpose only a warning
-  
+
       PROCESSOR_NUMBER processorNumber;
       processorNumber.Group = group;
       processorNumber.Number = number;
       processorNumber.Reserved = 0;
       if (!pSetThreadIdealProcessorEx(thread, &processorNumber, nullptr))
         WARNING("SetThreadIdealProcessorEx failed"); // on purpose only a warning
-    } 
-    else 
+    }
+    else
     {
       if (!SetThreadAffinityMask(thread, DWORD_PTR(uint64_t(1) << affinity)))
         WARNING("SetThreadAffinityMask failed"); // on purpose only a warning
@@ -86,10 +86,10 @@ namespace embree
     setAffinity(GetCurrentThread(), affinity);
   }
 
-  struct ThreadStartupData 
+  struct ThreadStartupData
   {
   public:
-    ThreadStartupData (thread_func f, void* arg) 
+    ThreadStartupData (thread_func f, void* arg)
       : f(f), arg(arg) {}
   public:
     thread_func f;
@@ -171,13 +171,13 @@ namespace embree
 {
   static MutexSys mutex;
   static std::vector<size_t> threadIDs;
-  
+
   /* changes thread ID mapping such that we first fill up all thread on one core */
   size_t mapThreadID(size_t threadID)
   {
     Lock<MutexSys> lock(mutex);
-    
-    if (threadIDs.size() == 0)
+
+    if (threadIDs.empty())
     {
       /* parse thread/CPU topology */
       for (size_t cpuID=0;;cpuID++)
@@ -185,15 +185,18 @@ namespace embree
         std::fstream fs;
         std::string cpu = std::string("/sys/devices/system/cpu/cpu") + std::to_string((long long)cpuID) + std::string("/topology/thread_siblings_list");
         fs.open (cpu.c_str(), std::fstream::in);
-        if (fs.fail()) break;
+        if (fs.fail()) { break;
+}
 
         int i;
-        while (fs >> i) 
+        while (fs >> i)
         {
-          if (std::none_of(threadIDs.begin(),threadIDs.end(),[&] (int id) { return id == i; }))
+          if (std::none_of(threadIDs.begin(),threadIDs.end(),[&] (int id) { return id == i; })) {
             threadIDs.push_back(i);
-          if (fs.peek() == ',') 
+}
+          if (fs.peek() == ',') {
             fs.ignore();
+}
         }
         fs.close();
       }
@@ -215,18 +218,20 @@ namespace embree
 
     /* re-map threadIDs if mapping is available */
     size_t ID = threadID;
-    if (threadID < threadIDs.size())
+    if (threadID < threadIDs.size()) {
       ID = threadIDs[threadID];
+}
 
     /* find correct thread to affinitize to */
     cpu_set_t set;
     CPU_ZERO(&set);
-    
+
     if (pthread_getaffinity_np(pthread_self(), sizeof(set), &set) == 0)
     {
       for (int i=0, j=0; i<CPU_SETSIZE; i++)
       {
-        if (!CPU_ISSET(i,&set)) continue;
+        if (!CPU_ISSET(i,&set)) { continue;
+}
 
         if (j == ID) {
           ID = i;
@@ -326,12 +331,12 @@ namespace embree
   void setAffinity(ssize_t affinity)
   {
 #if !defined(__ARM_NEON) // affinity seems not supported on M1 chip
-    
+
     thread_affinity_policy ap;
     ap.affinity_tag = affinity;
     if (thread_policy_set(mach_thread_self(),THREAD_AFFINITY_POLICY,(thread_policy_t)&ap,THREAD_AFFINITY_POLICY_COUNT) != KERN_SUCCESS)
       WARNING("setting thread affinity failed"); // on purpose only a warning
-    
+
 #endif
   }
 }
@@ -352,21 +357,21 @@ namespace embree
 
 namespace embree
 {
-  struct ThreadStartupData 
+  struct ThreadStartupData
   {
   public:
-    ThreadStartupData (thread_func f, void* arg, int affinity) 
+    ThreadStartupData (thread_func f, void* arg, int affinity)
       : f(f), arg(arg), affinity(affinity) {}
-  public: 
+
     thread_func f;
     void* arg;
     ssize_t affinity;
   };
-  
+
   static void* threadStartup(ThreadStartupData* parg)
   {
     _mm_setcsr(_mm_getcsr() | /*FTZ:*/ (1<<15) | /*DAZ:*/ (1<<6));
-    
+
     /*! Mac OS X does not support setting affinity at thread creation time */
 #if defined(__MACOSX__)
     if (parg->affinity >= 0)
@@ -384,13 +389,14 @@ namespace embree
     /* set stack size */
     pthread_attr_t attr;
     pthread_attr_init(&attr);
-    if (stack_size > 0) pthread_attr_setstacksize (&attr, stack_size);
+    if (stack_size > 0) { pthread_attr_setstacksize (&attr, stack_size);
+}
 
     /* create thread */
     pthread_t* tid = new pthread_t;
     if (pthread_create(tid,&attr,(void*(*)(void*))threadStartup,new ThreadStartupData(f,arg,threadID)) != 0) {
       pthread_attr_destroy(&attr);
-      delete tid; 
+      delete tid;
       FATAL("pthread_create failed");
     }
     pthread_attr_destroy(&attr);
@@ -446,7 +452,7 @@ namespace embree
   }
 
   /*! creates thread local storage */
-  tls_t createTls() 
+  tls_t createTls()
   {
     pthread_key_t* key = new pthread_key_t;
     if (pthread_key_create(key,nullptr) != 0) {
@@ -458,14 +464,14 @@ namespace embree
   }
 
   /*! return the thread local storage pointer */
-  void* getTls(tls_t tls) 
+  void* getTls(tls_t tls)
   {
     assert(tls);
     return pthread_getspecific(*(pthread_key_t*)tls);
   }
 
   /*! set the thread local storage pointer */
-  void setTls(tls_t tls, void* const ptr) 
+  void setTls(tls_t tls, void* const ptr)
   {
     assert(tls);
     if (pthread_setspecific(*(pthread_key_t*)tls, ptr) != 0)
@@ -473,7 +479,7 @@ namespace embree
   }
 
   /*! destroys thread local storage identifier */
-  void destroyTls(tls_t tls) 
+  void destroyTls(tls_t tls)
   {
     assert(tls);
     if (pthread_key_delete(*(pthread_key_t*)tls) != 0)

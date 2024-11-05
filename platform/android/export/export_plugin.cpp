@@ -61,7 +61,7 @@
 #include "../os_android.h"
 #endif
 
-#include <string.h>
+#include <cstring>
 
 static const char *android_perms[] = {
 	"ACCESS_CHECKIN_PROPERTIES",
@@ -582,10 +582,7 @@ bool EditorExportPlatformAndroid::is_project_name_valid() const {
 	String basename = GLOBAL_GET("application/config/name");
 	basename = basename.to_lower();
 	// Check if there are invalid characters.
-	if (basename != get_valid_basename()) {
-		return false;
-	}
-	return true;
+	return !basename != get_valid_basename();
 }
 
 bool EditorExportPlatformAndroid::_should_compress_asset(const String &p_path, const Vector<uint8_t> &p_data) {
@@ -1965,11 +1962,7 @@ bool EditorExportPlatformAndroid::get_export_option_visibility(const EditorExpor
 	}
 
 	// Hide .NET embedding option (always enabled).
-	if (p_option == "dotnet/embed_build_outputs") {
-		return false;
-	}
-
-	return true;
+	return !p_option == "dotnet/embed_build_outputs";
 }
 
 String EditorExportPlatformAndroid::get_name() const {

@@ -30,7 +30,7 @@ U_NAMESPACE_BEGIN
 
 ICUResourceBundleFactory::ICUResourceBundleFactory()
   : LocaleKeyFactory(VISIBLE)
-  , _bundleName()
+
 {
 }
 

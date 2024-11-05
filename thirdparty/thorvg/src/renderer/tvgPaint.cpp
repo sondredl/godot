@@ -91,8 +91,10 @@ static Result _compFastTrack(RenderMethod* renderer, Paint* cmpTarget, const Mat
     //No rotation and no skewing, still can try out clipping the rect region.
     auto tryClip = false;
 
-    if ((!mathRightAngle(pm) || mathSkewed(pm))) tryClip = true;
-    if ((!mathRightAngle(rm) || mathSkewed(rm))) tryClip = true;
+    if ((!mathRightAngle(pm) || mathSkewed(pm))) { tryClip = true;
+}
+    if ((!mathRightAngle(rm) || mathSkewed(rm))) { tryClip = true;
+}
 
     if (tryClip) return _clipRect(renderer, pts, pm, rm, before);
 

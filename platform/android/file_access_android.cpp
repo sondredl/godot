@@ -87,12 +87,7 @@ void FileAccessAndroid::seek(uint64_t p_position) {
 
 	AAsset_seek(asset, p_position, SEEK_SET);
 	pos = p_position;
-	if (pos > len) {
-		pos = len;
-		eof = true;
-	} else {
-		eof = false;
-	}
+	eof = pos > len;
 }
 
 void FileAccessAndroid::seek_end(int64_t p_position) {
@@ -154,12 +149,7 @@ bool FileAccessAndroid::file_exists(const String &p_path) {
 
 	AAsset *at = AAssetManager_open(asset_manager, path.utf8().get_data(), AASSET_MODE_STREAMING);
 
-	if (!at) {
-		return false;
-	}
-
-	AAsset_close(at);
-	return true;
+	return !!at;
 }
 
 void FileAccessAndroid::close() {

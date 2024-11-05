@@ -327,12 +327,7 @@ void AudioStreamImportSettingsDialog::_on_input_indicator(Ref<InputEvent> p_even
 			Ref<Font> beat_font = get_theme_font(SNAME("main"), EditorStringName(EditorFonts));
 			int y_ofs = beat_font->get_height(main_size) + 4 * EDSCALE;
 			if ((!_dragging && mb->get_position().y < y_ofs) || _beat_len_dragging) {
-				if (mb->is_pressed()) {
-					_set_beat_len_to(mb->get_position().x);
-					_beat_len_dragging = true;
-				} else {
-					_beat_len_dragging = false;
-				}
+				_beat_len_dragging = mb->is_pressed();
 				return;
 			}
 		}

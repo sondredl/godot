@@ -24,7 +24,7 @@
 #include "spirv_cfg.hpp"
 #include "spirv_cross.hpp"
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 
 using namespace std;
 
@@ -42,10 +42,11 @@ uint32_t CFG::find_common_dominator(uint32_t a, uint32_t b) const
 {
 	while (a != b)
 	{
-		if (get_visit_order(a) < get_visit_order(b))
+		if (get_visit_order(a) < get_visit_order(b)) {
 			a = get_immediate_dominator(a);
-		else
+		} else {
 			b = get_immediate_dominator(b);
+}
 	}
 	return a;
 }
@@ -60,8 +61,9 @@ void CFG::build_immediate_dominators()
 	{
 		uint32_t block = post_order[i - 1];
 		auto &pred = preceding_edges[block];
-		if (pred.empty()) // This is for the entry block, but we've already set up the dominators.
+		if (pred.empty()) { // This is for the entry block, but we've already set up the dominators.
 			continue;
+}
 
 		for (auto &edge : pred)
 		{
@@ -70,8 +72,9 @@ void CFG::build_immediate_dominators()
 				assert(immediate_dominators[edge]);
 				immediate_dominators[block] = find_common_dominator(immediate_dominators[block], edge);
 			}
-			else
+			else {
 				immediate_dominators[block] = edge;
+}
 		}
 	}
 }
@@ -96,10 +99,11 @@ bool CFG::post_order_visit(uint32_t block_id)
 	// If we have already branched to this block (back edge), stop recursion.
 	// If our branches are back-edges, we do not record them.
 	// We have to record crossing edges however.
-	if (has_visited_forward_edge(block_id))
+	if (has_visited_forward_edge(block_id)) {
 		return true;
-	else if (is_back_edge(block_id))
+	} else if (is_back_edge(block_id)) {
 		return false;
+}
 
 	// Block back-edges from recursively revisiting ourselves.
 	visit_order[block_id].get() = 0;
@@ -116,22 +120,26 @@ bool CFG::post_order_visit(uint32_t block_id)
 	// is lower than inside the loop, which is going to be key for some traversal algorithms like post-dominance analysis.
 	// For selection constructs true/false blocks will end up visiting the merge block directly and it works out fine,
 	// but for loops, only the header might end up actually branching to merge block.
-	if (block.merge == SPIRBlock::MergeLoop && post_order_visit(block.merge_block))
+	if (block.merge == SPIRBlock::MergeLoop && post_order_visit(block.merge_block)) {
 		add_branch(block_id, block.merge_block);
+}
 
 	// First visit our branch targets.
 	switch (block.terminator)
 	{
 	case SPIRBlock::Direct:
-		if (post_order_visit(block.next_block))
+		if (post_order_visit(block.next_block)) {
 			add_branch(block_id, block.next_block);
+}
 		break;
 
 	case SPIRBlock::Select:
-		if (post_order_visit(block.true_block))
+		if (post_order_visit(block.true_block)) {
 			add_branch(block_id, block.true_block);
-		if (post_order_visit(block.false_block))
+}
+		if (post_order_visit(block.false_block)) {
 			add_branch(block_id, block.false_block);
+}
 		break;
 
 	case SPIRBlock::MultiSelect:
@@ -139,11 +147,13 @@ bool CFG::post_order_visit(uint32_t block_id)
 		const auto &cases = compiler.get_case_list(block);
 		for (const auto &target : cases)
 		{
-			if (post_order_visit(target.block))
+			if (post_order_visit(target.block)) {
 				add_branch(block_id, target.block);
+}
 		}
-		if (block.default_block && post_order_visit(block.default_block))
+		if (block.default_block && post_order_visit(block.default_block)) {
 			add_branch(block_id, block.default_block);
+}
 		break;
 	}
 	default:
@@ -173,8 +183,9 @@ bool CFG::post_order_visit(uint32_t block_id)
 			auto &pred = pred_itr->second;
 			auto succ_itr = succeeding_edges.find(block_id);
 			size_t num_succeeding_edges = 0;
-			if (succ_itr != end(succeeding_edges))
+			if (succ_itr != end(succeeding_edges)) {
 				num_succeeding_edges = succ_itr->second.size();
+}
 
 			if (block.terminator == SPIRBlock::MultiSelect && num_succeeding_edges == 1)
 			{
@@ -184,13 +195,15 @@ bool CFG::post_order_visit(uint32_t block_id)
 				// to have a dominator be inside the block.
 				// Only case this can go wrong is if we have 2 or more edges from block header and
 				// 2 or more edges to merge block, and still have dominator be inside a case label.
-				if (!pred.empty())
+				if (!pred.empty()) {
 					add_branch(block_id, block.next_block);
+}
 			}
 			else
 			{
-				if (pred.size() == 1 && *pred.begin() != block_id)
+				if (pred.size() == 1 && *pred.begin() != block_id) {
 					add_branch(block_id, block.next_block);
+}
 			}
 		}
 		else
@@ -219,9 +232,10 @@ void CFG::build_post_order_visit_order()
 void CFG::add_branch(uint32_t from, uint32_t to)
 {
 	const auto add_unique = [](SmallVector<uint32_t> &l, uint32_t value) {
-		auto itr = find(begin(l), end(l), value);
-		if (itr == end(l))
+		auto *itr = find(begin(l), end(l), value);
+		if (itr == end(l)) {
 			l.push_back(value);
+}
 	};
 	add_unique(preceding_edges[to], from);
 	add_unique(succeeding_edges[from], to);
@@ -232,10 +246,12 @@ uint32_t CFG::find_loop_dominator(uint32_t block_id) const
 	while (block_id != SPIRBlock::NoDominator)
 	{
 		auto itr = preceding_edges.find(block_id);
-		if (itr == end(preceding_edges))
+		if (itr == end(preceding_edges)) {
 			return SPIRBlock::NoDominator;
-		if (itr->second.empty())
+}
+		if (itr->second.empty()) {
 			return SPIRBlock::NoDominator;
+}
 
 		uint32_t pred_block_id = SPIRBlock::NoDominator;
 		bool ignore_loop_header = false;
@@ -243,7 +259,7 @@ uint32_t CFG::find_loop_dominator(uint32_t block_id) const
 		// If we are a merge block, go directly to the header block.
 		// Only consider a loop dominator if we are branching from inside a block to a loop header.
 		// NOTE: In the CFG we forced an edge from header to merge block always to support variable scopes properly.
-		for (auto &pred : itr->second)
+		for (const auto &pred : itr->second)
 		{
 			auto &pred_block = compiler.get<SPIRBlock>(pred);
 			if (pred_block.merge == SPIRBlock::MergeLoop && pred_block.merge_block == ID(block_id))
@@ -261,16 +277,18 @@ uint32_t CFG::find_loop_dominator(uint32_t block_id) const
 
 		// No merge block means we can just pick any edge. Loop headers dominate the inner loop, so any path we
 		// take will lead there.
-		if (pred_block_id == SPIRBlock::NoDominator)
+		if (pred_block_id == SPIRBlock::NoDominator) {
 			pred_block_id = itr->second.front();
+}
 
 		block_id = pred_block_id;
 
 		if (!ignore_loop_header && block_id)
 		{
 			auto &block = compiler.get<SPIRBlock>(block_id);
-			if (block.merge == SPIRBlock::MergeLoop)
+			if (block.merge == SPIRBlock::MergeLoop) {
 				return block_id;
+}
 		}
 	}
 
@@ -285,22 +303,26 @@ bool CFG::node_terminates_control_flow_in_sub_graph(BlockID from, BlockID to) co
 
 	auto &from_block = compiler.get<SPIRBlock>(from);
 	BlockID ignore_block_id = 0;
-	if (from_block.merge == SPIRBlock::MergeLoop)
+	if (from_block.merge == SPIRBlock::MergeLoop) {
 		ignore_block_id = from_block.merge_block;
+}
 
 	while (to != from)
 	{
 		auto pred_itr = preceding_edges.find(to);
-		if (pred_itr == end(preceding_edges))
+		if (pred_itr == end(preceding_edges)) {
 			return false;
+}
 
 		DominatorBuilder builder(*this);
-		for (auto &edge : pred_itr->second)
+		for (const auto &edge : pred_itr->second) {
 			builder.add_block(edge);
+}
 
 		uint32_t dominator = builder.get_dominator();
-		if (dominator == 0)
+		if (dominator == 0) {
 			return false;
+}
 
 		auto &dom = compiler.get<SPIRBlock>(dominator);
 
@@ -346,8 +368,9 @@ bool CFG::node_terminates_control_flow_in_sub_graph(BlockID from, BlockID to) co
 			// It cannot be in-scope anymore.
 			to = dominator;
 		}
-		else
+		else {
 			return false;
+}
 	}
 
 	return true;
@@ -372,8 +395,9 @@ void DominatorBuilder::add_block(uint32_t block)
 		return;
 	}
 
-	if (block != dominator)
+	if (block != dominator) {
 		dominator = cfg.find_common_dominator(block, dominator);
+}
 }
 
 void DominatorBuilder::lift_continue_block_dominator()
@@ -384,10 +408,11 @@ void DominatorBuilder::lift_continue_block_dominator()
 	// It makes very little sense for a continue block to ever be a dominator, so fall back to the simplest
 	// solution.
 
-	if (!dominator)
+	if (!dominator) {
 		return;
+}
 
-	auto &block = cfg.get_compiler().get<SPIRBlock>(dominator);
+	const auto &block = cfg.get_compiler().get<SPIRBlock>(dominator);
 	auto post_order = cfg.get_visit_order(dominator);
 
 	// If we are branching to a block with a higher post-order traversal index (continue blocks), we have a problem
@@ -396,27 +421,32 @@ void DominatorBuilder::lift_continue_block_dominator()
 	switch (block.terminator)
 	{
 	case SPIRBlock::Direct:
-		if (cfg.get_visit_order(block.next_block) > post_order)
+		if (cfg.get_visit_order(block.next_block) > post_order) {
 			back_edge_dominator = true;
+}
 		break;
 
 	case SPIRBlock::Select:
-		if (cfg.get_visit_order(block.true_block) > post_order)
+		if (cfg.get_visit_order(block.true_block) > post_order) {
 			back_edge_dominator = true;
-		if (cfg.get_visit_order(block.false_block) > post_order)
+}
+		if (cfg.get_visit_order(block.false_block) > post_order) {
 			back_edge_dominator = true;
+}
 		break;
 
 	case SPIRBlock::MultiSelect:
 	{
-		auto &cases = cfg.get_compiler().get_case_list(block);
-		for (auto &target : cases)
+		const auto &cases = cfg.get_compiler().get_case_list(block);
+		for (const auto &target : cases)
 		{
-			if (cfg.get_visit_order(target.block) > post_order)
+			if (cfg.get_visit_order(target.block) > post_order) {
 				back_edge_dominator = true;
+}
 		}
-		if (block.default_block && cfg.get_visit_order(block.default_block) > post_order)
+		if (block.default_block && cfg.get_visit_order(block.default_block) > post_order) {
 			back_edge_dominator = true;
+}
 		break;
 	}
 
@@ -424,7 +454,8 @@ void DominatorBuilder::lift_continue_block_dominator()
 		break;
 	}
 
-	if (back_edge_dominator)
+	if (back_edge_dominator) {
 		dominator = cfg.get_function().entry_block;
+}
 }
 } // namespace SPIRV_CROSS_NAMESPACE

@@ -31,7 +31,7 @@ namespace embree
   DECLARE_ISA_FUNCTION(VirtualCurveIntersector*,VirtualCurveIntersector8v,void);
   DECLARE_ISA_FUNCTION(VirtualCurveIntersector*,VirtualCurveIntersector4iMB,void);
   DECLARE_ISA_FUNCTION(VirtualCurveIntersector*,VirtualCurveIntersector8iMB,void);
-    
+
   DECLARE_SYMBOL2(Accel::Intersector1,BVH4OBBVirtualCurveIntersector1);
   DECLARE_SYMBOL2(Accel::Intersector1,BVH4OBBVirtualCurveIntersector1MB);
   DECLARE_SYMBOL2(Accel::Intersector1,BVH4OBBVirtualCurveIntersectorRobust1);
@@ -60,7 +60,7 @@ namespace embree
 
   DECLARE_SYMBOL2(Accel::Intersector1,BVH4SubdivPatch1Intersector1);
   DECLARE_SYMBOL2(Accel::Intersector1,BVH4SubdivPatch1MBIntersector1);
-  
+
   DECLARE_SYMBOL2(Accel::Intersector1,BVH4VirtualIntersector1);
   DECLARE_SYMBOL2(Accel::Intersector1,BVH4VirtualMBIntersector1);
 
@@ -101,7 +101,7 @@ namespace embree
 
   DECLARE_SYMBOL2(Accel::Intersector4,BVH4SubdivPatch1Intersector4);
   DECLARE_SYMBOL2(Accel::Intersector4,BVH4SubdivPatch1MBIntersector4);
-  
+
   DECLARE_SYMBOL2(Accel::Intersector4,BVH4VirtualIntersector4Chunk);
   DECLARE_SYMBOL2(Accel::Intersector4,BVH4VirtualMBIntersector4Chunk);
 
@@ -142,7 +142,7 @@ namespace embree
 
   DECLARE_SYMBOL2(Accel::Intersector8,BVH4SubdivPatch1Intersector8);
   DECLARE_SYMBOL2(Accel::Intersector8,BVH4SubdivPatch1MBIntersector8);
-  
+
   DECLARE_SYMBOL2(Accel::Intersector8,BVH4VirtualIntersector8Chunk);
   DECLARE_SYMBOL2(Accel::Intersector8,BVH4VirtualMBIntersector8Chunk);
 
@@ -183,7 +183,7 @@ namespace embree
 
   DECLARE_SYMBOL2(Accel::Intersector16,BVH4SubdivPatch1Intersector16);
   DECLARE_SYMBOL2(Accel::Intersector16,BVH4SubdivPatch1MBIntersector16);
-  
+
   DECLARE_SYMBOL2(Accel::Intersector16,BVH4VirtualIntersector16Chunk);
   DECLARE_SYMBOL2(Accel::Intersector16,BVH4VirtualMBIntersector16Chunk);
 
@@ -316,13 +316,13 @@ namespace embree
     IF_ENABLED_CURVES_OR_POINTS(SELECT_SYMBOL_INIT_AVX_AVX2_AVX512(features,VirtualCurveIntersector8v));
     IF_ENABLED_CURVES_OR_POINTS(SELECT_SYMBOL_DEFAULT_AVX_AVX2_AVX512(features,VirtualCurveIntersector4iMB));
     IF_ENABLED_CURVES_OR_POINTS(SELECT_SYMBOL_INIT_AVX_AVX2_AVX512(features,VirtualCurveIntersector8iMB));
-    
+
     /* select intersectors1 */
     IF_ENABLED_CURVES_OR_POINTS(SELECT_SYMBOL_DEFAULT_AVX_AVX2_AVX512(features,BVH4OBBVirtualCurveIntersector1));
     IF_ENABLED_CURVES_OR_POINTS(SELECT_SYMBOL_DEFAULT_AVX_AVX2_AVX512(features,BVH4OBBVirtualCurveIntersector1MB));
     IF_ENABLED_CURVES_OR_POINTS(SELECT_SYMBOL_DEFAULT_AVX_AVX2_AVX512(features,BVH4OBBVirtualCurveIntersectorRobust1));
     IF_ENABLED_CURVES_OR_POINTS(SELECT_SYMBOL_DEFAULT_AVX_AVX2_AVX512(features,BVH4OBBVirtualCurveIntersectorRobust1MB));
-    
+
     IF_ENABLED_TRIS(SELECT_SYMBOL_DEFAULT_AVX_AVX2_AVX512(features,BVH4Triangle4Intersector1Moeller));
     IF_ENABLED_TRIS(SELECT_SYMBOL_DEFAULT_SSE42_AVX_AVX512(features,BVH4Triangle4iIntersector1Moeller));
     IF_ENABLED_TRIS(SELECT_SYMBOL_DEFAULT_SSE42_AVX_AVX512(features,BVH4Triangle4vIntersector1Pluecker));
@@ -346,7 +346,7 @@ namespace embree
 
     IF_ENABLED_SUBDIV(SELECT_SYMBOL_DEFAULT_SSE42_AVX_AVX2_AVX512(features,BVH4SubdivPatch1Intersector1));
     IF_ENABLED_SUBDIV(SELECT_SYMBOL_DEFAULT_SSE42_AVX_AVX2_AVX512(features,BVH4SubdivPatch1MBIntersector1));
-    
+
     IF_ENABLED_USER(SELECT_SYMBOL_DEFAULT_SSE42_AVX_AVX2_AVX512(features,BVH4VirtualIntersector1));
     IF_ENABLED_USER(SELECT_SYMBOL_DEFAULT_SSE42_AVX_AVX2_AVX512(features,BVH4VirtualMBIntersector1));
 
@@ -390,7 +390,7 @@ namespace embree
 
     IF_ENABLED_SUBDIV(SELECT_SYMBOL_DEFAULT_SSE42_AVX_AVX2_AVX512(features,BVH4SubdivPatch1Intersector4));
     IF_ENABLED_SUBDIV(SELECT_SYMBOL_DEFAULT_SSE42_AVX_AVX2_AVX512(features,BVH4SubdivPatch1MBIntersector4));
-    
+
     IF_ENABLED_USER(SELECT_SYMBOL_DEFAULT_SSE42_AVX_AVX2_AVX512(features,BVH4VirtualIntersector4Chunk));
     IF_ENABLED_USER(SELECT_SYMBOL_DEFAULT_SSE42_AVX_AVX2_AVX512(features,BVH4VirtualMBIntersector4Chunk));
 
@@ -476,7 +476,7 @@ namespace embree
 
     IF_ENABLED_SUBDIV(SELECT_SYMBOL_INIT_AVX512(features,BVH4SubdivPatch1Intersector16));
     IF_ENABLED_SUBDIV(SELECT_SYMBOL_INIT_AVX512(features,BVH4SubdivPatch1MBIntersector16));
-    
+
     IF_ENABLED_USER(SELECT_SYMBOL_INIT_AVX512(features,BVH4VirtualIntersector16Chunk));
     IF_ENABLED_USER(SELECT_SYMBOL_INIT_AVX512(features,BVH4VirtualMBIntersector16Chunk));
 
@@ -875,7 +875,7 @@ namespace embree
 #endif
     return intersectors;
   }
-  
+
   Accel::Intersectors BVH4Factory::BVH4SubdivPatch1Intersectors(BVH4* bvh)
   {
     Accel::Intersectors intersectors;
@@ -908,9 +908,9 @@ namespace embree
     Accel::Intersectors intersectors = BVH4OBBVirtualCurveIntersectors(accel,VirtualCurveIntersector4i(),ivariant);
 
     Builder* builder = nullptr;
-    if      (scene->device->hair_builder == "default"     ) builder = BVH4Curve4iBuilder_OBB_New(accel,scene,0);
-    else if (scene->device->hair_builder == "sah"         ) builder = BVH4Curve4iBuilder_OBB_New(accel,scene,0);
-    else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->hair_builder+" for BVH4OBB<VirtualCurve4i>");
+    if      (scene->device->hair_builder == "default"     ) { builder = BVH4Curve4iBuilder_OBB_New(accel,scene,0);
+    } else if (scene->device->hair_builder == "sah"         ) { builder = BVH4Curve4iBuilder_OBB_New(accel,scene,0);
+    } else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->hair_builder+" for BVH4OBB<VirtualCurve4i>");
 
     return new AccelInstance(accel,builder,intersectors);
   }
@@ -936,9 +936,9 @@ namespace embree
     Accel::Intersectors intersectors = BVH4OBBVirtualCurveIntersectors(accel,VirtualCurveIntersector4v(),ivariant);
 
     Builder* builder = nullptr;
-    if      (scene->device->hair_builder == "default"     ) builder = BVH4Curve4vBuilder_OBB_New(accel,scene,0);
-    else if (scene->device->hair_builder == "sah"         ) builder = BVH4Curve4vBuilder_OBB_New(accel,scene,0);
-    else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->hair_builder+" for BVH4OBB<VirtualCurve4v>");
+    if      (scene->device->hair_builder == "default"     ) { builder = BVH4Curve4vBuilder_OBB_New(accel,scene,0);
+    } else if (scene->device->hair_builder == "sah"         ) { builder = BVH4Curve4vBuilder_OBB_New(accel,scene,0);
+    } else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->hair_builder+" for BVH4OBB<VirtualCurve4v>");
 
     return new AccelInstance(accel,builder,intersectors);
   }
@@ -949,9 +949,9 @@ namespace embree
     Accel::Intersectors intersectors = BVH4OBBVirtualCurveIntersectorsMB(accel,VirtualCurveIntersector4iMB(),ivariant);
 
     Builder* builder = nullptr;
-    if      (scene->device->hair_builder == "default"     ) builder = BVH4OBBCurve4iMBBuilder_OBB(accel,scene,0);
-    else if (scene->device->hair_builder == "sah"         ) builder = BVH4OBBCurve4iMBBuilder_OBB(accel,scene,0);
-    else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->hair_builder+" for BVH4OBB<VirtualCurve4iMB>");
+    if      (scene->device->hair_builder == "default"     ) { builder = BVH4OBBCurve4iMBBuilder_OBB(accel,scene,0);
+    } else if (scene->device->hair_builder == "sah"         ) { builder = BVH4OBBCurve4iMBBuilder_OBB(accel,scene,0);
+    } else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->hair_builder+" for BVH4OBB<VirtualCurve4iMB>");
 
     return new AccelInstance(accel,builder,intersectors);
   }
@@ -970,15 +970,15 @@ namespace embree
     return new AccelInstance(accel,builder,intersectors);
   }
 #endif
-  
+
   Accel* BVH4Factory::BVH4Triangle4(Scene* scene, BuildVariant bvariant, IntersectVariant ivariant)
   {
     BVH4* accel = new BVH4(Triangle4::type,scene);
 
     Accel::Intersectors intersectors;
-    if      (scene->device->tri_traverser == "default") intersectors = BVH4Triangle4Intersectors(accel,ivariant);
-    else if (scene->device->tri_traverser == "fast"   ) intersectors = BVH4Triangle4Intersectors(accel,IntersectVariant::FAST);
-    else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown traverser "+scene->device->tri_traverser+" for BVH4<Triangle4>");
+    if      (scene->device->tri_traverser == "default") { intersectors = BVH4Triangle4Intersectors(accel,ivariant);
+    } else if (scene->device->tri_traverser == "fast"   ) { intersectors = BVH4Triangle4Intersectors(accel,IntersectVariant::FAST);
+    } else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown traverser "+scene->device->tri_traverser+" for BVH4<Triangle4>");
 
     Builder* builder = nullptr;
     if (scene->device->tri_builder == "default") {
@@ -988,12 +988,12 @@ namespace embree
       case BuildVariant::HIGH_QUALITY: builder = BVH4Triangle4SceneBuilderFastSpatialSAH(accel,scene,0); break;
       }
     }
-    else if (scene->device->tri_builder == "sah"         ) builder = BVH4Triangle4SceneBuilderSAH(accel,scene,0);
-    else if (scene->device->tri_builder == "sah_fast_spatial" ) builder = BVH4Triangle4SceneBuilderFastSpatialSAH(accel,scene,0);
-    else if (scene->device->tri_builder == "sah_presplit") builder = BVH4Triangle4SceneBuilderSAH(accel,scene,MODE_HIGH_QUALITY);
-    else if (scene->device->tri_builder == "dynamic"     ) builder = BVH4BuilderTwoLevelTriangle4MeshSAH(accel,scene,false);
-    else if (scene->device->tri_builder == "morton"      ) builder = BVH4BuilderTwoLevelTriangle4MeshSAH(accel,scene,true);
-    else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->tri_builder+" for BVH4<Triangle4>");
+    else if (scene->device->tri_builder == "sah"         ) { builder = BVH4Triangle4SceneBuilderSAH(accel,scene,0);
+    } else if (scene->device->tri_builder == "sah_fast_spatial" ) { builder = BVH4Triangle4SceneBuilderFastSpatialSAH(accel,scene,0);
+    } else if (scene->device->tri_builder == "sah_presplit") { builder = BVH4Triangle4SceneBuilderSAH(accel,scene,MODE_HIGH_QUALITY);
+    } else if (scene->device->tri_builder == "dynamic"     ) { builder = BVH4BuilderTwoLevelTriangle4MeshSAH(accel,scene,false);
+    } else if (scene->device->tri_builder == "morton"      ) { builder = BVH4BuilderTwoLevelTriangle4MeshSAH(accel,scene,true);
+    } else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->tri_builder+" for BVH4<Triangle4>");
 
     return new AccelInstance(accel,builder,intersectors);
   }
@@ -1003,10 +1003,10 @@ namespace embree
     BVH4* accel = new BVH4(Triangle4v::type,scene);
 
     Accel::Intersectors intersectors;
-    if      (scene->device->tri_traverser == "default") intersectors = BVH4Triangle4vIntersectors(accel,ivariant);
-    else if (scene->device->tri_traverser == "fast"   ) intersectors = BVH4Triangle4vIntersectors(accel,IntersectVariant::FAST);
-    else if (scene->device->tri_traverser == "robust" ) intersectors = BVH4Triangle4vIntersectors(accel,IntersectVariant::ROBUST);
-    else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown traverser "+scene->device->tri_traverser+" for BVH4<Triangle4>");
+    if      (scene->device->tri_traverser == "default") { intersectors = BVH4Triangle4vIntersectors(accel,ivariant);
+    } else if (scene->device->tri_traverser == "fast"   ) { intersectors = BVH4Triangle4vIntersectors(accel,IntersectVariant::FAST);
+    } else if (scene->device->tri_traverser == "robust" ) { intersectors = BVH4Triangle4vIntersectors(accel,IntersectVariant::ROBUST);
+    } else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown traverser "+scene->device->tri_traverser+" for BVH4<Triangle4>");
 
     Builder* builder = nullptr;
     if (scene->device->tri_builder == "default") {
@@ -1016,12 +1016,12 @@ namespace embree
       case BuildVariant::HIGH_QUALITY: builder = BVH4Triangle4vSceneBuilderFastSpatialSAH(accel,scene,0); break;
       }
     }
-    else if (scene->device->tri_builder == "sah"         ) builder = BVH4Triangle4vSceneBuilderSAH(accel,scene,0);
-    else if (scene->device->tri_builder == "sah_fast_spatial" ) builder = BVH4Triangle4vSceneBuilderFastSpatialSAH(accel,scene,0);
-    else if (scene->device->tri_builder == "sah_presplit") builder = BVH4Triangle4vSceneBuilderSAH(accel,scene,MODE_HIGH_QUALITY);
-    else if (scene->device->tri_builder == "dynamic"     ) builder = BVH4BuilderTwoLevelTriangle4vMeshSAH(accel,scene,false);
-    else if (scene->device->tri_builder == "morton"      ) builder = BVH4BuilderTwoLevelTriangle4vMeshSAH(accel,scene,true);
-    else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->tri_builder+" for BVH4<Triangle4v>");
+    else if (scene->device->tri_builder == "sah"         ) { builder = BVH4Triangle4vSceneBuilderSAH(accel,scene,0);
+    } else if (scene->device->tri_builder == "sah_fast_spatial" ) { builder = BVH4Triangle4vSceneBuilderFastSpatialSAH(accel,scene,0);
+    } else if (scene->device->tri_builder == "sah_presplit") { builder = BVH4Triangle4vSceneBuilderSAH(accel,scene,MODE_HIGH_QUALITY);
+    } else if (scene->device->tri_builder == "dynamic"     ) { builder = BVH4BuilderTwoLevelTriangle4vMeshSAH(accel,scene,false);
+    } else if (scene->device->tri_builder == "morton"      ) { builder = BVH4BuilderTwoLevelTriangle4vMeshSAH(accel,scene,true);
+    } else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->tri_builder+" for BVH4<Triangle4v>");
 
     return new AccelInstance(accel,builder,intersectors);
   }
@@ -1031,10 +1031,10 @@ namespace embree
     BVH4* accel = new BVH4(Triangle4i::type,scene);
 
     Accel::Intersectors intersectors;
-    if      (scene->device->tri_traverser == "default") intersectors = BVH4Triangle4iIntersectors(accel,ivariant);
-    else if (scene->device->tri_traverser == "fast"   ) intersectors = BVH4Triangle4iIntersectors(accel,IntersectVariant::FAST);
-    else if (scene->device->tri_traverser == "robust" ) intersectors = BVH4Triangle4iIntersectors(accel,IntersectVariant::ROBUST);
-    else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown traverser "+scene->device->tri_traverser+" for BVH4<Triangle4i>");
+    if      (scene->device->tri_traverser == "default") { intersectors = BVH4Triangle4iIntersectors(accel,ivariant);
+    } else if (scene->device->tri_traverser == "fast"   ) { intersectors = BVH4Triangle4iIntersectors(accel,IntersectVariant::FAST);
+    } else if (scene->device->tri_traverser == "robust" ) { intersectors = BVH4Triangle4iIntersectors(accel,IntersectVariant::ROBUST);
+    } else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown traverser "+scene->device->tri_traverser+" for BVH4<Triangle4i>");
 
     Builder* builder = nullptr;
     if (scene->device->tri_builder == "default"     ) {
@@ -1044,12 +1044,12 @@ namespace embree
       case BuildVariant::HIGH_QUALITY: builder = BVH4Triangle4iSceneBuilderFastSpatialSAH(accel,scene,0); break;
       }
     }
-    else if (scene->device->tri_builder == "sah"         ) builder = BVH4Triangle4iSceneBuilderSAH(accel,scene,0);
-    else if (scene->device->tri_builder == "sah_fast_spatial" ) builder = BVH4Triangle4iSceneBuilderFastSpatialSAH(accel,scene,0);
-    else if (scene->device->tri_builder == "sah_presplit") builder = BVH4Triangle4iSceneBuilderSAH(accel,scene,MODE_HIGH_QUALITY);
-    else if (scene->device->tri_builder == "dynamic"     ) builder = BVH4BuilderTwoLevelTriangle4iMeshSAH(accel,scene,false);
-    else if (scene->device->tri_builder == "morton"      ) builder = BVH4BuilderTwoLevelTriangle4iMeshSAH(accel,scene,true);
-    else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->tri_builder+" for BVH4<Triangle4i>");
+    else if (scene->device->tri_builder == "sah"         ) { builder = BVH4Triangle4iSceneBuilderSAH(accel,scene,0);
+    } else if (scene->device->tri_builder == "sah_fast_spatial" ) { builder = BVH4Triangle4iSceneBuilderFastSpatialSAH(accel,scene,0);
+    } else if (scene->device->tri_builder == "sah_presplit") { builder = BVH4Triangle4iSceneBuilderSAH(accel,scene,MODE_HIGH_QUALITY);
+    } else if (scene->device->tri_builder == "dynamic"     ) { builder = BVH4BuilderTwoLevelTriangle4iMeshSAH(accel,scene,false);
+    } else if (scene->device->tri_builder == "morton"      ) { builder = BVH4BuilderTwoLevelTriangle4iMeshSAH(accel,scene,true);
+    } else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->tri_builder+" for BVH4<Triangle4i>");
 
     return new AccelInstance(accel,builder,intersectors);
   }
@@ -1059,10 +1059,10 @@ namespace embree
     BVH4* accel = new BVH4(Triangle4i::type,scene);
 
     Accel::Intersectors intersectors;
-    if      (scene->device->tri_traverser_mb == "default") intersectors = BVH4Triangle4iMBIntersectors(accel,ivariant);
-    else if (scene->device->tri_traverser_mb == "fast"   ) intersectors = BVH4Triangle4iMBIntersectors(accel,IntersectVariant::FAST);
-    else if (scene->device->tri_traverser_mb == "robust" ) intersectors = BVH4Triangle4iMBIntersectors(accel,IntersectVariant::ROBUST);
-    else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown traverser "+scene->device->tri_traverser_mb+" for BVH4<Triangle4iMB>");
+    if      (scene->device->tri_traverser_mb == "default") { intersectors = BVH4Triangle4iMBIntersectors(accel,ivariant);
+    } else if (scene->device->tri_traverser_mb == "fast"   ) { intersectors = BVH4Triangle4iMBIntersectors(accel,IntersectVariant::FAST);
+    } else if (scene->device->tri_traverser_mb == "robust" ) { intersectors = BVH4Triangle4iMBIntersectors(accel,IntersectVariant::ROBUST);
+    } else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown traverser "+scene->device->tri_traverser_mb+" for BVH4<Triangle4iMB>");
 
     Builder* builder = nullptr;
     if (scene->device->tri_builder_mb == "default") {
@@ -1072,8 +1072,8 @@ namespace embree
       case BuildVariant::HIGH_QUALITY: assert(false); break;
       }
     }
-    else  if (scene->device->tri_builder_mb == "internal_time_splits") builder = BVH4Triangle4iMBSceneBuilderSAH(accel,scene,0);
-    else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->tri_builder_mb+" for BVH4<Triangle4iMB>");
+    else  if (scene->device->tri_builder_mb == "internal_time_splits") { builder = BVH4Triangle4iMBSceneBuilderSAH(accel,scene,0);
+    } else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->tri_builder_mb+" for BVH4<Triangle4iMB>");
 
     return new AccelInstance(accel,builder,intersectors);
   }
@@ -1083,10 +1083,10 @@ namespace embree
     BVH4* accel = new BVH4(Triangle4vMB::type,scene);
 
     Accel::Intersectors intersectors;
-    if      (scene->device->tri_traverser_mb == "default") intersectors = BVH4Triangle4vMBIntersectors(accel,ivariant);
-    else if (scene->device->tri_traverser_mb == "fast"   ) intersectors = BVH4Triangle4vMBIntersectors(accel,IntersectVariant::FAST);
-    else if (scene->device->tri_traverser_mb == "robust" ) intersectors = BVH4Triangle4vMBIntersectors(accel,IntersectVariant::ROBUST);
-    else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown traverser "+scene->device->tri_traverser_mb+" for BVH4<Triangle4vMB>");
+    if      (scene->device->tri_traverser_mb == "default") { intersectors = BVH4Triangle4vMBIntersectors(accel,ivariant);
+    } else if (scene->device->tri_traverser_mb == "fast"   ) { intersectors = BVH4Triangle4vMBIntersectors(accel,IntersectVariant::FAST);
+    } else if (scene->device->tri_traverser_mb == "robust" ) { intersectors = BVH4Triangle4vMBIntersectors(accel,IntersectVariant::ROBUST);
+    } else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown traverser "+scene->device->tri_traverser_mb+" for BVH4<Triangle4vMB>");
 
     Builder* builder = nullptr;
     if (scene->device->tri_builder_mb == "default") {
@@ -1096,8 +1096,8 @@ namespace embree
       case BuildVariant::HIGH_QUALITY: assert(false); break;
       }
     }
-    else  if (scene->device->tri_builder_mb == "internal_time_splits") builder = BVH4Triangle4vMBSceneBuilderSAH(accel,scene,0);
-    else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->tri_builder_mb+" for BVH4<Triangle4vMB>");
+    else  if (scene->device->tri_builder_mb == "internal_time_splits") { builder = BVH4Triangle4vMBSceneBuilderSAH(accel,scene,0);
+    } else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->tri_builder_mb+" for BVH4<Triangle4vMB>");
 
     return new AccelInstance(accel,builder,intersectors);
   }
@@ -1115,10 +1115,10 @@ namespace embree
       case BuildVariant::HIGH_QUALITY: builder = BVH4Quad4vSceneBuilderFastSpatialSAH(accel,scene,0); break;
       }
     }
-    else if (scene->device->quad_builder == "sah"              ) builder = BVH4Quad4vSceneBuilderSAH(accel,scene,0);
-    else if (scene->device->quad_builder == "sah_fast_spatial" ) builder = BVH4Quad4vSceneBuilderFastSpatialSAH(accel,scene,0);
-    else if (scene->device->quad_builder == "dynamic"          ) builder = BVH4BuilderTwoLevelQuadMeshSAH(accel,scene,false);
-    else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->quad_builder+" for BVH4<Quad4v>");
+    else if (scene->device->quad_builder == "sah"              ) { builder = BVH4Quad4vSceneBuilderSAH(accel,scene,0);
+    } else if (scene->device->quad_builder == "sah_fast_spatial" ) { builder = BVH4Quad4vSceneBuilderFastSpatialSAH(accel,scene,0);
+    } else if (scene->device->quad_builder == "dynamic"          ) { builder = BVH4BuilderTwoLevelQuadMeshSAH(accel,scene,false);
+    } else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->quad_builder+" for BVH4<Quad4v>");
 
     return new AccelInstance(accel,builder,intersectors);
   }
@@ -1136,8 +1136,8 @@ namespace embree
       case BuildVariant::HIGH_QUALITY: assert(false); break; // FIXME: implement
       }
     }
-    else if (scene->device->quad_builder == "sah") builder = BVH4Quad4iSceneBuilderSAH(accel,scene,0);
-    else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->quad_builder+" for BVH4<Quad4i>");
+    else if (scene->device->quad_builder == "sah") { builder = BVH4Quad4iSceneBuilderSAH(accel,scene,0);
+    } else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->quad_builder+" for BVH4<Quad4i>");
 
     return new AccelInstance(accel,builder,intersectors);
   }
@@ -1155,8 +1155,8 @@ namespace embree
       case BuildVariant::HIGH_QUALITY: assert(false); break;
       }
     }
-    else if (scene->device->quad_builder_mb == "sah") builder = BVH4Quad4iMBSceneBuilderSAH(accel,scene,0);
-    else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->quad_builder_mb+" for BVH4<Quad4iMB>");
+    else if (scene->device->quad_builder_mb == "sah") { builder = BVH4Quad4iMBSceneBuilderSAH(accel,scene,0);
+    } else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->quad_builder_mb+" for BVH4<Quad4iMB>");
 
     return new AccelInstance(accel,builder,intersectors);
   }
@@ -1206,9 +1206,9 @@ namespace embree
       case BuildVariant::HIGH_QUALITY: assert(false); break;
       }
     }
-    else if (scene->device->object_builder == "sah") builder = BVH4VirtualSceneBuilderSAH(accel,scene,0);
-    else if (scene->device->object_builder == "dynamic") builder = BVH4BuilderTwoLevelVirtualSAH(accel,scene,false);
-    else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->object_builder+" for BVH4<Object>");
+    else if (scene->device->object_builder == "sah") { builder = BVH4VirtualSceneBuilderSAH(accel,scene,0);
+    } else if (scene->device->object_builder == "dynamic") { builder = BVH4BuilderTwoLevelVirtualSAH(accel,scene,false);
+    } else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->object_builder+" for BVH4<Object>");
 
     return new AccelInstance(accel,builder,intersectors);
   }
@@ -1236,9 +1236,9 @@ namespace embree
       case BuildVariant::HIGH_QUALITY: assert(false); break;
       }
     }
-    else if (scene->device->object_builder == "sah") builder = BVH4InstanceSceneBuilderSAH(accel,scene,gtype);
-    else if (scene->device->object_builder == "dynamic") builder = BVH4BuilderTwoLevelInstanceSAH(accel,scene,gtype,false);
-    else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->object_builder+" for BVH4<Object>");
+    else if (scene->device->object_builder == "sah") { builder = BVH4InstanceSceneBuilderSAH(accel,scene,gtype);
+    } else if (scene->device->object_builder == "dynamic") { builder = BVH4BuilderTwoLevelInstanceSAH(accel,scene,gtype,false);
+    } else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->object_builder+" for BVH4<Object>");
 
     return new AccelInstance(accel,builder,intersectors);
   }
@@ -1301,7 +1301,7 @@ namespace embree
       intersectors.intersector4  = BVH4GridIntersector4HybridPluecker();
       intersectors.intersector8  = BVH4GridIntersector8HybridPluecker();
       intersectors.intersector16 = BVH4GridIntersector16HybridPluecker();
-#endif      
+#endif
     }
     return intersectors;
   }
@@ -1329,8 +1329,8 @@ namespace embree
       builder = BVH4GridSceneBuilderSAH(accel,scene,0);
     }
     else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->grid_builder+" for BVH4<GridMesh>");
-    
-    return new AccelInstance(accel,builder,intersectors);    
+
+    return new AccelInstance(accel,builder,intersectors);
   }
 
   Accel* BVH4Factory::BVH4GridMB(Scene* scene, BuildVariant bvariant, IntersectVariant ivariant)
@@ -1342,7 +1342,7 @@ namespace embree
       builder = BVH4GridMBSceneBuilderSAH(accel,scene,0);
     }
     else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->grid_builder+" for BVH4MB<GridMesh>");
-    return new AccelInstance(accel,builder,intersectors);        
+    return new AccelInstance(accel,builder,intersectors);
   }
 
 }

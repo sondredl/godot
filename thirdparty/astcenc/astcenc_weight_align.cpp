@@ -40,7 +40,7 @@
 #include "astcenc_internal.h"
 #include "astcenc_vecmathlib.h"
 
-#include <stdio.h>
+#include <cstdio>
 #include <cassert>
 #include <cstring>
 

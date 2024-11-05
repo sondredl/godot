@@ -202,12 +202,7 @@ void NoiseTexture2D::_update_texture() {
 		first_time = false;
 	}
 	if (use_thread) {
-		if (!noise_thread.is_started()) {
-			noise_thread.start(_thread_function, this);
-			regen_queued = false;
-		} else {
-			regen_queued = true;
-		}
+		regen_queued = !!noise_thread.is_started();
 
 	} else {
 		Ref<Image> new_image = _generate_texture();

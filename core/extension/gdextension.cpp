@@ -111,7 +111,7 @@ public:
 		r_error.expected = ce.expected;
 		return ret;
 	}
-	virtual void validated_call(Object *p_object, const Variant **p_args, Variant *r_ret) const override {
+	void validated_call(Object *p_object, const Variant **p_args, Variant *r_ret) const override {
 #ifdef TOOLS_ENABLED
 		ERR_FAIL_COND_MSG(!valid, vformat("Cannot call invalid GDExtension method bind '%s'. It's probably cached - you may need to restart Godot.", name));
 		ERR_FAIL_COND_MSG(p_object && p_object->is_extension_placeholder(), vformat("Cannot call GDExtension method bind '%s' on placeholder instance.", name));
@@ -143,7 +143,7 @@ public:
 		}
 	}
 
-	virtual void ptrcall(Object *p_object, const void **p_args, void *r_ret) const override {
+	void ptrcall(Object *p_object, const void **p_args, void *r_ret) const override {
 #ifdef TOOLS_ENABLED
 		ERR_FAIL_COND_MSG(!valid, vformat("Cannot call invalid GDExtension method bind '%s'. It's probably cached - you may need to restart Godot.", name));
 		ERR_FAIL_COND_MSG(p_object && p_object->is_extension_placeholder(), vformat("Cannot call GDExtension method bind '%s' on placeholder instance.", name));
@@ -153,7 +153,7 @@ public:
 		ptrcall_func(method_userdata, extension_instance, reinterpret_cast<GDExtensionConstTypePtr *>(p_args), (GDExtensionTypePtr)r_ret);
 	}
 
-	virtual bool is_vararg() const override {
+	bool is_vararg() const override {
 		return false;
 	}
 

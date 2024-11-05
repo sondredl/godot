@@ -81,7 +81,7 @@ SwMpool* mpoolInit(uint32_t threads)
 {
     auto allocSize = threads + 1;
 
-    auto mpool = static_cast<SwMpool*>(calloc(1, sizeof(SwMpool)));
+    auto *mpool = static_cast<SwMpool*>(calloc(1, sizeof(SwMpool)));
     mpool->outline = static_cast<SwOutline*>(calloc(1, sizeof(SwOutline) * allocSize));
     mpool->strokeOutline = static_cast<SwOutline*>(calloc(1, sizeof(SwOutline) * allocSize));
     mpool->dashOutline = static_cast<SwOutline*>(calloc(1, sizeof(SwOutline) * allocSize));
@@ -116,7 +116,8 @@ bool mpoolClear(SwMpool* mpool)
 
 bool mpoolTerm(SwMpool* mpool)
 {
-    if (!mpool) return false;
+    if (!mpool) { return false;
+}
 
     mpoolClear(mpool);
 

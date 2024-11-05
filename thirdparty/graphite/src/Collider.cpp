@@ -32,8 +32,9 @@ bool ShiftCollider::initSlot(Segment *seg, Slot *aSlot, const Rect &limit, float
     float a, shift;
     const GlyphCache &gc = seg->getFace()->glyphs();
     unsigned short gid = aSlot->gid();
-    if (!gc.check(gid))
+    if (!gc.check(gid)) {
         return false;
+}
     const BBox &bb = gc.getBoundingBBox(gid);
     const SlantBox &sb = gc.getBoundingSlantBox(gid);
     //float sx = aSlot->origin().x + currShift.x;
@@ -110,8 +111,9 @@ float sdm(float vi, float va, float mx, float my, O op)
     if (op(res, vi + 2 * my))
     {
         res = va + 2 * my;
-        if (op(res, 2 * mx - va))
+        if (op(res, 2 * mx - va)) {
             res = mx + my;
+}
     }
     return res;
 }
@@ -154,7 +156,8 @@ void ShiftCollider::addBox_slope(bool isx, const Rect &box, const BBox &bb, cons
                 c = 0.5f * (sb.si + sb.sa);
                 float smax = min(2 * box.tr.x - d, 2 * box.tr.y + d);
                 float smin = max(2 * box.bl.x - d, 2 * box.bl.y + d);
-                if (smin > smax) return;
+                if (smin > smax) { return;
+}
                 float si;
                 a = d;
                 if (isx)
@@ -171,7 +174,8 @@ void ShiftCollider::addBox_slope(bool isx, const Rect &box, const BBox &bb, cons
                 c = 0.5f * (sb.di + sb.da);
                 float dmax = min(2 * box.tr.x - s, s - 2 * box.bl.y);
                 float dmin = max(2 * box.bl.x - s, s - 2 * box.tr.y);
-                if (dmin > dmax) return;
+                if (dmin > dmax) { return;
+}
                 float di;
                 a = s;
                 if (isx)
@@ -184,8 +188,7 @@ void ShiftCollider::addBox_slope(bool isx, const Rect &box, const BBox &bb, cons
         default :
             break;
     }
-    return;
-}
+    }
 
 // Mark an area with an absolute cost, making it completely inaccessible.
 inline void ShiftCollider::removeBox(const Rect &box, const BBox &bb, const SlantBox &sb, const Position &org, int axis)
@@ -233,8 +236,7 @@ inline void ShiftCollider::removeBox(const Rect &box, const BBox &bb, const Slan
         default :
             break;
     }
-    return;
-}
+    }
 
 // Adjust the movement limits for the target to avoid having it collide
 // with the given neighbor slot. Also determine if there is in fact a collision
@@ -255,8 +257,9 @@ bool ShiftCollider::mergeSlot(Segment *seg, Slot *slot, const SlotCollision *csl
     float torg;
     const GlyphCache &gc = seg->getFace()->glyphs();
     const unsigned short gid = slot->gid();
-    if (!gc.check(gid))
+    if (!gc.check(gid)) {
         return false;
+}
     const BBox &bb = gc.getBoundingBBox(gid);
 
     // SlotCollision * cslot = seg->collisionInfo(slot);
@@ -452,8 +455,9 @@ bool ShiftCollider::mergeSlot(Segment *seg, Slot *slot, const SlotCollision *csl
                 }
             }
 
-            if (vmax < cmin - lmargin || vmin > cmax + lmargin || omax < otmin - lmargin || omin > otmax + lmargin)
+            if (vmax < cmin - lmargin || vmin > cmax + lmargin || omax < otmin - lmargin || omin > otmax + lmargin) {
                 continue;
+}
 
             // Process sub-boxes that are defined for this glyph.
             // We only need to do this if there was in fact a collision with the main octabox.
@@ -508,8 +512,9 @@ bool ShiftCollider::mergeSlot(Segment *seg, Slot *slot, const SlotCollision *csl
                         _ranges[i].exclude_with_margins(vmin, vmax, i);
                     anyhits = true;
                 }
-                if (anyhits)
+                if (anyhits) {
                     isCol = true;
+}
             }
             else // no sub-boxes
             {
@@ -535,8 +540,9 @@ bool ShiftCollider::mergeSlot(Segment *seg, Slot *slot, const SlotCollision *csl
     {
         // Set up the bogus slot representing the exclusion glyph.
         Slot *exclSlot = seg->newSlot();
-        if (!exclSlot)
+        if (!exclSlot) {
             return res;
+}
         exclSlot->setGlyph(seg, cslot->exclGlyph());
         Position exclOrigin(slot->origin() + cslot->exclOffset());
         exclSlot->origin(exclOrigin);
@@ -722,8 +728,10 @@ inline
 static float localmax (float al, float au, float bl, float bu, float x)
 {
     if (al < bl)
-    { if (au < bu) return au < x ? au : x; }
-    else if (au > bu) return bl < x ? bl : x;
+    { if (au < bu) { return au < x ? au : x;
+}}
+    else if (au > bu) { return bl < x ? bl : x;
+}
     return x;
 }
 
@@ -731,8 +739,10 @@ inline
 static float localmin(float al, float au, float bl, float bu, float x)
 {
     if (bl > al)
-    { if (bu > au) return bl > x ? bl : x; }
-    else if (au > bu) return al > x ? al : x;
+    { if (bu > au) { return bl > x ? bl : x;
+}}
+    else if (au > bu) { return al > x ? al : x;
+}
     return x;
 }
 
@@ -784,14 +794,16 @@ static float get_edge(Segment *seg, const Slot *s, const Position &shift, float 
     {
         const BBox &bb = gc.getBoundingBBox(gid);
         const SlantBox &sb = gc.getBoundingSlantBox(gid);
-        if (sy + bb.yi - margin > y + width / 2 || sy + bb.ya + margin < y - width / 2)
+        if (sy + bb.yi - margin > y + width / 2 || sy + bb.ya + margin < y - width / 2) {
             return res;
+}
         float td = sx - sy + y;
         float ts = sx + sy - y;
-        if (isRight)
+        if (isRight) {
             res = localmax(td + sb.da - width / 2, td + sb.da + width / 2, ts + sb.sa - width / 2, ts + sb.sa + width / 2, sx + bb.xa) + margin;
-        else
+        } else {
             res = localmin(td + sb.di - width / 2, td + sb.di + width / 2, ts + sb.si - width / 2, ts + sb.si + width / 2, sx + bb.xi) - margin;
+}
     }
     return res;
 }
@@ -806,9 +818,11 @@ bool KernCollider::initSlot(Segment *seg, Slot *aSlot, const Rect &limit, float 
     // const Slot *last = aSlot;
     const Slot *s;
     int numSlices;
-    while (base->attachedTo())
+    while (base->attachedTo()) {
         base = base->attachedTo();
-    if (margin < 10) margin = 10;
+}
+    if (margin < 10) { margin = 10;
+}
 
     _limit = limit;
     _offsetPrev = offsetPrev; // kern from a previous pass
@@ -830,9 +844,9 @@ bool KernCollider::initSlot(Segment *seg, Slot *aSlot, const Rect &limit, float 
         {
             numSlices = int((ymin - margin - _miny) / _sliceWidth - 1);
             _miny += numSlices * _sliceWidth;
-            if (numSlices < 0)
+            if (numSlices < 0) {
                 _edges.insert(_edges.begin(), -numSlices, (dir & 1) ? 1e38f : -1e38f);
-            else if ((unsigned)numSlices < _edges.size())    // this shouldn't fire since we always grow the range
+            } else if ((unsigned)numSlices < _edges.size())    // this shouldn't fire since we always grow the range
             {
                 Vector<float>::iterator e = _edges.begin();
                 while (numSlices--)
@@ -844,9 +858,9 @@ bool KernCollider::initSlot(Segment *seg, Slot *aSlot, const Rect &limit, float 
         {
             numSlices = int((ymax + margin - _miny) / _sliceWidth + 1);
             _maxy = numSlices * _sliceWidth + _miny;
-            if (numSlices > (int)_edges.size())
+            if (numSlices > (int)_edges.size()) {
                 _edges.insert(_edges.end(), numSlices - _edges.size(), (dir & 1) ? 1e38f : -1e38f);
-            else if (numSlices < (int)_edges.size())   // this shouldn't fire since we always grow the range
+            } else if (numSlices < (int)_edges.size())   // this shouldn't fire since we always grow the range
             {
                 while ((int)_edges.size() > numSlices)
                     _edges.pop_back();
@@ -869,8 +883,9 @@ bool KernCollider::initSlot(Segment *seg, Slot *aSlot, const Rect &limit, float 
     for (s = base; s; s = s->nextInCluster(s))
     {
         SlotCollision *c = seg->collisionInfo(s);
-        if (!gc.check(s->gid()))
+        if (!gc.check(s->gid())) {
             return false;
+}
         const BBox &bs = gc.getBoundingBBox(s->gid());
         float x = s->origin().x + c->shift().x + ((dir & 1) ? bs.xi : bs.xa);
         // Loop over slices.
@@ -888,8 +903,9 @@ bool KernCollider::initSlot(Segment *seg, Slot *aSlot, const Rect &limit, float 
                 if (t < _edges[i])
                 {
                     _edges[i] = t;
-                    if (t < _xbound)
+                    if (t < _xbound) {
                         _xbound = t;
+}
                 }
             }
             else if (!(dir & 1) && x > _edges[i])
@@ -898,8 +914,9 @@ bool KernCollider::initSlot(Segment *seg, Slot *aSlot, const Rect &limit, float 
                 if (t > _edges[i])
                 {
                     _edges[i] = t;
-                    if (t > _xbound)
+                    if (t > _xbound) {
                         _xbound = t;
+}
                 }
             }
         }
@@ -920,35 +937,40 @@ bool KernCollider::initSlot(Segment *seg, Slot *aSlot, const Rect &limit, float 
 bool KernCollider::mergeSlot(Segment *seg, Slot *slot, const Position &currShift, float currSpace, int dir, GR_MAYBE_UNUSED json * const dbgout)
 {
     int rtl = (dir & 1) * 2 - 1;
-    if (!seg->getFace()->glyphs().check(slot->gid()))
+    if (!seg->getFace()->glyphs().check(slot->gid())) {
         return false;
+}
     const Rect &bb = seg->theGlyphBBoxTemporary(slot->gid());
     const float sx = slot->origin().x + currShift.x;
     float x = (sx + (rtl > 0 ? bb.tr.x : bb.bl.x)) * rtl;
     // this isn't going to reduce _mingap so skip
-    if (_hit && x < rtl * (_xbound - _mingap - currSpace))
+    if (_hit && x < rtl * (_xbound - _mingap - currSpace)) {
         return false;
+}
 
     const float sy = slot->origin().y + currShift.y;
     int smin = max(1, int((bb.bl.y + (1 - _miny + sy)) / _sliceWidth + 1)) - 1;
     int smax = min((int)_edges.size() - 2, int((bb.tr.y + (1 - _miny + sy)) / _sliceWidth + 1)) + 1;
-    if (smin > smax)
+    if (smin > smax) {
         return false;
+}
     bool collides = false;
     bool nooverlap = true;
 
     for (int i = smin; i <= smax; ++i)
     {
         float here = _edges[i] * rtl;
-        if (here > (float)9e37)
+        if (here > (float)9e37) {
             continue;
+}
         if (!_hit || x > here - _mingap - currSpace)
         {
             float y = (float)(_miny - 1 + (i + .5f) * _sliceWidth);  // vertical center of slice
             // 2 * currSpace to account for the space that is already separating them and the space we want to add
             float m = get_edge(seg, slot, currShift, y, _sliceWidth, 0., rtl > 0) * rtl + 2 * currSpace;
-            if (m < (float)-8e37)       // only true if the glyph has a gap in it
+            if (m < (float)-8e37) {       // only true if the glyph has a gap in it
                 continue;
+}
             nooverlap = false;
             float t = here - m;
             // _mingap is positive to shrink
@@ -966,13 +988,16 @@ bool KernCollider::mergeSlot(Segment *seg, Slot *slot, const Position &currShift
             }
 #endif
         }
-        else
+        else {
             nooverlap = false;
+}
     }
-    if (nooverlap)
+    if (nooverlap) {
         _mingap = max(_mingap, _xbound - rtl * (currSpace + _margin + x));
-    if (collides && !nooverlap)
+}
+    if (collides && !nooverlap) {
         _hit = true;
+}
     return collides | nooverlap;   // note that true is not a necessarily reliable value
 
 }   // end of KernCollider::mergeSlot
@@ -1054,8 +1079,9 @@ void SlotCollision::initFromSlot(Segment *seg, Slot *slot)
     uint16 gid = slot->gid();
     uint16 aCol = seg->silf()->aCollision(); // flags attr ID
     const GlyphFace * glyphFace = seg->getFace()->glyphs().glyphSafe(gid);
-    if (!glyphFace)
+    if (!glyphFace) {
         return;
+}
     const sparse &p = glyphFace->attrs();
     _flags = p[aCol];
     _limit = Rect(Position(int16(p[aCol+1]), int16(p[aCol+2])),
@@ -1080,10 +1106,11 @@ void SlotCollision::initFromSlot(Segment *seg, Slot *slot)
 
 float SlotCollision::getKern(int dir) const
 {
-    if ((_flags & SlotCollision::COLL_KERN) != 0)
+    if ((_flags & SlotCollision::COLL_KERN) != 0) {
         return float(_shift.x * ((dir & 1) ? -1 : 1));
-    else
+    } else {
     	return 0;
+}
 }
 
 bool SlotCollision::ignore() const

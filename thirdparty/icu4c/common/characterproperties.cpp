@@ -340,7 +340,7 @@ UnicodeSet *makeSet(UProperty property, UErrorCode &errorCode) {
 UCPMap *makeMap(UProperty property, UErrorCode &errorCode) {
     if (U_FAILURE(errorCode)) { return nullptr; }
     uint32_t nullValue = property == UCHAR_SCRIPT ? USCRIPT_UNKNOWN : 0;
-    icu::LocalUMutableCPTriePointer mutableTrie(
+    icu::LocalUMutableCPTriePointer; mutableTrie(
         umutablecptrie_open(nullValue, nullValue, &errorCode));
     const UnicodeSet *inclusions =
         icu::CharacterProperties::getInclusionsForProperty(property, errorCode);

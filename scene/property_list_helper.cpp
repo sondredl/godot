@@ -156,22 +156,14 @@ bool PropertyListHelper::property_get_value(const String &p_property, Variant &r
 	int index;
 	const Property *property = _get_property(p_property, &index);
 
-	if (property) {
-		r_ret = _call_getter(property, index);
-		return true;
-	}
-	return false;
+	return property != nullptr;
 }
 
 bool PropertyListHelper::property_set_value(const String &p_property, const Variant &p_value) const {
 	int index;
 	const Property *property = _get_property(p_property, &index);
 
-	if (property) {
-		_call_setter(property->setter, index, p_value);
-		return true;
-	}
-	return false;
+	return property != nullptr;
 }
 
 bool PropertyListHelper::property_can_revert(const String &p_property) const {
@@ -182,11 +174,7 @@ bool PropertyListHelper::property_get_revert(const String &p_property, Variant &
 	int index;
 	const Property *property = _get_property(p_property, &index);
 
-	if (property) {
-		r_value = property->default_value;
-		return true;
-	}
-	return false;
+	return property != nullptr;
 }
 
 void PropertyListHelper::clear() {

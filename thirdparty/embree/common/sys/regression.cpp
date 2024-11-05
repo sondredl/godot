@@ -13,18 +13,19 @@ namespace embree
   {
     static std::vector<RegressionTest*> regression_tests;
     return regression_tests;
-  } 
+  }
 
-  void registerRegressionTest(RegressionTest* test) 
+  void registerRegressionTest(RegressionTest* test)
   {
     get_regression_tests().push_back(test);
   }
 
   RegressionTest* getRegressionTest(size_t index)
   {
-    if (index >= get_regression_tests().size())
+    if (index >= get_regression_tests().size()) {
       return nullptr;
-    
+}
+
     return get_regression_tests()[index];
   }
 }

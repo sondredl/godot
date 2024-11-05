@@ -99,19 +99,7 @@ void ExportTemplateManager::_update_template_status() {
 	String current_version = VERSION_FULL_CONFIG;
 	current_value->set_text(current_version);
 
-	if (templates.has(current_version)) {
-		current_missing_label->hide();
-		current_installed_label->show();
-
-		current_installed_hb->show();
-		current_version_exists = true;
-	} else {
-		current_installed_label->hide();
-		current_missing_label->show();
-
-		current_installed_hb->hide();
-		current_version_exists = false;
-	}
+	current_version_exists = templates.has(current_version);
 
 	if (is_downloading_templates) {
 		install_options_vb->hide();

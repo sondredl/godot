@@ -55,10 +55,11 @@ namespace glslang {
 //
 void TType::buildMangledName(TString& mangledName) const
 {
-    if (isMatrix())
+    if (isMatrix()) {
         mangledName += 'm';
-    else if (isVector())
+    } else if (isVector()) {
         mangledName += 'v';
+}
 
     switch (basicType) {
     case EbtFloat:              mangledName += 'f';      break;
@@ -87,22 +88,27 @@ void TType::buildMangledName(TString& mangledName) const
         case EbtUint64:  mangledName += "u64"; break;
         default: break; // some compilers want this
         }
-        if (sampler.isImageClass())
+        if (sampler.isImageClass()) {
             mangledName += "I";  // a normal image or subpass
-        else if (sampler.isPureSampler())
+        } else if (sampler.isPureSampler()) {
             mangledName += "p";  // a "pure" sampler
-        else if (!sampler.isCombined())
+        } else if (!sampler.isCombined()) {
             mangledName += "t";  // a "pure" texture
-        else
+        } else {
             mangledName += "s";  // traditional combined sampler
-        if (sampler.isArrayed())
+}
+        if (sampler.isArrayed()) {
             mangledName += "A";
-        if (sampler.isShadow())
+}
+        if (sampler.isShadow()) {
             mangledName += "S";
-        if (sampler.isExternal())
+}
+        if (sampler.isExternal()) {
             mangledName += "E";
-        if (sampler.isYuv())
+}
+        if (sampler.isYuv()) {
             mangledName += "Y";
+}
         switch (sampler.dim) {
         case Esd2D:       mangledName += "2";  break;
         case Esd3D:       mangledName += "3";  break;
@@ -132,20 +138,24 @@ void TType::buildMangledName(TString& mangledName) const
         }
 #endif
 
-        if (sampler.isMultiSample())
+        if (sampler.isMultiSample()) {
             mangledName += "M";
+}
         break;
     case EbtStruct:
     case EbtBlock:
-        if (basicType == EbtStruct)
+        if (basicType == EbtStruct) {
             mangledName += "struct-";
-        else
+        } else {
             mangledName += "block-";
-        if (typeName)
+}
+        if (typeName) {
             mangledName += *typeName;
+}
         for (unsigned int i = 0; i < structure->size(); ++i) {
-            if ((*structure)[i].type->getBasicType() == EbtVoid)
+            if ((*structure)[i].type->getBasicType() == EbtVoid) {
                 continue;
+}
             mangledName += '-';
             (*structure)[i].type->buildMangledName(mangledName);
         }
@@ -154,9 +164,9 @@ void TType::buildMangledName(TString& mangledName) const
         break;
     }
 
-    if (getVectorSize() > 0)
+    if (getVectorSize() > 0) {
         mangledName += static_cast<char>('0' + getVectorSize());
-    else {
+    } else {
         mangledName += static_cast<char>('0' + getMatrixCols());
         mangledName += static_cast<char>('0' + getMatrixRows());
     }
@@ -166,12 +176,14 @@ void TType::buildMangledName(TString& mangledName) const
         char buf[maxSize];
         for (int i = 0; i < arraySizes->getNumDims(); ++i) {
             if (arraySizes->getDimNode(i)) {
-                if (arraySizes->getDimNode(i)->getAsSymbolNode())
+                if (arraySizes->getDimNode(i)->getAsSymbolNode()) {
                     snprintf(buf, maxSize, "s%lld", arraySizes->getDimNode(i)->getAsSymbolNode()->getId());
-                else
+                } else {
                     snprintf(buf, maxSize, "s%p", arraySizes->getDimNode(i));
-            } else
+}
+            } else {
                 snprintf(buf, maxSize, "%d", arraySizes->getDimSize(i));
+}
             mangledName += '[';
             mangledName += buf;
             mangledName += ']';
@@ -189,8 +201,9 @@ void TSymbol::dumpExtensions(TInfoSink& infoSink) const
     if (numExtensions) {
         infoSink.debug << " <";
 
-        for (int i = 0; i < numExtensions; i++)
+        for (int i = 0; i < numExtensions; i++) {
             infoSink.debug << getExtensions()[i] << ",";
+}
 
         infoSink.debug << ">";
     }
@@ -205,8 +218,9 @@ void TVariable::dump(TInfoSink& infoSink, bool complete) const
         infoSink.debug << getName().c_str() << ": " << type.getStorageQualifierString() << " "
                        << type.getBasicTypeString();
 
-        if (type.isArray())
+        if (type.isArray()) {
             infoSink.debug << "[0]";
+}
     }
 
     infoSink.debug << "\n";
@@ -245,8 +259,9 @@ void TAnonMember::dump(TInfoSink& TInfoSink, bool) const
 void TSymbolTableLevel::dump(TInfoSink& infoSink, bool complete) const
 {
     tLevel::const_iterator it;
-    for (it = level.begin(); it != level.end(); ++it)
+    for (it = level.begin(); it != level.end(); ++it) {
         (*it).second->dump(infoSink, complete);
+}
 }
 
 void TSymbolTable::dump(TInfoSink& infoSink, bool complete) const
@@ -262,8 +277,9 @@ void TSymbolTable::dump(TInfoSink& infoSink, bool complete) const
 //
 TFunction::~TFunction()
 {
-    for (TParamList::iterator i = parameters.begin(); i != parameters.end(); ++i)
+    for (TParamList::iterator i = parameters.begin(); i != parameters.end(); ++i) {
         delete (*i).type;
+}
 }
 
 //
@@ -275,8 +291,9 @@ TSymbolTableLevel::~TSymbolTableLevel()
         const TString& name = it->first;
         auto retargetIter = std::find_if(retargetedSymbols.begin(), retargetedSymbols.end(),
                                       [&name](const std::pair<TString, TString>& i) { return i.first == name; });
-        if (retargetIter == retargetedSymbols.end())
+        if (retargetIter == retargetedSymbols.end()) {
             delete (*it).second;
+}
     }
 
 
@@ -296,8 +313,9 @@ void TSymbolTableLevel::relateToOperator(const char* name, TOperator op)
         if (parenAt != candidateName.npos && candidateName.compare(0, parenAt, name) == 0) {
             TFunction* function = (*candidate).second->getAsFunction();
             function->relateToOperator(op);
-        } else
+        } else {
             break;
+}
         ++candidate;
     }
 }
@@ -313,8 +331,9 @@ void TSymbolTableLevel::setFunctionExtensions(const char* name, int num, const c
         if (parenAt != candidateName.npos && candidateName.compare(0, parenAt, name) == 0) {
             TSymbol* symbol = candidate->second;
             symbol->setExtensions(num, extensions);
-        } else
+        } else {
             break;
+}
         ++candidate;
     }
 }
@@ -334,8 +353,9 @@ void TSymbolTableLevel::setSingleFunctionExtensions(const char* name, int num, c
 //
 void TSymbolTableLevel::readOnly()
 {
-    for (tLevel::iterator it = level.begin(); it != level.end(); ++it)
+    for (tLevel::iterator it = level.begin(); it != level.end(); ++it) {
         (*it).second->makeReadOnly();
+}
 }
 
 //
@@ -357,12 +377,14 @@ TVariable::TVariable(const TVariable& copyOf) : TSymbol(copyOf)
     constSubtree = nullptr;
     extensions = nullptr;
     memberExtensions = nullptr;
-    if (copyOf.getNumExtensions() > 0)
+    if (copyOf.getNumExtensions() > 0) {
         setExtensions(copyOf.getNumExtensions(), copyOf.getExtensions());
+}
     if (copyOf.hasMemberExtensions()) {
         for (int m = 0; m < (int)copyOf.type.getStruct()->size(); ++m) {
-            if (copyOf.getNumMemberExtensions(m) > 0)
+            if (copyOf.getNumMemberExtensions(m) > 0) {
                 setMemberExtensions(m, copyOf.getNumMemberExtensions(m), copyOf.getMemberExtensions(m));
+}
         }
     }
 
@@ -389,8 +411,9 @@ TFunction::TFunction(const TFunction& copyOf) : TSymbol(copyOf)
     }
 
     extensions = nullptr;
-    if (copyOf.getNumExtensions() > 0)
+    if (copyOf.getNumExtensions() > 0) {
         setExtensions(copyOf.getNumExtensions(), copyOf.getExtensions());
+}
     returnType.deepCopy(copyOf.returnType);
     mangledName = copyOf.mangledName;
     op = copyOf.op;
@@ -425,7 +448,7 @@ TSymbolTableLevel* TSymbolTableLevel::clone() const
     symTableLevel->anonId = anonId;
     symTableLevel->thisLevel = thisLevel;
     symTableLevel->retargetedSymbols.clear();
-    for (auto &s : retargetedSymbols) {
+    for (const auto &s : retargetedSymbols) {
         symTableLevel->retargetedSymbols.push_back({s.first, s.second});
     }
     std::vector<bool> containerCopied(anonId, false);
@@ -447,16 +470,18 @@ TSymbolTableLevel* TSymbolTableLevel::clone() const
             const TString& name = iter->first;
             auto retargetIter = std::find_if(retargetedSymbols.begin(), retargetedSymbols.end(),
                                           [&name](const std::pair<TString, TString>& i) { return i.first == name; });
-            if (retargetIter != retargetedSymbols.end())
+            if (retargetIter != retargetedSymbols.end()) {
                 continue;
+}
             symTableLevel->insert(*iter->second->clone(), false);
         }
     }
     // Now point retargeted symbols to the newly created versions of them
-    for (auto &s : retargetedSymbols) {
+    for (const auto &s : retargetedSymbols) {
         TSymbol* sym = symTableLevel->find(s.second);
-        if (!sym)
+        if (!sym) {
             continue;
+}
         symTableLevel->insert(s.first, sym);
     }
 
@@ -470,8 +495,9 @@ void TSymbolTable::copyTable(const TSymbolTable& copyOf)
     uniqueId = copyOf.uniqueId;
     noBuiltInRedeclarations = copyOf.noBuiltInRedeclarations;
     separateNameSpaces = copyOf.separateNameSpaces;
-    for (unsigned int i = copyOf.adoptedLevels; i < copyOf.table.size(); ++i)
+    for (unsigned int i = copyOf.adoptedLevels; i < copyOf.table.size(); ++i) {
         table.push_back(copyOf.table[i]->clone());
+}
 }
 
 } // end namespace glslang

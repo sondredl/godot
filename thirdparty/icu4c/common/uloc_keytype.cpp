@@ -384,10 +384,7 @@ bool
 init() {
     UErrorCode sts = U_ZERO_ERROR;
     umtx_initOnce(gLocExtKeyMapInitOnce, &initFromResourceBundle, sts);
-    if (U_FAILURE(sts)) {
-        return false;
-    }
-    return true;
+    return U_FAILURE(sts) == 0;
 }
 
 bool

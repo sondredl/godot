@@ -65,7 +65,7 @@ bool RenderingDeviceGraph::_is_write_usage(ResourceUsage p_usage) {
 		case RESOURCE_USAGE_ATTACHMENT_DEPTH_STENCIL_READ_WRITE:
 			return true;
 		default:
-			DEV_ASSERT(false && "Invalid resource tracker usage.");
+			DEV_ASSERT(false);
 			return false;
 	}
 }
@@ -92,7 +92,7 @@ RDD::TextureLayout RenderingDeviceGraph::_usage_to_image_layout(ResourceUsage p_
 		case RESOURCE_USAGE_NONE:
 			return RDD::TEXTURE_LAYOUT_UNDEFINED;
 		default:
-			DEV_ASSERT(false && "Invalid resource tracker usage or not an image usage.");
+			DEV_ASSERT(false);
 			return RDD::TEXTURE_LAYOUT_UNDEFINED;
 	}
 }
@@ -134,7 +134,7 @@ RDD::BarrierAccessBits RenderingDeviceGraph::_usage_to_access_bits(ResourceUsage
 		case RESOURCE_USAGE_ATTACHMENT_DEPTH_STENCIL_READ_WRITE:
 			return RDD::BarrierAccessBits(RDD::BARRIER_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | RDD::BARRIER_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT);
 		default:
-			DEV_ASSERT(false && "Invalid usage.");
+			DEV_ASSERT(false);
 			return RDD::BarrierAccessBits(0);
 	}
 #endif
@@ -677,7 +677,7 @@ void RenderingDeviceGraph::_run_compute_list_command(RDD::CommandBufferID p_comm
 				instruction_data_cursor += sizeof(ComputeListUniformSetPrepareForUseInstruction);
 			} break;
 			default:
-				DEV_ASSERT(false && "Unknown compute list instruction type.");
+				DEV_ASSERT(false);
 				return;
 		}
 	}
@@ -784,7 +784,7 @@ void RenderingDeviceGraph::_run_draw_list_command(RDD::CommandBufferID p_command
 				instruction_data_cursor += sizeof(DrawListUniformSetPrepareForUseInstruction);
 			} break;
 			default:
-				DEV_ASSERT(false && "Unknown draw list instruction type.");
+				DEV_ASSERT(false);
 				return;
 		}
 	}
@@ -1272,7 +1272,7 @@ void RenderingDeviceGraph::_print_draw_list(const uint8_t *p_instruction_data, u
 				instruction_data_cursor += sizeof(DrawListUniformSetPrepareForUseInstruction);
 			} break;
 			default:
-				DEV_ASSERT(false && "Unknown draw list instruction type.");
+				DEV_ASSERT(false);
 				return;
 		}
 	}
@@ -1317,7 +1317,7 @@ void RenderingDeviceGraph::_print_compute_list(const uint8_t *p_instruction_data
 				instruction_data_cursor += sizeof(ComputeListUniformSetPrepareForUseInstruction);
 			} break;
 			default:
-				DEV_ASSERT(false && "Unknown compute list instruction type.");
+				DEV_ASSERT(false);
 				return;
 		}
 	}

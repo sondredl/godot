@@ -246,12 +246,7 @@ bool OpenXRAPI::OpenXRSwapChainInfo::release() {
 		nullptr // next
 	};
 	XrResult result = openxr_api->xrReleaseSwapchainImage(swapchain, &swapchain_image_release_info);
-	if (XR_FAILED(result)) {
-		print_line("OpenXR: failed to release swapchain image! [", openxr_api->get_error_string(result), "]");
-		return false;
-	}
-
-	return true;
+	return !XR_FAILED(result);
 }
 
 RID OpenXRAPI::OpenXRSwapChainInfo::get_image() {
@@ -897,23 +892,7 @@ bool OpenXRAPI::load_supported_reference_spaces() {
 	}
 
 	XrResult result = xrEnumerateReferenceSpaces(session, 0, &num_reference_spaces, nullptr);
-	if (XR_FAILED(result)) {
-		print_line("OpenXR: Failed to get reference space count [", get_error_string(result), "]");
-		return false;
-	}
-
-	supported_reference_spaces = (XrReferenceSpaceType *)memalloc(sizeof(XrReferenceSpaceType) * num_reference_spaces);
-	ERR_FAIL_NULL_V(supported_reference_spaces, false);
-
-	result = xrEnumerateReferenceSpaces(session, num_reference_spaces, &num_reference_spaces, supported_reference_spaces);
-	ERR_FAIL_COND_V_MSG(XR_FAILED(result), false, "OpenXR: Failed to enumerate reference spaces");
-	ERR_FAIL_COND_V_MSG(num_reference_spaces == 0, false, "OpenXR: Failed to enumerate reference spaces");
-
-	for (uint32_t i = 0; i < num_reference_spaces; i++) {
-		print_verbose(String("OpenXR: Found supported reference space ") + OpenXRUtil::get_reference_space_name(supported_reference_spaces[i]));
-	}
-
-	return true;
+	return !XR_FAILED(result);
 }
 
 bool OpenXRAPI::is_reference_space_supported(XrReferenceSpaceType p_reference_space) {
@@ -1053,14 +1032,7 @@ bool OpenXRAPI::setup_view_space() {
 	};
 
 	XrResult result = xrCreateReferenceSpace(session, &view_space_create_info, &view_space);
-	if (XR_FAILED(result)) {
-		print_line("OpenXR: Failed to create view space [", get_error_string(result), "]");
-		return false;
-	}
-
-	set_object_name(XR_OBJECT_TYPE_SPACE, uint64_t(view_space), "View space");
-
-	return true;
+	return !XR_FAILED(result);
 }
 
 bool OpenXRAPI::reset_emulated_floor_height() {
@@ -1126,22 +1098,7 @@ bool OpenXRAPI::load_supported_swapchain_formats() {
 	}
 
 	XrResult result = xrEnumerateSwapchainFormats(session, 0, &num_swapchain_formats, nullptr);
-	if (XR_FAILED(result)) {
-		print_line("OpenXR: Failed to get swapchain format count [", get_error_string(result), "]");
-		return false;
-	}
-
-	supported_swapchain_formats = (int64_t *)memalloc(sizeof(int64_t) * num_swapchain_formats);
-	ERR_FAIL_NULL_V(supported_swapchain_formats, false);
-
-	result = xrEnumerateSwapchainFormats(session, num_swapchain_formats, &num_swapchain_formats, supported_swapchain_formats);
-	ERR_FAIL_COND_V_MSG(XR_FAILED(result), false, "OpenXR: Failed to enumerate swapchain formats");
-
-	for (uint32_t i = 0; i < num_swapchain_formats; i++) {
-		print_verbose(String("OpenXR: Found supported swapchain format ") + get_swapchain_format_name(supported_swapchain_formats[i]));
-	}
-
-	return true;
+	return !XR_FAILED(result);
 }
 
 bool OpenXRAPI::is_swapchain_format_supported(int64_t p_swapchain_format) {
@@ -3173,14 +3130,7 @@ bool OpenXRAPI::interaction_profile_add_binding(RID p_interaction_profile, RID p
 	binding.action = action->handle;
 
 	XrResult result = xrStringToPath(instance, p_path.utf8().get_data(), &binding.binding);
-	if (XR_FAILED(result)) {
-		print_line("OpenXR: failed to get path for ", p_path, "! [", get_error_string(result), "]");
-		return false;
-	}
-
-	ip->bindings.push_back(binding);
-
-	return true;
+	return !XR_FAILED(result);
 }
 
 bool OpenXRAPI::interaction_profile_suggest_bindings(RID p_interaction_profile) {
@@ -3262,12 +3212,7 @@ bool OpenXRAPI::sync_action_sets(const Vector<RID> p_active_sets) {
 	};
 
 	XrResult result = xrSyncActions(session, &sync_info);
-	if (XR_FAILED(result)) {
-		print_line("OpenXR: failed to sync active action sets! [", get_error_string(result), "]");
-		return false;
-	}
-
-	return true;
+	return !XR_FAILED(result);
 }
 
 bool OpenXRAPI::get_action_bool(RID p_action, RID p_tracker) {
@@ -3482,12 +3427,7 @@ bool OpenXRAPI::trigger_haptic_pulse(RID p_action, RID p_tracker, float p_freque
 	};
 
 	XrResult result = xrApplyHapticFeedback(session, &action_info, (const XrHapticBaseHeader *)&vibration);
-	if (XR_FAILED(result)) {
-		print_line("OpenXR: failed to apply haptic feedback! [", get_error_string(result), "]");
-		return false;
-	}
-
-	return true;
+	return !XR_FAILED(result);
 }
 
 void OpenXRAPI::register_composition_layer_provider(OpenXRCompositionLayerProvider *provider) {

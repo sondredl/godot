@@ -120,26 +120,30 @@ TIntermTyped* TIntermConstantUnion::fold(TOperator op, const TIntermTyped* right
 
     switch(op) {
     case EOpAdd:
-        for (int i = 0; i < newComps; i++)
+        for (int i = 0; i < newComps; i++) {
             newConstArray[i] = leftUnionArray[i] + rightUnionArray[i];
+}
         break;
     case EOpSub:
-        for (int i = 0; i < newComps; i++)
+        for (int i = 0; i < newComps; i++) {
             newConstArray[i] = leftUnionArray[i] - rightUnionArray[i];
+}
         break;
 
     case EOpMul:
     case EOpVectorTimesScalar:
     case EOpMatrixTimesScalar:
-        for (int i = 0; i < newComps; i++)
+        for (int i = 0; i < newComps; i++) {
             newConstArray[i] = leftUnionArray[i] * rightUnionArray[i];
+}
         break;
     case EOpMatrixTimesMatrix:
         for (int row = 0; row < getMatrixRows(); row++) {
             for (int column = 0; column < rightNode->getMatrixCols(); column++) {
                 double sum = 0.0f;
-                for (int i = 0; i < rightNode->getMatrixRows(); i++)
+                for (int i = 0; i < rightNode->getMatrixRows(); i++) {
                     sum += leftUnionArray[i * getMatrixRows() + row].getDConst() * rightUnionArray[column * rightNode->getMatrixRows() + i].getDConst();
+}
                 newConstArray[column * getMatrixRows() + row].setDConst(sum);
             }
         }
@@ -151,78 +155,87 @@ TIntermTyped* TIntermConstantUnion::fold(TOperator op, const TIntermTyped* right
             case EbtDouble:
             case EbtFloat:
             case EbtFloat16:
-                if (rightUnionArray[i].getDConst() != 0.0)
+                if (rightUnionArray[i].getDConst() != 0.0) {
                     newConstArray[i].setDConst(leftUnionArray[i].getDConst() / rightUnionArray[i].getDConst());
-                else if (leftUnionArray[i].getDConst() > 0.0)
+                } else if (leftUnionArray[i].getDConst() > 0.0) {
                     newConstArray[i].setDConst((double)INFINITY);
-                else if (leftUnionArray[i].getDConst() < 0.0)
+                } else if (leftUnionArray[i].getDConst() < 0.0) {
                     newConstArray[i].setDConst(-(double)INFINITY);
-                else
+                } else {
                     newConstArray[i].setDConst((double)NAN);
+}
                 break;
 
             case EbtInt:
-                if (rightUnionArray[i] == 0)
+                if (rightUnionArray[i] == 0) {
                     newConstArray[i].setIConst(0x7FFFFFFF);
-                else if (rightUnionArray[i].getIConst() == -1 && leftUnionArray[i].getIConst() == (int)-0x80000000ll)
+                } else if (rightUnionArray[i].getIConst() == -1 && leftUnionArray[i].getIConst() == (int)-0x80000000ll) {
                     newConstArray[i].setIConst((int)-0x80000000ll);
-                else
+                } else {
                     newConstArray[i].setIConst(leftUnionArray[i].getIConst() / rightUnionArray[i].getIConst());
+}
                 break;
 
             case EbtUint:
-                if (rightUnionArray[i] == 0u)
+                if (rightUnionArray[i] == 0u) {
                     newConstArray[i].setUConst(0xFFFFFFFFu);
-                else
+                } else {
                     newConstArray[i].setUConst(leftUnionArray[i].getUConst() / rightUnionArray[i].getUConst());
+}
                 break;
 
             case EbtInt8:
-                if (rightUnionArray[i] == (signed char)0)
+                if (rightUnionArray[i] == (signed char)0) {
                     newConstArray[i].setI8Const((signed char)0x7F);
-                else if (rightUnionArray[i].getI8Const() == (signed char)-1 && leftUnionArray[i].getI8Const() == (signed char)-0x80)
+                } else if (rightUnionArray[i].getI8Const() == (signed char)-1 && leftUnionArray[i].getI8Const() == (signed char)-0x80) {
                     newConstArray[i].setI8Const((signed char)-0x80);
-                else
+                } else {
                     newConstArray[i].setI8Const(leftUnionArray[i].getI8Const() / rightUnionArray[i].getI8Const());
+}
                 break;
 
             case EbtUint8:
-                if (rightUnionArray[i] == (unsigned char)0u)
+                if (rightUnionArray[i] == (unsigned char)0u) {
                     newConstArray[i].setU8Const((unsigned char)0xFFu);
-                else
+                } else {
                     newConstArray[i].setU8Const(leftUnionArray[i].getU8Const() / rightUnionArray[i].getU8Const());
+}
                 break;
 
            case EbtInt16:
-                if (rightUnionArray[i] == (signed short)0)
+                if (rightUnionArray[i] == (signed short)0) {
                     newConstArray[i].setI16Const((signed short)0x7FFF);
-                else if (rightUnionArray[i].getI16Const() == (signed short)-1 && leftUnionArray[i].getI16Const() == (signed short)-0x8000)
+                } else if (rightUnionArray[i].getI16Const() == (signed short)-1 && leftUnionArray[i].getI16Const() == (signed short)-0x8000) {
                     newConstArray[i].setI16Const((signed short)-0x8000);
-                else
+                } else {
                     newConstArray[i].setI16Const(leftUnionArray[i].getI16Const() / rightUnionArray[i].getI16Const());
+}
                 break;
 
             case EbtUint16:
-                if (rightUnionArray[i] == (unsigned short)0u)
+                if (rightUnionArray[i] == (unsigned short)0u) {
                     newConstArray[i].setU16Const((unsigned short)0xFFFFu);
-                else
+                } else {
                     newConstArray[i].setU16Const(leftUnionArray[i].getU16Const() / rightUnionArray[i].getU16Const());
+}
                 break;
 
             case EbtInt64:
-                if (rightUnionArray[i] == 0ll)
+                if (rightUnionArray[i] == 0ll) {
                     newConstArray[i].setI64Const(LLONG_MAX);
-                else if (rightUnionArray[i].getI64Const() == -1 && leftUnionArray[i].getI64Const() == LLONG_MIN)
+                } else if (rightUnionArray[i].getI64Const() == -1 && leftUnionArray[i].getI64Const() == LLONG_MIN) {
                     newConstArray[i].setI64Const(LLONG_MIN);
-                else
+                } else {
                     newConstArray[i].setI64Const(leftUnionArray[i].getI64Const() / rightUnionArray[i].getI64Const());
+}
                 break;
 
             case EbtUint64:
-                if (rightUnionArray[i] == 0ull)
+                if (rightUnionArray[i] == 0ull) {
                     newConstArray[i].setU64Const(0xFFFFFFFFFFFFFFFFull);
-                else
+                } else {
                     newConstArray[i].setU64Const(leftUnionArray[i].getU64Const() / rightUnionArray[i].getU64Const());
+}
                 break;
             default:
                 return nullptr;
@@ -245,8 +258,9 @@ TIntermTyped* TIntermConstantUnion::fold(TOperator op, const TIntermTyped* right
     case EOpVectorTimesMatrix:
         for (int i = 0; i < rightNode->getMatrixCols(); i++) {
             double sum = 0.0f;
-            for (int j = 0; j < getVectorSize(); j++)
+            for (int j = 0; j < getVectorSize(); j++) {
                 sum += leftUnionArray[j].getDConst() * rightUnionArray[i*rightNode->getMatrixRows() + j].getDConst();
+}
             newConstArray[i].setDConst(sum);
         }
 
@@ -255,25 +269,28 @@ TIntermTyped* TIntermConstantUnion::fold(TOperator op, const TIntermTyped* right
 
     case EOpMod:
         for (int i = 0; i < newComps; i++) {
-            if (rightUnionArray[i] == 0)
+            if (rightUnionArray[i] == 0) {
                 newConstArray[i] = leftUnionArray[i];
-            else {
+            } else {
                 switch (getType().getBasicType()) {
                 case EbtInt:
                     if (rightUnionArray[i].getIConst() == -1 && leftUnionArray[i].getIConst() == INT_MIN) {
                         newConstArray[i].setIConst(0);
                         break;
-                    } else goto modulo_default;
+                    } else { goto modulo_default;
+}
                 case EbtInt64:
                     if (rightUnionArray[i].getI64Const() == -1 && leftUnionArray[i].getI64Const() == LLONG_MIN) {
                         newConstArray[i].setI64Const(0);
                         break;
-                    } else goto modulo_default;
+                    } else { goto modulo_default;
+}
                 case EbtInt16:
                     if (rightUnionArray[i].getIConst() == -1 && leftUnionArray[i].getIConst() == SHRT_MIN) {
                         newConstArray[i].setIConst(0);
                         break;
-                    } else goto modulo_default;
+                    } else { goto modulo_default;
+}
                 default:
                 modulo_default:
                     newConstArray[i] = leftUnionArray[i] % rightUnionArray[i];
@@ -283,42 +300,49 @@ TIntermTyped* TIntermConstantUnion::fold(TOperator op, const TIntermTyped* right
         break;
 
     case EOpRightShift:
-        for (int i = 0; i < newComps; i++)
+        for (int i = 0; i < newComps; i++) {
             newConstArray[i] = leftUnionArray[i] >> rightUnionArray[i];
+}
         break;
 
     case EOpLeftShift:
-        for (int i = 0; i < newComps; i++)
+        for (int i = 0; i < newComps; i++) {
             newConstArray[i] = leftUnionArray[i] << rightUnionArray[i];
+}
         break;
 
     case EOpAnd:
-        for (int i = 0; i < newComps; i++)
+        for (int i = 0; i < newComps; i++) {
             newConstArray[i] = leftUnionArray[i] & rightUnionArray[i];
+}
         break;
     case EOpInclusiveOr:
-        for (int i = 0; i < newComps; i++)
+        for (int i = 0; i < newComps; i++) {
             newConstArray[i] = leftUnionArray[i] | rightUnionArray[i];
+}
         break;
     case EOpExclusiveOr:
-        for (int i = 0; i < newComps; i++)
+        for (int i = 0; i < newComps; i++) {
             newConstArray[i] = leftUnionArray[i] ^ rightUnionArray[i];
+}
         break;
 
     case EOpLogicalAnd: // this code is written for possible future use, will not get executed currently
-        for (int i = 0; i < newComps; i++)
+        for (int i = 0; i < newComps; i++) {
             newConstArray[i] = leftUnionArray[i] && rightUnionArray[i];
+}
         break;
 
     case EOpLogicalOr: // this code is written for possible future use, will not get executed currently
-        for (int i = 0; i < newComps; i++)
+        for (int i = 0; i < newComps; i++) {
             newConstArray[i] = leftUnionArray[i] || rightUnionArray[i];
+}
         break;
 
     case EOpLogicalXor:
         for (int i = 0; i < newComps; i++) {
             switch (getType().getBasicType()) {
-            case EbtBool: newConstArray[i].setBConst((leftUnionArray[i] == rightUnionArray[i]) ? false : true); break;
+            case EbtBool: newConstArray[i].setBConst(leftUnionArray[i] != rightUnionArray[i]); break;
             default: assert(false && "Default missing");
             }
         }
@@ -427,14 +451,16 @@ TIntermTyped* TIntermConstantUnion::fold(TOperator op, const TType& returnType) 
     case EOpNormalize:
     {
         double sum = 0;
-        for (int i = 0; i < objectSize; i++)
+        for (int i = 0; i < objectSize; i++) {
             sum += unionArray[i].getDConst() * unionArray[i].getDConst();
+}
         double length = sqrt(sum);
-        if (op == EOpLength)
+        if (op == EOpLength) {
             newConstArray[0].setDConst(length);
-        else {
-            for (int i = 0; i < objectSize; i++)
+        } else {
+            for (int i = 0; i < objectSize; i++) {
                 newConstArray[i].setDConst(unionArray[i].getDConst() / length);
+}
         }
         break;
     }
@@ -443,8 +469,9 @@ TIntermTyped* TIntermConstantUnion::fold(TOperator op, const TType& returnType) 
     {
         bool result = false;
         for (int i = 0; i < objectSize; i++) {
-            if (unionArray[i].getBConst())
+            if (unionArray[i].getBConst()) {
                 result = true;
+}
         }
         newConstArray[0].setBConst(result);
         break;
@@ -453,8 +480,9 @@ TIntermTyped* TIntermConstantUnion::fold(TOperator op, const TType& returnType) 
     {
         bool result = true;
         for (int i = 0; i < objectSize; i++) {
-            if (! unionArray[i].getBConst())
+            if (! unionArray[i].getBConst()) {
                 result = false;
+}
         }
         newConstArray[0].setBConst(result);
         break;
@@ -485,8 +513,9 @@ TIntermTyped* TIntermConstantUnion::fold(TOperator op, const TType& returnType) 
     }
 
     // Turn off the componentwise loop
-    if (! componentWise)
+    if (! componentWise) {
         objectSize = 0;
+}
 
     // Process component-wise operations
     for (int i = 0; i < objectSize; i++) {
@@ -582,28 +611,31 @@ TIntermTyped* TIntermConstantUnion::fold(TOperator op, const TType& returnType) 
             break;
 
         case EOpAbs:
-            if (unionArray[i].getType() == EbtDouble)
+            if (unionArray[i].getType() == EbtDouble) {
                 newConstArray[i].setDConst(fabs(unionArray[i].getDConst()));
-            else if (unionArray[i].getType() == EbtInt)
+            } else if (unionArray[i].getType() == EbtInt) {
                 newConstArray[i].setIConst(abs(unionArray[i].getIConst()));
-            else
+            } else {
                 newConstArray[i] = unionArray[i];
+}
             break;
         case EOpSign:
             #define SIGN(X) (X == 0 ? 0 : (X < 0 ? -1 : 1))
-            if (unionArray[i].getType() == EbtDouble)
+            if (unionArray[i].getType() == EbtDouble) {
                 newConstArray[i].setDConst(SIGN(unionArray[i].getDConst()));
-            else
+            } else {
                 newConstArray[i].setIConst(SIGN(unionArray[i].getIConst()));
+}
             break;
         case EOpFloor:
             newConstArray[i].setDConst(floor(unionArray[i].getDConst()));
             break;
         case EOpTrunc:
-            if (unionArray[i].getDConst() > 0)
+            if (unionArray[i].getDConst() > 0) {
                 newConstArray[i].setDConst(floor(unionArray[i].getDConst()));
-            else
+            } else {
                 newConstArray[i].setDConst(ceil(unionArray[i].getDConst()));
+}
             break;
         case EOpRound:
             newConstArray[i].setDConst(floor(0.5 + unionArray[i].getDConst()));
@@ -952,14 +984,17 @@ TIntermTyped* TIntermConstantUnion::fold(TOperator op, const TType& returnType) 
 //
 TIntermTyped* TIntermediate::fold(TIntermAggregate* aggrNode)
 {
-    if (aggrNode == nullptr)
+    if (aggrNode == nullptr) {
         return aggrNode;
+}
 
-    if (! areAllChildConst(aggrNode))
+    if (! areAllChildConst(aggrNode)) {
         return aggrNode;
+}
 
-    if (aggrNode->isConstructor())
+    if (aggrNode->isConstructor()) {
         return foldConstructor(aggrNode);
+}
 
     TIntermSequence& children = aggrNode->getSequence();
 
@@ -1015,8 +1050,9 @@ TIntermTyped* TIntermediate::fold(TIntermAggregate* aggrNode)
     TConstUnionArray newConstArray(objectSize);
 
     TVector<TConstUnionArray> childConstUnions;
-    for (unsigned int arg = 0; arg < children.size(); ++arg)
+    for (unsigned int arg = 0; arg < children.size(); ++arg) {
         childConstUnions.push_back(children[arg]->getAsConstantUnion()->getConstArray());
+}
 
     if (componentwise) {
         for (int comp = 0; comp < objectSize; comp++) {
@@ -1024,11 +1060,13 @@ TIntermTyped* TIntermediate::fold(TIntermAggregate* aggrNode)
             // some arguments are scalars instead of matching vectors; simulate a smear
             int arg0comp = std::min(comp, children[0]->getAsTyped()->getType().getVectorSize() - 1);
             int arg1comp = 0;
-            if (children.size() > 1)
+            if (children.size() > 1) {
                 arg1comp = std::min(comp, children[1]->getAsTyped()->getType().getVectorSize() - 1);
+}
             int arg2comp = 0;
-            if (children.size() > 2)
+            if (children.size() > 2) {
                 arg2comp = std::min(comp, children[2]->getAsTyped()->getType().getVectorSize() - 1);
+}
 
             switch (aggrNode->getOp()) {
             case EOpAtan:
@@ -1175,8 +1213,9 @@ TIntermTyped* TIntermediate::fold(TIntermAggregate* aggrNode)
                 newConstArray[comp].setBConst(childConstUnions[0][arg0comp] != childConstUnions[1][arg1comp]);
                 break;
             case EOpMix:
-                if (!children[0]->getAsTyped()->isFloatingDomain())
+                if (!children[0]->getAsTyped()->isFloatingDomain()) {
                     return aggrNode;
+}
                 if (children[2]->getAsTyped()->getBasicType() == EbtBool) {
                     newConstArray[comp].setDConst(childConstUnions[2][arg2comp].getBConst()
                         ? childConstUnions[1][arg1comp].getDConst()
@@ -1194,10 +1233,12 @@ TIntermTyped* TIntermediate::fold(TIntermAggregate* aggrNode)
             {
                 double t = (childConstUnions[2][arg2comp].getDConst() - childConstUnions[0][arg0comp].getDConst()) /
                            (childConstUnions[1][arg1comp].getDConst() - childConstUnions[0][arg0comp].getDConst());
-                if (t < 0.0)
+                if (t < 0.0) {
                     t = 0.0;
-                if (t > 1.0)
+}
+                if (t > 1.0) {
                     t = 1.0;
+}
                 newConstArray[comp].setDConst(t * t * (3.0 - 2.0 * t));
                 break;
             }
@@ -1234,18 +1275,20 @@ TIntermTyped* TIntermediate::fold(TIntermAggregate* aggrNode)
             // If dot(Nref, I) < 0 return N, otherwise return -N:  Arguments are (N, I, Nref).
             dot = childConstUnions[1].dot(childConstUnions[2]);
             for (int comp = 0; comp < numComps; ++comp) {
-                if (dot < 0.0)
+                if (dot < 0.0) {
                     newConstArray[comp] = childConstUnions[0][comp];
-                else
+                } else {
                     newConstArray[comp].setDConst(-childConstUnions[0][comp].getDConst());
+}
             }
             break;
         case EOpReflect:
             // I - 2 * dot(N, I) * N:  Arguments are (I, N).
             dot = childConstUnions[0].dot(childConstUnions[1]);
             dot *= 2.0;
-            for (int comp = 0; comp < numComps; ++comp)
+            for (int comp = 0; comp < numComps; ++comp) {
                 newConstArray[comp].setDConst(childConstUnions[0][comp].getDConst() - dot * childConstUnions[1][comp].getDConst());
+}
             break;
         case EOpRefract:
         {
@@ -1259,11 +1302,13 @@ TIntermTyped* TIntermediate::fold(TIntermAggregate* aggrNode)
             double eta = childConstUnions[2][0].getDConst();
             double k = 1.0 - eta * eta * (1.0 - dot * dot);
             if (k < 0.0) {
-                for (int comp = 0; comp < numComps; ++comp)
+                for (int comp = 0; comp < numComps; ++comp) {
                     newConstArray[comp].setDConst(0.0);
+}
             } else {
-                for (int comp = 0; comp < numComps; ++comp)
+                for (int comp = 0; comp < numComps; ++comp) {
                     newConstArray[comp].setDConst(eta * childConstUnions[0][comp].getDConst() - (eta * dot + sqrt(k)) * childConstUnions[1][comp].getDConst());
+}
             }
             break;
         }
@@ -1271,9 +1316,11 @@ TIntermTyped* TIntermediate::fold(TIntermAggregate* aggrNode)
         {
             int numRows = numComps;
             int numCols = children[1]->getAsConstantUnion()->getType().computeNumComponents();
-            for (int row = 0; row < numRows; ++row)
-                for (int col = 0; col < numCols; ++col)
+            for (int row = 0; row < numRows; ++row) {
+                for (int col = 0; col < numCols; ++col) {
                     newConstArray[col * numRows + row] = childConstUnions[0][row] * childConstUnions[1][col];
+}
+}
             break;
         }
         default:
@@ -1298,8 +1345,9 @@ bool TIntermediate::areAllChildConst(TIntermAggregate* aggrNode)
         TIntermSequence& childSequenceVector = aggrNode->getSequence();
         for (TIntermSequence::iterator p  = childSequenceVector.begin();
                                        p != childSequenceVector.end(); p++) {
-            if (!(*p)->getAsTyped()->getAsConstantUnion())
+            if (!(*p)->getAsTyped()->getAsConstantUnion()) {
                 return false;
+}
         }
     }
 
@@ -1311,13 +1359,15 @@ TIntermTyped* TIntermediate::foldConstructor(TIntermAggregate* aggrNode)
     bool error = false;
 
     TConstUnionArray unionArray(aggrNode->getType().computeNumComponents());
-    if (aggrNode->getSequence().size() == 1)
+    if (aggrNode->getSequence().size() == 1) {
         error = parseConstTree(aggrNode, unionArray, aggrNode->getOp(), aggrNode->getType(), true);
-    else
+    } else {
         error = parseConstTree(aggrNode, unionArray, aggrNode->getOp(), aggrNode->getType());
+}
 
-    if (error)
+    if (error) {
         return aggrNode;
+}
 
     return addConstantUnion(unionArray, aggrNode->getType(), aggrNode->getLoc());
 }
@@ -1337,24 +1387,26 @@ TIntermTyped* TIntermediate::foldDereference(TIntermTyped* node, int index, cons
     // arrays, vectors, matrices, all use simple multiplicative math
     // while structures need to add up heterogeneous members
     int start;
-    if (node->getType().isCoopMat())
+    if (node->getType().isCoopMat()) {
         start = 0;
-    else if (node->isArray() || ! node->isStruct())
+    } else if (node->isArray() || ! node->isStruct()) {
         start = size * index;
-    else {
+    } else {
         // it is a structure
         assert(node->isStruct());
         start = 0;
-        for (int i = 0; i < index; ++i)
+        for (int i = 0; i < index; ++i) {
             start += (*node->getType().getStruct())[i].type->computeNumComponents();
+}
     }
 
     result = addConstantUnion(TConstUnionArray(node->getAsConstantUnion()->getConstArray(), start, size), node->getType(), loc);
 
-    if (result == nullptr)
+    if (result == nullptr) {
         result = node;
-    else
+    } else {
         result->setType(dereferencedType);
+}
 
     return result;
 }
@@ -1368,15 +1420,17 @@ TIntermTyped* TIntermediate::foldSwizzle(TIntermTyped* node, TSwizzleSelectors<T
     const TConstUnionArray& unionArray = node->getAsConstantUnion()->getConstArray();
     TConstUnionArray constArray(selectors.size());
 
-    for (int i = 0; i < selectors.size(); i++)
+    for (int i = 0; i < selectors.size(); i++) {
         constArray[i] = unionArray[selectors[i]];
+}
 
     TIntermTyped* result = addConstantUnion(constArray, node->getType(), loc);
 
-    if (result == nullptr)
+    if (result == nullptr) {
         result = node;
-    else
+    } else {
         result->setType(TType(node->getBasicType(), EvqConst, selectors.size()));
+}
 
     return result;
 }

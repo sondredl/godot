@@ -252,11 +252,7 @@ bool AtlasMergingDialog::_set(const StringName &p_name, const Variant &p_value) 
 }
 
 bool AtlasMergingDialog::_get(const StringName &p_name, Variant &r_ret) const {
-	if (p_name == "next_line_after_column") {
-		r_ret = next_line_after_column;
-		return true;
-	}
-	return false;
+	return p_name == "next_line_after_column";
 }
 
 void AtlasMergingDialog::_notification(int p_what) {

@@ -100,10 +100,11 @@ void cvtt::Internal::ETCComputer::TestHalfBlock(MFloat &outError, MUInt16 &outSe
     {
         quantized[ch] = (ParallelMath::RightShift(quantizedPackedColor, (ch * 5)) & ParallelMath::MakeUInt15(31));
 
-        if (isDifferential)
+        if (isDifferential) {
             unquantized[ch] = (quantized[ch] << 3) | ParallelMath::RightShift(quantized[ch], 2);
-        else
+        } else {
             unquantized[ch] = (quantized[ch] << 4) | quantized[ch];
+}
     }
 
     MUInt16 selectors = ParallelMath::MakeUInt16(0);
@@ -113,9 +114,11 @@ void cvtt::Internal::ETCComputer::TestHalfBlock(MFloat &outError, MUInt16 &outSe
     MSInt16 s16_zero = ParallelMath::MakeSInt16(0);
 
     MUInt15 unquantizedModified[4][3];
-    for (unsigned int s = 0; s < 4; s++)
-        for (int ch = 0; ch < 3; ch++)
+    for (unsigned int s = 0; s < 4; s++) {
+        for (int ch = 0; ch < 3; ch++) {
             unquantizedModified[s][ch] = ParallelMath::Min(ParallelMath::ToUInt15(ParallelMath::Max(ParallelMath::ToSInt16(unquantized[ch]) + modifiers[s], s16_zero)), u15_255);
+}
+}
 
     bool isUniform = ((options.flags & cvtt::Flags::Uniform) != 0);
     bool isFakeBT709 = ((options.flags & cvtt::Flags::ETC_UseFakeBT709) != 0);
@@ -128,12 +131,13 @@ void cvtt::Internal::ETCComputer::TestHalfBlock(MFloat &outError, MUInt16 &outSe
         for (unsigned int s = 0; s < 4; s++)
         {
             MFloat error;
-            if (isFakeBT709)
+            if (isFakeBT709) {
                 error = ComputeErrorFakeBT709(unquantizedModified[s], preWeightedPixels[px]);
-            else if (isUniform)
+            } else if (isUniform) {
                 error = ComputeErrorUniform(pixels[px], unquantizedModified[s]);
-            else
+            } else {
                 error = ComputeErrorWeighted(unquantizedModified[s], preWeightedPixels[px], options);
+}
 
             ParallelMath::FloatCompFlag errorBetter = ParallelMath::Less(error, bestError);
             bestSelector = ParallelMath::Select(ParallelMath::FloatFlagToInt16(errorBetter), ParallelMath::MakeUInt16(s), bestSelector);
@@ -186,12 +190,13 @@ void cvtt::Internal::ETCComputer::TestHalfBlockPunchthrough(MFloat &outError, MU
         for (unsigned int s = 0; s < 3; s++)
         {
             MFloat error;
-            if (isFakeBT709)
+            if (isFakeBT709) {
                 error = ComputeErrorFakeBT709(unquantizedModified[s], preWeightedPixels[px]);
-            else if (isUniform)
+            } else if (isUniform) {
                 error = ComputeErrorUniform(pixels[px], unquantizedModified[s]);
-            else
+            } else {
                 error = ComputeErrorWeighted(unquantizedModified[s], preWeightedPixels[px], options);
+}
 
             ParallelMath::FloatCompFlag errorBetter = ParallelMath::Less(error, bestError);
             bestSelector = ParallelMath::Select(ParallelMath::FloatFlagToInt16(errorBetter), ParallelMath::MakeUInt15(s), bestSelector);
@@ -204,7 +209,7 @@ void cvtt::Internal::ETCComputer::TestHalfBlockPunchthrough(MFloat &outError, MU
         // Remap selector 1 to 2, and 2 to 3
         bestSelector = ParallelMath::Min(ParallelMath::MakeUInt15(3), bestSelector << 1);
 
-        // Mark zero transparent as 
+        // Mark zero transparent as
         ParallelMath::ConditionalSet(bestError, isTransparentFloat, ParallelMath::MakeFloatZero());
         ParallelMath::ConditionalSet(bestSelector, isTransparent[px], ParallelMath::MakeUInt15(1));
 
@@ -246,10 +251,11 @@ void cvtt::Internal::ETCComputer::FindBestDifferentialCombination(int flip, int 
             }
         }
 
-        if (canIgnore[0])
+        if (canIgnore[0]) {
             bestDiffColors[0] = bestDiffColors[1];
-        else if (canIgnore[1])
+        } else if (canIgnore[1]) {
             bestDiffColors[1] = bestDiffColors[0];
+}
 
         // The best differential possibilities must be better than the best total error
         if (bestDiffErrors[0] + bestDiffErrors[1] < blockBestTotalError)
@@ -279,8 +285,9 @@ void cvtt::Internal::ETCComputer::FindBestDifferentialCombination(int flip, int 
 
                     for (unsigned int i = 0; i < sectorNumAttempts; i++)
                     {
-                        if (ParallelMath::Extract(drs.diffErrors[sector][i], block) < blockBestTotalError)
+                        if (ParallelMath::Extract(drs.diffErrors[sector][i], block) < blockBestTotalError) {
                             drs.attemptSortIndexes[sector][numSortIndexes[sector]++] = i;
+}
                     }
 
                     struct SortPredicate
@@ -293,10 +300,12 @@ void cvtt::Internal::ETCComputer::FindBestDifferentialCombination(int flip, int 
                             float errorA = ParallelMath::Extract(diffErrors[a], block);
                             float errorB = ParallelMath::Extract(diffErrors[b], block);
 
-                            if (errorA < errorB)
+                            if (errorA < errorB) {
                                 return true;
-                            if (errorA > errorB)
+}
+                            if (errorA > errorB) {
                                 return false;
+}
 
                             return a < b;
                         }
@@ -317,14 +326,16 @@ void cvtt::Internal::ETCComputer::FindBestDifferentialCombination(int flip, int 
 
                     scannedElements++;
 
-                    if (error0 >= blockBestTotalError)
+                    if (error0 >= blockBestTotalError) {
                         break;
+}
 
                     float maxError1 = ParallelMath::Extract(bestTotalError, block) - error0;
                     uint16_t diffColor0 = ParallelMath::Extract(drs.diffColors[0][attemptIndex0], block);
 
-                    if (maxError1 < bestDiffErrors[1])
+                    if (maxError1 < bestDiffErrors[1]) {
                         break;
+}
 
                     for (unsigned int j = 0; j < numSortIndexes[1]; j++)
                     {
@@ -333,8 +344,9 @@ void cvtt::Internal::ETCComputer::FindBestDifferentialCombination(int flip, int 
 
                         scannedElements++;
 
-                        if (error1 >= maxError1)
+                        if (error1 >= maxError1) {
                             break;
+}
 
                         uint16_t diffColor1 = ParallelMath::Extract(drs.diffColors[1][attemptIndex1], block);
 
@@ -416,8 +428,9 @@ void cvtt::Internal::ETCComputer::EncodeTMode(uint8_t *outputBuffer, MFloat &bes
         numPixelsIsolated = numPixelsIsolated + ParallelMath::SelectOrZero(isIsolated[px], ParallelMath::MakeUInt15(1));
     }
 
-    for (int ch = 0; ch < 3; ch++)
+    for (int ch = 0; ch < 3; ch++) {
         lineTotal[ch] = lineTotal[ch] - isolatedTotal[ch];
+}
 
     MUInt15 numPixelsLine = ParallelMath::MakeUInt15(16) - numPixelsIsolated;
 
@@ -425,8 +438,9 @@ void cvtt::Internal::ETCComputer::EncodeTMode(uint8_t *outputBuffer, MFloat &bes
     MUInt15 isolatedAverageTargets[3];
     {
         int divisors[ParallelMath::ParallelSize];
-        for (int block = 0; block < ParallelMath::ParallelSize; block++)
+        for (int block = 0; block < ParallelMath::ParallelSize; block++) {
             divisors[block] = ParallelMath::Extract(numPixelsIsolated, block) * 34;
+}
 
         MUInt15 addend = (numPixelsIsolated << 4) | numPixelsIsolated;
         for (int ch = 0; ch < 3; ch++)
@@ -434,38 +448,43 @@ void cvtt::Internal::ETCComputer::EncodeTMode(uint8_t *outputBuffer, MFloat &bes
             // isolatedAverageQuantized[ch] = (isolatedTotal[ch] * 2 + numPixelsIsolated * 17) / (numPixelsIsolated * 34);
 
             MUInt15 numerator = isolatedTotal[ch] + isolatedTotal[ch];
-            if (!isFakeBT709)
+            if (!isFakeBT709) {
                 numerator = numerator + addend;
+}
 
             for (int block = 0; block < ParallelMath::ParallelSize; block++)
             {
                 int divisor = divisors[block];
-                if (divisor == 0)
+                if (divisor == 0) {
                     ParallelMath::PutUInt15(isolatedAverageQuantized[ch], block, 0);
-                else
+                } else {
                     ParallelMath::PutUInt15(isolatedAverageQuantized[ch], block, ParallelMath::Extract(numerator, block) / divisor);
+}
             }
 
             isolatedAverageTargets[ch] = numerator;
         }
     }
 
-    if (isFakeBT709)
+    if (isFakeBT709) {
         ResolveTHFakeBT709Rounding(isolatedAverageQuantized, isolatedAverageTargets, numPixelsIsolated);
+}
 
     MUInt15 isolatedColor[3];
-    for (int ch = 0; ch < 3; ch++)
+    for (int ch = 0; ch < 3; ch++) {
         isolatedColor[ch] = (isolatedAverageQuantized[ch]) | (isolatedAverageQuantized[ch] << 4);
+}
 
     MFloat isolatedError[16];
     for (int px = 0; px < 16; px++)
     {
-        if (isFakeBT709)
+        if (isFakeBT709) {
             isolatedError[px] = ComputeErrorFakeBT709(isolatedColor, preWeightedPixels[px]);
-        else if (isUniform)
+        } else if (isUniform) {
             isolatedError[px] = ComputeErrorUniform(pixels[px], isolatedColor);
-        else
+        } else {
             isolatedError[px] = ComputeErrorWeighted(isolatedColor, preWeightedPixels[px], options);
+}
     }
 
     MSInt32 bestSelectors = ParallelMath::MakeSInt32(0);
@@ -479,15 +498,17 @@ void cvtt::Internal::ETCComputer::EncodeTMode(uint8_t *outputBuffer, MFloat &bes
     for (int block = 0; block < ParallelMath::ParallelSize; block++)
     {
         int16_t blockMaxLine = ParallelMath::Extract(maxLine, block);
-        if (blockMaxLine > clusterMaxLine)
+        if (blockMaxLine > clusterMaxLine) {
             clusterMaxLine = blockMaxLine;
+}
     }
 
     int16_t clusterMinLine = -clusterMaxLine;
 
     int lineDivisors[ParallelMath::ParallelSize];
-    for (int block = 0; block < ParallelMath::ParallelSize; block++)
+    for (int block = 0; block < ParallelMath::ParallelSize; block++) {
         lineDivisors[block] = ParallelMath::Extract(numPixelsLine, block) * 34;
+}
 
     MUInt15 lineAddend = (numPixelsLine << 4) | numPixelsLine;
 
@@ -496,8 +517,9 @@ void cvtt::Internal::ETCComputer::EncodeTMode(uint8_t *outputBuffer, MFloat &bes
         int numUniqueColors[ParallelMath::ParallelSize];
         MUInt15 uniqueQuantizedColors[31];
 
-        for (int block = 0; block < ParallelMath::ParallelSize; block++)
+        for (int block = 0; block < ParallelMath::ParallelSize; block++) {
             numUniqueColors[block] = 0;
+}
 
         MUInt15 modifier = ParallelMath::MakeUInt15(cvtt::Tables::ETC2::g_thModifierTable[table]);
         MUInt15 modifierOffset = (modifier + modifier);
@@ -519,10 +541,11 @@ void cvtt::Internal::ETCComputer::EncodeTMode(uint8_t *outputBuffer, MFloat &bes
                     for (int block = 0; block < ParallelMath::ParallelSize; block++)
                     {
                         int divisor = lineDivisors[block];
-                        if (divisor == 0)
+                        if (divisor == 0) {
                             ParallelMath::PutUInt15(divided, block, 0);
-                        else
+                        } else {
                             ParallelMath::PutUInt15(divided, block, ParallelMath::Extract(numerator, block) / divisor);
+}
                     }
                     quantized[ch] = ParallelMath::Min(ParallelMath::MakeUInt15(15), divided);
                     targets[ch] = numerator;
@@ -540,10 +563,11 @@ void cvtt::Internal::ETCComputer::EncodeTMode(uint8_t *outputBuffer, MFloat &bes
                     for (int block = 0; block < ParallelMath::ParallelSize; block++)
                     {
                         int divisor = lineDivisors[block];
-                        if (divisor == 0)
+                        if (divisor == 0) {
                             ParallelMath::PutUInt15(divided, block, 0);
-                        else
+                        } else {
                             ParallelMath::PutUInt15(divided, block, ParallelMath::Extract(numerator, block) / divisor);
+}
                     }
                     quantized[ch] = ParallelMath::Min(ParallelMath::MakeUInt15(15), divided);
                 }
@@ -554,8 +578,9 @@ void cvtt::Internal::ETCComputer::EncodeTMode(uint8_t *outputBuffer, MFloat &bes
             for (int block = 0; block < ParallelMath::ParallelSize; block++)
             {
                 uint16_t blockPackedColor = ParallelMath::Extract(packedColor, block);
-                if (numUniqueColors[block] == 0 || blockPackedColor != ParallelMath::Extract(uniqueQuantizedColors[numUniqueColors[block] - 1], block))
+                if (numUniqueColors[block] == 0 || blockPackedColor != ParallelMath::Extract(uniqueQuantizedColors[numUniqueColors[block] - 1], block)) {
                     ParallelMath::PutUInt15(uniqueQuantizedColors[numUniqueColors[block]++], block, blockPackedColor);
+}
             }
         }
 
@@ -563,8 +588,9 @@ void cvtt::Internal::ETCComputer::EncodeTMode(uint8_t *outputBuffer, MFloat &bes
         int maxUniqueColors = 0;
         for (int block = 0; block < ParallelMath::ParallelSize; block++)
         {
-            if (numUniqueColors[block] > maxUniqueColors)
+            if (numUniqueColors[block] > maxUniqueColors) {
                 maxUniqueColors = numUniqueColors[block];
+}
         }
 
         for (int block = 0; block < ParallelMath::ParallelSize; block++)
@@ -572,8 +598,9 @@ void cvtt::Internal::ETCComputer::EncodeTMode(uint8_t *outputBuffer, MFloat &bes
             uint16_t fillColor = ParallelMath::Extract(uniqueQuantizedColors[0], block);
 
             int numUnique = numUniqueColors[block];
-            for (int fill = numUnique + 1; fill < maxUniqueColors; fill++)
+            for (int fill = numUnique + 1; fill < maxUniqueColors; fill++) {
                 ParallelMath::PutUInt15(uniqueQuantizedColors[fill], block, fillColor);
+}
         }
 
         for (int ci = 0; ci < maxUniqueColors; ci++)
@@ -631,15 +658,17 @@ void cvtt::Internal::ETCComputer::EncodeTMode(uint8_t *outputBuffer, MFloat &bes
             uint16_t blockBestLineColor = ParallelMath::Extract(bestLineColor, block);
             ParallelMath::ScalarUInt16 blockIsolatedAverageQuantized[3];
 
-            for (int ch = 0; ch < 3; ch++)
+            for (int ch = 0; ch < 3; ch++) {
                 blockIsolatedAverageQuantized[ch] = ParallelMath::Extract(isolatedAverageQuantized[ch], block);
+}
 
             uint16_t blockBestTable = ParallelMath::Extract(bestTable, block);
             int32_t blockBestSelectors = ParallelMath::Extract(bestSelectors, block);
 
             ParallelMath::ScalarUInt16 lineColor[3];
-            for (int ch = 0; ch < 3; ch++)
+            for (int ch = 0; ch < 3; ch++) {
                 lineColor[ch] = (blockBestLineColor >> (ch * 5)) & 15;
+}
 
             EmitTModeBlock(outputBuffer + block * 8, lineColor, blockIsolatedAverageQuantized, blockBestSelectors, blockBestTable, true);
         }
@@ -673,8 +702,9 @@ void cvtt::Internal::ETCComputer::EncodeHMode(uint8_t *outputBuffer, MFloat &bes
         counts[1] = counts[1] + ParallelMath::SelectOrZero(groupings[px], ParallelMath::MakeUInt15(1));
     }
 
-    for (int ch = 0; ch < 3; ch++)
+    for (int ch = 0; ch < 3; ch++) {
         totals[0][ch] = totals[0][ch] - totals[1][ch];
+}
     counts[0] = ParallelMath::MakeUInt15(16) - counts[1];
 
     MUInt16 bestSectorBits = ParallelMath::MakeUInt16(0);
@@ -702,8 +732,9 @@ void cvtt::Internal::ETCComputer::EncodeHMode(uint8_t *outputBuffer, MFloat &bes
 
                 int blockSectorCounts = ParallelMath::Extract(counts[sector], block);
                 int blockSectorTotals[3];
-                for (int ch = 0; ch < 3; ch++)
+                for (int ch = 0; ch < 3; ch++) {
                     blockSectorTotals[ch] = ParallelMath::Extract(totals[sector][ch], block);
+}
 
                 for (int offsetPremultiplier = minOffsetMultiplier; offsetPremultiplier <= maxOffsetMultiplier; offsetPremultiplier++)
                 {
@@ -711,10 +742,11 @@ void cvtt::Internal::ETCComputer::EncodeHMode(uint8_t *outputBuffer, MFloat &bes
                     int16_t quantized[3];
                     for (int ch = 0; ch < 3; ch++)
                     {
-                        if (blockSectorCounts == 0)
+                        if (blockSectorCounts == 0) {
                             quantized[ch] = 0;
-                        else
+                        } else {
                             quantized[ch] = std::min<int16_t>(15, std::max<int16_t>(0, (blockSectorTotals[ch] * 2 + blockSectorCounts * 17 + modifierOffset * offsetPremultiplier)) / (blockSectorCounts * 34));
+}
                     }
 
                     uint16_t packedColor = (quantized[0] << 10) | (quantized[1] << 5) | quantized[2];
@@ -728,25 +760,29 @@ void cvtt::Internal::ETCComputer::EncodeHMode(uint8_t *outputBuffer, MFloat &bes
                 ParallelMath::PutUInt15(he.numUniqueColors[sector], block, blockNumUniqueColors);
 
                 int baseIndex = 0;
-                if (sector == 1)
+                if (sector == 1) {
                     baseIndex = ParallelMath::Extract(he.numUniqueColors[0], block);
+}
 
-                for (int i = 0; i < blockNumUniqueColors; i++)
+                for (int i = 0; i < blockNumUniqueColors; i++) {
                     ParallelMath::PutUInt15(he.uniqueQuantizedColors[baseIndex + i], block, blockUniqueQuantizedColors[i]);
+}
             }
         }
 
         MUInt15 totalColors = he.numUniqueColors[0] + he.numUniqueColors[1];
         int maxErrorColors = 0;
-        for (int block = 0; block < ParallelMath::ParallelSize; block++)
+        for (int block = 0; block < ParallelMath::ParallelSize; block++) {
             maxErrorColors = std::max<int>(maxErrorColors, ParallelMath::Extract(totalColors, block));
+}
 
         for (int block = 0; block < ParallelMath::ParallelSize; block++)
         {
             int lastColor = ParallelMath::Extract(totalColors, block);
             uint16_t stripeColor = ParallelMath::Extract(he.uniqueQuantizedColors[0], block);
-            for (int i = lastColor; i < maxErrorColors; i++)
+            for (int i = lastColor; i < maxErrorColors; i++) {
                 ParallelMath::PutUInt15(he.uniqueQuantizedColors[i], block, stripeColor);
+}
         }
 
         for (int ci = 0; ci < maxErrorColors; ci++)
@@ -771,12 +807,13 @@ void cvtt::Internal::ETCComputer::EncodeHMode(uint8_t *outputBuffer, MFloat &bes
                 MFloat errors[2];
                 for (int i = 0; i < 2; i++)
                 {
-                    if (isFakeBT709)
+                    if (isFakeBT709) {
                         errors[i] = ComputeErrorFakeBT709(colors[i], preWeightedPixels[px]);
-                    else if (isUniform)
+                    } else if (isUniform) {
                         errors[i] = ComputeErrorUniform(colors[i], pixels[px]);
-                    else
+                    } else {
                         errors[i] = ComputeErrorWeighted(colors[i], preWeightedPixels[px], options);
+}
                 }
 
                 ParallelMath::Int16CompFlag errorOneLess = ParallelMath::FloatFlagToInt16(ParallelMath::Less(errors[1], errors[0]));
@@ -790,16 +827,18 @@ void cvtt::Internal::ETCComputer::EncodeHMode(uint8_t *outputBuffer, MFloat &bes
         for (int block = 0; block < ParallelMath::ParallelSize; block++)
         {
             int numUniqueColorCombos = ParallelMath::Extract(he.numUniqueColors[0], block) * ParallelMath::Extract(he.numUniqueColors[1], block);
-            if (numUniqueColorCombos > maxUniqueColorCombos)
+            if (numUniqueColorCombos > maxUniqueColorCombos) {
                 maxUniqueColorCombos = numUniqueColorCombos;
+}
         }
 
         MUInt15 indexes[2] = { zero15, zero15 };
         MUInt15 maxIndex[2] = { he.numUniqueColors[0] - ParallelMath::MakeUInt15(1), he.numUniqueColors[1] - ParallelMath::MakeUInt15(1) };
 
         int block1Starts[ParallelMath::ParallelSize];
-        for (int block = 0; block < ParallelMath::ParallelSize; block++)
+        for (int block = 0; block < ParallelMath::ParallelSize; block++) {
             block1Starts[block] = ParallelMath::Extract(he.numUniqueColors[0], block);
+}
 
         for (int combo = 0; combo < maxUniqueColorCombos; combo++)
         {
@@ -871,8 +910,9 @@ void cvtt::Internal::ETCComputer::EncodeHMode(uint8_t *outputBuffer, MFloat &bes
     {
         for (int block = 0; block < ParallelMath::ParallelSize; block++)
         {
-            if (!ParallelMath::Extract(bestIsThisMode, block))
+            if (!ParallelMath::Extract(bestIsThisMode, block)) {
                 continue;
+}
 
             ParallelMath::ScalarUInt16 blockBestColors[2] = { ParallelMath::Extract(bestColors[0], block), ParallelMath::Extract(bestColors[1], block) };
             ParallelMath::ScalarUInt16 blockBestSectorBits = ParallelMath::Extract(bestSectorBits, block);
@@ -900,8 +940,9 @@ void cvtt::Internal::ETCComputer::EncodeVirtualTModePunchthrough(uint8_t *output
     bool isFakeBT709 = ((options.flags & cvtt::Flags::ETC_UseFakeBT709) != 0);
 
     ParallelMath::FloatCompFlag isTransparentF[16];
-    for (int px = 0; px < 16; px++)
+    for (int px = 0; px < 16; px++) {
         isTransparentF[px] = ParallelMath::Int16FlagToFloat(isTransparent[px]);
+}
 
     ParallelMath::Int16CompFlag bestIsThisMode = ParallelMath::MakeBoolInt16(false);
     ParallelMath::Int16CompFlag bestIsHMode = ParallelMath::MakeBoolInt16(false);
@@ -938,8 +979,9 @@ void cvtt::Internal::ETCComputer::EncodeVirtualTModePunchthrough(uint8_t *output
     MUInt15 isolatedAverageTargets[3];
     {
         int divisors[ParallelMath::ParallelSize];
-        for (int block = 0; block < ParallelMath::ParallelSize; block++)
+        for (int block = 0; block < ParallelMath::ParallelSize; block++) {
             divisors[block] = ParallelMath::Extract(numPixelsIsolated, block) * 34;
+}
 
         MUInt15 addend = (numPixelsIsolated << 4) | numPixelsIsolated;
         for (int ch = 0; ch < 3; ch++)
@@ -947,8 +989,9 @@ void cvtt::Internal::ETCComputer::EncodeVirtualTModePunchthrough(uint8_t *output
             // isolatedAverageQuantized[ch] = (isolatedTotal[ch] * 2 + numPixelsIsolated * 17) / (numPixelsIsolated * 34);
 
             MUInt15 numerator = isolatedTotal[ch] + isolatedTotal[ch];
-            if (!isFakeBT709)
+            if (!isFakeBT709) {
                 numerator = numerator + addend;
+}
 
             MUInt15 hModeIsolatedNumerators[8];
             for (int table = 0; table < 8; table++)
@@ -965,14 +1008,16 @@ void cvtt::Internal::ETCComputer::EncodeVirtualTModePunchthrough(uint8_t *output
                 if (divisor == 0)
                 {
                     ParallelMath::PutUInt15(isolatedAverageQuantized[ch], block, 0);
-                    for (int table = 0; table < 8; table++)
+                    for (int table = 0; table < 8; table++) {
                         ParallelMath::PutUInt15(hModeIsolatedQuantized[table][ch], block, 0);
+}
                 }
                 else
                 {
                     ParallelMath::PutUInt15(isolatedAverageQuantized[ch], block, ParallelMath::Extract(numerator, block) / divisor);
-                    for (int table = 0; table < 8; table++)
+                    for (int table = 0; table < 8; table++) {
                         ParallelMath::PutUInt15(hModeIsolatedQuantized[table][ch], block, ParallelMath::Extract(hModeIsolatedNumerators[table], block) / divisor);
+}
                 }
             }
 
@@ -980,26 +1025,31 @@ void cvtt::Internal::ETCComputer::EncodeVirtualTModePunchthrough(uint8_t *output
         }
     }
 
-    if (isFakeBT709)
+    if (isFakeBT709) {
         ResolveTHFakeBT709Rounding(isolatedAverageQuantized, isolatedAverageTargets, numPixelsIsolated);
+}
 
-    for (int table = 0; table < 8; table++)
-        for (int ch = 0; ch < 3; ch++)
+    for (int table = 0; table < 8; table++) {
+        for (int ch = 0; ch < 3; ch++) {
             hModeIsolatedQuantized[table][ch] = ParallelMath::Min(ParallelMath::MakeUInt15(15), hModeIsolatedQuantized[table][ch]);
+}
+}
 
     MUInt15 isolatedColor[3];
-    for (int ch = 0; ch < 3; ch++)
+    for (int ch = 0; ch < 3; ch++) {
         isolatedColor[ch] = (isolatedAverageQuantized[ch]) | (isolatedAverageQuantized[ch] << 4);
+}
 
     MFloat isolatedError[16];
     for (int px = 0; px < 16; px++)
     {
-        if (isFakeBT709)
+        if (isFakeBT709) {
             isolatedError[px] = ComputeErrorFakeBT709(isolatedColor, preWeightedPixels[px]);
-        else if (isUniform)
+        } else if (isUniform) {
             isolatedError[px] = ComputeErrorUniform(pixels[px], isolatedColor);
-        else
+        } else {
             isolatedError[px] = ComputeErrorWeighted(isolatedColor, preWeightedPixels[px], options);
+}
 
         ParallelMath::ConditionalSet(isolatedError[px], isTransparentF[px], ParallelMath::MakeFloatZero());
     }
@@ -1018,15 +1068,17 @@ void cvtt::Internal::ETCComputer::EncodeVirtualTModePunchthrough(uint8_t *output
     for (int block = 0; block < ParallelMath::ParallelSize; block++)
     {
         int16_t blockMaxLine = ParallelMath::Extract(maxLine, block);
-        if (blockMaxLine > clusterMaxLine)
+        if (blockMaxLine > clusterMaxLine) {
             clusterMaxLine = blockMaxLine;
+}
     }
 
     int16_t clusterMinLine = -clusterMaxLine;
 
     int lineDivisors[ParallelMath::ParallelSize];
-    for (int block = 0; block < ParallelMath::ParallelSize; block++)
+    for (int block = 0; block < ParallelMath::ParallelSize; block++) {
         lineDivisors[block] = ParallelMath::Extract(numPixelsLine, block) * 34;
+}
 
     MUInt15 lineAddend = (numPixelsLine << 4) | numPixelsLine;
 
@@ -1035,8 +1087,9 @@ void cvtt::Internal::ETCComputer::EncodeVirtualTModePunchthrough(uint8_t *output
         int numUniqueColors[ParallelMath::ParallelSize];
         MUInt15 uniqueQuantizedColors[31];
 
-        for (int block = 0; block < ParallelMath::ParallelSize; block++)
+        for (int block = 0; block < ParallelMath::ParallelSize; block++) {
             numUniqueColors[block] = 0;
+}
 
         MUInt15 modifier = ParallelMath::MakeUInt15(cvtt::Tables::ETC2::g_thModifierTable[table]);
         MUInt15 modifierOffset = (modifier + modifier);
@@ -1058,10 +1111,11 @@ void cvtt::Internal::ETCComputer::EncodeVirtualTModePunchthrough(uint8_t *output
                     for (int block = 0; block < ParallelMath::ParallelSize; block++)
                     {
                         int divisor = lineDivisors[block];
-                        if (divisor == 0)
+                        if (divisor == 0) {
                             ParallelMath::PutUInt15(divided, block, 0);
-                        else
+                        } else {
                             ParallelMath::PutUInt15(divided, block, ParallelMath::Extract(numerator, block) / divisor);
+}
                     }
                     quantized[ch] = ParallelMath::Min(ParallelMath::MakeUInt15(15), divided);
                     targets[ch] = numerator;
@@ -1079,10 +1133,11 @@ void cvtt::Internal::ETCComputer::EncodeVirtualTModePunchthrough(uint8_t *output
                     for (int block = 0; block < ParallelMath::ParallelSize; block++)
                     {
                         int divisor = lineDivisors[block];
-                        if (divisor == 0)
+                        if (divisor == 0) {
                             ParallelMath::PutUInt15(divided, block, 0);
-                        else
+                        } else {
                             ParallelMath::PutUInt15(divided, block, ParallelMath::Extract(numerator, block) / divisor);
+}
                     }
                     quantized[ch] = ParallelMath::Min(ParallelMath::MakeUInt15(15), divided);
                 }
@@ -1093,8 +1148,9 @@ void cvtt::Internal::ETCComputer::EncodeVirtualTModePunchthrough(uint8_t *output
             for (int block = 0; block < ParallelMath::ParallelSize; block++)
             {
                 uint16_t blockPackedColor = ParallelMath::Extract(packedColor, block);
-                if (numUniqueColors[block] == 0 || blockPackedColor != ParallelMath::Extract(uniqueQuantizedColors[numUniqueColors[block] - 1], block))
+                if (numUniqueColors[block] == 0 || blockPackedColor != ParallelMath::Extract(uniqueQuantizedColors[numUniqueColors[block] - 1], block)) {
                     ParallelMath::PutUInt15(uniqueQuantizedColors[numUniqueColors[block]++], block, blockPackedColor);
+}
             }
         }
 
@@ -1102,8 +1158,9 @@ void cvtt::Internal::ETCComputer::EncodeVirtualTModePunchthrough(uint8_t *output
         int maxUniqueColors = 0;
         for (int block = 0; block < ParallelMath::ParallelSize; block++)
         {
-            if (numUniqueColors[block] > maxUniqueColors)
+            if (numUniqueColors[block] > maxUniqueColors) {
                 maxUniqueColors = numUniqueColors[block];
+}
         }
 
         for (int block = 0; block < ParallelMath::ParallelSize; block++)
@@ -1111,8 +1168,9 @@ void cvtt::Internal::ETCComputer::EncodeVirtualTModePunchthrough(uint8_t *output
             uint16_t fillColor = ParallelMath::Extract(uniqueQuantizedColors[0], block);
 
             int numUnique = numUniqueColors[block];
-            for (int fill = numUnique + 1; fill < maxUniqueColors; fill++)
+            for (int fill = numUnique + 1; fill < maxUniqueColors; fill++) {
                 ParallelMath::PutUInt15(uniqueQuantizedColors[fill], block, fillColor);
+}
         }
 
         MFloat hModeErrors[16];
@@ -1151,8 +1209,9 @@ void cvtt::Internal::ETCComputer::EncodeVirtualTModePunchthrough(uint8_t *output
             for (int px = 0; px < 16; px++)
             {
                 MFloat lineErrors[2];
-                for (int i = 0; i < 2; i++)
+                for (int i = 0; i < 2; i++) {
                     lineErrors[i] = isUniform ? ComputeErrorUniform(lineColors[i], pixels[px]) : ComputeErrorWeighted(lineColors[i], preWeightedPixels[px], options);
+}
 
                 ParallelMath::Int16CompFlag firstIsBetter = ParallelMath::FloatFlagToInt16(ParallelMath::LessOrEqual(lineErrors[0], lineErrors[1]));
                 bestLineSelector[px] = ParallelMath::Select(firstIsBetter, ParallelMath::MakeUInt15(1), ParallelMath::MakeUInt15(3));
@@ -1208,7 +1267,7 @@ void cvtt::Internal::ETCComputer::EncodeVirtualTModePunchthrough(uint8_t *output
                 ParallelMath::ConditionalSet(bestTable, errorBetter, ParallelMath::MakeUInt15(table));
                 ParallelMath::ConditionalSet(bestIsHMode, errorBetter, useHMode);
                 ParallelMath::ConditionalSet(bestHModeColor2, errorBetter, packedHModeColor2);
-                
+
                 bestIsThisMode = bestIsThisMode | errorBetter;
             }
         }
@@ -1224,15 +1283,17 @@ void cvtt::Internal::ETCComputer::EncodeVirtualTModePunchthrough(uint8_t *output
             uint16_t blockBestLineColor = ParallelMath::Extract(bestLineColor, block);
             ParallelMath::ScalarUInt16 blockIsolatedAverageQuantized[3];
 
-            for (int ch = 0; ch < 3; ch++)
+            for (int ch = 0; ch < 3; ch++) {
                 blockIsolatedAverageQuantized[ch] = ParallelMath::Extract(isolatedAverageQuantized[ch], block);
+}
 
             uint16_t blockBestTable = ParallelMath::Extract(bestTable, block);
             int32_t blockBestSelectors = ParallelMath::Extract(bestSelectors, block);
 
             ParallelMath::ScalarUInt16 lineColor[3];
-            for (int ch = 0; ch < 3; ch++)
+            for (int ch = 0; ch < 3; ch++) {
                 lineColor[ch] = (blockBestLineColor >> (10 - (ch * 5))) & 15;
+}
 
             if (ParallelMath::Extract(bestIsHMode, block))
             {
@@ -1256,8 +1317,9 @@ void cvtt::Internal::ETCComputer::EncodeVirtualTModePunchthrough(uint8_t *output
 
                 EmitHModeBlock(outputBuffer + block * 8, blockColors, sectorBits, signBits, blockBestTable, false);
             }
-            else
+            else {
                 EmitTModeBlock(outputBuffer + block * 8, lineColor, blockIsolatedAverageQuantized, blockBestSelectors, blockBestTable, false);
+}
         }
     }
 }
@@ -1265,10 +1327,11 @@ void cvtt::Internal::ETCComputer::EncodeVirtualTModePunchthrough(uint8_t *output
 
 cvtt::ParallelMath::UInt15 cvtt::Internal::ETCComputer::DecodePlanarCoeff(const MUInt15 &coeff, int ch)
 {
-    if (ch == 1)
+    if (ch == 1) {
         return (coeff << 1) | (ParallelMath::RightShift(coeff, 6));
-    else
+    } else {
         return (coeff << 2) | (ParallelMath::RightShift(coeff, 4));
+}
 }
 
 void cvtt::Internal::ETCComputer::EncodePlanar(uint8_t *outputBuffer, MFloat &bestError, const MUInt15 pixels[16][3], const MFloat preWeightedPixels[16][3], const Options &options)
@@ -1433,15 +1496,17 @@ void cvtt::Internal::ETCComputer::EncodePlanar(uint8_t *outputBuffer, MFloat &be
                 for (int c = 0; c < 3; c++)
                 {
                     MFloat coeff = ParallelMath::Max(ParallelMath::MakeFloatZero(), fcoeffs[c]);
-                    if (ch == 1)
+                    if (ch == 1) {
                         coeff = ParallelMath::Min(ParallelMath::MakeFloat(127.0f), coeff * (127.0f / 255.0f));
-                    else
+                    } else {
                         coeff = ParallelMath::Min(ParallelMath::MakeFloat(63.0f), coeff * (63.0f / 255.0f));
+}
                     fcoeffs[c] = coeff;
                 }
 
-                for (int c = 0; c < 3; c++)
+                for (int c = 0; c < 3; c++) {
                     bestCoeffs[ch][c] = ParallelMath::RoundAndConvertToU15(fcoeffs[c], &rtn);
+}
             }
         }
 
@@ -1472,8 +1537,9 @@ void cvtt::Internal::ETCComputer::EncodePlanar(uint8_t *outputBuffer, MFloat &be
         }
 
         totalError = ParallelMath::MakeFloatZero();
-        for (int px = 0; px < 16; px++)
+        for (int px = 0; px < 16; px++) {
             totalError = totalError + ComputeErrorFakeBT709(reconstructed[px], preWeightedPixels[px]);
+}
     }
     else
     {
@@ -1485,23 +1551,26 @@ void cvtt::Internal::ETCComputer::EncodePlanar(uint8_t *outputBuffer, MFloat &be
             for (int c = 0; c < 3; c++)
             {
                 MFloat coeff = ParallelMath::Max(ParallelMath::MakeFloatZero(), fcoeffs[c]);
-                if (ch == 1)
+                if (ch == 1) {
                     coeff = ParallelMath::Min(ParallelMath::MakeFloat(127.0f), coeff * (127.0f / 255.0f));
-                else
+                } else {
                     coeff = ParallelMath::Min(ParallelMath::MakeFloat(63.0f), coeff * (63.0f / 255.0f));
+}
                 fcoeffs[c] = coeff;
             }
 
             {
                 ParallelMath::RoundDownForScope rd;
-                for (int c = 0; c < 3; c++)
+                for (int c = 0; c < 3; c++) {
                     coeffRanges[c][0] = ParallelMath::RoundAndConvertToU15(fcoeffs[c], &rd);
+}
             }
 
             {
                 ParallelMath::RoundUpForScope ru;
-                for (int c = 0; c < 3; c++)
+                for (int c = 0; c < 3; c++) {
                     coeffRanges[c][1] = ParallelMath::RoundAndConvertToU15(fcoeffs[c], &ru);
+}
             }
 
             MFloat bestChannelError = ParallelMath::MakeFloat(FLT_MAX);
@@ -1580,8 +1649,9 @@ void cvtt::Internal::ETCComputer::EncodePlanar(uint8_t *outputBuffer, MFloat &be
 
         for (int block = 0; block < ParallelMath::ParallelSize; block++)
         {
-            if (!ParallelMath::Extract(errorBetter, block))
+            if (!ParallelMath::Extract(errorBetter, block)) {
                 continue;
+}
 
             int ro = ParallelMath::Extract(bestCoeffs[0][0], block);
             int rh = ParallelMath::Extract(bestCoeffs[0][1], block);
@@ -1618,12 +1688,14 @@ void cvtt::Internal::ETCComputer::EncodePlanar(uint8_t *outputBuffer, MFloat &be
             uint32_t lowBits = 0;
 
             // Avoid overflowing R
-            if ((fakeDR & 4) != 0 && fakeR + fakeDR < 8)
+            if ((fakeDR & 4) != 0 && fakeR + fakeDR < 8) {
                 highBits |= 1 << (63 - 32);
+}
 
             // Avoid overflowing G
-            if ((fakeDG & 4) != 0 && fakeG + fakeDG < 8)
+            if ((fakeDG & 4) != 0 && fakeG + fakeDG < 8) {
                 highBits |= 1 << (55 - 32);
+}
 
             // Overflow B
             if (fakeB + fakeDB < 4)
@@ -1653,10 +1725,12 @@ void cvtt::Internal::ETCComputer::EncodePlanar(uint8_t *outputBuffer, MFloat &be
             lowBits |= gv << 6;
             lowBits |= bv << 0;
 
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 4; i++) {
                 outputBuffer[block * 8 + i] = (highBits >> (24 - i * 8)) & 0xff;
-            for (int i = 0; i < 4; i++)
+}
+            for (int i = 0; i < 4; i++) {
                 outputBuffer[block * 8 + i + 4] = (lowBits >> (24 - i * 8)) & 0xff;
+}
         }
     }
 }
@@ -1677,8 +1751,9 @@ void cvtt::Internal::ETCComputer::CompressETC2Block(uint8_t *outputBuffer, const
         for (int px = 0; px < 16; px++)
         {
             MUInt15 alpha;
-            for (int block = 0; block < ParallelMath::ParallelSize; block++)
+            for (int block = 0; block < ParallelMath::ParallelSize; block++) {
                 ParallelMath::PutUInt15(alpha, block, pixelBlocks[block].m_pixels[px][3]);
+}
 
             ParallelMath::Int16CompFlag isTransparent = ParallelMath::Less(alpha, threshold);
             anyTransparent = (anyTransparent | isTransparent);
@@ -1688,8 +1763,9 @@ void cvtt::Internal::ETCComputer::CompressETC2Block(uint8_t *outputBuffer, const
     }
     else
     {
-        for (int px = 0; px < 16; px++)
+        for (int px = 0; px < 16; px++) {
             pixelIsTransparent[px] = ParallelMath::MakeBoolInt16(false);
+}
 
         allTransparent = anyTransparent = ParallelMath::MakeBoolInt16(false);
     }
@@ -1717,14 +1793,16 @@ void cvtt::Internal::ETCComputer::CompressETC2Block(uint8_t *outputBuffer, const
         }
     }
 
-    if (!ParallelMath::AllSet(allTransparent))
+    if (!ParallelMath::AllSet(allTransparent)) {
         EncodePlanar(outputBuffer, bestError, pixels, preWeightedPixels, options);
+}
 
     MFloat chromaDelta[16][2];
 
     MUInt15 numOpaque = ParallelMath::MakeUInt15(16);
-    for (int px = 0; px < 16; px++)
+    for (int px = 0; px < 16; px++) {
         numOpaque = numOpaque - ParallelMath::SelectOrZero(pixelIsTransparent[px], ParallelMath::MakeUInt15(1));
+}
 
     if (options.flags & cvtt::Flags::Uniform)
     {
@@ -1738,8 +1816,9 @@ void cvtt::Internal::ETCComputer::CompressETC2Block(uint8_t *outputBuffer, const
         MSInt16 chromaCoordinateCentroid[2] = { ParallelMath::MakeSInt16(0), ParallelMath::MakeSInt16(0) };
         for (int px = 0; px < 16; px++)
         {
-            for (int ch = 0; ch < 2; ch++)
+            for (int ch = 0; ch < 2; ch++) {
                 chromaCoordinateCentroid[ch] = chromaCoordinateCentroid[ch] + chromaCoordinates3[px][ch];
+}
         }
 
         if (punchthroughAlpha)
@@ -1758,15 +1837,17 @@ void cvtt::Internal::ETCComputer::CompressETC2Block(uint8_t *outputBuffer, const
         {
             for (int px = 0; px < 16; px++)
             {
-                for (int ch = 0; ch < 2; ch++)
+                for (int ch = 0; ch < 2; ch++) {
                     chromaDelta[px][ch] = ParallelMath::ToFloat((chromaCoordinates3[px][ch] << 4) - chromaCoordinateCentroid[ch]);
+}
             }
         }
 
         const MFloat rcpSqrt3 = ParallelMath::MakeFloat(0.57735026918962576450914878050196f);
 
-        for (int px = 0; px < 16; px++)
+        for (int px = 0; px < 16; px++) {
             chromaDelta[px][1] = chromaDelta[px][1] * rcpSqrt3;
+}
     }
     else
     {
@@ -1787,8 +1868,9 @@ void cvtt::Internal::ETCComputer::CompressETC2Block(uint8_t *outputBuffer, const
         MFloat chromaCoordinateCentroid[2] = { ParallelMath::MakeFloatZero(), ParallelMath::MakeFloatZero() };
         for (int px = 0; px < 16; px++)
         {
-            for (int ch = 0; ch < 2; ch++)
+            for (int ch = 0; ch < 2; ch++) {
                 chromaCoordinateCentroid[ch] = chromaCoordinateCentroid[ch] + chromaCoordinates3[px][ch];
+}
         }
 
         if (punchthroughAlpha)
@@ -1808,8 +1890,9 @@ void cvtt::Internal::ETCComputer::CompressETC2Block(uint8_t *outputBuffer, const
         {
             for (int px = 0; px < 16; px++)
             {
-                for (int ch = 0; ch < 2; ch++)
+                for (int ch = 0; ch < 2; ch++) {
                     chromaDelta[px][ch] = chromaCoordinates3[px][ch] * 16.0f - chromaCoordinateCentroid[ch];
+}
             }
         }
     }
@@ -1844,16 +1927,18 @@ void cvtt::Internal::ETCComputer::CompressETC2Block(uint8_t *outputBuffer, const
     ParallelMath::ConditionalSet(dx, allZero, ParallelMath::MakeFloat(1.f));
 
     ParallelMath::Int16CompFlag sectorAssignments[16];
-    for (int px = 0; px < 16; px++)
+    for (int px = 0; px < 16; px++) {
         sectorAssignments[px] = ParallelMath::FloatFlagToInt16(ParallelMath::Less(chromaDelta[px][0] * dx + chromaDelta[px][1] * dy, ParallelMath::MakeFloatZero()));
+}
 
     if (!ParallelMath::AllSet(allTransparent))
     {
         EncodeTMode(outputBuffer, bestError, sectorAssignments, pixels, preWeightedPixels, options);
 
         // Flip sector assignments
-        for (int px = 0; px < 16; px++)
+        for (int px = 0; px < 16; px++) {
             sectorAssignments[px] = ParallelMath::Not(sectorAssignments[px]);
+}
 
         EncodeTMode(outputBuffer, bestError, sectorAssignments, pixels, preWeightedPixels, options);
 
@@ -1867,8 +1952,9 @@ void cvtt::Internal::ETCComputer::CompressETC2Block(uint8_t *outputBuffer, const
         if (!ParallelMath::AllSet(allTransparent))
         {
             // Flip sector assignments
-            for (int px = 0; px < 16; px++)
+            for (int px = 0; px < 16; px++) {
                 sectorAssignments[px] = ParallelMath::Not(sectorAssignments[px]);
+}
         }
 
         // Reset the error of any transparent blocks to max and retry with punchthrough modes
@@ -1877,8 +1963,9 @@ void cvtt::Internal::ETCComputer::CompressETC2Block(uint8_t *outputBuffer, const
         EncodeVirtualTModePunchthrough(outputBuffer, bestError, sectorAssignments, pixels, preWeightedPixels, pixelIsTransparent, anyTransparent, allTransparent, options);
 
         // Flip sector assignments
-        for (int px = 0; px < 16; px++)
+        for (int px = 0; px < 16; px++) {
             sectorAssignments[px] = ParallelMath::Not(sectorAssignments[px]);
+}
 
         EncodeVirtualTModePunchthrough(outputBuffer, bestError, sectorAssignments, pixels, preWeightedPixels, pixelIsTransparent, anyTransparent, allTransparent, options);
 
@@ -1892,8 +1979,9 @@ void cvtt::Internal::ETCComputer::CompressETC2AlphaBlock(uint8_t *outputBuffer, 
 
     for (int px = 0; px < 16; px++)
     {
-        for (int block = 0; block < ParallelMath::ParallelSize; block++)
+        for (int block = 0; block < ParallelMath::ParallelSize; block++) {
             ParallelMath::PutUInt15(pixels[px], block, pixelBlocks[block].m_pixels[px][3]);
+}
     }
 
     CompressETC2AlphaBlockInternal(outputBuffer, pixels, false, false, options);
@@ -1919,8 +2007,9 @@ void cvtt::Internal::ETCComputer::CompressETC2AlphaBlockInternal(uint8_t *output
     MUInt15 bestMultiplier = ParallelMath::MakeUInt15(0);
     MUInt15 bestIndexes[16];
 
-    for (int px = 0; px < 16; px++)
+    for (int px = 0; px < 16; px++) {
         bestIndexes[px] = ParallelMath::MakeUInt15(0);
+}
 
     const int numAlphaRanges = 10;
     for (uint16_t tableIndex = 0; tableIndex < 16; tableIndex++)
@@ -1965,15 +2054,17 @@ void cvtt::Internal::ETCComputer::CompressETC2AlphaBlockInternal(uint8_t *output
 
                 if (is11Bit)
                 {
-                    if (multiplierOffset == 1)
+                    if (multiplierOffset == 1) {
                         multiplier = multiplier + ParallelMath::MakeUInt15(8);
-                    else
+                    } else {
                         multiplier = ParallelMath::Max(multiplier, ParallelMath::MakeUInt15(1));
+}
                 }
                 else
                 {
-                    if (multiplierOffset == 1)
+                    if (multiplierOffset == 1) {
                         multiplier = multiplier + ParallelMath::MakeUInt15(1);
+}
                 }
 
                 MSInt16 multipliedMinOffset = ParallelMath::CompactMultiply(ParallelMath::LosslessCast<MSInt16>::Cast(multiplier), vminOffset);
@@ -1986,8 +2077,9 @@ void cvtt::Internal::ETCComputer::CompressETC2AlphaBlockInternal(uint8_t *output
                 if (is11Bit)
                 {
                     // In unsigned, 4 is added to the unquantized alpha, so compensating for that cancels the 4 we have to add to do rounding.
-                    if (isSigned)
+                    if (isSigned) {
                         unclampedBaseAlphaTimes2 = unclampedBaseAlphaTimes2 + ParallelMath::MakeSInt16(8);
+}
 
                     // -128 is illegal for some reason
                     MSInt16 minBaseAlphaTimes2 = isSigned ? ParallelMath::MakeSInt16(16) : ParallelMath::MakeSInt16(0);
@@ -1995,8 +2087,9 @@ void cvtt::Internal::ETCComputer::CompressETC2AlphaBlockInternal(uint8_t *output
                     MUInt15 clampedBaseAlphaTimes2 = ParallelMath::Min(ParallelMath::LosslessCast<MUInt15>::Cast(ParallelMath::Max(unclampedBaseAlphaTimes2, minBaseAlphaTimes2)), ParallelMath::MakeUInt15(4095));
                     baseAlpha = ParallelMath::RightShift(clampedBaseAlphaTimes2, 1) & ParallelMath::MakeUInt15(2040);
 
-                    if (!isSigned)
+                    if (!isSigned) {
                         baseAlpha = baseAlpha + ParallelMath::MakeUInt15(4);
+}
                 }
                 else
                 {
@@ -2017,8 +2110,9 @@ void cvtt::Internal::ETCComputer::CompressETC2AlphaBlockInternal(uint8_t *output
                         MSInt32 deltaSq = ParallelMath::XMultiply(delta, delta);
                         totalError = totalError + ParallelMath::LosslessCast<MUInt31>::Cast(deltaSq);
                     }
-                    else
+                    else {
                         totalError = totalError + ParallelMath::ToUInt31(ParallelMath::SqDiffUInt8(quantizedValues, pixels[px]));
+}
                 }
 
                 ParallelMath::Int16CompFlag isBetter = ParallelMath::Int32FlagToInt16(ParallelMath::Less(totalError, bestTotalError));
@@ -2029,8 +2123,9 @@ void cvtt::Internal::ETCComputer::CompressETC2AlphaBlockInternal(uint8_t *output
                     ParallelMath::ConditionalSet(bestBaseCodeword, isBetter, baseAlpha);
                     ParallelMath::ConditionalSet(bestMultiplier, isBetter, multiplier);
 
-                    for (int px = 0; px < 16; px++)
+                    for (int px = 0; px < 16; px++) {
                         ParallelMath::ConditionalSet(bestIndexes[px], isBetter, indexes[px]);
+}
                 }
 
                 // TODO: Do one refine pass
@@ -2042,8 +2137,9 @@ void cvtt::Internal::ETCComputer::CompressETC2AlphaBlockInternal(uint8_t *output
     {
         bestMultiplier = ParallelMath::RightShift(bestMultiplier, 3);
 
-        if (isSigned)
+        if (isSigned) {
             bestBaseCodeword = bestBaseCodeword ^ ParallelMath::MakeUInt15(0x80);
+}
     }
 
     for (int block = 0; block < ParallelMath::ParallelSize; block++)
@@ -2060,8 +2156,9 @@ void cvtt::Internal::ETCComputer::CompressETC2AlphaBlockInternal(uint8_t *output
         static const int pixelSelectorOrder[16] = { 0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15 };
 
         ParallelMath::ScalarUInt16 indexes[16];
-        for (int px = 0; px < 16; px++)
+        for (int px = 0; px < 16; px++) {
             indexes[pixelSelectorOrder[px]] = ParallelMath::Extract(bestIndexes[px], block);
+}
 
         int outputOffset = 2;
         int outputBits = 0;
@@ -2090,8 +2187,9 @@ void cvtt::Internal::ETCComputer::CompressEACBlock(uint8_t *outputBuffer, const 
     for (int px = 0; px < 16; px++)
     {
         MSInt16 adjustedPixel;
-        for (int block = 0; block < ParallelMath::ParallelSize; block++)
+        for (int block = 0; block < ParallelMath::ParallelSize; block++) {
             ParallelMath::PutSInt16(adjustedPixel, block, inputBlocks[block].m_pixels[px]);
+}
 
         // We use a slightly shifted range here so we can keep the unquantized base color in a UInt15
         // That is, signed range is 1..2047, and unsigned range is 0..2047
@@ -2134,16 +2232,18 @@ void cvtt::Internal::ETCComputer::ExtractBlocks(MUInt15 pixels[16][3], MFloat pr
     {
         for (int ch = 0; ch < 3; ch++)
         {
-            for (int block = 0; block < ParallelMath::ParallelSize; block++)
+            for (int block = 0; block < ParallelMath::ParallelSize; block++) {
                 ParallelMath::PutUInt15(pixels[px][ch], block, inputBlocks[block].m_pixels[px][ch]);
+}
         }
 
-        if (isFakeBT709)
+        if (isFakeBT709) {
             ConvertToFakeBT709(preWeightedPixels[px], pixels[px]);
-        else if (isUniform)
+        } else if (isUniform)
         {
-            for (int ch = 0; ch < 3; ch++)
+            for (int ch = 0; ch < 3; ch++) {
                 preWeightedPixels[px][ch] = ParallelMath::ToFloat(pixels[px][ch]);
+}
         }
         else
         {
@@ -2218,8 +2318,9 @@ void cvtt::Internal::ETCComputer::ResolveHalfBlockFakeBT709RoundingAccurate(MUIn
         ConvertToFakeBT709(octantYUV, r, g, b);
 
         MFloat delta[3];
-        for (int ch = 0; ch < 3; ch++)
+        for (int ch = 0; ch < 3; ch++) {
             delta[ch] = octantYUV[ch] - cumulativeYUV[ch];
+}
 
         MFloat error = delta[0] * delta[0] + delta[1] + delta[1] + delta[2] * delta[2];
         ParallelMath::Int16CompFlag errorBetter = ParallelMath::FloatFlagToInt16(ParallelMath::Less(error, bestError));
@@ -2227,8 +2328,9 @@ void cvtt::Internal::ETCComputer::ResolveHalfBlockFakeBT709RoundingAccurate(MUIn
         bestError = ParallelMath::Min(error, bestError);
     }
 
-    for (int ch = 0; ch < 3; ch++)
+    for (int ch = 0; ch < 3; ch++) {
         quantized[ch] = quantized[ch] + (ParallelMath::RightShift(bestOctant, ch) & ParallelMath::MakeUInt15(1));
+}
 }
 
 void cvtt::Internal::ETCComputer::ResolveHalfBlockFakeBT709RoundingFast(MUInt15 quantized[3], const MUInt15 sectorCumulative[3], bool isDifferential)
@@ -2243,8 +2345,9 @@ void cvtt::Internal::ETCComputer::ResolveHalfBlockFakeBT709RoundingFast(MUInt15 
     MUInt15 upperBound;
 
     MUInt15 sectorCumulativeFillIn[3];
-    for (int ch = 0; ch < 3; ch++)
+    for (int ch = 0; ch < 3; ch++) {
         sectorCumulativeFillIn[ch] = sectorCumulative[ch] + ParallelMath::RightShift(sectorCumulative[ch], 8);
+}
 
     if (isDifferential)
     {
@@ -2252,8 +2355,9 @@ void cvtt::Internal::ETCComputer::ResolveHalfBlockFakeBT709RoundingFast(MUInt15 
         gOffset = (sectorCumulativeFillIn[1] << 4) & ParallelMath::MakeUInt15(0x0f0);
         bOffset = ParallelMath::RightShift(sectorCumulativeFillIn[2], 2) & ParallelMath::MakeUInt15(0x00f);
 
-        for (int ch = 0; ch < 3; ch++)
+        for (int ch = 0; ch < 3; ch++) {
             quantizedBase[ch] = ParallelMath::RightShift(sectorCumulativeFillIn[ch], 6);
+}
 
         upperBound = ParallelMath::MakeUInt15(31);
     }
@@ -2263,8 +2367,9 @@ void cvtt::Internal::ETCComputer::ResolveHalfBlockFakeBT709RoundingFast(MUInt15 
         gOffset = (sectorCumulativeFillIn[1] << 1) & ParallelMath::MakeUInt15(0x0f0);
         bOffset = ParallelMath::RightShift(sectorCumulativeFillIn[2], 3) & ParallelMath::MakeUInt15(0x00f);
 
-        for (int ch = 0; ch < 3; ch++)
+        for (int ch = 0; ch < 3; ch++) {
             quantizedBase[ch] = ParallelMath::RightShift(sectorCumulativeFillIn[ch], 7);
+}
 
         upperBound = ParallelMath::MakeUInt15(15);
     }
@@ -2272,15 +2377,17 @@ void cvtt::Internal::ETCComputer::ResolveHalfBlockFakeBT709RoundingFast(MUInt15 
     MUInt15 lookupIndex = (rOffset | gOffset | bOffset);
 
     MUInt15 octant;
-    for (int block = 0; block < ParallelMath::ParallelSize; block++)
+    for (int block = 0; block < ParallelMath::ParallelSize; block++) {
         ParallelMath::PutUInt15(octant, block, Tables::FakeBT709::g_rounding16[ParallelMath::Extract(lookupIndex, block)]);
+}
 
     quantizedBase[0] = quantizedBase[0] + (octant & ParallelMath::MakeUInt15(1));
     quantizedBase[1] = quantizedBase[1] + (ParallelMath::RightShift(octant, 1) & ParallelMath::MakeUInt15(1));
     quantizedBase[2] = quantizedBase[2] + (ParallelMath::RightShift(octant, 2) & ParallelMath::MakeUInt15(1));
 
-    for (int ch = 0; ch < 3; ch++)
+    for (int ch = 0; ch < 3; ch++) {
         quantized[ch] = ParallelMath::Min(quantizedBase[ch], upperBound);
+}
 }
 
 void cvtt::Internal::ETCComputer::ResolveTHFakeBT709Rounding(MUInt15 quantized[3], const MUInt15 targets[3], const MUInt15 &granularity)
@@ -2313,8 +2420,9 @@ void cvtt::Internal::ETCComputer::ResolveTHFakeBT709Rounding(MUInt15 quantized[3
         ConvertToFakeBT709(octantYUV, r, g, b);
 
         MFloat delta[3];
-        for (int ch = 0; ch < 3; ch++)
+        for (int ch = 0; ch < 3; ch++) {
             delta[ch] = octantYUV[ch] - cumulativeYUV[ch];
+}
 
         MFloat error = delta[0] * delta[0] + delta[1] + delta[1] + delta[2] * delta[2];
         ParallelMath::Int16CompFlag errorBetter = ParallelMath::FloatFlagToInt16(ParallelMath::Less(error, bestError));
@@ -2322,15 +2430,17 @@ void cvtt::Internal::ETCComputer::ResolveTHFakeBT709Rounding(MUInt15 quantized[3
         bestError = ParallelMath::Min(error, bestError);
     }
 
-    for (int ch = 0; ch < 3; ch++)
+    for (int ch = 0; ch < 3; ch++) {
         quantized[ch] = quantized[ch] + (ParallelMath::RightShift(bestOctant, ch) & ParallelMath::MakeUInt15(1));
+}
 }
 
 void cvtt::Internal::ETCComputer::ConvertToFakeBT709(MFloat yuv[3], const MUInt15 color[3])
 {
     MFloat floatRGB[3];
-    for (int ch = 0; ch < 3; ch++)
+    for (int ch = 0; ch < 3; ch++) {
         floatRGB[ch] = ParallelMath::ToFloat(color[ch]);
+}
 
     ConvertToFakeBT709(yuv, floatRGB);
 }
@@ -2379,8 +2489,9 @@ void cvtt::Internal::ETCComputer::QuantizeETC2Alpha(int tableIndex, const MUInt1
     for (int block = 0; block < ParallelMath::ParallelSize; block++)
     {
         uint16_t blockLookupIndex = ParallelMath::Extract(lookupIndex, block) / ParallelMath::Extract(multiplier, block);
-        if (blockLookupIndex >= Tables::ETC2::g_alphaRoundingTableWidth)
+        if (blockLookupIndex >= Tables::ETC2::g_alphaRoundingTableWidth) {
             blockLookupIndex = Tables::ETC2::g_alphaRoundingTableWidth - 1;
+}
         uint16_t index = Tables::ETC2::g_alphaRoundingTables[tableIndex][blockLookupIndex];
         ParallelMath::PutUInt15(positiveIndex, block, index);
         ParallelMath::PutUInt15(positiveOffsetUnmultiplied, block, Tables::ETC2::g_alphaModifierTablePositive[tableIndex][index]);
@@ -2397,13 +2508,15 @@ void cvtt::Internal::ETCComputer::QuantizeETC2Alpha(int tableIndex, const MUInt1
 
     if (is11Bit)
     {
-        if (isSigned)
+        if (isSigned) {
             outQuantizedValues = ParallelMath::Min(ParallelMath::MakeUInt15(2047), ParallelMath::LosslessCast<MUInt15>::Cast(ParallelMath::Max(ParallelMath::MakeSInt16(1), offsetValue)));
-        else
+        } else {
             outQuantizedValues = ParallelMath::Min(ParallelMath::MakeUInt15(2047), ParallelMath::LosslessCast<MUInt15>::Cast(ParallelMath::Max(ParallelMath::MakeSInt16(0), offsetValue)));
+}
     }
-    else
+    else {
         outQuantizedValues = ParallelMath::Min(ParallelMath::MakeUInt15(255), ParallelMath::LosslessCast<MUInt15>::Cast(ParallelMath::Max(ParallelMath::MakeSInt16(0), offsetValue)));
+}
 
     MUInt15 indexSub = ParallelMath::LosslessCast<MUInt15>::Cast(signBits) & ParallelMath::MakeUInt15(4);
 
@@ -2440,23 +2553,28 @@ void cvtt::Internal::ETCComputer::EmitTModeBlock(uint8_t *outputBuffer, const Pa
     highBits |= lineColor[1] << (40 - 32);
     highBits |= lineColor[2] << (36 - 32);
     highBits |= ((table >> 1) & 3) << (34 - 32);
-    if (opaque)
+    if (opaque) {
         highBits |= 1 << (33 - 32);
+}
     highBits |= (table & 1) << (32 - 32);
 
     for (int px = 0; px < 16; px++)
     {
         int sel = (packedSelectors >> (2 * selectorOrder[px])) & 3;
-        if ((sel & 0x1) != 0)
+        if ((sel & 0x1) != 0) {
             lowBits |= (1 << px);
-        if ((sel & 0x2) != 0)
+}
+        if ((sel & 0x2) != 0) {
             lowBits |= (1 << (16 + px));
+}
     }
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 4; i++) {
         outputBuffer[i] = (highBits >> (24 - i * 8)) & 0xff;
-    for (int i = 0; i < 4; i++)
+}
+    for (int i = 0; i < 4; i++) {
         outputBuffer[i + 4] = (lowBits >> (24 - i * 8)) & 0xff;
+}
 }
 
 void cvtt::Internal::ETCComputer::EmitHModeBlock(uint8_t *outputBuffer, const ParallelMath::ScalarUInt16 blockColors[2], ParallelMath::ScalarUInt16 sectorBits, ParallelMath::ScalarUInt16 signBits, ParallelMath::ScalarUInt16 table, bool opaque)
@@ -2476,8 +2594,9 @@ void cvtt::Internal::ETCComputer::EmitHModeBlock(uint8_t *outputBuffer, const Pa
         lineColor[2] = isolatedColor[2] = (blockColors[0] >> 0) & 0x1f;
 
         int32_t packedSelectors = 0x55555555;
-        for (int px = 0; px < 16; px++)
+        for (int px = 0; px < 16; px++) {
             packedSelectors |= ((signBits >> px) & 1) << ((px * 2) + 1);
+}
 
         EmitTModeBlock(outputBuffer, lineColor, isolatedColor, packedSelectors, table, opaque);
         return;
@@ -2488,8 +2607,9 @@ void cvtt::Internal::ETCComputer::EmitHModeBlock(uint8_t *outputBuffer, const Pa
     int16_t colors[2][3];
     for (int sector = 0; sector < 2; sector++)
     {
-        for (int ch = 0; ch < 3; ch++)
+        for (int ch = 0; ch < 3; ch++) {
             colors[sector][ch] = (blockColors[sector] >> ((2 - ch) * 5)) & 15;
+}
     }
 
     uint32_t lowBits = 0;
@@ -2497,8 +2617,9 @@ void cvtt::Internal::ETCComputer::EmitHModeBlock(uint8_t *outputBuffer, const Pa
 
     if (((table & 1) == 1) != (blockColors[0] > blockColors[1]))
     {
-        for (int ch = 0; ch < 3; ch++)
+        for (int ch = 0; ch < 3; ch++) {
             std::swap(colors[0][ch], colors[1][ch]);
+}
         sectorBits ^= 0xffff;
     }
 
@@ -2512,8 +2633,9 @@ void cvtt::Internal::ETCComputer::EmitHModeBlock(uint8_t *outputBuffer, const Pa
     int b2 = colors[1][2];
 
     // Avoid overflowing R
-    if ((g1a & 4) != 0 && r1 + g1a < 8)
+    if ((g1a & 4) != 0 && r1 + g1a < 8) {
         highBits |= 1 << (63 - 32);
+}
 
     int fakeDG = b1b >> 1;
     int fakeG = b1a | (g1b << 1);
@@ -2541,8 +2663,9 @@ void cvtt::Internal::ETCComputer::EmitHModeBlock(uint8_t *outputBuffer, const Pa
     highBits |= g2 << (39 - 32);
     highBits |= b2 << (35 - 32);
     highBits |= da << (34 - 32);
-    if (opaque)
+    if (opaque) {
         highBits |= 1 << (33 - 32);
+}
     highBits |= db << (32 - 32);
 
     for (int px = 0; px < 16; px++)
@@ -2556,10 +2679,12 @@ void cvtt::Internal::ETCComputer::EmitHModeBlock(uint8_t *outputBuffer, const Pa
 
     uint8_t *output = outputBuffer;
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 4; i++) {
         output[i] = (highBits >> (24 - i * 8)) & 0xff;
-    for (int i = 0; i < 4; i++)
+}
+    for (int i = 0; i < 4; i++) {
         output[i + 4] = (lowBits >> (24 - i * 8)) & 0xff;
+}
 }
 
 void cvtt::Internal::ETCComputer::EmitETC1Block(uint8_t *outputBuffer, int blockBestFlip, int blockBestD, const int blockBestColors[2][3], const int blockBestTables[2], const ParallelMath::ScalarUInt16 blockBestSelectors[2], bool transparent)
@@ -2588,8 +2713,9 @@ void cvtt::Internal::ETCComputer::EmitETC1Block(uint8_t *outputBuffer, int block
 
     highBits |= (blockBestTables[0] << 5);
     highBits |= (blockBestTables[1] << 2);
-    if (!transparent)
+    if (!transparent) {
         highBits |= (blockBestD << 1);
+}
     highBits |= blockBestFlip;
 
     const uint8_t modifierCodes[4] = { 3, 2, 0, 1 };
@@ -2611,14 +2737,18 @@ void cvtt::Internal::ETCComputer::EmitETC1Block(uint8_t *outputBuffer, int block
     const int pixelSelectorOrder[16] = { 0, 4, 8, 12, 1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15 };
 
     int lowBitOffset = 0;
-    for (int sb = 0; sb < 2; sb++)
-        for (int px = 0; px < 16; px++)
+    for (int sb = 0; sb < 2; sb++) {
+        for (int px = 0; px < 16; px++) {
             lowBits |= ((unpackedSelectorCodes[pixelSelectorOrder[px]] >> sb) & 1) << (px + sb * 16);
+}
+}
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < 4; i++) {
         outputBuffer[i] = (highBits >> (24 - i * 8)) & 0xff;
-    for (int i = 0; i < 4; i++)
+}
+    for (int i = 0; i < 4; i++) {
         outputBuffer[i + 4] = (lowBits >> (24 - i * 8)) & 0xff;
+}
 }
 
 void cvtt::Internal::ETCComputer::CompressETC1BlockInternal(MFloat &bestTotalError, uint8_t *outputBuffer, const MUInt15 pixels[16][3], const MFloat preWeightedPixels[16][3], DifferentialResolveStorage &drs, const Options &options, bool punchthrough)
@@ -2644,8 +2774,9 @@ void cvtt::Internal::ETCComputer::CompressETC1BlockInternal(MFloat &bestTotalErr
 	{
 		for (int sector = 0; sector < 2; sector++)
 		{
-			for (int ch = 0; ch < 3; ch++)
+			for (int ch = 0; ch < 3; ch++) {
 				sectorCumulative[flip][sector][ch] = zeroU15;
+}
 
 			for (int px = 0; px < 8; px++)
 			{
@@ -2754,10 +2885,11 @@ void cvtt::Internal::ETCComputer::CompressETC1BlockInternal(MFloat &bestTotalErr
                                 offsetCumulative[ch] = cu15;
 						    }
 
-                            if ((options.flags & cvtt::Flags::ETC_FakeBT709Accurate) != 0)
+                            if ((options.flags & cvtt::Flags::ETC_FakeBT709Accurate) != 0) {
                                 ResolveHalfBlockFakeBT709RoundingAccurate(quantized, offsetCumulative, d == 1);
-                            else
+                            } else {
                                 ResolveHalfBlockFakeBT709RoundingFast(quantized, offsetCumulative, d == 1);
+}
                         }
 
 						possibleColors[oi] = quantized[0] | (quantized[1] << 5) | (quantized[2] << 10);
@@ -2772,22 +2904,25 @@ void cvtt::Internal::ETCComputer::CompressETC1BlockInternal(MFloat &bestTotalErr
                         for (int i = 1; i < numOffsets; i++)
                         {
                             uint16_t color = ParallelMath::Extract(possibleColors[i], block);
-                            if (color != ParallelMath::Extract(possibleColors[blockNumUniqueColors - 1], block))
+                            if (color != ParallelMath::Extract(possibleColors[blockNumUniqueColors - 1], block)) {
                                 ParallelMath::PutUInt15(possibleColors[blockNumUniqueColors++], block, color);
+}
                         }
 
                         ParallelMath::PutUInt15(numUniqueColors, block, blockNumUniqueColors);
                     }
 
                     int maxUniqueColors = ParallelMath::Extract(numUniqueColors, 0);
-                    for (int block = 1; block < ParallelMath::ParallelSize; block++)
+                    for (int block = 1; block < ParallelMath::ParallelSize; block++) {
                         maxUniqueColors = std::max<int>(maxUniqueColors, ParallelMath::Extract(numUniqueColors, block));
+}
 
                     for (int block = 0; block < ParallelMath::ParallelSize; block++)
                     {
                         uint16_t fillColor = ParallelMath::Extract(possibleColors[0], block);
-                        for (int i = ParallelMath::Extract(numUniqueColors, block); i < maxUniqueColors; i++)
+                        for (int i = ParallelMath::Extract(numUniqueColors, block); i < maxUniqueColors; i++) {
                             ParallelMath::PutUInt15(possibleColors[i], block, fillColor);
+}
                     }
 
 					for (int i = 0; i < maxUniqueColors; i++)
@@ -2858,8 +2993,9 @@ void cvtt::Internal::ETCComputer::CompressETC1BlockInternal(MFloat &bestTotalErr
 
     for (int block = 0; block < ParallelMath::ParallelSize; block++)
     {
-        if (!ParallelMath::Extract(bestIsThisMode, block))
+        if (!ParallelMath::Extract(bestIsThisMode, block)) {
             continue;
+}
 
         uint32_t highBits = 0;
         uint32_t lowBits = 0;
@@ -2873,8 +3009,9 @@ void cvtt::Internal::ETCComputer::CompressETC1BlockInternal(MFloat &bestTotalErr
         for (int sector = 0; sector < 2; sector++)
         {
             int sectorColor = ParallelMath::Extract(bestColors[sector], block);
-            for (int ch = 0; ch < 3; ch++)
+            for (int ch = 0; ch < 3; ch++) {
                 colors[sector][ch] = (sectorColor >> (ch * 5)) & 31;
+}
         }
 
         EmitETC1Block(outputBuffer + block * 8, blockBestFlip, blockBestD, colors, blockBestTables, blockBestSelectors, false);
@@ -2905,8 +3042,9 @@ void cvtt::Internal::ETCComputer::CompressETC1PunchthroughBlockInternal(MFloat &
 	{
 		for (int sector = 0; sector < 2; sector++)
 		{
-			for (int ch = 0; ch < 3; ch++)
+			for (int ch = 0; ch < 3; ch++) {
 				sectorCumulative[flip][sector][ch] = zeroU15;
+}
 
 			for (int px = 0; px < 8; px++)
 			{
@@ -2943,21 +3081,25 @@ void cvtt::Internal::ETCComputer::CompressETC1PunchthroughBlockInternal(MFloat &
 	{
         ParallelMath::Int16CompFlag canIgnoreSector[2] = { ParallelMath::MakeBoolInt16(true), ParallelMath::MakeBoolInt16(false) };
 
-        for (int sector = 0; sector < 2; sector++)
-            for (int px = 0; px < 8; px++)
+        for (int sector = 0; sector < 2; sector++) {
+            for (int px = 0; px < 8; px++) {
                 canIgnoreSector[sector] = canIgnoreSector[sector] & sectorTransparent[flip][sector][px];
+}
+}
 
 		drs.diffNumAttempts[0] = drs.diffNumAttempts[1] = zeroU15;
 
 		for (int sector = 0; sector < 2; sector++)
 		{
             MUInt15 sectorNumOpaque = ParallelMath::MakeUInt15(0);
-            for (int px = 0; px < 8; px++)
+            for (int px = 0; px < 8; px++) {
                 sectorNumOpaque = sectorNumOpaque + ParallelMath::SelectOrZero(sectorTransparent[flip][sector][px], ParallelMath::MakeUInt15(1));
+}
 
             int sectorMaxOpaque = 0;
-            for (int block = 0; block < ParallelMath::ParallelSize; block++)
+            for (int block = 0; block < ParallelMath::ParallelSize; block++) {
                 sectorMaxOpaque = std::max<int>(sectorMaxOpaque, ParallelMath::Extract(sectorNumOpaque, block));
+}
 
             int sectorNumOpaqueMultipliers = sectorMaxOpaque * 2 + 1;
 
@@ -2996,8 +3138,9 @@ void cvtt::Internal::ETCComputer::CompressETC1PunchthroughBlockInternal(MFloat &
                         MUInt16 cuTimes31 = (ParallelMath::LosslessCast<MUInt16>::Cast(cu15) << 5) - ParallelMath::LosslessCast<MUInt16>::Cast(cu15);
                         MUInt15 cuDiv8 = ParallelMath::RightShift(cu15, 3);
                         MUInt16 numerator = cuTimes31 + ParallelMath::LosslessCast<MUInt16>::Cast(cuDiv8 + sectorNumOpaqueAddend);
-                        for (int block = 0; block < ParallelMath::ParallelSize; block++)
+                        for (int block = 0; block < ParallelMath::ParallelSize; block++) {
                             ParallelMath::PutUInt15(quantized[ch], block, ParallelMath::Extract(numerator, block) / ParallelMath::Extract(sectorNumOpaqueDenominator, block));
+}
                     }
 
 					possibleColors[om + sectorMaxOpaque] = quantized[0] | (quantized[1] << 5) | (quantized[2] << 10);
@@ -3010,22 +3153,25 @@ void cvtt::Internal::ETCComputer::CompressETC1PunchthroughBlockInternal(MFloat &
                     for (int i = 1; i < sectorNumOpaqueMultipliers; i++)
                     {
                         uint16_t color = ParallelMath::Extract(possibleColors[i], block);
-                        if (color != ParallelMath::Extract(possibleColors[blockNumUniqueColors - 1], block))
+                        if (color != ParallelMath::Extract(possibleColors[blockNumUniqueColors - 1], block)) {
                             ParallelMath::PutUInt15(possibleColors[blockNumUniqueColors++], block, color);
+}
                     }
 
                     ParallelMath::PutUInt15(numUniqueColors, block, blockNumUniqueColors);
                 }
 
                 int maxUniqueColors = ParallelMath::Extract(numUniqueColors, 0);
-                for (int block = 1; block < ParallelMath::ParallelSize; block++)
+                for (int block = 1; block < ParallelMath::ParallelSize; block++) {
                     maxUniqueColors = std::max<int>(maxUniqueColors, ParallelMath::Extract(numUniqueColors, block));
+}
 
                 for (int block = 0; block < ParallelMath::ParallelSize; block++)
                 {
                     uint16_t fillColor = ParallelMath::Extract(possibleColors[0], block);
-                    for (int i = ParallelMath::Extract(numUniqueColors, block); i < maxUniqueColors; i++)
+                    for (int i = ParallelMath::Extract(numUniqueColors, block); i < maxUniqueColors; i++) {
                         ParallelMath::PutUInt15(possibleColors[i], block, fillColor);
+}
                 }
 
 				for (int i = 0; i < maxUniqueColors; i++)
@@ -3059,8 +3205,9 @@ void cvtt::Internal::ETCComputer::CompressETC1PunchthroughBlockInternal(MFloat &
 
     for (int block = 0; block < ParallelMath::ParallelSize; block++)
     {
-        if (!ParallelMath::Extract(bestIsThisMode, block))
+        if (!ParallelMath::Extract(bestIsThisMode, block)) {
             continue;
+}
 
         int blockBestColors[2][3];
         int blockBestTables[2];
@@ -3068,8 +3215,9 @@ void cvtt::Internal::ETCComputer::CompressETC1PunchthroughBlockInternal(MFloat &
         for (int sector = 0; sector < 2; sector++)
         {
             int sectorColor = ParallelMath::Extract(bestColors[sector], block);
-            for (int ch = 0; ch < 3; ch++)
+            for (int ch = 0; ch < 3; ch++) {
                 blockBestColors[sector][ch] = (sectorColor >> (ch * 5)) & 31;
+}
 
             blockBestTables[sector] = ParallelMath::Extract(bestTables[sector], block);
             blockBestSelectors[sector] = ParallelMath::Extract(bestSelectors[sector], block);
@@ -3083,8 +3231,9 @@ void cvtt::Internal::ETCComputer::CompressETC1PunchthroughBlockInternal(MFloat &
 cvtt::ETC1CompressionData *cvtt::Internal::ETCComputer::AllocETC1Data(cvtt::Kernels::allocFunc_t allocFunc, void *context)
 {
     void *buffer = allocFunc(context, sizeof(cvtt::Internal::ETCComputer::ETC1CompressionDataInternal));
-    if (!buffer)
+    if (!buffer) {
         return NULL;
+}
     new (buffer) cvtt::Internal::ETCComputer::ETC1CompressionDataInternal(context);
     return static_cast<ETC1CompressionData*>(buffer);
 }
@@ -3100,8 +3249,9 @@ void cvtt::Internal::ETCComputer::ReleaseETC1Data(ETC1CompressionData *compressi
 cvtt::ETC2CompressionData *cvtt::Internal::ETCComputer::AllocETC2Data(cvtt::Kernels::allocFunc_t allocFunc, void *context, const cvtt::Options &options)
 {
     void *buffer = allocFunc(context, sizeof(cvtt::Internal::ETCComputer::ETC2CompressionDataInternal));
-    if (!buffer)
+    if (!buffer) {
         return NULL;
+}
     new (buffer) cvtt::Internal::ETCComputer::ETC2CompressionDataInternal(context, options);
     return static_cast<ETC2CompressionData*>(buffer);
 }

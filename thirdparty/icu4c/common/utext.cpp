@@ -189,7 +189,7 @@ utext_current32(UText *ut) {
     UChar32  c;
     if (ut->chunkOffset==ut->chunkLength) {
         // Current position is just off the end of the chunk.
-        if (ut->pFuncs->access(ut, ut->chunkNativeLimit, true) == false) {
+        if (!static_cast<bool>(ut->pFuncs->access(ut, ut->chunkNativeLimit, true))) {
             // Off the end of the text.
             return U_SENTINEL;
         }
@@ -273,7 +273,7 @@ utext_next32(UText *ut) {
     UChar32       c;
 
     if (ut->chunkOffset >= ut->chunkLength) {
-        if (ut->pFuncs->access(ut, ut->chunkNativeLimit, true) == false) {
+        if (!static_cast<bool>(ut->pFuncs->access(ut, ut->chunkNativeLimit, true))) {
             return U_SENTINEL;
         }
     }
@@ -287,7 +287,7 @@ utext_next32(UText *ut) {
     }
 
     if (ut->chunkOffset >= ut->chunkLength) {
-        if (ut->pFuncs->access(ut, ut->chunkNativeLimit, true) == false) {
+        if (!static_cast<bool>(ut->pFuncs->access(ut, ut->chunkNativeLimit, true))) {
             // c is an unpaired lead surrogate at the end of the text.
             // return it as it is.
             return c;
@@ -313,7 +313,7 @@ utext_previous32(UText *ut) {
     UChar32       c;
 
     if (ut->chunkOffset <= 0) {
-        if (ut->pFuncs->access(ut, ut->chunkNativeStart, false) == false) {
+        if (!static_cast<bool>(ut->pFuncs->access(ut, ut->chunkNativeStart, false))) {
             return U_SENTINEL;
         }
     }
@@ -327,7 +327,7 @@ utext_previous32(UText *ut) {
     }
 
     if (ut->chunkOffset <= 0) {
-        if (ut->pFuncs->access(ut, ut->chunkNativeStart, false) == false) {
+        if (!static_cast<bool>(ut->pFuncs->access(ut, ut->chunkNativeStart, false))) {
             // c is an unpaired trail surrogate at the start of the text.
             // return it as it is.
             return c;
@@ -656,8 +656,9 @@ utext_setup(UText *ut, int32_t extraSpace, UErrorCode *status) {
         ut->privB               = 0;
         ut->privC               = 0;
         ut->privP               = nullptr;
-        if (ut->pExtra!=nullptr && ut->extraSize>0)
+        if (ut->pExtra!=nullptr && ut->extraSize>0) {
             uprv_memset(ut->pExtra, 0, ut->extraSize);
+}
 
     }
     return ut;
@@ -1233,7 +1234,7 @@ fillForward:
                 destIx++;
             } else {
                 // General case, handle everything.
-                if (seenNonAscii == false) {
+                if (!static_cast<bool>(seenNonAscii)) {
                     seenNonAscii = true;
                     u8b_swap->bufNILimit = destIx;
                 }
@@ -1272,7 +1273,7 @@ fillForward:
         u8b_swap->bufNativeLimit     = srcIx;
         u8b_swap->bufStartIdx        = 0;
         u8b_swap->bufLimitIdx        = destIx;
-        if (seenNonAscii == false) {
+        if (!static_cast<bool>(seenNonAscii)) {
             u8b_swap->bufNILimit     = destIx;
         }
         u8b_swap->toUCharsMapStart   = u8b_swap->bufNativeStart;
@@ -1307,7 +1308,7 @@ fillReverse:
         //   If index is at the end, there is no character there to look at.
         if (ix != ut->b) {
             // Note: this function will only move the index back if it is on a trail byte
-            //       and there is a preceding lead byte and the sequence from the lead 
+            //       and there is a preceding lead byte and the sequence from the lead
             //       through this trail could be part of a valid UTF-8 sequence
             //       Otherwise the index remains unchanged.
             U8_SET_CP_START(s8, 0, ix);
@@ -2257,7 +2258,7 @@ unistrTextCopy(UText *ut,
 
     // update chunk description, set iteration position.
     ut->chunkContents = us->getBuffer();
-    if (move==false) {
+    if (!static_cast<bool>(move)) {
         // copy operation, string length grows
         ut->chunkLength += limit32-start32;
         ut->chunkNativeLimit = ut->chunkLength;

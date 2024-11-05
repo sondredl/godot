@@ -12,7 +12,7 @@ namespace embree
     double A = max(0.0f,bvh->getLinearBounds().expectedHalfArea());
     stat = statistics(bvh->root,A,BBox1f(0.0f,1.0f));
   }
-  
+
   template<int N>
   std::string BVHNStatistics<N>::str()
   {
@@ -25,17 +25,23 @@ namespace embree
     stream << "#bytes = " << std::setw(7) << std::setprecision(2) << totalBytes/1E6 << " MB (100.00%), ";
     stream << "#nodes = " << std::setw(7) << stat.size() << " (" << std::setw(6) << std::setprecision(2) << 100.0*stat.fillRate(bvh) << "% filled), ";
     stream << "#bytes/prim = " << std::setw(6) << std::setprecision(2) << double(totalBytes)/double(bvh->numPrimitives) << std::endl;
-    if (stat.statAABBNodes.numNodes    ) stream << "  getAABBNodes     : "  << stat.statAABBNodes.toString(bvh,totalSAH,totalBytes) << std::endl;
-    if (stat.statOBBNodes.numNodes  ) stream << "  ungetAABBNodes   : "  << stat.statOBBNodes.toString(bvh,totalSAH,totalBytes) << std::endl;
-    if (stat.statAABBNodesMB.numNodes  ) stream << "  getAABBNodesMB   : "  << stat.statAABBNodesMB.toString(bvh,totalSAH,totalBytes) << std::endl;
-    if (stat.statAABBNodesMB4D.numNodes) stream << "  getAABBNodesMB4D : "  << stat.statAABBNodesMB4D.toString(bvh,totalSAH,totalBytes) << std::endl;
-    if (stat.statOBBNodesMB.numNodes) stream << "  ungetAABBNodesMB : "  << stat.statOBBNodesMB.toString(bvh,totalSAH,totalBytes) << std::endl;
-    if (stat.statQuantizedNodes.numNodes  ) stream << "  quantizedNodes   : "  << stat.statQuantizedNodes.toString(bvh,totalSAH,totalBytes) << std::endl;
-    if (true)                               stream << "  leaves           : "  << stat.statLeaf.toString(bvh,totalSAH,totalBytes) << std::endl;
-    if (true)                               stream << "    histogram      : "  << stat.statLeaf.histToString() << std::endl;
+    if (stat.statAABBNodes.numNodes    ) { stream << "  getAABBNodes     : "  << stat.statAABBNodes.toString(bvh,totalSAH,totalBytes) << std::endl;
+}
+    if (stat.statOBBNodes.numNodes  ) { stream << "  ungetAABBNodes   : "  << stat.statOBBNodes.toString(bvh,totalSAH,totalBytes) << std::endl;
+}
+    if (stat.statAABBNodesMB.numNodes  ) { stream << "  getAABBNodesMB   : "  << stat.statAABBNodesMB.toString(bvh,totalSAH,totalBytes) << std::endl;
+}
+    if (stat.statAABBNodesMB4D.numNodes) { stream << "  getAABBNodesMB4D : "  << stat.statAABBNodesMB4D.toString(bvh,totalSAH,totalBytes) << std::endl;
+}
+    if (stat.statOBBNodesMB.numNodes) { stream << "  ungetAABBNodesMB : "  << stat.statOBBNodesMB.toString(bvh,totalSAH,totalBytes) << std::endl;
+}
+    if (stat.statQuantizedNodes.numNodes  ) { stream << "  quantizedNodes   : "  << stat.statQuantizedNodes.toString(bvh,totalSAH,totalBytes) << std::endl;
+}
+    stream << "  leaves           : "  << stat.statLeaf.toString(bvh,totalSAH,totalBytes) << std::endl;
+    stream << "    histogram      : "  << stat.statLeaf.histToString() << std::endl;
     return stream.str();
   }
-  
+
   template<int N>
   typename BVHNStatistics<N>::Statistics BVHNStatistics<N>::statistics(NodeRef node, const double A, const BBox1f t0t1)
   {
@@ -46,9 +52,10 @@ namespace embree
     {
       AABBNode* n = node.getAABBNode();
       s = s + parallel_reduce(0,N,Statistics(),[&] ( const int i ) {
-          if (n->child(i) == BVH::emptyNode) return Statistics();
+          if (n->child(i) == BVH::emptyNode) { return Statistics();
+}
           const double Ai = max(0.0f,halfArea(n->extend(i)));
-          Statistics s = statistics(n->child(i),Ai,t0t1); 
+          Statistics s = statistics(n->child(i),Ai,t0t1);
           s.statAABBNodes.numChildren++;
           return s;
         }, Statistics::add);
@@ -60,9 +67,10 @@ namespace embree
     {
       OBBNode* n = node.ungetAABBNode();
       s = s + parallel_reduce(0,N,Statistics(),[&] ( const int i ) {
-          if (n->child(i) == BVH::emptyNode) return Statistics();
+          if (n->child(i) == BVH::emptyNode) { return Statistics();
+}
           const double Ai = max(0.0f,halfArea(n->extent(i)));
-          Statistics s = statistics(n->child(i),Ai,t0t1); 
+          Statistics s = statistics(n->child(i),Ai,t0t1);
           s.statOBBNodes.numChildren++;
           return s;
         }, Statistics::add);
@@ -74,7 +82,8 @@ namespace embree
     {
       AABBNodeMB* n = node.getAABBNodeMB();
       s = s + parallel_reduce(0,N,Statistics(),[&] ( const int i ) {
-          if (n->child(i) == BVH::emptyNode) return Statistics();
+          if (n->child(i) == BVH::emptyNode) { return Statistics();
+}
           const double Ai = max(0.0f,n->expectedHalfArea(i,t0t1));
           Statistics s = statistics(n->child(i),Ai,t0t1);
           s.statAABBNodesMB.numChildren++;
@@ -88,7 +97,8 @@ namespace embree
     {
       AABBNodeMB4D* n = node.getAABBNodeMB4D();
       s = s + parallel_reduce(0,N,Statistics(),[&] ( const int i ) {
-          if (n->child(i) == BVH::emptyNode) return Statistics();
+          if (n->child(i) == BVH::emptyNode) { return Statistics();
+}
           const BBox1f t0t1i = intersect(t0t1,n->timeRange(i));
           assert(!t0t1i.empty());
           const double Ai = n->AABBNodeMB::expectedHalfArea(i,t0t1i);
@@ -104,9 +114,10 @@ namespace embree
     {
       OBBNodeMB* n = node.ungetAABBNodeMB();
       s = s + parallel_reduce(0,N,Statistics(),[&] ( const int i ) {
-          if (n->child(i) == BVH::emptyNode) return Statistics();
+          if (n->child(i) == BVH::emptyNode) { return Statistics();
+}
           const double Ai = max(0.0f,halfArea(n->extent0(i)));
-          Statistics s = statistics(n->child(i),Ai,t0t1); 
+          Statistics s = statistics(n->child(i),Ai,t0t1);
           s.statOBBNodesMB.numChildren++;
           return s;
         }, Statistics::add);
@@ -118,9 +129,10 @@ namespace embree
     {
       QuantizedNode* n = node.quantizedNode();
       s = s + parallel_reduce(0,N,Statistics(),[&] ( const int i ) {
-          if (n->child(i) == BVH::emptyNode) return Statistics();
+          if (n->child(i) == BVH::emptyNode) { return Statistics();
+}
           const double Ai = max(0.0f,halfArea(n->extent(i)));
-          Statistics s = statistics(n->child(i),Ai,t0t1); 
+          Statistics s = statistics(n->child(i),Ai,t0t1);
           s.statQuantizedNodes.numChildren++;
           return s;
         }, Statistics::add);
@@ -156,7 +168,7 @@ namespace embree
       // -- GODOT end --
     }
     return s;
-  } 
+  }
 
 #if defined(__AVX__)
   template class BVHNStatistics<8>;

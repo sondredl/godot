@@ -89,22 +89,27 @@ struct SwShapeTask : SwTask
 
     float validStrokeWidth()
     {
-        if (!rshape->stroke) return 0.0f;
+        if (!rshape->stroke) { return 0.0f;
+}
 
         auto width = rshape->stroke->width;
-        if (mathZero(width)) return 0.0f;
+        if (mathZero(width)) { return 0.0f;
+}
 
-        if (!rshape->stroke->fill && (MULTIPLY(rshape->stroke->color[3], opacity) == 0)) return 0.0f;
-        if (mathZero(rshape->stroke->trim.begin - rshape->stroke->trim.end)) return 0.0f;
+        if (!rshape->stroke->fill && (MULTIPLY(rshape->stroke->color[3], opacity) == 0)) { return 0.0f;
+}
+        if (mathZero(rshape->stroke->trim.begin - rshape->stroke->trim.end)) { return 0.0f;
+}
 
         return (width * sqrt(transform.e11 * transform.e11 + transform.e12 * transform.e12));
     }
 
     bool clip(SwRleData* target) override
     {
-        if (shape.fastTrack) rleClipRect(target, &bbox);
-        else if (shape.rle) rleClipPath(target, shape.rle);
-        else return false;
+        if (shape.fastTrack) { rleClipRect(target, &bbox);
+        } else if (shape.rle) { rleClipPath(target, shape.rle);
+        } else { return false;
+}
 
         return true;
     }
@@ -119,7 +124,8 @@ struct SwShapeTask : SwTask
 
     void run(unsigned tid) override
     {
-        if (opacity == 0 && !clipper) return;  //Invisible
+        if (opacity == 0 && !clipper) { return;  //Invisible
+}
 
         auto strokeWidth = validStrokeWidth();
         bool visibleFill = false;
@@ -127,7 +133,8 @@ struct SwShapeTask : SwTask
 
         //This checks also for the case, if the invisible shape turned to visible by alpha.
         auto prepareShape = false;
-        if (!shapePrepared(&shape) && (flags & RenderUpdateFlag::Color)) prepareShape = true;
+        if (!shapePrepared(&shape) && (flags & RenderUpdateFlag::Color)) { prepareShape = true;
+}
 
         //Shape
         if (flags & (RenderUpdateFlag::Path | RenderUpdateFlag::Transform) || prepareShape) {
@@ -145,12 +152,15 @@ struct SwShapeTask : SwTask
         //Fill
         if (flags & (RenderUpdateFlag::Path |RenderUpdateFlag::Gradient | RenderUpdateFlag::Transform | RenderUpdateFlag::Color)) {
             if (visibleFill || clipper) {
-                if (!shapeGenRle(&shape, rshape, antialiasing(strokeWidth))) goto err;
+                if (!shapeGenRle(&shape, rshape, antialiasing(strokeWidth))) { goto err;
+}
             }
             if (auto fill = rshape->fill) {
                 auto ctable = (flags & RenderUpdateFlag::Gradient) ? true : false;
-                if (ctable) shapeResetFill(&shape);
-                if (!shapeGenFillColors(&shape, fill, transform, surface, opacity, ctable)) goto err;
+                if (ctable) { shapeResetFill(&shape);
+}
+                if (!shapeGenFillColors(&shape, fill, transform, surface, opacity, ctable)) { goto err;
+}
             } else {
                 shapeDelFill(&shape);
             }
@@ -159,12 +169,15 @@ struct SwShapeTask : SwTask
         if (flags & (RenderUpdateFlag::Path | RenderUpdateFlag::Stroke | RenderUpdateFlag::Transform)) {
             if (strokeWidth > 0.0f) {
                 shapeResetStroke(&shape, rshape, transform);
-                if (!shapeGenStrokeRle(&shape, rshape, transform, clipRegion, bbox, mpool, tid)) goto err;
+                if (!shapeGenStrokeRle(&shape, rshape, transform, clipRegion, bbox, mpool, tid)) { goto err;
+}
 
                 if (auto fill = rshape->strokeFill()) {
                     auto ctable = (flags & RenderUpdateFlag::GradientStroke) ? true : false;
-                    if (ctable) shapeResetStrokeFill(&shape);
-                    if (!shapeGenStrokeFillColors(&shape, fill, transform, surface, opacity, ctable)) goto err;
+                    if (ctable) { shapeResetStrokeFill(&shape);
+}
+                    if (!shapeGenStrokeFillColors(&shape, fill, transform, surface, opacity, ctable)) { goto err;
+}
                 } else {
                     shapeDelStrokeFill(&shape);
                 }
@@ -232,12 +245,15 @@ struct SwImageTask : SwTask
         //Invisible shape turned to visible by alpha.
         if ((flags & (RenderUpdateFlag::Image | RenderUpdateFlag::Transform | RenderUpdateFlag::Color)) && (opacity > 0)) {
             imageReset(&image);
-            if (!image.data || image.w == 0 || image.h == 0) goto end;
+            if (!image.data || image.w == 0 || image.h == 0) { goto end;
+}
 
-            if (!imagePrepare(&image, transform, clipRegion, bbox, mpool, tid)) goto end;
+            if (!imagePrepare(&image, transform, clipRegion, bbox, mpool, tid)) { goto end;
+}
 
             if (clips.count > 0) {
-                if (!imageGenRle(&image, bbox, false)) goto end;
+                if (!imageGenRle(&image, bbox, false)) { goto end;
+}
                 if (image.rle) {
                     //Clear current task memorypool here if the clippers would use the same memory pool
                     imageDelOutline(&image, mpool, tid);
@@ -265,7 +281,8 @@ struct SwImageTask : SwTask
 
 static void _termEngine()
 {
-    if (rendererCnt > 0) return;
+    if (rendererCnt > 0) { return;
+}
 
     mpoolTerm(globalMpool);
     globalMpool = nullptr;
@@ -280,19 +297,21 @@ static void _renderFill(SwShapeTask* task, SwSurface* surface, uint8_t opacity)
     } else {
         task->rshape->fillColor(&r, &g, &b, &a);
         a = MULTIPLY(opacity, a);
-        if (a > 0) rasterShape(surface, &task->shape, r, g, b, a);
+        if (a > 0) { rasterShape(surface, &task->shape, r, g, b, a);
+}
     }
 }
 
 static void _renderStroke(SwShapeTask* task, SwSurface* surface, uint8_t opacity)
 {
-    uint8_t r, g, b, a;
+
     if (auto strokeFill = task->rshape->strokeFill()) {
         rasterGradientStroke(surface, &task->shape, strokeFill, opacity);
     } else {
         if (task->rshape->strokeColor(&r, &g, &b, &a)) {
             a = MULTIPLY(opacity, a);
-            if (a > 0) rasterStroke(surface, &task->shape, r, g, b, a);
+            if (a > 0) { rasterStroke(surface, &task->shape, r, g, b, a);
+}
         }
     }
 }
@@ -672,7 +691,7 @@ void* SwRenderer::prepareCommon(SwTask* task, const Matrix& transform, const Arr
 
     task->clips = clips;
     task->transform = transform;
-    
+
     //zero size?
     if (task->transform.e11 == 0.0f && task->transform.e12 == 0.0f) return task; //zero width
     if (task->transform.e21 == 0.0f && task->transform.e22 == 0.0f) return task; //zero height

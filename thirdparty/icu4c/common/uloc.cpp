@@ -1355,7 +1355,8 @@ _getVariant(const char* localeID,
             const char** pEnd,
             bool needSeparator,
             UErrorCode& status) {
-    if (U_FAILURE(status)) return;
+    if (U_FAILURE(status)) { return;
+}
     if (pEnd != nullptr) { *pEnd = localeID; }
 
     // Reasonable upper limit for variants
@@ -1385,7 +1386,8 @@ _getVariant(const char* localeID,
             }
             if (sink != nullptr) {
                 char c = uprv_toupper(localeID[index]);
-                if (c == '-') c = '_';
+                if (c == '-') { c = '_';
+}
                 sink->Append(&c, 1);
             }
         }
@@ -1414,7 +1416,8 @@ _getVariant(const char* localeID,
             }
             if (sink != nullptr) {
                 char c = uprv_toupper(localeID[index]);
-                if (c == '-' || c == ',') c = '_';
+                if (c == '-' || c == ',') { c = '_';
+}
                 sink->Append(&c, 1);
             }
         }
@@ -1964,8 +1967,9 @@ ulocimp_getParent(const char* localeID,
     const char *lastUnderscore;
     int32_t i;
 
-    if (localeID == nullptr)
+    if (localeID == nullptr) {
         localeID = uloc_getDefault();
+}
 
     lastUnderscore=uprv_strrchr(localeID, '_');
     if(lastUnderscore!=nullptr) {
@@ -2177,8 +2181,9 @@ uloc_getISO3Language(const char* localeID)
         localeID = uloc_getDefault();
     }
     CharString lang = ulocimp_getLanguage(localeID, err);
-    if (U_FAILURE(err))
+    if (U_FAILURE(err)) {
         return "";
+}
     std::optional<int16_t> offset = _findIndex(LANGUAGES, lang.data());
     return offset.has_value() ? LANGUAGES_3[*offset] : "";
 }
@@ -2193,8 +2198,9 @@ uloc_getISO3Country(const char* localeID)
         localeID = uloc_getDefault();
     }
     CharString cntry = ulocimp_getRegion(localeID, err);
-    if (U_FAILURE(err))
+    if (U_FAILURE(err)) {
         return "";
+}
     std::optional<int16_t> offset = _findIndex(COUNTRIES, cntry.data());
     return offset.has_value() ? COUNTRIES_3[*offset] : "";
 }
@@ -2264,8 +2270,9 @@ U_CAPI void  U_EXPORT2
 uloc_setDefault(const char*   newDefaultLocale,
              UErrorCode* err)
 {
-    if (U_FAILURE(*err))
+    if (U_FAILURE(*err)) {
         return;
+}
     /* the error code isn't currently used for anything by this function*/
 
     /* propagate change to C++ */

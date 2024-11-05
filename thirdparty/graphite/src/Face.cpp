@@ -80,15 +80,18 @@ bool Face::readGlyphs(uint32 faceOptions)
         return error(e);
     }
 
-    if (faceOptions & gr_face_cacheCmap)
+    if (faceOptions & gr_face_cacheCmap) {
         m_cmap = new CachedCmap(*this);
-    else
+    } else {
         m_cmap = new DirectCmap(*this);
-    if (e.test(!m_cmap, E_OUTOFMEM) || e.test(!*m_cmap, E_BADCMAP))
+}
+    if (e.test(!m_cmap, E_OUTOFMEM) || e.test(!*m_cmap, E_BADCMAP)) {
         return error(e);
+}
 
-    if (faceOptions & gr_face_preloadGlyphs)
+    if (faceOptions & gr_face_preloadGlyphs) {
         nameTable();        // preload the name table along with the glyphs.
+}
 
     return true;
 }
@@ -101,10 +104,12 @@ bool Face::readGraphite(const Table & silf)
     Error e;
     error_context(EC_READSILF);
     const byte * p = silf;
-    if (e.test(!p, E_NOSILF) || e.test(silf.size() < 20, E_BADSIZE)) return error(e);
+    if (e.test(!p, E_NOSILF) || e.test(silf.size() < 20, E_BADSIZE)) { return error(e);
+}
 
     const uint32 version = be::read<uint32>(p);
-    if (e.test(version < 0x00020000, E_TOOOLD)) return error(e);
+    if (e.test(version < 0x00020000, E_TOOOLD)) { return error(e);
+}
     if (version >= 0x00030000)
         be::skip<uint32>(p);        // compilerVersion
     m_numSilf = be::read<uint16>(p);
@@ -113,7 +118,8 @@ bool Face::readGraphite(const Table & silf)
 
     bool havePasses = false;
     m_silfs = new Silf[m_numSilf];
-    if (e.test(!m_silfs, E_OUTOFMEM)) return error(e);
+    if (e.test(!m_silfs, E_OUTOFMEM)) { return error(e);
+}
     for (int i = 0; i < m_numSilf; i++)
     {
         error_context(EC_ASILF + (i << 8));
@@ -151,16 +157,19 @@ bool Face::runGraphite(Segment *seg, const Silf *aSilf) const
 
 //    if ((seg->dir() & 1) != aSilf->dir())
 //        seg->reverseSlots();
-    if ((seg->dir() & 3) == 3 && aSilf->bidiPass() == 0xFF)
+    if ((seg->dir() & 3) == 3 && aSilf->bidiPass() == 0xFF) {
         seg->doMirror(aSilf->aMirror());
+}
     bool res = aSilf->runGraphite(seg, 0, aSilf->positionPass(), true);
     if (res)
     {
         seg->associateChars(0, seg->charInfoCount());
-        if (aSilf->flags() & 0x20)
+        if (aSilf->flags() & 0x20) {
             res &= seg->initCollisions();
-        if (res)
+}
+        if (res) {
             res &= aSilf->runGraphite(seg, aSilf->positionPass(), aSilf->numPasses(), false);
+}
     }
 
 #if !defined GRAPHITE2_NTRACING
@@ -171,13 +180,15 @@ bool Face::runGraphite(Segment *seg, const Silf *aSilf) const
                             << json::close // Close up the passes array
                 << "outputdir" << (seg->currdir() ? "rtl" : "ltr")
                 << "output" << json::array;
-        for(Slot * s = seg->first(); s; s = s->next())
+        for(Slot * s = seg->first(); s; s = s->next()) {
             *dbgout     << dslot(seg, s);
+}
         *dbgout         << json::close
                 << "advance" << seg->advance()
                 << "chars"   << json::array;
-        for(size_t i = 0, n = seg->charInfoCount(); i != n; ++i)
+        for(size_t i = 0, n = seg->charInfoCount(); i != n; ++i) {
             *dbgout     << json::flat << *seg->charinfo(int(i));
+}
         *dbgout         << json::close  // Close up the chars array
                     << json::close;     // Close up the segment object
     }
@@ -196,9 +207,10 @@ void Face::setLogger(FILE * log_file GR_MAYBE_UNUSED)
 
 const Silf *Face::chooseSilf(uint32 script) const
 {
-    if (m_numSilf == 0)
+    if (m_numSilf == 0) {
         return NULL;
-    else if (m_numSilf == 1 || script == 0)
+    } else { i
+}f (m_numSilf == 1 || script == 0)
         return m_silfs;
     else // do more work here
         return m_silfs;
@@ -216,7 +228,8 @@ int32 Face::getGlyphMetric(uint16 gid, uint8 metric) const
         case kgmetAscent : return m_ascent;
         case kgmetDescent : return m_descent;
         default:
-            if (gid >= glyphs().numGlyphs()) return 0;
+            if (gid >= glyphs().numGlyphs()) { return 0;
+}
             return glyphs().glyph(gid)->getMetric(metric);
     }
 }
@@ -224,8 +237,9 @@ int32 Face::getGlyphMetric(uint16 gid, uint8 metric) const
 void Face::takeFileFace(FileFace* pFileFace GR_MAYBE_UNUSED/*takes ownership*/)
 {
 #ifndef GRAPHITE2_NFILEFACE
-    if (m_pFileFace==pFileFace)
+    if (m_pFileFace==pFileFace) {
       return;
+}
 
     delete m_pFileFace;
     m_pFileFace = pFileFace;
@@ -234,7 +248,8 @@ void Face::takeFileFace(FileFace* pFileFace GR_MAYBE_UNUSED/*takes ownership*/)
 
 NameTable * Face::nameTable() const
 {
-    if (m_pNames) return m_pNames;
+    if (m_pNames) { return m_pNames;
+}
     const Table name(*this, Tag::name);
     if (name)
         m_pNames = new NameTable(name, name.size());
@@ -244,8 +259,9 @@ NameTable * Face::nameTable() const
 uint16 Face::languageForLocale(const char * locale) const
 {
     nameTable();
-    if (m_pNames)
+    if (m_pNames) {
         return m_pNames->getLanguageId(locale);
+}
     return 0;
 }
 
@@ -275,9 +291,10 @@ void Face::Table::release()
     _p = 0; _sz = 0;
 }
 
-Face::Table & Face::Table::operator = (const Table && rhs) throw()
+Face::Table & Face::Table::operator = (const Table && rhs)  noexcept noexcept
 {
-    if (this == &rhs)   return *this;
+    if (this == &rhs) {   return *this;
+}
     release();
     new (this) Table(std::move(rhs));
     return *this;
@@ -286,8 +303,9 @@ Face::Table & Face::Table::operator = (const Table && rhs) throw()
 Error Face::Table::decompress()
 {
     Error e;
-    if (e.test(_sz < 5 * sizeof(uint32), E_BADSIZE))
+    if (e.test(_sz < 5 * sizeof(uint32), E_BADSIZE)) {
         return e;
+}
     byte * uncompressed_table = 0;
     size_t uncompressed_size = 0;
 

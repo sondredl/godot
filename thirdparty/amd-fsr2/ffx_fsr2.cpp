@@ -21,7 +21,7 @@
 
 #include <algorithm>    // for max used inside SPD CPU code.
 #include <cmath>        // for fabs, abs, sinf, sqrt, etc.
-#include <string.h>     // for memset
+#include <cstring>     // for memset
 #include <cfloat>       // for FLT_EPSILON
 #include "ffx_fsr2.h"
 #define FFX_CPU
@@ -42,7 +42,7 @@
 #endif
 
 #ifndef _MSC_VER
-#include <wchar.h>
+#include <cwchar>
 #define wcscpy_s wcscpy
 #endif
 // -- GODOT end --
@@ -351,11 +351,13 @@ static FfxErrorCode patchResourceBindings(FfxPipelineState* inoutPipeline)
         int32_t mapIndex = 0;
         for (mapIndex = 0; mapIndex < _countof(srvResourceBindingTable); ++mapIndex)
         {
-            if (0 == wcscmp(srvResourceBindingTable[mapIndex].name, inoutPipeline->srvResourceBindings[srvIndex].name))
+            if (0 == wcscmp(srvResourceBindingTable[mapIndex].name, inoutPipeline->srvResourceBindings[srvIndex].name)) {
                 break;
+}
         }
-        if (mapIndex == _countof(srvResourceBindingTable))
+        if (mapIndex == _countof(srvResourceBindingTable)) {
             return FFX_ERROR_INVALID_ARGUMENT;
+}
 
         inoutPipeline->srvResourceBindings[srvIndex].resourceIdentifier = srvResourceBindingTable[mapIndex].index;
     }
@@ -365,11 +367,13 @@ static FfxErrorCode patchResourceBindings(FfxPipelineState* inoutPipeline)
         int32_t mapIndex = 0;
         for (mapIndex = 0; mapIndex < _countof(uavResourceBindingTable); ++mapIndex)
         {
-            if (0 == wcscmp(uavResourceBindingTable[mapIndex].name, inoutPipeline->uavResourceBindings[uavIndex].name))
+            if (0 == wcscmp(uavResourceBindingTable[mapIndex].name, inoutPipeline->uavResourceBindings[uavIndex].name)) {
                 break;
+}
         }
-        if (mapIndex == _countof(uavResourceBindingTable))
+        if (mapIndex == _countof(uavResourceBindingTable)) {
             return FFX_ERROR_INVALID_ARGUMENT;
+}
 
         inoutPipeline->uavResourceBindings[uavIndex].resourceIdentifier = uavResourceBindingTable[mapIndex].index;
     }
@@ -379,11 +383,13 @@ static FfxErrorCode patchResourceBindings(FfxPipelineState* inoutPipeline)
         int32_t mapIndex = 0;
         for (mapIndex = 0; mapIndex < _countof(cbResourceBindingTable); ++mapIndex)
         {
-            if (0 == wcscmp(cbResourceBindingTable[mapIndex].name, inoutPipeline->cbResourceBindings[cbIndex].name))
+            if (0 == wcscmp(cbResourceBindingTable[mapIndex].name, inoutPipeline->cbResourceBindings[cbIndex].name)) {
                 break;
+}
         }
-        if (mapIndex == _countof(cbResourceBindingTable))
+        if (mapIndex == _countof(cbResourceBindingTable)) {
             return FFX_ERROR_INVALID_ARGUMENT;
+}
 
         inoutPipeline->cbResourceBindings[cbIndex].resourceIdentifier = cbResourceBindingTable[mapIndex].index;
     }
@@ -426,7 +432,7 @@ static FfxErrorCode createPipelineStates(FfxFsr2Context_Private* context)
     FFX_VALIDATE(context->contextDescription.callbacks.fpCreatePipeline(&context->contextDescription.callbacks, FFX_FSR2_PASS_LOCK, &pipelineDescription, &context->pipelineLock));
     FFX_VALIDATE(context->contextDescription.callbacks.fpCreatePipeline(&context->contextDescription.callbacks, FFX_FSR2_PASS_ACCUMULATE, &pipelineDescription, &context->pipelineAccumulate));
     FFX_VALIDATE(context->contextDescription.callbacks.fpCreatePipeline(&context->contextDescription.callbacks, FFX_FSR2_PASS_ACCUMULATE_SHARPEN, &pipelineDescription, &context->pipelineAccumulateSharpen));
-    
+
     // for each pipeline: re-route/fix-up IDs based on names
     patchResourceBindings(&context->pipelineDepthClip);
     patchResourceBindings(&context->pipelineReconstructPreviousDepth);
@@ -519,7 +525,7 @@ static FfxErrorCode fsr2Create(FfxFsr2Context_Private* context, const FfxFsr2Con
 
         {   FFX_FSR2_RESOURCE_IDENTIFIER_DILATED_DEPTH, L"FSR2_DilatedDepth", (FfxResourceUsage)(FFX_RESOURCE_USAGE_RENDERTARGET | FFX_RESOURCE_USAGE_UAV),
             FFX_SURFACE_FORMAT_R32_FLOAT, contextDescription->maxRenderSize.width, contextDescription->maxRenderSize.height, 1, FFX_RESOURCE_FLAGS_ALIASABLE },
-            
+
         {   FFX_FSR2_RESOURCE_IDENTIFIER_LOCK_STATUS_1, L"FSR2_LockStatus1", (FfxResourceUsage)(FFX_RESOURCE_USAGE_RENDERTARGET | FFX_RESOURCE_USAGE_UAV),
             FFX_SURFACE_FORMAT_R16G16_FLOAT, contextDescription->displaySize.width, contextDescription->displaySize.height, 1, FFX_RESOURCE_FLAGS_NONE },
 
@@ -752,7 +758,7 @@ static void scheduleDispatch(FfxFsr2Context_Private* context, const FfxFsr2Dispa
             jobDescriptor.uavMip[currentUnorderedAccessViewIndex] = 0;
         }
     }
-    
+
     jobDescriptor.dimensions[0] = dispatchX;
     jobDescriptor.dimensions[1] = dispatchY;
     jobDescriptor.dimensions[2] = 1;
@@ -838,19 +844,19 @@ static FfxErrorCode fsr2Dispatch(FfxFsr2Context_Private* context, const FfxFsr2D
             context->contextDescription.callbacks.fpRegisterResource(&context->contextDescription.callbacks, &params->exposure, &context->srvResources[FFX_FSR2_RESOURCE_IDENTIFIER_INPUT_EXPOSURE]);
         }
     }
- 
+
     if (params->enableAutoReactive)
     {
         context->contextDescription.callbacks.fpRegisterResource(&context->contextDescription.callbacks, &params->colorOpaqueOnly, &context->srvResources[FFX_FSR2_RESOURCE_IDENTIFIER_PREV_PRE_ALPHA_COLOR]);
     }
-    
+
     if (ffxFsr2ResourceIsNull(params->reactive)) {
         context->srvResources[FFX_FSR2_RESOURCE_IDENTIFIER_INPUT_REACTIVE_MASK] = context->srvResources[FFX_FSR2_RESOURCE_IDENTIFIER_INTERNAL_DEFAULT_REACTIVITY];
     }
     else {
         context->contextDescription.callbacks.fpRegisterResource(&context->contextDescription.callbacks, &params->reactive, &context->srvResources[FFX_FSR2_RESOURCE_IDENTIFIER_INPUT_REACTIVE_MASK]);
     }
-    
+
     if (ffxFsr2ResourceIsNull(params->transparencyAndComposition)) {
         context->srvResources[FFX_FSR2_RESOURCE_IDENTIFIER_INPUT_TRANSPARENCY_AND_COMPOSITION_MASK] = context->srvResources[FFX_FSR2_RESOURCE_IDENTIFIER_INTERNAL_DEFAULT_REACTIVITY];
     } else {
@@ -1271,7 +1277,7 @@ FfxErrorCode ffxFsr2ContextGenerateReactiveMask(FfxFsr2Context* context, const F
     contextPrivate->contextDescription.callbacks.fpRegisterResource(&contextPrivate->contextDescription.callbacks, &params->colorOpaqueOnly, &contextPrivate->srvResources[FFX_FSR2_RESOURCE_IDENTIFIER_INPUT_OPAQUE_ONLY]);
     contextPrivate->contextDescription.callbacks.fpRegisterResource(&contextPrivate->contextDescription.callbacks, &params->colorPreUpscale, &contextPrivate->srvResources[FFX_FSR2_RESOURCE_IDENTIFIER_INPUT_COLOR]);
     contextPrivate->contextDescription.callbacks.fpRegisterResource(&contextPrivate->contextDescription.callbacks, &params->outReactive, &contextPrivate->uavResources[FFX_FSR2_RESOURCE_IDENTIFIER_AUTOREACTIVE]);
-    
+
     jobDescriptor.uavs[0] = contextPrivate->uavResources[FFX_FSR2_RESOURCE_IDENTIFIER_AUTOREACTIVE];
 
     wcscpy_s(jobDescriptor.srvNames[0], pipeline->srvResourceBindings[0].name);

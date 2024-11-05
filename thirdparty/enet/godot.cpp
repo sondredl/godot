@@ -77,11 +77,11 @@ public:
 		sock->open(NetSocket::TYPE_UDP, ip_type);
 	}
 
-	~ENetUDP() {
+	~ENetUDP() override {
 		sock->close();
 	}
 
-	bool can_upgrade() {
+	bool can_upgrade() override {
 		return true;
 	}
 
@@ -111,7 +111,7 @@ public:
 		return sock->recvfrom(p_buffer, p_len, r_read, r_ip, r_port);
 	}
 
-	int set_option(ENetSocketOption p_option, int p_value) {
+	int set_option(ENetSocketOption p_option, int p_value) override {
 		switch (p_option) {
 			case ENET_SOCKOPT_NONBLOCK: {
 				sock->set_blocking_enabled(p_value ? false : true);
@@ -153,7 +153,7 @@ public:
 		return -1;
 	}
 
-	void close() {
+	void close() override {
 		sock->close();
 		local_address.clear();
 	}
@@ -182,7 +182,7 @@ public:
 		}
 	}
 
-	~ENetDTLSClient() {
+	~ENetDTLSClient() override {
 		close();
 	}
 
@@ -244,11 +244,11 @@ public:
 		return err;
 	}
 
-	int set_option(ENetSocketOption p_option, int p_value) {
+	int set_option(ENetSocketOption p_option, int p_value) override {
 		return -1;
 	}
 
-	void close() {
+	void close() override {
 		dtls->disconnect_from_peer();
 		udp->close();
 	}
@@ -275,11 +275,11 @@ public:
 		server->setup(p_options);
 	}
 
-	~ENetDTLSServer() {
+	~ENetDTLSServer() override {
 		close();
 	}
 
-	void set_refuse_new_connections(bool p_refuse) {
+	void set_refuse_new_connections(bool p_refuse) override {
 		udp_server->set_max_pending_connections(p_refuse ? 0 : 16);
 	}
 
@@ -380,11 +380,11 @@ public:
 		return err; // OK, ERR_BUSY, or possibly an error.
 	}
 
-	int set_option(ENetSocketOption p_option, int p_value) {
+	int set_option(ENetSocketOption p_option, int p_value) override {
 		return -1;
 	}
 
-	void close() {
+	void close() override {
 		for (KeyValue<String, Ref<PacketPeerDTLS>> &E : peers) {
 			E.value->disconnect_from_peer();
 		}
@@ -397,18 +397,18 @@ public:
 
 static enet_uint32 timeBase = 0;
 
-int enet_initialize(void) {
+int enet_initialize() {
 	return 0;
 }
 
-void enet_deinitialize(void) {
+void enet_deinitialize() {
 }
 
-enet_uint32 enet_host_random_seed(void) {
+enet_uint32 enet_host_random_seed() {
 	return (enet_uint32)OS::get_singleton()->get_unix_time();
 }
 
-enet_uint32 enet_time_get(void) {
+enet_uint32 enet_time_get() {
 	return OS::get_singleton()->get_ticks_msec() - timeBase;
 }
 

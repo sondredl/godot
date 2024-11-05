@@ -1127,12 +1127,18 @@ static float prepare_block_statistics(
 	ga_cov *= astc::rsqrt(gg_var * aa_var);
 	ba_cov *= astc::rsqrt(bb_var * aa_var);
 
-	if (astc::isnan(rg_cov)) rg_cov = 1.0f;
-	if (astc::isnan(rb_cov)) rb_cov = 1.0f;
-	if (astc::isnan(ra_cov)) ra_cov = 1.0f;
-	if (astc::isnan(gb_cov)) gb_cov = 1.0f;
-	if (astc::isnan(ga_cov)) ga_cov = 1.0f;
-	if (astc::isnan(ba_cov)) ba_cov = 1.0f;
+	if (astc::isnan(rg_cov)) { rg_cov = 1.0f;
+}
+	if (astc::isnan(rb_cov)) { rb_cov = 1.0f;
+}
+	if (astc::isnan(ra_cov)) { ra_cov = 1.0f;
+}
+	if (astc::isnan(gb_cov)) { gb_cov = 1.0f;
+}
+	if (astc::isnan(ga_cov)) { ga_cov = 1.0f;
+}
+	if (astc::isnan(ba_cov)) { ba_cov = 1.0f;
+}
 
 	float lowest_correlation = astc::min(fabsf(rg_cov),      fabsf(rb_cov));
 	lowest_correlation       = astc::min(lowest_correlation, fabsf(ra_cov));

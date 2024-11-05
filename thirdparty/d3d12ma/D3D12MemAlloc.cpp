@@ -510,13 +510,16 @@ static ResourceClass HeapFlagsToResourceClass(D3D12_HEAP_FLAGS heapFlags)
     const bool allowNonRtDsTextures = (heapFlags & D3D12_HEAP_FLAG_DENY_NON_RT_DS_TEXTURES) == 0;
 
     const uint8_t allowedGroupCount = (allowBuffers ? 1 : 0) + (allowRtDsTextures ? 1 : 0) + (allowNonRtDsTextures ? 1 : 0);
-    if (allowedGroupCount != 1)
+    if (allowedGroupCount != 1) {
         return ResourceClass::Unknown;
+}
 
-    if (allowRtDsTextures)
+    if (allowRtDsTextures) {
         return ResourceClass::RT_DS_Texture;
-    if (allowNonRtDsTextures)
+}
+    if (allowNonRtDsTextures) {
         return ResourceClass::Non_RT_DS_Texture;
+}
     return ResourceClass::Buffer;
 }
 
@@ -681,36 +684,42 @@ static UINT GetBitsPerPixel(DXGI_FORMAT format)
         return 0;
     }
 }
-    
+
 template<typename D3D12_RESOURCE_DESC_T>
 static ResourceClass ResourceDescToResourceClass(const D3D12_RESOURCE_DESC_T& resDesc)
 {
-    if (resDesc.Dimension == D3D12_RESOURCE_DIMENSION_BUFFER)
+    if (resDesc.Dimension == D3D12_RESOURCE_DIMENSION_BUFFER) {
         return ResourceClass::Buffer;
+}
     // Else: it's surely a texture.
     const bool isRenderTargetOrDepthStencil =
         (resDesc.Flags & (D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET | D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)) != 0;
     return isRenderTargetOrDepthStencil ? ResourceClass::RT_DS_Texture : ResourceClass::Non_RT_DS_Texture;
 }
-    
+
 // This algorithm is overly conservative.
 template<typename D3D12_RESOURCE_DESC_T>
 static bool CanUseSmallAlignment(const D3D12_RESOURCE_DESC_T& resourceDesc)
 {
-    if (resourceDesc.Dimension != D3D12_RESOURCE_DIMENSION_TEXTURE2D)
+    if (resourceDesc.Dimension != D3D12_RESOURCE_DIMENSION_TEXTURE2D) {
         return false;
-    if ((resourceDesc.Flags & (D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET | D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)) != 0)
+}
+    if ((resourceDesc.Flags & (D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET | D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)) != 0) {
         return false;
-    if (resourceDesc.SampleDesc.Count > 1)
+}
+    if (resourceDesc.SampleDesc.Count > 1) {
         return false;
-    if (resourceDesc.DepthOrArraySize != 1)
+}
+    if (resourceDesc.DepthOrArraySize != 1) {
         return false;
+}
 
     UINT sizeX = (UINT)resourceDesc.Width;
     UINT sizeY = resourceDesc.Height;
     UINT bitsPerPixel = GetBitsPerPixel(resourceDesc.Format);
-    if (bitsPerPixel == 0)
+    if (bitsPerPixel == 0) {
         return false;
+}
 
     if (IsFormatCompressed(resourceDesc.Format))
     {
@@ -733,7 +742,7 @@ static bool CanUseSmallAlignment(const D3D12_RESOURCE_DESC_T& resourceDesc)
     const UINT tileCount = DivideRoundingUp(sizeX, tileSizeX) * DivideRoundingUp(sizeY, tileSizeY);
     return tileCount <= 16;
 }
-    
+
 static bool ValidateAllocateMemoryParameters(
     const ALLOCATION_DESC* pAllocDesc,
     const D3D12_RESOURCE_ALLOCATION_INFO* pAllocInfo,
@@ -750,7 +759,7 @@ static bool ValidateAllocateMemoryParameters(
 }
 
 #endif // _D3D12MA_FUNCTIONS
-    
+
 #ifndef _D3D12MA_STATISTICS_FUNCTIONS
 
 static void ClearStatistics(Statistics& outStats)
@@ -803,7 +812,7 @@ static void AddDetailedStatisticsUnusedRange(DetailedStatistics& inoutStats, UIN
     inoutStats.UnusedRangeSizeMin = D3D12MA_MIN(inoutStats.UnusedRangeSizeMin, size);
     inoutStats.UnusedRangeSizeMax = D3D12MA_MAX(inoutStats.UnusedRangeSizeMax, size);
 }
-    
+
 #endif // _D3D12MA_STATISTICS_FUNCTIONS
 
 
@@ -815,7 +824,7 @@ static void AddDetailedStatisticsUnusedRange(DetailedStatistics& inoutStats, UIN
     public:
         void Lock() { m_Mutex.lock(); }
         void Unlock() { m_Mutex.unlock(); }
-    
+
     private:
         std::mutex m_Mutex;
     };
@@ -832,7 +841,7 @@ static void AddDetailedStatisticsUnusedRange(DetailedStatistics& inoutStats, UIN
         void UnlockRead() { ReleaseSRWLockShared(&m_Lock); }
         void LockWrite() { AcquireSRWLockExclusive(&m_Lock); }
         void UnlockWrite() { ReleaseSRWLockExclusive(&m_Lock); }
-    
+
     private:
         SRWLOCK m_Lock;
     };
@@ -845,7 +854,7 @@ static void AddDetailedStatisticsUnusedRange(DetailedStatistics& inoutStats, UIN
         void UnlockRead() { m_Mutex.unlock_shared(); }
         void LockWrite() { m_Mutex.lock(); }
         void UnlockWrite() { m_Mutex.unlock(); }
-    
+
     private:
         std::shared_timed_mutex m_Mutex;
     };
@@ -861,9 +870,11 @@ public:
     MutexLock(D3D12MA_MUTEX& mutex, bool useMutex = true) :
         m_pMutex(useMutex ? &mutex : NULL)
     {
-        if (m_pMutex) m_pMutex->Lock(); 
+        if (m_pMutex) { m_pMutex->Lock();
+}
     }
-    ~MutexLock() { if (m_pMutex) m_pMutex->Unlock(); }
+    ~MutexLock() { if (m_pMutex) { m_pMutex->Unlock();
+}}
 
 private:
     D3D12MA_MUTEX* m_pMutex;
@@ -882,7 +893,8 @@ public:
             m_pMutex->LockRead();
         }
     }
-    ~MutexLockRead() { if (m_pMutex) m_pMutex->UnlockRead(); }
+    ~MutexLockRead() { if (m_pMutex) { m_pMutex->UnlockRead();
+}}
 
 private:
     D3D12MA_RW_MUTEX* m_pMutex;
@@ -896,9 +908,11 @@ public:
     MutexLockWrite(D3D12MA_RW_MUTEX& mutex, bool useMutex)
         : m_pMutex(useMutex ? &mutex : NULL)
     {
-        if (m_pMutex) m_pMutex->LockWrite(); 
+        if (m_pMutex) { m_pMutex->LockWrite();
+}
     }
-    ~MutexLockWrite() { if (m_pMutex) m_pMutex->UnlockWrite(); }
+    ~MutexLockWrite() { if (m_pMutex) { m_pMutex->UnlockWrite();
+}}
 
 private:
     D3D12MA_RW_MUTEX* m_pMutex;
@@ -1535,10 +1549,11 @@ void JsonWriter::WriteBool(bool b)
 {
     D3D12MA_ASSERT(!m_InsideString);
     BeginValue(false);
-    if (b)
+    if (b) {
         m_SB.Add(L"true");
-    else
+    } else {
         m_SB.Add(L"false");
+}
 }
 
 void JsonWriter::WriteNull()
@@ -1848,8 +1863,8 @@ public:
 
         iterator& operator++();
         iterator& operator--();
-        iterator operator++(int);
-        iterator operator--(int);
+        const iterator operator++(int);
+        const iterator operator--(int);
 
         bool operator==(const iterator& rhs) const;
         bool operator!=(const iterator& rhs) const;
@@ -1876,8 +1891,8 @@ public:
 
         reverse_iterator& operator++();
         reverse_iterator& operator--();
-        reverse_iterator operator++(int);
-        reverse_iterator operator--(int);
+        const reverse_iterator operator++(int);
+        const reverse_iterator operator--(int);
 
         bool operator==(const reverse_iterator& rhs) const;
         bool operator!=(const reverse_iterator& rhs) const;
@@ -1909,8 +1924,8 @@ public:
 
         const_iterator& operator++();
         const_iterator& operator--();
-        const_iterator operator++(int);
-        const_iterator operator--(int);
+        const const_iterator operator++(int);
+        const const_iterator operator--(int);
 
         bool operator==(const const_iterator& rhs) const;
         bool operator!=(const const_iterator& rhs) const;
@@ -1942,8 +1957,8 @@ public:
 
         const_reverse_iterator& operator++();
         const_reverse_iterator& operator--();
-        const_reverse_iterator operator++(int);
-        const_reverse_iterator operator--(int);
+        const const_reverse_iterator operator++(int);
+        const const_reverse_iterator operator--(int);
 
         bool operator==(const const_reverse_iterator& rhs) const;
         bool operator!=(const const_reverse_iterator& rhs) const;
@@ -1961,7 +1976,7 @@ public:
     // Intentionally not calling Clear, because that would be unnecessary
     // computations to return all items to m_ItemAllocator as free.
     ~List() = default;
-    
+
     size_t GetCount() const { return m_Count; }
     bool IsEmpty() const { return m_Count == 0; }
 
@@ -2056,7 +2071,7 @@ typename List<T>::iterator& List<T>::iterator::operator--()
 }
 
 template<typename T>
-typename List<T>::iterator List<T>::iterator::operator++(int)
+const typename List<T>::iterator List<T>::iterator::operator++(int)
 {
     iterator result = *this;
     ++* this;
@@ -2064,7 +2079,7 @@ typename List<T>::iterator List<T>::iterator::operator++(int)
 }
 
 template<typename T>
-typename List<T>::iterator List<T>::iterator::operator--(int)
+const typename List<T>::iterator List<T>::iterator::operator--(int)
 {
     iterator result = *this;
     --* this;
@@ -2125,7 +2140,7 @@ typename List<T>::reverse_iterator& List<T>::reverse_iterator::operator--()
 }
 
 template<typename T>
-typename List<T>::reverse_iterator List<T>::reverse_iterator::operator++(int)
+const typename List<T>::reverse_iterator List<T>::reverse_iterator::operator++(int)
 {
     reverse_iterator result = *this;
     ++* this;
@@ -2133,7 +2148,7 @@ typename List<T>::reverse_iterator List<T>::reverse_iterator::operator++(int)
 }
 
 template<typename T>
-typename List<T>::reverse_iterator List<T>::reverse_iterator::operator--(int)
+const typename List<T>::reverse_iterator List<T>::reverse_iterator::operator--(int)
 {
     reverse_iterator result = *this;
     --* this;
@@ -2200,7 +2215,7 @@ typename List<T>::const_iterator& List<T>::const_iterator::operator--()
 }
 
 template<typename T>
-typename List<T>::const_iterator List<T>::const_iterator::operator++(int)
+const typename List<T>::const_iterator List<T>::const_iterator::operator++(int)
 {
     const_iterator result = *this;
     ++* this;
@@ -2208,7 +2223,7 @@ typename List<T>::const_iterator List<T>::const_iterator::operator++(int)
 }
 
 template<typename T>
-typename List<T>::const_iterator List<T>::const_iterator::operator--(int)
+const typename List<T>::const_iterator List<T>::const_iterator::operator--(int)
 {
     const_iterator result = *this;
     --* this;
@@ -2275,7 +2290,7 @@ typename List<T>::const_reverse_iterator& List<T>::const_reverse_iterator::opera
 }
 
 template<typename T>
-typename List<T>::const_reverse_iterator List<T>::const_reverse_iterator::operator++(int)
+const typename List<T>::const_reverse_iterator List<T>::const_reverse_iterator::operator++(int)
 {
     const_reverse_iterator result = *this;
     ++* this;
@@ -2283,7 +2298,7 @@ typename List<T>::const_reverse_iterator List<T>::const_reverse_iterator::operat
 }
 
 template<typename T>
-typename List<T>::const_reverse_iterator List<T>::const_reverse_iterator::operator--(int)
+const typename List<T>::const_reverse_iterator List<T>::const_reverse_iterator::operator--(int)
 {
     const_reverse_iterator result = *this;
     --* this;
@@ -2502,8 +2517,9 @@ typename List<T>::Item* List<T>::InsertAfter(Item* pItem)
         ++m_Count;
         return newItem;
     }
-    else
+    else {
         return PushFront();
+}
 }
 
 template<typename T>
@@ -2547,9 +2563,9 @@ public:
     // Movable, not copyable.
     IntrusiveLinkedList() = default;
     IntrusiveLinkedList(const IntrusiveLinkedList&) = delete;
-    IntrusiveLinkedList(IntrusiveLinkedList&& src);
+    IntrusiveLinkedList(IntrusiveLinkedList&& src) noexcept ;
     IntrusiveLinkedList& operator=(const IntrusiveLinkedList&) = delete;
-    IntrusiveLinkedList& operator=(IntrusiveLinkedList&& src);
+    IntrusiveLinkedList& operator=(IntrusiveLinkedList&& src) noexcept ;
     ~IntrusiveLinkedList() { D3D12MA_HEAVY_ASSERT(IsEmpty()); }
 
     size_t GetCount() const { return m_Count; }
@@ -2582,7 +2598,7 @@ private:
 #ifndef _D3D12MA_INTRUSIVE_LINKED_LIST_FUNCTIONS
 template<typename ItemTypeTraits>
 IntrusiveLinkedList<ItemTypeTraits>::IntrusiveLinkedList(IntrusiveLinkedList&& src)
-    : m_Front(src.m_Front), m_Back(src.m_Back), m_Count(src.m_Count)
+ noexcept     : m_Front(src.m_Front), m_Back(src.m_Back), m_Count(src.m_Count)
 {
     src.m_Front = src.m_Back = NULL;
     src.m_Count = 0;
@@ -2590,7 +2606,7 @@ IntrusiveLinkedList<ItemTypeTraits>::IntrusiveLinkedList(IntrusiveLinkedList&& s
 
 template<typename ItemTypeTraits>
 IntrusiveLinkedList<ItemTypeTraits>& IntrusiveLinkedList<ItemTypeTraits>::operator=(IntrusiveLinkedList&& src)
-{
+ noexcept {
     if (&src != this)
     {
         D3D12MA_HEAVY_ASSERT(IsEmpty());
@@ -2696,8 +2712,9 @@ void IntrusiveLinkedList<ItemTypeTraits>::InsertBefore(ItemType* existingItem, I
         }
         ++m_Count;
     }
-    else
+    else {
         PushBack(newItem);
+}
 }
 
 template<typename ItemTypeTraits>
@@ -2721,8 +2738,9 @@ void IntrusiveLinkedList<ItemTypeTraits>::InsertAfter(ItemType* existingItem, It
         }
         ++m_Count;
     }
-    else
+    else {
         return PushFront(newItem);
+}
 }
 
 template<typename ItemTypeTraits>
@@ -3722,7 +3740,7 @@ class BlockMetadata_Linear : public BlockMetadata
 {
 public:
     BlockMetadata_Linear(const ALLOCATION_CALLBACKS* allocationCallbacks, bool isVirtual);
-    virtual ~BlockMetadata_Linear() = default;
+    ~BlockMetadata_Linear() override = default;
 
     UINT64 GetSumFreeSize() const override { return m_SumFreeSize; }
     bool IsEmpty() const override { return GetAllocationCount() == 0; }
@@ -5018,7 +5036,7 @@ class BlockMetadata_TLSF : public BlockMetadata
 {
 public:
     BlockMetadata_TLSF(const ALLOCATION_CALLBACKS* allocationCallbacks, bool isVirtual);
-    virtual ~BlockMetadata_TLSF();
+    ~BlockMetadata_TLSF() override;
 
     size_t GetAllocationCount() const override { return m_AllocCount; }
     size_t GetFreeRegionsCount() const override { return m_BlocksFreeCount + 1; }
@@ -5089,7 +5107,7 @@ private:
             void* privateData;
         };
     };
-    
+
     size_t m_AllocCount = 0;
     // Total number of free blocks besides null block
     size_t m_BlocksFreeCount = 0;
@@ -5218,8 +5236,9 @@ bool BlockMetadata_TLSF::Validate() const
             bool found = false;
             do
             {
-                if (freeBlock == prev)
+                if (freeBlock == prev) {
                     found = true;
+}
 
                 freeBlock = freeBlock->NextFree();
             } while (!found && freeBlock != NULL);
@@ -5277,8 +5296,9 @@ bool BlockMetadata_TLSF::CreateAllocationRequest(
 
     allocSize += GetDebugMargin();
     // Quick check for too small pool
-    if (allocSize > GetSumFreeSize())
+    if (allocSize > GetSumFreeSize()) {
         return false;
+}
 
     // If no free blocks in pool then check only null block
     if (m_BlocksFreeCount == 0)
@@ -5291,7 +5311,8 @@ bool BlockMetadata_TLSF::CreateAllocationRequest(
     {
         sizeForNextList += (1ULL << (BitScanMSB(allocSize) - SECOND_LEVEL_INDEX));
     }
-    else if (allocSize > SMALL_BUFFER_SIZE - smallSizeStep)
+    else { i
+}f (allocSize > SMALL_BUFFER_SIZE - smallSizeStep)
         sizeForNextList = SMALL_BUFFER_SIZE + 1;
     else
         sizeForNextList += smallSizeStep;
@@ -5306,18 +5327,21 @@ bool BlockMetadata_TLSF::CreateAllocationRequest(
     {
         // Quick check for larger block first
         nextListBlock = FindFreeBlock(sizeForNextList, nextListIndex);
-        if (nextListBlock != NULL && CheckBlock(*nextListBlock, nextListIndex, allocSize, allocAlignment, pAllocationRequest))
+        if (nextListBlock != NULL && CheckBlock(*nextListBlock, nextListIndex, allocSize, allocAlignment, pAllocationRequest)) {
             return true;
+}
 
         // If not fitted then null block
-        if (CheckBlock(*m_NullBlock, m_ListsCount, allocSize, allocAlignment, pAllocationRequest))
+        if (CheckBlock(*m_NullBlock, m_ListsCount, allocSize, allocAlignment, pAllocationRequest)) {
             return true;
+}
 
         // Null block failed, search larger bucket
         while (nextListBlock)
         {
-            if (CheckBlock(*nextListBlock, nextListIndex, allocSize, allocAlignment, pAllocationRequest))
+            if (CheckBlock(*nextListBlock, nextListIndex, allocSize, allocAlignment, pAllocationRequest)) {
                 return true;
+}
             nextListBlock = nextListBlock->NextFree();
         }
 
@@ -5325,8 +5349,9 @@ bool BlockMetadata_TLSF::CreateAllocationRequest(
         prevListBlock = FindFreeBlock(allocSize, prevListIndex);
         while (prevListBlock)
         {
-            if (CheckBlock(*prevListBlock, prevListIndex, allocSize, allocAlignment, pAllocationRequest))
+            if (CheckBlock(*prevListBlock, prevListIndex, allocSize, allocAlignment, pAllocationRequest)) {
                 return true;
+}
             prevListBlock = prevListBlock->NextFree();
         }
     }
@@ -5336,21 +5361,24 @@ bool BlockMetadata_TLSF::CreateAllocationRequest(
         prevListBlock = FindFreeBlock(allocSize, prevListIndex);
         while (prevListBlock)
         {
-            if (CheckBlock(*prevListBlock, prevListIndex, allocSize, allocAlignment, pAllocationRequest))
+            if (CheckBlock(*prevListBlock, prevListIndex, allocSize, allocAlignment, pAllocationRequest)) {
                 return true;
+}
             prevListBlock = prevListBlock->NextFree();
         }
 
         // If failed check null block
-        if (CheckBlock(*m_NullBlock, m_ListsCount, allocSize, allocAlignment, pAllocationRequest))
+        if (CheckBlock(*m_NullBlock, m_ListsCount, allocSize, allocAlignment, pAllocationRequest)) {
             return true;
+}
 
         // Check larger bucket
         nextListBlock = FindFreeBlock(sizeForNextList, nextListIndex);
         while (nextListBlock)
         {
-            if (CheckBlock(*nextListBlock, nextListIndex, allocSize, allocAlignment, pAllocationRequest))
+            if (CheckBlock(*nextListBlock, nextListIndex, allocSize, allocAlignment, pAllocationRequest)) {
                 return true;
+}
             nextListBlock = nextListBlock->NextFree();
         }
     }
@@ -5369,13 +5397,15 @@ bool BlockMetadata_TLSF::CreateAllocationRequest(
         for (; i < m_BlocksFreeCount; ++i)
         {
             Block& block = *blockList[i];
-            if (CheckBlock(block, GetListIndex(block.size), allocSize, allocAlignment, pAllocationRequest))
+            if (CheckBlock(block, GetListIndex(block.size), allocSize, allocAlignment, pAllocationRequest)) {
                 return true;
+}
         }
 
         // If failed check null block
-        if (CheckBlock(*m_NullBlock, m_ListsCount, allocSize, allocAlignment, pAllocationRequest))
+        if (CheckBlock(*m_NullBlock, m_ListsCount, allocSize, allocAlignment, pAllocationRequest)) {
             return true;
+}
 
         // Whole range searched, no more memory
         return false;
@@ -5386,21 +5416,24 @@ bool BlockMetadata_TLSF::CreateAllocationRequest(
         nextListBlock = FindFreeBlock(sizeForNextList, nextListIndex);
         while (nextListBlock)
         {
-            if (CheckBlock(*nextListBlock, nextListIndex, allocSize, allocAlignment, pAllocationRequest))
+            if (CheckBlock(*nextListBlock, nextListIndex, allocSize, allocAlignment, pAllocationRequest)) {
                 return true;
+}
             nextListBlock = nextListBlock->NextFree();
         }
 
         // If failed check null block
-        if (CheckBlock(*m_NullBlock, m_ListsCount, allocSize, allocAlignment, pAllocationRequest))
+        if (CheckBlock(*m_NullBlock, m_ListsCount, allocSize, allocAlignment, pAllocationRequest)) {
             return true;
+}
 
         // Check best fit bucket
         prevListBlock = FindFreeBlock(allocSize, prevListIndex);
         while (prevListBlock)
         {
-            if (CheckBlock(*prevListBlock, prevListIndex, allocSize, allocAlignment, pAllocationRequest))
+            if (CheckBlock(*prevListBlock, prevListIndex, allocSize, allocAlignment, pAllocationRequest)) {
                 return true;
+}
             prevListBlock = prevListBlock->NextFree();
         }
     }
@@ -5411,8 +5444,9 @@ bool BlockMetadata_TLSF::CreateAllocationRequest(
         nextListBlock = m_FreeList[nextListIndex];
         while (nextListBlock)
         {
-            if (CheckBlock(*nextListBlock, nextListIndex, allocSize, allocAlignment, pAllocationRequest))
+            if (CheckBlock(*nextListBlock, nextListIndex, allocSize, allocAlignment, pAllocationRequest)) {
                 return true;
+}
             nextListBlock = nextListBlock->NextFree();
         }
     }
@@ -5432,8 +5466,9 @@ void BlockMetadata_TLSF::Alloc(
     D3D12MA_ASSERT(currentBlock != NULL);
     D3D12MA_ASSERT(currentBlock->offset <= offset);
 
-    if (currentBlock != m_NullBlock)
+    if (currentBlock != m_NullBlock) {
         RemoveFreeBlock(currentBlock);
+}
 
     // Append missing alignment to prev block or create new one
     UINT64 misssingAlignment = offset - currentBlock->offset;
@@ -5454,8 +5489,9 @@ void BlockMetadata_TLSF::Alloc(
                 prevBlock->size += misssingAlignment;
                 InsertFreeBlock(prevBlock);
             }
-            else
-                m_BlocksFreeSize += misssingAlignment;
+            else {
+                m
+}_BlocksFreeSize += misssingAlignment;
         }
         else
         {
@@ -5562,11 +5598,11 @@ void BlockMetadata_TLSF::Free(AllocHandle allocHandle)
         MergeBlock(block, prev);
     }
 
-    if (!next->IsFree())
+    if (!next->IsFree()) {
         InsertFreeBlock(block);
-    else if (next == m_NullBlock)
+    } else if (next == m_NullBlock) {
         MergeBlock(m_NullBlock, block);
-    else
+    } else
     {
         RemoveFreeBlock(next);
         MergeBlock(next, block);
@@ -5596,8 +5632,9 @@ void BlockMetadata_TLSF::Clear()
 
 AllocHandle BlockMetadata_TLSF::GetAllocationListBegin() const
 {
-    if (m_AllocCount == 0)
+    if (m_AllocCount == 0) {
         return (AllocHandle)0;
+}
 
     for (Block* block = m_NullBlock->prevPhysical; block; block = block->prevPhysical)
     {
@@ -5626,8 +5663,9 @@ UINT64 BlockMetadata_TLSF::GetNextFreeRegionSize(AllocHandle alloc) const
     Block* block = (Block*)alloc;
     D3D12MA_ASSERT(!block->IsFree() && "Incorrect block!");
 
-    if (block->prevPhysical)
+    if (block->prevPhysical) {
         return block->prevPhysical->IsFree() ? block->prevPhysical->size : 0;
+}
     return 0;
 }
 
@@ -5660,14 +5698,16 @@ void BlockMetadata_TLSF::AddDetailedStatistics(DetailedStatistics& inoutStats) c
 
     for (Block* block = m_NullBlock->prevPhysical; block != NULL; block = block->prevPhysical)
     {
-        if (block->IsFree())
+        if (block->IsFree()) {
             AddDetailedStatisticsUnusedRange(inoutStats, block->size);
-        else
+        } else {
             AddDetailedStatisticsAllocation(inoutStats, block->size);
+}
     }
 
-    if (m_NullBlock->size > 0)
+    if (m_NullBlock->size > 0) {
         AddDetailedStatisticsUnusedRange(inoutStats, m_NullBlock->size);
+}
 }
 
 void BlockMetadata_TLSF::WriteAllocationInfoToJson(JsonWriter& json) const
@@ -5752,11 +5792,12 @@ void BlockMetadata_TLSF::RemoveFreeBlock(Block* block)
     D3D12MA_ASSERT(block != m_NullBlock);
     D3D12MA_ASSERT(block->IsFree());
 
-    if (block->NextFree() != NULL)
+    if (block->NextFree() != NULL) {
         block->NextFree()->PrevFree() = block->PrevFree();
-    if (block->PrevFree() != NULL)
+}
+    if (block->PrevFree() != NULL) {
         block->PrevFree()->NextFree() = block->NextFree();
-    else
+    } else
     {
         UINT8 memClass = SizeToMemoryClass(block->size);
         UINT16 secondIndex = SizeToSecondIndex(block->size, memClass);
@@ -5786,9 +5827,9 @@ void BlockMetadata_TLSF::InsertFreeBlock(Block* block)
     block->PrevFree() = NULL;
     block->NextFree() = m_FreeList[index];
     m_FreeList[index] = block;
-    if (block->NextFree() != NULL)
+    if (block->NextFree() != NULL) {
         block->NextFree()->PrevFree() = block;
-    else
+    } else
     {
         m_InnerIsFreeBitmap[memClass] |= 1U << secondIndex;
         m_IsFreeBitmap |= 1UL << memClass;
@@ -5805,8 +5846,9 @@ void BlockMetadata_TLSF::MergeBlock(Block* block, Block* prev)
     block->offset = prev->offset;
     block->size += prev->size;
     block->prevPhysical = prev->prevPhysical;
-    if (block->prevPhysical)
+    if (block->prevPhysical) {
         block->prevPhysical->nextPhysical = block;
+}
     m_BlockAllocator.Free(prev);
 }
 
@@ -5818,8 +5860,9 @@ BlockMetadata_TLSF::Block* BlockMetadata_TLSF::FindFreeBlock(UINT64 size, UINT32
     {
         // Check higher levels for avaiable blocks
         UINT32 freeMap = m_IsFreeBitmap & (~0UL << (memoryClass + 1));
-        if (!freeMap)
+        if (!freeMap) {
             return NULL; // No more memory avaible
+}
 
         // Find lowest free region
         memoryClass = BitScanLSB(freeMap);
@@ -5841,8 +5884,9 @@ bool BlockMetadata_TLSF::CheckBlock(
     D3D12MA_ASSERT(block.IsFree() && "Block is already taken!");
 
     UINT64 alignedOffset = AlignUp(block.offset, allocAlignment);
-    if (block.size < allocSize + alignedOffset - block.offset)
+    if (block.size < allocSize + alignedOffset - block.offset) {
         return false;
+}
 
     // Alloc successful
     pAllocationRequest->allocHandle = (AllocHandle)&block;
@@ -5853,13 +5897,15 @@ bool BlockMetadata_TLSF::CheckBlock(
     if (listIndex != m_ListsCount && block.PrevFree())
     {
         block.PrevFree()->NextFree() = block.NextFree();
-        if (block.NextFree())
+        if (block.NextFree()) {
             block.NextFree()->PrevFree() = block.PrevFree();
+}
         block.PrevFree() = NULL;
         block.NextFree() = m_FreeList[listIndex];
         m_FreeList[listIndex] = &block;
-        if (block.NextFree())
+        if (block.NextFree()) {
             block.NextFree()->PrevFree() = &block;
+}
     }
 
     return true;
@@ -5925,7 +5971,7 @@ public:
         D3D12_HEAP_FLAGS heapFlags,
         UINT64 size,
         UINT id);
-    virtual ~NormalBlock();
+    ~NormalBlock() override;
 
     BlockVector* GetBlockVector() const { return m_BlockVector; }
 
@@ -5985,7 +6031,7 @@ public:
     D3D12_HEAP_TYPE GetHeapType() const { return m_HeapType; }
     PoolPimpl* GetPool() const { return m_Pool; }
     UINT GetMemorySegmentGroup(AllocatorPimpl* allocator) const;
-    
+
     void AddStatistics(Statistics& inoutStats);
     void AddDetailedStatistics(DetailedStatistics& inoutStats);
     // Writes JSON array with the list of allocations.
@@ -6025,8 +6071,8 @@ struct CREATE_RESOURCE_PARAMS
 {
     CREATE_RESOURCE_PARAMS() = delete;
     CREATE_RESOURCE_PARAMS(
-        const D3D12_RESOURCE_DESC* pResourceDesc, 
-        D3D12_RESOURCE_STATES InitialResourceState, 
+        const D3D12_RESOURCE_DESC* pResourceDesc,
+        D3D12_RESOURCE_STATES InitialResourceState,
         const D3D12_CLEAR_VALUE* pOptimizedClearValue)
         : Variant(VARIANT_WITH_STATE)
         , pResourceDesc(pResourceDesc)
@@ -6036,8 +6082,8 @@ struct CREATE_RESOURCE_PARAMS
     }
 #ifdef __ID3D12Device8_INTERFACE_DEFINED__
     CREATE_RESOURCE_PARAMS(
-        const D3D12_RESOURCE_DESC1* pResourceDesc, 
-        D3D12_RESOURCE_STATES InitialResourceState, 
+        const D3D12_RESOURCE_DESC1* pResourceDesc,
+        D3D12_RESOURCE_STATES InitialResourceState,
         const D3D12_CLEAR_VALUE* pOptimizedClearValue)
         : Variant(VARIANT_WITH_STATE_AND_DESC1)
         , pResourceDesc1(pResourceDesc)
@@ -6717,7 +6763,7 @@ private:
     void UnregisterPool(Pool* pool, D3D12_HEAP_TYPE heapType);
 
     HRESULT UpdateD3D12Budget();
-    
+
     D3D12_RESOURCE_ALLOCATION_INFO GetResourceAllocationInfoNative(const D3D12_RESOURCE_DESC& resourceDesc) const;
 #ifdef __ID3D12Device8_INTERFACE_DEFINED__
     D3D12_RESOURCE_ALLOCATION_INFO GetResourceAllocationInfoNative(const D3D12_RESOURCE_DESC1& resourceDesc) const;
@@ -6779,7 +6825,7 @@ HRESULT AllocatorPimpl::Init(const ALLOCATOR_DESC& desc)
 
 #ifdef __ID3D12Device8_INTERFACE_DEFINED__
     m_Device->QueryInterface(D3D12MA_IID_PPV_ARGS(&m_Device8));
-    
+
     if((desc.Flags & ALLOCATOR_FLAG_DEFAULT_POOLS_NOT_ZEROED) != 0)
     {
         D3D12_FEATURE_DATA_D3D12_OPTIONS7 options7 = {};
@@ -6907,16 +6953,18 @@ bool AllocatorPimpl::HeapFlagsFulfillResourceHeapTier(D3D12_HEAP_FLAGS flags) co
 UINT AllocatorPimpl::StandardHeapTypeToMemorySegmentGroup(D3D12_HEAP_TYPE heapType) const
 {
     D3D12MA_ASSERT(IsHeapTypeStandard(heapType));
-    if (IsUMA())
+    if (IsUMA()) {
         return DXGI_MEMORY_SEGMENT_GROUP_LOCAL_COPY;
+}
     return heapType == D3D12_HEAP_TYPE_DEFAULT ?
         DXGI_MEMORY_SEGMENT_GROUP_LOCAL_COPY : DXGI_MEMORY_SEGMENT_GROUP_NON_LOCAL_COPY;
 }
 
 UINT AllocatorPimpl::HeapPropertiesToMemorySegmentGroup(const D3D12_HEAP_PROPERTIES& heapProps) const
 {
-    if (IsUMA())
+    if (IsUMA()) {
         return DXGI_MEMORY_SEGMENT_GROUP_LOCAL_COPY;
+}
     if (heapProps.MemoryPoolPreference == D3D12_MEMORY_POOL_UNKNOWN)
         return StandardHeapTypeToMemorySegmentGroup(heapProps.Type);
     return heapProps.MemoryPoolPreference == D3D12_MEMORY_POOL_L1 ?
@@ -6968,7 +7016,7 @@ HRESULT AllocatorPimpl::CreatePlacedResourceWrap(
         return m_Device8->CreatePlacedResource1(pHeap, HeapOffset,
             createParams.GetResourceDesc1(), createParams.GetInitialResourceState(),
             createParams.GetOptimizedClearValue(), riidResource, ppvResource);
-    } else 
+    } else
 #endif
     if (createParams.Variant == CREATE_RESOURCE_PARAMS::VARIANT_WITH_STATE)
     {
@@ -7046,7 +7094,7 @@ HRESULT AllocatorPimpl::CreateResource(
     BlockVector* blockVector = NULL;
     CommittedAllocationParameters committedAllocationParams = {};
     bool preferCommitted = false;
-    
+
     HRESULT hr;
 #ifdef __ID3D12Device8_INTERFACE_DEFINED__
     if (createParams.Variant >= CREATE_RESOURCE_PARAMS::VARIANT_WITH_STATE_AND_DESC1)
@@ -7266,8 +7314,9 @@ void AllocatorPimpl::CalculateStatistics(TotalStatistics& outStats, DetailedStat
     // Init stats
     for (size_t i = 0; i < HEAP_TYPE_COUNT; i++)
         ClearDetailedStatistics(outStats.HeapType[i]);
-    for (size_t i = 0; i < DXGI_MEMORY_SEGMENT_GROUP_COUNT; i++)
+    for (size_t i = 0; i < DXGI_MEMORY_SEGMENT_GROUP_COUNT; i++) {
         ClearDetailedStatistics(outStats.MemorySegmentGroup[i]);
+}
     ClearDetailedStatistics(outStats.Total);
     if (outCutomHeaps)
     {
@@ -7461,7 +7510,7 @@ void AllocatorPimpl::BuildStatsString(WCHAR** ppStatsString, BOOL detailedMap)
                 json.WriteNumber((UINT64)m_AdapterDesc.DedicatedSystemMemory);
                 json.WriteString(L"SharedSystemMemory");
                 json.WriteNumber((UINT64)m_AdapterDesc.SharedSystemMemory);
-                
+
                 json.WriteString(L"ResourceHeapTier");
                 json.WriteNumber(static_cast<UINT>(m_D3D12Options.ResourceHeapTier));
 
@@ -7586,18 +7635,24 @@ void AllocatorPimpl::BuildStatsString(WCHAR** ppStatsString, BOOL detailedMap)
                 json.WriteString(L"Flags");
                 json.BeginArray(true);
                 {
-                    if (flags & D3D12_HEAP_FLAG_SHARED)
+                    if (flags & D3D12_HEAP_FLAG_SHARED) {
                         json.WriteString(L"HEAP_FLAG_SHARED");
-                    if (flags & D3D12_HEAP_FLAG_ALLOW_DISPLAY)
+}
+                    if (flags & D3D12_HEAP_FLAG_ALLOW_DISPLAY) {
                         json.WriteString(L"HEAP_FLAG_ALLOW_DISPLAY");
-                    if (flags & D3D12_HEAP_FLAG_SHARED_CROSS_ADAPTER)
+}
+                    if (flags & D3D12_HEAP_FLAG_SHARED_CROSS_ADAPTER) {
                         json.WriteString(L"HEAP_FLAG_CROSS_ADAPTER");
-                    if (flags & D3D12_HEAP_FLAG_HARDWARE_PROTECTED)
+}
+                    if (flags & D3D12_HEAP_FLAG_HARDWARE_PROTECTED) {
                         json.WriteString(L"HEAP_FLAG_HARDWARE_PROTECTED");
-                    if (flags & D3D12_HEAP_FLAG_ALLOW_WRITE_WATCH)
+}
+                    if (flags & D3D12_HEAP_FLAG_ALLOW_WRITE_WATCH) {
                         json.WriteString(L"HEAP_FLAG_ALLOW_WRITE_WATCH");
-                    if (flags & D3D12_HEAP_FLAG_ALLOW_SHADER_ATOMICS)
+}
+                    if (flags & D3D12_HEAP_FLAG_ALLOW_SHADER_ATOMICS) {
                         json.WriteString(L"HEAP_FLAG_ALLOW_SHADER_ATOMICS");
+}
 #ifdef __ID3D12Device8_INTERFACE_DEFINED__
                     if (flags & D3D12_HEAP_FLAG_CREATE_NOT_RESIDENT)
                         json.WriteString(L"HEAP_FLAG_CREATE_NOT_RESIDENT");
@@ -7605,12 +7660,15 @@ void AllocatorPimpl::BuildStatsString(WCHAR** ppStatsString, BOOL detailedMap)
                         json.WriteString(L"HEAP_FLAG_CREATE_NOT_ZEROED");
 #endif
 
-                    if (flags & D3D12_HEAP_FLAG_DENY_BUFFERS)
+                    if (flags & D3D12_HEAP_FLAG_DENY_BUFFERS) {
                         json.WriteString(L"HEAP_FLAG_DENY_BUFFERS");
-                    if (flags & D3D12_HEAP_FLAG_DENY_RT_DS_TEXTURES)
+}
+                    if (flags & D3D12_HEAP_FLAG_DENY_RT_DS_TEXTURES) {
                         json.WriteString(L"HEAP_FLAG_DENY_RT_DS_TEXTURES");
-                    if (flags & D3D12_HEAP_FLAG_DENY_NON_RT_DS_TEXTURES)
+}
+                    if (flags & D3D12_HEAP_FLAG_DENY_NON_RT_DS_TEXTURES) {
                         json.WriteString(L"HEAP_FLAG_DENY_NON_RT_DS_TEXTURES");
+}
 
                     flags &= ~(D3D12_HEAP_FLAG_SHARED
                         | D3D12_HEAP_FLAG_DENY_BUFFERS
@@ -7674,8 +7732,9 @@ void AllocatorPimpl::BuildStatsString(WCHAR** ppStatsString, BOOL detailedMap)
 
                 json.WriteString(L"DedicatedAllocations");
                 json.BeginArray();
-                if (committedAllocs)
+                if (committedAllocs) {
                     committedAllocs->BuildStatsString(json);
+}
                 json.EndArray();
             };
 
@@ -7790,7 +7849,7 @@ HRESULT AllocatorPimpl::AllocateCommittedResource(
         hr = AllocateHeap(committedAllocParams, heapAllocInfo, withinBudget, pPrivateData, ppAllocation);
         if (SUCCEEDED(hr))
         {
-            hr = CreatePlacedResourceWrap((*ppAllocation)->GetHeap(), 0, 
+            hr = CreatePlacedResourceWrap((*ppAllocation)->GetHeap(), 0,
                     createParams, D3D12MA_IID_PPV_ARGS(&res));
             if (SUCCEEDED(hr))
             {
@@ -7879,8 +7938,9 @@ HRESULT AllocatorPimpl::AllocateCommittedResource(
                     createParams.GetResourceDesc(), createParams.GetInitialResourceState(),
                     createParams.GetOptimizedClearValue(), D3D12MA_IID_PPV_ARGS(&res));
             }
-            else
-                hr = E_NOINTERFACE;
+            else {
+                h
+}r = E_NOINTERFACE;
         }
     }
     else
@@ -8063,10 +8123,12 @@ HRESULT AllocatorPimpl::CalcAllocationParams(const ALLOCATION_DESC& allocDesc, U
 
     if (resDesc != NULL)
     {
-        if (resDesc->SampleDesc.Count > 1 && msaaAlwaysCommitted)
+        if (resDesc->SampleDesc.Count > 1 && msaaAlwaysCommitted) {
             outBlockVector = NULL;
-        if (!outPreferCommitted && PrefersCommittedAllocation(*resDesc))
+}
+        if (!outPreferCommitted && PrefersCommittedAllocation(*resDesc)) {
             outPreferCommitted = true;
+}
     }
 
     return (outBlockVector != NULL || outCommittedAllocationParams.m_List != NULL) ? S_OK : E_INVALIDARG;
@@ -8099,9 +8161,9 @@ UINT AllocatorPimpl::CalcDefaultPoolIndex(const ALLOCATION_DESC& allocDesc, Reso
     default: D3D12MA_ASSERT(0);
     }
 
-    if (SupportsResourceHeapTier2())
+    if (SupportsResourceHeapTier2()) {
         return poolIndex;
-    else
+    } else
     {
         switch (resourceClass)
         {
@@ -8396,8 +8458,9 @@ NormalBlock::~NormalBlock()
     if (m_pMetadata != NULL)
     {
         // Define macro D3D12MA_DEBUG_LOG to receive the list of the unfreed allocations.
-        if (!m_pMetadata->IsEmpty())
+        if (!m_pMetadata->IsEmpty()) {
             m_pMetadata->DebugLogAllAllocations();
+}
 
         // THIS IS THE MOST IMPORTANT ASSERT IN THE ENTIRE LIBRARY!
         // Hitting it means you have some memory leak - unreleased Allocation objects.
@@ -8459,10 +8522,11 @@ CommittedAllocationList::~CommittedAllocationList()
 
 UINT CommittedAllocationList::GetMemorySegmentGroup(AllocatorPimpl* allocator) const
 {
-    if (m_Pool)
+    if (m_Pool) {
         return allocator->HeapPropertiesToMemorySegmentGroup(m_Pool->GetDesc().HeapProperties);
-    else
-        return allocator->StandardHeapTypeToMemorySegmentGroup(m_HeapType);
+    } else {
+        r
+}eturn allocator->StandardHeapTypeToMemorySegmentGroup(m_HeapType);
 }
 
 void CommittedAllocationList::AddStatistics(Statistics& inoutStats)
@@ -8808,8 +8872,9 @@ void BlockVector::Remove(NormalBlock* pBlock)
 
 void BlockVector::IncrementallySortBlocks()
 {
-    if (!m_IncrementalSort)
+    if (!m_IncrementalSort) {
         return;
+}
     // Bubble sort only until first swap.
     for (size_t i = 1; i < m_Blocks.size(); ++i)
     {
@@ -8990,8 +9055,9 @@ HRESULT BlockVector::CommitAllocationRequest(
     Allocation** pAllocation)
 {
     // We no longer have an empty Allocation.
-    if (pBlock->m_pMetadata->IsEmpty())
+    if (pBlock->m_pMetadata->IsEmpty()) {
         m_HasEmptyBlock = false;
+}
 
     *pAllocation = m_hAllocator->GetAllocationObjectAllocator().Allocate(m_hAllocator, size, alignment, allocRequest.zeroInitialized);
     pBlock->m_pMetadata->Alloc(allocRequest, size, *pAllocation);
@@ -9084,9 +9150,9 @@ DefragmentationContextPimpl::DefragmentationContextPimpl(
 
 DefragmentationContextPimpl::~DefragmentationContextPimpl()
 {
-    if (m_PoolBlockVector != NULL)
+    if (m_PoolBlockVector != NULL) {
         m_PoolBlockVector->SetIncrementalSort(true);
-    else
+    } else
     {
         for (UINT32 i = 0; i < m_BlockVectorCount; ++i)
         {
@@ -9115,10 +9181,11 @@ HRESULT DefragmentationContextPimpl::DefragmentPassBegin(DEFRAGMENTATION_PASS_MO
     {
         MutexLockWrite lock(m_PoolBlockVector->GetMutex(), m_PoolBlockVector->m_hAllocator->UseMutex());
 
-        if (m_PoolBlockVector->GetBlockCount() > 1)
+        if (m_PoolBlockVector->GetBlockCount() > 1) {
             ComputeDefragmentation(*m_PoolBlockVector, 0);
-        else if (m_PoolBlockVector->GetBlockCount() == 1)
+        } else if (m_PoolBlockVector->GetBlockCount() == 1) {
             ReallocWithinBlock(*m_PoolBlockVector, m_PoolBlockVector->GetBlock(0));
+}
 
         // Setup index into block vector
         for (size_t i = 0; i < m_Moves.size(); ++i)
@@ -9340,10 +9407,11 @@ DefragmentationContextPimpl::CounterStatus DefragmentationContextPimpl::CheckCou
     // Ignore allocation if will exceed max size for copy
     if (m_PassStats.BytesMoved + bytes > m_MaxPassBytes)
     {
-        if (++m_IgnoredAllocs < MAX_ALLOCS_TO_IGNORE)
+        if (++m_IgnoredAllocs < MAX_ALLOCS_TO_IGNORE) {
             return CounterStatus::Ignore;
-        else
+        } else {
             return CounterStatus::End;
+}
     }
     return CounterStatus::Pass;
 }
@@ -9352,13 +9420,7 @@ bool DefragmentationContextPimpl::IncrementCounters(UINT64 bytes)
 {
     m_PassStats.BytesMoved += bytes;
     // Early return when max found
-    if (++m_PassStats.AllocationsMoved >= m_MaxPassAllocations || m_PassStats.BytesMoved >= m_MaxPassBytes)
-    {
-        D3D12MA_ASSERT((m_PassStats.AllocationsMoved == m_MaxPassAllocations ||
-            m_PassStats.BytesMoved == m_MaxPassBytes) && "Exceeded maximal pass threshold!");
-        return true;
-    }
-    return false;
+    return ++m_PassStats.AllocationsMoved >= m_MaxPassAllocations || m_PassStats.BytesMoved >= m_MaxPassBytes;
 }
 
 bool DefragmentationContextPimpl::ReallocWithinBlock(BlockVector& vector, NormalBlock* block)
@@ -9371,8 +9433,9 @@ bool DefragmentationContextPimpl::ReallocWithinBlock(BlockVector& vector, Normal
     {
         MoveAllocationData moveData = GetMoveData(handle, metadata);
         // Ignore newly created allocations by defragmentation algorithm
-        if (moveData.move.pSrcAllocation->GetPrivateData() == this)
+        if (moveData.move.pSrcAllocation->GetPrivateData() == this) {
             continue;
+}
         switch (CheckCounters(moveData.move.pSrcAllocation->GetSize()))
         {
         case CounterStatus::Ignore:
@@ -9384,7 +9447,7 @@ bool DefragmentationContextPimpl::ReallocWithinBlock(BlockVector& vector, Normal
         case CounterStatus::Pass:
             break;
         }
-        
+
         UINT64 offset = moveData.move.pSrcAllocation->GetOffset();
         if (offset != 0 && metadata->GetSumFreeSize() >= moveData.size)
         {
@@ -9407,8 +9470,9 @@ bool DefragmentationContextPimpl::ReallocWithinBlock(BlockVector& vector, Normal
                         &moveData.move.pDstTmpAllocation)))
                     {
                         m_Moves.push_back(moveData.move);
-                        if (IncrementCounters(moveData.size))
+                        if (IncrementCounters(moveData.size)) {
                             return true;
+}
                     }
                 }
             }
@@ -9433,8 +9497,9 @@ bool DefragmentationContextPimpl::AllocInOtherBlock(size_t start, size_t end, Mo
                 &data.move.pDstTmpAllocation)))
             {
                 m_Moves.push_back(data.move);
-                if (IncrementCounters(data.size))
+                if (IncrementCounters(data.size)) {
                     return true;
+}
                 break;
             }
         }
@@ -9457,8 +9522,9 @@ bool DefragmentationContextPimpl::ComputeDefragmentation_Fast(BlockVector& vecto
         {
             MoveAllocationData moveData = GetMoveData(handle, metadata);
             // Ignore newly created allocations by defragmentation algorithm
-            if (moveData.move.pSrcAllocation->GetPrivateData() == this)
+            if (moveData.move.pSrcAllocation->GetPrivateData() == this) {
                 continue;
+}
             switch (CheckCounters(moveData.move.pSrcAllocation->GetSize()))
             {
             case CounterStatus::Ignore:
@@ -9472,8 +9538,9 @@ bool DefragmentationContextPimpl::ComputeDefragmentation_Fast(BlockVector& vecto
             }
 
             // Check all previous blocks for free space
-            if (AllocInOtherBlock(0, i, moveData, vector))
+            if (AllocInOtherBlock(0, i, moveData, vector)) {
                 return true;
+}
         }
     }
     return false;
@@ -9487,8 +9554,9 @@ bool DefragmentationContextPimpl::ComputeDefragmentation_Balanced(BlockVector& v
     D3D12MA_ASSERT(m_AlgorithmState != NULL);
 
     StateBalanced& vectorState = reinterpret_cast<StateBalanced*>(m_AlgorithmState)[index];
-    if (update && vectorState.avgAllocSize == UINT64_MAX)
+    if (update && vectorState.avgAllocSize == UINT64_MAX) {
         UpdateVectorStatistics(vector, vectorState);
+}
 
     const size_t startMoveCount = m_Moves.size();
     UINT64 minimalFreeRegion = vectorState.avgFreeSize / 2;
@@ -9504,8 +9572,9 @@ bool DefragmentationContextPimpl::ComputeDefragmentation_Balanced(BlockVector& v
         {
             MoveAllocationData moveData = GetMoveData(handle, metadata);
             // Ignore newly created allocations by defragmentation algorithm
-            if (moveData.move.pSrcAllocation->GetPrivateData() == this)
+            if (moveData.move.pSrcAllocation->GetPrivateData() == this) {
                 continue;
+}
             switch (CheckCounters(moveData.move.pSrcAllocation->GetSize()))
             {
             case CounterStatus::Ignore:
@@ -9520,8 +9589,9 @@ bool DefragmentationContextPimpl::ComputeDefragmentation_Balanced(BlockVector& v
 
             // Check all previous blocks for free space
             const size_t prevMoveCount = m_Moves.size();
-            if (AllocInOtherBlock(0, i, moveData, vector))
+            if (AllocInOtherBlock(0, i, moveData, vector)) {
                 return true;
+}
 
             UINT64 nextFreeRegionSize = metadata->GetNextFreeRegionSize(handle);
             // If no room found then realloc within block for lower offset
@@ -9553,8 +9623,9 @@ bool DefragmentationContextPimpl::ComputeDefragmentation_Balanced(BlockVector& v
                                 &moveData.move.pDstTmpAllocation)))
                             {
                                 m_Moves.push_back(moveData.move);
-                                if (IncrementCounters(moveData.size))
+                                if (IncrementCounters(moveData.size)) {
                                     return true;
+}
                             }
                         }
                     }
@@ -9589,8 +9660,9 @@ bool DefragmentationContextPimpl::ComputeDefragmentation_Full(BlockVector& vecto
         {
             MoveAllocationData moveData = GetMoveData(handle, metadata);
             // Ignore newly created allocations by defragmentation algorithm
-            if (moveData.move.pSrcAllocation->GetPrivateData() == this)
+            if (moveData.move.pSrcAllocation->GetPrivateData() == this) {
                 continue;
+}
             switch (CheckCounters(moveData.move.pSrcAllocation->GetSize()))
             {
             case CounterStatus::Ignore:
@@ -9605,8 +9677,9 @@ bool DefragmentationContextPimpl::ComputeDefragmentation_Full(BlockVector& vecto
 
             // Check all previous blocks for free space
             const size_t prevMoveCount = m_Moves.size();
-            if (AllocInOtherBlock(0, i, moveData, vector))
+            if (AllocInOtherBlock(0, i, moveData, vector)) {
                 return true;
+}
 
             // If no room found then realloc within block for lower offset
             UINT64 offset = moveData.move.pSrcAllocation->GetOffset();
@@ -9631,8 +9704,9 @@ bool DefragmentationContextPimpl::ComputeDefragmentation_Full(BlockVector& vecto
                             &moveData.move.pDstTmpAllocation)))
                         {
                             m_Moves.push_back(moveData.move);
-                            if (IncrementCounters(moveData.size))
+                            if (IncrementCounters(moveData.size)) {
                                 return true;
+}
                         }
                     }
                 }
@@ -10178,10 +10252,10 @@ HRESULT Allocator::CreateResource(
     }
     D3D12MA_DEBUG_GLOBAL_MUTEX_LOCK
     return m_Pimpl->CreateResource(
-        pAllocDesc, 
-        CREATE_RESOURCE_PARAMS(pResourceDesc, InitialResourceState, pOptimizedClearValue), 
-        ppAllocation, 
-        riidResource, 
+        pAllocDesc,
+        CREATE_RESOURCE_PARAMS(pResourceDesc, InitialResourceState, pOptimizedClearValue),
+        ppAllocation,
+        riidResource,
         ppvResource);
 }
 
@@ -10202,10 +10276,10 @@ HRESULT Allocator::CreateResource2(
     }
     D3D12MA_DEBUG_GLOBAL_MUTEX_LOCK
     return m_Pimpl->CreateResource(
-        pAllocDesc, 
-        CREATE_RESOURCE_PARAMS(pResourceDesc, InitialResourceState, pOptimizedClearValue), 
-        ppAllocation, 
-        riidResource, 
+        pAllocDesc,
+        CREATE_RESOURCE_PARAMS(pResourceDesc, InitialResourceState, pOptimizedClearValue),
+        ppAllocation,
+        riidResource,
         ppvResource);
 }
 #endif // #ifdef __ID3D12Device8_INTERFACE_DEFINED__
@@ -10229,10 +10303,10 @@ HRESULT Allocator::CreateResource3(
     }
     D3D12MA_DEBUG_GLOBAL_MUTEX_LOCK
     return m_Pimpl->CreateResource(
-        pAllocDesc, 
-        CREATE_RESOURCE_PARAMS(pResourceDesc, InitialLayout, pOptimizedClearValue, NumCastableFormats, pCastableFormats), 
-        ppAllocation, 
-        riidResource, 
+        pAllocDesc,
+        CREATE_RESOURCE_PARAMS(pResourceDesc, InitialLayout, pOptimizedClearValue, NumCastableFormats, pCastableFormats),
+        ppAllocation,
+        riidResource,
         ppvResource);
 }
 #endif // #ifdef __ID3D12Device10_INTERFACE_DEFINED__
@@ -10267,10 +10341,10 @@ HRESULT Allocator::CreateAliasingResource(
     }
     D3D12MA_DEBUG_GLOBAL_MUTEX_LOCK
     return m_Pimpl->CreateAliasingResource(
-        pAllocation, 
-        AllocationLocalOffset, 
-        CREATE_RESOURCE_PARAMS(pResourceDesc, InitialResourceState, pOptimizedClearValue), 
-        riidResource, 
+        pAllocation,
+        AllocationLocalOffset,
+        CREATE_RESOURCE_PARAMS(pResourceDesc, InitialResourceState, pOptimizedClearValue),
+        riidResource,
         ppvResource);
 }
 
@@ -10291,10 +10365,10 @@ HRESULT Allocator::CreateAliasingResource1(
     }
     D3D12MA_DEBUG_GLOBAL_MUTEX_LOCK
     return m_Pimpl->CreateAliasingResource(
-        pAllocation, 
-        AllocationLocalOffset, 
-        CREATE_RESOURCE_PARAMS(pResourceDesc, InitialResourceState, pOptimizedClearValue), 
-        riidResource, 
+        pAllocation,
+        AllocationLocalOffset,
+        CREATE_RESOURCE_PARAMS(pResourceDesc, InitialResourceState, pOptimizedClearValue),
+        riidResource,
         ppvResource);
 }
 #endif  // #ifdef __ID3D12Device8_INTERFACE_DEFINED__
@@ -10318,10 +10392,10 @@ HRESULT Allocator::CreateAliasingResource2(
     }
     D3D12MA_DEBUG_GLOBAL_MUTEX_LOCK
     return m_Pimpl->CreateAliasingResource(
-        pAllocation, 
-        AllocationLocalOffset, 
+        pAllocation,
+        AllocationLocalOffset,
         CREATE_RESOURCE_PARAMS(pResourceDesc, InitialLayout, pOptimizedClearValue, NumCastableFormats, pCastableFormats),
-        riidResource, 
+        riidResource,
         ppvResource);
 }
 #endif  // #ifdef __ID3D12Device10_INTERFACE_DEFINED__

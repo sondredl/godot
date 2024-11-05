@@ -797,8 +797,9 @@ getKey_2022(char c,int32_t* key,int32_t* offset){
 
         int32_t mid = (hi+low) >> 1; /*Finds median*/
 
-        if (mid == oldmid)
+        if (mid == oldmid) {
             break;
+}
 
         if (escSeqStateTable_Key_2022[mid] > togo){
             hi = mid;
@@ -1232,7 +1233,7 @@ _2022FromGR94DBCS(uint32_t value) {
 /*
  * This method does the reverse of _2022FromGR94DBCS(). Given the 2022 code point, it returns the
  * 2 byte value that is in the range A1..FE for each byte. Otherwise it returns the 2022 code point
- * unchanged. 
+ * unchanged.
  */
 static inline uint32_t
 _2022ToGR94DBCS(uint32_t value) {
@@ -2194,7 +2195,7 @@ escape:
                     if(pToU2022State->g >= 2) {
                         pToU2022State->g=pToU2022State->prevG;
                     }
-                } else switch(cs) {
+                } else { switch(cs) {
                 case ASCII:
                     if(mySourceChar <= 0x7f) {
                         targetUniChar = mySourceChar;
@@ -2276,6 +2277,7 @@ getTrailByte:
                         goto endloop;
                     }
                 }  /* End of inner switch */
+}
                 break;
             }  /* End of outer switch */
             if(targetUniChar < (missingCharMarker-1/*0xfffe*/)){
@@ -2427,12 +2429,14 @@ UConverter_fromUnicode_ISO_2022_KR_OFFSETS_LOGIC(UConverterFromUnicodeArgs* args
                   /* append the shift sequence */
                 if (oldIsTargetByteDBCS != isTargetByteDBCS ){
 
-                    if (isTargetByteDBCS)
+                    if (isTargetByteDBCS) {
                         *target++ = UCNV_SO;
-                    else
+                    } else {
                         *target++ = UCNV_SI;
-                    if(offsets)
+}
+                    if(offsets) {
                         *(offsets++) = static_cast<int32_t>(source - args->source - 1);
+}
                 }
                 /* write the targetUniChar  to target */
                 if(targetByteUnit <= 0x00FF){

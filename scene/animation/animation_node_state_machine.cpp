@@ -674,12 +674,7 @@ bool AnimationNodeStateMachinePlayback::_make_travel_path(AnimationTree *p_tree,
 	}
 
 	// Finally, rewrite path if route is found.
-	if (found_route) {
-		r_path = new_path;
-		return true;
-	} else {
-		return false;
-	}
+	return found_route;
 }
 
 AnimationNode::NodeTimeInfo AnimationNodeStateMachinePlayback::process(const String &p_base_path, AnimationNodeStateMachine *p_state_machine, const AnimationMixer::PlaybackInfo p_playback_info, bool p_test_only) {

@@ -839,26 +839,12 @@ ObjectID DebugAdapterProtocol::search_object_id(DAPVarID p_var_id) {
 
 bool DebugAdapterProtocol::request_remote_object(const ObjectID &p_object_id) {
 	// If the object is already on the pending list, we don't need to request it again.
-	if (object_pending_set.has(p_object_id)) {
-		return false;
-	}
-
-	EditorDebuggerNode::get_singleton()->get_default_debugger()->request_remote_object(p_object_id);
-	object_pending_set.insert(p_object_id);
-
-	return true;
+	return !object_pending_set.has(p_object_id);
 }
 
 bool DebugAdapterProtocol::request_remote_evaluate(const String &p_eval, int p_stack_frame) {
 	// If the eval is already on the pending list, we don't need to request it again
-	if (eval_pending_list.has(p_eval)) {
-		return false;
-	}
-
-	EditorDebuggerNode::get_singleton()->get_default_debugger()->request_remote_evaluate(p_eval, p_stack_frame);
-	eval_pending_list.insert(p_eval);
-
-	return true;
+	return !eval_pending_list.has(p_eval);
 }
 
 bool DebugAdapterProtocol::process_message(const String &p_text) {

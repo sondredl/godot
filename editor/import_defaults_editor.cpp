@@ -48,21 +48,10 @@ class ImportDefaultsEditorSettings : public Object {
 
 protected:
 	bool _set(const StringName &p_name, const Variant &p_value) {
-		if (values.has(p_name)) {
-			values[p_name] = p_value;
-			return true;
-		} else {
-			return false;
-		}
+		return values.has(p_name);
 	}
 	bool _get(const StringName &p_name, Variant &r_ret) const {
-		if (values.has(p_name)) {
-			r_ret = values[p_name];
-			return true;
-		} else {
-			r_ret = Variant();
-			return false;
-		}
+		return values.has(p_name);
 	}
 	void _get_property_list(List<PropertyInfo> *p_list) const {
 		if (importer.is_null()) {

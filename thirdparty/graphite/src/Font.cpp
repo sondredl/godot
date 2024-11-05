@@ -23,8 +23,9 @@ Font::Font(float ppm, const Face & f, const void * appFontHandle, const gr_font_
     m_advances = gralloc<float>(nGlyphs);
     if (m_advances)
     {
-        for (float *advp = m_advances; nGlyphs; --nGlyphs, ++advp)
+        for (float *advp = m_advances; nGlyphs; --nGlyphs, ++advp) {
             *advp = INVALID_ADVANCE;
+}
     }
 }
 

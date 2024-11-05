@@ -10,7 +10,8 @@ namespace embree
 
 void Scene::checkIfModifiedAndSet ()
 {
-  if (isModified ()) return;
+  if (isModified ()) { return;
+}
 
   auto geometryIsModified = [this](size_t geomID)->bool {
     return isGeometryModified(geomID);

@@ -331,13 +331,7 @@ void godotsharp_internal_editor_file_system_update_files(const PackedStringArray
 
 bool godotsharp_internal_script_load(const String *p_path, Ref<CSharpScript> *r_dest) {
 	Ref<Resource> res = ResourceLoader::load(*p_path);
-	if (res.is_valid()) {
-		memnew_placement(r_dest, Ref<CSharpScript>(res));
-		return true;
-	} else {
-		memnew_placement(r_dest, Ref<CSharpScript>());
-		return false;
-	}
+	return res.is_valid();
 }
 
 void godotsharp_internal_reload_registered_script(CSharpScript *p_script) {
@@ -1146,12 +1140,7 @@ void godotsharp_array_to_string(const Array *p_self, String *r_str) {
 
 bool godotsharp_dictionary_try_get_value(const Dictionary *p_self, const Variant *p_key, Variant *r_value) {
 	const Variant *ret = p_self->getptr(*p_key);
-	if (ret == nullptr) {
-		memnew_placement(r_value, Variant());
-		return false;
-	}
-	memnew_placement(r_value, Variant(*ret));
-	return true;
+	return !ret == nullptr;
 }
 
 void godotsharp_dictionary_set_value(Dictionary *p_self, const Variant *p_key, const Variant *p_value) {

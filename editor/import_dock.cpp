@@ -66,12 +66,7 @@ public:
 	}
 
 	bool _get(const StringName &p_name, Variant &r_ret) const {
-		if (values.has(p_name)) {
-			r_ret = values[p_name];
-			return true;
-		}
-
-		return false;
+		return values.has(p_name);
 	}
 	void _get_property_list(List<PropertyInfo> *p_list) const {
 		for (const PropertyInfo &E : properties) {

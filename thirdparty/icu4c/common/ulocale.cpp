@@ -92,7 +92,8 @@ IMPL_ULOCALE_GET_KEYWORDS(Keywords)
 IMPL_ULOCALE_GET_KEYWORDS(UnicodeKeywords)
 
 bool ulocale_isBogus(const ULocale* locale) {
-    if (locale == nullptr) return false;
+    if (locale == nullptr) { return false;
+}
     return CONST_INTERNAL(locale)->isBogus();
 }
 

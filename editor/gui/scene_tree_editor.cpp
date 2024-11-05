@@ -1444,12 +1444,7 @@ bool SceneTreeEditor::can_drop_data_fw(const Point2 &p_point, const Variant &p_d
 			return true;
 		}
 
-		if (files.size() > 1) {
-			return false;
-		}
-		tree->set_drop_mode_flags(Tree::DROP_MODE_ON_ITEM);
-
-		return true;
+		return !files.size() > 1;
 	}
 
 	if (String(d["type"]) == "script_list_element") {

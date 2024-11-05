@@ -42,7 +42,6 @@
 #include <iomanip>
 #include <stack>
 #include <sstream>
-#include <cstring>
 #include <utility>
 
 #include "disassemble.h"
@@ -134,8 +133,9 @@ protected:
 void SpirvStream::validate()
 {
     size = (int)stream.size();
-    if (size < 4)
+    if (size < 4) {
         Kill(out, "stream is too short");
+}
 
     // Magic number
     if (stream[word++] != MagicNumber) {
@@ -158,8 +158,9 @@ void SpirvStream::validate()
 
     // Reserved schema, must be 0 for now
     schema = stream[word++];
-    if (schema != 0)
+    if (schema != 0) {
         Kill(out, "bad schema, must be 0");
+}
 }
 
 // Loop over all the instructions, in order, processing each.
@@ -178,8 +179,9 @@ void SpirvStream::processInstructions()
         ++word;
 
         // Presence of full instruction
-        if (nextInst > size)
+        if (nextInst > size) {
             Kill(out, "stream instruction terminated too early");
+}
 
         // Base for computing number of operands; will be updated as more is learned
         unsigned numOperands = wordCount - 1;
@@ -217,8 +219,9 @@ void SpirvStream::processInstructions()
 
 void SpirvStream::outputIndent()
 {
-    for (int i = 0; i < (int)nestedControl.size(); ++i)
+    for (int i = 0; i < (int)nestedControl.size(); ++i) {
         out << "  ";
+}
 }
 
 void SpirvStream::formatId(Id id, std::stringstream& idStream)
@@ -226,12 +229,14 @@ void SpirvStream::formatId(Id id, std::stringstream& idStream)
     if (id != 0) {
         // On instructions with no IDs, this is called with "0", which does not
         // have to be within ID bounds on null shaders.
-        if (id >= bound)
+        if (id >= bound) {
             Kill(out, "Bad <id>");
+}
 
         idStream << id;
-        if (idDescriptor[id].size() > 0)
+        if (!idDescriptor[id].empty()) {
             idStream << "(" << idDescriptor[id] << ")";
+}
     }
 }
 
@@ -241,13 +246,15 @@ void SpirvStream::outputResultId(Id id)
     std::stringstream idStream;
     formatId(id, idStream);
     out << std::setw(width) << std::right << idStream.str();
-    if (id != 0)
+    if (id != 0) {
         out << ":";
-    else
+    } else {
         out << " ";
+}
 
-    if (nestedControl.size() && id == nestedControl.top())
+    if (!nestedControl.empty() && id == nestedControl.top()) {
         nestedControl.pop();
+}
 }
 
 void SpirvStream::outputTypeId(Id id)
@@ -260,22 +267,25 @@ void SpirvStream::outputTypeId(Id id)
 
 void SpirvStream::outputId(Id id)
 {
-    if (id >= bound)
+    if (id >= bound) {
         Kill(out, "Bad <id>");
+}
 
     out << id;
-    if (idDescriptor[id].size() > 0)
+    if (!idDescriptor[id].empty()) {
         out << "(" << idDescriptor[id] << ")";
+}
 }
 
 void SpirvStream::outputMask(OperandClass operandClass, unsigned mask)
 {
-    if (mask == 0)
+    if (mask == 0) {
         out << "None";
-    else {
+    } else {
         for (int m = 0; m < OperandClassParams[operandClass].ceiling; ++m) {
-            if (mask & (1 << m))
+            if (mask & (1 << m)) {
                 out << OperandClassParams[operandClass].getName(m) << " ";
+}
         }
     }
 }
@@ -284,8 +294,9 @@ void SpirvStream::disassembleImmediates(int numOperands)
 {
     for (int i = 0; i < numOperands; ++i) {
         out << stream[word++];
-        if (i < numOperands - 1)
+        if (i < numOperands - 1) {
             out << " ";
+}
     }
 }
 
@@ -293,8 +304,9 @@ void SpirvStream::disassembleIds(int numOperands)
 {
     for (int i = 0; i < numOperands; ++i) {
         outputId(stream[word++]);
-        if (i < numOperands - 1)
+        if (i < numOperands - 1) {
             out << " ";
+}
     }
 }
 
@@ -344,9 +356,9 @@ void SpirvStream::disassembleInstruction(Id resultId, Id /*typeId*/, Op opCode, 
 
     out << (OpcodeString(opCode) + 2);  // leave out the "Op"
 
-    if (opCode == OpLoopMerge || opCode == OpSelectionMerge)
+    if (opCode == OpLoopMerge || opCode == OpSelectionMerge) {
         nextNestedControl = stream[word];
-    else if (opCode == OpBranchConditional || opCode == OpSwitch) {
+    } else if (opCode == OpBranchConditional || opCode == OpSwitch) {
         if (nextNestedControl) {
             nestedControl.push(nextNestedControl);
             nextNestedControl = 0;
@@ -355,7 +367,7 @@ void SpirvStream::disassembleInstruction(Id resultId, Id /*typeId*/, Op opCode, 
         idDescriptor[resultId] = decodeString().second;
     }
     else {
-        if (resultId != 0 && idDescriptor[resultId].size() == 0) {
+        if (resultId != 0 && idDescriptor[resultId].empty()) {
             switch (opCode) {
             case OpTypeInt:
                 switch (stream[word]) {
@@ -384,7 +396,7 @@ void SpirvStream::disassembleInstruction(Id resultId, Id /*typeId*/, Op opCode, 
                 idDescriptor[resultId] = "ptr";
                 break;
             case OpTypeVector:
-                if (idDescriptor[stream[word]].size() > 0) {
+                if (!idDescriptor[stream[word]].empty()) {
                     idDescriptor[resultId].append(idDescriptor[stream[word]].begin(), idDescriptor[stream[word]].begin() + 1);
                     if (strstr(idDescriptor[stream[word]].c_str(), "8")) {
                         idDescriptor[resultId].append("8");
@@ -448,8 +460,9 @@ void SpirvStream::disassembleInstruction(Id resultId, Id /*typeId*/, Op opCode, 
             disassembleIds(1);
             --numOperands;
             // Get names for printing "(XXX)" for readability, *after* this id
-            if (opCode == OpName)
+            if (opCode == OpName) {
                 idDescriptor[stream[word - 1]] = decodeString().second;
+}
             break;
         case OperandVariableIds:
             disassembleIds(numOperands);
@@ -548,8 +561,9 @@ void SpirvStream::disassembleInstruction(Id resultId, Id /*typeId*/, Op opCode, 
             numOperands -= disassembleString();
             break;
         case OperandVariableLiteralStrings:
-            while (numOperands > 0)
+            while (numOperands > 0) {
                 numOperands -= disassembleString();
+}
             return;
         case OperandMemoryAccess:
             outputMask(OperandMemoryAccess, stream[word++]);
@@ -559,31 +573,33 @@ void SpirvStream::disassembleInstruction(Id resultId, Id /*typeId*/, Op opCode, 
             if (stream[word-1] & MemoryAccessAlignedMask) {
                 disassembleImmediates(1);
                 numOperands--;
-                if (numOperands)
+                if (numOperands) {
                     out << " ";
+}
             }
             disassembleIds(numOperands);
             return;
         default:
             assert(operandClass >= OperandSource && operandClass < OperandOpcode);
 
-            if (OperandClassParams[operandClass].bitmask)
+            if (OperandClassParams[operandClass].bitmask) {
                 outputMask(operandClass, stream[word++]);
-            else
+            } else {
                 out << OperandClassParams[operandClass].getName(stream[word++]);
+}
             --numOperands;
 
             break;
         }
     }
 
-    return;
-}
+    }
 
 static void GLSLstd450GetDebugNames(const char** names)
 {
-    for (int i = 0; i < GLSLstd450Count; ++i)
+    for (int i = 0; i < GLSLstd450Count; ++i) {
         names[i] = "Unknown";
+}
 
     names[GLSLstd450Round]                   = "Round";
     names[GLSLstd450RoundEven]               = "RoundEven";

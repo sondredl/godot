@@ -97,11 +97,7 @@ bool ViewPanner::gui_input(const Ref<InputEvent> &p_event, Rect2 p_canvas_rect) 
 				(force_drag && mb->get_button_index() == MouseButton::LEFT);
 
 		if (is_drag_event) {
-			if (mb->is_pressed()) {
-				is_dragging = true;
-			} else {
-				is_dragging = false;
-			}
+			is_dragging = mb->is_pressed();
 			return mb->get_button_index() != MouseButton::LEFT || mb->is_pressed(); // Don't consume LMB release events (it fixes some selection problems).
 		}
 	}

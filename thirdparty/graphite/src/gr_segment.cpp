@@ -40,11 +40,14 @@ namespace
       {
           if (!first.validate(last))
           {
-              if (error)  *error = last - 1;
+              if (error) {  *error = last - 1;
+}
               return 0;
           }
-          for (;first != last; ++first, ++n_chars)
-              if ((usv = *first) == 0 || first.error()) break;
+          for (;first != last; ++first, ++n_chars) {
+              if ((usv = *first) == 0 || first.error()) { break;
+}
+}
       }
       else
       {
@@ -55,7 +58,8 @@ namespace
           }
       }
 
-      if (error)  *error = first.error() ? first : 0;
+      if (error) {  *error = first.error() ? first : 0;
+}
       return n_chars;
   }
 }
@@ -79,7 +83,8 @@ size_t gr_count_unicode_characters(gr_encform enc, const void* buffer_begin, con
 
 gr_segment* gr_make_seg(const gr_font *font, const gr_face *face, gr_uint32 script, const gr_feature_val* pFeats, gr_encform enc, const void* pStart, size_t nChars, int dir)
 {
-    if (!face) return nullptr;
+    if (!face) { return nullptr;
+}
 
     const gr_feature_val * tmp_feats = 0;
     if (pFeats == 0)

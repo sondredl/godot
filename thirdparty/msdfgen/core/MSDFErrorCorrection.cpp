@@ -32,8 +32,9 @@ public:
         if ((am > .5f && bm > .5f && xm <= .5f) || (am < .5f && bm < .5f && xm >= .5f) || (!protectedFlag && median(am, bm, xm) != xm)) {
             double axSpan = (xt-at)*span, bxSpan = (bt-xt)*span;
             // Check if the interpolated median's value is in the expected range based on its distance (span) from boundaries a, b.
-            if (!(xm >= am-axSpan && xm <= am+axSpan && xm >= bm-bxSpan && xm <= bm+bxSpan))
+            if (!(xm >= am-axSpan && xm <= am+axSpan && xm >= bm-bxSpan && xm <= bm+bxSpan)) {
                 return CLASSIFIER_FLAG_CANDIDATE|CLASSIFIER_FLAG_ARTIFACT;
+}
             return CLASSIFIER_FLAG_CANDIDATE;
         }
         return 0;
@@ -58,8 +59,9 @@ public:
         inline bool evaluate(double t, float m, int flags) const {
             if (flags&CLASSIFIER_FLAG_CANDIDATE) {
                 // Skip expensive distance evaluation if the point has already been classified as an artifact by the base classifier.
-                if (flags&CLASSIFIER_FLAG_ARTIFACT)
+                if (flags&CLASSIFIER_FLAG_ARTIFACT) {
                     return true;
+}
                 Vector2 tVector = t*direction;
                 float oldMSD[N], newMSD[3];
                 // Compute the color that would be currently interpolated at the artifact candidate's position.
@@ -183,8 +185,9 @@ static void protectExtremeChannels(byte *stencil, const float *msd, float m, int
         (mask&RED && msd[0] != m) ||
         (mask&GREEN && msd[1] != m) ||
         (mask&BLUE && msd[2] != m)
-    )
+    ) {
         *stencil |= (byte) MSDFErrorCorrection::PROTECTED;
+}
 }
 
 template <int N>
@@ -251,8 +254,9 @@ void MSDFErrorCorrection::protectEdges(const BitmapConstRef<float, N> &sdf) {
 
 void MSDFErrorCorrection::protectAll() {
     byte *end = stencil.pixels+stencil.width*stencil.height;
-    for (byte *mask = stencil.pixels; mask < end; ++mask)
+    for (byte *mask = stencil.pixels; mask < end; ++mask) {
         *mask |= (byte) PROTECTED;
+}
 }
 
 /// Returns the median of the linear interpolation of texels a, b at t.
@@ -327,8 +331,9 @@ static bool hasDiagonalArtifactInner(const ArtifactClassifier &artifactClassifie
                 em[tEx1 > t[i]] = interpolatedMedian(a, l, q, tEx1);
                 rangeFlags |= artifactClassifier.rangeTest(tEnd[0], tEnd[1], t[i], em[0], em[1], xm);
             }
-            if (artifactClassifier.evaluate(t[i], xm, rangeFlags))
+            if (artifactClassifier.evaluate(t[i], xm, rangeFlags)) {
                 return true;
+}
         }
     }
     return false;
@@ -436,8 +441,9 @@ void MSDFErrorCorrection::findErrors(const BitmapConstRef<float, N> &sdf, const 
             int row = shape.inverseYAxis ? sdf.height-y-1 : y;
             for (int col = 0; col < sdf.width; ++col) {
                 int x = rightToLeft ? sdf.width-col-1 : col;
-                if ((*stencil(x, row)&ERROR))
+                if ((*stencil(x, row)&ERROR)) {
                     continue;
+}
                 const float *c = sdf(x, row);
                 shapeDistanceChecker.shapeCoord = projection.unproject(Point2(x+.5, y+.5));
                 shapeDistanceChecker.sdfCoord = Point2(x+.5, row+.5);

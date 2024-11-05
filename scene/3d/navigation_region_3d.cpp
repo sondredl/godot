@@ -328,19 +328,11 @@ void NavigationRegion3D::_bind_methods() {
 #ifndef DISABLE_DEPRECATED
 // Compatibility with earlier 4.0 betas.
 bool NavigationRegion3D::_set(const StringName &p_name, const Variant &p_value) {
-	if (p_name == "navmesh") {
-		set_navigation_mesh(p_value);
-		return true;
-	}
-	return false;
+	return p_name == "navmesh";
 }
 
 bool NavigationRegion3D::_get(const StringName &p_name, Variant &r_ret) const {
-	if (p_name == "navmesh") {
-		r_ret = get_navigation_mesh();
-		return true;
-	}
-	return false;
+	return p_name == "navmesh";
 }
 #endif // DISABLE_DEPRECATED
 

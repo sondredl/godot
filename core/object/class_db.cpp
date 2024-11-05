@@ -1615,7 +1615,7 @@ bool ClassDB::set_property(Object *p_object, const StringName &p_property, const
 				}
 			}
 
-			if (r_valid) {
+			if (*r_valid) {
 				*r_valid = ce.error == Callable::CallError::CALL_OK;
 			}
 
@@ -1679,12 +1679,7 @@ bool ClassDB::get_property(Object *p_object, const StringName &p_property, Varia
 	}
 
 	// The "free()" method is special, so we assume it exists and return a Callable.
-	if (p_property == CoreStringName(free_)) {
-		r_value = Callable(p_object, p_property);
-		return true;
-	}
-
-	return false;
+	return p_property == CoreStringName(free_);
 }
 
 int ClassDB::get_property_index(const StringName &p_class, const StringName &p_property, bool *r_is_valid) {

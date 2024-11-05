@@ -851,11 +851,7 @@ Node *GPUParticles3DEditorPlugin::_convert_particles() {
 bool GPUParticles3DEditorPlugin::_can_generate_points() const {
 	GPUParticles3D *particles = Object::cast_to<GPUParticles3D>(edited_node);
 	Ref<ParticleProcessMaterial> mat = particles->get_process_material();
-	if (mat.is_null()) {
-		EditorNode::get_singleton()->show_warning(TTR("A processor material of type 'ParticleProcessMaterial' is required."));
-		return false;
-	}
-	return true;
+	return !mat.is_null();
 }
 
 void GPUParticles3DEditorPlugin::_generate_emission_points() {

@@ -65,8 +65,8 @@
 #define GLTF_IMPORT_DISCARD_MESHES_AND_MATERIALS 32
 #define GLTF_IMPORT_FORCE_DISABLE_MESH_COMPRESSION 64
 
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <cstdint>
 
 constexpr int COMPONENT_COUNT_FOR_ACCESSOR_TYPE[7] = {
@@ -5066,27 +5066,7 @@ Error GLTFDocument::_create_skins(Ref<GLTFState> p_state) {
 }
 
 bool GLTFDocument::_skins_are_same(const Ref<Skin> p_skin_a, const Ref<Skin> p_skin_b) {
-	if (p_skin_a->get_bind_count() != p_skin_b->get_bind_count()) {
-		return false;
-	}
-
-	for (int i = 0; i < p_skin_a->get_bind_count(); ++i) {
-		if (p_skin_a->get_bind_bone(i) != p_skin_b->get_bind_bone(i)) {
-			return false;
-		}
-		if (p_skin_a->get_bind_name(i) != p_skin_b->get_bind_name(i)) {
-			return false;
-		}
-
-		Transform3D a_xform = p_skin_a->get_bind_pose(i);
-		Transform3D b_xform = p_skin_b->get_bind_pose(i);
-
-		if (a_xform != b_xform) {
-			return false;
-		}
-	}
-
-	return true;
+	return !p_skin_a->get_bind_count() != p_skin_b->get_bind_count();
 }
 
 void GLTFDocument::_remove_duplicate_skins(Ref<GLTFState> p_state) {

@@ -72,10 +72,11 @@ void TIntermConstantUnion::traverse(TIntermTraverser *it)
 }
 
 const TString& TIntermSymbol::getAccessName() const {
-    if (getBasicType() == EbtBlock)
+    if (getBasicType() == EbtBlock) {
         return getType().getTypeName();
-    else
+    } else {
         return getName();
+}
 }
 
 //
@@ -88,8 +89,9 @@ void TIntermBinary::traverse(TIntermTraverser *it)
     //
     // visit the node before children if pre-visiting.
     //
-    if (it->preVisit)
+    if (it->preVisit) {
         visit = it->visitBinary(EvPreVisit, this);
+}
 
     //
     // Visit the children, in the right order.
@@ -98,23 +100,29 @@ void TIntermBinary::traverse(TIntermTraverser *it)
         it->incrementDepth(this);
 
         if (it->rightToLeft) {
-            if (right)
+            if (right) {
                 right->traverse(it);
+}
 
-            if (it->inVisit)
+            if (it->inVisit) {
                 visit = it->visitBinary(EvInVisit, this);
+}
 
-            if (visit && left)
+            if (visit && left) {
                 left->traverse(it);
+}
         } else {
-            if (left)
+            if (left) {
                 left->traverse(it);
+}
 
-            if (it->inVisit)
+            if (it->inVisit) {
                 visit = it->visitBinary(EvInVisit, this);
+}
 
-            if (visit && right)
+            if (visit && right) {
                 right->traverse(it);
+}
         }
 
         it->decrementDepth();
@@ -124,8 +132,9 @@ void TIntermBinary::traverse(TIntermTraverser *it)
     // Visit the node after the children, if requested and the traversal
     // hasn't been canceled yet.
     //
-    if (visit && it->postVisit)
+    if (visit && it->postVisit) {
         it->visitBinary(EvPostVisit, this);
+}
 }
 
 //
@@ -135,8 +144,9 @@ void TIntermUnary::traverse(TIntermTraverser *it)
 {
     bool visit = true;
 
-    if (it->preVisit)
+    if (it->preVisit) {
         visit = it->visitUnary(EvPreVisit, this);
+}
 
     if (visit) {
         it->incrementDepth(this);
@@ -144,8 +154,9 @@ void TIntermUnary::traverse(TIntermTraverser *it)
         it->decrementDepth();
     }
 
-    if (visit && it->postVisit)
+    if (visit && it->postVisit) {
         it->visitUnary(EvPostVisit, this);
+}
 }
 
 //
@@ -155,8 +166,9 @@ void TIntermAggregate::traverse(TIntermTraverser *it)
 {
     bool visit = true;
 
-    if (it->preVisit)
+    if (it->preVisit) {
         visit = it->visitAggregate(EvPreVisit, this);
+}
 
     if (visit) {
         it->incrementDepth(this);
@@ -165,9 +177,10 @@ void TIntermAggregate::traverse(TIntermTraverser *it)
             for (TIntermSequence::reverse_iterator sit = sequence.rbegin(); sit != sequence.rend(); sit++) {
                 (*sit)->traverse(it);
 
-                if (visit && it->inVisit) {
-                    if (*sit != sequence.front())
+                if ( it->inVisit) {
+                    if (*sit != sequence.front()) {
                         visit = it->visitAggregate(EvInVisit, this);
+}
                 }
             }
         } else {
@@ -175,8 +188,9 @@ void TIntermAggregate::traverse(TIntermTraverser *it)
                 (*sit)->traverse(it);
 
                 if (visit && it->inVisit) {
-                    if (*sit != sequence.back())
+                    if (*sit != sequence.back()) {
                         visit = it->visitAggregate(EvInVisit, this);
+}
                 }
             }
         }
@@ -184,8 +198,9 @@ void TIntermAggregate::traverse(TIntermTraverser *it)
         it->decrementDepth();
     }
 
-    if (visit && it->postVisit)
+    if (visit && it->postVisit) {
         it->visitAggregate(EvPostVisit, this);
+}
 }
 
 //
@@ -195,29 +210,35 @@ void TIntermSelection::traverse(TIntermTraverser *it)
 {
     bool visit = true;
 
-    if (it->preVisit)
+    if (it->preVisit) {
         visit = it->visitSelection(EvPreVisit, this);
+}
 
     if (visit) {
         it->incrementDepth(this);
         if (it->rightToLeft) {
-            if (falseBlock)
+            if (falseBlock) {
                 falseBlock->traverse(it);
-            if (trueBlock)
+}
+            if (trueBlock) {
                 trueBlock->traverse(it);
+}
             condition->traverse(it);
         } else {
             condition->traverse(it);
-            if (trueBlock)
+            if (trueBlock) {
                 trueBlock->traverse(it);
-            if (falseBlock)
+}
+            if (falseBlock) {
                 falseBlock->traverse(it);
+}
         }
         it->decrementDepth();
     }
 
-    if (visit && it->postVisit)
+    if (visit && it->postVisit) {
         it->visitSelection(EvPostVisit, this);
+}
 }
 
 //
@@ -227,37 +248,45 @@ void TIntermLoop::traverse(TIntermTraverser *it)
 {
     bool visit = true;
 
-    if (it->preVisit)
+    if (it->preVisit) {
         visit = it->visitLoop(EvPreVisit, this);
+}
 
     if (visit) {
         it->incrementDepth(this);
 
         if (it->rightToLeft) {
-            if (terminal)
+            if (terminal) {
                 terminal->traverse(it);
+}
 
-            if (body)
+            if (body) {
                 body->traverse(it);
+}
 
-            if (test)
+            if (test) {
                 test->traverse(it);
+}
         } else {
-            if (test)
+            if (test) {
                 test->traverse(it);
+}
 
-            if (body)
+            if (body) {
                 body->traverse(it);
+}
 
-            if (terminal)
+            if (terminal) {
                 terminal->traverse(it);
+}
         }
 
         it->decrementDepth();
     }
 
-    if (visit && it->postVisit)
+    if (visit && it->postVisit) {
         it->visitLoop(EvPostVisit, this);
+}
 }
 
 //
@@ -267,8 +296,9 @@ void TIntermBranch::traverse(TIntermTraverser *it)
 {
     bool visit = true;
 
-    if (it->preVisit)
+    if (it->preVisit) {
         visit = it->visitBranch(EvPreVisit, this);
+}
 
     if (visit && expression) {
         it->incrementDepth(this);
@@ -276,8 +306,9 @@ void TIntermBranch::traverse(TIntermTraverser *it)
         it->decrementDepth();
     }
 
-    if (visit && it->postVisit)
+    if (visit && it->postVisit) {
         it->visitBranch(EvPostVisit, this);
+}
 }
 
 //
@@ -287,8 +318,9 @@ void TIntermSwitch::traverse(TIntermTraverser* it)
 {
     bool visit = true;
 
-    if (it->preVisit)
+    if (it->preVisit) {
         visit = it->visitSwitch(EvPreVisit, this);
+}
 
     if (visit) {
         it->incrementDepth(this);
@@ -302,8 +334,9 @@ void TIntermSwitch::traverse(TIntermTraverser* it)
         it->decrementDepth();
     }
 
-    if (visit && it->postVisit)
+    if (visit && it->postVisit) {
         it->visitSwitch(EvPostVisit, this);
+}
 }
 
 } // end namespace glslang

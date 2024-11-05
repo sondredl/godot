@@ -209,7 +209,7 @@ namespace RVO3D {
 
 		if (distSq < rangeSq) {
 			if (agentNeighbors_.size() < maxNeighbors_) {
-				agentNeighbors_.push_back(std::make_pair(distSq, agent));
+				agentNeighbors_.emplace_back(distSq, agent);
 			}
 
 			size_t i = agentNeighbors_.size() - 1;

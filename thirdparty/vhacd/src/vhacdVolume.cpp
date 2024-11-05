@@ -1,15 +1,15 @@
 /* Copyright (c) 2011 Khaled Mamou (kmamou at gmail dot com)
  All rights reserved.
- 
- 
+
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
- 
+
  1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
- 
+
  2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
- 
+
  3. The names of the contributors may not be used to endorse or promote products derived from this software without specific prior written permission.
- 
+
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
@@ -20,10 +20,10 @@
 #include "btConvexHullComputer.h"
 #include "vhacdVolume.h"
 #include <algorithm>
-#include <float.h>
-#include <math.h>
+#include <cfloat>
+#include <cmath>
 #include <queue>
-#include <string.h>
+#include <cstring>
 
 #ifdef _MSC_VER
 #pragma warning(disable:4458 4100)
@@ -167,10 +167,12 @@ int32_t PlaneBoxOverlap(const Vec3<double>& normal,
             vmax[q] = -maxbox[q] - v;
         }
     }
-    if (normal * vmin > 0.0)
+    if (normal * vmin > 0.0) {
         return 0;
-    if (normal * vmax >= 0.0)
+}
+    if (normal * vmax >= 0.0) {
         return 1;
+}
     return 0;
 }
 
@@ -238,26 +240,30 @@ int32_t TriBoxOverlap(const Vec3<double>& boxcenter,
 
     /* test in X-direction */
     FINDMINMAX(v0[X], v1[X], v2[X], min, max);
-    if (min > boxhalfsize[X] || max < -boxhalfsize[X])
+    if (min > boxhalfsize[X] || max < -boxhalfsize[X]) {
         return 0;
+}
 
     /* test in Y-direction */
     FINDMINMAX(v0[Y], v1[Y], v2[Y], min, max);
-    if (min > boxhalfsize[Y] || max < -boxhalfsize[Y])
+    if (min > boxhalfsize[Y] || max < -boxhalfsize[Y]) {
         return 0;
+}
 
     /* test in Z-direction */
     FINDMINMAX(v0[Z], v1[Z], v2[Z], min, max);
-    if (min > boxhalfsize[Z] || max < -boxhalfsize[Z])
+    if (min > boxhalfsize[Z] || max < -boxhalfsize[Z]) {
         return 0;
+}
 
     /* Bullet 2: */
     /*  test if the box intersects the plane of the triangle */
     /*  compute plane equation of triangle: normal*x+d=0 */
     normal = e0 ^ e1;
 
-    if (!PlaneBoxOverlap(normal, v0, boxhalfsize))
+    if (!PlaneBoxOverlap(normal, v0, boxhalfsize)) {
         return 0;
+}
     return 1; /* box and triangle overlaps */
 }
 

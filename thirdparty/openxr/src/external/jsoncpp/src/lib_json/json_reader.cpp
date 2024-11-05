@@ -1048,8 +1048,9 @@ bool OurReader::parse(const char* beginDoc, const char* endDoc, Value& root,
 
 bool OurReader::readValue() {
   //  To preserve the old behaviour we cast size_t to int.
-  if (nodes_.size() > features_.stackLimit_)
+  if (nodes_.size() > features_.stackLimit_) {
     throwRuntimeError("Exceeded stackLimit in readValue().");
+}
   Token token;
   skipCommentTokens(token);
   bool successful = true;
@@ -1253,8 +1254,9 @@ bool OurReader::readToken(Token& token) {
     ok = false;
     break;
   }
-  if (!ok)
+  if (!ok) {
     token.type_ = tokenError;
+}
   token.end_ = current_;
   return ok;
 }
@@ -1262,10 +1264,11 @@ bool OurReader::readToken(Token& token) {
 void OurReader::skipSpaces() {
   while (current_ != end_) {
     Char c = *current_;
-    if (c == ' ' || c == '\t' || c == '\r' || c == '\n')
+    if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
       ++current_;
-    else
+    } else {
       break;
+}
   }
 }
 
@@ -1280,12 +1283,15 @@ void OurReader::skipBom(bool skipBom) {
 }
 
 bool OurReader::match(const Char* pattern, int patternLength) {
-  if (end_ - current_ < patternLength)
+  if (end_ - current_ < patternLength) {
     return false;
+}
   int index = patternLength;
-  while (index--)
-    if (current_[index] != pattern[index])
+  while (index--) {
+    if (current_[index] != pattern[index]) {
       return false;
+}
+}
   current_ += patternLength;
   return true;
 }
@@ -1304,8 +1310,9 @@ bool OurReader::readComment() {
     successful = readCppStyleComment();
   }
 
-  if (!successful)
+  if (!successful) {
     return false;
+}
 
   if (collectComments_) {
     CommentPlacement placement = commentBefore;
@@ -1332,9 +1339,10 @@ String OurReader::normalizeEOL(OurReader::Location begin,
   while (current != end) {
     char c = *current++;
     if (c == '\r') {
-      if (current != end && *current == '\n')
+      if (current != end && *current == '\n') {
         // convert dos EOL
         ++current;
+}
       // convert Mac EOL
       normalized += '\n';
     } else {
@@ -1361,10 +1369,12 @@ bool OurReader::readCStyleComment(bool* containsNewLineResult) {
 
   while ((current_ + 1) < end_) {
     Char c = getNextChar();
-    if (c == '*' && *current_ == '/')
+    if (c == '*' && *current_ == '/') {
       break;
-    if (c == '\n')
+}
+    if (c == '\n') {
       *containsNewLineResult = true;
+}
   }
 
   return getNextChar() == '/';
@@ -1373,12 +1383,14 @@ bool OurReader::readCStyleComment(bool* containsNewLineResult) {
 bool OurReader::readCppStyleComment() {
   while (current_ != end_) {
     Char c = getNextChar();
-    if (c == '\n')
+    if (c == '\n') {
       break;
+}
     if (c == '\r') {
       // Consume DOS EOL. It will be normalized in addComment.
-      if (current_ != end_ && *current_ == '\n')
+      if (current_ != end_ && *current_ == '\n') {
         getNextChar();
+}
       // Break on Moc OS 9 EOL.
       break;
     }
@@ -1394,21 +1406,25 @@ bool OurReader::readNumber(bool checkInf) {
   }
   char c = '0'; // stopgap for already consumed character
   // integral part
-  while (c >= '0' && c <= '9')
+  while (c >= '0' && c <= '9') {
     c = (current_ = p) < end_ ? *p++ : '\0';
+}
   // fractional part
   if (c == '.') {
     c = (current_ = p) < end_ ? *p++ : '\0';
-    while (c >= '0' && c <= '9')
+    while (c >= '0' && c <= '9') {
       c = (current_ = p) < end_ ? *p++ : '\0';
+}
   }
   // exponential part
   if (c == 'e' || c == 'E') {
     c = (current_ = p) < end_ ? *p++ : '\0';
-    if (c == '+' || c == '-')
+    if (c == '+' || c == '-') {
       c = (current_ = p) < end_ ? *p++ : '\0';
-    while (c >= '0' && c <= '9')
+}
+    while (c >= '0' && c <= '9') {
       c = (current_ = p) < end_ ? *p++ : '\0';
+}
   }
   return true;
 }
@@ -1416,10 +1432,11 @@ bool OurReader::readString() {
   Char c = 0;
   while (current_ != end_) {
     c = getNextChar();
-    if (c == '\\')
+    if (c == '\\') {
       getNextChar();
-    else if (c == '"')
+    } else if (c == '"') {
       break;
+}
   }
   return c == '"';
 }
@@ -1428,10 +1445,11 @@ bool OurReader::readStringSingleQuote() {
   Char c = 0;
   while (current_ != end_) {
     c = getNextChar();
-    if (c == '\\')
+    if (c == '\\') {
       getNextChar();
-    else if (c == '\'')
+    } else if (c == '\'') {
       break;
+}
   }
   return c == '\'';
 }
@@ -1444,28 +1462,34 @@ bool OurReader::readObject(Token& token) {
   currentValue().setOffsetStart(token.start_ - begin_);
   while (readToken(tokenName)) {
     bool initialTokenOk = true;
-    while (tokenName.type_ == tokenComment && initialTokenOk)
+    while (tokenName.type_ == tokenComment && initialTokenOk) {
       initialTokenOk = readToken(tokenName);
-    if (!initialTokenOk)
+}
+    if (!initialTokenOk) {
       break;
+}
     if (tokenName.type_ == tokenObjectEnd &&
         (name.empty() ||
-         features_.allowTrailingCommas_)) // empty object or trailing comma
+         features_.allowTrailingCommas_)) { // empty object or trailing comma
       return true;
+}
     name.clear();
     if (tokenName.type_ == tokenString) {
-      if (!decodeString(tokenName, name))
+      if (!decodeString(tokenName, name)) {
         return recoverFromError(tokenObjectEnd);
+}
     } else if (tokenName.type_ == tokenNumber && features_.allowNumericKeys_) {
       Value numberName;
-      if (!decodeNumber(tokenName, numberName))
+      if (!decodeNumber(tokenName, numberName)) {
         return recoverFromError(tokenObjectEnd);
+}
       name = numberName.asString();
     } else {
       break;
     }
-    if (name.length() >= (1U << 30))
+    if (name.length() >= (1U << 30)) {
       throwRuntimeError("keylength >= 2^30");
+}
     if (features_.rejectDupKeys_ && currentValue().isMember(name)) {
       String msg = "Duplicate key: '" + name + "'";
       return addErrorAndRecover(msg, tokenName, tokenObjectEnd);
@@ -1480,8 +1504,9 @@ bool OurReader::readObject(Token& token) {
     nodes_.push(&value);
     bool ok = readValue();
     nodes_.pop();
-    if (!ok) // error already set
+    if (!ok) { // error already set
       return recoverFromError(tokenObjectEnd);
+}
 
     Token comma;
     if (!readToken(comma) ||
@@ -1491,10 +1516,12 @@ bool OurReader::readObject(Token& token) {
                                 comma, tokenObjectEnd);
     }
     bool finalizeTokenOk = true;
-    while (comma.type_ == tokenComment && finalizeTokenOk)
+    while (comma.type_ == tokenComment && finalizeTokenOk) {
       finalizeTokenOk = readToken(comma);
-    if (comma.type_ == tokenObjectEnd)
+}
+    if (comma.type_ == tokenObjectEnd) {
       return true;
+}
   }
   return addErrorAndRecover("Missing '}' or object member name", tokenName,
                             tokenObjectEnd);
@@ -1521,8 +1548,9 @@ bool OurReader::readArray(Token& token) {
     nodes_.push(&value);
     bool ok = readValue();
     nodes_.pop();
-    if (!ok) // error already set
+    if (!ok) { // error already set
       return recoverFromError(tokenArrayEnd);
+}
 
     Token currentToken;
     // Accept Comment after last item in the array.
@@ -1536,20 +1564,16 @@ bool OurReader::readArray(Token& token) {
       return addErrorAndRecover("Missing ',' or ']' in array declaration",
                                 currentToken, tokenArrayEnd);
     }
-    if (currentToken.type_ == tokenArrayEnd)
+    if (currentToken.type_ == tokenArrayEnd) {
       break;
+}
   }
   return true;
 }
 
 bool OurReader::decodeNumber(Token& token) {
   Value decoded;
-  if (!decodeNumber(token, decoded))
-    return false;
-  currentValue().swapPayload(decoded);
-  currentValue().setOffsetStart(token.start_ - begin_);
-  currentValue().setOffsetLimit(token.end_ - begin_);
-  return true;
+  return !!decodeNumber(token, decoded);
 }
 
 bool OurReader::decodeNumber(Token& token, Value& decoded) {
@@ -1634,12 +1658,7 @@ bool OurReader::decodeNumber(Token& token, Value& decoded) {
 
 bool OurReader::decodeDouble(Token& token) {
   Value decoded;
-  if (!decodeDouble(token, decoded))
-    return false;
-  currentValue().swapPayload(decoded);
-  currentValue().setOffsetStart(token.start_ - begin_);
-  currentValue().setOffsetLimit(token.end_ - begin_);
-  return true;
+  return !!decodeDouble(token, decoded);
 }
 
 bool OurReader::decodeDouble(Token& token, Value& decoded) {
@@ -1656,8 +1675,9 @@ bool OurReader::decodeDouble(Token& token, Value& decoded) {
 
 bool OurReader::decodeString(Token& token) {
   String decoded_string;
-  if (!decodeString(token, decoded_string))
+  if (!decodeString(token, decoded_string)) {
     return false;
+}
   Value decoded(decoded_string);
   currentValue().swapPayload(decoded);
   currentValue().setOffsetStart(token.start_ - begin_);
@@ -1671,8 +1691,9 @@ bool OurReader::decodeString(Token& token, String& decoded) {
   Location end = token.end_ - 1;       // do not include '"'
   while (current != end) {
     Char c = *current++;
-    if (c == '"')
+    if (c == '"') {
       break;
+}
     if (c == '\\') {
       if (current == end)
         return addError("Empty escape sequence in string", token, current);
@@ -1704,8 +1725,9 @@ bool OurReader::decodeString(Token& token, String& decoded) {
         break;
       case 'u': {
         unsigned int unicode;
-        if (!decodeUnicodeCodePoint(token, current, end, unicode))
+        if (!decodeUnicodeCodePoint(token, current, end, unicode)) {
           return false;
+}
         decoded += codePointToUTF8(unicode);
       } break;
       default:
@@ -1721,8 +1743,9 @@ bool OurReader::decodeString(Token& token, String& decoded) {
 bool OurReader::decodeUnicodeCodePoint(Token& token, Location& current,
                                        Location end, unsigned int& unicode) {
 
-  if (!decodeUnicodeEscapeSequence(token, current, end, unicode))
+  if (!decodeUnicodeEscapeSequence(token, current, end, unicode)) {
     return false;
+}
   if (unicode >= 0xD800 && unicode <= 0xDBFF) {
     // surrogate pairs
     if (end - current < 6)
@@ -1733,10 +1756,12 @@ bool OurReader::decodeUnicodeCodePoint(Token& token, Location& current,
       unsigned int surrogatePair;
       if (decodeUnicodeEscapeSequence(token, current, end, surrogatePair)) {
         unicode = 0x10000 + ((unicode & 0x3FF) << 10) + (surrogatePair & 0x3FF);
-      } else
+      } else {
         return false;
-    } else
-      return addError("expecting another \\u token to begin the second half of "
+}
+    } else {
+      r
+}eturn addError("expecting another \\u token to begin the second half of "
                       "a unicode surrogate pair",
                       token, current);
   }
@@ -1754,14 +1779,15 @@ bool OurReader::decodeUnicodeEscapeSequence(Token& token, Location& current,
   for (int index = 0; index < 4; ++index) {
     Char c = *current++;
     unicode *= 16;
-    if (c >= '0' && c <= '9')
+    if (c >= '0' && c <= '9') {
       unicode += c - '0';
-    else if (c >= 'a' && c <= 'f')
+    } else if (c >= 'a' && c <= 'f') {
       unicode += c - 'a' + 10;
-    else if (c >= 'A' && c <= 'F')
+    } else if (c >= 'A' && c <= 'F') {
       unicode += c - 'A' + 10;
-    else
-      return addError(
+    } else {
+      r
+}eturn addError(
           "Bad unicode escape sequence in string: hexadecimal digit expected.",
           token, current);
   }
@@ -1784,8 +1810,9 @@ bool OurReader::recoverFromError(TokenType skipUntilToken) {
   for (;;) {
     if (!readToken(skip))
       errors_.resize(errorCount); // discard errors caused by recovery
-    if (skip.type_ == skipUntilToken || skip.type_ == tokenEndOfStream)
+    if (skip.type_ == skipUntilToken || skip.type_ == tokenEndOfStream) {
       break;
+}
   }
   errors_.resize(errorCount);
   return false;
@@ -1800,8 +1827,9 @@ bool OurReader::addErrorAndRecover(const String& message, Token& token,
 Value& OurReader::currentValue() { return *(nodes_.top()); }
 
 OurReader::Char OurReader::getNextChar() {
-  if (current_ == end_)
+  if (current_ == end_) {
     return 0;
+}
   return *current_++;
 }
 
@@ -1813,8 +1841,9 @@ void OurReader::getLocationLineAndColumn(Location location, int& line,
   while (current < location && current != end_) {
     Char c = *current++;
     if (c == '\r') {
-      if (*current == '\n')
+      if (*current == '\n') {
         ++current;
+}
       lastLineStart = current;
       ++line;
     } else if (c == '\n') {

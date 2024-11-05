@@ -131,7 +131,7 @@ namespace basisu
 	uint32_t pvrtc4_swizzle_uv(uint32_t width, uint32_t height, uint32_t x, uint32_t y)
 	{
 		assert((x < width) && (y < height) && basisu::is_pow2(height) && basisu::is_pow2(width));
-				
+
 		uint32_t min_d = width, max_v = y;
 		if (height < width)
 		{
@@ -143,12 +143,14 @@ namespace basisu
 		uint32_t shift_ofs = 0, swizzled = 0;
 		for (uint32_t s_bit = 1, d_bit = 1; s_bit < min_d; s_bit <<= 1, d_bit <<= 2, ++shift_ofs)
 		{
-			if (y & s_bit) swizzled |= d_bit;
-			if (x & s_bit) swizzled |= (2 * d_bit);
+			if (y & s_bit) { swizzled |= d_bit;
+}
+			if (x & s_bit) { swizzled |= (2 * d_bit);
+}
 		}
 
 		max_v >>= shift_ofs;
-		
+
 		// OR in the rest of the bits from the largest dimension
 		swizzled |= (max_v << (2 * shift_ofs));
 
@@ -169,7 +171,7 @@ namespace basisu
 				r = (packed >> 10) & 31;
 				g = (packed >> 5) & 31;
 				b = (packed >> 1) & 15;
-					
+
 				if (unpack)
 				{
 					b = (b << 1) | (b >> 3);
@@ -198,7 +200,7 @@ namespace basisu
 				{
 					a = (a << 1);
 					a = (a << 4) | a;
-						
+
 					r = (r << 1) | (r >> 3);
 					g = (g << 1) | (g >> 3);
 					b = (b << 2) | (b >> 1);
@@ -272,7 +274,7 @@ namespace basisu
 				b = (packed >> 1) & 7;
 
 				a = a << 1;
-						
+
 				r = (r << 1) | (r >> 3);
 				g = (g << 1) | (g >> 3);
 				b = (b << 2) | (b >> 1);
@@ -285,13 +287,13 @@ namespace basisu
 				b = packed & 15;
 
 				a = a << 1;
-						
+
 				r = (r << 1) | (r >> 3);
 				g = (g << 1) | (g >> 3);
 				b = (b << 1) | (b >> 3);
 			}
 		}
-						
+
 		assert((r < 32) && (g < 32) && (b < 32) && (a < 16));
 
 		return color_rgba(r, g, b, a);
@@ -305,12 +307,12 @@ namespace basisu
 		int block_x1 = block_x0 + 1;
 		int block_y0 = (static_cast<int>(y) - 2) >> 2;
 		int block_y1 = block_y0 + 1;
-		
+
 		block_x0 = posmod(block_x0, m_block_width);
 		block_x1 = posmod(block_x1, m_block_width);
 		block_y0 = posmod(block_y0, m_block_height);
 		block_y1 = posmod(block_y1, m_block_height);
-		
+
 		pColors[0] = interpolate(x, y, m_blocks(block_x0, block_y0).get_endpoint_5554(0), m_blocks(block_x1, block_y0).get_endpoint_5554(0), m_blocks(block_x0, block_y1).get_endpoint_5554(0), m_blocks(block_x1, block_y1).get_endpoint_5554(0));
 		pColors[3] = interpolate(x, y, m_blocks(block_x0, block_y0).get_endpoint_5554(1), m_blocks(block_x1, block_y0).get_endpoint_5554(1), m_blocks(block_x0, block_y1).get_endpoint_5554(1), m_blocks(block_x1, block_y1).get_endpoint_5554(1));
 
@@ -334,7 +336,7 @@ namespace basisu
 
 		return false;
 	}
-		
+
 	color_rgba pvrtc4_image::get_pixel(uint32_t x, uint32_t y, uint32_t m) const
 	{
 		assert((x < m_width) && (y < m_height));
@@ -343,18 +345,19 @@ namespace basisu
 		int block_x1 = block_x0 + 1;
 		int block_y0 = (static_cast<int>(y) - 2) >> 2;
 		int block_y1 = block_y0 + 1;
-		
+
 		block_x0 = posmod(block_x0, m_block_width);
 		block_x1 = posmod(block_x1, m_block_width);
 		block_y0 = posmod(block_y0, m_block_height);
 		block_y1 = posmod(block_y1, m_block_height);
-		
+
 		if (get_block_uses_transparent_modulation(x >> 2, y >> 2))
 		{
-			if (m == 0)
+			if (m == 0) {
 				return interpolate(x, y, m_blocks(block_x0, block_y0).get_endpoint_5554(0), m_blocks(block_x1, block_y0).get_endpoint_5554(0), m_blocks(block_x0, block_y1).get_endpoint_5554(0), m_blocks(block_x1, block_y1).get_endpoint_5554(0));
-			else if (m == 3)
+			} else if (m == 3) {
 				return interpolate(x, y, m_blocks(block_x0, block_y0).get_endpoint_5554(1), m_blocks(block_x1, block_y0).get_endpoint_5554(1), m_blocks(block_x0, block_y1).get_endpoint_5554(1), m_blocks(block_x1, block_y1).get_endpoint_5554(1));
+}
 
 			color_rgba l(interpolate(x, y, m_blocks(block_x0, block_y0).get_endpoint_5554(0), m_blocks(block_x1, block_y0).get_endpoint_5554(0), m_blocks(block_x0, block_y1).get_endpoint_5554(0), m_blocks(block_x1, block_y1).get_endpoint_5554(0)));
 			color_rgba h(interpolate(x, y, m_blocks(block_x0, block_y0).get_endpoint_5554(1), m_blocks(block_x1, block_y0).get_endpoint_5554(1), m_blocks(block_x0, block_y1).get_endpoint_5554(1), m_blocks(block_x1, block_y1).get_endpoint_5554(1)));
@@ -363,26 +366,29 @@ namespace basisu
 		}
 		else
 		{
-			if (m == 0)
+			if (m == 0) {
 				return interpolate(x, y, m_blocks(block_x0, block_y0).get_endpoint_5554(0), m_blocks(block_x1, block_y0).get_endpoint_5554(0), m_blocks(block_x0, block_y1).get_endpoint_5554(0), m_blocks(block_x1, block_y1).get_endpoint_5554(0));
-			else if (m == 3)
+			} else if (m == 3) {
 				return interpolate(x, y, m_blocks(block_x0, block_y0).get_endpoint_5554(1), m_blocks(block_x1, block_y0).get_endpoint_5554(1), m_blocks(block_x0, block_y1).get_endpoint_5554(1), m_blocks(block_x1, block_y1).get_endpoint_5554(1));
+}
 
 			color_rgba l(interpolate(x, y, m_blocks(block_x0, block_y0).get_endpoint_5554(0), m_blocks(block_x1, block_y0).get_endpoint_5554(0), m_blocks(block_x0, block_y1).get_endpoint_5554(0), m_blocks(block_x1, block_y1).get_endpoint_5554(0)));
 			color_rgba h(interpolate(x, y, m_blocks(block_x0, block_y0).get_endpoint_5554(1), m_blocks(block_x1, block_y0).get_endpoint_5554(1), m_blocks(block_x0, block_y1).get_endpoint_5554(1), m_blocks(block_x1, block_y1).get_endpoint_5554(1)));
 
-			if (m == 2)
+			if (m == 2) {
 				return color_rgba((l[0] * 3 + h[0] * 5) / 8, (l[1] * 3 + h[1] * 5) / 8, (l[2] * 3 + h[2] * 5) / 8, (l[3] * 3 + h[3] * 5) / 8);
-			else
+			} else {
 				return color_rgba((l[0] * 5 + h[0] * 3) / 8, (l[1] * 5 + h[1] * 3) / 8, (l[2] * 5 + h[2] * 3) / 8, (l[3] * 5 + h[3] * 3) / 8);
+}
 		}
 	}
 
 	uint64_t pvrtc4_image::local_endpoint_optimization_opaque(uint32_t bx, uint32_t by, const image& orig_img, bool perceptual)
 	{
 		uint64_t initial_error = evaluate_1x1_endpoint_error(bx, by, orig_img, perceptual, false);
-		if (!initial_error)
+		if (!initial_error) {
 			return initial_error;
+}
 
 		vec3F c_avg_orig(0);
 
@@ -450,8 +456,9 @@ namespace basisu
 				}
 			}
 
-			if (!total_weight[0] || !total_weight[1])
+			if (!total_weight[0] || !total_weight[1]) {
 				success = false;
+}
 
 			quant_colors[0] = new_colors[0] / (float)total_weight[0];
 			quant_colors[1] = new_colors[1] / (float)total_weight[1];
@@ -471,7 +478,7 @@ namespace basisu
 		color_rgba color_1((int)colors[1][0], (int)colors[1][1], (int)colors[1][2], 0);
 
 		pvrtc4_block cur_blocks[3][3];
-		
+
 		for (int y = -1; y <= 1; y++)
 		{
 			for (int x = -1; x <= 1; x++)

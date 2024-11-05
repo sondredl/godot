@@ -35,8 +35,8 @@
  * without needing additional storage.
  */
 
-#include <stdio.h>
-#include <assert.h>
+#include <cstdio>
+#include <cassert>
 
 #include "astcenc_internal.h"
 
@@ -1239,8 +1239,7 @@ static void quantize_hdr_rgbo(
 		    quant_level, static_cast<uint8_t>(encvals[i]), output[i]);
 	}
 
-	return;
-}
+	}
 
 /**
  * @brief Quantize a HDR RGB color using direct RGB encoding.
@@ -1605,8 +1604,7 @@ static void quantize_hdr_rgb(
 		    quant_level, static_cast<uint8_t>(idx), output[i]);
 	}
 
-	return;
-}
+	}
 
 /**
  * @brief Quantize a HDR RGB + LDR A color using direct RGBA encoding.
@@ -1883,8 +1881,6 @@ static void quantize_hdr_alpha(
 
 	output[0] = quant_color(quant_level, v6);
 	output[1] = quant_color(quant_level, v7);
-
-	return;
 }
 
 /**

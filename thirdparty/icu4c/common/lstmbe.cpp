@@ -82,7 +82,7 @@ public:
 
     ConstArray1D(const float* data, int32_t d1) : data_(data), d1_(d1) {}
 
-    virtual ~ConstArray1D();
+    ~ConstArray1D() override;
 
     // Init the object, the object does not own the data nor copy.
     // It is designed to directly use data from memory mapped resources.
@@ -93,8 +93,8 @@ public:
     }
 
     // ReadArray1D methods.
-    virtual int32_t d1() const override { return d1_; }
-    virtual float get(int32_t i) const override {
+    int32_t d1() const override { return d1_; }
+    float get(int32_t i) const override {
         U_ASSERT(i < d1_);
         return data_[i];
     }
@@ -119,7 +119,7 @@ public:
     ConstArray2D(const float* data, int32_t d1, int32_t d2)
         : data_(data), d1_(d1), d2_(d2) {}
 
-    virtual ~ConstArray2D();
+    ~ConstArray2D() override;
 
     // Init the object, the object does not own the data nor copy.
     // It is designed to directly use data from memory mapped resources.
@@ -174,7 +174,7 @@ public:
         }
     }
 
-    virtual ~Array1D();
+    ~Array1D() override;
 
     // A special constructor which does not own the memory but writeable
     // as a slice of an array.
@@ -182,8 +182,8 @@ public:
         : memory_(nullptr), data_(data), d1_(d1) {}
 
     // ReadArray1D methods.
-    virtual int32_t d1() const override { return d1_; }
-    virtual float get(int32_t i) const override {
+    int32_t d1() const override { return d1_; }
+    float get(int32_t i) const override {
         U_ASSERT(i < d1_);
         return data_[i];
     }
@@ -310,12 +310,12 @@ public:
             clear();
         }
     }
-    virtual ~Array2D();
+    ~Array2D() override;
 
     // ReadArray2D methods.
-    virtual int32_t d1() const override { return d1_; }
-    virtual int32_t d2() const override { return d2_; }
-    virtual float get(int32_t i, int32_t j) const override {
+    int32_t d1() const override { return d1_; }
+    int32_t d2() const override { return d2_; }
+    float get(int32_t i, int32_t j) const override {
         U_ASSERT(i < d1_);
         U_ASSERT(j < d2_);
         return data_[i * d2_ + j];
@@ -392,10 +392,12 @@ LSTMData::LSTMData(UResourceBundle* rb, UErrorCode &status)
     int32_t embedding_size = ures_getInt(embeddings_res.getAlias(), &status);
     LocalUResourceBundlePointer hunits_res(
         ures_getByKey(rb, "hunits", nullptr, &status));
-    if (U_FAILURE(status)) return;
+    if (U_FAILURE(status)) { return;
+}
     int32_t hunits = ures_getInt(hunits_res.getAlias(), &status);
     const char16_t* type = ures_getStringByKey(rb, "type", nullptr, &status);
-    if (U_FAILURE(status)) return;
+    if (U_FAILURE(status)) { return;
+}
     if (u_strCompare(type, -1, u"codepoints", -1, false) == 0) {
         fType = CODE_POINTS;
     } else if (u_strCompare(type, -1, u"graphclust", -1, false) == 0) {
@@ -403,7 +405,8 @@ LSTMData::LSTMData(UResourceBundle* rb, UErrorCode &status)
     }
     fName = ures_getStringByKey(rb, "model", nullptr, &status);
     LocalUResourceBundlePointer dataRes(ures_getByKey(rb, "data", nullptr, &status));
-    if (U_FAILURE(status)) return;
+    if (U_FAILURE(status)) { return;
+}
     int32_t data_len = 0;
     const int32_t* data = ures_getIntVector(dataRes.getAlias(), &data_len, &status);
     fDict = uhash_open(uhash_hashUChars, uhash_compareUChars, nullptr, &status);
@@ -421,7 +424,8 @@ LSTMData::LSTMData(UResourceBundle* rb, UErrorCode &status)
         stringArray.getValue(idx, value);
         const char16_t* str = value.getString(stringLength, status);
         uhash_putiAllowZero(fDict, (void*)str, idx, &status);
-        if (U_FAILURE(status)) return;
+        if (U_FAILURE(status)) { return;
+}
 #ifdef LSTM_VECTORIZER_DEBUG
         printf("Assign [");
         while (*str != 0x0000) {
@@ -505,8 +509,8 @@ Vectorizer::~Vectorizer()
 class CodePointsVectorizer : public Vectorizer {
 public:
     CodePointsVectorizer(UHashtable* dict) : Vectorizer(dict) {}
-    virtual ~CodePointsVectorizer();
-    virtual void vectorize(UText *text, int32_t startPos, int32_t endPos,
+    ~CodePointsVectorizer() override;
+    void vectorize(UText *text, int32_t startPos, int32_t endPos,
                            UVector32 &offsets, UVector32 &indices,
                            UErrorCode &status) const override;
 };
@@ -521,7 +525,8 @@ void CodePointsVectorizer::vectorize(
 {
     if (offsets.ensureCapacity(endPos - startPos, status) &&
             indices.ensureCapacity(endPos - startPos, status)) {
-        if (U_FAILURE(status)) return;
+        if (U_FAILURE(status)) { return;
+}
         utext_setNativeIndex(text, startPos);
         int32_t current;
         char16_t str[2] = {0, 0};
@@ -544,8 +549,8 @@ public:
         : Vectorizer(dict)
     {
     }
-    virtual ~GraphemeClusterVectorizer();
-    virtual void vectorize(UText *text, int32_t startPos, int32_t endPos,
+    ~GraphemeClusterVectorizer() override;
+    void vectorize(UText *text, int32_t startPos, int32_t endPos,
                            UVector32 &offsets, UVector32 &indices,
                            UErrorCode &status) const override;
 };
@@ -560,16 +565,20 @@ void GraphemeClusterVectorizer::vectorize(
     UText *text, int32_t startPos, int32_t endPos,
     UVector32 &offsets, UVector32 &indices, UErrorCode &status) const
 {
-    if (U_FAILURE(status)) return;
+    if (U_FAILURE(status)) { return;
+}
     if (!offsets.ensureCapacity(endPos - startPos, status) ||
             !indices.ensureCapacity(endPos - startPos, status)) {
         return;
     }
-    if (U_FAILURE(status)) return;
+    if (U_FAILURE(status)) { return;
+}
     LocalPointer<BreakIterator> graphemeIter(BreakIterator::createCharacterInstance(Locale(), status));
-    if (U_FAILURE(status)) return;
+    if (U_FAILURE(status)) { return;
+}
     graphemeIter->setText(text, status);
-    if (U_FAILURE(status)) return;
+    if (U_FAILURE(status)) { return;
+}
 
     if (startPos != 0) {
         graphemeIter->preceding(startPos);
@@ -583,10 +592,12 @@ void GraphemeClusterVectorizer::vectorize(
         }
         if (current > startPos) {
             utext_extract(text, last, current, str, MAX_GRAPHEME_CLSTER_LENGTH, &status);
-            if (U_FAILURE(status)) return;
+            if (U_FAILURE(status)) { return;
+}
             offsets.addElement(last, status);
             indices.addElement(stringToIndex(str), status);
-            if (U_FAILURE(status)) return;
+            if (U_FAILURE(status)) { return;
+}
         }
         last = current;
     }
@@ -641,7 +652,8 @@ LSTMBreakEngine::divideUpDictionaryRange( UText *text,
                                                 UVector32 &foundBreaks,
                                                 UBool /* isPhraseBreaking */,
                                                 UErrorCode& status) const {
-    if (U_FAILURE(status)) return 0;
+    if (U_FAILURE(status)) { return 0;
+}
     int32_t beginFoundBreakSize = foundBreaks.size();
     utext_setNativeIndex(text, startPos);
     utext_moveIndex32(text, MIN_WORD_SPAN);
@@ -652,9 +664,11 @@ LSTMBreakEngine::divideUpDictionaryRange( UText *text,
 
     UVector32 offsets(status);
     UVector32 indices(status);
-    if (U_FAILURE(status)) return 0;
+    if (U_FAILURE(status)) { return 0;
+}
     fVectorizer->vectorize(text, startPos, endPos, offsets, indices, status);
-    if (U_FAILURE(status)) return 0;
+    if (U_FAILURE(status)) { return 0;
+}
     int32_t* offsetsBuf = offsets.getBuffer();
     int32_t* indicesBuf = indices.getBuffer();
 
@@ -677,7 +691,8 @@ LSTMBreakEngine::divideUpDictionaryRange( UText *text,
     Array1D fbRow(2 * hunits, status);
 
     // ----- End of all the Array memory allocation needed for this function
-    if (U_FAILURE(status)) return 0;
+    if (U_FAILURE(status)) { return 0;
+}
 
     // To save the needed memory usage, the following is different from the
     // Python or ICU4X implementation. We first perform the Backward LSTM
@@ -738,7 +753,8 @@ LSTMBreakEngine::divideUpDictionaryRange( UText *text,
         if (current == BEGIN || current == SINGLE) {
             if (i != 0) {
                 foundBreaks.addElement(offsetsBuf[i], status);
-                if (U_FAILURE(status)) return 0;
+                if (U_FAILURE(status)) { return 0;
+}
             }
         }
     }
@@ -763,7 +779,7 @@ Vectorizer* createVectorizer(const LSTMData* data, UErrorCode &status) {
 }
 
 LSTMBreakEngine::LSTMBreakEngine(const LSTMData* data, const UnicodeSet& set, UErrorCode &status)
-    : DictionaryBreakEngine(), fData(data), fVectorizer(createVectorizer(fData, status))
+    :  fData(data), fVectorizer(createVectorizer(fData, status))
 {
     if (U_FAILURE(status)) {
       fData = nullptr;  // If failure, we should not delete fData in destructor because the caller will do so.
@@ -796,13 +812,15 @@ U_CAPI const LSTMData* U_EXPORT2 CreateLSTMDataForScript(UScriptCode script, UEr
         return nullptr;
     }
     UnicodeString name = defaultLSTM(script, status);
-    if (U_FAILURE(status)) return nullptr;
+    if (U_FAILURE(status)) { return nullptr;
+}
     CharString namebuf;
     namebuf.appendInvariantChars(name, status).truncate(namebuf.lastIndexOf('.'));
 
     LocalUResourceBundlePointer rb(
         ures_openDirect(U_ICUDATA_BRKITR, namebuf.data(), &status));
-    if (U_FAILURE(status)) return nullptr;
+    if (U_FAILURE(status)) { return nullptr;
+}
 
     return CreateLSTMData(rb.orphan(), status);
 }

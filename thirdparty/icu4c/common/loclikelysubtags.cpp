@@ -36,7 +36,7 @@ constexpr char PSEUDO_CRACKED_PREFIX = ',';  // -XC, -PSCRACK
 
 }  // namespace
 
-LocaleDistanceData::LocaleDistanceData(LocaleDistanceData &&data) :
+LocaleDistanceData::LocaleDistanceData(LocaleDistanceData &&data)  noexcept :
         distanceTrieBytes(data.distanceTrieBytes),
         regionToPartitions(data.regionToPartitions),
         partitions(data.partitions),

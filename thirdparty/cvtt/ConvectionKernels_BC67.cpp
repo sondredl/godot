@@ -855,16 +855,18 @@ namespace cvtt
 
             void Init()
             {
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 4; i++) {
                     m_vector[i] = 0;
+}
 
                 m_offset = 0;
             }
 
             void InitPacked(const uint32_t *v, int bits)
             {
-                for (int b = 0; b < bits; b += 32)
+                for (int b = 0; b < bits; b += 32) {
                     m_vector[b / 32] = v[b / 32];
+}
 
                 m_offset = bits;
             }
@@ -877,8 +879,9 @@ namespace cvtt
                 m_vector[vOffset] |= (static_cast<uint32_t>(value) << bitOffset) & static_cast<uint32_t>(0xffffffff);
 
                 int overflowBits = bitOffset + bits - 32;
-                if (overflowBits > 0)
+                if (overflowBits > 0) {
                     m_vector[vOffset + 1] |= (static_cast<uint32_t>(value) >> (bits - overflowBits));
+}
 
                 m_offset += bits;
             }
@@ -890,8 +893,9 @@ namespace cvtt
                 for (int v = 0; v < 4; v++)
                 {
                     uint32_t chunk = m_vector[v];
-                    for (int b = 0; b < 4; b++)
+                    for (int b = 0; b < 4; b++) {
                         output[v * 4 + b] = static_cast<uint8_t>((chunk >> (b * 8)) & 0xff);
+}
                 }
             }
         };
@@ -903,23 +907,27 @@ namespace cvtt
 
             void Init(const uint8_t *bytes)
             {
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 4; i++) {
                     m_vector[i] = 0;
+}
 
-                for (int b = 0; b < 16; b++)
+                for (int b = 0; b < 16; b++) {
                     m_vector[b / 4] |= (bytes[b] << ((b % 4) * 8));
+}
             }
 
             inline void UnpackStart(uint32_t *v, int bits)
             {
-                for (int b = 0; b < bits; b += 32)
+                for (int b = 0; b < bits; b += 32) {
                     v[b / 32] = m_vector[b / 32];
+}
 
                 int entriesShifted = bits / 32;
                 int carry = bits % 32;
 
-                for (int i = entriesShifted; i < 4; i++)
+                for (int i = entriesShifted; i < 4; i++) {
                     m_vector[i - entriesShifted] = m_vector[i];
+}
 
                 int entriesRemaining = 4 - entriesShifted;
                 if (carry)
@@ -928,8 +936,9 @@ namespace cvtt
                     for (int i = 0; i < entriesRemaining; i++)
                     {
                         m_vector[i] >>= carry;
-                        if (i != entriesRemaining - 1)
+                        if (i != entriesRemaining - 1) {
                             m_vector[i] |= (m_vector[i + 1] & bitMask) << (32 - carry);
+}
                     }
                 }
             }
@@ -943,8 +952,9 @@ namespace cvtt
                 for (int i = 0; i < 4; i++)
                 {
                     m_vector[i] >>= bits;
-                    if (i != 3)
+                    if (i != 3) {
                         m_vector[i] |= (m_vector[i + 1] & bitMask) << (32 - bits);
+}
                 }
 
                 return result;
@@ -958,8 +968,9 @@ namespace cvtt
                 ParallelMath::Float offset = ParallelMath::Select(ParallelMath::Less(v, ParallelMath::MakeFloatZero()), ParallelMath::MakeFloat(-30.0f), ParallelMath::MakeFloat(30.0f));
                 return (v * 32.0f + offset) / 31.0f;
             }
-            else
+            else {
                 return (v * 64.0f + 30.0f) / 31.0f;
+}
         }
 
         ParallelMath::SInt16 UnscaleHDRValueSigned(const ParallelMath::SInt16 &v)
@@ -991,10 +1002,11 @@ namespace cvtt
             {
                 for (int ch = 0; ch < 3; ch++)
                 {
-                    if (isSigned)
+                    if (isSigned) {
                         outEP[epi][ch] = ParallelMath::LosslessCast<ParallelMath::AInt16>::Cast(UnscaleHDRValueSigned(ParallelMath::LosslessCast<ParallelMath::SInt16>::Cast(inEP[epi][ch])));
-                    else
+                    } else {
                         outEP[epi][ch] = ParallelMath::LosslessCast<ParallelMath::AInt16>::Cast(UnscaleHDRValueUnsigned(ParallelMath::LosslessCast<ParallelMath::UInt16>::Cast(inEP[epi][ch])));
+}
                 }
             }
         }
@@ -1027,17 +1039,19 @@ void cvtt::Internal::BC7Computer::TweakAlpha(const MUInt15 original[2], int twea
 
 void cvtt::Internal::BC7Computer::Quantize(MUInt15* color, int bits, int channels)
 {
-    for (int ch = 0; ch < channels; ch++)
+    for (int ch = 0; ch < channels; ch++) {
         color[ch] = ParallelMath::RightShift(((color[ch] << bits) - color[ch]) + ParallelMath::MakeUInt15(127 + (1 << (7 - bits))), 8);
+}
 }
 
 void cvtt::Internal::BC7Computer::QuantizeP(MUInt15* color, int bits, uint16_t p, int channels)
 {
     int16_t addend;
-    if (p)
+    if (p) {
         addend = ((1 << (8 - bits)) - 1);
-    else
+    } else {
         addend = 255;
+}
 
     for (int ch = 0; ch < channels; ch++)
     {
@@ -1123,8 +1137,9 @@ void cvtt::Internal::BC7Computer::CompressEndpoints5(MUInt15 epRGB[2][3], MUInt1
 
 void cvtt::Internal::BC7Computer::CompressEndpoints6(MUInt15 ep[2][4], uint16_t p[2])
 {
-    for (int j = 0; j < 2; j++)
+    for (int j = 0; j < 2; j++) {
         QuantizeP(ep[j], 7, p[j], 4);
+}
 }
 
 void cvtt::Internal::BC7Computer::CompressEndpoints7(MUInt15 ep[2][4], uint16_t p[2])
@@ -1141,8 +1156,9 @@ void cvtt::Internal::BC7Computer::TrySingleColorRGBAMultiTable(uint32_t flags, c
     MFloat bestAverageError = ParallelMath::MakeFloat(FLT_MAX);
 
     MUInt15 intAverage[4];
-    for (int ch = 0; ch < 4; ch++)
+    for (int ch = 0; ch < 4; ch++) {
         intAverage[ch] = ParallelMath::RoundAndConvertToU15(average[ch], rtn);
+}
 
     MUInt15 eps[2][4];
     MUInt15 reconstructed[4];
@@ -1150,13 +1166,15 @@ void cvtt::Internal::BC7Computer::TrySingleColorRGBAMultiTable(uint32_t flags, c
 
     for (int epi = 0; epi < 2; epi++)
     {
-        for (int ch = 0; ch < 3; ch++)
+        for (int ch = 0; ch < 3; ch++) {
             eps[epi][ch] = ParallelMath::MakeUInt15(0);
+}
         eps[epi][3] = ParallelMath::MakeUInt15(255);
     }
 
-    for (int ch = 0; ch < 3; ch++)
+    for (int ch = 0; ch < 3; ch++) {
         reconstructed[ch] = ParallelMath::MakeUInt15(0);
+}
     reconstructed[3] = ParallelMath::MakeUInt15(255);
 
     // Depending on the target index and parity bits, there are multiple valid solid colors.
@@ -1204,12 +1222,15 @@ void cvtt::Internal::BC7Computer::TrySingleColorRGBAMultiTable(uint32_t flags, c
 
             ParallelMath::ConditionalSet(index, better, candidateIndex);
 
-            for (int ch = 0; ch < numRealChannels; ch++)
+            for (int ch = 0; ch < numRealChannels; ch++) {
                 ParallelMath::ConditionalSet(reconstructed[ch], better, candidateReconstructed[ch]);
+}
 
-            for (int epi = 0; epi < 2; epi++)
-                for (int ch = 0; ch < numRealChannels; ch++)
+            for (int epi = 0; epi < 2; epi++) {
+                for (int ch = 0; ch < numRealChannels; ch++) {
                     ParallelMath::ConditionalSet(eps[epi][ch], better, candidateEPs[epi][ch]);
+}
+}
         }
     }
 
@@ -1229,24 +1250,28 @@ void cvtt::Internal::BC7Computer::TrySingleColorRGBAMultiTable(uint32_t flags, c
         shapeBestError = ParallelMath::Min(shapeBestError, error);
         for (int epi = 0; epi < 2; epi++)
         {
-            for (int ch = 0; ch < numRealChannels; ch++)
+            for (int ch = 0; ch < numRealChannels; ch++) {
                 ParallelMath::ConditionalSet(shapeBestEP[epi][ch], better, eps[epi][ch]);
+}
         }
 
-        for (int pxi = 0; pxi < shapeLength; pxi++)
+        for (int pxi = 0; pxi < shapeLength; pxi++) {
             ParallelMath::ConditionalSet(fragmentBestIndexes[pxi], better, index);
+}
     }
 }
 
 void cvtt::Internal::BC7Computer::TrySinglePlane(uint32_t flags, const MUInt15 pixels[16][4], const MFloat floatPixels[16][4], const float channelWeights[4], const BC7EncodingPlan &encodingPlan, int numRefineRounds, BC67::WorkInfo& work, const ParallelMath::RoundTowardNearestForScope *rtn)
 {
-    if (numRefineRounds < 1)
+    if (numRefineRounds < 1) {
         numRefineRounds = 1;
+}
 
     float channelWeightsSq[4];
 
-    for (int ch = 0; ch < 4; ch++)
+    for (int ch = 0; ch < 4; ch++) {
         channelWeightsSq[ch] = channelWeights[ch] * channelWeights[ch];
+}
 
     SinglePlaneTemporaries temps;
 
@@ -1344,14 +1369,17 @@ void cvtt::Internal::BC7Computer::TrySinglePlane(uint32_t flags, const MUInt15 p
 
     for (uint16_t mode = 0; mode <= 7; mode++)
     {
-        if (mode == 4 || mode == 5)
+        if (mode == 4 || mode == 5) {
             continue;
+}
 
-        if (mode < 4 && !allowRGBModes)
+        if (mode < 4 && !allowRGBModes) {
             continue;
+}
 
-        if (mode == 7 && !allowMode7)
+        if (mode == 7 && !allowMode7) {
             continue;
+}
 
         uint64_t partitionEnabledBits = 0;
         switch (mode)
@@ -1372,10 +1400,11 @@ void cvtt::Internal::BC7Computer::TrySinglePlane(uint32_t flags, const MUInt15 p
             partitionEnabledBits = encodingPlan.mode6Enabled ? 1 : 0;
             break;
         case 7:
-            if (anyBlockHasAlpha)
+            if (anyBlockHasAlpha) {
                 partitionEnabledBits = encodingPlan.mode7RGBAPartitionEnabled;
-            else
+            } else {
                 partitionEnabledBits = encodingPlan.mode7RGBPartitionEnabled;
+}
             break;
         default:
             break;
@@ -1388,10 +1417,11 @@ void cvtt::Internal::BC7Computer::TrySinglePlane(uint32_t flags, const MUInt15 p
         int indexPrec = BC7Data::g_modes[mode].m_indexBits;
 
         int parityBitMax = 1;
-        if (BC7Data::g_modes[mode].m_pBitMode == BC7Data::PBitMode_PerEndpoint)
+        if (BC7Data::g_modes[mode].m_pBitMode == BC7Data::PBitMode_PerEndpoint) {
             parityBitMax = 4;
-        else if (BC7Data::g_modes[mode].m_pBitMode == BC7Data::PBitMode_PerSubset)
+        } else if (BC7Data::g_modes[mode].m_pBitMode == BC7Data::PBitMode_PerSubset) {
             parityBitMax = 2;
+}
 
         int numRealChannels = isRGB ? 3 : 4;
 
@@ -1424,24 +1454,28 @@ void cvtt::Internal::BC7Computer::TrySinglePlane(uint32_t flags, const MUInt15 p
             }
         }
 
-        for (int slot = 0; slot < BC7Data::g_numShapesAll; slot++)
+        for (int slot = 0; slot < BC7Data::g_numShapesAll; slot++) {
             temps.shapeBestError[slot] = ParallelMath::MakeFloat(FLT_MAX);
+}
 
         for (int shapeIter = 0; shapeIter < numShapes; shapeIter++)
         {
             int shape = shapeList[shapeIter];
 
             int numTweakRounds = 0;
-            if (isRGB)
+            if (isRGB) {
                 numTweakRounds = encodingPlan.seedPointsForShapeRGB[shape];
-            else
+            } else {
                 numTweakRounds = encodingPlan.seedPointsForShapeRGBA[shape];
+}
 
-            if (numTweakRounds == 0)
+            if (numTweakRounds == 0) {
                 continue;
+}
 
-            if (numTweakRounds > MaxTweakRounds)
+            if (numTweakRounds > MaxTweakRounds) {
                 numTweakRounds = MaxTweakRounds;
+}
 
             int shapeStart = BC7Data::g_shapeRanges[shape][0];
             int shapeLength = BC7Data::g_shapeRanges[shape][1];
@@ -1485,19 +1519,21 @@ void cvtt::Internal::BC7Computer::TrySinglePlane(uint32_t flags, const MUInt15 p
                 if ((flags & Flags::BC7_RespectPunchThrough) && (mode == 6 || mode == 7))
                 {
                     // Modes 6 and 7 have parity bits that affect alpha
-                    if (pIter == 0)
+                    if (pIter == 0) {
                         punchThroughInvalid[pIter] = (isPunchThrough & blockHasNonZeroAlpha);
-                    else if (pIter == parityBitMax - 1)
+                    } else if (pIter == parityBitMax - 1) {
                         punchThroughInvalid[pIter] = (isPunchThrough & blockHasNonMaxAlpha);
-                    else
+                    } else {
                         punchThroughInvalid[pIter] = isPunchThrough;
+}
                 }
             }
 
             for (int pIter = 0; pIter < parityBitMax; pIter++)
             {
-                if (ParallelMath::AllSet(punchThroughInvalid[pIter]))
+                if (ParallelMath::AllSet(punchThroughInvalid[pIter])) {
                     continue;
+}
 
                 bool needPunchThroughCheck = ParallelMath::AnySet(punchThroughInvalid[pIter]);
 
@@ -1509,9 +1545,11 @@ void cvtt::Internal::BC7Computer::TrySinglePlane(uint32_t flags, const MUInt15 p
 
                     MUInt15 ep[2][4];
 
-                    for (int epi = 0; epi < 2; epi++)
-                        for (int ch = 0; ch < 4; ch++)
+                    for (int epi = 0; epi < 2; epi++) {
+                        for (int ch = 0; ch < 4; ch++) {
                             ep[epi][ch] = tweakBaseEP[tweak][epi][ch];
+}
+}
 
                     for (int refine = 0; refine < numRefineRounds; refine++)
                     {
@@ -1561,9 +1599,9 @@ void cvtt::Internal::BC7Computer::TrySinglePlane(uint32_t flags, const MUInt15 p
                             index = indexSelector.SelectIndexLDR(floatPixels[px], rtn);
                             indexSelector.ReconstructLDR_BC7(index, reconstructed, numRealChannels);
 
-                            if (flags & cvtt::Flags::BC7_FastIndexing)
+                            if (flags & cvtt::Flags::BC7_FastIndexing) {
                                 BCCommon::ComputeErrorLDR<4>(flags, reconstructed, pixels[px], numRealChannels, aggError);
-                            else
+                            } else
                             {
                                 MFloat error = BCCommon::ComputeErrorLDRSimple<4>(flags, reconstructed, pixels[px], numRealChannels, channelWeightsSq);
 
@@ -1584,17 +1622,20 @@ void cvtt::Internal::BC7Computer::TrySinglePlane(uint32_t flags, const MUInt15 p
                                 shapeError = shapeError + error;
                             }
 
-                            if (refine != numRefineRounds - 1)
+                            if (refine != numRefineRounds - 1) {
                                 epRefiner.ContributeUnweightedPW(preWeightedPixels[px], index, numRealChannels);
+}
 
                             indexes[pxi] = index;
                         }
 
-                        if (flags & cvtt::Flags::BC7_FastIndexing)
+                        if (flags & cvtt::Flags::BC7_FastIndexing) {
                             shapeError = aggError.Finalize(flags, channelWeightsSq);
+}
 
-                        if (isRGB)
+                        if (isRGB) {
                             shapeError = shapeError + staticAlphaError;
+}
 
                         ParallelMath::FloatCompFlag shapeErrorBetter;
                         ParallelMath::Int16CompFlag shapeErrorBetter16;
@@ -1610,24 +1651,29 @@ void cvtt::Internal::BC7Computer::TrySinglePlane(uint32_t flags, const MUInt15 p
                                 shapeErrorBetter16 = ParallelMath::AndNot(punchThroughInvalid[pIter], shapeErrorBetter16);
                                 shapeErrorBetter = ParallelMath::Int16FlagToFloat(shapeErrorBetter16);
 
-                                if (!ParallelMath::AnySet(shapeErrorBetter16))
+                                if (!ParallelMath::AnySet(shapeErrorBetter16)) {
                                     punchThroughOK = false;
+}
                             }
 
                             if (punchThroughOK)
                             {
                                 ParallelMath::ConditionalSet(temps.shapeBestError[shape], shapeErrorBetter, shapeError);
-                                for (int epi = 0; epi < 2; epi++)
-                                    for (int ch = 0; ch < numRealChannels; ch++)
+                                for (int epi = 0; epi < 2; epi++) {
+                                    for (int ch = 0; ch < numRealChannels; ch++) {
                                         ParallelMath::ConditionalSet(temps.shapeBestEP[shape][epi][ch], shapeErrorBetter16, ep[epi][ch]);
+}
+}
 
-                                for (int pxi = 0; pxi < shapeLength; pxi++)
+                                for (int pxi = 0; pxi < shapeLength; pxi++) {
                                     ParallelMath::ConditionalSet(temps.fragmentBestIndexes[shapeStart + pxi], shapeErrorBetter16, indexes[pxi]);
+}
                             }
                         }
 
-                        if (refine != numRefineRounds - 1)
+                        if (refine != numRefineRounds - 1) {
                             epRefiner.GetRefinedEndpointsLDR(ep, numRealChannels, rtn);
+}
                     } // refine
                 } // tweak
             } // p
@@ -1635,20 +1681,23 @@ void cvtt::Internal::BC7Computer::TrySinglePlane(uint32_t flags, const MUInt15 p
             if (flags & cvtt::Flags::BC7_TrySingleColor)
             {
                 MUInt15 total[4];
-                for (int ch = 0; ch < 4; ch++)
+                for (int ch = 0; ch < 4; ch++) {
                     total[ch] = ParallelMath::MakeUInt15(0);
+}
 
                 for (int pxi = 0; pxi < shapeLength; pxi++)
                 {
                     int px = BC7Data::g_fragments[shapeStart + pxi];
-                    for (int ch = 0; ch < 4; ch++)
+                    for (int ch = 0; ch < 4; ch++) {
                         total[ch] = total[ch] + pixels[pxi][ch];
+}
                 }
 
                 MFloat rcpShapeLength = ParallelMath::MakeFloat(1.0f / static_cast<float>(shapeLength));
                 MFloat average[4];
-                for (int ch = 0; ch < 4; ch++)
+                for (int ch = 0; ch < 4; ch++) {
                     average[ch] = ParallelMath::ToFloat(total[ch]) * rcpShapeLength;
+}
 
                 const uint8_t *fragment = BC7Data::g_fragments + shapeStart;
                 MFloat &shapeBestError = temps.shapeBestError[shape];
@@ -1789,10 +1838,11 @@ void cvtt::Internal::BC7Computer::TrySinglePlane(uint32_t flags, const MUInt15 p
             partitionsEnabledBits = encodingPlan.mode6Enabled ? 1 : 0;
             break;
         case 7:
-            if (anyBlockHasAlpha)
+            if (anyBlockHasAlpha) {
                 partitionEnabledBits = encodingPlan.mode7RGBAPartitionEnabled;
-            else
+            } else {
                 partitionEnabledBits = encodingPlan.mode7RGBPartitionEnabled;
+}
             break;
         default:
             break;
@@ -1800,23 +1850,25 @@ void cvtt::Internal::BC7Computer::TrySinglePlane(uint32_t flags, const MUInt15 p
 
         for (uint16_t partition = 0; partition < numPartitions; partition++)
         {
-            if (((partitionsEnabledBits >> partition) & 1) == 0)
+            if (((partitionsEnabledBits >> partition) & 1) == 0) {
                 continue;
+}
 
             const int *partitionShapes;
-            if (numSubsets == 1)
+            if (numSubsets == 1) {
                 partitionShapes = BC7Data::g_shapes1[partition];
-            else if (numSubsets == 2)
+            } else if (numSubsets == 2) {
                 partitionShapes = BC7Data::g_shapes2[partition];
-            else
+            } else
             {
                 assert(numSubsets == 3);
                 partitionShapes = BC7Data::g_shapes3[partition];
             }
 
             MFloat totalError = ParallelMath::MakeFloatZero();
-            for (int subset = 0; subset < numSubsets; subset++)
+            for (int subset = 0; subset < numSubsets; subset++) {
                 totalError = totalError + temps.shapeBestError[partitionShapes[subset]];
+}
 
             ParallelMath::FloatCompFlag errorBetter = ParallelMath::Less(totalError, work.m_error);
             ParallelMath::Int16CompFlag errorBetter16 = ParallelMath::FloatFlagToInt16(errorBetter);
@@ -1841,9 +1893,11 @@ void cvtt::Internal::BC7Computer::TrySinglePlane(uint32_t flags, const MUInt15 p
                     int shapeStart = BC7Data::g_shapeRanges[shape][0];
                     int shapeLength = BC7Data::g_shapeRanges[shape][1];
 
-                    for (int epi = 0; epi < 2; epi++)
-                        for (int ch = 0; ch < 4; ch++)
+                    for (int epi = 0; epi < 2; epi++) {
+                        for (int ch = 0; ch < 4; ch++) {
                             ParallelMath::ConditionalSet(work.m_ep[subset][epi][ch], errorBetter16, temps.shapeBestEP[shape][epi][ch]);
+}
+}
 
                     for (int pxi = 0; pxi < shapeLength; pxi++)
                     {
@@ -1867,12 +1921,14 @@ void cvtt::Internal::BC7Computer::TryDualPlane(uint32_t flags, const MUInt15 pix
     // solve the alpha channel first, then solve the RGB channels, which in turn breaks down into two cases:
     // - Separate alpha channel, then weighted RGB
     // - Alpha+2 other channels, then the independent channel
-    if (numRefineRounds < 1)
+    if (numRefineRounds < 1) {
         numRefineRounds = 1;
+}
 
     float channelWeightsSq[4];
-    for (int ch = 0; ch < 4; ch++)
+    for (int ch = 0; ch < 4; ch++) {
         channelWeightsSq[ch] = channelWeights[ch] * channelWeights[ch];
+}
 
     for (uint16_t mode = 4; mode <= 5; mode++)
     {
@@ -1885,11 +1941,13 @@ void cvtt::Internal::BC7Computer::TryDualPlane(uint32_t flags, const MUInt15 pix
                 numSP[0] = encodingPlan.mode4SP[rotation][0];
                 numSP[1] = encodingPlan.mode4SP[rotation][1];
             }
-            else
+            else {
                 numSP[0] = numSP[1] = encodingPlan.mode5SP[rotation];
+}
 
-            if (numSP[0] == 0 && numSP[1] == 0)
+            if (numSP[0] == 0 && numSP[1] == 0) {
                 continue;
+}
 
             int alphaChannel = (rotation + 3) & 3;
             int redChannel = (rotation == 1) ? 3 : 0;
@@ -1905,8 +1963,9 @@ void cvtt::Internal::BC7Computer::TryDualPlane(uint32_t flags, const MUInt15 pix
                 rotatedRGB[px][1] = pixels[px][greenChannel];
                 rotatedRGB[px][2] = pixels[px][blueChannel];
 
-                for (int ch = 0; ch < 3; ch++)
+                for (int ch = 0; ch < 3; ch++) {
                     floatRotatedRGB[px][ch] = ParallelMath::ToFloat(rotatedRGB[px][ch]);
+}
             }
 
             uint16_t maxIndexSelector = (mode == 4) ? 2 : 1;
@@ -1925,18 +1984,21 @@ void cvtt::Internal::BC7Computer::TryDualPlane(uint32_t flags, const MUInt15 pix
             {
                 int numTweakRounds = numSP[indexSelector];
 
-                if (numTweakRounds <= 0)
+                if (numTweakRounds <= 0) {
                     continue;
+}
 
-                if (numTweakRounds > MaxTweakRounds)
+                if (numTweakRounds > MaxTweakRounds) {
                     numTweakRounds = MaxTweakRounds;
+}
 
                 EndpointSelector<3, 8> rgbSelector;
 
                 for (int epPass = 0; epPass < NumEndpointSelectorPasses; epPass++)
                 {
-                    for (int px = 0; px < 16; px++)
+                    for (int px = 0; px < 16; px++) {
                         rgbSelector.ContributePass(preWeightedRotatedRGB[px], epPass, ParallelMath::MakeFloat(1.0f));
+}
 
                     rgbSelector.FinishPass(epPass);
                 }
@@ -1958,8 +2020,9 @@ void cvtt::Internal::BC7Computer::TryDualPlane(uint32_t flags, const MUInt15 pix
                     rgbPrec = indexSelector ? 3 : 2;
                     alphaPrec = indexSelector ? 2 : 3;
                 }
-                else
+                else {
                     rgbPrec = alphaPrec = 2;
+}
 
                 UnfinishedEndpoints<3> unfinishedRGB = rgbSelector.GetEndpoints(rotatedRGBWeights);
 
@@ -1970,8 +2033,9 @@ void cvtt::Internal::BC7Computer::TryDualPlane(uint32_t flags, const MUInt15 pix
                 MUInt15 bestAlphaIndexes[16];
                 MUInt15 bestEP[2][4];
 
-                for (int px = 0; px < 16; px++)
+                for (int px = 0; px < 16; px++) {
                     bestRGBIndexes[px] = bestAlphaIndexes[px] = ParallelMath::MakeUInt15(0);
+}
 
                 for (int tweak = 0; tweak < numTweakRounds; tweak++)
                 {
@@ -1984,10 +2048,11 @@ void cvtt::Internal::BC7Computer::TryDualPlane(uint32_t flags, const MUInt15 pix
 
                     for (int refine = 0; refine < numRefineRounds; refine++)
                     {
-                        if (mode == 4)
+                        if (mode == 4) {
                             CompressEndpoints4(rgbEP, alphaEP);
-                        else
+                        } else {
                             CompressEndpoints5(rgbEP, alphaEP);
+}
 
 
                         IndexSelector<1> alphaIndexSelector;
@@ -2104,13 +2169,15 @@ void cvtt::Internal::BC7Computer::TryDualPlane(uint32_t flags, const MUInt15 pix
                         {
                             bestRGBError = ParallelMath::Min(errorRGB, bestRGBError);
 
-                            for (int px = 0; px < 16; px++)
+                            for (int px = 0; px < 16; px++) {
                                 ParallelMath::ConditionalSet(bestRGBIndexes[px], rgbBetterInt16, rgbIndexes[px]);
+}
 
                             for (int ep = 0; ep < 2; ep++)
                             {
-                                for (int ch = 0; ch < 3; ch++)
+                                for (int ch = 0; ch < 3; ch++) {
                                     ParallelMath::ConditionalSet(bestEP[ep][ch], rgbBetterInt16, rgbEP[ep][ch]);
+}
                             }
                         }
 
@@ -2118,11 +2185,13 @@ void cvtt::Internal::BC7Computer::TryDualPlane(uint32_t flags, const MUInt15 pix
                         {
                             bestAlphaError = ParallelMath::Min(errorA, bestAlphaError);
 
-                            for (int px = 0; px < 16; px++)
+                            for (int px = 0; px < 16; px++) {
                                 ParallelMath::ConditionalSet(bestAlphaIndexes[px], alphaBetterInt16, alphaIndexes[px]);
+}
 
-                            for (int ep = 0; ep < 2; ep++)
+                            for (int ep = 0; ep < 2; ep++) {
                                 ParallelMath::ConditionalSet(bestEP[ep][3], alphaBetterInt16, alphaEP[ep]);
+}
                         }
 
                         if (refine != numRefineRounds - 1)
@@ -2132,8 +2201,9 @@ void cvtt::Internal::BC7Computer::TryDualPlane(uint32_t flags, const MUInt15 pix
                             MUInt15 alphaEPTemp[2][1];
                             alphaRefiner.GetRefinedEndpointsLDR(alphaEPTemp, rtn);
 
-                            for (int i = 0; i < 2; i++)
+                            for (int i = 0; i < 2; i++) {
                                 alphaEP[i] = alphaEPTemp[i][0];
+}
                         }
                     }	// refine
                 } // tweak
@@ -2155,9 +2225,11 @@ void cvtt::Internal::BC7Computer::TryDualPlane(uint32_t flags, const MUInt15 pix
                     ParallelMath::ConditionalSet(work.m_indexes2[px], errorBetter16, indexSelector ? bestRGBIndexes[px] : bestAlphaIndexes[px]);
                 }
 
-                for (int ep = 0; ep < 2; ep++)
-                    for (int ch = 0; ch < 4; ch++)
+                for (int ep = 0; ep < 2; ep++) {
+                    for (int ch = 0; ch < 4; ch++) {
                         ParallelMath::ConditionalSet(work.m_ep[0][ep][ch], errorBetter16, bestEP[ep][ch]);
+}
+}
             }
         }
     }
@@ -2178,14 +2250,16 @@ void cvtt::Internal::BC7Computer::Pack(uint32_t flags, const PixelBlockU8* input
 
     for (int px = 0; px < 16; px++)
     {
-        for (int ch = 0; ch < 4; ch++)
+        for (int ch = 0; ch < 4; ch++) {
             ParallelMath::ConvertLDRInputs(inputs, px, ch, pixels[px][ch]);
+}
     }
 
     for (int px = 0; px < 16; px++)
     {
-        for (int ch = 0; ch < 4; ch++)
+        for (int ch = 0; ch < 4; ch++) {
             floatPixels[px][ch] = ParallelMath::ToFloat(pixels[px][ch]);
+}
     }
 
     BC67::WorkInfo work;
@@ -2217,16 +2291,18 @@ void cvtt::Internal::BC7Computer::Pack(uint32_t flags, const PixelBlockU8* input
         for (int i = 0; i < 16; i++)
         {
             indexes[i] = ParallelMath::Extract(work.m_indexes[i], block);
-            if (modeInfo.m_alphaMode == BC7Data::AlphaMode_Separate)
+            if (modeInfo.m_alphaMode == BC7Data::AlphaMode_Separate) {
                 indexes2[i] = ParallelMath::Extract(work.m_indexes2[i], block);
+}
         }
 
         for (int subset = 0; subset < 3; subset++)
         {
             for (int ep = 0; ep < 2; ep++)
             {
-                for (int ch = 0; ch < 4; ch++)
+                for (int ch = 0; ch < 4; ch++) {
                     endPoints[subset][ep][ch] = ParallelMath::Extract(work.m_ep[subset][ep][ch], block);
+}
             }
         }
 
@@ -2240,42 +2316,48 @@ void cvtt::Internal::BC7Computer::Pack(uint32_t flags, const PixelBlockU8* input
             if (flipRGB)
             {
                 uint16_t highIndex = (1 << modeInfo.m_indexBits) - 1;
-                for (int px = 0; px < 16; px++)
+                for (int px = 0; px < 16; px++) {
                     indexes[px] = highIndex - indexes[px];
+}
             }
 
             if (flipAlpha)
             {
                 uint16_t highIndex = (1 << modeInfo.m_alphaIndexBits) - 1;
-                for (int px = 0; px < 16; px++)
+                for (int px = 0; px < 16; px++) {
                     indexes2[px] = highIndex - indexes2[px];
+}
             }
 
-            if (indexSelector)
+            if (indexSelector) {
                 Swap(flipRGB, flipAlpha);
+}
 
             if (flipRGB)
             {
-                for (int ch = 0; ch < 3; ch++)
+                for (int ch = 0; ch < 3; ch++) {
                     Swap(endPoints[0][0][ch], endPoints[0][1][ch]);
+}
             }
-            if (flipAlpha)
+            if (flipAlpha) {
                 Swap(endPoints[0][0][3], endPoints[0][1][3]);
+}
 
         }
         else
         {
-            if (modeInfo.m_numSubsets == 2)
+            if (modeInfo.m_numSubsets == 2) {
                 fixups[1] = BC7Data::g_fixupIndexes2[partition];
-            else if (modeInfo.m_numSubsets == 3)
+            } else if (modeInfo.m_numSubsets == 3)
             {
                 fixups[1] = BC7Data::g_fixupIndexes3[partition][0];
                 fixups[2] = BC7Data::g_fixupIndexes3[partition][1];
             }
 
             bool flip[3] = { false, false, false };
-            for (int subset = 0; subset < modeInfo.m_numSubsets; subset++)
+            for (int subset = 0; subset < modeInfo.m_numSubsets; subset++) {
                 flip[subset] = ((indexes[fixups[subset]] & (1 << (modeInfo.m_indexBits - 1))) != 0);
+}
 
             if (flip[0] || flip[1] || flip[2])
             {
@@ -2283,29 +2365,34 @@ void cvtt::Internal::BC7Computer::Pack(uint32_t flags, const PixelBlockU8* input
                 for (int px = 0; px < 16; px++)
                 {
                     int subset = 0;
-                    if (modeInfo.m_numSubsets == 2)
+                    if (modeInfo.m_numSubsets == 2) {
                         subset = (BC7Data::g_partitionMap[partition] >> px) & 1;
-                    else if (modeInfo.m_numSubsets == 3)
+                    } else if (modeInfo.m_numSubsets == 3) {
                         subset = (BC7Data::g_partitionMap2[partition] >> (px * 2)) & 3;
+}
 
-                    if (flip[subset])
+                    if (flip[subset]) {
                         indexes[px] = highIndex - indexes[px];
+}
                 }
 
                 int maxCH = (modeInfo.m_alphaMode == BC7Data::AlphaMode_Combined) ? 4 : 3;
                 for (int subset = 0; subset < modeInfo.m_numSubsets; subset++)
                 {
-                    if (flip[subset])
-                        for (int ch = 0; ch < maxCH; ch++)
+                    if (flip[subset]) {
+                        for (int ch = 0; ch < maxCH; ch++) {
                             Swap(endPoints[subset][0][ch], endPoints[subset][1][ch]);
+}
+}
                 }
             }
         }
 
         pv.Pack(static_cast<uint8_t>(1 << mode), mode + 1);
 
-        if (modeInfo.m_partitionBits)
+        if (modeInfo.m_partitionBits) {
             pv.Pack(partition, modeInfo.m_partitionBits);
+}
 
         if (modeInfo.m_alphaMode == BC7Data::AlphaMode_Separate)
         {
@@ -2313,8 +2400,9 @@ void cvtt::Internal::BC7Computer::Pack(uint32_t flags, const PixelBlockU8* input
             pv.Pack(rotation, 2);
         }
 
-        if (modeInfo.m_hasIndexSelector)
+        if (modeInfo.m_hasIndexSelector) {
             pv.Pack(indexSelector, 1);
+}
 
         // Encode RGB
         for (int ch = 0; ch < 3; ch++)
@@ -2377,8 +2465,9 @@ void cvtt::Internal::BC7Computer::Pack(uint32_t flags, const PixelBlockU8* input
         for (int px = 0; px < 16; px++)
         {
             int bits = modeInfo.m_indexBits;
-            if ((px == 0) || (px == fixups[1]) || (px == fixups[2]))
+            if ((px == 0) || (px == fixups[1]) || (px == fixups[2])) {
                 bits--;
+}
 
             pv.Pack(indexes[px], bits);
         }
@@ -2389,8 +2478,9 @@ void cvtt::Internal::BC7Computer::Pack(uint32_t flags, const PixelBlockU8* input
             for (int px = 0; px < 16; px++)
             {
                 int bits = modeInfo.m_alphaIndexBits;
-                if (px == 0)
+                if (px == 0) {
                     bits--;
+}
 
                 pv.Pack(indexes2[px], bits);
             }
@@ -2419,9 +2509,11 @@ void cvtt::Internal::BC7Computer::UnpackOne(PixelBlockU8 &output, const uint8_t*
 
     if (mode > 7)
     {
-        for (int px = 0; px < 16; px++)
-            for (int ch = 0; ch < 4; ch++)
+        for (int px = 0; px < 16; px++) {
+            for (int ch = 0; ch < 4; ch++) {
                 output.m_pixels[px][ch] = 0;
+}
+}
 
         return;
     }
@@ -2429,25 +2521,28 @@ void cvtt::Internal::BC7Computer::UnpackOne(PixelBlockU8 &output, const uint8_t*
     const BC7Data::BC7ModeInfo &modeInfo = BC7Data::g_modes[mode];
 
     int partition = 0;
-    if (modeInfo.m_partitionBits)
+    if (modeInfo.m_partitionBits) {
         partition = pv.Unpack(modeInfo.m_partitionBits);
+}
 
     int rotation = 0;
-    if (modeInfo.m_alphaMode == BC7Data::AlphaMode_Separate)
+    if (modeInfo.m_alphaMode == BC7Data::AlphaMode_Separate) {
         rotation = pv.Unpack(2);
+}
 
     int indexSelector = 0;
-    if (modeInfo.m_hasIndexSelector)
+    if (modeInfo.m_hasIndexSelector) {
         indexSelector = pv.Unpack(1);
+}
 
     // Resolve fixups
     int fixups[3] = { 0, 0, 0 };
 
     if (modeInfo.m_alphaMode != BC7Data::AlphaMode_Separate)
     {
-        if (modeInfo.m_numSubsets == 2)
+        if (modeInfo.m_numSubsets == 2) {
             fixups[1] = BC7Data::g_fixupIndexes2[partition];
-        else if (modeInfo.m_numSubsets == 3)
+        } else if (modeInfo.m_numSubsets == 3)
         {
             fixups[1] = BC7Data::g_fixupIndexes3[partition][0];
             fixups[2] = BC7Data::g_fixupIndexes3[partition][1];
@@ -2461,8 +2556,9 @@ void cvtt::Internal::BC7Computer::UnpackOne(PixelBlockU8 &output, const uint8_t*
     {
         for (int subset = 0; subset < modeInfo.m_numSubsets; subset++)
         {
-            for (int ep = 0; ep < 2; ep++)
+            for (int ep = 0; ep < 2; ep++) {
                 endPoints[subset][ep][ch] = (pv.Unpack(modeInfo.m_rgbBits) << (8 - modeInfo.m_rgbBits));
+}
         }
     }
 
@@ -2471,16 +2567,18 @@ void cvtt::Internal::BC7Computer::UnpackOne(PixelBlockU8 &output, const uint8_t*
     {
         for (int subset = 0; subset < modeInfo.m_numSubsets; subset++)
         {
-            for (int ep = 0; ep < 2; ep++)
+            for (int ep = 0; ep < 2; ep++) {
                 endPoints[subset][ep][3] = (pv.Unpack(modeInfo.m_alphaBits) << (8 - modeInfo.m_alphaBits));
+}
         }
     }
     else
     {
         for (int subset = 0; subset < modeInfo.m_numSubsets; subset++)
         {
-            for (int ep = 0; ep < 2; ep++)
+            for (int ep = 0; ep < 2; ep++) {
                 endPoints[subset][ep][3] = 255;
+}
         }
     }
 
@@ -2495,11 +2593,13 @@ void cvtt::Internal::BC7Computer::UnpackOne(PixelBlockU8 &output, const uint8_t*
 
             for (int ep = 0; ep < 2; ep++)
             {
-                for (int ch = 0; ch < 3; ch++)
+                for (int ch = 0; ch < 3; ch++) {
                     endPoints[subset][ep][ch] |= p << (7 - modeInfo.m_rgbBits);
+}
 
-                if (modeInfo.m_alphaMode != BC7Data::AlphaMode_None)
+                if (modeInfo.m_alphaMode != BC7Data::AlphaMode_None) {
                     endPoints[subset][ep][3] |= p << (7 - modeInfo.m_alphaBits);
+}
             }
         }
 
@@ -2513,11 +2613,13 @@ void cvtt::Internal::BC7Computer::UnpackOne(PixelBlockU8 &output, const uint8_t*
             {
                 int p = pv.Unpack(1);
 
-                for (int ch = 0; ch < 3; ch++)
+                for (int ch = 0; ch < 3; ch++) {
                     endPoints[subset][ep][ch] |= p << (7 - modeInfo.m_rgbBits);
+}
 
-                if (modeInfo.m_alphaMode != BC7Data::AlphaMode_None)
+                if (modeInfo.m_alphaMode != BC7Data::AlphaMode_None) {
                     endPoints[subset][ep][3] |= p << (7 - modeInfo.m_alphaBits);
+}
             }
         }
 
@@ -2529,11 +2631,13 @@ void cvtt::Internal::BC7Computer::UnpackOne(PixelBlockU8 &output, const uint8_t*
     {
         for (int ep = 0; ep < 2; ep++)
         {
-            for (int ch = 0; ch < 3; ch++)
+            for (int ch = 0; ch < 3; ch++) {
                 endPoints[subset][ep][ch] |= (endPoints[subset][ep][ch] >> (modeInfo.m_rgbBits + parityBits));
+}
 
-            if (modeInfo.m_alphaMode != BC7Data::AlphaMode_None)
+            if (modeInfo.m_alphaMode != BC7Data::AlphaMode_None) {
                 endPoints[subset][ep][3] |= (endPoints[subset][ep][3] >> (modeInfo.m_alphaBits + parityBits));
+}
         }
     }
 
@@ -2544,8 +2648,9 @@ void cvtt::Internal::BC7Computer::UnpackOne(PixelBlockU8 &output, const uint8_t*
     for (int px = 0; px < 16; px++)
     {
         int bits = modeInfo.m_indexBits;
-        if ((px == 0) || (px == fixups[1]) || (px == fixups[2]))
+        if ((px == 0) || (px == fixups[1]) || (px == fixups[2])) {
             bits--;
+}
 
         indexes[px] = pv.Unpack(bits);
     }
@@ -2556,16 +2661,18 @@ void cvtt::Internal::BC7Computer::UnpackOne(PixelBlockU8 &output, const uint8_t*
         for (int px = 0; px < 16; px++)
         {
             int bits = modeInfo.m_alphaIndexBits;
-            if (px == 0)
+            if (px == 0) {
                 bits--;
+}
 
             indexes2[px] = pv.Unpack(bits);
         }
     }
     else
     {
-        for (int px = 0; px < 16; px++)
+        for (int px = 0; px < 16; px++) {
             indexes2[px] = 0;
+}
     }
 
     const int *alphaWeights = BC7Data::g_weightTables[modeInfo.m_alphaIndexBits];
@@ -2581,10 +2688,11 @@ void cvtt::Internal::BC7Computer::UnpackOne(PixelBlockU8 &output, const uint8_t*
 
         rgbWeight = rgbWeights[indexes[px]];
 
-        if (modeInfo.m_alphaMode == BC7Data::AlphaMode_Combined)
+        if (modeInfo.m_alphaMode == BC7Data::AlphaMode_Combined) {
             alphaWeight = rgbWeight;
-        else if (modeInfo.m_alphaMode == BC7Data::AlphaMode_Separate)
+        } else if (modeInfo.m_alphaMode == BC7Data::AlphaMode_Separate) {
             alphaWeight = alphaWeights[indexes2[px]];
+}
 
         if (indexSelector == 1)
         {
@@ -2597,16 +2705,19 @@ void cvtt::Internal::BC7Computer::UnpackOne(PixelBlockU8 &output, const uint8_t*
 
         int subset = 0;
 
-        if (modeInfo.m_numSubsets == 2)
+        if (modeInfo.m_numSubsets == 2) {
             subset = (BC7Data::g_partitionMap[partition] >> px) & 1;
-        else if (modeInfo.m_numSubsets == 3)
+        } else if (modeInfo.m_numSubsets == 3) {
             subset = (BC7Data::g_partitionMap2[partition] >> (px * 2)) & 3;
+}
 
-        for (int ch = 0; ch < 3; ch++)
+        for (int ch = 0; ch < 3; ch++) {
             pixel[ch] = ((64 - rgbWeight) * endPoints[subset][0][ch] + rgbWeight * endPoints[subset][1][ch] + 32) >> 6;
+}
 
-        if (modeInfo.m_alphaMode != BC7Data::AlphaMode_None)
+        if (modeInfo.m_alphaMode != BC7Data::AlphaMode_None) {
             pixel[3] = ((64 - alphaWeight) * endPoints[subset][0][3] + alphaWeight * endPoints[subset][1][3] + 32) >> 6;
+}
 
         if (rotation != 0)
         {
@@ -2616,8 +2727,9 @@ void cvtt::Internal::BC7Computer::UnpackOne(PixelBlockU8 &output, const uint8_t*
             pixel[3] = temp;
         }
 
-        for (int ch = 0; ch < 4; ch++)
+        for (int ch = 0; ch < 4; ch++) {
             output.m_pixels[px][ch] = static_cast<uint8_t>(pixel[ch]);
+}
     }
 }
 
@@ -2812,8 +2924,9 @@ void cvtt::Internal::BC6HComputer::EvaluatePartitionedLegality(const MAInt16 ep0
             {
                 for (int epi = 0; epi < 2; epi++)
                 {
-                    if (epi == 0 && subset == 0)
+                    if (epi == 0 && subset == 0) {
                         continue;
+}
 
                     MAInt16 bReduced = (outEncodedEPs[subset][epi][ch] & aSignificantMask);
 
@@ -2827,8 +2940,9 @@ void cvtt::Internal::BC6HComputer::EvaluatePartitionedLegality(const MAInt16 ep0
             }
         }
 
-        if (!ParallelMath::AnySet(allLegal))
+        if (!ParallelMath::AnySet(allLegal)) {
             break;
+}
     }
 
     outIsLegal = allLegal;
@@ -2863,15 +2977,17 @@ void cvtt::Internal::BC6HComputer::EvaluateSingleLegality(const MAInt16 ep[2][3]
 
 void cvtt::Internal::BC6HComputer::Pack(uint32_t flags, const PixelBlockF16* inputs, uint8_t* packedBlocks, const float channelWeights[4], bool isSigned, int numTweakRounds, int numRefineRounds)
 {
-    if (numTweakRounds < 1)
+    if (numTweakRounds < 1) {
         numTweakRounds = 1;
-    else if (numTweakRounds > MaxTweakRounds)
+    } else if (numTweakRounds > MaxTweakRounds) {
         numTweakRounds = MaxTweakRounds;
+}
 
-    if (numRefineRounds < 1)
+    if (numRefineRounds < 1) {
         numRefineRounds = 1;
-    else if (numRefineRounds > MaxRefineRounds)
+    } else if (numRefineRounds > MaxRefineRounds) {
         numRefineRounds = MaxRefineRounds;
+}
 
     bool fastIndexing = ((flags & cvtt::Flags::BC6H_FastIndexing) != 0);
     float channelWeightsSq[3];
@@ -2884,8 +3000,9 @@ void cvtt::Internal::BC6HComputer::Pack(uint32_t flags, const PixelBlockF16* inp
 
     MSInt16 low15Bits = ParallelMath::MakeSInt16(32767);
 
-    for (int ch = 0; ch < 3; ch++)
+    for (int ch = 0; ch < 3; ch++) {
         channelWeightsSq[ch] = channelWeights[ch] * channelWeights[ch];
+}
 
     for (int px = 0; px < 16; px++)
     {
@@ -2902,8 +3019,9 @@ void cvtt::Internal::BC6HComputer::Pack(uint32_t flags, const PixelBlockF16* inp
                 ParallelMath::ConditionalSet(pixelValue, negative, ParallelMath::MakeSInt16(0) - magnitude);
                 pixelValue = ParallelMath::Max(pixelValue, ParallelMath::MakeSInt16(-31743));
             }
-            else
+            else {
                 pixelValue = ParallelMath::Max(pixelValue, ParallelMath::MakeSInt16(0));
+}
 
             pixelValue = ParallelMath::Min(pixelValue, ParallelMath::MakeSInt16(31743));
 
@@ -2923,13 +3041,17 @@ void cvtt::Internal::BC6HComputer::Pack(uint32_t flags, const PixelBlockF16* inp
     MUInt15 bestMode = ParallelMath::MakeUInt15(0);
     MUInt15 bestPartition = ParallelMath::MakeUInt15(0);
 
-    for (int px = 0; px < 16; px++)
+    for (int px = 0; px < 16; px++) {
         bestIndexes[px] = ParallelMath::MakeUInt15(0);
+}
 
-    for (int subset = 0; subset < 2; subset++)
-        for (int epi = 0; epi < 2; epi++)
-            for (int ch = 0; ch < 3; ch++)
+    for (int subset = 0; subset < 2; subset++) {
+        for (int epi = 0; epi < 2; epi++) {
+            for (int ch = 0; ch < 3; ch++) {
                 bestEndPoints[subset][epi][ch] = ParallelMath::MakeAInt16(0);
+}
+}
+}
 
     UnfinishedEndpoints<3> partitionedUFEP[32][2];
     UnfinishedEndpoints<3> singleUFEP;
@@ -2949,12 +3071,14 @@ void cvtt::Internal::BC6HComputer::Pack(uint32_t flags, const PixelBlockF16* inp
                 epSelectors[subset].ContributePass(preWeightedPixels[px], pass, ParallelMath::MakeFloat(1.0f));
             }
 
-            for (int subset = 0; subset < 2; subset++)
+            for (int subset = 0; subset < 2; subset++) {
                 epSelectors[subset].FinishPass(pass);
+}
         }
 
-        for (int subset = 0; subset < 2; subset++)
+        for (int subset = 0; subset < 2; subset++) {
             partitionedUFEP[p][subset] = epSelectors[subset].GetEndpoints(channelWeights);
+}
     }
 
     // Generate UFEP for single
@@ -2963,8 +3087,9 @@ void cvtt::Internal::BC6HComputer::Pack(uint32_t flags, const PixelBlockF16* inp
 
         for (int pass = 0; pass < NumEndpointSelectorPasses; pass++)
         {
-            for (int px = 0; px < 16; px++)
+            for (int px = 0; px < 16; px++) {
                 epSelector.ContributePass(preWeightedPixels[px], pass, ParallelMath::MakeFloat(1.0f));
+}
 
             epSelector.FinishPass(pass);
         }
@@ -2978,8 +3103,9 @@ void cvtt::Internal::BC6HComputer::Pack(uint32_t flags, const PixelBlockF16* inp
 
         for (int aPrec = BC7Data::g_maxHDRPrecision; aPrec >= 0; aPrec--)
         {
-            if (!BC7Data::g_hdrModesExistForPrecision[partitionedInt][aPrec])
+            if (!BC7Data::g_hdrModesExistForPrecision[partitionedInt][aPrec]) {
                 continue;
+}
 
             int numPartitions = partitioned ? 32 : 1;
             int numSubsets = partitioned ? 2 : 1;
@@ -2998,9 +3124,11 @@ void cvtt::Internal::BC6HComputer::Pack(uint32_t flags, const PixelBlockF16* inp
 
                 bool roundValid[MaxMetaRounds][2];
 
-                for (int r = 0; r < MaxMetaRounds; r++)
-                    for (int subset = 0; subset < 2; subset++)
+                for (int r = 0; r < MaxMetaRounds; r++) {
+                    for (int subset = 0; subset < 2; subset++) {
                         roundValid[r][subset] = true;
+}
+}
 
                 for (int subset = 0; subset < numSubsets; subset++)
                 {
@@ -3013,8 +3141,9 @@ void cvtt::Internal::BC6HComputer::Pack(uint32_t flags, const PixelBlockF16* inp
                         {
                             int metaRound = tweak * MaxRefineRounds + refinePass;
 
-                            if (tweak >= numTweakRounds || refinePass >= numRefineRounds)
+                            if (tweak >= numTweakRounds || refinePass >= numRefineRounds) {
                                 abortRemainingRefines = true;
+}
 
                             if (abortRemainingRefines)
                             {
@@ -3031,23 +3160,26 @@ void cvtt::Internal::BC6HComputer::Pack(uint32_t flags, const PixelBlockF16* inp
                             {
                                 UnfinishedEndpoints<3> ufep = partitioned ? partitionedUFEP[p][subset] : singleUFEP;
 
-                                if (isSigned)
+                                if (isSigned) {
                                     ufep.FinishHDRSigned(tweak, indexRange, endPointsColorSpace[0], endPointsColorSpace[1], &rtn);
-                                else
+                                } else {
                                     ufep.FinishHDRUnsigned(tweak, indexRange, endPointsColorSpace[0], endPointsColorSpace[1], &rtn);
+}
                             }
-                            else
+                            else {
                                 refiners[subset].GetRefinedEndpointsHDR(endPointsColorSpace, isSigned, &rtn);
+}
 
                             refiners[subset].Init(indexRange, channelWeights);
 
                             int fixupIndex = (subset == 0) ? 0 : BC7Data::g_fixupIndexes2[p];
 
                             IndexSelectorHDR<3> indexSelector;
-                            if (isSigned)
+                            if (isSigned) {
                                 QuantizeEndpointsSigned(endPointsColorSpace, floatPixels2CL, floatPixelsLinearWeighted, mrQuantizedEndPoints[subset], mrIndexes, indexSelector, fixupIndex, aPrec, indexRange, channelWeights, fastIndexing, &rtn);
-                            else
+                            } else {
                                 QuantizeEndpointsUnsigned(endPointsColorSpace, floatPixels2CL, floatPixelsLinearWeighted, mrQuantizedEndPoints[subset], mrIndexes, indexSelector, fixupIndex, aPrec, indexRange, channelWeights, fastIndexing, &rtn);
+}
 
                             if (metaRound > 0)
                             {
@@ -3059,13 +3191,16 @@ void cvtt::Internal::BC6HComputer::Pack(uint32_t flags, const PixelBlockF16* inp
 
                                     ParallelMath::Int16CompFlag same = ParallelMath::MakeBoolInt16(true);
 
-                                    for (int epi = 0; epi < 2; epi++)
-                                        for (int ch = 0; ch < 3; ch++)
+                                    for (int epi = 0; epi < 2; epi++) {
+                                        for (int ch = 0; ch < 3; ch++) {
                                             same = (same & ParallelMath::Equal(prevRoundEPs[epi][ch], mrQuantizedEndPoints[subset][epi][ch]));
+}
+}
 
                                     anySame = (anySame | same);
-                                    if (ParallelMath::AllSet(anySame))
+                                    if (ParallelMath::AllSet(anySame)) {
                                         break;
+}
                                 }
 
                                 if (ParallelMath::AllSet(anySame))
@@ -3080,28 +3215,31 @@ void cvtt::Internal::BC6HComputer::Pack(uint32_t flags, const PixelBlockF16* inp
                             {
                                 for (int px = 0; px < 16; px++)
                                 {
-                                    if (subset != ((partitionMask >> px) & 1))
+                                    if (subset != ((partitionMask >> px) & 1)) {
                                         continue;
+}
 
                                     MUInt15 index;
-                                    if (px == fixupIndex)
+                                    if (px == fixupIndex) {
                                         index = mrIndexes[px];
-                                    else
+                                    } else
                                     {
                                         index = fastIndexing ? indexSelector.SelectIndexHDRFast(floatPixels2CL[px], &rtn) : indexSelector.SelectIndexHDRSlow(floatPixelsLinearWeighted[px], &rtn);
                                         mrIndexes[px] = index;
                                     }
 
                                     MSInt16 reconstructed[3];
-                                    if (isSigned)
+                                    if (isSigned) {
                                         indexSelector.ReconstructHDRSigned(mrIndexes[px], reconstructed);
-                                    else
+                                    } else {
                                         indexSelector.ReconstructHDRUnsigned(mrIndexes[px], reconstructed);
+}
 
                                     subsetError = subsetError + (fastIndexing ? BCCommon::ComputeErrorHDRFast<3>(flags, reconstructed, pixels[px], channelWeightsSq) : BCCommon::ComputeErrorHDRSlow<3>(flags, reconstructed, pixels[px], channelWeightsSq));
 
-                                    if (refinePass != numRefineRounds - 1)
+                                    if (refinePass != numRefineRounds - 1) {
                                         refiners[subset].ContributeUnweightedPW(preWeightedPixels[px], index);
+}
                                 }
                             }
 
@@ -3114,23 +3252,26 @@ void cvtt::Internal::BC6HComputer::Pack(uint32_t flags, const PixelBlockF16* inp
                 int numMeta1 = partitioned ? MaxMetaRounds : 1;
                 for (int meta0 = 0; meta0 < MaxMetaRounds; meta0++)
                 {
-                    if (!roundValid[meta0][0])
+                    if (!roundValid[meta0][0]) {
                         continue;
+}
 
                     for (int meta1 = 0; meta1 < numMeta1; meta1++)
                     {
                         MFloat combinedError = metaError[meta0][0];
                         if (partitioned)
                         {
-                            if (!roundValid[meta1][1])
+                            if (!roundValid[meta1][1]) {
                                 continue;
+}
 
                             combinedError = combinedError + metaError[meta1][1];
                         }
 
                         ParallelMath::FloatCompFlag errorBetter = ParallelMath::Less(combinedError, bestError);
-                        if (!ParallelMath::AnySet(errorBetter))
+                        if (!ParallelMath::AnySet(errorBetter)) {
                             continue;
+}
 
                         ParallelMath::Int16CompFlag needsCommit = ParallelMath::FloatFlagToInt16(errorBetter);
 
@@ -3139,19 +3280,22 @@ void cvtt::Internal::BC6HComputer::Pack(uint32_t flags, const PixelBlockF16* inp
                         {
                             const BC7Data::BC6HModeInfo &modeInfo = BC7Data::g_hdrModes[mode];
 
-                            if (modeInfo.m_partitioned != partitioned || modeInfo.m_aPrec != aPrec)
+                            if (modeInfo.m_partitioned != partitioned || modeInfo.m_aPrec != aPrec) {
                                 continue;
+}
 
                             MAInt16 encodedEPs[2][2][3];
                             ParallelMath::Int16CompFlag isLegal;
-                            if (partitioned)
+                            if (partitioned) {
                                 EvaluatePartitionedLegality(metaEndPointsQuantized[meta0][0], metaEndPointsQuantized[meta1][1], modeInfo.m_aPrec, modeInfo.m_bPrec, modeInfo.m_transformed, encodedEPs, isLegal);
-                            else
+                            } else {
                                 EvaluateSingleLegality(metaEndPointsQuantized[meta0][0], modeInfo.m_aPrec, modeInfo.m_bPrec, modeInfo.m_transformed, encodedEPs[0], isLegal);
+}
 
                             ParallelMath::Int16CompFlag isLegalAndBetter = (ParallelMath::FloatFlagToInt16(errorBetter) & isLegal);
-                            if (!ParallelMath::AnySet(isLegalAndBetter))
+                            if (!ParallelMath::AnySet(isLegalAndBetter)) {
                                 continue;
+}
 
                             ParallelMath::FloatCompFlag isLegalAndBetterFloat = ParallelMath::Int16FlagToFloat(isLegalAndBetter);
 
@@ -3163,23 +3307,26 @@ void cvtt::Internal::BC6HComputer::Pack(uint32_t flags, const PixelBlockF16* inp
                             {
                                 for (int epi = 0; epi < 2; epi++)
                                 {
-                                    for (int ch = 0; ch < 3; ch++)
+                                    for (int ch = 0; ch < 3; ch++) {
                                         ParallelMath::ConditionalSet(bestEndPoints[subset][epi][ch], isLegalAndBetter, encodedEPs[subset][epi][ch]);
+}
                                 }
                             }
 
                             for (int px = 0; px < 16; px++)
                             {
                                 int subset = ((partitionMask >> px) & 1);
-                                if (subset == 0)
+                                if (subset == 0) {
                                     ParallelMath::ConditionalSet(bestIndexes[px], isLegalAndBetter, metaIndexes[meta0][px]);
-                                else
+                                } else {
                                     ParallelMath::ConditionalSet(bestIndexes[px], isLegalAndBetter, metaIndexes[meta1][px]);
+}
                             }
 
                             needsCommit = ParallelMath::AndNot(needsCommit, isLegalAndBetter);
-                            if (!ParallelMath::AnySet(needsCommit))
+                            if (!ParallelMath::AnySet(needsCommit)) {
                                 break;
+}
                         }
                     }
                 }
@@ -3205,13 +3352,15 @@ void cvtt::Internal::BC6HComputer::Pack(uint32_t flags, const PixelBlockF16* inp
         {
             for (int epi = 0; epi < 2; epi++)
             {
-                for (int ch = 0; ch < 3; ch++)
+                for (int ch = 0; ch < 3; ch++) {
                     eps[subset][epi][ch] = ParallelMath::Extract(bestEndPoints[subset][epi][ch], block);
+}
             }
         }
 
-        for (int px = 0; px < 16; px++)
+        for (int px = 0; px < 16; px++) {
             indexes[px] = ParallelMath::Extract(bestIndexes[px], block);
+}
 
         uint16_t modeID = modeInfo.m_modeID;
 
@@ -3281,10 +3430,11 @@ void cvtt::Internal::BC6HComputer::Pack(uint32_t flags, const PixelBlockF16* inp
         for (int px = 0; px < 16; px++)
         {
             ParallelMath::ScalarUInt16 index = ParallelMath::Extract(bestIndexes[px], block);
-            if (px == 0 || px == fixupIndex1)
+            if (px == 0 || px == fixupIndex1) {
                 pv.Pack(index, indexBits - 1);
-            else
+            } else {
                 pv.Pack(index, indexBits);
+}
         }
 
         pv.Flush(packedBlocks + 16 * block);
@@ -3293,8 +3443,9 @@ void cvtt::Internal::BC6HComputer::Pack(uint32_t flags, const PixelBlockF16* inp
 
 void cvtt::Internal::BC6HComputer::SignExtendSingle(int &v, int bits)
 {
-    if (v & (1 << (bits - 1)))
+    if (v & (1 << (bits - 1))) {
         v |= -(1 << bits);
+}
 }
 
 void cvtt::Internal::BC6HComputer::UnpackOne(PixelBlockF16 &output, const uint8_t *pBC, bool isSigned)
@@ -3324,8 +3475,9 @@ void cvtt::Internal::BC6HComputer::UnpackOne(PixelBlockF16 &output, const uint8_
     {
         for (int px = 0; px < 16; px++)
         {
-            for (int ch = 0; ch < 3; ch++)
+            for (int ch = 0; ch < 3; ch++) {
                 output.m_pixels[px][ch] = 0;
+}
             output.m_pixels[px][3] = 0x3c00;	// 1.0
         }
         return;
@@ -3338,10 +3490,13 @@ void cvtt::Internal::BC6HComputer::UnpackOne(PixelBlockF16 &output, const uint8_
     int32_t partition = 0;
     int32_t eps[2][2][3];
 
-    for (int subset = 0; subset < 2; subset++)
-        for (int epi = 0; epi < 2; epi++)
-            for (int ch = 0; ch < 3; ch++)
+    for (int subset = 0; subset < 2; subset++) {
+        for (int epi = 0; epi < 2; epi++) {
+            for (int ch = 0; ch < 3; ch++) {
                 eps[subset][epi][ch] = 0;
+}
+}
+}
 
     for (size_t i = numModeBits; i < headerBits; i++) {
         int32_t *pCodedValue = NULL;
@@ -3409,18 +3564,20 @@ void cvtt::Internal::BC6HComputer::UnpackOne(PixelBlockF16 &output, const uint8_
     int indexes[16];
     for (int px = 0; px < 16; px++)
     {
-        if (px == 0 || px == fixupIndex1)
+        if (px == 0 || px == fixupIndex1) {
             indexes[px] = pv.Unpack(indexBits - 1);
-        else
+        } else {
             indexes[px] = pv.Unpack(indexBits);
+}
     }
 
     if (modeInfo.m_partitioned)
     {
         for (int ch = 0; ch < 3; ch++)
         {
-            if (isSigned)
+            if (isSigned) {
                 SignExtendSingle(eps[0][0][ch], modeInfo.m_aPrec);
+}
             if (modeInfo.m_transformed || isSigned)
             {
                 SignExtendSingle(eps[0][1][ch], modeInfo.m_bPrec[ch]);
@@ -3433,10 +3590,12 @@ void cvtt::Internal::BC6HComputer::UnpackOne(PixelBlockF16 &output, const uint8_
     {
         for (int ch = 0; ch < 3; ch++)
         {
-            if (isSigned)
+            if (isSigned) {
                 SignExtendSingle(eps[0][0][ch], modeInfo.m_aPrec);
-            if (modeInfo.m_transformed || isSigned)
+}
+            if (modeInfo.m_transformed || isSigned) {
                 SignExtendSingle(eps[0][1][ch], modeInfo.m_bPrec[ch]);
+}
         }
     }
 
@@ -3449,8 +3608,9 @@ void cvtt::Internal::BC6HComputer::UnpackOne(PixelBlockF16 &output, const uint8_
             int wrapMask = (1 << aPrec) - 1;
 
             eps[0][1][ch] = ((eps[0][0][ch] + eps[0][1][ch]) & wrapMask);
-            if (isSigned)
+            if (isSigned) {
                 SignExtendSingle(eps[0][1][ch], aPrec);
+}
 
             if (modeInfo.m_partitioned)
             {
@@ -3492,15 +3652,17 @@ void cvtt::Internal::BC6HComputer::UnpackOne(PixelBlockF16 &output, const uint8_
                         }
 
                         int unq = 0;
-                        if (comp == 0)
+                        if (comp == 0) {
                             unq = 0;
-                        else if (comp >= ((1 << (aPrec - 1)) - 1))
+                        } else if (comp >= ((1 << (aPrec - 1)) - 1)) {
                             unq = 0x7fff;
-                        else
+                        } else {
                             unq = ((comp << 15) + 0x4000) >> (aPrec - 1);
+}
 
-                        if (s)
+                        if (s) {
                             unq = -unq;
+}
 
                         v = unq;
                     }
@@ -3515,10 +3677,11 @@ void cvtt::Internal::BC6HComputer::UnpackOne(PixelBlockF16 &output, const uint8_
                     {
                         // Nothing
                     }
-                    else if (v == ((1 << aPrec) - 1))
+                    else if (v == ((1 << aPrec) - 1)) {
                         v = 0xffff;
-                    else
+                    } else {
                         v = ((v << 16) + 0x8000) >> aPrec;
+}
                 }
             }
         }
@@ -3529,8 +3692,9 @@ void cvtt::Internal::BC6HComputer::UnpackOne(PixelBlockF16 &output, const uint8_
     for (int px = 0; px < 16; px++)
     {
         int subset = 0;
-        if (modeInfo.m_partitioned)
+        if (modeInfo.m_partitioned) {
             subset = (BC7Data::g_partitionMap[partition] >> px) & 1;
+}
 
         int w = weights[indexes[px]];
         for (int ch = 0; ch < 3; ch++)
@@ -3539,10 +3703,11 @@ void cvtt::Internal::BC6HComputer::UnpackOne(PixelBlockF16 &output, const uint8_
 
             if (isSigned)
             {
-                if (comp < 0)
+                if (comp < 0) {
                     comp = -(((-comp) * 31) >> 5);
-                else
+                } else {
                     comp = (comp * 31) >> 5;
+}
 
                 int s = 0;
                 if (comp < 0)
@@ -3567,10 +3732,11 @@ void cvtt::Kernels::ConfigureBC7EncodingPlanFromQuality(BC7EncodingPlan &encodin
 {
     static const int kMaxQuality = 100;
 
-    if (quality < 1)
+    if (quality < 1) {
         quality = 1;
-    else if (quality > kMaxQuality)
+    } else if (quality > kMaxQuality) {
         quality = kMaxQuality;
+}
 
     const int numRGBModes = cvtt::Tables::BC7Prio::g_bc7NumPrioCodesRGB * quality / kMaxQuality;
     const int numRGBAModes = cvtt::Tables::BC7Prio::g_bc7NumPrioCodesRGBA * quality / kMaxQuality;
@@ -3635,8 +3801,9 @@ bool cvtt::Kernels::ConfigureBC7EncodingPlanFromFineTuningParams(BC7EncodingPlan
     for (int partition = 0; partition < 16; partition++)
     {
         uint8_t sp = params.mode0SP[partition];
-        if (sp == 0)
+        if (sp == 0) {
             continue;
+}
 
         encodingPlan.mode0PartitionEnabled |= static_cast<uint16_t>(1) << partition;
 
@@ -3651,8 +3818,9 @@ bool cvtt::Kernels::ConfigureBC7EncodingPlanFromFineTuningParams(BC7EncodingPlan
     for (int partition = 0; partition < 64; partition++)
     {
         uint8_t sp = params.mode1SP[partition];
-        if (sp == 0)
+        if (sp == 0) {
             continue;
+}
 
         encodingPlan.mode1PartitionEnabled |= static_cast<uint64_t>(1) << partition;
 
@@ -3667,8 +3835,9 @@ bool cvtt::Kernels::ConfigureBC7EncodingPlanFromFineTuningParams(BC7EncodingPlan
     for (int partition = 0; partition < 64; partition++)
     {
         uint8_t sp = params.mode2SP[partition];
-        if (sp == 0)
+        if (sp == 0) {
             continue;
+}
 
         encodingPlan.mode2PartitionEnabled |= static_cast<uint64_t>(1) << partition;
 
@@ -3683,8 +3852,9 @@ bool cvtt::Kernels::ConfigureBC7EncodingPlanFromFineTuningParams(BC7EncodingPlan
     for (int partition = 0; partition < 64; partition++)
     {
         uint8_t sp = params.mode3SP[partition];
-        if (sp == 0)
+        if (sp == 0) {
             continue;
+}
 
         encodingPlan.mode3PartitionEnabled |= static_cast<uint64_t>(1) << partition;
 
@@ -3698,13 +3868,15 @@ bool cvtt::Kernels::ConfigureBC7EncodingPlanFromFineTuningParams(BC7EncodingPlan
     // Mode 4
     for (int rotation = 0; rotation < 4; rotation++)
     {
-        for (int indexMode = 0; indexMode < 2; indexMode++)
+        for (int indexMode = 0; indexMode < 2; indexMode++) {
             encodingPlan.mode4SP[rotation][indexMode] = params.mode4SP[rotation][indexMode];
+}
     }
 
     // Mode 5
-    for (int rotation = 0; rotation < 4; rotation++)
+    for (int rotation = 0; rotation < 4; rotation++) {
         encodingPlan.mode5SP[rotation] = params.mode5SP[rotation];
+}
 
     // Mode 6
     {
@@ -3722,8 +3894,9 @@ bool cvtt::Kernels::ConfigureBC7EncodingPlanFromFineTuningParams(BC7EncodingPlan
     for (int partition = 0; partition < 64; partition++)
     {
         uint8_t sp = params.mode7SP[partition];
-        if (sp == 0)
+        if (sp == 0) {
             continue;
+}
 
         encodingPlan.mode7RGBAPartitionEnabled |= static_cast<uint64_t>(1) << partition;
 

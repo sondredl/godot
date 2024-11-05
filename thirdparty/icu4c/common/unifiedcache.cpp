@@ -161,7 +161,8 @@ void UnifiedCache::flush() const {
     // Use a loop in case cache items that are flushed held hard references to
     // other cache items making those additional cache items eligible for
     // flushing.
-    while (_flush(false));
+    while (_flush(false)) {;
+}
 }
 
 void UnifiedCache::handleUnreferencedObject() const {

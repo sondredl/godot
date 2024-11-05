@@ -94,9 +94,9 @@ GodotJavaWrapper::GodotJavaWrapper(JNIEnv *p_env, jobject p_activity, jobject p_
 }
 
 GodotJavaWrapper::~GodotJavaWrapper() {
-	if (godot_view) {
+
 		delete godot_view;
-	}
+
 
 	JNIEnv *env = get_jni_env();
 	ERR_FAIL_NULL(env);

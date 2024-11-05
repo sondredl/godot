@@ -1,5 +1,5 @@
 #include <array>
-#include <string.h>
+#include <cstring>
 #include <limits>
 #ifdef __ARM_NEON
 #  include <arm_neon.h>
@@ -82,23 +82,23 @@ struct Channels
 
 namespace
 {
-static etcpak_force_inline uint8_t clamp( uint8_t min, int16_t val, uint8_t max )
+etcpak_force_inline uint8_t clamp( uint8_t min, int16_t val, uint8_t max )
 {
     return val < min ? min : ( val > max ? max : val );
 }
 
-static etcpak_force_inline uint8_t clampMin( uint8_t min, int16_t val )
+etcpak_force_inline uint8_t clampMin( uint8_t min, int16_t val )
 {
     return val < min ? min : val;
 }
 
-static etcpak_force_inline uint8_t clampMax( int16_t val, uint8_t max )
+etcpak_force_inline uint8_t clampMax( int16_t val, uint8_t max )
 {
     return val > max ? max : val;
 }
 
 // slightly faster than std::sort
-static void insertionSort( uint8_t* arr1, uint8_t* arr2 )
+void insertionSort( uint8_t* arr1, uint8_t* arr2 )
 {
     for( uint8_t i = 1; i < 16; ++i )
     {
@@ -118,7 +118,7 @@ static void insertionSort( uint8_t* arr1, uint8_t* arr2 )
 //converts indices from  |a0|a1|e0|e1|i0|i1|m0|m1|b0|b1|f0|f1|j0|j1|n0|n1|c0|c1|g0|g1|k0|k1|o0|o1|d0|d1|h0|h1|l0|l1|p0|p1| previously used by T- and H-modes
 //                     into  |p0|o0|n0|m0|l0|k0|j0|i0|h0|g0|f0|e0|d0|c0|b0|a0|p1|o1|n1|m1|l1|k1|j1|i1|h1|g1|f1|e1|d1|c1|b1|a1| which should be used for all modes.
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-static etcpak_force_inline int indexConversion( int pixelIndices )
+etcpak_force_inline int indexConversion( int pixelIndices )
 {
     int correctIndices = 0;
     int LSB[4][4];
@@ -149,7 +149,7 @@ static etcpak_force_inline int indexConversion( int pixelIndices )
 
 // Swapping two RGB-colors
 // NO WARRANTY --- SEE STATEMENT IN TOP OF FILE (C) Ericsson AB 2005-2013. All Rights Reserved.
-static etcpak_force_inline void swapColors( uint8_t( colors )[2][3] )
+etcpak_force_inline void swapColors( uint8_t( colors )[2][3] )
 {
     uint8_t temp = colors[0][R];
     colors[0][R] = colors[1][R];
@@ -188,7 +188,7 @@ void compressColor( uint8_t( currColor )[2][3], uint8_t( quantColor )[2][3], boo
 }
 
 // three decoding functions come from ETCPACK v2.74 and are slightly changed.
-static etcpak_force_inline void decompressColor( uint8_t( colorsRGB444 )[2][3], uint8_t( colors )[2][3] )
+etcpak_force_inline void decompressColor( uint8_t( colorsRGB444 )[2][3], uint8_t( colors )[2][3] )
 {
     // The color should be retrieved as:
     //
@@ -208,7 +208,7 @@ static etcpak_force_inline void decompressColor( uint8_t( colorsRGB444 )[2][3], 
 
 // calculates the paint colors from the block colors
 // using a distance d and one of the H- or T-patterns.
-static void calculatePaintColors59T( uint8_t d, uint8_t( colors )[2][3], uint8_t( pColors )[4][3] )
+void calculatePaintColors59T( uint8_t d, uint8_t( colors )[2][3], uint8_t( pColors )[4][3] )
 {
     //////////////////////////////////////////////
     //
@@ -241,7 +241,7 @@ static void calculatePaintColors59T( uint8_t d, uint8_t( colors )[2][3], uint8_t
     pColors[2][B] = colors[1][B];
 }
 
-static void calculatePaintColors58H( uint8_t d, uint8_t( colors )[2][3], uint8_t( pColors )[4][3] )
+void calculatePaintColors58H( uint8_t d, uint8_t( colors )[2][3], uint8_t( pColors )[4][3] )
 {
     pColors[3][R] = clampMin( 0, colors[1][R] - tableTH[d] );
     pColors[3][G] = clampMin( 0, colors[1][G] - tableTH[d] );
@@ -1081,7 +1081,7 @@ static etcpak_force_inline uint64_t EncodeSelectors_AVX2( uint64_t d, const uint
 
 #endif
 
-static etcpak_force_inline void Average( const uint8_t* data, v4i* a )
+etcpak_force_inline void Average( const uint8_t* data, v4i* a )
 {
 #ifdef __SSE4_1__
     __m128i d0 = _mm_loadu_si128(((__m128i*)data) + 0);
@@ -1190,7 +1190,7 @@ static etcpak_force_inline void Average( const uint8_t* data, v4i* a )
 #endif
 }
 
-static etcpak_force_inline void CalcErrorBlock( const uint8_t* data, unsigned int err[4][4] )
+etcpak_force_inline void CalcErrorBlock( const uint8_t* data, unsigned int err[4][4] )
 {
 #ifdef __SSE4_1__
     __m128i d0 = _mm_loadu_si128(((__m128i*)data) + 0);
@@ -1309,7 +1309,7 @@ static etcpak_force_inline void CalcErrorBlock( const uint8_t* data, unsigned in
 #endif
 }
 
-static etcpak_force_inline unsigned int CalcError( const unsigned int block[4], const v4i& average )
+etcpak_force_inline unsigned int CalcError( const unsigned int block[4], const v4i& average )
 {
     unsigned int err = 0x3FFFFFFF; // Big value to prevent negative values, but small enough to prevent overflow
     err -= block[0] * 2 * average[2];
@@ -1319,7 +1319,7 @@ static etcpak_force_inline unsigned int CalcError( const unsigned int block[4], 
     return err;
 }
 
-static etcpak_force_inline void ProcessAverages( v4i* a )
+etcpak_force_inline void ProcessAverages( v4i* a )
 {
 #ifdef __SSE4_1__
     for( int i=0; i<2; i++ )
@@ -1396,8 +1396,9 @@ static etcpak_force_inline void ProcessAverages( v4i* a )
             int32_t c2 = mul8bit( a[i*2][j], 31 );
 
             int32_t diff = c2 - c1;
-            if( diff > 3 ) diff = 3;
-            else if( diff < -4 ) diff = -4;
+            if( diff > 3 ) { diff = 3;
+            } else if( diff < -4 ) { diff = -4;
+}
 
             int32_t co = c1 + diff;
 
@@ -1415,7 +1416,7 @@ static etcpak_force_inline void ProcessAverages( v4i* a )
 #endif
 }
 
-static etcpak_force_inline void EncodeAverages( uint64_t& _d, const v4i* a, size_t idx )
+etcpak_force_inline void EncodeAverages( uint64_t& _d, const v4i* a, size_t idx )
 {
     auto d = _d;
     d |= ( idx << 24 );
@@ -1442,7 +1443,7 @@ static etcpak_force_inline void EncodeAverages( uint64_t& _d, const v4i* a, size
     _d = d;
 }
 
-static etcpak_force_inline uint64_t CheckSolid( const uint8_t* src )
+etcpak_force_inline uint64_t CheckSolid( const uint8_t* src )
 {
 #ifdef __SSE4_1__
     __m128i d0 = _mm_loadu_si128(((__m128i*)src) + 0);
@@ -1503,7 +1504,7 @@ static etcpak_force_inline uint64_t CheckSolid( const uint8_t* src )
         ( (unsigned int)( src[2] & 0xF8 ) );
 }
 
-static etcpak_force_inline void PrepareAverages( v4i a[8], const uint8_t* src, unsigned int err[4] )
+etcpak_force_inline void PrepareAverages( v4i a[8], const uint8_t* src, unsigned int err[4] )
 {
     Average( src, a );
     ProcessAverages( a );
@@ -1518,7 +1519,7 @@ static etcpak_force_inline void PrepareAverages( v4i a[8], const uint8_t* src, u
     }
 }
 
-static etcpak_force_inline void FindBestFit( uint64_t terr[2][8], uint16_t tsel[16][8], v4i a[8], const uint32_t* id, const uint8_t* data )
+etcpak_force_inline void FindBestFit( uint64_t terr[2][8], uint16_t tsel[16][8], v4i a[8], const uint32_t* id, const uint8_t* data )
 {
     for( size_t i=0; i<16; i++ )
     {
@@ -1752,19 +1753,19 @@ static etcpak_force_inline void FindBestFit( uint32_t terr[2][8], uint16_t tsel[
 }
 #endif
 
-static etcpak_force_inline uint8_t convert6(float f)
+etcpak_force_inline uint8_t convert6(float f)
 {
     int i = (std::min(std::max(static_cast<int>(f), 0), 1023) - 15) >> 1;
     return (i + 11 - ((i + 11) >> 7) - ((i + 4) >> 7)) >> 3;
 }
 
-static etcpak_force_inline uint8_t convert7(float f)
+etcpak_force_inline uint8_t convert7(float f)
 {
     int i = (std::min(std::max(static_cast<int>(f), 0), 1023) - 15) >> 1;
     return (i + 9 - ((i + 9) >> 8) - ((i + 6) >> 8)) >> 2;
 }
 
-static etcpak_force_inline std::pair<uint64_t, uint64_t> Planar( const uint8_t* src, const uint8_t mode, bool useHeuristics )
+etcpak_force_inline std::pair<uint64_t, uint64_t> Planar( const uint8_t* src, const uint8_t mode, bool useHeuristics )
 {
     int32_t r = 0;
     int32_t g = 0;
@@ -2139,7 +2140,8 @@ uint32_t calculateErrorTH( bool tMode, uint8_t* src, uint8_t( colorsRGB444 )[2][
     // test distances
     for( uint8_t d = startDist; d < 8; ++d )
     {
-        if( d >= 2 && dist == d - 2 ) break;
+        if( d >= 2 && dist == d - 2 ) { break;
+}
 
         blockErr = 0;
         pixColors = 0;
@@ -2328,7 +2330,8 @@ uint32_t compressBlockTH( uint8_t *src, Luma& l, uint32_t& compressed1, uint32_t
     }
     else
     {
-        if( lRange * 2 <= rRange ) tMode = true;
+        if( lRange * 2 <= rRange ) { tMode = true;
+}
     }
     // 4) calculates the two base colors
     uint8_t rangeIdx[4] = { pixIdx[0], pixIdx[minSumRangeIdx], pixIdx[minSumRangeIdx + 1], pixIdx[15] };
@@ -2554,7 +2557,8 @@ static etcpak_force_inline uint64_t ProcessRGB( const uint8_t* src )
     return EncodeSelectors_AVX2( d, terr, tsel, (idx % 2) == 1 );
 #else
     uint64_t d = CheckSolid( src );
-    if( d != 0 ) return d;
+    if( d != 0 ) { return d;
+}
 
     v4i a[8];
     unsigned int err[4] = {};
@@ -2568,7 +2572,7 @@ static etcpak_force_inline uint64_t ProcessRGB( const uint8_t* src )
     uint64_t terr[2][8] = {};
 #endif
     uint16_t tsel[16][8];
-    auto id = g_id[idx];
+    const auto *id = g_id[idx];
     FindBestFit( terr, tsel, a, id, src );
 
     return FixByteOrder( EncodeSelectors( d, terr, tsel, id ) );
@@ -2988,7 +2992,8 @@ static etcpak_force_inline uint64_t ProcessRGB_ETC2( const uint8_t* src, bool us
     if( d != 0 ) return d;
 #else
     uint64_t d = CheckSolid( src );
-    if (d != 0) return d;
+    if (d != 0) { return d;
+}
 #endif
 
     uint8_t mode = ModeUndecided;
@@ -3083,7 +3088,8 @@ static etcpak_force_inline uint64_t ProcessRGB_ETC2( const uint8_t* src, bool us
 #else
     auto result = Planar( src, mode, useHeuristics );
 #endif
-    if( result.second == 0 ) return result.first;
+    if( result.second == 0 ) { return result.first;
+}
 
     v4i a[8];
     unsigned int err[4] = {};
@@ -3097,7 +3103,7 @@ static etcpak_force_inline uint64_t ProcessRGB_ETC2( const uint8_t* src, bool us
     uint64_t terr[2][8] = {};
 #endif
     uint16_t tsel[16][8];
-    auto id = g_id[idx];
+    const auto *id = g_id[idx];
     FindBestFit( terr, tsel, a, id, src );
 
     if( useHeuristics )
@@ -3790,8 +3796,9 @@ static etcpak_force_inline uint64_t ProcessAlpha_ETC2( const uint8_t* src )
     uint8_t max = src[0];
     for( int i=1; i<16; i++ )
     {
-        if( min > src[i] ) min = src[i];
-        else if( max < src[i] ) max = src[i];
+        if( min > src[i] ) { min = src[i];
+        } else if( max < src[i] ) { max = src[i];
+}
     }
     int srcRange = max - min;
     int srcMid = min + srcRange / 2;
@@ -3838,7 +3845,8 @@ static etcpak_force_inline uint64_t ProcessAlpha_ETC2( const uint8_t* src )
             err = rangeErr;
             sel = r;
             selmul = mul;
-            if( err == 0 ) break;
+            if( err == 0 ) { break;
+}
         }
     }
 
@@ -3847,7 +3855,7 @@ static etcpak_force_inline uint64_t ProcessAlpha_ETC2( const uint8_t* src )
         ( uint64_t( sel ) << 48 );
 
     int offset = 45;
-    auto ptr = buf[sel];
+    auto *ptr = buf[sel];
     for( int i=0; i<16; i++ )
     {
         d |= uint64_t( *ptr++ ) << offset;
@@ -3890,7 +3898,7 @@ void CompressEtc1Alpha( const uint32_t* src, uint64_t* dst, uint32_t blocks, siz
 
         src += 4;
 #else
-        auto ptr = buf;
+        auto *ptr = buf;
         for( int x=0; x<4; x++ )
         {
             unsigned int a = *src >> 24;
@@ -3949,7 +3957,7 @@ void CompressEtc2Alpha( const uint32_t* src, uint64_t* dst, uint32_t blocks, siz
 
         src += 4;
 #else
-        auto ptr = buf;
+        auto *ptr = buf;
         for( int x=0; x<4; x++ )
         {
             unsigned int a = *src >> 24;
@@ -4000,7 +4008,7 @@ void CompressEtc1Rgb( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_
 
         src += 4;
 #else
-        auto ptr = buf;
+        auto *ptr = buf;
         for( int x=0; x<4; x++ )
         {
             *ptr++ = *src;
@@ -4050,7 +4058,7 @@ void CompressEtc1RgbDither( const uint32_t* src, uint64_t* dst, uint32_t blocks,
 
         src += 4;
 #else
-        auto ptr = buf;
+        auto *ptr = buf;
         for( int x=0; x<4; x++ )
         {
             *ptr++ = *src;
@@ -4094,7 +4102,7 @@ void CompressEtc2Rgb( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_
 
         src += 4;
 #else
-        auto ptr = buf;
+        auto *ptr = buf;
         for( int x=0; x<4; x++ )
         {
             *ptr++ = *src;
@@ -4157,8 +4165,8 @@ void CompressEtc2Rgba( const uint32_t* src, uint64_t* dst, uint32_t blocks, size
 
         src += 4;
 #else
-        auto ptr = rgba;
-        auto ptr8 = alpha;
+        auto *ptr = rgba;
+        auto *ptr8 = alpha;
         for( int x=0; x<4; x++ )
         {
             auto v = *src;
@@ -4224,7 +4232,7 @@ void CompressEacR( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t w
 
         src += 4;
 #else
-        auto ptr8 = r;
+        auto *ptr8 = r;
         for( int x=0; x<4; x++ )
         {
             auto v = *src;
@@ -4297,8 +4305,8 @@ void CompressEacRg( const uint32_t* src, uint64_t* dst, uint32_t blocks, size_t 
         _mm_store_si128( (__m128i*)&rg[16], s2 );
         src += 4;
 #else
-        auto ptrr = rg;
-        auto ptrg = ptrr + 16;
+        auto *ptrr = rg;
+        auto *ptrg = ptrr + 16;
         for( int x=0; x<4; x++ )
         {
             auto v = *src;

@@ -372,11 +372,7 @@ static Error _parse_obj(const String &p_path, List<Ref<ImporterMesh>> &r_meshes,
 		} else if (l.begins_with("s ")) { //smoothing
 			String what = l.substr(2, l.length()).strip_edges();
 			bool do_smooth;
-			if (what == "off") {
-				do_smooth = false;
-			} else {
-				do_smooth = true;
-			}
+			do_smooth = !what == "off";
 			if (do_smooth != smoothing) {
 				smoothing = do_smooth;
 				if (smoothing) {

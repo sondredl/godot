@@ -303,230 +303,231 @@ void DecodeResourceLimits(TBuiltInResource* resources, char* config)
 
         const int value = std::atoi(valueStr.c_str());
 
-        if (tokenStr == "MaxLights")
+        if (tokenStr == "MaxLights") {
             resources->maxLights = value;
-        else if (tokenStr == "MaxClipPlanes")
+        } else if (tokenStr == "MaxClipPlanes") {
             resources->maxClipPlanes = value;
-        else if (tokenStr == "MaxTextureUnits")
+        } else if (tokenStr == "MaxTextureUnits") {
             resources->maxTextureUnits = value;
-        else if (tokenStr == "MaxTextureCoords")
+        } else if (tokenStr == "MaxTextureCoords") {
             resources->maxTextureCoords = value;
-        else if (tokenStr == "MaxVertexAttribs")
+        } else if (tokenStr == "MaxVertexAttribs") {
             resources->maxVertexAttribs = value;
-        else if (tokenStr == "MaxVertexUniformComponents")
+        } else if (tokenStr == "MaxVertexUniformComponents") {
             resources->maxVertexUniformComponents = value;
-        else if (tokenStr == "MaxVaryingFloats")
+        } else if (tokenStr == "MaxVaryingFloats") {
             resources->maxVaryingFloats = value;
-        else if (tokenStr == "MaxVertexTextureImageUnits")
+        } else if (tokenStr == "MaxVertexTextureImageUnits") {
             resources->maxVertexTextureImageUnits = value;
-        else if (tokenStr == "MaxCombinedTextureImageUnits")
+        } else if (tokenStr == "MaxCombinedTextureImageUnits") {
             resources->maxCombinedTextureImageUnits = value;
-        else if (tokenStr == "MaxTextureImageUnits")
+        } else if (tokenStr == "MaxTextureImageUnits") {
             resources->maxTextureImageUnits = value;
-        else if (tokenStr == "MaxFragmentUniformComponents")
+        } else if (tokenStr == "MaxFragmentUniformComponents") {
             resources->maxFragmentUniformComponents = value;
-        else if (tokenStr == "MaxDrawBuffers")
+        } else if (tokenStr == "MaxDrawBuffers") {
             resources->maxDrawBuffers = value;
-        else if (tokenStr == "MaxVertexUniformVectors")
+        } else if (tokenStr == "MaxVertexUniformVectors") {
             resources->maxVertexUniformVectors = value;
-        else if (tokenStr == "MaxVaryingVectors")
+        } else if (tokenStr == "MaxVaryingVectors") {
             resources->maxVaryingVectors = value;
-        else if (tokenStr == "MaxFragmentUniformVectors")
+        } else if (tokenStr == "MaxFragmentUniformVectors") {
             resources->maxFragmentUniformVectors = value;
-        else if (tokenStr == "MaxVertexOutputVectors")
+        } else if (tokenStr == "MaxVertexOutputVectors") {
             resources->maxVertexOutputVectors = value;
-        else if (tokenStr == "MaxFragmentInputVectors")
+        } else if (tokenStr == "MaxFragmentInputVectors") {
             resources->maxFragmentInputVectors = value;
-        else if (tokenStr == "MinProgramTexelOffset")
+        } else if (tokenStr == "MinProgramTexelOffset") {
             resources->minProgramTexelOffset = value;
-        else if (tokenStr == "MaxProgramTexelOffset")
+        } else if (tokenStr == "MaxProgramTexelOffset") {
             resources->maxProgramTexelOffset = value;
-        else if (tokenStr == "MaxClipDistances")
+        } else if (tokenStr == "MaxClipDistances") {
             resources->maxClipDistances = value;
-        else if (tokenStr == "MaxComputeWorkGroupCountX")
+        } else if (tokenStr == "MaxComputeWorkGroupCountX") {
             resources->maxComputeWorkGroupCountX = value;
-        else if (tokenStr == "MaxComputeWorkGroupCountY")
+        } else if (tokenStr == "MaxComputeWorkGroupCountY") {
             resources->maxComputeWorkGroupCountY = value;
-        else if (tokenStr == "MaxComputeWorkGroupCountZ")
+        } else if (tokenStr == "MaxComputeWorkGroupCountZ") {
             resources->maxComputeWorkGroupCountZ = value;
-        else if (tokenStr == "MaxComputeWorkGroupSizeX")
+        } else if (tokenStr == "MaxComputeWorkGroupSizeX") {
             resources->maxComputeWorkGroupSizeX = value;
-        else if (tokenStr == "MaxComputeWorkGroupSizeY")
+        } else if (tokenStr == "MaxComputeWorkGroupSizeY") {
             resources->maxComputeWorkGroupSizeY = value;
-        else if (tokenStr == "MaxComputeWorkGroupSizeZ")
+        } else if (tokenStr == "MaxComputeWorkGroupSizeZ") {
             resources->maxComputeWorkGroupSizeZ = value;
-        else if (tokenStr == "MaxComputeUniformComponents")
+        } else if (tokenStr == "MaxComputeUniformComponents") {
             resources->maxComputeUniformComponents = value;
-        else if (tokenStr == "MaxComputeTextureImageUnits")
+        } else if (tokenStr == "MaxComputeTextureImageUnits") {
             resources->maxComputeTextureImageUnits = value;
-        else if (tokenStr == "MaxComputeImageUniforms")
+        } else if (tokenStr == "MaxComputeImageUniforms") {
             resources->maxComputeImageUniforms = value;
-        else if (tokenStr == "MaxComputeAtomicCounters")
+        } else if (tokenStr == "MaxComputeAtomicCounters") {
             resources->maxComputeAtomicCounters = value;
-        else if (tokenStr == "MaxComputeAtomicCounterBuffers")
+        } else if (tokenStr == "MaxComputeAtomicCounterBuffers") {
             resources->maxComputeAtomicCounterBuffers = value;
-        else if (tokenStr == "MaxVaryingComponents")
+        } else if (tokenStr == "MaxVaryingComponents") {
             resources->maxVaryingComponents = value;
-        else if (tokenStr == "MaxVertexOutputComponents")
+        } else if (tokenStr == "MaxVertexOutputComponents") {
             resources->maxVertexOutputComponents = value;
-        else if (tokenStr == "MaxGeometryInputComponents")
+        } else if (tokenStr == "MaxGeometryInputComponents") {
             resources->maxGeometryInputComponents = value;
-        else if (tokenStr == "MaxGeometryOutputComponents")
+        } else if (tokenStr == "MaxGeometryOutputComponents") {
             resources->maxGeometryOutputComponents = value;
-        else if (tokenStr == "MaxFragmentInputComponents")
+        } else if (tokenStr == "MaxFragmentInputComponents") {
             resources->maxFragmentInputComponents = value;
-        else if (tokenStr == "MaxImageUnits")
+        } else if (tokenStr == "MaxImageUnits") {
             resources->maxImageUnits = value;
-        else if (tokenStr == "MaxCombinedImageUnitsAndFragmentOutputs")
+        } else if (tokenStr == "MaxCombinedImageUnitsAndFragmentOutputs") {
             resources->maxCombinedImageUnitsAndFragmentOutputs = value;
-        else if (tokenStr == "MaxCombinedShaderOutputResources")
+        } else if (tokenStr == "MaxCombinedShaderOutputResources") {
             resources->maxCombinedShaderOutputResources = value;
-        else if (tokenStr == "MaxImageSamples")
+        } else if (tokenStr == "MaxImageSamples") {
             resources->maxImageSamples = value;
-        else if (tokenStr == "MaxVertexImageUniforms")
+        } else if (tokenStr == "MaxVertexImageUniforms") {
             resources->maxVertexImageUniforms = value;
-        else if (tokenStr == "MaxTessControlImageUniforms")
+        } else if (tokenStr == "MaxTessControlImageUniforms") {
             resources->maxTessControlImageUniforms = value;
-        else if (tokenStr == "MaxTessEvaluationImageUniforms")
+        } else if (tokenStr == "MaxTessEvaluationImageUniforms") {
             resources->maxTessEvaluationImageUniforms = value;
-        else if (tokenStr == "MaxGeometryImageUniforms")
+        } else if (tokenStr == "MaxGeometryImageUniforms") {
             resources->maxGeometryImageUniforms = value;
-        else if (tokenStr == "MaxFragmentImageUniforms")
+        } else if (tokenStr == "MaxFragmentImageUniforms") {
             resources->maxFragmentImageUniforms = value;
-        else if (tokenStr == "MaxCombinedImageUniforms")
+        } else if (tokenStr == "MaxCombinedImageUniforms") {
             resources->maxCombinedImageUniforms = value;
-        else if (tokenStr == "MaxGeometryTextureImageUnits")
+        } else if (tokenStr == "MaxGeometryTextureImageUnits") {
             resources->maxGeometryTextureImageUnits = value;
-        else if (tokenStr == "MaxGeometryOutputVertices")
+        } else if (tokenStr == "MaxGeometryOutputVertices") {
             resources->maxGeometryOutputVertices = value;
-        else if (tokenStr == "MaxGeometryTotalOutputComponents")
+        } else if (tokenStr == "MaxGeometryTotalOutputComponents") {
             resources->maxGeometryTotalOutputComponents = value;
-        else if (tokenStr == "MaxGeometryUniformComponents")
+        } else if (tokenStr == "MaxGeometryUniformComponents") {
             resources->maxGeometryUniformComponents = value;
-        else if (tokenStr == "MaxGeometryVaryingComponents")
+        } else if (tokenStr == "MaxGeometryVaryingComponents") {
             resources->maxGeometryVaryingComponents = value;
-        else if (tokenStr == "MaxTessControlInputComponents")
+        } else if (tokenStr == "MaxTessControlInputComponents") {
             resources->maxTessControlInputComponents = value;
-        else if (tokenStr == "MaxTessControlOutputComponents")
+        } else if (tokenStr == "MaxTessControlOutputComponents") {
             resources->maxTessControlOutputComponents = value;
-        else if (tokenStr == "MaxTessControlTextureImageUnits")
+        } else if (tokenStr == "MaxTessControlTextureImageUnits") {
             resources->maxTessControlTextureImageUnits = value;
-        else if (tokenStr == "MaxTessControlUniformComponents")
+        } else if (tokenStr == "MaxTessControlUniformComponents") {
             resources->maxTessControlUniformComponents = value;
-        else if (tokenStr == "MaxTessControlTotalOutputComponents")
+        } else if (tokenStr == "MaxTessControlTotalOutputComponents") {
             resources->maxTessControlTotalOutputComponents = value;
-        else if (tokenStr == "MaxTessEvaluationInputComponents")
+        } else if (tokenStr == "MaxTessEvaluationInputComponents") {
             resources->maxTessEvaluationInputComponents = value;
-        else if (tokenStr == "MaxTessEvaluationOutputComponents")
+        } else if (tokenStr == "MaxTessEvaluationOutputComponents") {
             resources->maxTessEvaluationOutputComponents = value;
-        else if (tokenStr == "MaxTessEvaluationTextureImageUnits")
+        } else if (tokenStr == "MaxTessEvaluationTextureImageUnits") {
             resources->maxTessEvaluationTextureImageUnits = value;
-        else if (tokenStr == "MaxTessEvaluationUniformComponents")
+        } else if (tokenStr == "MaxTessEvaluationUniformComponents") {
             resources->maxTessEvaluationUniformComponents = value;
-        else if (tokenStr == "MaxTessPatchComponents")
+        } else if (tokenStr == "MaxTessPatchComponents") {
             resources->maxTessPatchComponents = value;
-        else if (tokenStr == "MaxPatchVertices")
+        } else if (tokenStr == "MaxPatchVertices") {
             resources->maxPatchVertices = value;
-        else if (tokenStr == "MaxTessGenLevel")
+        } else if (tokenStr == "MaxTessGenLevel") {
             resources->maxTessGenLevel = value;
-        else if (tokenStr == "MaxViewports")
+        } else if (tokenStr == "MaxViewports") {
             resources->maxViewports = value;
-        else if (tokenStr == "MaxVertexAtomicCounters")
+        } else if (tokenStr == "MaxVertexAtomicCounters") {
             resources->maxVertexAtomicCounters = value;
-        else if (tokenStr == "MaxTessControlAtomicCounters")
+        } else if (tokenStr == "MaxTessControlAtomicCounters") {
             resources->maxTessControlAtomicCounters = value;
-        else if (tokenStr == "MaxTessEvaluationAtomicCounters")
+        } else if (tokenStr == "MaxTessEvaluationAtomicCounters") {
             resources->maxTessEvaluationAtomicCounters = value;
-        else if (tokenStr == "MaxGeometryAtomicCounters")
+        } else if (tokenStr == "MaxGeometryAtomicCounters") {
             resources->maxGeometryAtomicCounters = value;
-        else if (tokenStr == "MaxFragmentAtomicCounters")
+        } else if (tokenStr == "MaxFragmentAtomicCounters") {
             resources->maxFragmentAtomicCounters = value;
-        else if (tokenStr == "MaxCombinedAtomicCounters")
+        } else if (tokenStr == "MaxCombinedAtomicCounters") {
             resources->maxCombinedAtomicCounters = value;
-        else if (tokenStr == "MaxAtomicCounterBindings")
+        } else if (tokenStr == "MaxAtomicCounterBindings") {
             resources->maxAtomicCounterBindings = value;
-        else if (tokenStr == "MaxVertexAtomicCounterBuffers")
+        } else if (tokenStr == "MaxVertexAtomicCounterBuffers") {
             resources->maxVertexAtomicCounterBuffers = value;
-        else if (tokenStr == "MaxTessControlAtomicCounterBuffers")
+        } else if (tokenStr == "MaxTessControlAtomicCounterBuffers") {
             resources->maxTessControlAtomicCounterBuffers = value;
-        else if (tokenStr == "MaxTessEvaluationAtomicCounterBuffers")
+        } else if (tokenStr == "MaxTessEvaluationAtomicCounterBuffers") {
             resources->maxTessEvaluationAtomicCounterBuffers = value;
-        else if (tokenStr == "MaxGeometryAtomicCounterBuffers")
+        } else if (tokenStr == "MaxGeometryAtomicCounterBuffers") {
             resources->maxGeometryAtomicCounterBuffers = value;
-        else if (tokenStr == "MaxFragmentAtomicCounterBuffers")
+        } else if (tokenStr == "MaxFragmentAtomicCounterBuffers") {
             resources->maxFragmentAtomicCounterBuffers = value;
-        else if (tokenStr == "MaxCombinedAtomicCounterBuffers")
+        } else if (tokenStr == "MaxCombinedAtomicCounterBuffers") {
             resources->maxCombinedAtomicCounterBuffers = value;
-        else if (tokenStr == "MaxAtomicCounterBufferSize")
+        } else if (tokenStr == "MaxAtomicCounterBufferSize") {
             resources->maxAtomicCounterBufferSize = value;
-        else if (tokenStr == "MaxTransformFeedbackBuffers")
+        } else if (tokenStr == "MaxTransformFeedbackBuffers") {
             resources->maxTransformFeedbackBuffers = value;
-        else if (tokenStr == "MaxTransformFeedbackInterleavedComponents")
+        } else if (tokenStr == "MaxTransformFeedbackInterleavedComponents") {
             resources->maxTransformFeedbackInterleavedComponents = value;
-        else if (tokenStr == "MaxCullDistances")
+        } else if (tokenStr == "MaxCullDistances") {
             resources->maxCullDistances = value;
-        else if (tokenStr == "MaxCombinedClipAndCullDistances")
+        } else if (tokenStr == "MaxCombinedClipAndCullDistances") {
             resources->maxCombinedClipAndCullDistances = value;
-        else if (tokenStr == "MaxSamples")
+        } else if (tokenStr == "MaxSamples") {
             resources->maxSamples = value;
-        else if (tokenStr == "MaxMeshOutputVerticesNV")
+        } else if (tokenStr == "MaxMeshOutputVerticesNV") {
             resources->maxMeshOutputVerticesNV = value;
-        else if (tokenStr == "MaxMeshOutputPrimitivesNV")
+        } else if (tokenStr == "MaxMeshOutputPrimitivesNV") {
             resources->maxMeshOutputPrimitivesNV = value;
-        else if (tokenStr == "MaxMeshWorkGroupSizeX_NV")
+        } else if (tokenStr == "MaxMeshWorkGroupSizeX_NV") {
             resources->maxMeshWorkGroupSizeX_NV = value;
-        else if (tokenStr == "MaxMeshWorkGroupSizeY_NV")
+        } else if (tokenStr == "MaxMeshWorkGroupSizeY_NV") {
             resources->maxMeshWorkGroupSizeY_NV = value;
-        else if (tokenStr == "MaxMeshWorkGroupSizeZ_NV")
+        } else if (tokenStr == "MaxMeshWorkGroupSizeZ_NV") {
             resources->maxMeshWorkGroupSizeZ_NV = value;
-        else if (tokenStr == "MaxTaskWorkGroupSizeX_NV")
+        } else if (tokenStr == "MaxTaskWorkGroupSizeX_NV") {
             resources->maxTaskWorkGroupSizeX_NV = value;
-        else if (tokenStr == "MaxTaskWorkGroupSizeY_NV")
+        } else if (tokenStr == "MaxTaskWorkGroupSizeY_NV") {
             resources->maxTaskWorkGroupSizeY_NV = value;
-        else if (tokenStr == "MaxTaskWorkGroupSizeZ_NV")
+        } else if (tokenStr == "MaxTaskWorkGroupSizeZ_NV") {
             resources->maxTaskWorkGroupSizeZ_NV = value;
-        else if (tokenStr == "MaxMeshViewCountNV")
+        } else if (tokenStr == "MaxMeshViewCountNV") {
             resources->maxMeshViewCountNV = value;
-        else if (tokenStr == "MaxMeshOutputVerticesEXT")
+        } else if (tokenStr == "MaxMeshOutputVerticesEXT") {
             resources->maxMeshOutputVerticesEXT = value;
-        else if (tokenStr == "MaxMeshOutputPrimitivesEXT")
+        } else if (tokenStr == "MaxMeshOutputPrimitivesEXT") {
             resources->maxMeshOutputPrimitivesEXT = value;
-        else if (tokenStr == "MaxMeshWorkGroupSizeX_EXT")
+        } else if (tokenStr == "MaxMeshWorkGroupSizeX_EXT") {
             resources->maxMeshWorkGroupSizeX_EXT = value;
-        else if (tokenStr == "MaxMeshWorkGroupSizeY_EXT")
+        } else if (tokenStr == "MaxMeshWorkGroupSizeY_EXT") {
             resources->maxMeshWorkGroupSizeY_EXT = value;
-        else if (tokenStr == "MaxMeshWorkGroupSizeZ_EXT")
+        } else if (tokenStr == "MaxMeshWorkGroupSizeZ_EXT") {
             resources->maxMeshWorkGroupSizeZ_EXT = value;
-        else if (tokenStr == "MaxTaskWorkGroupSizeX_EXT")
+        } else if (tokenStr == "MaxTaskWorkGroupSizeX_EXT") {
             resources->maxTaskWorkGroupSizeX_EXT = value;
-        else if (tokenStr == "MaxTaskWorkGroupSizeY_EXT")
+        } else if (tokenStr == "MaxTaskWorkGroupSizeY_EXT") {
             resources->maxTaskWorkGroupSizeY_EXT = value;
-        else if (tokenStr == "MaxTaskWorkGroupSizeZ_EXT")
+        } else if (tokenStr == "MaxTaskWorkGroupSizeZ_EXT") {
             resources->maxTaskWorkGroupSizeZ_EXT = value;
-        else if (tokenStr == "MaxMeshViewCountEXT")
+        } else if (tokenStr == "MaxMeshViewCountEXT") {
             resources->maxMeshViewCountEXT = value;
-        else if (tokenStr == "MaxDualSourceDrawBuffersEXT")
+        } else if (tokenStr == "MaxDualSourceDrawBuffersEXT") {
             resources->maxDualSourceDrawBuffersEXT = value;
-        else if (tokenStr == "nonInductiveForLoops")
+        } else if (tokenStr == "nonInductiveForLoops") {
             resources->limits.nonInductiveForLoops = (value != 0);
-        else if (tokenStr == "whileLoops")
+        } else if (tokenStr == "whileLoops") {
             resources->limits.whileLoops = (value != 0);
-        else if (tokenStr == "doWhileLoops")
+        } else if (tokenStr == "doWhileLoops") {
             resources->limits.doWhileLoops = (value != 0);
-        else if (tokenStr == "generalUniformIndexing")
+        } else if (tokenStr == "generalUniformIndexing") {
             resources->limits.generalUniformIndexing = (value != 0);
-        else if (tokenStr == "generalAttributeMatrixVectorIndexing")
+        } else if (tokenStr == "generalAttributeMatrixVectorIndexing") {
             resources->limits.generalAttributeMatrixVectorIndexing = (value != 0);
-        else if (tokenStr == "generalVaryingIndexing")
+        } else if (tokenStr == "generalVaryingIndexing") {
             resources->limits.generalVaryingIndexing = (value != 0);
-        else if (tokenStr == "generalSamplerIndexing")
+        } else if (tokenStr == "generalSamplerIndexing") {
             resources->limits.generalSamplerIndexing = (value != 0);
-        else if (tokenStr == "generalVariableIndexing")
+        } else if (tokenStr == "generalVariableIndexing") {
             resources->limits.generalVariableIndexing = (value != 0);
-        else if (tokenStr == "generalConstantMatrixVectorIndexing")
+        } else if (tokenStr == "generalConstantMatrixVectorIndexing") {
             resources->limits.generalConstantMatrixVectorIndexing = (value != 0);
-        else
+        } else {
             printf("Warning: unrecognized limit (%s) in configuration file.\n", tokenStr.c_str());
+}
 
     }
 }

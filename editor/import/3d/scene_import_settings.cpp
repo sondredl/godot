@@ -107,11 +107,7 @@ class SceneImportSettingsData : public Object {
 				return true;
 			}
 		}
-		if (defaults.has(p_name)) {
-			r_ret = defaults[p_name];
-			return true;
-		}
-		return false;
+		return defaults.has(p_name);
 	}
 
 	void handle_special_properties(PropertyInfo &r_option) const {

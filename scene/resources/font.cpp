@@ -137,16 +137,7 @@ bool Font::_is_cyclic(const Ref<Font> &p_f, int p_depth) const {
 	if (p_f.is_null()) {
 		return false;
 	}
-	if (p_f == this) {
-		return true;
-	}
-	for (int i = 0; i < p_f->fallbacks.size(); i++) {
-		const Ref<Font> &f = p_f->fallbacks[i];
-		if (_is_cyclic(f, p_depth + 1)) {
-			return true;
-		}
-	}
-	return false;
+	return p_f == this;
 }
 
 bool Font::_is_base_cyclic(const Ref<Font> &p_f, int p_depth) const {
@@ -1075,19 +1066,11 @@ bool FontFile::_set(const StringName &p_name, const Variant &p_value) {
 	if (tokens.size() == 1 && tokens[0] == "font_data") {
 		// Compatibility, DynamicFont.
 		Ref<Font> f = p_value;
-		if (f.is_valid()) {
-			fallbacks.push_back(f);
-			return true;
-		}
-		return false;
+		return f.is_valid();
 	} else if (tokens.size() == 2 && tokens[0] == "fallback") {
 		// Compatibility, DynamicFont.
 		Ref<FontFile> f = p_value;
-		if (f.is_valid()) {
-			fallbacks.push_back(f);
-			return true;
-		}
-		return false;
+		return f.is_valid();
 	} else if (tokens.size() == 1 && tokens[0] == "textures") {
 		// Compatibility, BitmapFont.
 		set_fixed_size(16);
@@ -1142,11 +1125,7 @@ bool FontFile::_set(const StringName &p_name, const Variant &p_value) {
 	} else if (tokens.size() == 1 && tokens[0] == "fallback") {
 		// Compatibility, BitmapFont.
 		Ref<Font> f = p_value;
-		if (f.is_valid()) {
-			fallbacks.push_back(f);
-			return true;
-		}
-		return false;
+		return f.is_valid();
 	}
 #endif // DISABLE_DEPRECATED
 

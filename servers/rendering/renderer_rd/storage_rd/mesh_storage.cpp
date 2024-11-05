@@ -1433,13 +1433,13 @@ void MeshStorage::_multimesh_allocate_data(RID p_multimesh, int p_instances, RS:
 		multimesh->uniform_set_3d = RID(); //cleared by dependency
 	}
 
-	if (multimesh->data_cache_dirty_regions) {
+	if (*multimesh->data_cache_dirty_regions) {
 		memdelete_arr(multimesh->data_cache_dirty_regions);
 		multimesh->data_cache_dirty_regions = nullptr;
 		multimesh->data_cache_dirty_region_count = 0;
 	}
 
-	if (multimesh->previous_data_cache_dirty_regions) {
+	if (*multimesh->previous_data_cache_dirty_regions) {
 		memdelete_arr(multimesh->previous_data_cache_dirty_regions);
 		multimesh->previous_data_cache_dirty_regions = nullptr;
 		multimesh->previous_data_cache_dirty_region_count = 0;

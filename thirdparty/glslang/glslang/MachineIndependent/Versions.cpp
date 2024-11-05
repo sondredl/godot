@@ -608,8 +608,9 @@ void TParseVersions::getPreamble(std::string& preamble)
             // define GL_core_profile and GL_compatibility_profile
             preamble += "#define GL_core_profile 1\n";
 
-            if (profile == ECompatibilityProfile)
+            if (profile == ECompatibilityProfile) {
                 preamble += "#define GL_compatibility_profile 1\n";
+}
         }
         if (version >= 140) {
             preamble += "#define GL_EXT_null_initializer 1\n";
@@ -722,8 +723,9 @@ const char* StageName(EShLanguage stage)
 //
 void TParseVersions::requireStage(const TSourceLoc& loc, EShLanguageMask languageMask, const char* featureDesc)
 {
-    if (((1 << language) & languageMask) == 0)
+    if (((1 << language) & languageMask) == 0) {
         error(loc, "not supported in this stage:", featureDesc, StageName(language));
+}
 }
 
 // If only one stage supports a feature, this can be called.  But, all supporting stages
@@ -744,8 +746,9 @@ void TParseVersions::requireStage(const TSourceLoc& loc, EShLanguage stage, cons
 //
 void TParseVersions::requireProfile(const TSourceLoc& loc, int profileMask, const char* featureDesc)
 {
-    if (! (profile & profileMask))
+    if (! (profile & profileMask)) {
         error(loc, "not supported with this profile:", featureDesc, ProfileName(profile));
+}
 }
 
 //
@@ -782,8 +785,9 @@ void TParseVersions::profileRequires(const TSourceLoc& loc, int profileMask, int
             default: break; // some compilers want this
             }
         }
-        if (! okay)
+        if (! okay) {
             error(loc, "not supported for this version or the enabled extensions", featureDesc, "");
+}
     }
 }
 
@@ -807,11 +811,12 @@ void TParseVersions::checkDeprecated(const TSourceLoc& loc, int profileMask, int
 {
     if (profile & profileMask) {
         if (version >= depVersion) {
-            if (forwardCompatible)
+            if (forwardCompatible) {
                 error(loc, "deprecated, may be removed in future release", featureDesc, "");
-            else if (! suppressWarnings())
+            } else if (! suppressWarnings()) {
                 infoSink.info.message(EPrefixWarning, (TString(featureDesc) + " deprecated in version " +
                                                        String(depVersion) + "; may be removed in future release").c_str(), loc);
+}
         }
     }
 }
@@ -839,8 +844,9 @@ bool TParseVersions::checkExtensionsRequested(const TSourceLoc& loc, int numExte
     // First, see if any of the extensions are enabled
     for (int i = 0; i < numExtensions; ++i) {
         TExtensionBehavior behavior = getExtensionBehavior(extensions[i]);
-        if (behavior == EBhEnable || behavior == EBhRequire)
+        if (behavior == EBhEnable || behavior == EBhRequire) {
             return true;
+}
     }
 
     // See if any extensions want to give a warning on use; give warnings for all such extensions
@@ -856,9 +862,7 @@ bool TParseVersions::checkExtensionsRequested(const TSourceLoc& loc, int numExte
             warned = true;
         }
     }
-    if (warned)
-        return true;
-    return false;
+    return warned;
 }
 
 //
@@ -868,16 +872,18 @@ bool TParseVersions::checkExtensionsRequested(const TSourceLoc& loc, int numExte
 void TParseVersions::requireExtensions(const TSourceLoc& loc, int numExtensions, const char* const extensions[],
     const char* featureDesc)
 {
-    if (checkExtensionsRequested(loc, numExtensions, extensions, featureDesc))
+    if (checkExtensionsRequested(loc, numExtensions, extensions, featureDesc)) {
         return;
+}
 
     // If we get this far, give errors explaining what extensions are needed
-    if (numExtensions == 1)
+    if (numExtensions == 1) {
         error(loc, "required extension not requested:", featureDesc, extensions[0]);
-    else {
+    } else {
         error(loc, "required extension not requested:", featureDesc, "Possible extensions include:");
-        for (int i = 0; i < numExtensions; ++i)
+        for (int i = 0; i < numExtensions; ++i) {
             infoSink.info.message(EPrefixNone, extensions[i]);
+}
     }
 }
 
@@ -888,26 +894,29 @@ void TParseVersions::requireExtensions(const TSourceLoc& loc, int numExtensions,
 void TParseVersions::ppRequireExtensions(const TSourceLoc& loc, int numExtensions, const char* const extensions[],
     const char* featureDesc)
 {
-    if (checkExtensionsRequested(loc, numExtensions, extensions, featureDesc))
+    if (checkExtensionsRequested(loc, numExtensions, extensions, featureDesc)) {
         return;
+}
 
     // If we get this far, give errors explaining what extensions are needed
-    if (numExtensions == 1)
+    if (numExtensions == 1) {
         ppError(loc, "required extension not requested:", featureDesc, extensions[0]);
-    else {
+    } else {
         ppError(loc, "required extension not requested:", featureDesc, "Possible extensions include:");
-        for (int i = 0; i < numExtensions; ++i)
+        for (int i = 0; i < numExtensions; ++i) {
             infoSink.info.message(EPrefixNone, extensions[i]);
+}
     }
 }
 
 TExtensionBehavior TParseVersions::getExtensionBehavior(const char* extension)
 {
     auto iter = extensionBehavior.find(TString(extension));
-    if (iter == extensionBehavior.end())
+    if (iter == extensionBehavior.end()) {
         return EBhMissing;
-    else
+    } else {
         return iter->second;
+}
 }
 
 // Returns true if the given extension is set to enable, require, or warn.
@@ -927,8 +936,9 @@ bool TParseVersions::extensionTurnedOn(const char* const extension)
 bool TParseVersions::extensionsTurnedOn(int numExtensions, const char* const extensions[])
 {
     for (int i = 0; i < numExtensions; ++i) {
-        if (extensionTurnedOn(extensions[i]))
+        if (extensionTurnedOn(extensions[i])) {
             return true;
+}
     }
     return false;
 }
@@ -940,15 +950,15 @@ void TParseVersions::updateExtensionBehavior(int line, const char* extension, co
 {
     // Translate from text string of extension's behavior to an enum.
     TExtensionBehavior behavior = EBhDisable;
-    if (! strcmp("require", behaviorString))
+    if (! strcmp("require", behaviorString)) {
         behavior = EBhRequire;
-    else if (! strcmp("enable", behaviorString))
+    } else if (! strcmp("enable", behaviorString)) {
         behavior = EBhEnable;
-    else if (! strcmp("disable", behaviorString))
+    } else if (! strcmp("disable", behaviorString)) {
         behavior = EBhDisable;
-    else if (! strcmp("warn", behaviorString))
+    } else if (! strcmp("warn", behaviorString)) {
         behavior = EBhWarn;
-    else {
+    } else {
         error(getCurrentLoc(), "behavior not supported:", "#extension", behaviorString);
         return;
     }
@@ -980,76 +990,77 @@ void TParseVersions::updateExtensionBehavior(int line, const char* extension, co
         updateExtensionBehavior(line, "GL_EXT_texture_cube_map_array", behaviorString);
     }
     // geometry to io_blocks
-    else if (strcmp(extension, "GL_EXT_geometry_shader") == 0)
+    else if (strcmp(extension, "GL_EXT_geometry_shader") == 0) {
         updateExtensionBehavior(line, "GL_EXT_shader_io_blocks", behaviorString);
-    else if (strcmp(extension, "GL_OES_geometry_shader") == 0)
+    } else if (strcmp(extension, "GL_OES_geometry_shader") == 0) {
         updateExtensionBehavior(line, "GL_OES_shader_io_blocks", behaviorString);
     // tessellation to io_blocks
-    else if (strcmp(extension, "GL_EXT_tessellation_shader") == 0)
+    } else if (strcmp(extension, "GL_EXT_tessellation_shader") == 0) {
         updateExtensionBehavior(line, "GL_EXT_shader_io_blocks", behaviorString);
-    else if (strcmp(extension, "GL_OES_tessellation_shader") == 0)
+    } else if (strcmp(extension, "GL_OES_tessellation_shader") == 0) {
         updateExtensionBehavior(line, "GL_OES_shader_io_blocks", behaviorString);
-    else if (strcmp(extension, "GL_GOOGLE_include_directive") == 0)
+    } else if (strcmp(extension, "GL_GOOGLE_include_directive") == 0) {
         updateExtensionBehavior(line, "GL_GOOGLE_cpp_style_line_directive", behaviorString);
-    else if (strcmp(extension, "GL_ARB_shading_language_include") == 0)
+    } else if (strcmp(extension, "GL_ARB_shading_language_include") == 0) {
         updateExtensionBehavior(line, "GL_GOOGLE_cpp_style_line_directive", behaviorString);
     // subgroup_* to subgroup_basic
-    else if (strcmp(extension, "GL_KHR_shader_subgroup_vote") == 0)
+    } else if (strcmp(extension, "GL_KHR_shader_subgroup_vote") == 0) {
         updateExtensionBehavior(line, "GL_KHR_shader_subgroup_basic", behaviorString);
-    else if (strcmp(extension, "GL_KHR_shader_subgroup_arithmetic") == 0)
+    } else if (strcmp(extension, "GL_KHR_shader_subgroup_arithmetic") == 0) {
         updateExtensionBehavior(line, "GL_KHR_shader_subgroup_basic", behaviorString);
-    else if (strcmp(extension, "GL_KHR_shader_subgroup_ballot") == 0)
+    } else if (strcmp(extension, "GL_KHR_shader_subgroup_ballot") == 0) {
         updateExtensionBehavior(line, "GL_KHR_shader_subgroup_basic", behaviorString);
-    else if (strcmp(extension, "GL_KHR_shader_subgroup_shuffle") == 0)
+    } else if (strcmp(extension, "GL_KHR_shader_subgroup_shuffle") == 0) {
         updateExtensionBehavior(line, "GL_KHR_shader_subgroup_basic", behaviorString);
-    else if (strcmp(extension, "GL_KHR_shader_subgroup_shuffle_relative") == 0)
+    } else if (strcmp(extension, "GL_KHR_shader_subgroup_shuffle_relative") == 0) {
         updateExtensionBehavior(line, "GL_KHR_shader_subgroup_basic", behaviorString);
-    else if (strcmp(extension, "GL_KHR_shader_subgroup_clustered") == 0)
+    } else if (strcmp(extension, "GL_KHR_shader_subgroup_clustered") == 0) {
         updateExtensionBehavior(line, "GL_KHR_shader_subgroup_basic", behaviorString);
-    else if (strcmp(extension, "GL_KHR_shader_subgroup_quad") == 0)
+    } else if (strcmp(extension, "GL_KHR_shader_subgroup_quad") == 0) {
         updateExtensionBehavior(line, "GL_KHR_shader_subgroup_basic", behaviorString);
-    else if (strcmp(extension, "GL_NV_shader_subgroup_partitioned") == 0)
+    } else if (strcmp(extension, "GL_NV_shader_subgroup_partitioned") == 0) {
         updateExtensionBehavior(line, "GL_KHR_shader_subgroup_basic", behaviorString);
-    else if (strcmp(extension, "GL_EXT_buffer_reference2") == 0 ||
-             strcmp(extension, "GL_EXT_buffer_reference_uvec2") == 0)
+    } else if (strcmp(extension, "GL_EXT_buffer_reference2") == 0 ||
+             strcmp(extension, "GL_EXT_buffer_reference_uvec2") == 0) {
         updateExtensionBehavior(line, "GL_EXT_buffer_reference", behaviorString);
-    else if (strcmp(extension, "GL_NV_integer_cooperative_matrix") == 0)
+    } else if (strcmp(extension, "GL_NV_integer_cooperative_matrix") == 0) {
         updateExtensionBehavior(line, "GL_NV_cooperative_matrix", behaviorString);
     // subgroup extended types to explicit types
-    else if (strcmp(extension, "GL_EXT_shader_subgroup_extended_types_int8") == 0)
+    } else if (strcmp(extension, "GL_EXT_shader_subgroup_extended_types_int8") == 0) {
         updateExtensionBehavior(line, "GL_EXT_shader_explicit_arithmetic_types_int8", behaviorString);
-    else if (strcmp(extension, "GL_EXT_shader_subgroup_extended_types_int16") == 0)
+    } else if (strcmp(extension, "GL_EXT_shader_subgroup_extended_types_int16") == 0) {
         updateExtensionBehavior(line, "GL_EXT_shader_explicit_arithmetic_types_int16", behaviorString);
-    else if (strcmp(extension, "GL_EXT_shader_subgroup_extended_types_int64") == 0)
+    } else if (strcmp(extension, "GL_EXT_shader_subgroup_extended_types_int64") == 0) {
         updateExtensionBehavior(line, "GL_EXT_shader_explicit_arithmetic_types_int64", behaviorString);
-    else if (strcmp(extension, "GL_EXT_shader_subgroup_extended_types_float16") == 0)
+    } else if (strcmp(extension, "GL_EXT_shader_subgroup_extended_types_float16") == 0) {
         updateExtensionBehavior(line, "GL_EXT_shader_explicit_arithmetic_types_float16", behaviorString);
 
     // see if we need to update the numeric features
-    else if (strcmp(extension, "GL_EXT_shader_explicit_arithmetic_types") == 0)
+    } else if (strcmp(extension, "GL_EXT_shader_explicit_arithmetic_types") == 0) {
         intermediate.updateNumericFeature(TNumericFeatures::shader_explicit_arithmetic_types, on);
-    else if (strcmp(extension, "GL_EXT_shader_explicit_arithmetic_types_int8") == 0)
+    } else if (strcmp(extension, "GL_EXT_shader_explicit_arithmetic_types_int8") == 0) {
         intermediate.updateNumericFeature(TNumericFeatures::shader_explicit_arithmetic_types_int8, on);
-    else if (strcmp(extension, "GL_EXT_shader_explicit_arithmetic_types_int16") == 0)
+    } else if (strcmp(extension, "GL_EXT_shader_explicit_arithmetic_types_int16") == 0) {
         intermediate.updateNumericFeature(TNumericFeatures::shader_explicit_arithmetic_types_int16, on);
-    else if (strcmp(extension, "GL_EXT_shader_explicit_arithmetic_types_int32") == 0)
+    } else if (strcmp(extension, "GL_EXT_shader_explicit_arithmetic_types_int32") == 0) {
         intermediate.updateNumericFeature(TNumericFeatures::shader_explicit_arithmetic_types_int32, on);
-    else if (strcmp(extension, "GL_EXT_shader_explicit_arithmetic_types_int64") == 0)
+    } else if (strcmp(extension, "GL_EXT_shader_explicit_arithmetic_types_int64") == 0) {
         intermediate.updateNumericFeature(TNumericFeatures::shader_explicit_arithmetic_types_int64, on);
-    else if (strcmp(extension, "GL_EXT_shader_explicit_arithmetic_types_float16") == 0)
+    } else if (strcmp(extension, "GL_EXT_shader_explicit_arithmetic_types_float16") == 0) {
         intermediate.updateNumericFeature(TNumericFeatures::shader_explicit_arithmetic_types_float16, on);
-    else if (strcmp(extension, "GL_EXT_shader_explicit_arithmetic_types_float32") == 0)
+    } else if (strcmp(extension, "GL_EXT_shader_explicit_arithmetic_types_float32") == 0) {
         intermediate.updateNumericFeature(TNumericFeatures::shader_explicit_arithmetic_types_float32, on);
-    else if (strcmp(extension, "GL_EXT_shader_explicit_arithmetic_types_float64") == 0)
+    } else if (strcmp(extension, "GL_EXT_shader_explicit_arithmetic_types_float64") == 0) {
         intermediate.updateNumericFeature(TNumericFeatures::shader_explicit_arithmetic_types_float64, on);
-    else if (strcmp(extension, "GL_EXT_shader_implicit_conversions") == 0)
+    } else if (strcmp(extension, "GL_EXT_shader_implicit_conversions") == 0) {
         intermediate.updateNumericFeature(TNumericFeatures::shader_implicit_conversions, on);
-    else if (strcmp(extension, "GL_ARB_gpu_shader_fp64") == 0)
+    } else if (strcmp(extension, "GL_ARB_gpu_shader_fp64") == 0) {
         intermediate.updateNumericFeature(TNumericFeatures::gpu_shader_fp64, on);
-    else if (strcmp(extension, "GL_AMD_gpu_shader_int16") == 0)
+    } else if (strcmp(extension, "GL_AMD_gpu_shader_int16") == 0) {
         intermediate.updateNumericFeature(TNumericFeatures::gpu_shader_int16, on);
-    else if (strcmp(extension, "GL_AMD_gpu_shader_half_float") == 0)
+    } else if (strcmp(extension, "GL_AMD_gpu_shader_half_float") == 0) {
         intermediate.updateNumericFeature(TNumericFeatures::gpu_shader_half_float, on);
+}
 }
 
 void TParseVersions::updateExtensionBehavior(const char* extension, TExtensionBehavior behavior)
@@ -1061,8 +1072,9 @@ void TParseVersions::updateExtensionBehavior(const char* extension, TExtensionBe
             error(getCurrentLoc(), "extension 'all' cannot have 'require' or 'enable' behavior", "#extension", "");
             return;
         } else {
-            for (auto iter = extensionBehavior.begin(); iter != extensionBehavior.end(); ++iter)
+            for (auto iter = extensionBehavior.begin(); iter != extensionBehavior.end(); ++iter) {
                 iter->second = behavior;
+}
         }
     } else {
         // Do the update for this single extension
@@ -1083,10 +1095,12 @@ void TParseVersions::updateExtensionBehavior(const char* extension, TExtensionBe
 
             return;
         } else {
-            if (iter->second == EBhDisablePartial)
+            if (iter->second == EBhDisablePartial) {
                 warn(getCurrentLoc(), "extension is only partially supported:", "#extension", extension);
-            if (behavior != EBhDisable)
+}
+            if (behavior != EBhDisable) {
                 intermediate.addRequestedExtension(extension);
+}
             iter->second = behavior;
         }
     }
@@ -1120,23 +1134,26 @@ void TParseVersions::checkExtensionStage(const TSourceLoc& loc, const char * con
 void TParseVersions::extensionRequires(const TSourceLoc &loc, const char * const extension, const char *behaviorString)
 {
     bool isEnabled = false;
-    if (!strcmp("require", behaviorString))
+    if (!strcmp("require", behaviorString)) {
         isEnabled = true;
-    else if (!strcmp("enable", behaviorString))
+    } else if (!strcmp("enable", behaviorString)) {
         isEnabled = true;
+}
 
     if (isEnabled) {
         unsigned int minSpvVersion = 0;
         auto iter = extensionMinSpv.find(TString(extension));
-        if (iter != extensionMinSpv.end())
+        if (iter != extensionMinSpv.end()) {
             minSpvVersion = iter->second;
+}
         requireSpv(loc, extension, minSpvVersion);
     }
 
     if (spvVersion.spv != 0){
-        for (auto ext : spvUnsupportedExt){
-            if (strcmp(extension, ext.c_str()) == 0)
+        for (const auto& ext : spvUnsupportedExt){
+            if (strcmp(extension, ext.c_str()) == 0) {
                 error(loc, "not allowed when using generating SPIR-V codes", extension, "");
+}
         }
     }
 }
@@ -1156,8 +1173,9 @@ void TParseVersions::doubleCheck(const TSourceLoc& loc, const char* op)
     if (language == EShLangVertex) {
         const char* const f64_Extensions[] = {E_GL_ARB_gpu_shader_fp64, E_GL_ARB_vertex_attrib_64bit};
         profileRequires(loc, ECoreProfile | ECompatibilityProfile, 400, 2, f64_Extensions, op);
-    } else
+    } else {
         profileRequires(loc, ECoreProfile | ECompatibilityProfile, 400, E_GL_ARB_gpu_shader_fp64, op);
+}
 }
 
 // Call for any operation needing GLSL float16 data-type support.
@@ -1378,34 +1396,39 @@ void TParseVersions::coopmatCheck(const TSourceLoc& loc, const char* op, bool bu
 // Call for any operation removed because SPIR-V is in use.
 void TParseVersions::spvRemoved(const TSourceLoc& loc, const char* op)
 {
-    if (spvVersion.spv != 0)
+    if (spvVersion.spv != 0) {
         error(loc, "not allowed when generating SPIR-V", op, "");
+}
 }
 
 // Call for any operation removed because Vulkan SPIR-V is being generated.
 void TParseVersions::vulkanRemoved(const TSourceLoc& loc, const char* op)
 {
-    if (spvVersion.vulkan > 0 && !spvVersion.vulkanRelaxed)
+    if (spvVersion.vulkan > 0 && !spvVersion.vulkanRelaxed) {
         error(loc, "not allowed when using GLSL for Vulkan", op, "");
+}
 }
 
 // Call for any operation that requires Vulkan.
 void TParseVersions::requireVulkan(const TSourceLoc& loc, const char* op)
 {
-    if (spvVersion.vulkan == 0)
+    if (spvVersion.vulkan == 0) {
         error(loc, "only allowed when using GLSL for Vulkan", op, "");
+}
 }
 
 // Call for any operation that requires SPIR-V.
 void TParseVersions::requireSpv(const TSourceLoc& loc, const char* op)
 {
-    if (spvVersion.spv == 0)
+    if (spvVersion.spv == 0) {
         error(loc, "only allowed when generating SPIR-V", op, "");
+}
 }
 void TParseVersions::requireSpv(const TSourceLoc& loc, const char *op, unsigned int version)
 {
-    if (spvVersion.spv < version)
+    if (spvVersion.spv < version) {
         error(loc, "not supported for current targeted SPIR-V version", op, "");
+}
 }
 
 } // end namespace glslang

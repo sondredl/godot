@@ -72,15 +72,15 @@ public:
     };
     void setDoubleOutput(EExtraOutput extra) { extraOutput = extra; }
 
-    virtual bool visitBinary(TVisit, TIntermBinary* node);
-    virtual bool visitUnary(TVisit, TIntermUnary* node);
-    virtual bool visitAggregate(TVisit, TIntermAggregate* node);
-    virtual bool visitSelection(TVisit, TIntermSelection* node);
-    virtual void visitConstantUnion(TIntermConstantUnion* node);
-    virtual void visitSymbol(TIntermSymbol* node);
-    virtual bool visitLoop(TVisit, TIntermLoop* node);
-    virtual bool visitBranch(TVisit, TIntermBranch* node);
-    virtual bool visitSwitch(TVisit, TIntermSwitch* node);
+    bool visitBinary(TVisit, TIntermBinary* node) override;
+    bool visitUnary(TVisit, TIntermUnary* node) override;
+    bool visitAggregate(TVisit, TIntermAggregate* node) override;
+    bool visitSelection(TVisit, TIntermSelection* node) override;
+    void visitConstantUnion(TIntermConstantUnion* node) override;
+    void visitSymbol(TIntermSymbol* node) override;
+    bool visitLoop(TVisit, TIntermLoop* node) override;
+    bool visitBranch(TVisit, TIntermBranch* node) override;
+    bool visitSwitch(TVisit, TIntermSwitch* node) override;
 
     TInfoSink& infoSink;
 protected:
@@ -99,13 +99,15 @@ static void OutputTreeText(TInfoSink& infoSink, const TIntermNode* node, const i
     int i;
 
     infoSink.debug << node->getLoc().string << ":";
-    if (node->getLoc().line)
+    if (node->getLoc().line) {
         infoSink.debug << node->getLoc().line;
-    else
+    } else {
         infoSink.debug << "? ";
+}
 
-    for (i = 0; i < depth; ++i)
+    for (i = 0; i < depth; ++i) {
         infoSink.debug << "  ";
+}
 }
 
 //
@@ -1159,8 +1161,9 @@ bool TOutputTraverser::visitAggregate(TVisit /* visit */, TIntermAggregate* node
     default: out.debug.message(EPrefixError, "Bad aggregation op");
     }
 
-    if (node->getOp() != EOpSequence && node->getOp() != EOpScope && node->getOp() != EOpParameters)
+    if (node->getOp() != EOpSequence && node->getOp() != EOpScope && node->getOp() != EOpParameters) {
         out.debug << " (" << node->getCompleteString() << ")";
+}
 
     out.debug << "\n";
 
@@ -1176,12 +1179,15 @@ bool TOutputTraverser::visitSelection(TVisit /* visit */, TIntermSelection* node
     out.debug << "Test condition and select";
     out.debug << " (" << node->getCompleteString() << ")";
 
-    if (node->getShortCircuit() == false)
+    if (!node->getShortCircuit()) {
         out.debug << ": no shortcircuit";
-    if (node->getFlatten())
+}
+    if (node->getFlatten()) {
         out.debug << ": Flatten";
-    if (node->getDontFlatten())
+}
+    if (node->getDontFlatten()) {
         out.debug << ": DontFlatten";
+}
     out.debug << "\n";
 
     ++depth;
@@ -1194,8 +1200,9 @@ bool TOutputTraverser::visitSelection(TVisit /* visit */, TIntermSelection* node
     if (node->getTrueBlock()) {
         out.debug << "true case\n";
         node->getTrueBlock()->traverse(this);
-    } else
+    } else {
         out.debug << "true case is null\n";
+}
 
     if (node->getFalseBlock()) {
         OutputTreeText(out, node, depth);
@@ -1217,18 +1224,20 @@ bool TOutputTraverser::visitSelection(TVisit /* visit */, TIntermSelection* node
 static void OutputDouble(TInfoSink& out, double value, TOutputTraverser::EExtraOutput extra)
 {
     if (std::isinf(value)) {
-        if (value < 0)
+        if (value < 0) {
             out.debug << "-1.#INF";
-        else
+        } else {
             out.debug << "+1.#INF";
-    } else if (std::isnan(value))
+}
+    } else if (std::isnan(value)) {
         out.debug << "1.#IND";
-    else {
+    } else {
         const int maxSize = 340;
         char buf[maxSize];
         const char* format = "%f";
-        if (fabs(value) > 0.0 && (fabs(value) < 1e-5 || fabs(value) > 1e12))
+        if (fabs(value) > 0.0 && (fabs(value) < 1e-5 || fabs(value) > 1e12)) {
             format = "%-.13e";
+}
         int len = snprintf(buf, maxSize, format, value);
         assert(len < maxSize);
 
@@ -1273,10 +1282,11 @@ static void OutputConstantUnion(TInfoSink& out, const TIntermTyped* node, const 
         OutputTreeText(out, node, depth);
         switch (constUnion[i].getType()) {
         case EbtBool:
-            if (constUnion[i].getBConst())
+            if (constUnion[i].getBConst()) {
                 out.debug << "true";
-            else
+            } else {
                 out.debug << "false";
+}
 
             out.debug << " (" << "const bool" << ")";
 
@@ -1384,9 +1394,9 @@ void TOutputTraverser::visitSymbol(TIntermSymbol* node)
 
     infoSink.debug << "'" << node->getName() << "' (" << node->getCompleteString() << ")\n";
 
-    if (! node->getConstArray().empty())
+    if (! node->getConstArray().empty()) {
         OutputConstantUnion(infoSink, node, node->getConstArray(), extraOutput, depth + 1);
-    else if (node->getConstSubtree()) {
+    } else if (node->getConstSubtree()) {
         incrementDepth(node);
         node->getConstSubtree()->traverse(this);
         decrementDepth();
@@ -1400,14 +1410,17 @@ bool TOutputTraverser::visitLoop(TVisit /* visit */, TIntermLoop* node)
     OutputTreeText(out, node, depth);
 
     out.debug << "Loop with condition ";
-    if (! node->testFirst())
+    if (! node->testFirst()) {
         out.debug << "not ";
+}
     out.debug << "tested first";
 
-    if (node->getUnroll())
+    if (node->getUnroll()) {
         out.debug << ": Unroll";
-    if (node->getDontUnroll())
+}
+    if (node->getDontUnroll()) {
         out.debug << ": DontUnroll";
+}
     if (node->getLoopDependency()) {
         out.debug << ": Dependency ";
         out.debug << node->getLoopDependency();
@@ -1420,15 +1433,17 @@ bool TOutputTraverser::visitLoop(TVisit /* visit */, TIntermLoop* node)
     if (node->getTest()) {
         out.debug << "Loop Condition\n";
         node->getTest()->traverse(this);
-    } else
+    } else {
         out.debug << "No loop condition\n";
+}
 
     OutputTreeText(infoSink, node, depth);
     if (node->getBody()) {
         out.debug << "Loop Body\n";
         node->getBody()->traverse(this);
-    } else
+    } else {
         out.debug << "No loop body\n";
+}
 
     if (node->getTerminal()) {
         OutputTreeText(infoSink, node, depth);
@@ -1466,8 +1481,9 @@ bool TOutputTraverser::visitBranch(TVisit /* visit*/, TIntermBranch* node)
         ++depth;
         node->getExpression()->traverse(this);
         --depth;
-    } else
+    } else {
         out.debug << "\n";
+}
 
     return false;
 }
@@ -1479,10 +1495,12 @@ bool TOutputTraverser::visitSwitch(TVisit /* visit */, TIntermSwitch* node)
     OutputTreeText(out, node, depth);
     out.debug << "switch";
 
-    if (node->getFlatten())
+    if (node->getFlatten()) {
         out.debug << ": Flatten";
-    if (node->getDontFlatten())
+}
+    if (node->getDontFlatten()) {
         out.debug << ": DontFlatten";
+}
     out.debug << "\n";
 
     OutputTreeText(out, node, depth);
@@ -1509,19 +1527,23 @@ bool TOutputTraverser::visitSwitch(TVisit /* visit */, TIntermSwitch* node)
 void TIntermediate::output(TInfoSink& infoSink, bool tree)
 {
     infoSink.debug << "Shader version: " << version << "\n";
-    if (requestedExtensions.size() > 0) {
-        for (auto extIt = requestedExtensions.begin(); extIt != requestedExtensions.end(); ++extIt)
+    if (!requestedExtensions.empty()) {
+        for (auto extIt = requestedExtensions.begin(); extIt != requestedExtensions.end(); ++extIt) {
             infoSink.debug << "Requested " << *extIt << "\n";
+}
     }
 
-    if (xfbMode)
+    if (xfbMode) {
         infoSink.debug << "in xfb mode\n";
+}
 
-    if (getSubgroupUniformControlFlow())
+    if (getSubgroupUniformControlFlow()) {
         infoSink.debug << "subgroup_uniform_control_flow\n";
+}
 
-    if (getMaximallyReconverges())
+    if (getMaximallyReconverges()) {
         infoSink.debug << "maximally_reconverges\n";
+}
 
     switch (language) {
     case EShLangVertex:
@@ -1530,20 +1552,24 @@ void TIntermediate::output(TInfoSink& infoSink, bool tree)
     case EShLangTessControl:
         infoSink.debug << "vertices = " << vertices << "\n";
 
-        if (inputPrimitive != ElgNone)
+        if (inputPrimitive != ElgNone) {
             infoSink.debug << "input primitive = " << TQualifier::getGeometryString(inputPrimitive) << "\n";
-        if (vertexSpacing != EvsNone)
+}
+        if (vertexSpacing != EvsNone) {
             infoSink.debug << "vertex spacing = " << TQualifier::getVertexSpacingString(vertexSpacing) << "\n";
-        if (vertexOrder != EvoNone)
+}
+        if (vertexOrder != EvoNone) {
             infoSink.debug << "triangle order = " << TQualifier::getVertexOrderString(vertexOrder) << "\n";
+}
         break;
 
     case EShLangTessEvaluation:
         infoSink.debug << "input primitive = " << TQualifier::getGeometryString(inputPrimitive) << "\n";
         infoSink.debug << "vertex spacing = " << TQualifier::getVertexSpacingString(vertexSpacing) << "\n";
         infoSink.debug << "triangle order = " << TQualifier::getVertexOrderString(vertexOrder) << "\n";
-        if (pointMode)
+        if (pointMode) {
             infoSink.debug << "using point mode\n";
+}
         break;
 
     case EShLangGeometry:
@@ -1554,33 +1580,43 @@ void TIntermediate::output(TInfoSink& infoSink, bool tree)
         break;
 
     case EShLangFragment:
-        if (pixelCenterInteger)
+        if (pixelCenterInteger) {
             infoSink.debug << "gl_FragCoord pixel center is integer\n";
-        if (originUpperLeft)
+}
+        if (originUpperLeft) {
             infoSink.debug << "gl_FragCoord origin is upper left\n";
-        if (earlyFragmentTests)
+}
+        if (earlyFragmentTests) {
             infoSink.debug << "using early_fragment_tests\n";
-        if (postDepthCoverage)
+}
+        if (postDepthCoverage) {
             infoSink.debug << "using post_depth_coverage\n";
-        if (nonCoherentColorAttachmentReadEXT)
+}
+        if (nonCoherentColorAttachmentReadEXT) {
             infoSink.debug << "using non_coherent_color_attachment_readEXT\n";
-        if (nonCoherentDepthAttachmentReadEXT)
+}
+        if (nonCoherentDepthAttachmentReadEXT) {
             infoSink.debug << "using non_coherent_depth_attachment_readEXT\n";
-        if (nonCoherentStencilAttachmentReadEXT)
+}
+        if (nonCoherentStencilAttachmentReadEXT) {
             infoSink.debug << "using non_coherent_stencil_attachment_readEXT\n";
-        if (depthLayout != EldNone)
+}
+        if (depthLayout != EldNone) {
             infoSink.debug << "using " << TQualifier::getLayoutDepthString(depthLayout) << "\n";
+}
         if (blendEquations != 0) {
             infoSink.debug << "using";
             // blendEquations is a mask, decode it
             for (TBlendEquationShift be = (TBlendEquationShift)0; be < EBlendCount; be = (TBlendEquationShift)(be + 1)) {
-                if (blendEquations & (1 << be))
+                if (blendEquations & (1 << be)) {
                     infoSink.debug << " " << TQualifier::getBlendEquationString(be);
+}
             }
             infoSink.debug << "\n";
         }
-        if (interlockOrdering != EioNone)
+        if (interlockOrdering != EioNone) {
             infoSink.debug << "interlock ordering = " << TQualifier::getInterlockOrderingString(interlockOrdering) << "\n";
+}
         break;
 
     case EShLangMesh:
@@ -1608,12 +1644,14 @@ void TIntermediate::output(TInfoSink& infoSink, bool tree)
         break;
     }
 
-    if (treeRoot == nullptr || ! tree)
+    if (treeRoot == nullptr || ! tree) {
         return;
+}
 
     TOutputTraverser it(infoSink);
-    if (getBinaryDoubleOutput())
+    if (getBinaryDoubleOutput()) {
         it.setDoubleOutput(TOutputTraverser::BinaryDoubleOutput);
+}
     treeRoot->traverse(&it);
 }
 

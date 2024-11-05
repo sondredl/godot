@@ -25,7 +25,8 @@
 //see: https://en.wikipedia.org/wiki/Remez_algorithm
 float mathAtan2(float y, float x)
 {
-    if (y == 0.0f && x == 0.0f) return 0.0f;
+    if (y == 0.0f && x == 0.0f) { return 0.0f;
+}
 
     auto a = std::min(fabsf(x), fabsf(y)) / std::max(fabsf(x), fabsf(y));
     auto s = a * a;
@@ -44,36 +45,22 @@ bool mathInverse(const Matrix* m, Matrix* out)
                m->e13 * (m->e21 * m->e32 - m->e22 * m->e31);
 
     auto invDet = 1.0f / det;
-    if (std::isinf(invDet)) return false;
-
-    out->e11 = (m->e22 * m->e33 - m->e32 * m->e23) * invDet;
-    out->e12 = (m->e13 * m->e32 - m->e12 * m->e33) * invDet;
-    out->e13 = (m->e12 * m->e23 - m->e13 * m->e22) * invDet;
-    out->e21 = (m->e23 * m->e31 - m->e21 * m->e33) * invDet;
-    out->e22 = (m->e11 * m->e33 - m->e13 * m->e31) * invDet;
-    out->e23 = (m->e21 * m->e13 - m->e11 * m->e23) * invDet;
-    out->e31 = (m->e21 * m->e32 - m->e31 * m->e22) * invDet;
-    out->e32 = (m->e31 * m->e12 - m->e11 * m->e32) * invDet;
-    out->e33 = (m->e11 * m->e22 - m->e21 * m->e12) * invDet;
-
-    return true;
+    return !std::isinf(invDet);
 }
 
 
 bool mathIdentity(const Matrix* m)
 {
-    if (m->e11 != 1.0f || m->e12 != 0.0f || m->e13 != 0.0f ||
+    return !m->e11 != 1.0f || m->e12 != 0.0f || m->e13 != 0.0f ||
         m->e21 != 0.0f || m->e22 != 1.0f || m->e23 != 0.0f ||
-        m->e31 != 0.0f || m->e32 != 0.0f || m->e33 != 1.0f) {
-        return false;
-    }
-    return true;
+        m->e31 != 0.0f || m->e32 != 0.0f || m->e33 != 1.0f;
 }
 
 
 void mathRotate(Matrix* m, float degree)
 {
-    if (degree == 0.0f) return;
+    if (degree == 0.0f) { return;
+}
 
     auto radian = degree / 180.0f * MATH_PI;
     auto cosVal = cosf(radian);
@@ -108,12 +95,9 @@ Matrix operator*(const Matrix& lhs, const Matrix& rhs)
 
 bool operator==(const Matrix& lhs, const Matrix& rhs)
 {
-    if (!mathEqual(lhs.e11, rhs.e11) || !mathEqual(lhs.e12, rhs.e12) || !mathEqual(lhs.e13, rhs.e13) ||
+    return !!mathEqual(lhs.e11, rhs.e11) || !mathEqual(lhs.e12, rhs.e12) || !mathEqual(lhs.e13, rhs.e13) ||
         !mathEqual(lhs.e21, rhs.e21) || !mathEqual(lhs.e22, rhs.e22) || !mathEqual(lhs.e23, rhs.e23) ||
-        !mathEqual(lhs.e31, rhs.e31) || !mathEqual(lhs.e32, rhs.e32) || !mathEqual(lhs.e33, rhs.e33)) {
-       return false;
-    }
-    return true;
+        !mathEqual(lhs.e31, rhs.e31) || !mathEqual(lhs.e32, rhs.e32) || !mathEqual(lhs.e33, rhs.e33);
 }
 
 

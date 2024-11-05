@@ -1,9 +1,9 @@
 // This file is part of meshoptimizer library; see meshoptimizer.h for version/license details
 #include "meshoptimizer.h"
 
-#include <assert.h>
-#include <float.h>
-#include <string.h>
+#include <cassert>
+#include <cfloat>
+#include <cstring>
 
 // This work is based on:
 // Fabian Giesen. Decoding Morton codes. 2009
@@ -126,8 +126,9 @@ void meshopt_spatialSortRemap(unsigned int* destination, const float* vertex_pos
 
 	unsigned int* scratch = allocator.allocate<unsigned int>(vertex_count);
 
-	for (size_t i = 0; i < vertex_count; ++i)
+	for (size_t i = 0; i < vertex_count; ++i) {
 		destination[i] = unsigned(i);
+}
 
 	// 3-pass radix sort computes the resulting order into scratch
 	radixPass(scratch, destination, keys, vertex_count, hist, 0);
@@ -135,8 +136,9 @@ void meshopt_spatialSortRemap(unsigned int* destination, const float* vertex_pos
 	radixPass(scratch, destination, keys, vertex_count, hist, 2);
 
 	// since our remap table is mapping old=>new, we need to reverse it
-	for (size_t i = 0; i < vertex_count; ++i)
+	for (size_t i = 0; i < vertex_count; ++i) {
 		destination[scratch[i]] = unsigned(i);
+}
 }
 
 void meshopt_spatialSortTriangles(unsigned int* destination, const unsigned int* indices, size_t index_count, const float* vertex_positions, size_t vertex_count, size_t vertex_positions_stride)

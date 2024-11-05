@@ -147,7 +147,7 @@ BOOL is_wow64() {
 }
 #endif
 
-static const char *arch_name_map[][2] = {
+const char *arch_name_map[][2] = {
 	{ "arm32", "arm" },
 	{ "arm64", "arm64" },
 	{ "rv64", "riscv64" },
@@ -227,12 +227,7 @@ bool get_install_location_from_file(const String &p_file_path, String &r_dotnet_
 
 	String line = f->get_line();
 
-	if (line.is_empty()) {
-		return false;
-	}
-
-	r_dotnet_root = line;
-	return true;
+	return !line.is_empty();
 }
 #endif
 

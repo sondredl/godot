@@ -228,8 +228,9 @@ void edgeColoringInkTrap(Shape &shape, double angleThreshold, unsigned long long
 #define EDGE_DISTANCE_PRECISION 16
 
 static double edgeToEdgeDistance(const EdgeSegment &a, const EdgeSegment &b, int precision) {
-    if (a.point(0) == b.point(0) || a.point(0) == b.point(1) || a.point(1) == b.point(0) || a.point(1) == b.point(1))
+    if (a.point(0) == b.point(0) || a.point(0) == b.point(1) || a.point(1) == b.point(0) || a.point(1) == b.point(1)) {
         return 0;
+}
     double iFac = 1./precision;
     double minDistance = (b.point(0)-a.point(0)).length();
     for (int i = 0; i <= precision; ++i) {
@@ -247,11 +248,12 @@ static double edgeToEdgeDistance(const EdgeSegment &a, const EdgeSegment &b, int
 
 static double splineToSplineDistance(EdgeSegment *const *edgeSegments, int aStart, int aEnd, int bStart, int bEnd, int precision) {
     double minDistance = DBL_MAX;
-    for (int ai = aStart; ai < aEnd; ++ai)
+    for (int ai = aStart; ai < aEnd; ++ai) {
         for (int bi = bStart; bi < bEnd && minDistance; ++bi) {
             double d = edgeToEdgeDistance(*edgeSegments[ai], *edgeSegments[bi], precision);
             minDistance = min(minDistance, d);
         }
+}
     return minDistance;
 }
 
@@ -259,8 +261,9 @@ static void colorSecondDegreeGraph(int *coloring, const int *const *edgeMatrix, 
     for (int i = 0; i < vertexCount; ++i) {
         int possibleColors = 7;
         for (int j = 0; j < i; ++j) {
-            if (edgeMatrix[i][j])
+            if (edgeMatrix[i][j]) {
                 possibleColors &= ~(1<<coloring[j]);
+}
         }
         int color = 0;
         switch (possibleColors) {
@@ -296,9 +299,11 @@ static void colorSecondDegreeGraph(int *coloring, const int *const *edgeMatrix, 
 
 static int vertexPossibleColors(const int *coloring, const int *edgeVector, int vertexCount) {
     int usedColors = 0;
-    for (int i = 0; i < vertexCount; ++i)
-        if (edgeVector[i])
+    for (int i = 0; i < vertexCount; ++i) {
+        if (edgeVector[i]) {
             usedColors |= 1<<coloring[i];
+}
+}
     return 7&~usedColors;
 }
 
@@ -321,8 +326,9 @@ static bool tryAddEdge(int *coloring, int *const *edgeMatrix, int vertexCount, i
     static const int FIRST_POSSIBLE_COLOR[8] = { -1, 0, 1, 0, 2, 2, 1, 0 };
     edgeMatrix[vertexA][vertexB] = 1;
     edgeMatrix[vertexB][vertexA] = 1;
-    if (coloring[vertexA] != coloring[vertexB])
+    if (coloring[vertexA] != coloring[vertexB]) {
         return true;
+}
     int bPossibleColors = vertexPossibleColors(coloring, edgeMatrix[vertexB], vertexCount);
     if (bPossibleColors) {
         coloring[vertexB] = FIRST_POSSIBLE_COLOR[bPossibleColors];
@@ -442,8 +448,9 @@ void edgeColoringByDistance(Shape &shape, double angleThreshold, unsigned long l
 
     int segmentCount = (int) edgeSegments.size();
     int splineCount = (int) splineStarts.size()-1;
-    if (!splineCount)
+    if (!splineCount) {
         return;
+}
 
     std::vector<double> distanceMatrixStorage(splineCount*splineCount);
     std::vector<double *> distanceMatrix(splineCount);
@@ -492,8 +499,9 @@ void edgeColoringByDistance(Shape &shape, double angleThreshold, unsigned long l
     const EdgeColor colors[3] = { YELLOW, CYAN, MAGENTA };
     int spline = -1;
     for (int i = 0; i < segmentCount; ++i) {
-        if (splineStarts[spline+1] == i)
+        if (splineStarts[spline+1] == i) {
             ++spline;
+}
         edgeSegments[i]->color = colors[coloring[spline]];
     }
 }

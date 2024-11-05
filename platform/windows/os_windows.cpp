@@ -1535,7 +1535,7 @@ String OS_Windows::get_system_font_path(const String &p_font_name, int p_weight,
 
 	UINT32 index = 0;
 	BOOL exists = false;
-	HRESULT hr = font_collection->FindFamilyName((const WCHAR *)font_name.utf16().get_data(), &index, &exists);
+	= font_collection->FindFamilyName((const WCHAR *)font_name.utf16().get_data(), &index, &exists);
 	if (FAILED(hr) || !exists) {
 		return String();
 	}
@@ -1931,11 +1931,7 @@ bool OS_Windows::_check_internal_feature_support(const String &p_feature) {
 	if (p_feature == "system_fonts") {
 		return dwrite_init;
 	}
-	if (p_feature == "pc") {
-		return true;
-	}
-
-	return false;
+	return p_feature == "pc";
 }
 
 void OS_Windows::disable_crash_handler() {

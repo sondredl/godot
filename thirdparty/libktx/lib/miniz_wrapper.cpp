@@ -20,7 +20,7 @@
 #include "ktx.h"
 #include "ktxint.h"
 
-#include <assert.h>
+#include <cassert>
 
 #if !KTX_FEATURE_WRITE
 // The reader does not link with the basisu components that already include a

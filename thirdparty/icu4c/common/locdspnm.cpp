@@ -270,29 +270,29 @@ public:
     // constructor
     LocaleDisplayNamesImpl(const Locale& locale, UDialectHandling dialectHandling);
     LocaleDisplayNamesImpl(const Locale& locale, UDisplayContext *contexts, int32_t length);
-    virtual ~LocaleDisplayNamesImpl();
+    ~LocaleDisplayNamesImpl() override;
 
-    virtual const Locale& getLocale() const override;
-    virtual UDialectHandling getDialectHandling() const override;
-    virtual UDisplayContext getContext(UDisplayContextType type) const override;
+    const Locale& getLocale() const override;
+    UDialectHandling getDialectHandling() const override;
+    UDisplayContext getContext(UDisplayContextType type) const override;
 
-    virtual UnicodeString& localeDisplayName(const Locale& locale,
+    UnicodeString& localeDisplayName(const Locale& locale,
                                                 UnicodeString& result) const override;
-    virtual UnicodeString& localeDisplayName(const char* localeId,
+    UnicodeString& localeDisplayName(const char* localeId,
                                                 UnicodeString& result) const override;
-    virtual UnicodeString& languageDisplayName(const char* lang,
+    UnicodeString& languageDisplayName(const char* lang,
                                                UnicodeString& result) const override;
-    virtual UnicodeString& scriptDisplayName(const char* script,
+    UnicodeString& scriptDisplayName(const char* script,
                                                 UnicodeString& result) const override;
-    virtual UnicodeString& scriptDisplayName(UScriptCode scriptCode,
+    UnicodeString& scriptDisplayName(UScriptCode scriptCode,
                                                 UnicodeString& result) const override;
-    virtual UnicodeString& regionDisplayName(const char* region,
+    UnicodeString& regionDisplayName(const char* region,
                                                 UnicodeString& result) const override;
-    virtual UnicodeString& variantDisplayName(const char* variant,
+    UnicodeString& variantDisplayName(const char* variant,
                                                 UnicodeString& result) const override;
-    virtual UnicodeString& keyDisplayName(const char* key,
+    UnicodeString& keyDisplayName(const char* key,
                                                 UnicodeString& result) const override;
-    virtual UnicodeString& keyValueDisplayName(const char* key,
+    UnicodeString& keyValueDisplayName(const char* key,
                                                 const char* value,
                                                 UnicodeString& result) const override;
 private:
@@ -364,9 +364,9 @@ struct LocaleDisplayNamesImpl::CapitalizationContextSink : public ResourceSink {
 
     CapitalizationContextSink(LocaleDisplayNamesImpl& _parent)
       : hasCapitalizationUsage(false), parent(_parent) {}
-    virtual ~CapitalizationContextSink();
+    ~CapitalizationContextSink() override;
 
-    virtual void put(const char *key, ResourceValue &value, UBool /*noFallback*/,
+    void put(const char *key, ResourceValue &value, UBool /*noFallback*/,
             UErrorCode &errorCode) override {
         ResourceTable contexts = value.getTable(errorCode);
         if (U_FAILURE(errorCode)) { return; }

@@ -17,8 +17,9 @@ namespace embree
   template<int N>
   BVHN<N>::~BVHN ()
   {
-    for (size_t i=0; i<objects.size(); i++) 
+    for (size_t i=0; i<objects.size(); i++) {
       delete objects[i];
+}
   }
 
   template<int N>
@@ -34,17 +35,18 @@ namespace embree
     this->root = root;
     this->bounds = bounds;
     this->numPrimitives = numPrimitives;
-  }	
+  }
 
   template<int N>
   void BVHN<N>::clearBarrier(NodeRef& node)
   {
-    if (node.isBarrier())
+    if (node.isBarrier()) {
       node.clearBarrier();
-    else if (!node.isLeaf()) {
+    } else if (!node.isLeaf()) {
       BaseNode* n = node.baseNode(); // FIXME: flags should be stored in BVH
-      for (size_t c=0; c<N; c++)
+      for (size_t c=0; c<N; c++) {
         clearBarrier(n->child(c));
+}
     }
   }
 
@@ -52,7 +54,7 @@ namespace embree
   void BVHN<N>::layoutLargeNodes(size_t num)
   {
 #if defined(__64BIT__) // do not use tree rotations on 32 bit platforms, barrier bit in NodeRef will cause issues
-    struct NodeArea 
+    struct NodeArea
     {
       __forceinline NodeArea() {}
 
@@ -74,22 +76,25 @@ namespace embree
     {
       std::pop_heap(lst.begin(), lst.end());
       NodeArea n = lst.back(); lst.pop_back();
-      if (!n.node->isAABBNode()) break;
+      if (!n.node->isAABBNode()) { break;
+}
       AABBNode* node = n.node->getAABBNode();
       for (size_t i=0; i<N; i++) {
-        if (node->child(i) == BVHN::emptyNode) continue;
+        if (node->child(i) == BVHN::emptyNode) { continue;
+}
         lst.push_back(NodeArea(node->child(i),node->bounds(i)));
         std::push_heap(lst.begin(), lst.end());
       }
     }
 
-    for (size_t i=0; i<lst.size(); i++)
+    for (size_t i=0; i<lst.size(); i++) {
       lst[i].node->setBarrier();
-      
+}
+
     root = layoutLargeNodesRecursion(root,alloc.getCachedAllocator());
 #endif
   }
-  
+
   template<int N>
   typename BVHN<N>::NodeRef BVHN<N>::layoutLargeNodesRecursion(NodeRef& node, const FastAllocator::CachedAllocator& allocator)
   {
@@ -97,23 +102,26 @@ namespace embree
       node.clearBarrier();
       return node;
     }
-    else if (node.isAABBNode()) 
+    else if (node.isAABBNode())
     {
       AABBNode* oldnode = node.getAABBNode();
       AABBNode* newnode = (BVHN::AABBNode*) allocator.malloc0(sizeof(BVHN::AABBNode),byteNodeAlignment);
       *newnode = *oldnode;
-      for (size_t c=0; c<N; c++)
+      for (size_t c=0; c<N; c++) {
         newnode->child(c) = layoutLargeNodesRecursion(oldnode->child(c),allocator);
+}
       return encodeNode(newnode);
     }
-    else return node;
+    else { return node;
+}
   }
 
   template<int N>
   double BVHN<N>::preBuild(const std::string& builderName)
   {
-    if (builderName == "") 
+    if (builderName.empty()) {
       return inf;
+}
 
     if (device->verbosity(2))
     {
@@ -122,39 +130,46 @@ namespace embree
     }
 
     double t0 = 0.0;
-    if (device->benchmark || device->verbosity(2)) t0 = getSeconds();
+    if (device->benchmark || device->verbosity(2)) { t0 = getSeconds();
+}
     return t0;
   }
 
   template<int N>
   void BVHN<N>::postBuild(double t0)
   {
-    if (t0 == double(inf))
+    if (t0 == double(inf)) {
       return;
-    
+}
+
     double dt = 0.0;
-    if (device->benchmark || device->verbosity(2)) 
+    if (device->benchmark || device->verbosity(2)) {
       dt = getSeconds()-t0;
+}
 
     std::unique_ptr<BVHNStatistics<N>> stat;
 
     /* print statistics */
     if (device->verbosity(2))
     {
-      if (!stat) stat.reset(new BVHNStatistics<N>(this));
+      if (!stat) { stat.reset(new BVHNStatistics<N>(this));
+}
       const size_t usedBytes = alloc.getUsedBytes();
       Lock<MutexSys> lock(g_printMutex);
       std::cout << "finished BVH" << N << "<" << primTy->name() << "> : " << 1000.0f*dt << "ms, " << 1E-6*double(numPrimitives)/dt << " Mprim/s, " << 1E-9*double(usedBytes)/dt << " GB/s" << std::endl;
-    
-      if (device->verbosity(2))
+
+      if (device->verbosity(2)) {
         std::cout << stat->str();
+}
 
       if (device->verbosity(2))
       {
         FastAllocator::AllStatistics stat(&alloc);
-        for (size_t i=0; i<objects.size(); i++)
-          if (objects[i])
+        for (size_t i=0; i<objects.size(); i++) {
+          if (objects[i]) {
             stat = stat + FastAllocator::AllStatistics(&objects[i]->alloc);
+}
+}
 
         stat.print(numPrimitives);
       }
@@ -162,9 +177,11 @@ namespace embree
       if (device->verbosity(3))
       {
         alloc.print_blocks();
-        for (size_t i=0; i<objects.size(); i++)
-          if (objects[i]) 
+        for (size_t i=0; i<objects.size(); i++) {
+          if (objects[i]) {
             objects[i]->alloc.print_blocks();
+}
+}
       }
 
       std::cout << std::flush;
@@ -173,7 +190,8 @@ namespace embree
     /* benchmark mode */
     if (device->benchmark)
     {
-      if (!stat) stat.reset(new BVHNStatistics<N>(this));
+      if (!stat) { stat.reset(new BVHNStatistics<N>(this));
+}
       Lock<MutexSys> lock(g_printMutex);
       std::cout << "BENCHMARK_BUILD " << dt << " " << double(numPrimitives)/dt << " " << stat->sah() << " " << stat->bytesUsed() << " BVH" << N << "<" << primTy->name() << ">" << std::endl << std::flush;
     }

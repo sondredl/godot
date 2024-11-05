@@ -27,14 +27,15 @@ namespace basisu
 		m_header.m_data_size = m_total_file_size - sizeof(basist::basis_file_header);
 
 		m_header.m_total_slices = (uint32_t)encoder_output.m_slice_desc.size();
-		
+
 		m_header.m_total_images = 0;
-		for (uint32_t i = 0; i < encoder_output.m_slice_desc.size(); i++)
+		for (uint32_t i = 0; i < encoder_output.m_slice_desc.size(); i++) {
 			m_header.m_total_images = maximum<uint32_t>(m_header.m_total_images, encoder_output.m_slice_desc[i].m_source_file_index + 1);
-		
+}
+
 		m_header.m_tex_format = (int)encoder_output.m_tex_format;
 		m_header.m_flags = 0;
-		
+
 		if (encoder_output.m_etc1s)
 		{
 			assert(encoder_output.m_tex_format == basist::basis_tex_format::cETC1S);
@@ -45,13 +46,16 @@ namespace basisu
 			assert(encoder_output.m_tex_format != basist::basis_tex_format::cETC1S);
 		}
 
-		if (y_flipped)
+		if (y_flipped) {
 			m_header.m_flags = m_header.m_flags | basist::cBASISHeaderFlagYFlipped;
-		if (encoder_output.m_uses_global_codebooks)
+}
+		if (encoder_output.m_uses_global_codebooks) {
 			m_header.m_flags = m_header.m_flags | basist::cBASISHeaderFlagUsesGlobalCodebook;
-		if (encoder_output.m_srgb)
+}
+		if (encoder_output.m_srgb) {
 			m_header.m_flags = m_header.m_flags | basist::cBASISHeaderFlagSRGB;
-				
+}
+
 		for (uint32_t i = 0; i < encoder_output.m_slice_desc.size(); i++)
 		{
 			if (encoder_output.m_slice_desc[i].m_alpha)
@@ -108,11 +112,13 @@ namespace basisu
 
 			m_images_descs[i].m_image_index = slice_descs[i].m_source_file_index;
 			m_images_descs[i].m_level_index = slice_descs[i].m_mip_index;
-			
-			if (slice_descs[i].m_alpha)
+
+			if (slice_descs[i].m_alpha) {
 				m_images_descs[i].m_flags = m_images_descs[i].m_flags | basist::cSliceDescFlagsHasAlpha;
-			if (slice_descs[i].m_iframe)
+}
+			if (slice_descs[i].m_iframe) {
 				m_images_descs[i].m_flags = m_images_descs[i].m_flags | basist::cSliceDescFlagsFrameIsIFrame;
+}
 
 			m_images_descs[i].m_orig_width = slice_descs[i].m_orig_width;
 			m_images_descs[i].m_orig_height = slice_descs[i].m_orig_height;
@@ -150,43 +156,44 @@ namespace basisu
 		append_vector(m_comp_data, reinterpret_cast<const uint8_t *>(&m_header), sizeof(m_header));
 
 		assert(m_comp_data.size() == m_slice_descs_file_ofs);
-		append_vector(m_comp_data, reinterpret_cast<const uint8_t*>(&m_images_descs[0]), m_images_descs.size() * sizeof(m_images_descs[0]));
+		append_vector(m_comp_data, reinterpret_cast<const uint8_t*>((m_images_descs).data()), m_images_descs.size() * sizeof(m_images_descs[0]));
 
 		if (!encoder_output.m_uses_global_codebooks)
 		{
-			if (encoder_output.m_endpoint_palette.size())
+			if (!encoder_output.m_endpoint_palette.empty())
 			{
 				assert(m_comp_data.size() == m_endpoint_cb_file_ofs);
-				append_vector(m_comp_data, reinterpret_cast<const uint8_t*>(&encoder_output.m_endpoint_palette[0]), encoder_output.m_endpoint_palette.size());
+				append_vector(m_comp_data, reinterpret_cast<const uint8_t*>((encoder_output.m_endpoint_palette).data()), encoder_output.m_endpoint_palette.size());
 			}
 
-			if (encoder_output.m_selector_palette.size())
+			if (!encoder_output.m_selector_palette.empty())
 			{
 				assert(m_comp_data.size() == m_selector_cb_file_ofs);
-				append_vector(m_comp_data, reinterpret_cast<const uint8_t*>(&encoder_output.m_selector_palette[0]), encoder_output.m_selector_palette.size());
+				append_vector(m_comp_data, reinterpret_cast<const uint8_t*>((encoder_output.m_selector_palette).data()), encoder_output.m_selector_palette.size());
 			}
 		}
 
-		if (encoder_output.m_slice_image_tables.size())
+		if (!encoder_output.m_slice_image_tables.empty())
 		{
 			assert(m_comp_data.size() == m_tables_file_ofs);
-			append_vector(m_comp_data, reinterpret_cast<const uint8_t*>(&encoder_output.m_slice_image_tables[0]), encoder_output.m_slice_image_tables.size());
+			append_vector(m_comp_data, reinterpret_cast<const uint8_t*>((encoder_output.m_slice_image_tables).data()), encoder_output.m_slice_image_tables.size());
 		}
 
 		assert(m_comp_data.size() == m_first_image_file_ofs);
-		for (uint32_t i = 0; i < slice_descs.size(); i++)
-			append_vector(m_comp_data, &encoder_output.m_slice_image_data[i][0], encoder_output.m_slice_image_data[i].size());
+		for (uint32_t i = 0; i < slice_descs.size(); i++) {
+			append_vector(m_comp_data, encoder_output.m_slice_image_data[i].data(), encoder_output.m_slice_image_data[i].size());
+}
 
 		assert(m_comp_data.size() == m_total_file_size);
 	}
 
 	void basisu_file::fixup_crcs()
 	{
-		basist::basis_file_header *pHeader = reinterpret_cast<basist::basis_file_header *>(&m_comp_data[0]);
+		basist::basis_file_header *pHeader = reinterpret_cast<basist::basis_file_header *>((m_comp_data).data());
 
 		pHeader->m_data_size = m_total_file_size - sizeof(basist::basis_file_header);
-		pHeader->m_data_crc16 = basist::crc16(&m_comp_data[0] + sizeof(basist::basis_file_header), m_total_file_size - sizeof(basist::basis_file_header), 0);
-				
+		pHeader->m_data_crc16 = basist::crc16((m_comp_data).data() + sizeof(basist::basis_file_header), m_total_file_size - sizeof(basist::basis_file_header), 0);
+
 		pHeader->m_header_crc16 = basist::crc16(&pHeader->m_data_size, sizeof(basist::basis_file_header) - BASISU_OFFSETOF(basist::basis_file_header, m_data_size), 0);
 
 		pHeader->m_sig = basist::basis_file_header::cBASISSigValue;
@@ -242,10 +249,11 @@ namespace basisu
 			m_tables_file_ofs = 0;
 			m_first_image_file_ofs = m_slice_descs_file_ofs + sizeof(basist::basis_slice_desc) * (uint32_t)slice_descs.size();
 		}
-				
+
 		uint64_t total_file_size = m_first_image_file_ofs;
-		for (uint32_t i = 0; i < encoder_output.m_slice_image_data.size(); i++)
+		for (uint32_t i = 0; i < encoder_output.m_slice_image_data.size(); i++) {
 			total_file_size += encoder_output.m_slice_image_data[i].size();
+}
 		if (total_file_size >= 0xFFFF0000ULL)
 		{
 			error_printf("basisu_file::init: File is too large!\n");
@@ -256,8 +264,9 @@ namespace basisu
 
 		create_header(encoder_output, tex_type, userdata0, userdata1, y_flipped, us_per_frame);
 
-		if (!create_image_descs(encoder_output))
+		if (!create_image_descs(encoder_output)) {
 			return false;
+}
 
 		create_comp_data(encoder_output);
 

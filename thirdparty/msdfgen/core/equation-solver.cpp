@@ -11,8 +11,9 @@ int solveQuadratic(double x[2], double a, double b, double c) {
     if (a == 0 || fabs(b) > 1e12*fabs(a)) {
         // a == 0, b == 0 -> no solution
         if (b == 0) {
-            if (c == 0)
+            if (c == 0) {
                 return -1; // 0 == 0
+}
             return 0;
         }
         x[0] = -c/b;
@@ -27,8 +28,9 @@ int solveQuadratic(double x[2], double a, double b, double c) {
     } else if (dscr == 0) {
         x[0] = -b/(2*a);
         return 1;
-    } else
+    } else {
         return 0;
+}
 }
 
 static int solveCubicNormed(double x[3], double a, double b, double c) {
@@ -40,8 +42,10 @@ static int solveCubicNormed(double x[3], double a, double b, double c) {
     a *= 1/3.;
     if (r2 < q3) {
         double t = r/sqrt(q3);
-        if (t < -1) t = -1;
-        if (t > 1) t = 1;
+        if (t < -1) { t = -1;
+}
+        if (t > 1) { t = 1;
+}
         t = acos(t);
         q = -2*sqrt(q);
         x[0] = q*cos(1/3.*t)-a;
@@ -63,8 +67,9 @@ static int solveCubicNormed(double x[3], double a, double b, double c) {
 int solveCubic(double x[3], double a, double b, double c, double d) {
     if (a != 0) {
         double bn = b/a;
-        if (fabs(bn) < 1e6) // Above this ratio, the numerical error gets larger than if we treated a as zero
+        if (fabs(bn) < 1e6) { // Above this ratio, the numerical error gets larger than if we treated a as zero
             return solveCubicNormed(x, bn, c/a, d/a);
+}
     }
     return solveQuadratic(x, b, c, d);
 }

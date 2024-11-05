@@ -383,7 +383,7 @@ namespace RVO2D {
 
 		if (distSq < rangeSq) {
 			if (agentNeighbors_.size() < maxNeighbors_) {
-				agentNeighbors_.push_back(std::make_pair(distSq, agent));
+				agentNeighbors_.emplace_back(distSq, agent);
 			}
 
 			size_t i = agentNeighbors_.size() - 1;
@@ -404,7 +404,7 @@ namespace RVO2D {
 	void Agent2D::insertObstacleNeighbor(const Obstacle2D *obstacle, float rangeSq)
 	{
 		const Obstacle2D *const nextObstacle = obstacle->nextObstacle_;
-		
+
 		// ignore obstacle if no matching layer/mask
 		if ((avoidance_mask_ & nextObstacle->avoidance_layers_) == 0) {
 			return;
@@ -417,7 +417,7 @@ namespace RVO2D {
 		const float distSq = distSqPointLineSegment(obstacle->point_, nextObstacle->point_, position_);
 
 		if (distSq < rangeSq) {
-			obstacleNeighbors_.push_back(std::make_pair(distSq, obstacle));
+			obstacleNeighbors_.emplace_back(distSq, obstacle);
 
 			size_t i = obstacleNeighbors_.size() - 1;
 

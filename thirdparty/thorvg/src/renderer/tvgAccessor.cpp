@@ -31,7 +31,8 @@ static bool accessChildren(Iterator* it, function<bool(const Paint* paint, void*
 {
     while (auto child = it->next()) {
         //Access the child
-        if (!func(child, data)) return false;
+        if (!func(child, data)) { return false;
+}
 
         //Access the children of the child
         if (auto it2 = IteratorAccessor::iterator(child)) {

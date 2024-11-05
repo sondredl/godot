@@ -144,7 +144,7 @@ static const char * const charCatNames[U_CHAR_EXTENDED_CATEGORY_COUNT] = {
     "format",
     "private use area",
     "surrogate",
-    "dash punctuation",   
+    "dash punctuation",
     "start punctuation",
     "end punctuation",
     "connector punctuation",
@@ -451,16 +451,18 @@ static uint16_t getExtName(uint32_t code, char *buffer, uint16_t bufferLength) {
 
     UChar32 cp;
     int ndigits, i;
-    
+
     WRITE_CHAR(buffer, bufferLength, length, '<');
     while (catname[length - 1]) {
         WRITE_CHAR(buffer, bufferLength, length, catname[length - 1]);
     }
     WRITE_CHAR(buffer, bufferLength, length, '-');
-    for (cp = code, ndigits = 0; cp; ++ndigits, cp >>= 4)
+    for (cp = code, ndigits = 0; cp; ++ndigits, cp >>= 4) {
         ;
-    if (ndigits < 4)
+}
+    if (ndigits < 4) {
         ndigits = 4;
+}
     for (cp = code, i = ndigits; (cp || i > 0) && bufferLength; cp >>= 4, bufferLength--) {
         uint8_t v = static_cast<uint8_t>(cp & 0xf);
         buffer[--i] = (v < 10 ? '0' + v : 'A' + v - 10);
@@ -639,7 +641,7 @@ enumGroupNames(UCharNames *names, const uint16_t *group,
  * It only needs to do it if it is called with a real function and not
  * with the dummy DO_FIND_NAME, because u_charFromName() does a check
  * for extended names by itself.
- */ 
+ */
 static UBool
 enumExtNames(UChar32 start, UChar32 end,
              UEnumCharNamesFn *fn, void *context)
@@ -647,7 +649,7 @@ enumExtNames(UChar32 start, UChar32 end,
     if(fn!=DO_FIND_NAME) {
         char buffer[200];
         uint16_t length;
-        
+
         while(start<=end) {
             buffer[length = getExtName(start, buffer, sizeof(buffer))] = 0;
             /* here, we assume that the buffer is large enough */
@@ -765,7 +767,7 @@ enumNames(UCharNames *names,
         }
         return enumExtNames(start, limit - 1, fn, context);
     }
-    
+
     return true;
 }
 

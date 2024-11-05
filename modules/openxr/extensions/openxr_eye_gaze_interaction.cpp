@@ -134,11 +134,5 @@ bool OpenXREyeGazeInteractionExtension::get_eye_gaze_pose(double p_dist, Vector3
 	Vector3 linear_velocity;
 	Vector3 angular_velocity;
 	XRPose::TrackingConfidence confidence = openxr_api->get_action_pose(eye_action, eye_tracker, eye_transform, linear_velocity, angular_velocity);
-	if (confidence == XRPose::XR_TRACKING_CONFIDENCE_NONE) {
-		return false;
-	}
-
-	r_eye_pose = eye_transform.origin + eye_transform.basis[2] * p_dist;
-
-	return true;
+	return !confidence == XRPose::XR_TRACKING_CONFIDENCE_NONE;
 }

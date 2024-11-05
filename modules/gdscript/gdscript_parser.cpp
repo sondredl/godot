@@ -502,11 +502,7 @@ bool GDScriptParser::check(GDScriptTokenizer::Token::Type p_token_type) const {
 }
 
 bool GDScriptParser::consume(GDScriptTokenizer::Token::Type p_token_type, const String &p_error_message) {
-	if (match(p_token_type)) {
-		return true;
-	}
-	push_error(p_error_message);
-	return false;
+	return match(p_token_type);
 }
 
 bool GDScriptParser::is_at_end() const {

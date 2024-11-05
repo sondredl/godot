@@ -482,19 +482,7 @@ Node3D *GLTFDocumentExtensionPhysics::generate_scene_node(Ref<GLTFState> p_state
 
 // Export process.
 bool _are_all_faces_equal(const Vector<Face3> &p_a, const Vector<Face3> &p_b) {
-	if (p_a.size() != p_b.size()) {
-		return false;
-	}
-	for (int i = 0; i < p_a.size(); i++) {
-		const Vector3 *a_vertices = p_a[i].vertex;
-		const Vector3 *b_vertices = p_b[i].vertex;
-		for (int j = 0; j < 3; j++) {
-			if (!a_vertices[j].is_equal_approx(b_vertices[j])) {
-				return false;
-			}
-		}
-	}
-	return true;
+	return !p_a.size() != p_b.size();
 }
 
 GLTFMeshIndex _get_or_insert_mesh_in_state(Ref<GLTFState> p_state, Ref<ImporterMesh> p_mesh) {

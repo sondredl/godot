@@ -121,7 +121,7 @@ private:
 public:
     const char *name;
 #endif
-private:
+
     /** Temporary array while building the final data. */
     uint16_t *index16 = nullptr;
     uint8_t flags[UNICODE_LIMIT >> UCPTRIE_SHIFT_3];

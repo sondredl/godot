@@ -45,59 +45,59 @@ namespace glslang {
 struct TRemoveTraverser : TIntermTraverser {
     TRemoveTraverser() : TIntermTraverser(false, false, true, false) {}
 
-    virtual void visitSymbol(TIntermSymbol* node)
+    void visitSymbol(TIntermSymbol* node) override
     {
         delete node;
     }
 
-    virtual bool visitBinary(TVisit /* visit*/ , TIntermBinary* node)
-    {
-        delete node;
-
-        return true;
-    }
-
-    virtual bool visitUnary(TVisit /* visit */, TIntermUnary* node)
+    bool visitBinary(TVisit /* visit*/ , TIntermBinary* node) override
     {
         delete node;
 
         return true;
     }
 
-    virtual bool visitAggregate(TVisit /* visit*/ , TIntermAggregate* node)
+    bool visitUnary(TVisit /* visit */, TIntermUnary* node) override
     {
         delete node;
 
         return true;
     }
 
-    virtual bool visitSelection(TVisit /* visit*/ , TIntermSelection* node)
+    bool visitAggregate(TVisit /* visit*/ , TIntermAggregate* node) override
     {
         delete node;
 
         return true;
     }
 
-    virtual bool visitSwitch(TVisit /* visit*/ , TIntermSwitch* node)
+    bool visitSelection(TVisit /* visit*/ , TIntermSelection* node) override
     {
         delete node;
 
         return true;
     }
 
-    virtual void visitConstantUnion(TIntermConstantUnion* node)
-    {
-        delete node;
-    }
-
-    virtual bool visitLoop(TVisit /* visit*/ , TIntermLoop* node)
+    bool visitSwitch(TVisit /* visit*/ , TIntermSwitch* node) override
     {
         delete node;
 
         return true;
     }
 
-    virtual bool visitBranch(TVisit /* visit*/ , TIntermBranch* node)
+    void visitConstantUnion(TIntermConstantUnion* node) override
+    {
+        delete node;
+    }
+
+    bool visitLoop(TVisit /* visit*/ , TIntermLoop* node) override
+    {
+        delete node;
+
+        return true;
+    }
+
+    bool visitBranch(TVisit /* visit*/ , TIntermBranch* node) override
     {
         delete node;
 

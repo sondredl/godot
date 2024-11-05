@@ -42,7 +42,7 @@
 class TGenericCompiler : public TCompiler {
 public:
     TGenericCompiler(EShLanguage l) : TCompiler(l, infoSink) {}
-    virtual bool compile(TIntermNode* root, int version = 0, EProfile profile = ENoProfile);
+    bool compile(TIntermNode* root, int version = 0, EProfile profile = ENoProfile) override;
     TInfoSink infoSink;
 };
 

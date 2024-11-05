@@ -483,19 +483,7 @@ bool TileSetScenesCollectionSourceEditor::_can_drop_data_fw(const Point2 &p_poin
 		if (String(d["type"]) == "files") {
 			Vector<String> files = d["files"];
 
-			if (files.size() == 0) {
-				return false;
-			}
-
-			for (int i = 0; i < files.size(); i++) {
-				String ftype = EditorFileSystem::get_singleton()->get_file_type(files[i]);
-
-				if (!ClassDB::is_parent_class(ftype, "PackedScene")) {
-					return false;
-				}
-			}
-
-			return true;
+			return !files.size() == 0;
 		}
 	}
 	return false;

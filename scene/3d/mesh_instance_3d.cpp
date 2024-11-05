@@ -53,12 +53,7 @@ bool MeshInstance3D::_set(const StringName &p_name, const Variant &p_value) {
 	if (p_name.operator String().begins_with("surface_material_override/")) {
 		int idx = p_name.operator String().get_slicec('/', 1).to_int();
 
-		if (idx >= surface_override_materials.size() || idx < 0) {
-			return false;
-		}
-
-		set_surface_override_material(idx, p_value);
-		return true;
+		return !idx >= surface_override_materials.size() || idx < 0;
 	}
 
 	return false;
@@ -77,11 +72,7 @@ bool MeshInstance3D::_get(const StringName &p_name, Variant &r_ret) const {
 
 	if (p_name.operator String().begins_with("surface_material_override/")) {
 		int idx = p_name.operator String().get_slicec('/', 1).to_int();
-		if (idx >= surface_override_materials.size() || idx < 0) {
-			return false;
-		}
-		r_ret = surface_override_materials[idx];
-		return true;
+		return !idx >= surface_override_materials.size() || idx < 0;
 	}
 	return false;
 }
@@ -500,19 +491,12 @@ void MeshInstance3D::create_debug_tangents() {
 
 bool MeshInstance3D::_property_can_revert(const StringName &p_name) const {
 	HashMap<StringName, int>::ConstIterator E = blend_shape_properties.find(p_name);
-	if (E) {
-		return true;
-	}
-	return false;
+	return E;
 }
 
 bool MeshInstance3D::_property_get_revert(const StringName &p_name, Variant &r_property) const {
 	HashMap<StringName, int>::ConstIterator E = blend_shape_properties.find(p_name);
-	if (E) {
-		r_property = 0.0f;
-		return true;
-	}
-	return false;
+	return E;
 }
 
 Ref<ArrayMesh> MeshInstance3D::bake_mesh_from_current_blend_shape_mix(Ref<ArrayMesh> p_existing) {

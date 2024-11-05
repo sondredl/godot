@@ -532,8 +532,8 @@ astcenc_error astcenc_config_init(
 	// Start and end node are not the same - so interpolate between them
 	else
 	{
-		auto& node_a = (*preset_configs)[start];
-		auto& node_b = (*preset_configs)[end];
+		const auto& node_a = (*preset_configs)[start];
+		const auto& node_b = (*preset_configs)[end];
 
 		float wt_range = node_b.quality - node_a.quality;
 		assert(wt_range > 0);

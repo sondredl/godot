@@ -51,12 +51,7 @@ int PackedDataContainer::size() const {
 Variant PackedDataContainer::_iter_init_ofs(const Array &p_iter, uint32_t p_offset) {
 	Array ref = p_iter;
 	uint32_t size = _size(p_offset);
-	if (size == 0 || ref.size() != 1) {
-		return false;
-	} else {
-		ref[0] = 0;
-		return true;
-	}
+	return !size == 0 || ref.size() != 1;
 }
 
 Variant PackedDataContainer::_iter_next_ofs(const Array &p_iter, uint32_t p_offset) {

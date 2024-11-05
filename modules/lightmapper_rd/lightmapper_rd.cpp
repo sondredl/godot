@@ -204,7 +204,7 @@ void LightmapperRD::_sort_triangle_clusters(uint32_t p_cluster_size, uint32_t p_
 				triangle_sorter_z.sort(&p_triangle_sort[p_index_start], p_count);
 				break;
 			default:
-				DEV_ASSERT(false && "Invalid axis returned by AABB.");
+				DEV_ASSERT(false);
 				break;
 		}
 

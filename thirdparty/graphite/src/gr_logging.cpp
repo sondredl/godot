@@ -25,7 +25,8 @@ extern "C" {
 
 bool gr_start_logging(GR_MAYBE_UNUSED gr_face * face, const char *log_path)
 {
-    if (!log_path)  return false;
+    if (!log_path) {  return false;
+}
 
 #if !defined GRAPHITE2_NTRACING
     gr_stop_logging(face);
@@ -43,12 +44,14 @@ bool gr_start_logging(GR_MAYBE_UNUSED gr_face * face, const char *log_path)
 #else   // _WIN32
     FILE *log = fopen(log_path, "wt");
 #endif  // _WIN32
-    if (!log)   return false;
+    if (!log) {   return false;
+}
 
     if (face)
     {
         face->setLogger(log);
-        if (!face->logger()) return false;
+        if (!face->logger()) { return false;
+}
 
         *face->logger() << json::array;
 #ifdef GRAPHITE2_TELEMETRY
@@ -179,10 +182,12 @@ json & graphite2::operator << (json & j, const dslot & ds) throw()
         << "advance"        << s.advancePos()
         << "insert"         << s.isInsertBefore()
         << "break"          << s.getAttr(&seg, gr_slatBreak, 0);
-    if (s.just() > 0)
+    if (s.just() > 0) {
         j << "justification"    << s.just();
-    if (s.getBidiLevel() > 0)
+}
+    if (s.getBidiLevel() > 0) {
         j << "bidi"     << s.getBidiLevel();
+}
     if (!s.isBase())
         j << "parent" << json::flat << json::object
             << "id"             << objectid(dslot(&seg, s.attachedTo()))
@@ -190,14 +195,16 @@ json & graphite2::operator << (json & j, const dslot & ds) throw()
             << "offset"         << s.attachOffset()
             << json::close;
     j << "user" << json::flat << json::array;
-    for (int n = 0; n!= seg.numAttrs(); ++n)
+    for (int n = 0; n!= seg.numAttrs(); ++n) {
         j   << s.userAttrs()[n];
+}
     j       << json::close;
     if (s.firstChild())
     {
         j   << "children" << json::flat << json::array;
-        for (const Slot *c = s.firstChild(); c; c = c->nextSibling())
+        for (const Slot *c = s.firstChild(); c; c = c->nextSibling()) {
             j   << objectid(dslot(&seg, c));
+}
         j       << json::close;
     }
     if (cslot)
@@ -226,7 +233,7 @@ json & graphite2::operator << (json & j, const dslot & ds) throw()
 }
 
 
-graphite2::objectid::objectid(const dslot & ds) throw()
+graphite2::objectid::objectid(const dslot & ds) noexcept
 {
     const Slot * const p = ds.second;
     uint32 s = uint32(reinterpret_cast<size_t>(p));
@@ -234,7 +241,7 @@ graphite2::objectid::objectid(const dslot & ds) throw()
     name[sizeof name-1] = 0;
 }
 
-graphite2::objectid::objectid(const Segment * const p) throw()
+graphite2::objectid::objectid(const Segment * const p) noexcept
 {
     uint32 s = uint32(reinterpret_cast<size_t>(p));
     sprintf(name, "%.4x-%.2x-%.4hx", uint16(s >> 16), 0, uint16(s));

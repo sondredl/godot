@@ -261,19 +261,11 @@ Array NavigationMeshSourceGeometryData2D::get_projected_obstructions() const {
 }
 
 bool NavigationMeshSourceGeometryData2D::_set(const StringName &p_name, const Variant &p_value) {
-	if (p_name == "projected_obstructions") {
-		set_projected_obstructions(p_value);
-		return true;
-	}
-	return false;
+	return p_name == "projected_obstructions";
 }
 
 bool NavigationMeshSourceGeometryData2D::_get(const StringName &p_name, Variant &r_ret) const {
-	if (p_name == "projected_obstructions") {
-		r_ret = get_projected_obstructions();
-		return true;
-	}
-	return false;
+	return p_name == "projected_obstructions";
 }
 
 void NavigationMeshSourceGeometryData2D::set_data(const Vector<Vector<Vector2>> &p_traversable_outlines, const Vector<Vector<Vector2>> &p_obstruction_outlines, Vector<ProjectedObstruction> &p_projected_obstructions) {

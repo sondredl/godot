@@ -32,24 +32,27 @@ namespace spirv_cross_util
 void rename_interface_variable(Compiler &compiler, const SmallVector<Resource> &resources, uint32_t location,
                                const std::string &name)
 {
-	for (auto &v : resources)
+	for (const auto &v : resources)
 	{
-		if (!compiler.has_decoration(v.id, spv::DecorationLocation))
+		if (!compiler.has_decoration(v.id, spv::DecorationLocation)) {
 			continue;
+}
 
 		auto loc = compiler.get_decoration(v.id, spv::DecorationLocation);
-		if (loc != location)
+		if (loc != location) {
 			continue;
+}
 
-		auto &type = compiler.get_type(v.base_type_id);
+		const auto &type = compiler.get_type(v.base_type_id);
 
 		// This is more of a friendly variant. If we need to rename interface variables, we might have to rename
 		// structs as well and make sure all the names match up.
 		if (type.basetype == SPIRType::Struct)
 		{
 			compiler.set_name(v.base_type_id, join("SPIRV_Cross_Interface_Location", location));
-			for (uint32_t i = 0; i < uint32_t(type.member_types.size()); i++)
+			for (uint32_t i = 0; i < uint32_t(type.member_types.size()); i++) {
 				compiler.set_member_name(v.base_type_id, i, join("InterfaceMember", i));
+}
 		}
 
 		compiler.set_name(v.id, name);
@@ -58,8 +61,8 @@ void rename_interface_variable(Compiler &compiler, const SmallVector<Resource> &
 
 void inherit_combined_sampler_bindings(Compiler &compiler)
 {
-	auto &samplers = compiler.get_combined_image_samplers();
-	for (auto &s : samplers)
+	const auto &samplers = compiler.get_combined_image_samplers();
+	for (const auto &s : samplers)
 	{
 		if (compiler.has_decoration(s.image_id, spv::DecorationDescriptorSet))
 		{

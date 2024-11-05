@@ -70,25 +70,29 @@ void TParseContextBase::outputMessage(const TSourceLoc& loc, const char* szReaso
 void C_DECL TParseContextBase::error(const TSourceLoc& loc, const char* szReason, const char* szToken,
                                      const char* szExtraInfoFormat, ...)
 {
-    if (messages & EShMsgOnlyPreprocessor)
+    if (messages & EShMsgOnlyPreprocessor) {
         return;
+}
     // If enhanced msg readability, only print one error
-    if (messages & EShMsgEnhanced && numErrors > 0)
+    if (messages & EShMsgEnhanced && numErrors > 0) {
         return;
+}
     va_list args;
     va_start(args, szExtraInfoFormat);
     outputMessage(loc, szReason, szToken, szExtraInfoFormat, EPrefixError, args);
     va_end(args);
 
-    if ((messages & EShMsgCascadingErrors) == 0)
+    if ((messages & EShMsgCascadingErrors) == 0) {
         currentScanner->setEndOfInput();
+}
 }
 
 void C_DECL TParseContextBase::warn(const TSourceLoc& loc, const char* szReason, const char* szToken,
                                     const char* szExtraInfoFormat, ...)
 {
-    if (suppressWarnings())
+    if (suppressWarnings()) {
         return;
+}
     va_list args;
     va_start(args, szExtraInfoFormat);
     outputMessage(loc, szReason, szToken, szExtraInfoFormat, EPrefixWarning, args);
@@ -103,8 +107,9 @@ void C_DECL TParseContextBase::ppError(const TSourceLoc& loc, const char* szReas
     outputMessage(loc, szReason, szToken, szExtraInfoFormat, EPrefixError, args);
     va_end(args);
 
-    if ((messages & EShMsgCascadingErrors) == 0)
+    if ((messages & EShMsgCascadingErrors) == 0) {
         currentScanner->setEndOfInput();
+}
 }
 
 void C_DECL TParseContextBase::ppWarn(const TSourceLoc& loc, const char* szReason, const char* szToken,
@@ -128,8 +133,9 @@ bool TParseContextBase::lValueErrorCheck(const TSourceLoc& loc, const char* op, 
 
     const char* symbol = nullptr;
     TIntermSymbol* symNode = node->getAsSymbolNode();
-    if (symNode != nullptr)
+    if (symNode != nullptr) {
         symbol = symNode->getName().c_str();
+}
 
     const char* message = nullptr;
     switch (node->getQualifier().storage) {
@@ -137,14 +143,17 @@ bool TParseContextBase::lValueErrorCheck(const TSourceLoc& loc, const char* op, 
     case EvqConstReadOnly:  message = "can't modify a const";        break;
     case EvqUniform:        message = "can't modify a uniform";      break;
     case EvqBuffer:
-        if (node->getQualifier().isReadOnly())
+        if (node->getQualifier().isReadOnly()) {
             message = "can't modify a readonly buffer";
-        if (node->getQualifier().isShaderRecord())
+}
+        if (node->getQualifier().isShaderRecord()) {
             message = "can't modify a shaderrecordnv qualified buffer";
+}
         break;
     case EvqHitAttr:
-        if (language != EShLangIntersect)
+        if (language != EShLangIntersect) {
             message = "cannot modify hitAttributeNV in this stage";
+}
         break;
 
     default:
@@ -153,8 +162,9 @@ bool TParseContextBase::lValueErrorCheck(const TSourceLoc& loc, const char* op, 
         //
         switch (node->getBasicType()) {
         case EbtSampler:
-            if (extensionTurnedOn(E_GL_ARB_bindless_texture) == false)
+            if (!extensionTurnedOn(E_GL_ARB_bindless_texture)) {
                 message = "can't modify a sampler";
+}
             break;
         case EbtVoid:
             message = "can't modify void";
@@ -210,16 +220,18 @@ bool TParseContextBase::lValueErrorCheck(const TSourceLoc& loc, const char* op, 
     //
     const TIntermTyped* leftMostTypeNode = TIntermediate::traverseLValueBase(node, true);
 
-    if (symNode)
+    if (symNode) {
         error(loc, " l-value required", op, "\"%s\" (%s)", symbol, message);
-    else
-        if (binaryNode && binaryNode->getAsOperator()->getOp() == EOpIndexDirectStruct)
-            if(IsAnonymous(leftMostTypeNode->getAsSymbolNode()->getName()))
+    } else
+        if (binaryNode && binaryNode->getAsOperator()->getOp() == EOpIndexDirectStruct) {
+            if(IsAnonymous(leftMostTypeNode->getAsSymbolNode()->getName())) {
                 error(loc, " l-value required", op, "\"%s\" (%s)", leftMostTypeNode->getAsSymbolNode()->getAccessName().c_str(), message);
-            else
+            } else {
                 error(loc, " l-value required", op, "\"%s\" (%s)", leftMostTypeNode->getAsSymbolNode()->getName().c_str(), message);
-        else
+}
+        } else {
             error(loc, " l-value required", op, "(%s)", message);
+}
 
     return true;
 }
@@ -227,8 +239,9 @@ bool TParseContextBase::lValueErrorCheck(const TSourceLoc& loc, const char* op, 
 // Test for and give an error if the node can't be read from.
 void TParseContextBase::rValueErrorCheck(const TSourceLoc& loc, const char* op, TIntermTyped* node)
 {
-    if (! node)
+    if (! node) {
         return;
+}
 
     TIntermBinary* binaryNode = node->getAsBinaryNode();
     const TIntermSymbol* symNode = node->getAsSymbolNode();
@@ -236,17 +249,19 @@ void TParseContextBase::rValueErrorCheck(const TSourceLoc& loc, const char* op, 
     if (node->getQualifier().isWriteOnly()) {
         const TIntermTyped* leftMostTypeNode = TIntermediate::traverseLValueBase(node, true);
 
-        if (symNode != nullptr)
+        if (symNode != nullptr) {
             error(loc, "can't read from writeonly object: ", op, symNode->getName().c_str());
-        else if (binaryNode &&
+        } else if (binaryNode &&
                 (binaryNode->getAsOperator()->getOp() == EOpIndexDirectStruct ||
-                 binaryNode->getAsOperator()->getOp() == EOpIndexDirect))
-            if(IsAnonymous(leftMostTypeNode->getAsSymbolNode()->getName()))
+                 binaryNode->getAsOperator()->getOp() == EOpIndexDirect)) {
+            if(IsAnonymous(leftMostTypeNode->getAsSymbolNode()->getName())) {
                 error(loc, "can't read from writeonly object: ", op, leftMostTypeNode->getAsSymbolNode()->getAccessName().c_str());
-            else
+            } else {
                 error(loc, "can't read from writeonly object: ", op, leftMostTypeNode->getAsSymbolNode()->getName().c_str());
-        else
+}
+        } else {
             error(loc, "can't read from writeonly object: ", op, "");
+}
 
     } else {
         if (binaryNode) {
@@ -273,8 +288,9 @@ void TParseContextBase::rValueErrorCheck(const TSourceLoc& loc, const char* op, 
 // Order is preserved, to avoid creating novel forward references.
 void TParseContextBase::trackLinkage(TSymbol& symbol)
 {
-    if (!parsingBuiltins)
+    if (!parsingBuiltins) {
         linkageSymbols.push_back(&symbol);
+}
 }
 
 // Ensure index is in bounds, correct if necessary.
@@ -318,8 +334,9 @@ void TParseContextBase::makeEditable(TSymbol*& symbol)
     symbol = symbolTable.copyUp(symbol);
 
     // Save it (deferred, so it can be edited first) in the AST for linker use.
-    if (symbol)
+    if (symbol) {
         trackLinkage(*symbol);
+}
 }
 
 // Return a writable version of the variable 'name'.
@@ -333,11 +350,13 @@ TVariable* TParseContextBase::getEditableVariable(const char* name)
     TSymbol* symbol = symbolTable.find(name, &builtIn);
 
     assert(symbol != nullptr);
-    if (symbol == nullptr)
+    if (symbol == nullptr) {
         return nullptr;
+}
 
-    if (builtIn)
+    if (builtIn) {
         makeEditable(symbol);
+}
 
     return symbol->getAsVariable();
 }
@@ -419,8 +438,9 @@ const TFunction* TParseContextBase::selectFunction(
         // to even be a potential match, number of arguments must be >= the number of
         // fixed (non-default) parameters, and <= the total (including parameter with defaults).
         if (call.getParamCount() < candidate.getFixedParamCount() ||
-            call.getParamCount() > candidate.getParamCount())
+            call.getParamCount() > candidate.getParamCount()) {
             continue;
+}
 
         // see if arguments are convertible
         bool viable = true;
@@ -442,17 +462,20 @@ const TFunction* TParseContextBase::selectFunction(
             }
         }
 
-        if (viable)
+        if (viable) {
             viableCandidates.push_back(&candidate);
+}
     }
 
     // 2. none viable...
-    if (viableCandidates.size() == 0)
+    if (viableCandidates.empty()) {
         return nullptr;
+}
 
     // 3. only one viable...
-    if (viableCandidates.size() == 1)
+    if (viableCandidates.size() == 1) {
         return viableCandidates.front();
+}
 
     // 4. find best...
     const auto betterParam = [&call, &better](const TFunction& can1, const TFunction& can2) -> bool {
@@ -471,8 +494,9 @@ const TFunction* TParseContextBase::selectFunction(
         // is call -> can2 equivalent to call -> can1 for all the call parameters?
         for (int param = 0; param < call.getParamCount(); ++param) {
             if (better(*call[param].type, *can1[param].type, *can2[param].type) ||
-                better(*call[param].type, *can2[param].type, *can1[param].type))
+                better(*call[param].type, *can2[param].type, *can1[param].type)) {
                 return false;
+}
         }
         return true;
     };
@@ -480,20 +504,23 @@ const TFunction* TParseContextBase::selectFunction(
     const TFunction* incumbent = viableCandidates.front();
     for (auto it = viableCandidates.begin() + 1; it != viableCandidates.end(); ++it) {
         const TFunction& candidate = *(*it);
-        if (betterParam(*incumbent, candidate) && ! betterParam(candidate, *incumbent))
+        if (betterParam(*incumbent, candidate) && ! betterParam(candidate, *incumbent)) {
             incumbent = &candidate;
+}
     }
 
     // 5. ambiguity...
     for (auto it = viableCandidates.begin(); it != viableCandidates.end(); ++it) {
-        if (incumbent == *it)
+        if (incumbent == *it) {
             continue;
+}
         const TFunction& candidate = *(*it);
 
         // In the case of default parameters, it may have an identical initial set, which is
         // also ambiguous
-        if (betterParam(*incumbent, candidate) || equivalentParams(*incumbent, candidate))
+        if (betterParam(*incumbent, candidate) || equivalentParams(*incumbent, candidate)) {
             tie = true;
+}
     }
 
     return incumbent;
@@ -509,8 +536,9 @@ void TParseContextBase::parseSwizzleSelector(const TSourceLoc& loc, const TStrin
                                              TSwizzleSelectors<TVectorSelector>& selector)
 {
     // Too long?
-    if (compString.size() > MaxSwizzleSelectors)
+    if (compString.size() > MaxSwizzleSelectors) {
         error(loc, "vector swizzle too long", compString.c_str(), "");
+}
 
     // Use this to test that all swizzle characters are from the same swizzle-namespace-set
     enum {
@@ -597,8 +625,9 @@ void TParseContextBase::parseSwizzleSelector(const TSourceLoc& loc, const TStrin
     }
 
     // Ensure it is valid.
-    if (selector.size() == 0)
+    if (selector.size() == 0) {
         selector.push_back(0);
+}
 }
 
 //
@@ -637,18 +666,20 @@ void TParseContextBase::growGlobalUniformBlock(const TSourceLoc& loc, TType& mem
     TType* type = new TType;
     type->shallowCopy(memberType);
     type->setFieldName(memberName);
-    if (typeList)
+    if (typeList) {
         type->setStruct(typeList);
+}
     TTypeLoc typeLoc = {type, loc};
     globalUniformBlock->getType().getWritableStruct()->push_back(typeLoc);
 
     // Insert into the symbol table.
     if (firstNewMember == 0) {
         // This is the first request; we need a normal symbol table insert
-        if (symbolTable.insert(*globalUniformBlock))
+        if (symbolTable.insert(*globalUniformBlock)) {
             trackLinkage(*globalUniformBlock);
-        else
+        } else {
             error(loc, "failed to insert the global constant buffer", "uniform", "");
+}
     } else {
         // This is a follow-on request; we need to amend the first insert
         symbolTable.amend(*globalUniformBlock, firstNewMember);
@@ -672,14 +703,14 @@ void TParseContextBase::growAtomicCounterBlock(int binding, const TSourceLoc& lo
         TQualifier blockQualifier;
         blockQualifier.clear();
         blockQualifier.storage = EvqBuffer;
-        
+
         char charBuffer[512];
         if (binding != TQualifier::layoutBindingEnd) {
             snprintf(charBuffer, 512, "%s_%d", getAtomicCounterBlockName(), binding);
         } else {
             snprintf(charBuffer, 512, "%s_0", getAtomicCounterBlockName());
         }
-        
+
         TType blockType(new TTypeList, *NewPoolTString(charBuffer), blockQualifier);
         setUniformBlockDefaults(blockType);
         blockType.getQualifier().layoutPacking = ElpStd430;
@@ -698,18 +729,20 @@ void TParseContextBase::growAtomicCounterBlock(int binding, const TSourceLoc& lo
     TType* type = new TType;
     type->shallowCopy(memberType);
     type->setFieldName(memberName);
-    if (typeList)
+    if (typeList) {
         type->setStruct(typeList);
+}
     TTypeLoc typeLoc = {type, loc};
     atomicCounterBuffer->getType().getWritableStruct()->push_back(typeLoc);
 
     // Insert into the symbol table.
     if (bufferNewMember == 0) {
         // This is the first request; we need a normal symbol table insert
-        if (symbolTable.insert(*atomicCounterBuffer))
+        if (symbolTable.insert(*atomicCounterBuffer)) {
             trackLinkage(*atomicCounterBuffer);
-        else
+        } else {
             error(loc, "failed to insert the global constant buffer", "buffer", "");
+}
     } else {
         // This is a follow-on request; we need to amend the first insert
         symbolTable.amend(*atomicCounterBuffer, bufferNewMember);
@@ -720,8 +753,9 @@ void TParseContextBase::growAtomicCounterBlock(int binding, const TSourceLoc& lo
 
 void TParseContextBase::finish()
 {
-    if (parsingBuiltins)
+    if (parsingBuiltins) {
         return;
+}
 
     for (const TString& relaxedSymbol : relaxedSymbols)
     {
@@ -743,8 +777,9 @@ void TParseContextBase::finish()
 
     // Transfer the linkage symbols to AST nodes, preserving order.
     TIntermAggregate* linkage = new TIntermAggregate;
-    for (auto i = linkageSymbols.begin(); i != linkageSymbols.end(); ++i)
+    for (auto i = linkageSymbols.begin(); i != linkageSymbols.end(); ++i) {
         intermediate.addSymbolLinkageNode(linkage, **i);
+}
     intermediate.addSymbolLinkageNodes(linkage, getLanguage(), symbolTable);
 }
 

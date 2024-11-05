@@ -90,8 +90,7 @@ bool mathSmallCubic(const SwPoint* base, SwFixed& angleIn, SwFixed& angleMid, Sw
     auto theta1 = abs(mathDiff(angleIn, angleMid));
     auto theta2 = abs(mathDiff(angleMid, angleOut));
 
-    if ((theta1 < (SW_ANGLE_PI / 8)) && (theta2 < (SW_ANGLE_PI / 8))) return true;
-    return false;
+    return (theta1 < (SW_ANGLE_PI / 8)) && (theta2 < (SW_ANGLE_PI / 8));
 }
 
 
@@ -156,7 +155,8 @@ int64_t mathMulDiv(int64_t a, int64_t b, int64_t c)
 
 void mathRotate(SwPoint& pt, SwFixed angle)
 {
-    if (angle == 0 || pt.zero()) return;
+    if (angle == 0 || pt.zero()) { return;
+}
 
     Point v = pt.toPoint();
 
@@ -171,21 +171,24 @@ void mathRotate(SwPoint& pt, SwFixed angle)
 
 SwFixed mathTan(SwFixed angle)
 {
-    if (angle == 0) return 0;
+    if (angle == 0) { return 0;
+}
     return SwFixed(tanf(TO_RADIAN(angle)) * 65536.0f);
 }
 
 
 SwFixed mathAtan(const SwPoint& pt)
 {
-    if (pt.zero()) return 0;
+    if (pt.zero()) { return 0;
+}
     return SwFixed(mathAtan2(TO_FLOAT(pt.y), TO_FLOAT(pt.x)) * (180.0f / MATH_PI) * 65536.0f);
 }
 
 
 SwFixed mathSin(SwFixed angle)
 {
-    if (angle == 0) return 0;
+    if (angle == 0) { return 0;
+}
     return mathCos(SW_ANGLE_PI2 - angle);
 }
 
@@ -198,11 +201,14 @@ SwFixed mathCos(SwFixed angle)
 
 SwFixed mathLength(const SwPoint& pt)
 {
-    if (pt.zero()) return 0;
+    if (pt.zero()) { return 0;
+}
 
     //trivial case
-    if (pt.x == 0) return abs(pt.y);
-    if (pt.y == 0) return abs(pt.x);
+    if (pt.x == 0) { return abs(pt.y);
+}
+    if (pt.y == 0) { return abs(pt.x);
+}
 
     auto v = pt.toPoint();
     //return static_cast<SwFixed>(sqrtf(v.x * v.x + v.y * v.y) * 65536.0f);
@@ -247,8 +253,10 @@ SwFixed mathDiff(SwFixed angle1, SwFixed angle2)
     auto delta = angle2 - angle1;
 
     delta %= SW_ANGLE_2PI;
-    if (delta < 0) delta += SW_ANGLE_2PI;
-    if (delta > SW_ANGLE_PI) delta -= SW_ANGLE_2PI;
+    if (delta < 0) { delta += SW_ANGLE_2PI;
+}
+    if (delta > SW_ANGLE_PI) { delta -= SW_ANGLE_2PI;
+}
 
     return delta;
 }
@@ -271,11 +279,13 @@ bool mathClipBBox(const SwBBox& clipper, SwBBox& clipee)
     clipee.min.y = (clipee.min.y > clipper.min.y) ? clipee.min.y : clipper.min.y;
 
     //Check valid region
-    if (clipee.max.x - clipee.min.x < 1 && clipee.max.y - clipee.min.y < 1) return false;
+    if (clipee.max.x - clipee.min.x < 1 && clipee.max.y - clipee.min.y < 1) { return false;
+}
 
     //Check boundary
     if (clipee.min.x >= clipper.max.x || clipee.min.y >= clipper.max.y ||
-        clipee.max.x <= clipper.min.x || clipee.max.y <= clipper.min.y) return false;
+        clipee.max.x <= clipper.min.x || clipee.max.y <= clipper.min.y) { return false;
+}
 
     return true;
 }
@@ -283,7 +293,8 @@ bool mathClipBBox(const SwBBox& clipper, SwBBox& clipee)
 
 bool mathUpdateOutlineBBox(const SwOutline* outline, const SwBBox& clipRegion, SwBBox& renderRegion, bool fastTrack)
 {
-    if (!outline) return false;
+    if (!outline) { return false;
+}
 
     if (outline->pts.empty() || outline->cntrs.empty()) {
         renderRegion.reset();

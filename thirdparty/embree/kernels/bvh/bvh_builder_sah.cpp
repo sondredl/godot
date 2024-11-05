@@ -109,7 +109,7 @@ namespace embree
 
       // FIXME: shrink bvh->alloc in destructor here and in other builders too
 
-      void build()
+      void build() override
       {
         /* we reset the allocator when the mesh size changed */
         if (mesh && mesh->numPrimitives != numPreviousPrimitives) {
@@ -117,8 +117,9 @@ namespace embree
         }
 
         /* if we use the primrefarray for allocations we have to take it back from the BVH */
-        if (settings.primrefarrayalloc != size_t(inf))
+        if (settings.primrefarrayalloc != size_t(inf)) {
           bvh->alloc.unshare(prims);
+}
 
 	/* skip build for empty scene */
         const size_t numPrimitives = mesh ? mesh->size() : scene->getNumPrimitives(gtype_,false);
@@ -138,13 +139,15 @@ namespace embree
             /* create primref array */
             if (primrefarrayalloc) {
               settings.primrefarrayalloc = numPrimitives/1000;
-              if (settings.primrefarrayalloc < 1000)
+              if (settings.primrefarrayalloc < 1000) {
                 settings.primrefarrayalloc = inf;
+}
             }
 
             /* enable os_malloc for two level build */
-            if (mesh)
+            if (mesh) {
               bvh->alloc.setOSallocation(true);
+}
 
             /* initialize allocator */
             const size_t node_bytes = numPrimitives*sizeof(typename BVH::AABBNodeMB)/(4*N);
@@ -175,18 +178,18 @@ namespace embree
 #endif
 
         /* if we allocated using the primrefarray we have to keep it alive */
-        if (settings.primrefarrayalloc != size_t(inf))
+        if (settings.primrefarrayalloc != size_t(inf)) {
           bvh->alloc.share(prims);
 
         /* for static geometries we can do some cleanups */
-        else if (scene && scene->isStaticAccel()) {
+        } else if (scene && scene->isStaticAccel()) {
           prims.clear();
         }
 	bvh->cleanup();
         bvh->postBuild(t0);
       }
 
-      void clear() {
+      void clear() override {
         prims.clear();
       }
     };
@@ -219,7 +222,7 @@ namespace embree
 
       // FIXME: shrink bvh->alloc in destructor here and in other builders too
 
-      void build()
+      void build() override
       {
         /* we reset the allocator when the mesh size changed */
         if (mesh && mesh->numPrimitives != numPreviousPrimitives) {
@@ -247,8 +250,9 @@ namespace embree
 	      createPrimRefArray(scene,gtype_,false,numPrimitives,prims,bvh->scene->progressInterface);
 
             /* enable os_malloc for two level build */
-            if (mesh)
+            if (mesh) {
               bvh->alloc.setOSallocation(true);
+}
 
             /* call BVH builder */
             const size_t node_bytes = numPrimitives*sizeof(typename BVH::QuantizedNode)/(4*N);
@@ -270,7 +274,7 @@ namespace embree
         bvh->postBuild(t0);
       }
 
-      void clear() {
+      void clear() override {
         prims.clear();
       }
     };
@@ -304,11 +308,13 @@ namespace embree
         {
           bool found = false;
           const unsigned int new_geomID = prims[start+i].geomID();
-          for (size_t j=0;j<num_geomIDs;j++)
+          for (size_t j=0;j<num_geomIDs;j++) {
             if (new_geomID == geomIDs[j])
             { found = true; break; }
-          if (!found) 
+}
+          if (!found) {
             geomIDs[num_geomIDs++] = new_geomID;
+}
         }
 
         /* allocate all leaf memory in one single block */
@@ -324,7 +330,8 @@ namespace embree
           unsigned int pos = 0;
           for (size_t i=0;i<items;i++)
           {
-            if (unlikely(prims[start+i].geomID() != geomIDs[g])) continue;
+            if (unlikely(prims[start+i].geomID() != geomIDs[g])) { continue;
+}
 
             const SubGridBuildData& sgrid_bd = sgrids[prims[start+i].primID()];
             x[pos] = sgrid_bd.sx;
@@ -350,7 +357,7 @@ namespace embree
     {
       typedef BVHN<N> BVH;
       typedef typename BVHN<N>::NodeRef NodeRef;
-      
+
       BVH* bvh;
       Scene* scene;
       GridMesh* mesh;
@@ -366,16 +373,17 @@ namespace embree
       BVHNBuilderSAHGrid (BVH* bvh, GridMesh* mesh, unsigned int geomID, const size_t sahBlockSize, const float intCost, const size_t minLeafSize, const size_t maxLeafSize, const size_t mode)
         : bvh(bvh), scene(nullptr), mesh(mesh), prims(bvh->device,0), sgrids(scene->device,0), settings(sahBlockSize, minLeafSize, min(maxLeafSize,BVH::maxLeafBlocks), travCost, intCost, DEFAULT_SINGLE_THREAD_THRESHOLD), geomID_(geomID) {}
 
-      void build()
+      void build() override
       {
         /* we reset the allocator when the mesh size changed */
         if (mesh && mesh->numPrimitives != numPreviousPrimitives) {
           bvh->alloc.clear();
         }
-        
+
         /* if we use the primrefarray for allocations we have to take it back from the BVH */
-        if (settings.primrefarrayalloc != size_t(inf))
+        if (settings.primrefarrayalloc != size_t(inf)) {
           bvh->alloc.unshare(prims);
+}
 
         const size_t numGridPrimitives = mesh ? mesh->size() : scene->getNumPrimitives(GridMesh::geom_type,false);
         numPreviousPrimitives = numGridPrimitives;
@@ -395,12 +403,14 @@ namespace embree
 
         /* create primref array */
         settings.primrefarrayalloc = numPrimitives/1000;
-        if (settings.primrefarrayalloc < 1000)
+        if (settings.primrefarrayalloc < 1000) {
           settings.primrefarrayalloc = inf;
+}
 
         /* enable os_malloc for two level build */
-        if (mesh)
+        if (mesh) {
           bvh->alloc.setOSallocation(true);
+}
 
         /* initialize allocator */
         const size_t node_bytes = numPrimitives*sizeof(typename BVH::AABBNodeMB)/(4*N);
@@ -427,18 +437,18 @@ namespace embree
         sgrids.clear();
 
         /* if we allocated using the primrefarray we have to keep it alive */
-        if (settings.primrefarrayalloc != size_t(inf))
+        if (settings.primrefarrayalloc != size_t(inf)) {
           bvh->alloc.share(prims);
 
         /* for static geometries we can do some cleanups */
-        else if (scene && scene->isStaticAccel()) {
+        } else if (scene && scene->isStaticAccel()) {
           prims.clear();
         }
 	bvh->cleanup();
         bvh->postBuild(t0);
       }
 
-      void clear() {
+      void clear() override {
         prims.clear();
       }
     };
@@ -448,7 +458,7 @@ namespace embree
     /************************************************************************************/
     /************************************************************************************/
 
-    
+
 #if defined(EMBREE_GEOMETRY_TRIANGLE)
     Builder* BVH4Triangle4MeshBuilderSAH  (void* bvh, TriangleMesh* mesh, unsigned int geomID, size_t mode) { return new BVHNBuilderSAH<4,Triangle4>((BVH4*)bvh,mesh,geomID,4,1.0f,4,inf,TriangleMesh::geom_type); }
     Builder* BVH4Triangle4vMeshBuilderSAH (void* bvh, TriangleMesh* mesh, unsigned int geomID, size_t mode) { return new BVHNBuilderSAH<4,Triangle4v>((BVH4*)bvh,mesh,geomID,4,1.0f,4,inf,TriangleMesh::geom_type); }
@@ -470,7 +480,7 @@ namespace embree
     Builder* BVH8QuantizedTriangle4iSceneBuilderSAH  (void* bvh, Scene* scene, size_t mode) { return new BVHNBuilderSAHQuantized<8,Triangle4i>((BVH8*)bvh,scene,4,1.0f,4,inf,TriangleMesh::geom_type); }
     Builder* BVH8QuantizedTriangle4SceneBuilderSAH  (void* bvh, Scene* scene, size_t mode) { return new BVHNBuilderSAHQuantized<8,Triangle4>((BVH8*)bvh,scene,4,1.0f,4,inf,TriangleMesh::geom_type); }
 
-    
+
 
 #endif
 #endif

@@ -3202,7 +3202,7 @@ RDD::DataFormat RenderingDeviceDriverVulkan::swap_chain_get_format(SwapChainID p
 		case VK_FORMAT_R8G8B8A8_UNORM:
 			return DATA_FORMAT_R8G8B8A8_UNORM;
 		default:
-			DEV_ASSERT(false && "Unknown swap chain format.");
+			DEV_ASSERT(false);
 			return DATA_FORMAT_MAX;
 	}
 }

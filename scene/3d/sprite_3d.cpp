@@ -1458,11 +1458,7 @@ void AnimatedSprite3D::get_argument_options(const StringName &p_function, int p_
 
 #ifndef DISABLE_DEPRECATED
 bool AnimatedSprite3D::_set(const StringName &p_name, const Variant &p_value) {
-	if ((p_name == SNAME("frames"))) {
-		set_sprite_frames(p_value);
-		return true;
-	}
-	return false;
+	return (p_name == SNAME("frames"));
 }
 #endif
 void AnimatedSprite3D::_bind_methods() {

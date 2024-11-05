@@ -30,15 +30,13 @@
 
 static bool _isImportanceApplicable(SvgStyleFlags &toFlagsImportance, SvgStyleFlags fromFlagsImportance, SvgStyleFlags flag)
 {
-    if (!(toFlagsImportance & flag) && (fromFlagsImportance & flag)) {
-        return true;
-    }
-    return false;
+    return !(toFlagsImportance & flag) && (fromFlagsImportance & flag);
 }
 
 static void _copyStyle(SvgStyleProperty* to, const SvgStyleProperty* from)
 {
-    if (from == nullptr) return;
+    if (from == nullptr) { return;
+}
     //Copy the properties of 'from' only if they were explicitly set (not the default ones).
     if ((from->curColorSet && !(to->flags & SvgStyleFlags::Color)) ||
         _isImportanceApplicable(to->flagsImportance, from->flagsImportance, SvgStyleFlags::Color)) {
@@ -72,7 +70,8 @@ static void _copyStyle(SvgStyleProperty* to, const SvgStyleProperty* from)
         to->fill.paint.none = from->fill.paint.none;
         to->fill.paint.curColor = from->fill.paint.curColor;
         if (from->fill.paint.url) {
-            if (to->fill.paint.url) free(to->fill.paint.url);
+            if (to->fill.paint.url) { free(to->fill.paint.url);
+}
             to->fill.paint.url = strdup(from->fill.paint.url);
         }
         to->fill.flags = (to->fill.flags | SvgFillFlags::Paint);
@@ -106,7 +105,8 @@ static void _copyStyle(SvgStyleProperty* to, const SvgStyleProperty* from)
         to->stroke.paint.none = from->stroke.paint.none;
         to->stroke.paint.curColor = from->stroke.paint.curColor;
         if (from->stroke.paint.url) {
-            if (to->stroke.paint.url) free(to->stroke.paint.url);
+            if (to->stroke.paint.url) { free(to->stroke.paint.url);
+}
             to->stroke.paint.url = strdup(from->stroke.paint.url);
         }
         to->stroke.flags = (to->stroke.flags | SvgStrokeFlags::Paint);
@@ -197,11 +197,13 @@ void cssCopyStyleAttr(SvgNode* to, const SvgNode* from)
     _copyStyle(to->style, from->style);
 
     if (from->style->clipPath.url) {
-        if (to->style->clipPath.url) free(to->style->clipPath.url);
+        if (to->style->clipPath.url) { free(to->style->clipPath.url);
+}
         to->style->clipPath.url = strdup(from->style->clipPath.url);
     }
     if (from->style->mask.url) {
-        if (to->style->mask.url) free(to->style->mask.url);
+        if (to->style->mask.url) { free(to->style->mask.url);
+}
         to->style->mask.url = strdup(from->style->mask.url);
     }
 }
@@ -209,7 +211,8 @@ void cssCopyStyleAttr(SvgNode* to, const SvgNode* from)
 
 SvgNode* cssFindStyleNode(const SvgNode* style, const char* title, SvgNodeType type)
 {
-    if (!style) return nullptr;
+    if (!style) { return nullptr;
+}
 
     auto child = style->child.data;
     for (uint32_t i = 0; i < style->child.count; ++i, ++child) {
@@ -223,7 +226,8 @@ SvgNode* cssFindStyleNode(const SvgNode* style, const char* title, SvgNodeType t
 
 SvgNode* cssFindStyleNode(const SvgNode* style, const char* title)
 {
-    if (!style || !title) return nullptr;
+    if (!style || !title) { return nullptr;
+}
 
     auto child = style->child.data;
     for (uint32_t i = 0; i < style->child.count; ++i, ++child) {

@@ -2574,22 +2574,13 @@ bool CanvasItemEditor::_gui_input_ruler_tool(const Ref<InputEvent> &p_event) {
 	}
 
 	if (b.is_valid() && b->get_button_index() == MouseButton::LEFT) {
-		if (b->is_pressed()) {
-			ruler_tool_active = true;
-		} else {
-			ruler_tool_active = false;
-		}
+		ruler_tool_active = b->is_pressed();
 
 		viewport->queue_redraw();
 		return true;
 	}
 
-	if (m.is_valid() && (ruler_tool_active || (grid_snap_active && previous_origin != ruler_tool_origin))) {
-		viewport->queue_redraw();
-		return true;
-	}
-
-	return false;
+	return m.is_valid() && (ruler_tool_active || (grid_snap_active && previous_origin != ruler_tool_origin));
 }
 
 bool CanvasItemEditor::_gui_input_hover(const Ref<InputEvent> &p_event) {

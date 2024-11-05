@@ -228,28 +228,7 @@ bool GDScriptTestRunner::generate_outputs() {
 		return false;
 	}
 
-	if (!generate_class_index()) {
-		return false;
-	}
-
-	for (int i = 0; i < tests.size(); i++) {
-		GDScriptTest test = tests[i];
-		if (print_filenames) {
-			print_line(test.get_source_relative_filepath());
-		} else {
-			OS::get_singleton()->print(".");
-		}
-
-		bool result = test.generate_output();
-
-		if (!result) {
-			print_line("\nCould not generate output for " + test.get_source_file());
-			return false;
-		}
-	}
-	print_line("\nGenerated output files for " + itos(tests.size()) + " tests successfully.");
-
-	return true;
+	return generate_class_index();
 }
 
 bool GDScriptTestRunner::make_tests_for_dir(const String &p_dir) {

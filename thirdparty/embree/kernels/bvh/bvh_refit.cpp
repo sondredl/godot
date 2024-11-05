@@ -20,7 +20,7 @@ namespace embree
   namespace isa
   {
     static const size_t SINGLE_THREAD_THRESHOLD = 4*1024;
-    
+
     template<int N>
     __forceinline bool compare(const typename BVHN<N>::NodeRef* a, const typename BVHN<N>::NodeRef* b)
     {
@@ -46,17 +46,18 @@ namespace embree
         BBox3fa subTreeBounds[MAX_NUM_SUB_TREES];
         numSubTrees = 0;
         gather_subtree_refs(bvh->root,numSubTrees,0);
-        if (numSubTrees)
+        if (numSubTrees) {
           parallel_for(size_t(0), numSubTrees, size_t(1), [&](const range<size_t>& r) {
               for (size_t i=r.begin(); i<r.end(); i++) {
                 NodeRef& ref = subTrees[i];
                 subTreeBounds[i] = recurse_bottom(ref);
               }
             });
+}
 
-        numSubTrees = 0;        
+        numSubTrees = 0;
         bvh->bounds = LBBox3fa(refit_toplevel(bvh->root,numSubTrees,subTreeBounds,0));
-      }    
+      }
   }
 
     template<int N>
@@ -64,7 +65,7 @@ namespace embree
                                               size_t &subtrees,
                                               const size_t depth)
     {
-      if (depth >= MAX_SUB_TREE_EXTRACTION_DEPTH) 
+      if (depth >= MAX_SUB_TREE_EXTRACTION_DEPTH)
       {
         assert(subtrees < MAX_NUM_SUB_TREES);
         subTrees[subtrees++] = ref;
@@ -76,8 +77,9 @@ namespace embree
         AABBNode* node = ref.getAABBNode();
         for (size_t i=0; i<N; i++) {
           NodeRef& child = node->child(i);
-          if (unlikely(child == BVH::emptyNode)) continue;
-          gather_subtree_refs(child,subtrees,depth+1); 
+          if (unlikely(child == BVH::emptyNode)) { continue;
+}
+          gather_subtree_refs(child,subtrees,depth+1);
         }
       }
     }
@@ -88,7 +90,7 @@ namespace embree
                                             const BBox3fa *const subTreeBounds,
                                             const size_t depth)
     {
-      if (depth >= MAX_SUB_TREE_EXTRACTION_DEPTH) 
+      if (depth >= MAX_SUB_TREE_EXTRACTION_DEPTH)
       {
         assert(subtrees < MAX_NUM_SUB_TREES);
         assert(subTrees[subtrees] == ref);
@@ -104,14 +106,15 @@ namespace embree
         {
           NodeRef& child = node->child(i);
 
-          if (unlikely(child == BVH::emptyNode)) 
+          if (unlikely(child == BVH::emptyNode)) {
             bounds[i] = BBox3fa(empty);
-          else
-            bounds[i] = refit_toplevel(child,subtrees,subTreeBounds,depth+1); 
+          } else {
+            bounds[i] = refit_toplevel(child,subtrees,subTreeBounds,depth+1);
+}
         }
-        
+
         BBox3vf<N> boundsT = transpose<N>(bounds);
-      
+
         /* set new bounds */
         node->lower_x = boundsT.lower.x;
         node->lower_y = boundsT.lower.y;
@@ -119,45 +122,49 @@ namespace embree
         node->upper_x = boundsT.upper.x;
         node->upper_y = boundsT.upper.y;
         node->upper_z = boundsT.upper.z;
-        
+
         return merge<N>(bounds);
       }
-      else
+      else {
         return leafBounds.leafBounds(ref);
+}
     }
 
     // =========================================================
     // =========================================================
     // =========================================================
 
-    
+
     template<int N>
     BBox3fa BVHNRefitter<N>::recurse_bottom(NodeRef& ref)
     {
       /* this is a leaf node */
-      if (unlikely(ref.isLeaf()))
+      if (unlikely(ref.isLeaf())) {
         return leafBounds.leafBounds(ref);
-      
+}
+
       /* recurse if this is an internal node */
       AABBNode* node = ref.getAABBNode();
 
-      /* enable exclusive prefetch for >= AVX platforms */      
-#if defined(__AVX__)      
+      /* enable exclusive prefetch for >= AVX platforms */
+#if defined(__AVX__)
       BVH::prefetchW(ref);
-#endif      
+#endif
       BBox3fa bounds[N];
 
-      for (size_t i=0; i<N; i++)
+      for (size_t i=0; i<N; i++) {
         if (unlikely(node->child(i) == BVH::emptyNode))
         {
-          bounds[i] = BBox3fa(empty);          
+          bounds[i] = BBox3fa(empty);
         }
-      else
+      else {
         bounds[i] = recurse_bottom(node->child(i));
-      
+}
+}
+
       /* AOS to SOA transform */
       BBox3vf<N> boundsT = transpose<N>(bounds);
-      
+
       /* set new bounds */
       node->lower_x = boundsT.lower.x;
       node->lower_y = boundsT.lower.y;
@@ -176,10 +183,11 @@ namespace embree
     template<int N, typename Mesh, typename Primitive>
     void BVHNRefitT<N,Mesh,Primitive>::clear()
     {
-      if (builder) 
+      if (builder) {
         builder->clear();
+}
     }
-    
+
     template<int N, typename Mesh, typename Primitive>
     void BVHNRefitT<N,Mesh,Primitive>::build()
     {
@@ -187,15 +195,16 @@ namespace embree
         topologyVersion = mesh->getTopologyVersion();
         builder->build();
       }
-      else
+      else {
         refitter->refit();
+}
     }
 
     template class BVHNRefitter<4>;
 #if defined(__AVX__)
     template class BVHNRefitter<8>;
 #endif
-    
+
 #if defined(EMBREE_GEOMETRY_TRIANGLE)
     Builder* BVH4Triangle4MeshBuilderSAH  (void* bvh, TriangleMesh* mesh, unsigned int geomID, size_t mode);
     Builder* BVH4Triangle4vMeshBuilderSAH (void* bvh, TriangleMesh* mesh, unsigned int geomID, size_t mode);

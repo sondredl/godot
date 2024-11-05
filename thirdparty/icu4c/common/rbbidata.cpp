@@ -12,7 +12,6 @@
 #if !UCONFIG_NO_BREAK_ITERATION
 
 #include "unicode/ucptrie.h"
-#include "unicode/utypes.h"
 #include "rbbidata.h"
 #include "rbbirb.h"
 #include "udatamem.h"
@@ -345,7 +344,7 @@ ubrk_swap(const UDataSwapper *ds, const void *inData, int32_t length, void *outD
     //
     const uint8_t  *inBytes =(const uint8_t *)inData+headerSize;
     RBBIDataHeader *rbbiDH = (RBBIDataHeader *)inBytes;
-    if (ds->readUInt32(rbbiDH->fMagic) != 0xb1a0 || 
+    if (ds->readUInt32(rbbiDH->fMagic) != 0xb1a0 ||
             !RBBIDataWrapper::isDataVersionAcceptable(rbbiDH->fFormatVersion) ||
             ds->readUInt32(rbbiDH->fLength)  <  sizeof(RBBIDataHeader)) {
         udata_printError(ds, "ubrk_swap(): RBBI Data header is invalid.\n");

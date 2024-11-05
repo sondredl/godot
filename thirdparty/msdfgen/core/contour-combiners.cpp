@@ -97,32 +97,40 @@ typename OverlappingContourCombiner<EdgeSelector>::DistanceType OverlappingConto
     if (innerScalarDistance >= 0 && fabs(innerScalarDistance) <= fabs(outerScalarDistance)) {
         distance = innerDistance;
         winding = 1;
-        for (int i = 0; i < contourCount; ++i)
+        for (int i = 0; i < contourCount; ++i) {
             if (windings[i] > 0) {
                 DistanceType contourDistance = edgeSelectors[i].distance();
-                if (fabs(resolveDistance(contourDistance)) < fabs(outerScalarDistance) && resolveDistance(contourDistance) > resolveDistance(distance))
+                if (fabs(resolveDistance(contourDistance)) < fabs(outerScalarDistance) && resolveDistance(contourDistance) > resolveDistance(distance)) {
                     distance = contourDistance;
+}
             }
+}
     } else if (outerScalarDistance <= 0 && fabs(outerScalarDistance) < fabs(innerScalarDistance)) {
         distance = outerDistance;
         winding = -1;
-        for (int i = 0; i < contourCount; ++i)
+        for (int i = 0; i < contourCount; ++i) {
             if (windings[i] < 0) {
                 DistanceType contourDistance = edgeSelectors[i].distance();
-                if (fabs(resolveDistance(contourDistance)) < fabs(innerScalarDistance) && resolveDistance(contourDistance) < resolveDistance(distance))
+                if (fabs(resolveDistance(contourDistance)) < fabs(innerScalarDistance) && resolveDistance(contourDistance) < resolveDistance(distance)) {
                     distance = contourDistance;
+}
             }
-    } else
+}
+    } else {
         return shapeDistance;
+}
 
-    for (int i = 0; i < contourCount; ++i)
+    for (int i = 0; i < contourCount; ++i) {
         if (windings[i] != winding) {
             DistanceType contourDistance = edgeSelectors[i].distance();
-            if (resolveDistance(contourDistance)*resolveDistance(distance) >= 0 && fabs(resolveDistance(contourDistance)) < fabs(resolveDistance(distance)))
+            if (resolveDistance(contourDistance)*resolveDistance(distance) >= 0 && fabs(resolveDistance(contourDistance)) < fabs(resolveDistance(distance))) {
                 distance = contourDistance;
+}
         }
-    if (resolveDistance(distance) == resolveDistance(shapeDistance))
+}
+    if (resolveDistance(distance) == resolveDistance(shapeDistance)) {
         distance = shapeDistance;
+}
     return distance;
 }
 

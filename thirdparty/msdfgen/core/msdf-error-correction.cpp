@@ -11,8 +11,9 @@ namespace msdfgen {
 
 template <int N>
 static void msdfErrorCorrectionInner(const BitmapRef<float, N> &sdf, const Shape &shape, const Projection &projection, double range, const MSDFGeneratorConfig &config) {
-    if (config.errorCorrection.mode == ErrorCorrectionConfig::DISABLED)
+    if (config.errorCorrection.mode == ErrorCorrectionConfig::DISABLED) {
         return;
+}
     Bitmap<byte, 1> stencilBuffer;
     if (!config.errorCorrection.buffer)
         stencilBuffer = Bitmap<byte, 1>(sdf.width, sdf.height);
@@ -36,14 +37,16 @@ static void msdfErrorCorrectionInner(const BitmapRef<float, N> &sdf, const Shape
     }
     if (config.errorCorrection.distanceCheckMode == ErrorCorrectionConfig::DO_NOT_CHECK_DISTANCE || (config.errorCorrection.distanceCheckMode == ErrorCorrectionConfig::CHECK_DISTANCE_AT_EDGE && config.errorCorrection.mode != ErrorCorrectionConfig::EDGE_ONLY)) {
         ec.findErrors<N>(sdf);
-        if (config.errorCorrection.distanceCheckMode == ErrorCorrectionConfig::CHECK_DISTANCE_AT_EDGE)
+        if (config.errorCorrection.distanceCheckMode == ErrorCorrectionConfig::CHECK_DISTANCE_AT_EDGE) {
             ec.protectAll();
+}
     }
     if (config.errorCorrection.distanceCheckMode == ErrorCorrectionConfig::ALWAYS_CHECK_DISTANCE || config.errorCorrection.distanceCheckMode == ErrorCorrectionConfig::CHECK_DISTANCE_AT_EDGE) {
-        if (config.overlapSupport)
+        if (config.overlapSupport) {
             ec.findErrors<OverlappingContourCombiner, N>(sdf, shape);
-        else
+        } else {
             ec.findErrors<SimpleContourCombiner, N>(sdf, shape);
+}
     }
     ec.apply(sdf);
 }
@@ -53,8 +56,9 @@ static void msdfErrorCorrectionShapeless(const BitmapRef<float, N> &sdf, const P
     Bitmap<byte, 1> stencilBuffer(sdf.width, sdf.height);
     MSDFErrorCorrection ec(stencilBuffer, projection, range);
     ec.setMinDeviationRatio(minDeviationRatio);
-    if (protectAll)
+    if (protectAll) {
         ec.protectAll();
+}
     ec.findErrors<N>(sdf);
     ec.apply(sdf);
 }
@@ -109,7 +113,7 @@ template <int N>
 static void msdfErrorCorrectionInner_legacy(const BitmapRef<float, N> &output, const Vector2 &threshold) {
     std::vector<std::pair<int, int> > clashes;
     int w = output.width, h = output.height;
-    for (int y = 0; y < h; ++y)
+    for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
             if (
                 (x > 0 && detectClash(output(x, y), output(x-1, y), threshold.x)) ||
@@ -119,6 +123,7 @@ static void msdfErrorCorrectionInner_legacy(const BitmapRef<float, N> &output, c
             )
                 clashes.push_back(std::make_pair(x, y));
         }
+}
     for (std::vector<std::pair<int, int> >::const_iterator clash = clashes.begin(); clash != clashes.end(); ++clash) {
         float *pixel = output(clash->first, clash->second);
         float med = median(pixel[0], pixel[1], pixel[2]);
@@ -126,7 +131,7 @@ static void msdfErrorCorrectionInner_legacy(const BitmapRef<float, N> &output, c
     }
 #ifndef MSDFGEN_NO_DIAGONAL_CLASH_DETECTION
     clashes.clear();
-    for (int y = 0; y < h; ++y)
+    for (int y = 0; y < h; ++y) {
         for (int x = 0; x < w; ++x) {
             if (
                 (x > 0 && y > 0 && detectClash(output(x, y), output(x-1, y-1), threshold.x+threshold.y)) ||
@@ -136,6 +141,7 @@ static void msdfErrorCorrectionInner_legacy(const BitmapRef<float, N> &output, c
             )
                 clashes.push_back(std::make_pair(x, y));
         }
+}
     for (std::vector<std::pair<int, int> >::const_iterator clash = clashes.begin(); clash != clashes.end(); ++clash) {
         float *pixel = output(clash->first, clash->second);
         float med = median(pixel[0], pixel[1], pixel[2]);

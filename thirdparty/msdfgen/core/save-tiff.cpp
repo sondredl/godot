@@ -22,8 +22,9 @@ static bool writeValue(FILE *file, T value) {
 }
 template <typename T>
 static void writeValueRepeated(FILE *file, T value, int times) {
-    for (int i = 0; i < times; ++i)
+    for (int i = 0; i < times; ++i) {
         writeValue(file, value);
+}
 }
 
 static bool writeTiffHeader(FILE *file, int width, int height, int channels) {
@@ -52,9 +53,9 @@ static bool writeTiffHeader(FILE *file, int width, int height, int channels) {
     writeValue<uint16_t>(file, 0x0102u);
     writeValue<uint16_t>(file, 0x0003u);
     writeValue<uint32_t>(file, channels);
-    if (channels > 1)
+    if (channels > 1) {
         writeValue<uint32_t>(file, 0x00c2u); // Offset of 32, 32, ...
-    else {
+    } else {
         writeValue<uint16_t>(file, 32);
         writeValue<uint16_t>(file, 0);
     }
@@ -111,9 +112,9 @@ static bool writeTiffHeader(FILE *file, int width, int height, int channels) {
     writeValue<uint16_t>(file, 0x0153u);
     writeValue<uint16_t>(file, 0x0003u);
     writeValue<uint32_t>(file, channels);
-    if (channels > 1)
+    if (channels > 1) {
         writeValue<uint32_t>(file, 0x00d2u+channels*2); // Offset of 3, 3, ...
-    else {
+    } else {
         writeValue<uint16_t>(file, 3);
         writeValue<uint16_t>(file, 0);
     }
@@ -121,18 +122,20 @@ static bool writeTiffHeader(FILE *file, int width, int height, int channels) {
     writeValue<uint16_t>(file, 0x0154u);
     writeValue<uint16_t>(file, 0x000bu);
     writeValue<uint32_t>(file, channels);
-    if (channels > 1)
+    if (channels > 1) {
         writeValue<uint32_t>(file, 0x00d2u+channels*4); // Offset of 0.f, 0.f, ...
-    else
+    } else {
         writeValue<float>(file, 0.f);
+}
     // SMaxSampleValue
     writeValue<uint16_t>(file, 0x0155u);
     writeValue<uint16_t>(file, 0x000bu);
     writeValue<uint32_t>(file, channels);
-    if (channels > 1)
+    if (channels > 1) {
         writeValue<uint32_t>(file, 0x00d2u+channels*8); // Offset of 1.f, 1.f, ...
-    else
+    } else {
         writeValue<float>(file, 1.f);
+}
     // Offset = 0x00be
 
     writeValue<uint32_t>(file, 0);
@@ -168,12 +171,14 @@ static bool writeTiffHeader(FILE *file, int width, int height, int channels) {
 
 template <int N>
 bool saveTiffFloat(const BitmapConstRef<float, N> &bitmap, const char *filename) {
-    FILE *file = fopen(filename, "wb");
-    if (!file)
+    FILE *file = fopen(filename, "wbe");
+    if (!file) {
         return false;
+}
     writeTiffHeader(file, bitmap.width, bitmap.height, N);
-    for (int y = bitmap.height-1; y >= 0; --y)
+    for (int y = bitmap.height-1; y >= 0; --y) {
         fwrite(bitmap(0, y), sizeof(float), N*bitmap.width, file);
+}
     return !fclose(file);
 }
 

@@ -1,9 +1,9 @@
 // This file is part of meshoptimizer library; see meshoptimizer.h for version/license details
 #include "meshoptimizer.h"
 
-#include <assert.h>
-#include <limits.h>
-#include <string.h>
+#include <cassert>
+#include <climits>
+#include <cstring>
 
 // This work is based on:
 // Francine Evans, Steven Skiena and Amitabh Varshney. Optimizing Triangle Strips for Fast Rendering. 1996
@@ -36,12 +36,13 @@ static int findStripNext(const unsigned int buffer[][3], unsigned int buffer_siz
 	{
 		unsigned int a = buffer[i][0], b = buffer[i][1], c = buffer[i][2];
 
-		if (e0 == a && e1 == b)
+		if (e0 == a && e1 == b) {
 			return (int(i) << 2) | 2;
-		else if (e0 == b && e1 == c)
+		} else if (e0 == b && e1 == c) {
 			return (int(i) << 2) | 0;
-		else if (e0 == c && e1 == a)
+		} else if (e0 == c && e1 == a) {
 			return (int(i) << 2) | 1;
+}
 	}
 
 	return -1;
@@ -201,8 +202,9 @@ size_t meshopt_stripify(unsigned int* destination, const unsigned int* indices, 
 
 			if (restart_index)
 			{
-				if (strip_size)
+				if (strip_size) {
 					destination[strip_size++] = restart_index;
+}
 
 				destination[strip_size++] = a;
 				destination[strip_size++] = b;

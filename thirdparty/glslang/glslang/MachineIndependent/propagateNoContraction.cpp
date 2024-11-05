@@ -45,6 +45,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "absl/strings/match.h"
 #include "localintermediate.h"
 namespace {
 
@@ -140,7 +141,7 @@ unsigned getStructIndexFromConstantUnion(glslang::TIntermTyped* node)
 ObjectAccessChain generateSymbolLabel(glslang::TIntermSymbol* node)
 {
     ObjectAccessChain symbol_id =
-        std::to_string(node->getId()) + "(" + node->getName().c_str() + ")";
+        std::to_string(node->getId()) + "(" + node->getName() + ")";
     return symbol_id;
 }
 
@@ -221,8 +222,9 @@ ObjectAccessChain getSubAccessChainAfterPrefix(const ObjectAccessChain& chain,
                                                const ObjectAccessChain& prefix)
 {
     size_t pos = chain.find(prefix);
-    if (pos != 0)
+    if (pos != 0) {
         return chain;
+}
     return chain.substr(prefix.length() + sizeof(ObjectAccesschainDelimiter));
 }
 
@@ -274,7 +276,7 @@ TSymbolDefinitionCollectingTraverser::TSymbolDefinitionCollectingTraverser(
     std::unordered_set<glslang::TIntermBranch*>* precise_return_nodes)
     : TIntermTraverser(true, false, false), symbol_definition_mapping_(*symbol_definition_mapping),
       precise_objects_(*precise_objects), precise_return_nodes_(*precise_return_nodes),
-      current_object_(), accesschain_mapping_(*accesschain_mapping),
+       accesschain_mapping_(*accesschain_mapping),
       current_function_definition_node_(nullptr) {}
 
 // Visits a symbol node, set the current_object_ to the
@@ -421,8 +423,9 @@ getSymbolToDefinitionMappingAndPreciseSymbolIDs(const glslang::TIntermediate& in
                                         ReturnBranchNodeSet());
 
     TIntermNode* root = intermediate.getTreeRoot();
-    if (root == nullptr)
+    if (root == nullptr) {
         return result_tuple;
+}
 
     NodeMapping& symbol_definition_mapping = std::get<0>(result_tuple);
     AccessChainMapping& accesschain_mapping = std::get<1>(result_tuple);
@@ -531,12 +534,12 @@ public:
         // Compare the access chain string of the assignee node with the given
         // precise object to determine if this assignment should propagate
         // 'precise'.
-        if (assignee_object.find(precise_object) == 0) {
+        if (absl::StartsWith(assignee_object, precise_object)) {
             // The access chain string of the given precise object is a prefix
             // of assignee's access chain string. The assignee should be
             // 'precise'.
             return make_tuple(true, ObjectAccessChain());
-        } else if (precise_object.find(assignee_object) == 0) {
+        } else if (absl::StartsWith(precise_object, assignee_object)) {
             // The assignee's access chain string is a prefix of the given
             // precise object, the assignee object contains 'precise' object,
             // and we need to pass the remained access chain to the object nodes
@@ -618,8 +621,7 @@ public:
     TNoContractionPropagator(ObjectAccesschainSet* precise_objects,
                              const AccessChainMapping& accesschain_mapping)
         : TIntermTraverser(true, false, false),
-          precise_objects_(*precise_objects), added_precise_object_ids_(),
-          remained_accesschain_(), accesschain_mapping_(accesschain_mapping) {}
+          precise_objects_(*precise_objects),  accesschain_mapping_(accesschain_mapping) {}
 
     // Propagates 'precise' in the right nodes of a given assignment node with
     // access chain record from the assignee node to a 'precise' object it

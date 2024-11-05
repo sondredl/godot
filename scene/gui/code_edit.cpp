@@ -1151,13 +1151,7 @@ void CodeEdit::_new_line(bool p_split_current_line, bool p_above) {
 				String closing_pair = get_auto_brace_completion_close_key(String::chr(indent_char));
 				if (!closing_pair.is_empty() && line.find(closing_pair, cc) == cc) {
 					// No need to move the brace below if we are not taking the text with us.
-					if (p_split_current_line) {
-						brace_indent = true;
-						ins += "\n" + ins.substr(indent_text.size(), ins.length() - 2);
-					} else {
-						brace_indent = false;
-						ins = "\n" + ins.substr(indent_text.size(), ins.length() - 2);
-					}
+					brace_indent = p_split_current_line;
 				}
 			}
 		}
@@ -3632,19 +3626,7 @@ void CodeEdit::_filter_code_completion_candidates_impl() {
 
 // Assumes both the new_options and the code_completion_options are sorted.
 bool CodeEdit::_should_reset_selected_option_for_new_options(const Vector<ScriptLanguage::CodeCompletionOption> &p_new_options) {
-	if (code_completion_current_selected >= p_new_options.size()) {
-		return true;
-	}
-
-	for (int i = 0; i < code_completion_options.size() && i < p_new_options.size(); i++) {
-		if (i > code_completion_current_selected) {
-			return false;
-		}
-		if (code_completion_options[i].display != p_new_options[i].display) {
-			return true;
-		}
-	}
-	return false;
+	return code_completion_current_selected >= p_new_options.size();
 }
 
 void CodeEdit::_lines_edited_from(int p_from_line, int p_to_line) {

@@ -5388,12 +5388,7 @@ GDScriptParser::DataType GDScriptAnalyzer::type_from_variant(const Variant &p_va
 		result.native_type = obj->get_class_name();
 
 		Ref<Script> scr = p_value; // Check if value is a script itself.
-		if (scr.is_valid()) {
-			result.is_meta_type = true;
-		} else {
-			result.is_meta_type = false;
-			scr = obj->get_script();
-		}
+		result.is_meta_type = scr.is_valid();
 		if (scr.is_valid()) {
 			Ref<GDScript> gds = scr;
 			if (gds.is_valid()) {

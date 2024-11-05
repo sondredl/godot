@@ -1653,20 +1653,7 @@ bool SpriteFramesEditor::can_drop_data_fw(const Point2 &p_point, const Variant &
 	if (String(d["type"]) == "files") {
 		Vector<String> files = d["files"];
 
-		if (files.size() == 0) {
-			return false;
-		}
-
-		for (int i = 0; i < files.size(); i++) {
-			const String &f = files[i];
-			String ftype = EditorFileSystem::get_singleton()->get_file_type(f);
-
-			if (!ClassDB::is_parent_class(ftype, "Texture2D")) {
-				return false;
-			}
-		}
-
-		return true;
+		return !files.size() == 0;
 	}
 	return false;
 }
@@ -2469,10 +2456,7 @@ bool SpriteFramesEditorPlugin::handles(Object *p_object) const {
 		return true;
 	}
 	SpriteFrames *frames = Object::cast_to<SpriteFrames>(p_object);
-	if (frames && (frames_editor->get_sprite_frames().is_null() || frames_editor->get_sprite_frames() == frames)) {
-		return true;
-	}
-	return false;
+	return frames && (frames_editor->get_sprite_frames().is_null() || frames_editor->get_sprite_frames() == frames);
 }
 
 void SpriteFramesEditorPlugin::make_visible(bool p_visible) {

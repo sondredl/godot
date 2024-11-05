@@ -13,9 +13,9 @@
 
 using namespace graphite2;
 
-namespace { static const uint32 ERROROFFSET = 0xFFFFFFFF; }
+namespace { const uint32 ERROROFFSET = 0xFFFFFFFF; }
 
-Silf::Silf() throw()
+Silf::Silf() noexcept
 : m_passes(0),
   m_pseudos(0),
   m_classOffsets(0),
@@ -46,12 +46,12 @@ Silf::Silf() throw()
     memset(&m_silfinfo, 0, sizeof m_silfinfo);
 }
 
-Silf::~Silf() throw()
+Silf::~Silf() noexcept
 {
     releaseBuffers();
 }
 
-void Silf::releaseBuffers() throw()
+void Silf::releaseBuffers() noexcept
 {
     delete [] m_passes;
     delete [] m_pseudos;
@@ -110,7 +110,8 @@ bool Silf::readGraphite(const byte * const silf_start, size_t lSilf, Face& face,
     if (m_numJusts)
     {
         m_justs = gralloc<Justinfo>(m_numJusts);
-        if (e.test(!m_justs, E_OUTOFMEM)) return face.error(e);
+        if (e.test(!m_justs, E_OUTOFMEM)) { return face.error(e);
+}
 
         for (uint8 i = 0; i < m_numJusts; i++)
         {
@@ -288,13 +289,16 @@ uint16 Silf::findPseudo(uint32 uid) const
 
 uint16 Silf::findClassIndex(uint16 cid, uint16 gid) const
 {
-    if (cid > m_nClass) return -1;
+    if (cid > m_nClass) { return -1;
+}
 
     const uint16 * cls = m_classData + m_classOffsets[cid];
     if (cid < m_nLinear)        // output class being used for input, shouldn't happen
     {
-        for (unsigned int i = 0, n = m_classOffsets[cid + 1] - m_classOffsets[cid]; i < n; ++i, ++cls)
-            if (*cls == gid) return i;
+        for (unsigned int i = 0, n = m_classOffsets[cid + 1] - m_classOffsets[cid]; i < n; ++i, ++cls) {
+            if (*cls == gid) { return i;
+}
+}
         return -1;
     }
     else
@@ -314,7 +318,8 @@ uint16 Silf::findClassIndex(uint16 cid, uint16 gid) const
 
 uint16 Silf::getClassGlyph(uint16 cid, unsigned int index) const
 {
-    if (cid > m_nClass) return 0;
+    if (cid > m_nClass) { return 0;
+}
 
     uint32 loc = m_classOffsets[cid];
     if (cid < m_nLinear)
@@ -345,8 +350,9 @@ bool Silf::runGraphite(Segment *seg, uint8 firstPass, uint8 lastPass, int dobidi
 
     if (lastPass == 0)
     {
-        if (firstPass == lastPass && lbidi == 0xFF)
+        if (firstPass == lastPass && lbidi == 0xFF) {
             return true;
+}
         lastPass = m_numPasses;
     }
     if ((firstPass < lbidi || (dobidi && firstPass == lbidi)) && (lastPass >= lbidi || (dobidi && lastPass + 1 == lbidi)))

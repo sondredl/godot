@@ -44,18 +44,22 @@ float Segment::justify(Slot *pSlot, const Font *font, float width, GR_MAYBE_UNUS
     const float scale = font ? font->scale() : 1.0f;
     Position res;
 
-    if (width < 0 && !(silf()->flags()))
+    if (width < 0 && !(silf()->flags())) {
         return width;
+}
 
     if ((m_dir & 1) != m_silf->dir() && m_silf->bidiPass() != m_silf->numPasses())
     {
         reverseSlots();
         std::swap(pFirst, pLast);
     }
-    if (!pFirst) pFirst = pSlot;
-    while (!pFirst->isBase()) pFirst = pFirst->attachedTo();
+    if (!pFirst) { pFirst = pSlot;
+}
+    while (!pFirst->isBase()) { pFirst = pFirst->attachedTo();
+}
     if (!pLast) pLast = last();
-    while (!pLast->isBase()) pLast = pLast->attachedTo();
+    while (!pLast->isBase()) { pLast = pLast->attachedTo();
+}
     const float base = pFirst->origin().x / scale;
     width = width / scale;
     if ((jflags & gr_justEndInline) == 0)
@@ -63,16 +67,19 @@ float Segment::justify(Slot *pSlot, const Font *font, float width, GR_MAYBE_UNUS
         while (pLast != pFirst && pLast)
         {
             Rect bbox = theGlyphBBoxTemporary(pLast->glyph());
-            if (bbox.bl.x != 0.f || bbox.bl.y != 0.f || bbox.tr.x != 0.f || bbox.tr.y == 0.f)
+            if (bbox.bl.x != 0.f || bbox.bl.y != 0.f || bbox.tr.x != 0.f || bbox.tr.y == 0.f) {
                 break;
+}
             pLast = pLast->prev();
         }
     }
 
-    if (pLast)
+    if (pLast) {
         end = pLast->nextSibling();
-    if (pFirst)
+}
+    if (pFirst) {
         pFirst = pFirst->nextSibling();
+}
 
     int icount = 0;
     int numLevels = silf()->numJustLevels();
@@ -105,7 +112,8 @@ float Segment::justify(Slot *pSlot, const Font *font, float width, GR_MAYBE_UNUS
     for (Slot *s = pFirst; s && s != end; s = s->nextSibling())
     {
         float w = s->origin().x / scale + s->advance() - base;
-        if (w > currWidth) currWidth = w;
+        if (w > currWidth) { currWidth = w;
+}
         for (int j = 0; j < numLevels; ++j)
             stats[j].accumulate(s, this, j);
         s->just(0);
@@ -117,7 +125,8 @@ float Segment::justify(Slot *pSlot, const Font *font, float width, GR_MAYBE_UNUS
         float error = 0.;
         float diffpw;
         int tWeight = stats[i].weight();
-        if (tWeight == 0) continue;
+        if (tWeight == 0) { continue;
+}
 
         do {
             error = 0.;
@@ -129,30 +138,36 @@ float Segment::justify(Slot *pSlot, const Font *font, float width, GR_MAYBE_UNUS
                 int w = s->getJustify(this, i, 3);
                 float pref = diffpw * w + error;
                 int step = s->getJustify(this, i, 2);
-                if (!step) step = 1;        // handle lazy font developers
+                if (!step) { step = 1;        // handle lazy font developers
+}
                 if (pref > 0)
                 {
                     float max = uint16(s->getJustify(this, i, 0));
-                    if (i == 0) max -= s->just();
-                    if (pref > max) pref = max;
-                    else tWeight += w;
+                    if (i == 0) { max -= s->just();
+}
+                    if (pref > max) { pref = max;
+                    } else { tWeight += w;
+}
                 }
                 else
                 {
                     float max = uint16(s->getJustify(this, i, 1));
-                    if (i == 0) max += s->just();
-                    if (-pref > max) pref = -max;
-                    else tWeight += w;
+                    if (i == 0) { max += s->just();
+}
+                    if (-pref > max) { pref = -max;
+                    } else { tWeight += w;
+}
                 }
                 int actual = int(pref / step) * step;
 
                 if (actual)
                 {
                     error += diffpw * w - actual;
-                    if (i == 0)
+                    if (i == 0) {
                         s->just(s->just() + actual);
-                    else
+                    } else {
                         s->setJustify(this, i, 4, actual);
+}
                 }
             }
             currWidth += diff - error;
@@ -165,7 +180,8 @@ float Segment::justify(Slot *pSlot, const Font *font, float width, GR_MAYBE_UNUS
     {
         m_first = pSlot = addLineEnd(pSlot);
         m_last = pLast = addLineEnd(end);
-        if (!m_first || !m_last) return -1.0;
+        if (!m_first || !m_last) { return -1.0;
+}
     }
     else
     {
@@ -182,8 +198,9 @@ float Segment::justify(Slot *pSlot, const Font *font, float width, GR_MAYBE_UNUS
                     << "passes"     << json::array;
 #endif
 
-    if (m_silf->justificationPass() != m_silf->positionPass() && (width >= 0.f || (silf()->flags() & 1)))
+    if (m_silf->justificationPass() != m_silf->positionPass() && (width >= 0.f || (silf()->flags() & 1))) {
         m_silf->runGraphite(this, m_silf->justificationPass(), m_silf->positionPass());
+}
 
 #if !defined GRAPHITE2_NTRACING
     if (dbgout)
@@ -210,15 +227,17 @@ float Segment::justify(Slot *pSlot, const Font *font, float width, GR_MAYBE_UNUS
     m_first = oldFirst;
     m_last = oldLast;
 
-    if ((m_dir & 1) != m_silf->dir() && m_silf->bidiPass() != m_silf->numPasses())
+    if ((m_dir & 1) != m_silf->dir() && m_silf->bidiPass() != m_silf->numPasses()) {
         reverseSlots();
+}
     return res.x;
 }
 
 Slot *Segment::addLineEnd(Slot *nSlot)
 {
     Slot *eSlot = newSlot();
-    if (!eSlot) return NULL;
+    if (!eSlot) { return NULL;
+}
     const uint16 gid = silf()->endLineGlyphid();
     const GlyphFace * theGlyph = m_face->glyphs().glyphSafe(gid);
     eSlot->setGlyph(this, gid, theGlyph);
@@ -228,10 +247,11 @@ Slot *Segment::addLineEnd(Slot *nSlot)
         eSlot->prev(nSlot->prev());
         nSlot->prev(eSlot);
         eSlot->before(nSlot->before());
-        if (eSlot->prev())
+        if (eSlot->prev()) {
             eSlot->after(eSlot->prev()->after());
-        else
+        } else {
             eSlot->after(nSlot->before());
+}
     }
     else
     {
@@ -250,10 +270,12 @@ void Segment::delLineEnd(Slot *s)
     if (nSlot)
     {
         nSlot->prev(s->prev());
-        if (s->prev())
+        if (s->prev()) {
             s->prev()->next(nSlot);
+}
     }
-    else
+    else {
         s->prev()->next(NULL);
+}
     freeSlot(s);
 }

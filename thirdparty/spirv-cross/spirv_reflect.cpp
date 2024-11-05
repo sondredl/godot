@@ -78,8 +78,9 @@ public:
 private:
 	inline void statement_indent()
 	{
-		for (uint32_t i = 0; i < indent; i++)
+		for (uint32_t i = 0; i < indent; i++) {
 			buffer << "    ";
+}
 	}
 
 	template <typename T>
@@ -129,8 +130,9 @@ void Stream::begin_json_array()
 
 void Stream::end_json_array()
 {
-	if (stack.empty() || stack.top().first != Type::Array)
+	if (stack.empty() || stack.top().first != Type::Array) {
 		SPIRV_CROSS_THROW("Invalid JSON state");
+}
 	if (stack.top().second)
 	{
 		statement_inner("\n");
@@ -146,11 +148,13 @@ void Stream::end_json_array()
 
 void Stream::emit_json_array_value(const std::string &value)
 {
-	if (stack.empty() || stack.top().first != Type::Array)
+	if (stack.empty() || stack.top().first != Type::Array) {
 		SPIRV_CROSS_THROW("Invalid JSON state");
+}
 
-	if (stack.top().second)
+	if (stack.top().second) {
 		statement_inner(",\n");
+}
 
 	statement_no_return("\"", value, "\"");
 	stack.top().second = true;
@@ -158,20 +162,24 @@ void Stream::emit_json_array_value(const std::string &value)
 
 void Stream::emit_json_array_value(uint32_t value)
 {
-	if (stack.empty() || stack.top().first != Type::Array)
+	if (stack.empty() || stack.top().first != Type::Array) {
 		SPIRV_CROSS_THROW("Invalid JSON state");
-	if (stack.top().second)
+}
+	if (stack.top().second) {
 		statement_inner(",\n");
+}
 	statement_no_return(std::to_string(value));
 	stack.top().second = true;
 }
 
 void Stream::emit_json_array_value(bool value)
 {
-	if (stack.empty() || stack.top().first != Type::Array)
+	if (stack.empty() || stack.top().first != Type::Array) {
 		SPIRV_CROSS_THROW("Invalid JSON state");
-	if (stack.top().second)
+}
+	if (stack.top().second) {
 		statement_inner(",\n");
+}
 	statement_no_return(value ? "true" : "false");
 	stack.top().second = true;
 }
@@ -189,8 +197,9 @@ void Stream::begin_json_object()
 
 void Stream::end_json_object()
 {
-	if (stack.empty() || stack.top().first != Type::Object)
+	if (stack.empty() || stack.top().first != Type::Object) {
 		SPIRV_CROSS_THROW("Invalid JSON state");
+}
 	if (stack.top().second)
 	{
 		statement_inner("\n");
@@ -206,11 +215,13 @@ void Stream::end_json_object()
 
 void Stream::emit_json_key(const std::string &key)
 {
-	if (stack.empty() || stack.top().first != Type::Object)
+	if (stack.empty() || stack.top().first != Type::Object) {
 		SPIRV_CROSS_THROW("Invalid JSON state");
+}
 
-	if (stack.top().second)
+	if (stack.top().second) {
 		statement_inner(",\n");
+}
 	statement_no_return("\"", key, "\" : ");
 	stack.top().second = true;
 }
@@ -319,8 +330,9 @@ void CompilerReflection::emit_types()
 		}
 	});
 
-	for (uint32_t pointee_type : physical_pointee_types)
+	for (uint32_t pointee_type : physical_pointee_types) {
 		emit_type(pointee_type, emitted_open_tag);
+}
 
 	if (emitted_open_tag)
 	{
@@ -410,13 +422,15 @@ void CompilerReflection::emit_type_array(const SPIRType &type)
 		// Note that we emit the zeros here as a means of identifying
 		// unbounded arrays.  This is necessary as otherwise there would
 		// be no way of differentiating between float[4] and float[4][]
-		for (const auto &value : type.array)
+		for (const auto &value : type.array) {
 			json_stream->emit_json_array_value(value);
+}
 		json_stream->end_json_array();
 
 		json_stream->emit_json_key_array("array_size_is_literal");
-		for (const auto &value : type.array_size_literal)
+		for (const auto &value : type.array_size_literal) {
 			json_stream->emit_json_array_value(value);
+}
 		json_stream->end_json_array();
 	}
 }
@@ -429,23 +443,29 @@ void CompilerReflection::emit_type_member_qualifiers(const SPIRType &type, uint3
 	if (index < memb.size())
 	{
 		auto &dec = memb[index];
-		if (dec.decoration_flags.get(DecorationLocation))
+		if (dec.decoration_flags.get(DecorationLocation)) {
 			json_stream->emit_json_key_value("location", dec.location);
-		if (dec.decoration_flags.get(DecorationOffset))
+}
+		if (dec.decoration_flags.get(DecorationOffset)) {
 			json_stream->emit_json_key_value("offset", dec.offset);
+}
 
 		// Array stride is a property of the array type, not the struct.
-		if (has_decoration(type.member_types[index], DecorationArrayStride))
+		if (has_decoration(type.member_types[index], DecorationArrayStride)) {
 			json_stream->emit_json_key_value("array_stride",
 			                                 get_decoration(type.member_types[index], DecorationArrayStride));
+}
 
-		if (dec.decoration_flags.get(DecorationMatrixStride))
+		if (dec.decoration_flags.get(DecorationMatrixStride)) {
 			json_stream->emit_json_key_value("matrix_stride", dec.matrix_stride);
-		if (dec.decoration_flags.get(DecorationRowMajor))
+}
+		if (dec.decoration_flags.get(DecorationRowMajor)) {
 			json_stream->emit_json_key_value("row_major", true);
+}
 
-		if (is_physical_pointer(membertype))
+		if (is_physical_pointer(membertype)) {
 			json_stream->emit_json_key_value("physical_pointer", true);
+}
 	}
 }
 
@@ -490,12 +510,13 @@ void CompilerReflection::emit_entry_points()
 	{
 		// Needed to make output deterministic.
 		sort(begin(entries), end(entries), [](const EntryPoint &a, const EntryPoint &b) -> bool {
-			if (a.execution_model < b.execution_model)
+			if (a.execution_model < b.execution_model) {
 				return true;
-			else if (a.execution_model > b.execution_model)
+			} else if (a.execution_model > b.execution_model) {
 				return false;
-			else
+			} else {
 				return a.name < b.name;
+}
 		});
 
 		json_stream->emit_json_key_array("entryPoints");
@@ -557,11 +578,11 @@ void CompilerReflection::emit_resources(const char *tag, const SmallVector<Resou
 	}
 
 	json_stream->emit_json_key_array(tag);
-	for (auto &res : resources)
+	for (const auto &res : resources)
 	{
-		auto &type = get_type(res.type_id);
+		const auto &type = get_type(res.type_id);
 		auto typeflags = ir.meta[type.self].decoration.decoration_flags;
-		auto &mask = get_decoration_bitset(res.id);
+		const auto &mask = get_decoration_bitset(res.id);
 
 		// If we don't have a name, use the fallback for the type instead of the variable
 		// for SSBOs and UBOs since those are the only meaningful names to use externally.
@@ -589,16 +610,21 @@ void CompilerReflection::emit_resources(const char *tag, const SmallVector<Resou
 			                  (type.storage == StorageClassUniform && typeflags.get(DecorationBufferBlock));
 			Bitset qualifier_mask = ssbo_block ? get_buffer_block_flags(res.id) : mask;
 
-			if (qualifier_mask.get(DecorationNonReadable))
+			if (qualifier_mask.get(DecorationNonReadable)) {
 				json_stream->emit_json_key_value("writeonly", true);
-			if (qualifier_mask.get(DecorationNonWritable))
+}
+			if (qualifier_mask.get(DecorationNonWritable)) {
 				json_stream->emit_json_key_value("readonly", true);
-			if (qualifier_mask.get(DecorationRestrict))
+}
+			if (qualifier_mask.get(DecorationRestrict)) {
 				json_stream->emit_json_key_value("restrict", true);
-			if (qualifier_mask.get(DecorationCoherent))
+}
+			if (qualifier_mask.get(DecorationCoherent)) {
 				json_stream->emit_json_key_value("coherent", true);
-			if (qualifier_mask.get(DecorationVolatile))
+}
+			if (qualifier_mask.get(DecorationVolatile)) {
 				json_stream->emit_json_key_value("volatile", true);
+}
 		}
 
 		emit_type_array(type);
@@ -614,37 +640,49 @@ void CompilerReflection::emit_resources(const char *tag, const SmallVector<Resou
 			}
 		}
 
-		if (type.storage == StorageClassPushConstant)
+		if (type.storage == StorageClassPushConstant) {
 			json_stream->emit_json_key_value("push_constant", true);
-		if (mask.get(DecorationLocation))
+}
+		if (mask.get(DecorationLocation)) {
 			json_stream->emit_json_key_value("location", get_decoration(res.id, DecorationLocation));
-		if (mask.get(DecorationRowMajor))
+}
+		if (mask.get(DecorationRowMajor)) {
 			json_stream->emit_json_key_value("row_major", true);
-		if (mask.get(DecorationColMajor))
+}
+		if (mask.get(DecorationColMajor)) {
 			json_stream->emit_json_key_value("column_major", true);
-		if (mask.get(DecorationIndex))
+}
+		if (mask.get(DecorationIndex)) {
 			json_stream->emit_json_key_value("index", get_decoration(res.id, DecorationIndex));
-		if (type.storage != StorageClassPushConstant && mask.get(DecorationDescriptorSet))
+}
+		if (type.storage != StorageClassPushConstant && mask.get(DecorationDescriptorSet)) {
 			json_stream->emit_json_key_value("set", get_decoration(res.id, DecorationDescriptorSet));
-		if (mask.get(DecorationBinding))
+}
+		if (mask.get(DecorationBinding)) {
 			json_stream->emit_json_key_value("binding", get_decoration(res.id, DecorationBinding));
-		if (mask.get(DecorationInputAttachmentIndex))
+}
+		if (mask.get(DecorationInputAttachmentIndex)) {
 			json_stream->emit_json_key_value("input_attachment_index",
 			                                 get_decoration(res.id, DecorationInputAttachmentIndex));
-		if (mask.get(DecorationOffset))
+}
+		if (mask.get(DecorationOffset)) {
 			json_stream->emit_json_key_value("offset", get_decoration(res.id, DecorationOffset));
-		if (mask.get(DecorationWeightTextureQCOM))
+}
+		if (mask.get(DecorationWeightTextureQCOM)) {
 			json_stream->emit_json_key_value("WeightTextureQCOM", get_decoration(res.id, DecorationWeightTextureQCOM));
-		if (mask.get(DecorationBlockMatchTextureQCOM))
+}
+		if (mask.get(DecorationBlockMatchTextureQCOM)) {
 			json_stream->emit_json_key_value("BlockMatchTextureQCOM", get_decoration(res.id, DecorationBlockMatchTextureQCOM));
+}
 
 		// For images, the type itself adds a layout qualifer.
 		// Only emit the format for storage images.
 		if (type.basetype == SPIRType::Image && type.image.sampled == 2)
 		{
 			const char *fmt = format_to_glsl(type.image.format);
-			if (fmt != nullptr)
+			if (fmt != nullptr) {
 				json_stream->emit_json_key_value("format", std::string(fmt));
+}
 		}
 		json_stream->end_json_object();
 	}
@@ -654,8 +692,9 @@ void CompilerReflection::emit_resources(const char *tag, const SmallVector<Resou
 void CompilerReflection::emit_specialization_constants()
 {
 	auto specialization_constants = get_specialization_constants();
-	if (specialization_constants.empty())
+	if (specialization_constants.empty()) {
 		return;
+}
 
 	json_stream->emit_json_key_array("specialization_constants");
 	for (const auto &spec_const : specialization_constants)
@@ -695,16 +734,18 @@ void CompilerReflection::emit_specialization_constants()
 
 string CompilerReflection::to_member_name(const SPIRType &type, uint32_t index) const
 {
-	auto *type_meta = ir.find_meta(type.self);
+	const auto *type_meta = ir.find_meta(type.self);
 
 	if (type_meta)
 	{
-		auto &memb = type_meta->members;
-		if (index < memb.size() && !memb[index].alias.empty())
+		const auto &memb = type_meta->members;
+		if (index < memb.size() && !memb[index].alias.empty()) {
 			return memb[index].alias;
-		else
+		} else {
 			return join("_m", index);
+}
 	}
-	else
+	else {
 		return join("_m", index);
+}
 }

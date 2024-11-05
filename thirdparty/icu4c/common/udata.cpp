@@ -146,8 +146,9 @@ findCommonICUDataByName(const char *inBasename, UErrorCode &err)
     int32_t i;
 
     UDataMemory  *pData = udata_findCachedData(inBasename, err);
-    if (U_FAILURE(err) || pData == nullptr)
+    if (U_FAILURE(err) || pData == nullptr) {
         return false;
+}
 
     {
         Mutex lock;
@@ -384,7 +385,7 @@ static UDataMemory *udata_cacheDataItem(const char *path, UDataMemory *item, UEr
     umtx_unlock(nullptr);
 
 #ifdef UDATA_DEBUG
-    fprintf(stderr, "Cache: [%s] <<< %p : %s. vFunc=%p\n", newElement->name, 
+    fprintf(stderr, "Cache: [%s] <<< %p : %s. vFunc=%p\n", newElement->name,
     (void*) newElement->item, u_errorName(subErr), (void*) newElement->item->vFuncs);
 #endif
 
@@ -436,13 +437,13 @@ private:
 
 /**
  * @param iter    The iterator to be initialized. Its current state does not matter.
- * @param inPath  The full pathname to be iterated over.  If nullptr, defaults to U_ICUDATA_NAME 
- * @param pkg     Package which is being searched for, ex "icudt28l".  Will ignore leaf directories such as /icudt28l 
- * @param item    Item to be searched for.  Can include full path, such as /a/b/foo.dat 
+ * @param inPath  The full pathname to be iterated over.  If nullptr, defaults to U_ICUDATA_NAME
+ * @param pkg     Package which is being searched for, ex "icudt28l".  Will ignore leaf directories such as /icudt28l
+ * @param item    Item to be searched for.  Can include full path, such as /a/b/foo.dat
  * @param inSuffix  Optional item suffix, if not-null (ex. ".dat") then 'path' can contain 'item' explicitly.
- *             Ex:   'stuff.dat' would be found in '/a/foo:/tmp/stuff.dat:/bar/baz' as item #2.   
+ *             Ex:   'stuff.dat' would be found in '/a/foo:/tmp/stuff.dat:/bar/baz' as item #2.
  *                   '/blarg/stuff.dat' would also be found.
- *  Note: inSuffix may also be the 'item' being searched for as well, (ex: "ibm-5348_P100-1997.cnv"), in which case 
+ *  Note: inSuffix may also be the 'item' being searched for as well, (ex: "ibm-5348_P100-1997.cnv"), in which case
  *        the 'item' parameter is often the same as pkg. (Though sometimes might have a tree part as well, ex: "icudt62l-curr").
  */
 UDataPathIterator::UDataPathIterator(const char *inPath, const char *pkg,
@@ -508,8 +509,8 @@ UDataPathIterator::UDataPathIterator(const char *inPath, const char *pkg,
 /**
  * Get the next path on the list.
  *
- * @param iter The Iter to be used 
- * @param len  If set, pointer to the length of the returned path, for convenience. 
+ * @param iter The Iter to be used
+ * @param len  If set, pointer to the length of the returned path, for convenience.
  * @return Pointer to the next path segment, or nullptr if there are no more.
  */
 const char *UDataPathIterator::next(UErrorCode *pErrorCode)
@@ -553,7 +554,7 @@ const char *UDataPathIterator::next(UErrorCode *pErrorCode)
 #ifdef UDATA_DEBUG
         fprintf(stderr, "rest of path (IDD) = %s\n", currentPath);
         fprintf(stderr, "                     ");
-        { 
+        {
             int32_t qqq;
             for(qqq=0;qqq<pathLen;qqq++)
             {
@@ -568,7 +569,7 @@ const char *UDataPathIterator::next(UErrorCode *pErrorCode)
         /* check for .dat files */
         pathBasename = findBasename(pathBuffer.data());
 
-        if(checkLastFour && 
+        if(checkLastFour &&
            (pathLen>=4) &&
            uprv_strncmp(pathBuffer.data() +(pathLen-4), suffix.data(), 4)==0 && /* suffix matches */
            uprv_strncmp(findBasename(pathBuffer.data()), basename, basenameLen)==0  && /* base matches */
@@ -579,7 +580,7 @@ const char *UDataPathIterator::next(UErrorCode *pErrorCode)
 #endif
             /* do nothing */
         }
-        else 
+        else
         {       /* regular dir path */
             if(pathBuffer[pathLen-1] != U_FILE_SEP_CHAR) {
                 if((pathLen>=4) &&
@@ -681,7 +682,7 @@ openCommonData(const char *path,          /*  Path from OpenChoice?          */
 
     UDataMemory_init(&tData);
 
-    /* ??????? TODO revisit this */ 
+    /* ??????? TODO revisit this */
     if (commonDataIndex >= 0) {
         /* "mini-cache" for common ICU data */
         if(commonDataIndex >= UPRV_LENGTHOF(gCommonICUDataArray)) {
@@ -763,7 +764,7 @@ openCommonData(const char *path,          /*  Path from OpenChoice?          */
 
     UDataPathIterator iter(u_getDataDirectory(), inBasename, path, ".dat", true, pErrorCode);
 
-    while ((UDataMemory_isLoaded(&tData)==false) && (pathBuffer = iter.next(pErrorCode)) != nullptr)
+    while ((!static_cast<bool>(UDataMemory_isLoaded(&tData))) && (pathBuffer = iter.next(pErrorCode)) != nullptr)
     {
 #ifdef UDATA_DEBUG
         fprintf(stderr, "ocd: trying path %s - ", pathBuffer);
@@ -972,9 +973,9 @@ checkDataItem
 }
 
 /**
- * @return 0 if not loaded, 1 if loaded or err 
+ * @return 0 if not loaded, 1 if loaded or err
  */
-static UDataMemory *doLoadFromIndividualFiles(const char *pkgName, 
+static UDataMemory *doLoadFromIndividualFiles(const char *pkgName,
         const char *dataPath, const char *tocEntryPathSuffix,
             /* following arguments are the same as doOpenChoice itself */
             const char *path, const char *type, const char *name,
@@ -1030,9 +1031,9 @@ static UDataMemory *doLoadFromIndividualFiles(const char *pkgName,
 }
 
 /**
- * @return 0 if not loaded, 1 if loaded or err 
+ * @return 0 if not loaded, 1 if loaded or err
  */
-static UDataMemory *doLoadFromCommonData(UBool isICUData, const char * /*pkgName*/, 
+static UDataMemory *doLoadFromCommonData(UBool isICUData, const char * /*pkgName*/,
         const char * /*dataPath*/, const char * /*tocEntryPathSuffix*/, const char *tocEntryName,
             /* following arguments are the same as doOpenChoice itself */
             const char *path, const char *type, const char *name,
@@ -1168,7 +1169,7 @@ doOpenChoice(const char *path, const char *type, const char *name,
     if(path == nullptr ||
        !strcmp(path, U_ICUDATA_ALIAS) ||  /* "ICUDATA" */
        !uprv_strncmp(path, U_ICUDATA_NAME U_TREE_SEPARATOR_STRING, /* "icudt26e-" */
-                     uprv_strlen(U_ICUDATA_NAME U_TREE_SEPARATOR_STRING)) ||  
+                     uprv_strlen(U_ICUDATA_NAME U_TREE_SEPARATOR_STRING)) ||
        !uprv_strncmp(path, U_ICUDATA_ALIAS U_TREE_SEPARATOR_STRING, /* "ICUDATA-" */
                      uprv_strlen(U_ICUDATA_ALIAS U_TREE_SEPARATOR_STRING))) {
       isICUData = true;
@@ -1215,7 +1216,7 @@ doOpenChoice(const char *path, const char *type, const char *name,
             }
         } else {
             treeChar = uprv_strchr(path, U_TREE_SEPARATOR);
-            if(treeChar) { 
+            if(treeChar) {
                 treeName.append(treeChar+1, *pErrorCode); /* following '-' */
                 if(isICUData) {
                     pkgName.append(U_ICUDATA_NAME, *pErrorCode);
@@ -1243,7 +1244,7 @@ doOpenChoice(const char *path, const char *type, const char *name,
     fprintf(stderr, " P=%s T=%s\n", pkgName.data(), treeName.data());
 #endif
 
-    /* setting up the entry name and file name 
+    /* setting up the entry name and file name
      * Make up a full name by appending the type to the supplied
      *  name, assuming that a type was supplied.
      */
@@ -1310,7 +1311,7 @@ doOpenChoice(const char *path, const char *type, const char *name,
         fprintf(stderr, "Trying packages (UDATA_PACKAGES_FIRST)\n");
 #endif
         /* #2 */
-        retVal = doLoadFromCommonData(isICUData, 
+        retVal = doLoadFromCommonData(isICUData,
                             pkgName.data(), dataPath, tocEntryPathSuffix, tocEntryName.data(),
                             path, type, name, isAcceptable, context, &subErrorCode, pErrorCode);
         if((retVal != nullptr) || U_FAILURE(*pErrorCode)) {
@@ -1335,7 +1336,7 @@ doOpenChoice(const char *path, const char *type, const char *name,
     }
 
     /****    COMMON PACKAGE  */
-    if((gDataFileAccess==UDATA_ONLY_PACKAGES) || 
+    if((gDataFileAccess==UDATA_ONLY_PACKAGES) ||
        (gDataFileAccess==UDATA_FILES_FIRST)) {
 #ifdef UDATA_DEBUG
         fprintf(stderr, "Trying packages (UDATA_ONLY_PACKAGES || UDATA_FILES_FIRST)\n");
@@ -1347,10 +1348,10 @@ doOpenChoice(const char *path, const char *type, const char *name,
             return retVal;
         }
     }
-    
+
     /* Load from DLL.  If we haven't attempted package load, we also haven't had any chance to
         try a DLL (static or setCommonData/etc)  load.
-         If we ever have a "UDATA_ONLY_FILES", add it to the or list here.  */  
+         If we ever have a "UDATA_ONLY_FILES", add it to the or list here.  */
     if(gDataFileAccess==UDATA_NO_FILES) {
 #ifdef UDATA_DEBUG
         fprintf(stderr, "Trying common data (UDATA_NO_FILES)\n");

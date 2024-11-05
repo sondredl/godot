@@ -65,8 +65,9 @@ const void * direct_run(const bool          get_table_mode,
     // We need to define and return to opcode table from within this function
     // other inorder to take the addresses of the instruction bodies.
     #include "inc/opcode_table.h"
-    if (get_table_mode)
+    if (get_table_mode) {
         return opcode_table;
+}
 
     // Declare virtual machine registers
     const instr           * ip = program;
@@ -95,7 +96,7 @@ const void * direct_run(const bool          get_table_mode,
 
 }
 
-const opcode_t * Machine::getOpcodeTable() throw()
+const opcode_t * Machine::getOpcodeTable() noexcept
 {
     slotref * dummy;
     Machine::status_t dumstat = Machine::finished;

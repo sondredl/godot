@@ -29,15 +29,14 @@
 
 static inline bool _onlyShifted(const Matrix& m)
 {
-    if (mathEqual(m.e11, 1.0f) && mathEqual(m.e22, 1.0f) && mathZero(m.e12) && mathZero(m.e21)) return true;
-    return false;
+    return mathEqual(m.e11, 1.0f) && mathEqual(m.e22, 1.0f) && mathZero(m.e12) && mathZero(m.e21);
 }
 
 
 static bool _genOutline(SwImage* image, const Matrix& transform, SwMpool* mpool, unsigned tid)
 {
     image->outline = mpoolReqOutline(mpool, tid);
-    auto outline = image->outline;
+    auto *outline = image->outline;
 
     outline->pts.reserve(5);
     outline->types.reserve(5);
@@ -86,20 +85,18 @@ bool imagePrepare(SwImage* image, const Matrix& transform, const SwBBox& clipReg
         auto scaleY = sqrtf((transform.e22 * transform.e22) + (transform.e12 * transform.e12));
         image->scale = (fabsf(scaleX - scaleY) > 0.01f) ? 1.0f : scaleX;
 
-        if (mathZero(transform.e12) && mathZero(transform.e21)) image->scaled = true;
-        else image->scaled = false;
+        image->scaled = mathZero(transform.e12) && mathZero(transform.e21);
     }
 
-    if (!_genOutline(image, transform, mpool, tid)) return false;
+    if (!_genOutline(image, transform, mpool, tid)) { return false;
+}
     return mathUpdateOutlineBBox(image->outline, clipRegion, renderRegion, image->direct);
 }
 
 
 bool imageGenRle(SwImage* image, const SwBBox& renderRegion, bool antiAlias)
 {
-    if ((image->rle = rleRender(image->rle, image->outline, renderRegion, antiAlias))) return true;
-
-    return false;
+    return (image->rle = rleRender(image->rle, image->outline, renderRegion, antiAlias)) != nullptr;
 }
 
 

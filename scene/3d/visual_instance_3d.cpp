@@ -363,12 +363,7 @@ bool GeometryInstance3D::_set(const StringName &p_name, const Variant &p_value) 
 
 bool GeometryInstance3D::_get(const StringName &p_name, Variant &r_ret) const {
 	const StringName *r = _instance_uniform_get_remap(p_name);
-	if (r) {
-		r_ret = get_instance_shader_parameter(*r);
-		return true;
-	}
-
-	return false;
+	return r;
 }
 
 void GeometryInstance3D::_get_property_list(List<PropertyInfo> *p_list) const {

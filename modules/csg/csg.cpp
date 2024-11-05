@@ -111,12 +111,7 @@ static inline bool ray_intersects_triangle(const Vector3 &p_from, const Vector3 
 	// Calculate distance.
 	real_t t = f * edge2.dot(q);
 	// Confirm triangle is in front of ray.
-	if (t >= p_tolerance) {
-		r_intersection_point = p_from + p_dir * t;
-		return true;
-	} else {
-		return false;
-	}
+	return t >= p_tolerance;
 }
 
 inline bool is_point_in_triangle(const Vector3 &p_point, const Vector3 p_vertices[3], int p_shifted = 0) {

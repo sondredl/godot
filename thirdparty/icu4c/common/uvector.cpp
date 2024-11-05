@@ -26,7 +26,7 @@ constexpr int32_t DEFAULT_CAPACITY = 8;
  */
 constexpr int8_t HINT_KEY_POINTER = 1;
 constexpr int8_t HINT_KEY_INTEGER = 0;
- 
+
 UOBJECT_DEFINE_RTTI_IMPLEMENTATION(UVector)
 
 UVector::UVector(UErrorCode &status) :
@@ -87,7 +87,8 @@ void UVector::assign(const UVector& other, UElementAssigner *assign, UErrorCode 
 // This only does something sensible if this object has a non-null comparer
 bool UVector::operator==(const UVector& other) const {
     U_ASSERT(comparer != nullptr);
-    if (count != other.count) return false;
+    if (count != other.count) { return false;
+}
     if (comparer != nullptr) {
         // Compare using this object's comparer
         for (int32_t i=0; i<count; ++i) {
@@ -491,7 +492,7 @@ void UVector::sortedInsert(UElement e, UElementComparator *compare, UErrorCode& 
   *
   *  The context pointer to this function is a pointer back
   *  (with some extra indirection) to the user supplied comparator.
-  *  
+  *
   */
 static int32_t U_CALLCONV
 sortComparator(const void *context, const void *left, const void *right) {

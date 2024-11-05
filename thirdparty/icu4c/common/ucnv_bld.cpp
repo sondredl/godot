@@ -294,8 +294,9 @@ ucnv_data_unFlattenClone(UConverterLoadArgs *pArgs, UDataMemory *pData, UErrorCo
     UConverterSharedData *data;
     UConverterType type = static_cast<UConverterType>(source->conversionType);
 
-    if(U_FAILURE(*status))
+    if(U_FAILURE(*status)) {
         return nullptr;
+}
 
     if (static_cast<uint16_t>(type) >= UCNV_NUMBER_OF_SUPPORTED_CONVERTER_TYPES ||
         converterData[type] == nullptr ||
@@ -446,8 +447,9 @@ ucnv_shareConverterData(UConverterSharedData * data)
                             &err);
         ucnv_enableCleanup();
 
-        if (U_FAILURE(err))
+        if (U_FAILURE(err)) {
             return;
+}
     }
 
     /* ### check to see if the element is not already there! */
@@ -589,7 +591,7 @@ ucnv_unload(UConverterSharedData *sharedData) {
             sharedData->referenceCounter--;
         }
 
-        if((sharedData->referenceCounter <= 0)&&(sharedData->sharedDataCached == false)) {
+        if((sharedData->referenceCounter <= 0)&&(!static_cast<bool>(sharedData->sharedDataCached))) {
             ucnv_deleteSharedConverterData(sharedData);
         }
     }
@@ -1416,7 +1418,8 @@ ucnv_swap(const UDataSwapper *ds,
     }
 
     inBytes+=staticDataSize;
-    if (outBytes != nullptr) outBytes+=staticDataSize;
+    if (outBytes != nullptr) { outBytes+=staticDataSize;
+}
     if(length>=0) {
         length-=(int32_t)staticDataSize;
     }

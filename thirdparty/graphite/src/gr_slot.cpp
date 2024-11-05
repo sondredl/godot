@@ -73,10 +73,11 @@ float gr_slot_advance_X(const gr_slot* p/*not NULL*/, const gr_face *face, const
     {
         scale = font->scale();
         int gid = p->glyph();
-        if (face && font->isHinted() && gid < face->glyphs().numGlyphs())
+        if (face && font->isHinted() && gid < face->glyphs().numGlyphs()) {
             res = (res - face->glyphs().glyph(gid)->theAdvance().x) * scale + font->advance(gid);
-        else
+        } else {
             res = res * scale;
+}
     }
     return res;
 }
@@ -85,10 +86,11 @@ float gr_slot_advance_Y(const gr_slot *p/*not NULL*/, GR_MAYBE_UNUSED const gr_f
 {
     assert(p);
     float res = p->advancePos().y;
-    if (font)
+    if (font) {
         return res * font->scale();
-    else
+    } else {
         return res;
+}
 }
 
 int gr_slot_before(const gr_slot* p/*not NULL*/)

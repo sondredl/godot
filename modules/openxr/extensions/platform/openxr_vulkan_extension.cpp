@@ -123,27 +123,7 @@ bool OpenXRVulkanExtension::create_vulkan_instance(const VkInstanceCreateInfo *p
 
 	VkResult vk_result = VK_SUCCESS;
 	XrResult result = xrCreateVulkanInstanceKHR(OpenXRAPI::get_singleton()->get_instance(), &xr_vulkan_instance_info, &vulkan_instance, &vk_result);
-	if (XR_FAILED(result)) {
-		print_line("OpenXR: Failed to create vulkan instance [", OpenXRAPI::get_singleton()->get_error_string(result), "]");
-		return false;
-	}
-
-	ERR_FAIL_COND_V_MSG(vk_result == VK_ERROR_INCOMPATIBLE_DRIVER, false,
-			"Cannot find a compatible Vulkan installable client driver (ICD).\n\n"
-			"vkCreateInstance Failure");
-	ERR_FAIL_COND_V_MSG(vk_result == VK_ERROR_EXTENSION_NOT_PRESENT, false,
-			"Cannot find a specified extension library.\n"
-			"Make sure your layers path is set appropriately.\n"
-			"vkCreateInstance Failure");
-	ERR_FAIL_COND_V_MSG(vk_result, false,
-			"vkCreateInstance failed.\n\n"
-			"Do you have a compatible Vulkan installable client driver (ICD) installed?\n"
-			"Please look at the Getting Started guide for additional information.\n"
-			"vkCreateInstance Failure");
-
-	*r_instance = vulkan_instance;
-
-	return true;
+	return !XR_FAILED(result);
 }
 
 bool OpenXRVulkanExtension::get_physical_device(VkPhysicalDevice *r_device) {
@@ -157,14 +137,7 @@ bool OpenXRVulkanExtension::get_physical_device(VkPhysicalDevice *r_device) {
 	};
 
 	XrResult result = xrGetVulkanGraphicsDevice2KHR(OpenXRAPI::get_singleton()->get_instance(), &get_info, &vulkan_physical_device);
-	if (XR_FAILED(result)) {
-		print_line("OpenXR: Failed to obtain vulkan physical device [", OpenXRAPI::get_singleton()->get_error_string(result), "]");
-		return false;
-	}
-
-	*r_device = vulkan_physical_device;
-
-	return true;
+	return !XR_FAILED(result);
 }
 
 bool OpenXRVulkanExtension::create_vulkan_device(const VkDeviceCreateInfo *p_device_create_info, VkDevice *r_device) {
