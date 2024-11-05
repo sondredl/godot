@@ -31,7 +31,7 @@
 #ifndef DEFAULT_CONTROLLER_MAPPINGS_H
 #define DEFAULT_CONTROLLER_MAPPINGS_H
 
-class DefaultControllerMappings; {
+class DefaultControllerMappings {
 public:
 	static const char *mappings[];
 };
