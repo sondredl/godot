@@ -34,7 +34,7 @@ typedef struct VkMacOSSurfaceCreateInfoMVK {
 typedef VkResult (VKAPI_PTR *PFN_vkCreateMacOSSurfaceMVK)(VkInstance instance, const VkMacOSSurfaceCreateInfoMVK* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkSurfaceKHR* pSurface);
 
 #ifndef VK_NO_PROTOTYPES
-VKAPI_ATTR VkResult VKAPI_CALL vkCreateMacOSSurfaceMVK(
+VKAPI_ATTR VkResult; VKAPI_CALL vkCreateMacOSSurfaceMVK(
     VkInstance                                  instance,
     const VkMacOSSurfaceCreateInfoMVK*          pCreateInfo,
     const VkAllocationCallbacks*                pAllocator,

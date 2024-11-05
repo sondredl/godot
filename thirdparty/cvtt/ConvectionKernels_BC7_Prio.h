@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-namespace cvtt { namespace Tables { namespace BC7Prio {
+namespace cvtt; { namespace Tables { namespace BC7Prio {
     extern const uint16_t *g_bc7PrioCodesRGB;
     extern const int g_bc7NumPrioCodesRGB;
 

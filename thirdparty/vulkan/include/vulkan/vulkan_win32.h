@@ -36,13 +36,13 @@ typedef VkResult (VKAPI_PTR *PFN_vkCreateWin32SurfaceKHR)(VkInstance instance, c
 typedef VkBool32 (VKAPI_PTR *PFN_vkGetPhysicalDeviceWin32PresentationSupportKHR)(VkPhysicalDevice physicalDevice, uint32_t queueFamilyIndex);
 
 #ifndef VK_NO_PROTOTYPES
-VKAPI_ATTR VkResult VKAPI_CALL vkCreateWin32SurfaceKHR(
+VKAPI_ATTR VkResult; VKAPI_CALL vkCreateWin32SurfaceKHR(
     VkInstance                                  instance,
     const VkWin32SurfaceCreateInfoKHR*          pCreateInfo,
     const VkAllocationCallbacks*                pAllocator,
     VkSurfaceKHR*                               pSurface);
 
-VKAPI_ATTR VkBool32 VKAPI_CALL vkGetPhysicalDeviceWin32PresentationSupportKHR(
+VKAPI_ATTR VkBool32; VKAPI_CALL vkGetPhysicalDeviceWin32PresentationSupportKHR(
     VkPhysicalDevice                            physicalDevice,
     uint32_t                                    queueFamilyIndex);
 #endif

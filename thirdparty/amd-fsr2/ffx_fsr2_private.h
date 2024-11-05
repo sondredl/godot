@@ -31,7 +31,7 @@ typedef struct Fsr2Constants {
     int32_t                     lumaMipDimensions[2];
     int32_t                     lumaMipLevelToUse;
     int32_t                     frameIndex;
-    
+
     float                       deviceToViewDepth[4];
     float                       jitterOffset[2];
     float                       motionVectorScale[2];
@@ -60,14 +60,14 @@ struct FfxResource;
 // The private implementation of the FSR2 context.
 typedef struct FfxFsr2Context_Private {
 
-    FfxFsr2ContextDescription   contextDescription;
+    struct FfxFsr2ContextDescription   contextDescription;
     Fsr2Constants               constants;
     FfxDevice                   device;
-    FfxDeviceCapabilities       deviceCapabilities;
-    FfxPipelineState            pipelineDepthClip;
-    FfxPipelineState            pipelineReconstructPreviousDepth;
-    FfxPipelineState            pipelineLock;
-    FfxPipelineState            pipelineAccumulate;
+    struct FfxDeviceCapabilities       deviceCapabilities;
+    struct FfxPipelineState            pipelineDepthClip;
+    struct FfxPipelineState            pipelineReconstructPreviousDepth;
+    struct FfxPipelineState            pipelineLock;
+    struct FfxPipelineState            pipelineAccumulate;
     FfxPipelineState            pipelineAccumulateSharpen;
     FfxPipelineState            pipelineRCAS;
     FfxPipelineState            pipelineComputeLuminancePyramid;

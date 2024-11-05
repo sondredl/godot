@@ -104,8 +104,8 @@ typedef void (EGLAPIENTRY  *EGLDEBUGPROCKHR)(EGLenum error,const char *command,E
 #define EGL_DEBUG_MSG_WARN_KHR            0x33BB
 #define EGL_DEBUG_MSG_INFO_KHR            0x33BC
 #define EGL_DEBUG_CALLBACK_KHR            0x33B8
-typedef EGLint (EGLAPIENTRYP PFNEGLDEBUGMESSAGECONTROLKHRPROC) (EGLDEBUGPROCKHR callback, const EGLAttrib *attrib_list);
-typedef EGLBoolean (EGLAPIENTRYP PFNEGLQUERYDEBUGKHRPROC) (EGLint attribute, EGLAttrib *value);
+typedef EGLint (EGLAPIENTRYP PFNEGLDEBUGMESSAGECONTROLKHRPROC) (EGLDEBUGPROCKHR callback, const EGLAttribKHR *attrib_list);
+typedef EGLBoolean (EGLAPIENTRYP PFNEGLQUERYDEBUGKHRPROC) (EGLint attribute, EGLAttribKHR *value);
 typedef EGLint (EGLAPIENTRYP PFNEGLLABELOBJECTKHRPROC) (EGLDisplay display, EGLenum objectType, EGLObjectKHR object, EGLLabelKHR label);
 #ifdef EGL_EGLEXT_PROTOTYPES
 EGLAPI EGLint EGLAPIENTRY eglDebugMessageControlKHR (EGLDEBUGPROCKHR callback, const EGLAttrib *attrib_list);
@@ -117,7 +117,7 @@ EGLAPI EGLint EGLAPIENTRY eglLabelObjectKHR (EGLDisplay display, EGLenum objectT
 #ifndef EGL_KHR_display_reference
 #define EGL_KHR_display_reference 1
 #define EGL_TRACK_REFERENCES_KHR          0x3352
-typedef EGLBoolean (EGLAPIENTRYP PFNEGLQUERYDISPLAYATTRIBKHRPROC) (EGLDisplay dpy, EGLint name, EGLAttrib *value);
+typedef EGLBoolean (EGLAPIENTRYP PFNEGLQUERYDISPLAYATTRIBKHRPROC) (EGLDisplay dpy, EGLint name, EGLAttribKHR *value);
 #ifdef EGL_EGLEXT_PROTOTYPES
 EGLAPI EGLBoolean EGLAPIENTRY eglQueryDisplayAttribKHR (EGLDisplay dpy, EGLint name, EGLAttrib *value);
 #endif

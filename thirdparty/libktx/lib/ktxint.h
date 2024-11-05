@@ -62,20 +62,20 @@ extern GLboolean _ktxSupportsSRGB;
  * See the KTX specification for descriptions.
  */
 typedef struct KTX_header {
-    ktx_uint8_t  identifier[12];
-    ktx_uint32_t endianness;
-    ktx_uint32_t glType;
-    ktx_uint32_t glTypeSize;
-    ktx_uint32_t glFormat;
-    ktx_uint32_t glInternalformat;
-    ktx_uint32_t glBaseInternalformat;
-    ktx_uint32_t pixelWidth;
-    ktx_uint32_t pixelHeight;
-    ktx_uint32_t pixelDepth;
-    ktx_uint32_t numberOfArrayElements;
-    ktx_uint32_t numberOfFaces;
-    ktx_uint32_t numberOfMipLevels;
-    ktx_uint32_t bytesOfKeyValueData;
+    __uint8_t  identifier[12];
+    __uint32_t endianness;
+    __uint32_t glType;
+    __uint32_t glTypeSize;
+    __uint32_t glFormat;
+    __uint32_t glInternalformat;
+    __uint32_t glBaseInternalformat;
+    __uint32_t pixelWidth;
+    __uint32_t pixelHeight;
+    __uint32_t pixelDepth;
+    __uint32_t numberOfArrayElements;
+    __uint32_t numberOfFaces;
+    __uint32_t numberOfMipLevels;
+    __uint32_t bytesOfKeyValueData;
 } KTX_header;
 
 /* This will cause compilation to fail if the struct size doesn't match */
@@ -87,8 +87,8 @@ typedef int KTX_header_SIZE_ASSERT [sizeof(KTX_header) == KTX_HEADER_SIZE];
  * @brief 32-bit KTX 2 index entry.
  */
 typedef struct ktxIndexEntry32 {
-    ktx_uint32_t byteOffset; /*!< Offset of item from start of file. */
-    ktx_uint32_t byteLength; /*!< Number of bytes of data in the item. */
+    __uint32_t byteOffset; /*!< Offset of item from start of file. */
+    __uint32_t byteLength; /*!< Number of bytes of data in the item. */
 } ktxIndexEntry32;
 /**
  * @internal

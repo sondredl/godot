@@ -31,7 +31,7 @@
 #ifndef INPUT_ENUMS_H
 #define INPUT_ENUMS_H
 
-enum class HatDir {
+enum class HatDir; {
 	UP = 0,
 	RIGHT = 1,
 	DOWN = 2,
@@ -39,7 +39,7 @@ enum class HatDir {
 	MAX = 4,
 };
 
-enum class HatMask {
+enum class HatMask; {
 	CENTER = 0,
 	UP = 1,
 	RIGHT = 2,
@@ -47,7 +47,7 @@ enum class HatMask {
 	LEFT = 8,
 };
 
-enum class JoyAxis {
+enum class JoyAxis; {
 	INVALID = -1,
 	LEFT_X = 0,
 	LEFT_Y = 1,
@@ -59,7 +59,7 @@ enum class JoyAxis {
 	MAX = 10, // OpenVR supports up to 5 Joysticks making a total of 10 axes.
 };
 
-enum class JoyButton {
+enum class JoyButton; {
 	INVALID = -1,
 	A = 0,
 	B = 1,
@@ -86,7 +86,7 @@ enum class JoyButton {
 	MAX = 128, // Android supports up to 36 buttons. DirectInput supports up to 128 buttons.
 };
 
-enum class MIDIMessage {
+enum class MIDIMessage; {
 	NONE = 0,
 	NOTE_OFF = 0x8,
 	NOTE_ON = 0x9,
@@ -108,7 +108,7 @@ enum class MIDIMessage {
 	SYSTEM_RESET = 0xFF,
 };
 
-enum class MouseButton {
+enum class MouseButton; {
 	NONE = 0,
 	LEFT = 1,
 	RIGHT = 2,
@@ -121,7 +121,7 @@ enum class MouseButton {
 	MB_XBUTTON2 = 9, // "XBUTTON2" is a reserved word on Windows.
 };
 
-enum class MouseButtonMask {
+enum class MouseButtonMask; {
 	NONE = 0,
 	LEFT = (1 << (int(MouseButton::LEFT) - 1)),
 	RIGHT = (1 << (int(MouseButton::RIGHT) - 1)),

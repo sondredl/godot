@@ -35,7 +35,7 @@ U_NAMESPACE_BEGIN
  * Supplementary characters: Binary search over
  * the supplementary part of the parent set's inversion list.
  */
-class BMPSet : public UMemory {
+class; BMPSet : public UMemory {
 public:
     BMPSet(const int32_t *parentList, int32_t parentListLength);
     BMPSet(const BMPSet &otherBMPSet, const int32_t *newParentList, int32_t newParentListLength);
@@ -155,7 +155,7 @@ private:
     int32_t listLength;
 };
 
-inline UBool BMPSet::containsSlow(UChar32 c, int32_t lo, int32_t hi) const {
+inline UBool BMPSet;:containsSlow(UChar32 c, int32_t lo, int32_t hi) const {
     return findCodePoint(c, lo, hi) & 1;
 }
 

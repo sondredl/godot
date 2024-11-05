@@ -640,15 +640,15 @@ VARIANT_ENUM_CAST(core_bind::ResourceLoader::CacheMode);
 
 VARIANT_BITFIELD_CAST(core_bind::ResourceSaver::SaverFlags);
 
-VARIANT_ENUM_CAST(core_bind::OS::RenderingDriver);
-VARIANT_ENUM_CAST(core_bind::OS::SystemDir);
 
-VARIANT_ENUM_CAST(core_bind::Geometry2D::PolyBooleanOperation);
-VARIANT_ENUM_CAST(core_bind::Geometry2D::PolyJoinType);
-VARIANT_ENUM_CAST(core_bind::Geometry2D::PolyEndType);
 
-VARIANT_ENUM_CAST(core_bind::Thread::Priority);
 
-VARIANT_ENUM_CAST(core_bind::special::ClassDB::APIType);
+
+
+
+
+
+
+
 
 #endif // CORE_BIND_H

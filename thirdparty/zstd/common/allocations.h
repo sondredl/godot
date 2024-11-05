@@ -25,8 +25,9 @@
 
 MEM_STATIC void* ZSTD_customMalloc(size_t size, ZSTD_customMem customMem)
 {
-    if (customMem.customAlloc)
+    if (customMem.customAlloc) {
         return customMem.customAlloc(customMem.opaque, size);
+}
     return ZSTD_malloc(size);
 }
 
@@ -45,10 +46,11 @@ MEM_STATIC void* ZSTD_customCalloc(size_t size, ZSTD_customMem customMem)
 MEM_STATIC void ZSTD_customFree(void* ptr, ZSTD_customMem customMem)
 {
     if (ptr!=NULL) {
-        if (customMem.customFree)
+        if (customMem.customFree) {
             customMem.customFree(customMem.opaque, ptr);
-        else
+        } else {
             ZSTD_free(ptr);
+}
     }
 }
 

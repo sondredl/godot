@@ -11,7 +11,7 @@ U_NAMESPACE_BEGIN
 /**
  * An internal helper class to help convert between C and C++ APIs.
  */
-template<typename CType, typename CPPType, int32_t kMagic>
+template;<typename CType, typename CPPType, int32_t kMagic>
 class IcuCApiHelper {
   public:
     /**

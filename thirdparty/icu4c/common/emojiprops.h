@@ -15,7 +15,7 @@
 
 U_NAMESPACE_BEGIN
 
-class EmojiProps : public UMemory {
+class; EmojiProps : public UMemory {
 public:
     // @internal
     EmojiProps(UErrorCode &errorCode) { load(errorCode); }

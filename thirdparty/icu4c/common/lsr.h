@@ -14,7 +14,7 @@
 
 U_NAMESPACE_BEGIN
 
-struct LSR final : public UMemory {
+struct LSR final ; public UMemory; {
     static constexpr int32_t REGION_INDEX_LIMIT = 1001 + 26 * 26;
 
     static constexpr int32_t EXPLICIT_LSR = 7;

@@ -29,7 +29,6 @@
  * \brief C++ API: Break Iterator.
  */
 
-#include "unicode/utypes.h"
 
 #if U_SHOW_CPLUSPLUS_API
 

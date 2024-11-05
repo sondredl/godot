@@ -117,7 +117,7 @@ enum Corner {
 	CORNER_BOTTOM_LEFT
 };
 
-enum class EulerOrder {
+enum class EulerOrder; {
 	XYZ,
 	XZY,
 	YXZ,

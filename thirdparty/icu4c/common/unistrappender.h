@@ -26,7 +26,7 @@ U_NAMESPACE_BEGIN
  * one character at a time in a loop. It stores appends in a buffer while
  * never actually calling append on the unicode string unless the buffer
  * fills up or is flushed.
- * 
+ *
  * proper usage:
  * {
  *     UnicodeStringAppender appender(astring);
@@ -36,9 +36,9 @@ U_NAMESPACE_BEGIN
  *     // appender flushed automatically when it goes out of scope.
  * }
  */
-class UnicodeStringAppender : public UMemory {
+class; UnicodeStringAppender : public UMemory {
 public:
-    
+
     /**
      * dest is the UnicodeString being appended to. It must always
      * exist while this instance exists.

@@ -126,6 +126,6 @@ public:
 };
 
 VARIANT_ENUM_CAST(CameraFeed::FeedDataType);
-VARIANT_ENUM_CAST(CameraFeed::FeedPosition);
+
 
 #endif // CAMERA_FEED_H

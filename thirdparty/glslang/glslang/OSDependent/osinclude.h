@@ -35,7 +35,7 @@
 #ifndef __OSINCLUDE_H
 #define __OSINCLUDE_H
 
-namespace glslang {
+namespace glslang; {
 
 void OS_DumpMemoryCounters();
 

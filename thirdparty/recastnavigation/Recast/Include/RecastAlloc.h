@@ -37,7 +37,7 @@ enum rcAllocHint
 //  @param[in]		rcAllocHint	A hint to the allocator on how long the memory is expected to be in use.
 //  @return A pointer to the beginning of the allocated memory block, or null if the allocation failed.
 ///  @see rcAllocSetCustom
-typedef void* (rcAllocFunc)(size_t size, rcAllocHint hint);
+typedef void* (rcAllocFunc)(size_t size, enum rcAllocHint hint);
 
 /// A memory deallocation function.
 ///  @param[in]		ptr		A pointer to a memory block previously allocated using #rcAllocFunc.
@@ -47,26 +47,26 @@ typedef void (rcFreeFunc)(void* ptr);
 /// Sets the base custom allocation functions to be used by Recast.
 ///  @param[in]		allocFunc	The memory allocation function to be used by #rcAlloc
 ///  @param[in]		freeFunc	The memory de-allocation function to be used by #rcFree
-///  
+///
 /// @see rcAlloc, rcFree
 void rcAllocSetCustom(rcAllocFunc *allocFunc, rcFreeFunc *freeFunc);
 
 /// Allocates a memory block.
-/// 
+///
 /// @param[in]		size	The size, in bytes of memory, to allocate.
 /// @param[in]		hint	A hint to the allocator on how long the memory is expected to be in use.
 /// @return A pointer to the beginning of the allocated memory block, or null if the allocation failed.
-/// 
+///
 /// @see rcFree, rcAllocSetCustom
-void* rcAlloc(size_t size, rcAllocHint hint);
+void* rcAlloc(size_t size, enum rcAllocHint hint);
 
 /// Deallocates a memory block.  If @p ptr is NULL, this does nothing.
 ///
 /// @warning This function leaves the value of @p ptr unchanged.  So it still
 /// points to the same (now invalid) location, and not to null.
-/// 
+///
 /// @param[in]		ptr		A pointer to a memory block previously allocated using #rcAlloc.
-/// 
+///
 /// @see rcAlloc, rcAllocSetCustom
 void rcFree(void* ptr);
 
@@ -74,7 +74,7 @@ void rcFree(void* ptr);
 /// rcNewTag is a dummy type used to differentiate our operator from the STL one, in case users import both Recast
 /// and STL.
 struct rcNewTag {};
-inline void* operator new(size_t, const rcNewTag&, void* p) { return p; }
+inline void* operator; new(size_t, const rcNewTag&, void* p) { return p; }
 inline void operator delete(void*, const rcNewTag&, void*) {}
 
 /// Signed to avoid warnnings when comparing to int loop indexes, and common error with comparing to zero.
@@ -362,7 +362,7 @@ public:
 	/// The root array pointer.
 	///  @return The root array pointer.
 	inline operator T*() { return ptr; }
-	
+
 private:
 	// Explicitly disabled copy constructor and copy assignment operator.
 	rcScopedDelete(const rcScopedDelete&);

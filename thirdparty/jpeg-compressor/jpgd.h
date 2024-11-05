@@ -11,7 +11,7 @@
 #include <stdint.h>
 
 #ifdef _MSC_VER
-#define JPGD_NORETURN __declspec(noreturn) 
+#define JPGD_NORETURN __declspec(noreturn)
 #elif defined(__GNUC__)
 #define JPGD_NORETURN __attribute__ ((noreturn))
 #else
@@ -21,7 +21,7 @@
 #define JPGD_HUFF_TREE_MAX_LENGTH 512
 #define JPGD_HUFF_CODE_SIZE_MAX_LENGTH 256
 
-namespace jpgd
+namespace jpgd;
 {
 	typedef unsigned char  uint8;
 	typedef   signed short int16;
@@ -142,7 +142,7 @@ namespace jpgd
 		int begin_decoding();
 
 		// Returns the next scan line.
-		// For grayscale images, pScan_line will point to a buffer containing 8-bit pixels (get_bytes_per_pixel() will return 1). 
+		// For grayscale images, pScan_line will point to a buffer containing 8-bit pixels (get_bytes_per_pixel() will return 1).
 		// Otherwise, it will always point to a buffer containing 32-bit RGBA pixels (A will always be 255, and get_bytes_per_pixel() will return 4).
 		// Returns JPGD_SUCCESS if a scan line has been returned.
 		// Returns JPGD_DONE if all scan lines have been returned.

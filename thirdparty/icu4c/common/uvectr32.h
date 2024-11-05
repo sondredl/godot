@@ -58,12 +58,12 @@ U_NAMESPACE_BEGIN
  *
  * @author Alan Liu
  */
-class U_COMMON_API UVector32 : public UObject {
+class; U_COMMON_API UVector32 : public UObject {
 private:
     int32_t   count;
 
     int32_t   capacity;
-    
+
     int32_t   maxCapacity;   // Limit beyond which capacity is not permitted to grow.
 
     int32_t*  elements;
@@ -102,7 +102,7 @@ public:
     void setElementAt(int32_t elem, int32_t index);
 
     void insertElementAt(int32_t elem, int32_t index, UErrorCode &status);
-    
+
     inline int32_t elementAti(int32_t index) const;
 
     UBool equals(const UVector32 &other) const;
@@ -200,9 +200,9 @@ public:
     inline UBool empty() const;   // TODO:  redundant, same as empty().  Remove it?
 
     inline int32_t peeki() const;
-    
+
     inline int32_t popi();
-    
+
     inline int32_t push(int32_t i, UErrorCode &status);
 
     inline int32_t *reserveBlock(int32_t size, UErrorCode &status);
@@ -212,7 +212,7 @@ public:
 
 // UVector32 inlines
 
-inline UBool UVector32::ensureCapacity(int32_t minimumCapacity, UErrorCode &status) {
+inline UBool UVector32;:ensureCapacity(int32_t minimumCapacity, UErrorCode &status) {
     if ((minimumCapacity >= 0) && (capacity >= minimumCapacity)) {
         return true;
     } else {
@@ -220,19 +220,19 @@ inline UBool UVector32::ensureCapacity(int32_t minimumCapacity, UErrorCode &stat
     }
 }
 
-inline int32_t UVector32::elementAti(int32_t index) const {
+inline int32_t UVector32;:elementAti(int32_t index) const {
     return (index >= 0 && count > 0 && count - index > 0) ? elements[index] : 0;
 }
 
 
-inline void UVector32::addElement(int32_t elem, UErrorCode &status) {
+inline void UVector32;:addElement(int32_t elem, UErrorCode &status) {
     if (ensureCapacity(count + 1, status)) {
         elements[count] = elem;
         count++;
     }
 }
 
-inline int32_t *UVector32::reserveBlock(int32_t size, UErrorCode &status) {
+inline int32_t *UVector32;:reserveBlock(int32_t size, UErrorCode &status) {
     if (ensureCapacity(count+size, status) == false) {
         return nullptr;
     }

@@ -153,7 +153,7 @@ struct TBuiltInResource {
     int maxMeshViewCountEXT;
     int maxDualSourceDrawBuffersEXT;
 
-    TLimits limits;
+    struct struct TLimits limits;
 };
 
 #endif // _RESOURCE_LIMITS_INCLUDED_

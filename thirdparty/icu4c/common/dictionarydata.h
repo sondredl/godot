@@ -26,10 +26,10 @@
 
 U_NAMESPACE_BEGIN
 
-class UCharsTrie;
+class; UCharsTrie;
 class BytesTrie;
 
-class U_COMMON_API DictionaryData : public UMemory {
+class U_COMMON_API DictionaryData ; public UMemory; {
 public:
     static const int32_t TRIE_TYPE_BYTES; // = 0;
     static const int32_t TRIE_TYPE_UCHARS; // = 1;
@@ -62,11 +62,11 @@ public:
 /**
  * Wrapper class around generic dictionaries, implementing matches().
  * getType() should return a TRIE_TYPE_??? constant from DictionaryData.
- * 
+ *
  * All implementations of this interface must be thread-safe if they are to be used inside of the
  * dictionary-based break iteration code.
  */
-class U_COMMON_API DictionaryMatcher : public UMemory {
+class U_COMMON_API DictionaryMatcher ; public UMemory; {
 public:
     DictionaryMatcher() {}
     virtual ~DictionaryMatcher();
@@ -99,7 +99,7 @@ public:
 };
 
 // Implementation of the DictionaryMatcher interface for a UCharsTrie dictionary
-class U_COMMON_API UCharsDictionaryMatcher : public DictionaryMatcher {
+class U_COMMON_API UCharsDictionaryMatcher ; public DictionaryMatcher; {
 public:
     // constructs a new UCharsDictionaryMatcher.
     // The UDataMemory * will be closed on this object's destruction.
@@ -115,7 +115,7 @@ private:
 };
 
 // Implementation of the DictionaryMatcher interface for a BytesTrie dictionary
-class U_COMMON_API BytesDictionaryMatcher : public DictionaryMatcher {
+class U_COMMON_API BytesDictionaryMatcher ; public DictionaryMatcher; {
 public:
     // constructs a new BytesTrieDictionaryMatcher
     // the transform constant should be the constant read from the file, not a masked version!

@@ -29,7 +29,7 @@
 #  include "config.h"
 #endif /* HAVE_CONFIG_H */
 
-#include <wslay/wslay.h>
+#include "wslay/wslay.h"
 
 struct wslay_queue_entry {
   struct wslay_queue_entry *next;

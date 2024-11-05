@@ -551,9 +551,12 @@ MEM_STATIC U32 ZSTD_MLcode(U32 mlBase)
 MEM_STATIC int ZSTD_cParam_withinBounds(ZSTD_cParameter cParam, int value)
 {
     ZSTD_bounds const bounds = ZSTD_cParam_getBounds(cParam);
-    if (ZSTD_isError(bounds.error)) return 0;
-    if (value < bounds.lowerBound) return 0;
-    if (value > bounds.upperBound) return 0;
+    if (ZSTD_isError(bounds.error)) { return 0;
+}
+    if (value < bounds.lowerBound) { return 0;
+}
+    if (value > bounds.upperBound) { return 0;
+}
     return 1;
 }
 
@@ -625,7 +628,8 @@ ZSTD_safecopyLiterals(BYTE* op, BYTE const* ip, BYTE const* const iend, BYTE con
         op += ilimit_w - ip;
         ip = ilimit_w;
     }
-    while (ip < iend) *op++ = *ip++;
+    while (ip < iend) { *op++ = *ip++;
+}
 }
 
 
@@ -753,7 +757,8 @@ MEM_STATIC size_t ZSTD_count(const BYTE* pIn, const BYTE* pMatch, const BYTE* co
 
     if (pIn < pInLoopLimit) {
         { size_t const diff = MEM_readST(pMatch) ^ MEM_readST(pIn);
-          if (diff) return ZSTD_NbCommonBytes(diff); }
+          if (diff) { return ZSTD_NbCommonBytes(diff);
+}}
         pIn+=sizeof(size_t); pMatch+=sizeof(size_t);
         while (pIn < pInLoopLimit) {
             size_t const diff = MEM_readST(pMatch) ^ MEM_readST(pIn);
@@ -763,7 +768,8 @@ MEM_STATIC size_t ZSTD_count(const BYTE* pIn, const BYTE* pMatch, const BYTE* co
     }   }
     if (MEM_64bits() && (pIn<(pInLimit-3)) && (MEM_read32(pMatch) == MEM_read32(pIn))) { pIn+=4; pMatch+=4; }
     if ((pIn<(pInLimit-1)) && (MEM_read16(pMatch) == MEM_read16(pIn))) { pIn+=2; pMatch+=2; }
-    if ((pIn<pInLimit) && (*pMatch == *pIn)) pIn++;
+    if ((pIn<pInLimit) && (*pMatch == *pIn)) { pIn++;
+}
     return (size_t)(pIn - pStart);
 }
 
@@ -777,7 +783,8 @@ ZSTD_count_2segments(const BYTE* ip, const BYTE* match,
 {
     const BYTE* const vEnd = MIN( ip + (mEnd - match), iEnd);
     size_t const matchLength = ZSTD_count(ip, match, vEnd);
-    if (match + matchLength != mEnd) return matchLength;
+    if (match + matchLength != mEnd) { return matchLength;
+}
     DEBUGLOG(7, "ZSTD_count_2segments: found a 2-parts match (current length==%zu)", matchLength);
     DEBUGLOG(7, "distance from match beginning to end dictionary = %zi", mEnd - match);
     DEBUGLOG(7, "distance from current pos to end buffer = %zi", iEnd - ip);
@@ -864,7 +871,8 @@ static U64 ZSTD_ipow(U64 base, U64 exponent)
 {
     U64 power = 1;
     while (exponent) {
-      if (exponent & 1) power *= base;
+      if (exponent & 1) { power *= base;
+}
       exponent >>= 1;
       base *= base;
     }
@@ -1173,15 +1181,18 @@ ZSTD_window_enforceMaxDist(ZSTD_window_t* window,
     */
     if (blockEndIdx > maxDist + loadedDictEnd) {
         U32 const newLowLimit = blockEndIdx - maxDist;
-        if (window->lowLimit < newLowLimit) window->lowLimit = newLowLimit;
+        if (window->lowLimit < newLowLimit) { window->lowLimit = newLowLimit;
+}
         if (window->dictLimit < window->lowLimit) {
             DEBUGLOG(5, "Update dictLimit to match lowLimit, from %u to %u",
                         (unsigned)window->dictLimit, (unsigned)window->lowLimit);
             window->dictLimit = window->lowLimit;
         }
         /* On reaching window size, dictionaries are invalidated */
-        if (loadedDictEndPtr) *loadedDictEndPtr = 0;
-        if (dictMatchStatePtr) *dictMatchStatePtr = NULL;
+        if (loadedDictEndPtr) { *loadedDictEndPtr = 0;
+}
+        if (dictMatchStatePtr) { *dictMatchStatePtr = NULL;
+}
     }
 }
 
@@ -1252,8 +1263,9 @@ U32 ZSTD_window_update(ZSTD_window_t* window,
     BYTE const* const ip = (BYTE const*)src;
     U32 contiguous = 1;
     DEBUGLOG(5, "ZSTD_window_update");
-    if (srcSize == 0)
+    if (srcSize == 0) {
         return contiguous;
+}
     assert(window->base != NULL);
     assert(window->dictBase != NULL);
     /* Check if blocks follow each other */
@@ -1267,7 +1279,8 @@ U32 ZSTD_window_update(ZSTD_window_t* window,
         window->dictBase = window->base;
         window->base = ip - distanceFromBase;
         /* ms->nextToUpdate = window->dictLimit; */
-        if (window->dictLimit - window->lowLimit < HASH_READ_SIZE) window->lowLimit = window->dictLimit;   /* too small extDict */
+        if (window->dictLimit - window->lowLimit < HASH_READ_SIZE) { window->lowLimit = window->dictLimit;   /* too small extDict */
+}
         contiguous = 0;
     }
     window->nextSrc = ip + srcSize;

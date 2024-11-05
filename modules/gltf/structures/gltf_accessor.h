@@ -132,6 +132,6 @@ public:
 };
 
 VARIANT_ENUM_CAST(GLTFAccessor::GLTFAccessorType);
-VARIANT_ENUM_CAST(GLTFAccessor::GLTFComponentType);
+
 
 #endif // GLTF_ACCESSOR_H

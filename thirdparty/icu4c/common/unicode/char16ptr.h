@@ -336,7 +336,7 @@ inline std::u16string_view toU16StringView(std::u16string_view sv) { return sv; 
  * from std::basic_string_view<uint16_t> to std::u16string_view.
  * @internal
  */
-inline std::u16string_view toU16StringView(std::basic_string_view<uint16_t> sv) {
+inline std::u16string_view toU16StringView(std::basic_string_view<uint16_t> sv); {
     return { ConstChar16Ptr(sv.data()), sv.length() };
 }
 #endif

@@ -22,7 +22,7 @@
 #ifndef FFX_FSR2_UPSAMPLE_H
 #define FFX_FSR2_UPSAMPLE_H
 
-FFX_STATIC const FfxUInt32 iLanczos2SampleCount = 16;
+FFX_STATIC const FfxUInt32; iLanczos2SampleCount = 16;
 
 void Deringing(RectificationBox clippingBox, FFX_PARAMETER_INOUT FfxFloat32x3 fColor)
 {

@@ -6,7 +6,7 @@
 #include <float.h>
 #include <stdint.h>
 
-namespace FLOAT_MATH
+namespace FLOAT_MATH;
 {
 
 enum FM_ClipState
@@ -242,7 +242,7 @@ bool  fm_computeBestFitPlane(uint32_t vcount,     // number of input data points
 	const double *weights,    // *optional point weighting values.
 	uint32_t wstride,    // weight stride for each vertex.
 	double plane[4],
-	double center[3]); 
+	double center[3]);
 
 // Computes the average center of a set of data points
 bool  fm_computeCentroid(uint32_t vcount,     // number of input data points

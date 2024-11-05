@@ -658,15 +658,15 @@ public:
 
 VARIANT_ENUM_CAST(Control::FocusMode);
 VARIANT_BITFIELD_CAST(Control::SizeFlags);
-VARIANT_ENUM_CAST(Control::CursorShape);
-VARIANT_ENUM_CAST(Control::LayoutPreset);
-VARIANT_ENUM_CAST(Control::LayoutPresetMode);
-VARIANT_ENUM_CAST(Control::MouseFilter);
-VARIANT_ENUM_CAST(Control::GrowDirection);
-VARIANT_ENUM_CAST(Control::Anchor);
-VARIANT_ENUM_CAST(Control::LayoutMode);
-VARIANT_ENUM_CAST(Control::LayoutDirection);
-VARIANT_ENUM_CAST(Control::TextDirection);
+
+
+
+
+
+
+
+
+
 
 // G = get_drag_data_fw, C = can_drop_data_fw, D = drop_data_fw, U = underscore
 #define SET_DRAG_FORWARDING_CD(from, to) from->set_drag_forwarding(Callable(), callable_mp(this, &to::can_drop_data_fw).bind(from), callable_mp(this, &to::drop_data_fw).bind(from));

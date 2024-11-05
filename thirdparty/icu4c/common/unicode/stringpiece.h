@@ -23,7 +23,7 @@
 #define __STRINGPIECE_H__
 
 /**
- * \file 
+ * \file
  * \brief C++ API: StringPiece: Read-only byte string wrapper class.
  */
 
@@ -132,7 +132,7 @@ class U_COMMON_API StringPiece : public UMemory {
    */
   template <typename T,
             typename = std::enable_if_t<
-                (std::is_same_v<decltype(T().data()), const char*>
+                (std::is_same<decltype(T().data()), const char*>
 #if defined(__cpp_char8_t)
                     || std::is_same_v<decltype(T().data()), const char8_t*>
 #endif
@@ -233,7 +233,7 @@ class U_COMMON_API StringPiece : public UMemory {
 
   /**
    * Reset the stringpiece to refer to new data.
-   * @param str a pointer to a NUL-terminated string. 
+   * @param str a pointer to a NUL-terminated string.
    * @stable ICU 4.8
    */
   void set(const char* str);
@@ -333,7 +333,7 @@ class U_COMMON_API StringPiece : public UMemory {
  * @return true if the string data is equal
  * @stable ICU 4.8
  */
-U_EXPORT UBool U_EXPORT2 
+U_EXPORT UBool U_EXPORT2
 operator==(const StringPiece& x, const StringPiece& y);
 
 /**

@@ -24,7 +24,7 @@
 FT_BEGIN_HEADER
 
 
-  typedef FT_Int32  FT_ItemVarDelta;
+  typedef FT_Int32;  FT_ItemVarDelta;
 
   typedef struct  GX_ItemVarDataRec_
   {
@@ -37,7 +37,7 @@ FT_BEGIN_HEADER
     FT_UShort          wordDeltaCount; /* Number of the first 32-bit ints  */
                                        /* or 16-bit ints of `deltaSet`     */
                                        /* depending on `longWords`.        */
-    FT_Bool            longWords;      /* If true, `deltaSet` is a 32-bit  */
+    _Bool            longWords;      /* If true, `deltaSet` is a 32-bit  */
                                        /* array followed by a 16-bit       */
                                        /* array, otherwise a 16-bit array  */
                                        /* followed by an 8-bit array.      */

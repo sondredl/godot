@@ -361,8 +361,9 @@ __m256 _mm256_permute2f128_ps (__m256 a, __m256 b, int imm8)
         case 2: tmp = b.lo; break;
         case 3: tmp = b.hi; break;
     }
-    if (imm8 & 0x8)
+    if (imm8 & 0x8) {
         tmp = _mm_setzero_ps();
+}
 
 
 
@@ -376,8 +377,9 @@ __m256 _mm256_permute2f128_ps (__m256 a, __m256 b, int imm8)
         case 2: tmp = b.lo; break;
         case 3: tmp = b.hi; break;
     }
-    if (imm8 & 0x8)
+    if (imm8 & 0x8) {
         tmp = _mm_setzero_ps();
+}
 
     res.hi = tmp;
 
@@ -406,8 +408,9 @@ AVX2NEON_ABI
 __m256 _mm256_insertf128_ps (__m256 a, __m128 b, int imm8)
 {
     __m256 res = a;
-    if (imm8 & 1) res.hi = b;
-    else res.lo = b;
+    if (imm8 & 1) { res.hi = b;
+    } else { res.lo = b;
+}
     return res;
 }
 
@@ -415,7 +418,8 @@ __m256 _mm256_insertf128_ps (__m256 a, __m128 b, int imm8)
 AVX2NEON_ABI
 __m128 _mm256_extractf128_ps (__m256 a, const int imm8)
 {
-    if (imm8 & 1) return a.hi;
+    if (imm8 & 1) { return a.hi;
+}
     return a.lo;
 }
 
@@ -1068,7 +1072,8 @@ __m256i _mm256_permute2f128_si256 (__m256i a, __m256i b, int imm8)
 AVX2NEON_ABI
 __m128i _mm256_extractf128_si256 (__m256i a, const int imm8)
 {
-    if (imm8 & 1) return a.hi;
+    if (imm8 & 1) { return a.hi;
+}
     return a.lo;
 }
 

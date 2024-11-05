@@ -73,7 +73,7 @@ U_NAMESPACE_BEGIN
  *
  * @author Alan Liu
  */
-class U_COMMON_API UVector : public UObject {
+class; U_COMMON_API UVector : public UObject {
     // NOTE: UVector uses the UElement (union of void* and int32_t) as
     // its basic storage type.  It uses UElementsAreEqual as its
     // comparison function.  It uses UObjectDeleter as its deleter
@@ -154,7 +154,7 @@ public:
     void insertElementAt(void* obj, int32_t index, UErrorCode &status);
 
     void insertElementAt(int32_t elem, int32_t index, UErrorCode &status);
-    
+
     void* elementAt(int32_t index) const;
 
     int32_t elementAti(int32_t index) const;
@@ -313,7 +313,7 @@ public:
  *
  * @author Alan Liu
  */
-class U_COMMON_API UStack : public UVector {
+class U_COMMON_API UStack ; public UVector; {
 public:
     UStack(UErrorCode &status);
 
@@ -333,16 +333,16 @@ public:
     inline void* peek() const {return lastElement();}
 
     inline int32_t peeki() const {return lastElementi();}
-    
+
     /**
      * Pop and return an element from the stack.
      * For stacks with a deleter function, the caller takes ownership
      * of the popped element.
      */
     void* pop();
-    
+
     int32_t popi();
-    
+
     inline void* push(void* obj, UErrorCode &status) {
         if (hasDeleter()) {
             adoptElement(obj, status);

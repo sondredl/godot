@@ -11,14 +11,14 @@
 #define vfloat vfloat_impl
 #define vdouble vdouble_impl
 
-namespace embree
+namespace embree;
 {
   /* 8-wide AVX float type */
   template<>
   struct vfloat<8>
   {
     ALIGNED_STRUCT_(32);
-   
+
     typedef vboolf8 Bool;
     typedef vint8   Int;
     typedef vfloat8 Float;
@@ -66,7 +66,7 @@ namespace embree
     ////////////////////////////////////////////////////////////////////////////////
 
     static __forceinline vfloat8 broadcast(const void* a) {
-      return _mm256_broadcast_ss((float*)a); 
+      return _mm256_broadcast_ss((float*)a);
     }
 
     static __forceinline vfloat8 load(const char* ptr) {
@@ -92,7 +92,7 @@ namespace embree
       return vfloat8(vfloat4::load(ptr),vfloat4::load(ptr+4));
 #endif
     }
-      
+
     static __forceinline vfloat8 load (const void* ptr) { return _mm256_load_ps((float*)ptr); }
     static __forceinline vfloat8 loadu(const void* ptr) { return _mm256_loadu_ps((float*)ptr); }
 
@@ -113,13 +113,13 @@ namespace embree
     static __forceinline void store (const vboolf8& mask, void* ptr, const vfloat8& v) { _mm256_maskstore_ps((float*)ptr,_mm256_castps_si256(mask.v),v); }
     static __forceinline void storeu(const vboolf8& mask, void* ptr, const vfloat8& v) { _mm256_maskstore_ps((float*)ptr,_mm256_castps_si256(mask.v),v); }
 #endif
-    
+
 #if defined(__AVX2__)
     static __forceinline vfloat8 load_nt(void* ptr) {
       return _mm256_castsi256_ps(_mm256_stream_load_si256((__m256i*)ptr));
     }
 #endif
-    
+
     static __forceinline void store_nt(void* ptr, const vfloat8& v) {
       _mm256_stream_ps((float*)ptr,v);
     }
@@ -217,7 +217,7 @@ namespace embree
   __forceinline vfloat8 operator +(const vfloat8& a) { return a; }
 #if !defined(__aarch64__)
   __forceinline vfloat8 operator -(const vfloat8& a) {
-    const __m256 mask = _mm256_castsi256_ps(_mm256_set1_epi32(0x80000000)); 
+    const __m256 mask = _mm256_castsi256_ps(_mm256_set1_epi32(0x80000000));
     return _mm256_xor_ps(a, mask);
   }
 #else
@@ -289,7 +289,7 @@ __forceinline vfloat8 abs(const vfloat8& a) {
 
 #if defined(__AVX2__)
     return _mm256_fmadd_ps(_mm256_set1_ps(1.5f), r,
-                           _mm256_mul_ps(_mm256_mul_ps(_mm256_mul_ps(a, _mm256_set1_ps(-0.5f)), r), _mm256_mul_ps(r, r))); 
+                           _mm256_mul_ps(_mm256_mul_ps(_mm256_mul_ps(a, _mm256_set1_ps(-0.5f)), r), _mm256_mul_ps(r, r)));
 #else
     return _mm256_add_ps(_mm256_mul_ps(_mm256_set1_ps(1.5f), r),
                          _mm256_mul_ps(_mm256_mul_ps(_mm256_mul_ps(a, _mm256_set1_ps(-0.5f)), r), _mm256_mul_ps(r, r)));
@@ -428,7 +428,7 @@ __forceinline vfloat8 abs(const vfloat8& a) {
   static __forceinline vboolf8 operator <=(const vfloat8& a, const vfloat8& b) { return _mm256_cmp_ps(a, b, _CMP_LE_OS);  }
 
   static __forceinline vfloat8 select(const vboolf8& m, const vfloat8& t, const vfloat8& f) {
-    return _mm256_blendv_ps(f, t, m); 
+    return _mm256_blendv_ps(f, t, m);
   }
 #else
   static __forceinline vboolf8 operator ==(const vfloat8& a, const vfloat8& b) { return _mm256_cmpeq_ps(a, b);  }
@@ -578,7 +578,7 @@ __forceinline vfloat8 abs(const vfloat8& a) {
   template<int i>
   static __forceinline vfloat8 align_shift_right(const vfloat8& a, const vfloat8& b) {
     return _mm256_castsi256_ps(_mm256_alignr_epi32(_mm256_castps_si256(a), _mm256_castps_si256(b), i));
-  }  
+  }
 #endif
 
 #if defined (__AVX_I__)
@@ -689,18 +689,18 @@ __forceinline vfloat8 abs(const vfloat8& a) {
   __forceinline float reduce_add(const vfloat8& v) { return vaddvq_f32(_mm_add_ps(v.v.lo,v.v.hi)); }
 
 #endif
-  __forceinline size_t select_min(const vboolf8& valid, const vfloat8& v) 
-  { 
-    const vfloat8 a = select(valid,v,vfloat8(pos_inf)); 
+  __forceinline size_t select_min(const vboolf8& valid, const vfloat8& v)
+  {
+    const vfloat8 a = select(valid,v,vfloat8(pos_inf));
     const vbool8 valid_min = valid & (a == vreduce_min(a));
-    return bsf(movemask(any(valid_min) ? valid_min : valid)); 
+    return bsf(movemask(any(valid_min) ? valid_min : valid));
   }
 
-  __forceinline size_t select_max(const vboolf8& valid, const vfloat8& v) 
-  { 
-    const vfloat8 a = select(valid,v,vfloat8(neg_inf)); 
+  __forceinline size_t select_max(const vboolf8& valid, const vfloat8& v)
+  {
+    const vfloat8 a = select(valid,v,vfloat8(neg_inf));
     const vbool8 valid_max = valid & (a == vreduce_max(a));
-    return bsf(movemask(any(valid_max) ? valid_max : valid)); 
+    return bsf(movemask(any(valid_max) ? valid_max : valid));
   }
 
 

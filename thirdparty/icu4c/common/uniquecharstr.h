@@ -22,7 +22,7 @@ U_NAMESPACE_BEGIN
  * freeze the object, get a char * pointer for each string,
  * call orphanCharStrings() to capture the string storage, and let this object go out of scope.
  */
-class UniqueCharStrings {
+class; UniqueCharStrings {
 public:
     UniqueCharStrings(UErrorCode &errorCode) : strings(nullptr) {
         // Note: We hash on string contents but store stable char16_t * pointers.

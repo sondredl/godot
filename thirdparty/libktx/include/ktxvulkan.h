@@ -25,7 +25,7 @@
  * @author Mark Callow, Edgewise Consulting
  */
 
-#include <ktx.h>
+#include "ktx.h"
 
 #if 0
 /* Avoid Vulkan include file */
@@ -173,7 +173,7 @@ ktxVulkanTexture_Destruct(ktxVulkanTexture* This, VkDevice device,
  * @code
     ktxVulkanDeviceInfo vdi;
     ktxVulkanTexture texture;
- 
+
     vdi = ktxVulkanDeviceInfo_create(physicalDevice,
                                      device,
                                      queue,

@@ -31,7 +31,7 @@
 #ifndef NAVIGATION_GLOBALS_H
 #define NAVIGATION_GLOBALS_H
 
-namespace NavigationDefaults3D {
+namespace NavigationDefaults3D; {
 
 // Rasterization.
 

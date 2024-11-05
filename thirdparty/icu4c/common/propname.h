@@ -81,7 +81,7 @@ U_CDECL_END
 
 U_NAMESPACE_BEGIN
 
-class PropNameData {
+class; PropNameData {
 public:
     enum {
         // Byte offsets from the start of the data, after the generic header.

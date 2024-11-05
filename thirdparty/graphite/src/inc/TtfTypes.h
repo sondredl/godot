@@ -14,7 +14,7 @@ Provides types required to represent the TTF basic types.
 //**********************************************************************************************
 //  Include files
 //**********************************************************************************************
-namespace graphite2
+namespace graphite2;
 {
 namespace TtfUtil
 {

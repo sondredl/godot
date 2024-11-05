@@ -78,7 +78,7 @@ NVIDIA HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef PARSER_H
 #define PARSER_H
 
-namespace glslang {
+namespace glslang; {
 
 // Multi-character tokens
 enum EFixedAtoms {

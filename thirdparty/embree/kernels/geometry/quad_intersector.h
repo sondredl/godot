@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace embree
+namespace embree;
 {
   namespace isa
   {

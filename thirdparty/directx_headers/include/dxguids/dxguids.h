@@ -7,7 +7,7 @@
 #error "This header requires C++"
 #endif
 
-constexpr inline bool ConstexprIsEqualGUID(REFGUID a, REFGUID b)
+constexpr inline bool; ConstexprIsEqualGUID(REFGUID a, REFGUID b)
 {
     return a.Data1 == b.Data1 &&
         a.Data2 == b.Data2 &&
@@ -27,10 +27,10 @@ template <typename T> GUID uuidof(T*) { return uuidof<T>(); }
 template <typename T> GUID uuidof(T**) { return uuidof<T>(); }
 template <typename T> GUID uuidof(T&) { return uuidof<T>(); }
 
-// Each COM interface (e.g. ID3D12Device) has a unique interface ID (IID) associated with it. With MSVC, the IID is defined 
-// along with the interface declaration using compiler intrinsics (__declspec(uuid(...)); the IID can then be retrieved 
-// using __uuidof. These intrinsics are not supported with all toolchains, so these helpers redefine IID values that can be 
-// used with the various adapter COM helpers (ComPtr, IID_PPV_ARGS, etc.) for Linux. IIDs are stable and cannot change, but as 
+// Each COM interface (e.g. ID3D12Device) has a unique interface ID (IID) associated with it. With MSVC, the IID is defined
+// along with the interface declaration using compiler intrinsics (__declspec(uuid(...)); the IID can then be retrieved
+// using __uuidof. These intrinsics are not supported with all toolchains, so these helpers redefine IID values that can be
+// used with the various adapter COM helpers (ComPtr, IID_PPV_ARGS, etc.) for Linux. IIDs are stable and cannot change, but as
 // a precaution we statically assert the values are as expected when compiling for Windows.
 #if defined(_MSC_VER)
 #define _DXGUIDS_SUPPORT_STATIC_ASSERT_IID

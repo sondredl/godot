@@ -111,7 +111,8 @@ static BROTLI_INLINE brotli_reg_t BrotliGetAvailableBits(
 static BROTLI_INLINE size_t BrotliGetRemainingBytes(BrotliBitReader* br) {
   static const size_t kCap = (size_t)1 << BROTLI_LARGE_MAX_WBITS;
   size_t avail_in = BrotliBitReaderGetAvailIn(br);
-  if (avail_in > kCap) return kCap;
+  if (avail_in > kCap) { return kCap;
+}
   return avail_in + (BrotliGetAvailableBits(br) >> 3);
 }
 

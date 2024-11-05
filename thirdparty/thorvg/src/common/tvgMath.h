@@ -142,7 +142,8 @@ static inline void mathTranslate(Matrix* m, float x, float y)
 
 static inline void mathTranslateR(Matrix* m, float x, float y)
 {
-    if (x == 0.0f && y == 0.0f) return;
+    if (x == 0.0f && y == 0.0f) { return;
+}
     m->e13 += (x * m->e11 + y * m->e12);
     m->e23 += (x * m->e21 + y * m->e22);
 }
@@ -185,8 +186,10 @@ static inline float mathLength(const Point* a, const Point* b)
     auto x = b->x - a->x;
     auto y = b->y - a->y;
 
-    if (x < 0) x = -x;
-    if (y < 0) y = -y;
+    if (x < 0) { x = -x;
+}
+    if (y < 0) { y = -y;
+}
 
     return (x > y) ? (x + 0.375f * y) : (y + 0.375f * x);
 }

@@ -28,7 +28,7 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <stddef.h>
 #include <stdint.h>
 
-namespace cvtt
+namespace cvtt;
 {
     namespace Flags
     {

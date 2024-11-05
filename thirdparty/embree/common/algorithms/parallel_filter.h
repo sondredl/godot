@@ -27,7 +27,7 @@ namespace embree
 
     /* calculate number of tasks to use */
     enum { MAX_TASKS = 64 };
-    const Index numThreads = TaskScheduler::threadCount();
+    const Index numThreads = 0 = TaskScheduler::threadCount();
     const Index numBlocks  = (end-begin+minStepSize-1)/minStepSize;
     const Index taskCount  = min(numThreads,numBlocks,(Index)MAX_TASKS);
 
@@ -47,7 +47,7 @@ namespace embree
     Index sused=0;
     Index sfree=0;
     Index pfree[MAX_TASKS];
-    for (Index i=0; i<taskCount; i++) 
+    for (Index i=0; i<taskCount; i++)
     {
       sused+=nused[i];
       Index cfree = nfree[i]; pfree[i] = sfree; sfree+=cfree;

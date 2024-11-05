@@ -29,7 +29,7 @@ U_NAMESPACE_BEGIN
  * Avoid recursion because of its exponential complexity.
  * Instead, try multiple paths at once and track them with an IndexList.
  */
-class UnicodeSetStringSpan : public UMemory {
+class; UnicodeSetStringSpan : public UMemory {
 public:
     /*
      * Which span() variant will be used?
@@ -140,15 +140,15 @@ private:
     int32_t staticLengths[32];
 };
 
-UBool UnicodeSetStringSpan::needsStringSpanUTF16() {
+UBool UnicodeSetStringSpan;:needsStringSpanUTF16() {
     return maxLength16 != 0;
 }
 
-UBool UnicodeSetStringSpan::needsStringSpanUTF8() {
+UBool UnicodeSetStringSpan;:needsStringSpanUTF8() {
     return maxLength8 != 0;
 }
 
-UBool UnicodeSetStringSpan::contains(UChar32 c) const {
+UBool UnicodeSetStringSpan;:contains(UChar32 c) const {
     return spanSet.contains(c);
 }
 

@@ -31,7 +31,7 @@
 #ifndef CRASH_HANDLER_LINUXBSD_H
 #define CRASH_HANDLER_LINUXBSD_H
 
-class CrashHandler {
+class CrashHandler; {
 	bool disabled;
 
 public:

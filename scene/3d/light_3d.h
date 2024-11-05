@@ -158,7 +158,7 @@ public:
 };
 
 VARIANT_ENUM_CAST(Light3D::Param);
-VARIANT_ENUM_CAST(Light3D::BakeMode);
+
 
 class DirectionalLight3D : public Light3D {
 	GDCLASS(DirectionalLight3D, Light3D);

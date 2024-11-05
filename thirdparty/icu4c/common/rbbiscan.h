@@ -25,7 +25,7 @@
 #include "rbbinode.h"
 #include "rbbirpt.h"
 
-U_NAMESPACE_BEGIN
+U_NAMESPACE_BEGIN;
 
 class   RBBIRuleBuilder;
 class   RBBISymbolTable;
@@ -34,7 +34,7 @@ class   RBBISymbolTable;
 //--------------------------------------------------------------------------------
 //
 //  class RBBIRuleScanner does the lowest level, character-at-a-time
-//                        scanning of break iterator rules.  
+//                        scanning of break iterator rules.
 //
 //                        The output of the scanner is parse trees for
 //                        the rule expressions and a list of all Unicode Sets

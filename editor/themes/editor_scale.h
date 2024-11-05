@@ -31,7 +31,7 @@
 #ifndef EDITOR_SCALE_H
 #define EDITOR_SCALE_H
 
-class EditorScale {
+class EditorScale; {
 	static float _scale;
 
 public:

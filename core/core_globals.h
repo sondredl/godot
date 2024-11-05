@@ -34,7 +34,7 @@
 // Home for state needed from global functions
 // that cannot be stored in Engine or OS due to e.g. circular includes
 
-class CoreGlobals {
+class CoreGlobals; {
 public:
 	static bool leak_reporting_enabled;
 	static bool print_line_enabled;

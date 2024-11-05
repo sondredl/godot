@@ -17,19 +17,19 @@
 
 // See cppspmd_math.h for detailed error statistics.
 
-CPPSPMD_FORCE_INLINE void reduce_expb(vfloat& arg, vfloat& two_int_a, vint& adjustment);
-CPPSPMD_FORCE_INLINE vfloat tan56(vfloat x);
-CPPSPMD_FORCE_INLINE vfloat tan82(vfloat x);
+CPPSPMD_FORCE_INLINE void reduce_expb(float& arg, vfloat& two_int_a, vint& adjustment);
+CPPSPMD_FORCE_INLINE vfloat; tan56(vfloat x);
+CPPSPMD_FORCE_INLINE vfloat; tan82(vfloat x);
 
-inline vfloat log2_est(vfloat v);
+inline float log2_est(float v);
 
-inline vfloat log_est(vfloat v);
+inline float log_est(float v);
 
-inline vfloat exp2_est(vfloat arg);
+inline float exp2_est(float arg);
 
-inline vfloat exp_est(vfloat arg);
+inline float exp_est(float arg);
 
-inline vfloat pow_est(vfloat arg1, vfloat arg2);
+inline float pow_est(float arg1, float arg2);
 
 CPPSPMD_FORCE_INLINE vfloat recip_est1(const vfloat& q);
 CPPSPMD_FORCE_INLINE vfloat recip_est1_pn(const vfloat& q);
@@ -54,7 +54,7 @@ CPPSPMD_FORCE_INLINE vfloat atan2_est(vfloat y, vfloat x);
 
 CPPSPMD_FORCE_INLINE vfloat atan_est(vfloat x) { return atan2_est(x, vfloat(1.0f)); }
 
-// Don't call this for angles close to 90/270! 
+// Don't call this for angles close to 90/270!
 inline vfloat tan_est(vfloat x);
 
 // https://burtleburtle.net/bob/rand/smallprng.html

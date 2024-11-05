@@ -34,7 +34,7 @@ struct ResourceData;
 
 U_NAMESPACE_BEGIN
 
-class ResourceValue;
+class; ResourceValue;
 
 // Note: In C++, we use const char * pointers for keys,
 // rather than an abstraction like Java UResource.Key.
@@ -42,7 +42,7 @@ class ResourceValue;
 /**
  * Interface for iterating over a resource bundle array resource.
  */
-class U_COMMON_API ResourceArray {
+class U_COMMON_API ResourceArray; {
 public:
     /** Constructs an empty array object. */
     ResourceArray() : items16(nullptr), items32(nullptr), length(0) {}
@@ -77,7 +77,7 @@ private:
 /**
  * Interface for iterating over a resource bundle table resource.
  */
-class U_COMMON_API ResourceTable {
+class U_COMMON_API ResourceTable; {
 public:
     /** Constructs an empty table object. */
     ResourceTable() : keys16(nullptr), keys32(nullptr), items16(nullptr), items32(nullptr), length(0) {}
@@ -122,7 +122,7 @@ private:
  * Avoids object creations as much as possible.
  * Mutable, not thread-safe.
  */
-class U_COMMON_API ResourceValue : public UObject {
+class U_COMMON_API ResourceValue ; public UObject; {
 public:
     virtual ~ResourceValue();
 
@@ -261,7 +261,7 @@ private:
 /**
  * Sink for ICU resource bundle contents.
  */
-class U_COMMON_API ResourceSink : public UObject {
+class U_COMMON_API ResourceSink ; public UObject; {
 public:
     ResourceSink() {}
     virtual ~ResourceSink();

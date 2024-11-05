@@ -11,26 +11,26 @@
 #define vfloat vfloat_impl
 #define vdouble vdouble_impl
 
-namespace embree
-{ 
+namespace embree;
+{
   /* 4-wide AVX2 64-bit long long type */
   template<>
   struct vllong<4>
   {
     ALIGNED_STRUCT_(32);
-    
+
     typedef vboold4 Bool;
 
     enum  { size = 4 }; // number of SIMD elements
     union {             // data
-      __m256i v; 
+      __m256i v;
       long long i[4];
     };
-    
+
     ////////////////////////////////////////////////////////////////////////////////
     /// Constructors, Assignment & Cast Operators
     ////////////////////////////////////////////////////////////////////////////////
-       
+
     __forceinline vllong() {}
     __forceinline vllong(const vllong4& t) { v = t.v; }
     __forceinline vllong4& operator =(const vllong4& f) { v = f.v; return *this; }
@@ -43,16 +43,16 @@ namespace embree
     __forceinline vllong(long long i) {
       v = _mm256_set1_epi64x(i);
     }
-    
+
     __forceinline vllong(long long a, long long b, long long c, long long d) {
-      v = _mm256_set_epi64x(d,c,b,a);      
+      v = _mm256_set_epi64x(d,c,b,a);
     }
-   
-    
+
+
     ////////////////////////////////////////////////////////////////////////////////
     /// Constants
     ////////////////////////////////////////////////////////////////////////////////
-    
+
     __forceinline vllong(ZeroTy) : v(_mm256_setzero_si256()) {}
     __forceinline vllong(OneTy)  : v(_mm256_set1_epi64x(1)) {}
     __forceinline vllong(StepTy) : v(_mm256_set_epi64x(3,2,1,0)) {}
@@ -106,7 +106,7 @@ namespace embree
     ////////////////////////////////////////////////////////////////////////////////
     /// Array Access
     ////////////////////////////////////////////////////////////////////////////////
-    
+
     __forceinline       long long& operator [](size_t index)       { assert(index < 4); return i[index]; }
     __forceinline const long long& operator [](size_t index) const { assert(index < 4); return i[index]; }
 
@@ -115,7 +115,7 @@ namespace embree
   ////////////////////////////////////////////////////////////////////////////////
   /// Select
   ////////////////////////////////////////////////////////////////////////////////
-  
+
   __forceinline vllong4 select(const vboold4& m, const vllong4& t, const vllong4& f) {
   #if defined(__AVX512VL__)
     return _mm256_mask_blend_epi64(m, f, t);
@@ -174,7 +174,7 @@ namespace embree
   //__forceinline vllong4 sra(const vllong4& a, long long b) { return _mm256_srai_epi64(a, b); }
 
   __forceinline vllong4 srl(const vllong4& a, long long b) { return _mm256_srli_epi64(a, (int)b); }
-  
+
   //__forceinline vllong4 min(const vllong4& a, const vllong4& b) { return _mm256_min_epi64(a, b); }
   //__forceinline vllong4 min(const vllong4& a, long long      b) { return min(a,vllong4(b)); }
   //__forceinline vllong4 min(long long      a, const vllong4& b) { return min(vllong4(a),b); }
@@ -190,26 +190,26 @@ namespace embree
   __forceinline vllong4 mask_and(const vboold4& m, const vllong4& c, const vllong4& a, const vllong4& b) { return select(m, a & b, c); }
   __forceinline vllong4 mask_or (const vboold4& m, const vllong4& c, const vllong4& a, const vllong4& b) { return select(m, a | b, c); }
 #endif
-  
+
   ////////////////////////////////////////////////////////////////////////////////
   /// Assignment Operators
   ////////////////////////////////////////////////////////////////////////////////
 
   __forceinline vllong4& operator +=(vllong4& a, const vllong4& b) { return a = a + b; }
   __forceinline vllong4& operator +=(vllong4& a, long long      b) { return a = a + b; }
-  
+
   __forceinline vllong4& operator -=(vllong4& a, const vllong4& b) { return a = a - b; }
   __forceinline vllong4& operator -=(vllong4& a, long long      b) { return a = a - b; }
 
   __forceinline vllong4& operator *=(vllong4& a, const vllong4& b) { return a = a * b; }
   __forceinline vllong4& operator *=(vllong4& a, long long      b) { return a = a * b; }
-  
+
   __forceinline vllong4& operator &=(vllong4& a, const vllong4& b) { return a = a & b; }
   __forceinline vllong4& operator &=(vllong4& a, long long      b) { return a = a & b; }
-  
+
   __forceinline vllong4& operator |=(vllong4& a, const vllong4& b) { return a = a | b; }
   __forceinline vllong4& operator |=(vllong4& a, long long      b) { return a = a | b; }
-  
+
   __forceinline vllong4& operator <<=(vllong4& a, long long      b) { return a = a << b; }
   //__forceinline vllong4& operator >>=(vllong4& a, long long      b) { return a = a >> b; }
 
@@ -315,7 +315,7 @@ namespace embree
   ////////////////////////////////////////////////////////////////////////////////
   /// Reductions
   ////////////////////////////////////////////////////////////////////////////////
-  
+
 
   __forceinline vllong4 vreduce_and2(const vllong4& x) { return x & shuffle<1,0>(x); }
   __forceinline vllong4 vreduce_and (const vllong4& y) { const vllong4 x = vreduce_and2(y); return x & shuffle2<1,0>(x); }
@@ -329,11 +329,11 @@ namespace embree
   __forceinline long long reduce_add(const vllong4& a) { return toScalar(vreduce_add(a)); }
   __forceinline long long reduce_or (const vllong4& a) { return toScalar(vreduce_or(a)); }
   __forceinline long long reduce_and(const vllong4& a) { return toScalar(vreduce_and(a)); }
-  
+
   ////////////////////////////////////////////////////////////////////////////////
   /// Output Operators
   ////////////////////////////////////////////////////////////////////////////////
-  
+
   __forceinline embree_ostream operator <<(embree_ostream cout, const vllong4& v)
   {
     cout << "<" << v[0];

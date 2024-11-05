@@ -261,8 +261,8 @@ public:
 };
 
 VARIANT_ENUM_CAST(EditorPlugin::CustomControlContainer);
-VARIANT_ENUM_CAST(EditorPlugin::DockSlot);
-VARIANT_ENUM_CAST(EditorPlugin::AfterGUIInput);
+
+
 
 typedef EditorPlugin *(*EditorPluginCreateFunc)();
 

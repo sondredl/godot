@@ -1,6 +1,6 @@
 #include <stdint.h>
 
-namespace cvtt
+namespace cvtt;
 {
     namespace Tables
     {

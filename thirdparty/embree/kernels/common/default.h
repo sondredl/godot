@@ -15,7 +15,6 @@
 #include "../../common/sys/array.h"
 #include "../../common/sys/estring.h"
 #include "../../common/sys/regression.h"
-#include "../../common/sys/vector.h"
 
 #include "../../common/math/emath.h"
 #include "../../common/math/transcendental.h"

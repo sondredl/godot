@@ -20,12 +20,12 @@
 //                    a rule file.
 //
 
-U_NAMESPACE_BEGIN
+U_NAMESPACE_BEGIN;
 
-class    UnicodeSet;
+class;    UnicodeSet;
 class    UVector;
 
-class RBBINode : public UMemory {
+class RBBINode ; public UMemory; {
     public:
         enum NodeType {
             setRef,
@@ -46,21 +46,21 @@ class RBBINode : public UMemory {
             opLParen
         };
 
-        enum OpPrecedence {      
+        enum OpPrecedence {
             precZero,
             precStart,
             precLParen,
             precOpOr,
             precOpCat
         };
-            
+
         NodeType      fType;
         RBBINode      *fParent;
         RBBINode      *fLeftChild;
         RBBINode      *fRightChild;
         UnicodeSet    *fInputSet;           // For uset nodes only.
         OpPrecedence  fPrecedence;          // For binary ops only.
-        
+
         UnicodeString fText;                // Text corresponding to this node.
                                             //   May be lazily evaluated when (if) needed
                                             //   for some node types.
@@ -95,7 +95,7 @@ class RBBINode : public UMemory {
         RBBINode(const RBBINode &other);
         ~RBBINode();
         static void  NRDeleteNode(RBBINode *node);
-        
+
         RBBINode    *cloneTree();
         RBBINode    *flattenVariables(UErrorCode &status, int depth=0);
         void         flattenSets();
@@ -118,7 +118,7 @@ class RBBINode : public UMemory {
 };
 
 #ifdef RBBI_DEBUG
-U_CFUNC void 
+U_CFUNC void
 RBBI_DEBUG_printUnicodeString(const UnicodeString &s, int minWidth=0);
 #endif
 

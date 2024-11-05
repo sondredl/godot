@@ -49,7 +49,7 @@ enum {
 	SND_PCM_IOPLUG_HW_PERIODS,	/**< number of periods */
 	SND_PCM_IOPLUG_HW_PARAMS	/**< max number of hw constraints */
 };
-	
+
 /** I/O plugin handle */
 typedef struct snd_pcm_ioplug snd_pcm_ioplug_t;
 /** Callback table of ioplug */
@@ -107,14 +107,14 @@ struct snd_pcm_ioplug {
 	 */
 	snd_pcm_t *pcm;
 
-	snd_pcm_stream_t stream;	/**< stream direcion; read-only */	
+	snd_pcm_stream_t stream;	/**< stream direcion; read-only */
 	snd_pcm_state_t state;		/**< current PCM state; read-only */
 	volatile snd_pcm_uframes_t appl_ptr;	/**< application pointer; read-only */
 	volatile snd_pcm_uframes_t hw_ptr;	/**< hw pointer; read-only */
 	int nonblock;			/**< non-block mode; read-only */
 
 	snd_pcm_access_t access;	/**< access type; filled after hw_params is called */
-	snd_pcm_format_t format;	/**< PCM format; filled after hw_params is called */
+	snd_pcm_ioplug_t format;	/**< PCM format; filled after hw_params is called */
 	unsigned int channels;		/**< number of channels; filled after hw_params is called */
 	unsigned int rate;		/**< rate; filled after hw_params is called */
 	snd_pcm_uframes_t period_size;	/**< period size; filled after hw_params is called */

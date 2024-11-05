@@ -811,12 +811,12 @@ public:
 };
 
 VARIANT_ENUM_CAST(Node::DuplicateFlags);
-VARIANT_ENUM_CAST(Node::ProcessMode);
-VARIANT_ENUM_CAST(Node::ProcessThreadGroup);
+
+
 VARIANT_BITFIELD_CAST(Node::ProcessThreadMessages);
-VARIANT_ENUM_CAST(Node::InternalMode);
-VARIANT_ENUM_CAST(Node::PhysicsInterpolationMode);
-VARIANT_ENUM_CAST(Node::AutoTranslateMode);
+
+
+
 
 typedef HashSet<Node *, Node::Comparator> NodeSet;
 

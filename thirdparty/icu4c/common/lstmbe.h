@@ -11,7 +11,6 @@
 #include "unicode/uniset.h"
 #include "unicode/ures.h"
 #include "unicode/utext.h"
-#include "unicode/utypes.h"
 
 #include "brkeng.h"
 #include "dictbe.h"

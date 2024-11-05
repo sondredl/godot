@@ -229,7 +229,7 @@ public:
 };
 
 VARIANT_ENUM_CAST(AStarGrid2D::DiagonalMode);
-VARIANT_ENUM_CAST(AStarGrid2D::Heuristic);
+
 VARIANT_ENUM_CAST(AStarGrid2D::CellShape)
 
 #endif // A_STAR_GRID_2D_H

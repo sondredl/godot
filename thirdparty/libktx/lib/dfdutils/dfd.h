@@ -18,7 +18,7 @@
 #ifndef _DFD_H_
 #define _DFD_H_
 
-#include <KHR/khr_df.h>
+#include "KHR/khr_df.h"
 #include <stdbool.h>
 
 #ifdef __cplusplus

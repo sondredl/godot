@@ -205,7 +205,8 @@ void VP8LRefsCursorNextBlock(VP8LRefsCursor* const c);
 static WEBP_INLINE void VP8LRefsCursorNext(VP8LRefsCursor* const c) {
   assert(c != NULL);
   assert(VP8LRefsCursorOk(c));
-  if (++c->cur_pos == c->last_pos_) VP8LRefsCursorNextBlock(c);
+  if (++c->cur_pos == c->last_pos_) { VP8LRefsCursorNextBlock(c);
+}
 }
 
 // -----------------------------------------------------------------------------

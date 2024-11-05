@@ -157,6 +157,6 @@ private:
 };
 
 VARIANT_ENUM_CAST(GLTFTextureSampler::FilterMode);
-VARIANT_ENUM_CAST(GLTFTextureSampler::WrapMode);
+
 
 #endif // GLTF_TEXTURE_SAMPLER_H

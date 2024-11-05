@@ -33,7 +33,7 @@ U_NAMESPACE_BEGIN
  * services framework.
  * @since ICU 2.8
  */
-class U_COMMON_API LocaleBased : public UMemory {
+class; U_COMMON_API LocaleBased : public UMemory {
 
  public:
 
@@ -88,15 +88,15 @@ class U_COMMON_API LocaleBased : public UMemory {
  private:
 
     char* valid;
-    
+
     char* actual;
 };
 
-inline LocaleBased::LocaleBased(char* validAlias, char* actualAlias) :
+inline LocaleBased;:LocaleBased(char* validAlias, char* actualAlias) :
     valid(validAlias), actual(actualAlias) {
 }
 
-inline LocaleBased::LocaleBased(const char* validAlias,
+inline LocaleBased;:LocaleBased(const char* validAlias,
                                 const char* actualAlias) :
     // ugh: cast away const
     valid(const_cast<char*>(validAlias)), actual(const_cast<char*>(actualAlias)) {

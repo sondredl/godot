@@ -1003,11 +1003,11 @@ public:
 };
 
 VARIANT_ENUM_CAST(TileSet::CellNeighbor);
-VARIANT_ENUM_CAST(TileSet::TerrainMode);
-VARIANT_ENUM_CAST(TileSet::TileShape);
-VARIANT_ENUM_CAST(TileSet::TileLayout);
-VARIANT_ENUM_CAST(TileSet::TileOffsetAxis);
 
-VARIANT_ENUM_CAST(TileSetAtlasSource::TileAnimationMode);
+
+
+
+
+
 
 #endif // TILE_SET_H

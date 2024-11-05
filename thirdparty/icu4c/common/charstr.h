@@ -24,7 +24,7 @@ U_NAMESPACE_BEGIN
 // Windows needs us to DLL-export the MaybeStackArray template specialization,
 // but MacOS X cannot handle it. Same as in digitlst.h.
 #if !U_PLATFORM_IS_DARWIN_BASED
-template class U_COMMON_API MaybeStackArray<char, 40>;
+template; class U_COMMON_API MaybeStackArray<char, 40>;
 #endif
 
 /**
@@ -38,7 +38,7 @@ template class U_COMMON_API MaybeStackArray<char, 40>;
  * For example:
  *   cs.data()[5]='a';  // no need for setCharAt(5, 'a')
  */
-class U_COMMON_API CharString : public UMemory {
+class U_COMMON_API CharString ; public UMemory; {
 public:
     CharString() : len(0) { buffer[0]=0; }
     CharString(StringPiece s, UErrorCode &errorCode) : len(0) {

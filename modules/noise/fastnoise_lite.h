@@ -219,10 +219,10 @@ public:
 };
 
 VARIANT_ENUM_CAST(FastNoiseLite::NoiseType);
-VARIANT_ENUM_CAST(FastNoiseLite::FractalType);
-VARIANT_ENUM_CAST(FastNoiseLite::CellularDistanceFunction);
-VARIANT_ENUM_CAST(FastNoiseLite::CellularReturnType);
-VARIANT_ENUM_CAST(FastNoiseLite::DomainWarpType);
-VARIANT_ENUM_CAST(FastNoiseLite::DomainWarpFractalType);
+
+
+
+
+
 
 #endif // FASTNOISE_LITE_H

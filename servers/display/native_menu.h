@@ -157,6 +157,6 @@ public:
 };
 
 VARIANT_ENUM_CAST(NativeMenu::Feature);
-VARIANT_ENUM_CAST(NativeMenu::SystemMenus);
+
 
 #endif // NATIVE_MENU_H

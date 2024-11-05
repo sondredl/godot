@@ -509,7 +509,7 @@ public:
 };
 
 VARIANT_ENUM_CAST(CodeEdit::CodeCompletionKind);
-VARIANT_ENUM_CAST(CodeEdit::CodeCompletionLocation);
+
 
 // The custom comparer which will sort completion options.
 struct CodeCompletionOptionCompare {

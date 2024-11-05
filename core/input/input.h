@@ -395,6 +395,6 @@ public:
 };
 
 VARIANT_ENUM_CAST(Input::MouseMode);
-VARIANT_ENUM_CAST(Input::CursorShape);
+
 
 #endif // INPUT_H

@@ -50,7 +50,8 @@ typedef struct {
  * issues. */
 
 static int _ov_header_fseek_wrap(FILE *f,ogg_int64_t off,int whence){
-  if(f==NULL)return(-1);
+  if(f==NULL) {return(-1);
+}
 
 #ifdef __MINGW32__
   return fseeko64(f,off,whence);

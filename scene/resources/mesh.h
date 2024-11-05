@@ -399,11 +399,11 @@ public:
 	~ArrayMesh();
 };
 
-VARIANT_ENUM_CAST(Mesh::ArrayType);
+
 VARIANT_BITFIELD_CAST(Mesh::ArrayFormat);
-VARIANT_ENUM_CAST(Mesh::ArrayCustomFormat);
-VARIANT_ENUM_CAST(Mesh::PrimitiveType);
-VARIANT_ENUM_CAST(Mesh::BlendShapeMode);
+
+
+
 
 class PlaceholderMesh : public Mesh {
 	GDCLASS(PlaceholderMesh, Mesh);

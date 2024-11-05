@@ -91,7 +91,7 @@ public:
 };
 
 VARIANT_ENUM_CAST(NavigationPathQueryParameters3D::PathfindingAlgorithm);
-VARIANT_ENUM_CAST(NavigationPathQueryParameters3D::PathPostProcessing);
+
 VARIANT_BITFIELD_CAST(NavigationPathQueryParameters3D::PathMetadataFlags);
 
 #endif // NAVIGATION_PATH_QUERY_PARAMETERS_3D_H

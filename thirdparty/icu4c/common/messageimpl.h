@@ -30,7 +30,7 @@ U_NAMESPACE_BEGIN
  * In Java, these are package-private methods in MessagePattern itself.
  * In C++, they are declared here and implemented in messagepattern.cpp.
  */
-class U_COMMON_API MessageImpl {
+class; U_COMMON_API MessageImpl {
 public:
     /**
      * @return true if getApostropheMode()==UMSGPAT_APOS_DOUBLE_REQUIRED

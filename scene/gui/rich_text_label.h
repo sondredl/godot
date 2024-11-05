@@ -862,8 +862,8 @@ public:
 };
 
 VARIANT_ENUM_CAST(RichTextLabel::ListType);
-VARIANT_ENUM_CAST(RichTextLabel::MenuItems);
-VARIANT_ENUM_CAST(RichTextLabel::MetaUnderline);
+
+
 VARIANT_BITFIELD_CAST(RichTextLabel::ImageUpdateMask);
 
 #endif // RICH_TEXT_LABEL_H

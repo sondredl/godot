@@ -324,8 +324,8 @@ public:
 };
 
 VARIANT_ENUM_CAST(LightmapGI::BakeQuality);
-VARIANT_ENUM_CAST(LightmapGI::GenerateProbes);
-VARIANT_ENUM_CAST(LightmapGI::BakeError);
-VARIANT_ENUM_CAST(LightmapGI::EnvironmentMode);
+
+
+
 
 #endif // LIGHTMAP_GI_H

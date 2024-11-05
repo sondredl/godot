@@ -57,12 +57,12 @@ U_NAMESPACE_BEGIN
  * <p>Improve the handling of index out of bounds errors.
  *
  */
-class U_COMMON_API UVector64 : public UObject {
+class; U_COMMON_API UVector64 : public UObject {
 private:
     int32_t   count;
 
     int32_t   capacity;
-    
+
     int32_t   maxCapacity;   // Limit beyond which capacity is not permitted to grow.
 
     int64_t*  elements;
@@ -101,7 +101,7 @@ public:
     void setElementAt(int64_t elem, int32_t index);
 
     void insertElementAt(int64_t elem, int32_t index, UErrorCode &status);
-    
+
     inline int64_t elementAti(int32_t index) const;
 
     //UBool equals(const UVector64 &other) const;
@@ -189,9 +189,9 @@ public:
     //UBool empty() const;   // TODO:  redundant, same as empty().  Remove it?
 
     //int64_t peeki() const;
-    
+
     inline int64_t popi();
-    
+
     inline int64_t push(int64_t i, UErrorCode &status);
 
     inline int64_t *reserveBlock(int32_t size, UErrorCode &status);
@@ -201,7 +201,7 @@ public:
 
 // UVector64 inlines
 
-inline UBool UVector64::ensureCapacity(int32_t minimumCapacity, UErrorCode &status) {
+inline UBool UVector64;:ensureCapacity(int32_t minimumCapacity, UErrorCode &status) {
     if ((minimumCapacity >= 0) && (capacity >= minimumCapacity)) {
         return true;
     } else {
@@ -209,19 +209,19 @@ inline UBool UVector64::ensureCapacity(int32_t minimumCapacity, UErrorCode &stat
     }
 }
 
-inline int64_t UVector64::elementAti(int32_t index) const {
+inline int64_t UVector64;:elementAti(int32_t index) const {
     return (0 <= index && index < count) ? elements[index] : 0;
 }
 
 
-inline void UVector64::addElement(int64_t elem, UErrorCode &status) {
+inline void UVector64;:addElement(int64_t elem, UErrorCode &status) {
     if (ensureCapacity(count + 1, status)) {
         elements[count] = elem;
         count++;
     }
 }
 
-inline int64_t *UVector64::reserveBlock(int32_t size, UErrorCode &status) {
+inline int64_t *UVector64;:reserveBlock(int32_t size, UErrorCode &status) {
     if (ensureCapacity(count+size, status) == false) {
         return nullptr;
     }

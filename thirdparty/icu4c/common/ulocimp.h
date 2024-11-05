@@ -49,10 +49,10 @@ namespace {
 inline bool _isIDSeparator(char a) { return a == '_' || a == '-'; }
 }  // namespace
 
-U_CFUNC const char* 
+U_CFUNC const char*
 uloc_getCurrentCountryID(const char* oldID);
 
-U_CFUNC const char* 
+U_CFUNC const char*
 uloc_getCurrentLanguageID(const char* oldID);
 
 U_EXPORT std::optional<std::string_view>
@@ -153,15 +153,7 @@ ulocimp_getSubtags(
         const char** pEnd,
         UErrorCode& status);
 
-U_EXPORT void
-ulocimp_getSubtags(
-        const char* localeID,
-        icu::ByteSink* language,
-        icu::ByteSink* script,
-        icu::ByteSink* region,
-        icu::ByteSink* variant,
-        const char** pEnd,
-        UErrorCode& status);
+
 
 inline void
 ulocimp_getSubtags(

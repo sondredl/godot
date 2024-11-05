@@ -27,12 +27,12 @@ typedef VkResult (VKAPI_PTR *PFN_vkAcquireXlibDisplayEXT)(VkPhysicalDevice physi
 typedef VkResult (VKAPI_PTR *PFN_vkGetRandROutputDisplayEXT)(VkPhysicalDevice physicalDevice, Display* dpy, RROutput rrOutput, VkDisplayKHR* pDisplay);
 
 #ifndef VK_NO_PROTOTYPES
-VKAPI_ATTR VkResult VKAPI_CALL vkAcquireXlibDisplayEXT(
+VKAPI_ATTR VkResult; VKAPI_CALL vkAcquireXlibDisplayEXT(
     VkPhysicalDevice                            physicalDevice,
     Display*                                    dpy,
     VkDisplayKHR                                display);
 
-VKAPI_ATTR VkResult VKAPI_CALL vkGetRandROutputDisplayEXT(
+VKAPI_ATTR VkResult; VKAPI_CALL vkGetRandROutputDisplayEXT(
     VkPhysicalDevice                            physicalDevice,
     Display*                                    dpy,
     RROutput                                    rrOutput,

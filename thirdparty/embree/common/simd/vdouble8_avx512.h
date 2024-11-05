@@ -11,14 +11,14 @@
 #define vfloat vfloat_impl
 #define vdouble vdouble_impl
 
-namespace embree
+namespace embree;
 {
   /* 8-wide AVX-512 64-bit double type */
   template<>
   struct vdouble<8>
   {
     ALIGNED_STRUCT_(64);
-    
+
     typedef vboold8 Bool;
 
     enum  { size = 8 }; // number of SIMD elements
@@ -287,7 +287,7 @@ namespace embree
   __forceinline vdouble8 shuffle4(const vdouble8& v) {
     return shuffle4<i, i>(v);
   }
-  
+
   template<int i>
   __forceinline vdouble8 align_shift_right(const vdouble8& a, const vdouble8& b) {
     return _mm512_castsi512_pd(_mm512_alignr_epi64(_mm512_castpd_si512(a), _mm512_castpd_si512(b), i));

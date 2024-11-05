@@ -62,7 +62,6 @@ namespace spv {
 #include <sstream>
 #include <stack>
 #include <unordered_map>
-#include <map>
 
 namespace spv {
 
@@ -123,7 +122,7 @@ public:
         if (trackDebugInfo) {
             dirtyLineTracker = true;
             if (line != 0) {
-                // TODO: This is special handling of some AST nodes having (untracked) line 0. 
+                // TODO: This is special handling of some AST nodes having (untracked) line 0.
                 //       But they should have a valid line number.
                 currentLine = line;
                 if (filename) {
@@ -246,7 +245,7 @@ public:
     Id makeDebugFunction(Function* function, Id nameId, Id funcTypeId);
     Id makeDebugLexicalBlock(uint32_t line);
     std::string unmangleFunctionName(std::string const& name) const;
-    void setupDebugFunctionEntry(Function* function, const char* name, int line, 
+    void setupDebugFunctionEntry(Function* function, const char* name, int line,
                                  const std::vector<Id>& paramTypes,
                                  const std::vector<char const*>& paramNames);
 

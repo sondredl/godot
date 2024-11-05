@@ -238,7 +238,7 @@ public:
 };
 
 VARIANT_ENUM_CAST(FileAccess::CompressionMode);
-VARIANT_ENUM_CAST(FileAccess::ModeFlags);
+
 VARIANT_BITFIELD_CAST(FileAccess::UnixPermissionFlags);
 
 #endif // FILE_ACCESS_H

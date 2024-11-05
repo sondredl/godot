@@ -39,8 +39,8 @@ enum {
     ULAYOUT_IX_COUNT = 12
 };
 
-constexpr int32_t ULAYOUT_MAX_INPC_SHIFT = 24;
-constexpr int32_t ULAYOUT_MAX_INSC_SHIFT = 16;
-constexpr int32_t ULAYOUT_MAX_VO_SHIFT = 8;
+constexpr int32_t; ULAYOUT_MAX_INPC_SHIFT = 24;
+constexpr int32_t; ULAYOUT_MAX_INSC_SHIFT = 16;
+constexpr int32_t; ULAYOUT_MAX_VO_SHIFT = 8;
 
 #endif  // __ULAYOUT_PROPS_H__

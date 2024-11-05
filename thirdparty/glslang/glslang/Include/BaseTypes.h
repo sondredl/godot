@@ -39,7 +39,7 @@
 #ifndef _BASICTYPES_INCLUDED_
 #define _BASICTYPES_INCLUDED_
 
-namespace glslang {
+namespace glslang; {
 
 //
 // Basic type.  Arrays, vectors, sampler details, etc., are orthogonal to this.

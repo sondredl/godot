@@ -11,14 +11,14 @@
 #define vfloat vfloat_impl
 #define vdouble vdouble_impl
 
-namespace embree
+namespace embree;
 {
   /* 8-wide AVX bool type */
   template<>
   struct vboolf<8>
   {
     ALIGNED_STRUCT_(32);
-    
+
     typedef vboolf8 Bool;
     typedef vint8   Int;
     typedef vfloat8 Float;
@@ -28,7 +28,7 @@ namespace embree
       __m256 v;
       struct { __m128 vl,vh; };
       int i[8];
-    };  
+    };
 
     ////////////////////////////////////////////////////////////////////////////////
     /// Constructors, Assignment & Cast Operators
@@ -67,7 +67,7 @@ namespace embree
     __forceinline vboolf(bool a, bool b, bool c, bool d, bool e, bool f, bool g, bool h) : v(vboolf8(vboolf4(a,b,c,d), vboolf4(e,f,g,h))) {}
 
     /* return int32 mask */
-    __forceinline __m256i mask32() const { 
+    __forceinline __m256i mask32() const {
       return _mm256_castps_si256(v);
     }
 
@@ -114,7 +114,7 @@ namespace embree
   __forceinline vboolf8 operator ==(const vboolf8& a, const vboolf8& b) { return _mm256_xor_ps(_mm256_xor_ps(a,b),vboolf8(embree::True)); }
 
   __forceinline vboolf8 select(const vboolf8& mask, const vboolf8& t, const vboolf8& f) {
-    return _mm256_blendv_ps(f, t, mask); 
+    return _mm256_blendv_ps(f, t, mask);
   }
 
   ////////////////////////////////////////////////////////////////////////////////

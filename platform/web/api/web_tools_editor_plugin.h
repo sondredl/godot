@@ -52,7 +52,7 @@ public:
 
 #else
 
-class WebToolsEditorPlugin {
+class WebToolsEditorPlugin; {
 public:
 	static void initialize() {}
 };

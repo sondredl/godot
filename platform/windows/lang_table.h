@@ -37,7 +37,7 @@ struct _WinLocale {
 	int sublang;
 };
 
-static const _WinLocale _win_locales[] = {
+static const struct _WinLocale _win_locales[] = {
 	{ "ar", LANG_ARABIC, SUBLANG_NEUTRAL },
 	{ "ar_AE", LANG_ARABIC, SUBLANG_ARABIC_UAE },
 	{ "ar_BH", LANG_ARABIC, SUBLANG_ARABIC_BAHRAIN },

@@ -11,14 +11,14 @@
 #define vfloat vfloat_impl
 #define vdouble vdouble_impl
 
-namespace embree
+namespace embree;
 {
   /* 4-wide AVX bool type for 64bit data types*/
   template<>
   struct vboold<4>
   {
     ALIGNED_STRUCT_(32);
-    
+
     typedef vboold4 Bool;
 
     enum  { size = 4 };       // number of SIMD elements
@@ -56,7 +56,7 @@ namespace embree
       vh = mm_lookupmask_pd[a >> 2];
 #endif
     }
-    
+
     ////////////////////////////////////////////////////////////////////////////////
     /// Constants
     ////////////////////////////////////////////////////////////////////////////////
@@ -104,7 +104,7 @@ namespace embree
   __forceinline vboold4 operator ==(const vboold4& a, const vboold4& b) { return _mm256_xor_pd(_mm256_xor_pd(a,b),vboold4(embree::True)); }
 
   __forceinline vboold4 select(const vboold4& mask, const vboold4& t, const vboold4& f) {
-    return _mm256_blendv_pd(f, t, mask); 
+    return _mm256_blendv_pd(f, t, mask);
   }
 
   ////////////////////////////////////////////////////////////////////////////////
