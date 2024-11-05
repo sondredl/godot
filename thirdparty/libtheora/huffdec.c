@@ -201,12 +201,14 @@ int oc_huff_tree_unpack(oc_pack_buf *_opb,unsigned char _tokens[256][2]){
     long bits;
     bits=oc_pack_read1(_opb);
     /*Only process nodes so long as there's more bits in the buffer.*/
-    if(oc_pack_bytes_left(_opb)<0)return TH_EBADHEADER;
+    if(oc_pack_bytes_left(_opb)<0) {return TH_EBADHEADER;
+}
     /*Read an internal node:*/
     if(!bits){
       len++;
       /*Don't allow codewords longer than 32 bits.*/
-      if(len>32)return TH_EBADHEADER;
+      if(len>32) {return TH_EBADHEADER;
+}
     }
     /*Read a leaf node:*/
     else{
@@ -215,7 +217,8 @@ int oc_huff_tree_unpack(oc_pack_buf *_opb,unsigned char _tokens[256][2]){
       int          nentries;
       int          token;
       /*Don't allow more than 32 spec-tokens per codebook.*/
-      if(++nleaves>32)return TH_EBADHEADER;
+      if(++nleaves>32) {return TH_EBADHEADER;
+}
       bits=oc_pack_read(_opb,OC_NDCT_TOKEN_BITS);
       neb=OC_DCT_TOKEN_MAP_LOG_NENTRIES[bits];
       token=OC_DCT_TOKEN_MAP[bits];
@@ -231,7 +234,8 @@ int oc_huff_tree_unpack(oc_pack_buf *_opb,unsigned char _tokens[256][2]){
         code_bit<<=1;
         len--;
       }
-      if(len<=0)break;
+      if(len<=0) {break;
+}
       code|=code_bit;
     }
   }
@@ -249,8 +253,8 @@ static int oc_huff_subtree_tokens(unsigned char _tokens[][2],int _depth){
   code=0;
   ti=0;
   do{
-    if(_tokens[ti][1]-_depth<32)code+=0x80000000U>>_tokens[ti++][1]-_depth;
-    else{
+    if(_tokens[ti][1]-_depth<32) {code+=0x80000000U>>_tokens[ti++][1]-_depth;
+    } else{
       /*Because of the expanded internal tokens, we can have codewords as long
          as 35 bits.
         A single recursion here is enough to advance past them.*/
@@ -291,17 +295,19 @@ static int oc_huff_tree_collapse_depth(unsigned char _tokens[][2],
   got_leaves=1;
   do{
     int ti;
-    if(got_leaves)best_nbits=nbits;
+    if(got_leaves) {best_nbits=nbits;
+}
     nbits++;
     got_leaves=0;
     loccupancy=occupancy;
     for(occupancy=ti=0;ti<_ntokens;occupancy++){
-      if(_tokens[ti][1]<_depth+nbits)ti++;
-      else if(_tokens[ti][1]==_depth+nbits){
+      if(_tokens[ti][1]<_depth+nbits) {ti++;
+      } else if(_tokens[ti][1]==_depth+nbits){
         got_leaves=1;
         ti++;
       }
-      else ti+=oc_huff_subtree_tokens(_tokens+ti,_depth+nbits);
+      else { ti+=oc_huff_subtree_tokens(_tokens+ti,_depth+nbits);
+}
     }
   }
   while(occupancy>loccupancy&&occupancy*slush>=1<<nbits);
@@ -365,7 +371,8 @@ static size_t oc_huff_tree_collapse(ogg_int16_t *_tree,
         break;
       }
       /*Pop back up a level of recursion.*/
-      else if(l-->0)nbits=depth[l+1]-depth[l];
+      else if(l-->0) {nbits=depth[l+1]-depth[l];
+}
     }
     while(l>=0);
   }
@@ -390,14 +397,17 @@ int oc_huff_trees_unpack(oc_pack_buf *_opb,
     size_t         size;
     /*Unpack the full tree into a temporary buffer.*/
     ntokens=oc_huff_tree_unpack(_opb,tokens);
-    if(ntokens<0)return ntokens;
+    if(ntokens<0) {return ntokens;
+}
     /*Figure out how big the collapsed tree will be and allocate space for it.*/
     size=oc_huff_tree_collapse(NULL,tokens,ntokens);
     /*This should never happen; if it does it means you set OC_HUFF_SLUSH or
        OC_ROOT_HUFF_SLUSH too large.*/
-    if(size>32767)return TH_EIMPL;
+    if(size>32767) {return TH_EIMPL;
+}
     tree=(ogg_int16_t *)_ogg_malloc(size*sizeof(*tree));
-    if(tree==NULL)return TH_EFAULT;
+    if(tree==NULL) {return TH_EFAULT;
+}
     /*Construct the collapsed the tree.*/
     oc_huff_tree_collapse(tree,tokens,ntokens);
     _nodes[i]=tree;
@@ -421,8 +431,8 @@ static size_t oc_huff_tree_size(const ogg_int16_t *_tree,int _node){
   do{
     int child;
     child=_tree[_node+i+1];
-    if(child<=0)i+=1<<n-(-child>>8);
-    else{
+    if(child<=0) {i+=1<<n-(-child>>8);
+    } else{
       size+=oc_huff_tree_size(_tree,child);
       i++;
     }
@@ -500,7 +510,8 @@ int oc_huff_token_decode_c(oc_pack_buf *_opb,const ogg_int16_t *_tree){
     }
     bits=window>>OC_PB_WINDOW_SIZE-n;
     node=_tree[node+1+bits];
-    if(node<=0)break;
+    if(node<=0) {break;
+}
     window<<=n;
     available-=n;
   }

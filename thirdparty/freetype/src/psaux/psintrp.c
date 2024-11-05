@@ -292,16 +292,18 @@
     /* variable accumulates delta values from operand stack */
     CF2_Fixed  position = hintOffset;
 
-    if ( font->isT1 && !font->decoder->flex_state && !*haveWidth )
+    if ( font->isT1 && !font->decoder->flex_state && !*haveWidth ) {
       FT_ERROR(( "cf2_doStems (Type 1 mode):"
                  " No width. Use hsbw/sbw as first op\n" ));
+}
 
     if ( !font->isT1 && hasWidthArg && !*haveWidth )
       *width = ADD_INT32( cf2_stack_getReal( opStack, 0 ),
                           cf2_getNominalWidthX( font->decoder ) );
 
-    if ( font->decoder->width_only )
+    if ( font->decoder->width_only ) {
       goto exit;
+}
 
     for ( i = hasWidthArg ? 1 : 0; i < count; i += 2 )
     {

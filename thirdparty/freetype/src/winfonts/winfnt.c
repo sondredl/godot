@@ -192,11 +192,13 @@
     FNT_Font   font   = face->font;
 
 
-    if ( !font )
+    if ( !font ) {
       return;
+}
 
-    if ( font->fnt_frame )
+    if ( font->fnt_frame ) {
       FT_FRAME_RELEASE( font->fnt_frame );
+}
     FT_FREE( font->family_name );
 
     FT_FREE( font );
@@ -262,8 +264,9 @@
 
     /* this is a FNT file/table; extract its frame */
     if ( FT_STREAM_SEEK( font->offset )                         ||
-         FT_FRAME_EXTRACT( header->file_size, font->fnt_frame ) )
+         FT_FRAME_EXTRACT( header->file_size, font->fnt_frame ) ) {
       goto Exit;
+}
 
   Exit:
     return error;
@@ -303,8 +306,9 @@
       FT_TRACE2(( "MZ signature found\n" ));
 
       if ( FT_STREAM_SEEK( mz_header.lfanew )                       ||
-           FT_STREAM_READ_FIELDS( winne_header_fields, &ne_header ) )
+           FT_STREAM_READ_FIELDS( winne_header_fields, &ne_header ) ) {
         goto Exit;
+}
 
       error = FT_ERR( Unknown_File_Format );
       if ( ne_header.magic == WINFNT_NE_MAGIC )
@@ -321,8 +325,9 @@
 
         if ( FT_STREAM_SEEK( res_offset )                    ||
              FT_FRAME_ENTER( ne_header.rname_tab_offset -
-                             ne_header.resource_tab_offset ) )
+                             ne_header.resource_tab_offset ) ) {
           goto Exit;
+}
 
         size_shift = FT_GET_USHORT_LE();
 
@@ -347,8 +352,9 @@
 
 
           type_id = FT_GET_USHORT_LE();
-          if ( !type_id )
+          if ( !type_id ) {
             break;
+}
 
           count = FT_GET_USHORT_LE();
 
@@ -387,8 +393,9 @@
 
         face->root.num_faces = font_count;
 
-        if ( face_instance_index < 0 )
+        if ( face_instance_index < 0 ) {
           goto Exit;
+}
 
         if ( face_index >= font_count )
         {
@@ -396,12 +403,14 @@
           goto Exit;
         }
 
-        if ( FT_NEW( face->font ) )
+        if ( FT_NEW( face->font ) ) {
           goto Exit;
+}
 
         if ( FT_STREAM_SEEK( font_offset + (FT_ULong)face_index * 12 ) ||
-             FT_FRAME_ENTER( 12 )                                      )
+             FT_FRAME_ENTER( 12 )                                      ) {
           goto Fail;
+}
 
         face->font->offset   = (FT_ULong)FT_GET_USHORT_LE() << size_shift;
         face->font->fnt_size = (FT_ULong)FT_GET_USHORT_LE() << size_shift;
@@ -427,8 +436,9 @@
         FT_TRACE2(( "PE signature found\n" ));
 
         if ( FT_STREAM_SEEK( mz_header.lfanew )                           ||
-             FT_STREAM_READ_FIELDS( winpe32_header_fields, &pe32_header ) )
+             FT_STREAM_READ_FIELDS( winpe32_header_fields, &pe32_header ) ) {
           goto Exit;
+}
 
         FT_TRACE2(( "magic %04lx, machine %02x, number_of_sections %u, "
                     "size_of_optional_header %02x\n",
@@ -476,8 +486,9 @@
         FT_TRACE2(( "found resources section %.8s\n", pe32_section.name ));
 
         if ( FT_STREAM_SEEK( pe32_section.pointer_to_raw_data )        ||
-             FT_STREAM_READ_FIELDS( winpe_rsrc_dir_fields, &root_dir ) )
+             FT_STREAM_READ_FIELDS( winpe_rsrc_dir_fields, &root_dir ) ) {
           goto Exit;
+}
 
         root_dir_offset = pe32_section.pointer_to_raw_data;
 
@@ -602,8 +613,9 @@
     }
 
   Fail:
-    if ( error )
+    if ( error ) {
       fnt_font_done( face );
+}
 
   Exit:
     return error;
@@ -711,8 +723,9 @@
     FT_Memory  memory;
 
 
-    if ( !face )
+    if ( !face ) {
       return;
+}
 
     memory = FT_FACE_MEMORY( face );
 
@@ -745,16 +758,18 @@
 
     /* try to load font from a DLL */
     error = fnt_face_get_dll_font( face, face_instance_index );
-    if ( !error && face_instance_index < 0 )
+    if ( !error && face_instance_index < 0 ) {
       goto Exit;
+}
 
     if ( FT_ERR_EQ( error, Unknown_File_Format ) )
     {
       /* this didn't work; try to load a single FNT font */
       FNT_Font  font;
 
-      if ( FT_NEW( face->font ) )
+      if ( FT_NEW( face->font ) ) {
         goto Exit;
+}
 
       fntface->num_faces = 1;
 
@@ -766,16 +781,18 @@
 
       if ( !error )
       {
-        if ( face_instance_index < 0 )
+        if ( face_instance_index < 0 ) {
           goto Exit;
+}
 
         if ( face_index > 0 )
           error = FT_THROW( Invalid_Argument );
       }
     }
 
-    if ( error )
+    if ( error ) {
       goto Fail;
+}
 
     /* sanity check */
     if ( !face->font->header.pixel_height )
@@ -808,8 +825,9 @@
         root->style_flags |= FT_STYLE_FLAG_BOLD;
 
       /* set up the `fixed_sizes' array */
-      if ( FT_QNEW( root->available_sizes ) )
+      if ( FT_QNEW( root->available_sizes ) ) {
         goto Fail;
+}
 
       root->num_fixed_sizes = 1;
 
@@ -875,8 +893,9 @@
                              NULL,
                              &charmap,
                              NULL );
-        if ( error )
+        if ( error ) {
           goto Fail;
+}
       }
 
       /* set up remaining flags */
@@ -903,8 +922,9 @@
       /* null byte -- the frame is erroneously one byte too small.  */
       /* We thus allocate one more byte, setting it explicitly to   */
       /* zero.                                                      */
-      if ( FT_QALLOC( font->family_name, family_size + 1 ) )
+      if ( FT_QALLOC( font->family_name, family_size + 1 ) ) {
         goto Fail;
+}
 
       FT_MEM_COPY( font->family_name,
                    font->fnt_frame + font->header.face_name_offset,
@@ -915,8 +935,9 @@
       /* shrink it to the actual length */
       if ( FT_QREALLOC( font->family_name,
                         family_size + 1,
-                        ft_strlen( font->family_name ) + 1 ) )
+                        ft_strlen( font->family_name ) + 1 ) ) {
         goto Fail;
+}
 
       root->family_name = font->family_name;
       root->style_name  = (char *)"Regular";
@@ -928,7 +949,8 @@
         else
           root->style_name = (char *)"Bold";
       }
-      else if ( root->style_flags & FT_STYLE_FLAG_ITALIC )
+      else { i
+}f ( root->style_flags & FT_STYLE_FLAG_ITALIC )
         root->style_name = (char *)"Italic";
     }
     goto Exit;
@@ -1085,8 +1107,9 @@
     ft_synthesize_vertical_metrics( &slot->metrics,
                                     (FT_Pos)( bitmap->rows << 6 ) );
 
-    if ( load_flags & FT_LOAD_BITMAP_METRICS_ONLY )
+    if ( load_flags & FT_LOAD_BITMAP_METRICS_ONLY ) {
       goto Exit;
+}
 
     /* jump to glyph data */
     p = font->fnt_frame + /* font->header.bits_offset */ + offset;
@@ -1110,8 +1133,9 @@
 
       /* note: since glyphs are stored in columns and not in rows we */
       /*       can't use ft_glyphslot_set_bitmap                     */
-      if ( FT_QALLOC_MULT( bitmap->buffer, bitmap->rows, pitch ) )
+      if ( FT_QALLOC_MULT( bitmap->buffer, bitmap->rows, pitch ) ) {
         goto Exit;
+}
 
       column = (FT_Byte*)bitmap->buffer;
 

@@ -177,8 +177,9 @@
 
     /* validate trackValueOffet */
     p = gxvalid->root->base + GXV_TRAK_DATA( trackValueOffset_min );
-    if ( limit - p < nTracks * nSizes * 2 )
+    if ( limit - p < nTracks * nSizes * 2 ) {
       GXV_TRACE(( "too short trackValue array\n" ));
+}
 
     p = gxvalid->root->base + GXV_TRAK_DATA( trackValueOffset_max );
     GXV_LIMIT_CHECK( nSizes * 2 );

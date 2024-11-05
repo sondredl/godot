@@ -335,7 +335,8 @@ int VP8LCreateCompressedHuffmanTree(const HuffmanTreeCode* const tree,
     const int value = tree->code_lengths[i];
     int k = i + 1;
     int runs;
-    while (k < depth_size && tree->code_lengths[k] == value) ++k;
+    while (k < depth_size && tree->code_lengths[k] == value) { ++k;
+}
     runs = k - i;
     if (value == 0) {
       tokens = CodeRepeatedZeros(runs, tokens);

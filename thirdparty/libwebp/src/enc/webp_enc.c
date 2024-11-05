@@ -329,7 +329,8 @@ int WebPReportProgress(const WebPPicture* const pic,
 
 int WebPEncode(const WebPConfig* config, WebPPicture* pic) {
   int ok = 0;
-  if (pic == NULL) return 0;
+  if (pic == NULL) { return 0;
+}
 
   pic->error_code = VP8_ENC_OK;  // all ok so far
   if (config == NULL) {  // bad params
@@ -338,7 +339,8 @@ int WebPEncode(const WebPConfig* config, WebPPicture* pic) {
   if (!WebPValidateConfig(config)) {
     return WebPEncodingSetError(pic, VP8_ENC_ERROR_INVALID_CONFIGURATION);
   }
-  if (!WebPValidatePicture(pic)) return 0;
+  if (!WebPValidatePicture(pic)) { return 0;
+}
   if (pic->width > WEBP_MAX_DIMENSION || pic->height > WEBP_MAX_DIMENSION) {
     return WebPEncodingSetError(pic, VP8_ENC_ERROR_BAD_DIMENSION);
   }
@@ -374,7 +376,8 @@ int WebPEncode(const WebPConfig* config, WebPPicture* pic) {
     }
 
     enc = InitVP8Encoder(config, pic);
-    if (enc == NULL) return 0;  // pic->error is already set.
+    if (enc == NULL) { return 0;  // pic->error is already set.
+}
     // Note: each of the tasks below account for 20% in the progress report.
     ok = VP8EncAnalyze(enc);
 

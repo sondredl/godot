@@ -61,8 +61,9 @@ backtrace_open (const char *filename, backtrace_error_callback error_callback,
 {
   int descriptor;
 
-  if (does_not_exist != NULL)
+  if (does_not_exist != NULL) {
     *does_not_exist = 0;
+}
 
   descriptor = open (filename, (int) (O_RDONLY | O_BINARY | O_CLOEXEC));
   if (descriptor < 0)
@@ -71,10 +72,11 @@ backtrace_open (const char *filename, backtrace_error_callback error_callback,
 	 if the file does not exist.  We treat lacking permission to
 	 open the file as the file not existing; this case arises when
 	 running the libgo syscall package tests as root.  */
-      if (does_not_exist != NULL && (errno == ENOENT || errno == EACCES))
+      if (does_not_exist != NULL && (errno == ENOENT || errno == EACCES)) {
 	*does_not_exist = 1;
-      else
+      } else {
 	error_callback (data, filename, errno);
+}
       return -1;
     }
 

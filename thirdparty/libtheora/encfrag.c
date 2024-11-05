@@ -47,7 +47,8 @@ unsigned oc_enc_frag_sad_c(const unsigned char *_src,
   sad=0;
   for(i=8;i-->0;){
     int j;
-    for(j=0;j<8;j++)sad+=abs(_src[j]-_ref[j]);
+    for(j=0;j<8;j++) {sad+=abs(_src[j]-_ref[j]);
+}
     _src+=_ystride;
     _ref+=_ystride;
   }
@@ -61,8 +62,10 @@ unsigned oc_enc_frag_sad_thresh_c(const unsigned char *_src,
   sad=0;
   for(i=8;i-->0;){
     int j;
-    for(j=0;j<8;j++)sad+=abs(_src[j]-_ref[j]);
-    if(sad>_thresh)break;
+    for(j=0;j<8;j++) {sad+=abs(_src[j]-_ref[j]);
+}
+    if(sad>_thresh) {break;
+}
     _src+=_ystride;
     _ref+=_ystride;
   }
@@ -77,8 +80,10 @@ unsigned oc_enc_frag_sad2_thresh_c(const unsigned char *_src,
   sad=0;
   for(i=8;i-->0;){
     int j;
-    for(j=0;j<8;j++)sad+=abs(_src[j]-(_ref1[j]+_ref2[j]>>1));
-    if(sad>_thresh)break;
+    for(j=0;j<8;j++) {sad+=abs(_src[j]-(_ref1[j]+_ref2[j]>>1));
+}
+    if(sad>_thresh) {break;
+}
     _src+=_ystride;
     _ref1+=_ystride;
     _ref2+=_ystride;
@@ -94,14 +99,16 @@ unsigned oc_enc_frag_intra_sad_c(const unsigned char *_src, int _ystride){
   dc=0;
   for(i=8;i-->0;){
     int j;
-    for(j=0;j<8;j++)dc+=src[j];
+    for(j=0;j<8;j++) {dc+=src[j];
+}
     src+=_ystride;
   }
   dc=dc+32>>6;
   sad=0;
   for(i=8;i-->0;){
     int j;
-    for(j=0;j<8;j++)sad+=abs(_src[j]-dc);
+    for(j=0;j<8;j++) {sad+=abs(_src[j]-dc);
+}
     _src+=_ystride;
   }
   return sad;
@@ -343,7 +350,8 @@ unsigned oc_enc_frag_ssd_c(const unsigned char *_src,
   int      x;
   ret=0;
   for(y=0;y<8;y++){
-    for(x=0;x<8;x++)ret+=(_src[x]-_ref[x])*(_src[x]-_ref[x]);
+    for(x=0;x<8;x++) {ret+=(_src[x]-_ref[x])*(_src[x]-_ref[x]);
+}
     _src+=_ystride;
     _ref+=_ystride;
   }
@@ -358,7 +366,8 @@ unsigned oc_enc_frag_border_ssd_c(const unsigned char *_src,
   ret=0;
   for(y=0;y<8;y++){
     for(x=0;x<8;x++,_mask>>=1){
-      if(_mask&1)ret+=(_src[x]-_ref[x])*(_src[x]-_ref[x]);
+      if(_mask&1) {ret+=(_src[x]-_ref[x])*(_src[x]-_ref[x]);
+}
     }
     _src+=_ystride;
     _ref+=_ystride;
@@ -371,7 +380,8 @@ void oc_enc_frag_copy2_c(unsigned char *_dst,
   int i;
   int j;
   for(i=8;i-->0;){
-    for(j=0;j<8;j++)_dst[j]=_src1[j]+_src2[j]>>1;
+    for(j=0;j<8;j++) {_dst[j]=_src1[j]+_src2[j]>>1;
+}
     _dst+=_ystride;
     _src1+=_ystride;
     _src2+=_ystride;

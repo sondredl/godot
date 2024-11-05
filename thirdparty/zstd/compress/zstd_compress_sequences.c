@@ -89,8 +89,9 @@ static size_t ZSTD_entropyCost(unsigned const* count, unsigned const max, size_t
     assert(total > 0);
     for (s = 0; s <= max; ++s) {
         unsigned norm = (unsigned)((256 * count[s]) / total);
-        if (count[s] != 0 && norm == 0)
+        if (count[s] != 0 && norm == 0) {
             norm = 1;
+}
         assert(count[s] < total);
         cost += count[s] * kInverseProbabilityLog256[norm];
     }
@@ -120,8 +121,9 @@ size_t ZSTD_fseBitCost(
         unsigned const tableLog = cstate.stateLog;
         unsigned const badCost = (tableLog + 1) << kAccuracyLog;
         unsigned const bitCost = FSE_bitCost(cstate.symbolTT, tableLog, s, kAccuracyLog);
-        if (count[s] == 0)
+        if (count[s] == 0) {
             continue;
+}
         if (bitCost >= badCost) {
             DEBUGLOG(5, "Repeat FSE_CTable has Prob[%u] == 0", s);
             return ERROR(GENERIC);
@@ -312,9 +314,11 @@ ZSTD_encodeSequences_body(
     FSE_initCState2(&stateOffsetBits,  CTable_OffsetBits,  ofCodeTable[nbSeq-1]);
     FSE_initCState2(&stateLitLength,   CTable_LitLength,   llCodeTable[nbSeq-1]);
     BIT_addBits(&blockStream, sequences[nbSeq-1].litLength, LL_bits[llCodeTable[nbSeq-1]]);
-    if (MEM_32bits()) BIT_flushBits(&blockStream);
+    if (MEM_32bits()) { BIT_flushBits(&blockStream);
+}
     BIT_addBits(&blockStream, sequences[nbSeq-1].mlBase, ML_bits[mlCodeTable[nbSeq-1]]);
-    if (MEM_32bits()) BIT_flushBits(&blockStream);
+    if (MEM_32bits()) { BIT_flushBits(&blockStream);
+}
     if (longOffsets) {
         U32 const ofBits = ofCodeTable[nbSeq-1];
         unsigned const extraBits = ofBits - MIN(ofBits, STREAM_ACCUMULATOR_MIN-1);
@@ -345,14 +349,18 @@ ZSTD_encodeSequences_body(
                                                                             /* (7)*/  /* (7)*/
             FSE_encodeSymbol(&blockStream, &stateOffsetBits, ofCode);       /* 15 */  /* 15 */
             FSE_encodeSymbol(&blockStream, &stateMatchLength, mlCode);      /* 24 */  /* 24 */
-            if (MEM_32bits()) BIT_flushBits(&blockStream);                  /* (7)*/
+            if (MEM_32bits()) { BIT_flushBits(&blockStream);                  /* (7)*/
+}
             FSE_encodeSymbol(&blockStream, &stateLitLength, llCode);        /* 16 */  /* 33 */
-            if (MEM_32bits() || (ofBits+mlBits+llBits >= 64-7-(LLFSELog+MLFSELog+OffFSELog)))
+            if (MEM_32bits() || (ofBits+mlBits+llBits >= 64-7-(LLFSELog+MLFSELog+OffFSELog))) {
                 BIT_flushBits(&blockStream);                                /* (7)*/
+}
             BIT_addBits(&blockStream, sequences[n].litLength, llBits);
-            if (MEM_32bits() && ((llBits+mlBits)>24)) BIT_flushBits(&blockStream);
+            if (MEM_32bits() && ((llBits+mlBits)>24)) { BIT_flushBits(&blockStream);
+}
             BIT_addBits(&blockStream, sequences[n].mlBase, mlBits);
-            if (MEM_32bits() || (ofBits+mlBits+llBits > 56)) BIT_flushBits(&blockStream);
+            if (MEM_32bits() || (ofBits+mlBits+llBits > 56)) { BIT_flushBits(&blockStream);
+}
             if (longOffsets) {
                 unsigned const extraBits = ofBits - MIN(ofBits, STREAM_ACCUMULATOR_MIN-1);
                 if (extraBits) {

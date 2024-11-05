@@ -230,7 +230,8 @@ int WebPInitDecBufferInternal(WebPDecBuffer* buffer, int version) {
   if (WEBP_ABI_IS_INCOMPATIBLE(version, WEBP_DECODER_ABI_VERSION)) {
     return 0;  // version mismatch
   }
-  if (buffer == NULL) return 0;
+  if (buffer == NULL) { return 0;
+}
   memset(buffer, 0, sizeof(*buffer));
   return 1;
 }

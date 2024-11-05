@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <glad/egl.h>
+#include "glad/egl.h"
 
 #ifndef GLAD_IMPL_UTIL_C_
 #define GLAD_IMPL_UTIL_C_
@@ -87,7 +87,8 @@ PFNEGLWAITSYNCPROC glad_eglWaitSync = NULL;
 
 
 static void glad_egl_load_EGL_VERSION_1_0( GLADuserptrloadfunc load, void* userptr) {
-    if(!GLAD_EGL_VERSION_1_0) return;
+    if(!GLAD_EGL_VERSION_1_0) { return;
+}
     glad_eglChooseConfig = (PFNEGLCHOOSECONFIGPROC) load(userptr, "eglChooseConfig");
     glad_eglCopyBuffers = (PFNEGLCOPYBUFFERSPROC) load(userptr, "eglCopyBuffers");
     glad_eglCreateContext = (PFNEGLCREATECONTEXTPROC) load(userptr, "eglCreateContext");
@@ -114,14 +115,16 @@ static void glad_egl_load_EGL_VERSION_1_0( GLADuserptrloadfunc load, void* userp
     glad_eglWaitNative = (PFNEGLWAITNATIVEPROC) load(userptr, "eglWaitNative");
 }
 static void glad_egl_load_EGL_VERSION_1_1( GLADuserptrloadfunc load, void* userptr) {
-    if(!GLAD_EGL_VERSION_1_1) return;
+    if(!GLAD_EGL_VERSION_1_1) { return;
+}
     glad_eglBindTexImage = (PFNEGLBINDTEXIMAGEPROC) load(userptr, "eglBindTexImage");
     glad_eglReleaseTexImage = (PFNEGLRELEASETEXIMAGEPROC) load(userptr, "eglReleaseTexImage");
     glad_eglSurfaceAttrib = (PFNEGLSURFACEATTRIBPROC) load(userptr, "eglSurfaceAttrib");
     glad_eglSwapInterval = (PFNEGLSWAPINTERVALPROC) load(userptr, "eglSwapInterval");
 }
 static void glad_egl_load_EGL_VERSION_1_2( GLADuserptrloadfunc load, void* userptr) {
-    if(!GLAD_EGL_VERSION_1_2) return;
+    if(!GLAD_EGL_VERSION_1_2) { return;
+}
     glad_eglBindAPI = (PFNEGLBINDAPIPROC) load(userptr, "eglBindAPI");
     glad_eglCreatePbufferFromClientBuffer = (PFNEGLCREATEPBUFFERFROMCLIENTBUFFERPROC) load(userptr, "eglCreatePbufferFromClientBuffer");
     glad_eglQueryAPI = (PFNEGLQUERYAPIPROC) load(userptr, "eglQueryAPI");
@@ -129,11 +132,13 @@ static void glad_egl_load_EGL_VERSION_1_2( GLADuserptrloadfunc load, void* userp
     glad_eglWaitClient = (PFNEGLWAITCLIENTPROC) load(userptr, "eglWaitClient");
 }
 static void glad_egl_load_EGL_VERSION_1_4( GLADuserptrloadfunc load, void* userptr) {
-    if(!GLAD_EGL_VERSION_1_4) return;
+    if(!GLAD_EGL_VERSION_1_4) { return;
+}
     glad_eglGetCurrentContext = (PFNEGLGETCURRENTCONTEXTPROC) load(userptr, "eglGetCurrentContext");
 }
 static void glad_egl_load_EGL_VERSION_1_5( GLADuserptrloadfunc load, void* userptr) {
-    if(!GLAD_EGL_VERSION_1_5) return;
+    if(!GLAD_EGL_VERSION_1_5) { return;
+}
     glad_eglClientWaitSync = (PFNEGLCLIENTWAITSYNCPROC) load(userptr, "eglClientWaitSync");
     glad_eglCreateImage = (PFNEGLCREATEIMAGEPROC) load(userptr, "eglCreateImage");
     glad_eglCreatePlatformPixmapSurface = (PFNEGLCREATEPLATFORMPIXMAPSURFACEPROC) load(userptr, "eglCreatePlatformPixmapSurface");
@@ -146,11 +151,13 @@ static void glad_egl_load_EGL_VERSION_1_5( GLADuserptrloadfunc load, void* userp
     glad_eglWaitSync = (PFNEGLWAITSYNCPROC) load(userptr, "eglWaitSync");
 }
 static void glad_egl_load_EGL_ANDROID_blob_cache( GLADuserptrloadfunc load, void* userptr) {
-    if(!GLAD_EGL_ANDROID_blob_cache) return;
+    if(!GLAD_EGL_ANDROID_blob_cache) { return;
+}
     glad_eglSetBlobCacheFuncsANDROID = (PFNEGLSETBLOBCACHEFUNCSANDROIDPROC) load(userptr, "eglSetBlobCacheFuncsANDROID");
 }
 static void glad_egl_load_EGL_EXT_platform_base( GLADuserptrloadfunc load, void* userptr) {
-    if(!GLAD_EGL_EXT_platform_base) return;
+    if(!GLAD_EGL_EXT_platform_base) { return;
+}
     glad_eglCreatePlatformPixmapSurfaceEXT = (PFNEGLCREATEPLATFORMPIXMAPSURFACEEXTPROC) load(userptr, "eglCreatePlatformPixmapSurfaceEXT");
     glad_eglCreatePlatformWindowSurfaceEXT = (PFNEGLCREATEPLATFORMWINDOWSURFACEEXTPROC) load(userptr, "eglCreatePlatformWindowSurfaceEXT");
     glad_eglGetPlatformDisplayEXT = (PFNEGLGETPLATFORMDISPLAYEXTPROC) load(userptr, "eglGetPlatformDisplayEXT");
@@ -190,7 +197,8 @@ static GLADapiproc glad_egl_get_proc_from_userptr(void *userptr, const char *nam
 
 static int glad_egl_find_extensions_egl(EGLDisplay display) {
     const char *extensions;
-    if (!glad_egl_get_extensions(display, &extensions)) return 0;
+    if (!glad_egl_get_extensions(display, &extensions)) { return 0;
+}
 
     GLAD_EGL_ANDROID_blob_cache = glad_egl_has_extension(extensions, "EGL_ANDROID_blob_cache");
     GLAD_EGL_EXT_platform_base = glad_egl_has_extension(extensions, "EGL_EXT_platform_base");
@@ -247,17 +255,20 @@ int gladLoadEGLUserPtr(EGLDisplay display, GLADuserptrloadfunc load, void* userp
     eglGetCurrentDisplay = (PFNEGLGETCURRENTDISPLAYPROC) load(userptr, "eglGetCurrentDisplay");
     eglQueryString = (PFNEGLQUERYSTRINGPROC) load(userptr, "eglQueryString");
     eglGetError = (PFNEGLGETERRORPROC) load(userptr, "eglGetError");
-    if (eglGetDisplay == NULL || eglGetCurrentDisplay == NULL || eglQueryString == NULL || eglGetError == NULL) return 0;
+    if (eglGetDisplay == NULL || eglGetCurrentDisplay == NULL || eglQueryString == NULL || eglGetError == NULL) { return 0;
+}
 
     version = glad_egl_find_core_egl(display);
-    if (!version) return 0;
+    if (!version) { return 0;
+}
     glad_egl_load_EGL_VERSION_1_0(load, userptr);
     glad_egl_load_EGL_VERSION_1_1(load, userptr);
     glad_egl_load_EGL_VERSION_1_2(load, userptr);
     glad_egl_load_EGL_VERSION_1_4(load, userptr);
     glad_egl_load_EGL_VERSION_1_5(load, userptr);
 
-    if (!glad_egl_find_extensions_egl(display)) return 0;
+    if (!glad_egl_find_extensions_egl(display)) { return 0;
+}
     glad_egl_load_EGL_ANDROID_blob_cache(load, userptr);
     glad_egl_load_EGL_EXT_platform_base(load, userptr);
 
@@ -269,7 +280,7 @@ int gladLoadEGL(EGLDisplay display, GLADloadfunc load) {
     return gladLoadEGLUserPtr(display, glad_egl_get_proc_from_userptr, GLAD_GNUC_EXTENSION (void*) load);
 }
 
- 
+
 
 #ifdef GLAD_EGL
 

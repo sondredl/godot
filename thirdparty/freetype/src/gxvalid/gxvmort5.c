@@ -113,14 +113,17 @@
       (GXV_mort_subtable_type5_StateOptRecData)gxvalid->statetable.optdata;
 
     if ( optdata->classTable < offset                                   &&
-         offset < optdata->classTable + *(optdata->classTable_length_p) )
+         offset < optdata->classTable + *(optdata->classTable_length_p) ) {
       GXV_TRACE(( " offset runs into ClassTable" ));
+}
     if ( optdata->stateArray < offset                                   &&
-         offset < optdata->stateArray + *(optdata->stateArray_length_p) )
+         offset < optdata->stateArray + *(optdata->stateArray_length_p) ) {
       GXV_TRACE(( " offset runs into StateArray" ));
+}
     if ( optdata->entryTable < offset                                   &&
-         offset < optdata->entryTable + *(optdata->entryTable_length_p) )
+         offset < optdata->entryTable + *(optdata->entryTable_length_p) ) {
       GXV_TRACE(( " offset runs into EntryTable" ));
+}
 
 #ifndef GXV_LOAD_TRACE_VARS
     GXV_LIMIT_CHECK( count * 2 );

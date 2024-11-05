@@ -68,18 +68,23 @@ void _vi_psy_free(vorbis_info_psy *i){
 static void min_curve(float *c,
                        float *c2){
   int i;
-  for(i=0;i<EHMER_MAX;i++)if(c2[i]<c[i])c[i]=c2[i];
+  for(i=0;i<EHMER_MAX;i++) {if(c2[i]<c[i]) {c[i]=c2[i];
+}
+}
 }
 static void max_curve(float *c,
                        float *c2){
   int i;
-  for(i=0;i<EHMER_MAX;i++)if(c2[i]>c[i])c[i]=c2[i];
+  for(i=0;i<EHMER_MAX;i++) {if(c2[i]>c[i]) {c[i]=c2[i];
+}
+}
 }
 
 static void attenuate_curve(float *c,float att){
   int i;
-  for(i=0;i<EHMER_MAX;i++)
+  for(i=0;i<EHMER_MAX;i++) {
     c[i]+=att;
+}
 }
 
 static float ***setup_tone_curves(float curveatt_dB[P_BANDS],float binHz,int n,
@@ -104,19 +109,23 @@ static float ***setup_tone_curves(float curveatt_dB[P_BANDS],float binHz,int n,
     int ath_offset=i*4;
     for(j=0;j<EHMER_MAX;j++){
       float min=999.;
-      for(k=0;k<4;k++)
+      for(k=0;k<4;k++) {
         if(j+k+ath_offset<MAX_ATH){
-          if(min>ATH[j+k+ath_offset])min=ATH[j+k+ath_offset];
+          if(min>ATH[j+k+ath_offset]) {min=ATH[j+k+ath_offset];
+}
         }else{
-          if(min>ATH[MAX_ATH-1])min=ATH[MAX_ATH-1];
+          if(min>ATH[MAX_ATH-1]) {min=ATH[MAX_ATH-1];
+}
         }
+}
       ath[j]=min;
     }
 
     /* copy curves into working space, replicate the 50dB curve to 30
        and 40, replicate the 100dB curve to 110 */
-    for(j=0;j<6;j++)
+    for(j=0;j<6;j++) {
       memcpy(workc[i][j+2],tonemasks[i][j],EHMER_MAX*sizeof(*tonemasks[i][j]));
+}
     memcpy(workc[i][0],tonemasks[i][0],EHMER_MAX*sizeof(*tonemasks[i][0]));
     memcpy(workc[i][1],tonemasks[i][0],EHMER_MAX*sizeof(*tonemasks[i][0]));
 
@@ -124,8 +133,10 @@ static float ***setup_tone_curves(float curveatt_dB[P_BANDS],float binHz,int n,
     for(j=0;j<P_LEVELS;j++){
       for(k=0;k<EHMER_MAX;k++){
         float adj=center_boost+abs(EHMER_OFFSET-k)*center_decay_rate;
-        if(adj<0. && center_boost>0)adj=0.;
-        if(adj>0. && center_boost<0)adj=0.;
+        if(adj<0. && center_boost>0) {adj=0.;
+}
+        if(adj>0. && center_boost<0) {adj=0.;
+}
         workc[i][j][k]+=adj;
       }
     }
@@ -172,14 +183,18 @@ static float ***setup_tone_curves(float curveatt_dB[P_BANDS],float binHz,int n,
     bin=floor(fromOC(i*.5)/binHz);
     lo_curve=  ceil(toOC(bin*binHz+1)*2);
     hi_curve=  floor(toOC((bin+1)*binHz)*2);
-    if(lo_curve>i)lo_curve=i;
-    if(lo_curve<0)lo_curve=0;
-    if(hi_curve>=P_BANDS)hi_curve=P_BANDS-1;
+    if(lo_curve>i) {lo_curve=i;
+}
+    if(lo_curve<0) {lo_curve=0;
+}
+    if(hi_curve>=P_BANDS) {hi_curve=P_BANDS-1;
+}
 
     for(m=0;m<P_LEVELS;m++){
       ret[i][m]=_ogg_malloc(sizeof(***ret)*(EHMER_MAX+2));
 
-      for(j=0;j<n;j++)brute_buffer[j]=999.;
+      for(j=0;j<n;j++) {brute_buffer[j]=999.;
+}
 
       /* render the curve into bins, then pull values back into curve.
          The point is that any inherent subsampling aliasing results in
@@ -191,20 +206,29 @@ static float ***setup_tone_curves(float curveatt_dB[P_BANDS],float binHz,int n,
           int lo_bin= fromOC(j*.125+k*.5-2.0625)/binHz;
           int hi_bin= fromOC(j*.125+k*.5-1.9375)/binHz+1;
 
-          if(lo_bin<0)lo_bin=0;
-          if(lo_bin>n)lo_bin=n;
-          if(lo_bin<l)l=lo_bin;
-          if(hi_bin<0)hi_bin=0;
-          if(hi_bin>n)hi_bin=n;
+          if(lo_bin<0) {lo_bin=0;
+}
+          if(lo_bin>n) {lo_bin=n;
+}
+          if(lo_bin<l) {l=lo_bin;
+}
+          if(hi_bin<0) {hi_bin=0;
+}
+          if(hi_bin>n) {hi_bin=n;
+}
 
-          for(;l<hi_bin && l<n;l++)
-            if(brute_buffer[l]>workc[k][m][j])
+          for(;l<hi_bin && l<n;l++) {
+            if(brute_buffer[l]>workc[k][m][j]) {
               brute_buffer[l]=workc[k][m][j];
+}
+}
         }
 
-        for(;l<n;l++)
-          if(brute_buffer[l]>workc[k][m][EHMER_MAX-1])
+        for(;l<n;l++) {
+          if(brute_buffer[l]>workc[k][m][EHMER_MAX-1]) {
             brute_buffer[l]=workc[k][m][EHMER_MAX-1];
+}
+}
 
       }
 
@@ -216,20 +240,29 @@ static float ***setup_tone_curves(float curveatt_dB[P_BANDS],float binHz,int n,
           int lo_bin= fromOC(j*.125+i*.5-2.0625)/binHz;
           int hi_bin= fromOC(j*.125+i*.5-1.9375)/binHz+1;
 
-          if(lo_bin<0)lo_bin=0;
-          if(lo_bin>n)lo_bin=n;
-          if(lo_bin<l)l=lo_bin;
-          if(hi_bin<0)hi_bin=0;
-          if(hi_bin>n)hi_bin=n;
+          if(lo_bin<0) {lo_bin=0;
+}
+          if(lo_bin>n) {lo_bin=n;
+}
+          if(lo_bin<l) {l=lo_bin;
+}
+          if(hi_bin<0) {hi_bin=0;
+}
+          if(hi_bin>n) {hi_bin=n;
+}
 
-          for(;l<hi_bin && l<n;l++)
-            if(brute_buffer[l]>workc[k][m][j])
+          for(;l<hi_bin && l<n;l++) {
+            if(brute_buffer[l]>workc[k][m][j]) {
               brute_buffer[l]=workc[k][m][j];
+}
+}
         }
 
-        for(;l<n;l++)
-          if(brute_buffer[l]>workc[k][m][EHMER_MAX-1])
+        for(;l<n;l++) {
+          if(brute_buffer[l]>workc[k][m][EHMER_MAX-1]) {
             brute_buffer[l]=workc[k][m][EHMER_MAX-1];
+}
+}
 
       }
 
@@ -248,13 +281,17 @@ static float ***setup_tone_curves(float curveatt_dB[P_BANDS],float binHz,int n,
       }
 
       /* add fenceposts */
-      for(j=0;j<EHMER_OFFSET;j++)
-        if(ret[i][m][j+2]>-200.f)break;
+      for(j=0;j<EHMER_OFFSET;j++) {
+        if(ret[i][m][j+2]>-200.f) {break;
+}
+}
       ret[i][m][0]=j;
 
-      for(j=EHMER_MAX-1;j>EHMER_OFFSET+1;j--)
-        if(ret[i][m][j+2]>-200.f)
+      for(j=EHMER_MAX-1;j>EHMER_OFFSET+1;j--) {
+        if(ret[i][m][j+2]>-200.f) {
           break;
+}
+}
       ret[i][m][1]=j;
 
     }
@@ -285,9 +322,10 @@ void _vp_psy_init(vorbis_look_psy *p,vorbis_info_psy *vi,
 
   /* AoTuV HF weighting */
   p->m_val = 1.;
-  if(rate < 26000) p->m_val = 0;
-  else if(rate < 38000) p->m_val = .94;   /* 32kHz */
-  else if(rate > 46000) p->m_val = 1.275; /* 48kHz */
+  if(rate < 26000) { p->m_val = 0;
+  } else if(rate < 38000) { p->m_val = .94;   /* 32kHz */
+  } else if(rate > 46000) { p->m_val = 1.275; /* 48kHz */
+}
 
   /* set up the lookups for a given blocksize and sample rate */
 
@@ -311,40 +349,47 @@ void _vp_psy_init(vorbis_look_psy *p,vorbis_info_psy *vi,
     float bark=toBARK(rate/(2*n)*i);
 
     for(;lo+vi->noisewindowlomin<i &&
-          toBARK(rate/(2*n)*lo)<(bark-vi->noisewindowlo);lo++);
+          toBARK(rate/(2*n)*lo)<(bark-vi->noisewindowlo);lo++) {;
+}
 
     for(;hi<=n && (hi<i+vi->noisewindowhimin ||
-          toBARK(rate/(2*n)*hi)<(bark+vi->noisewindowhi));hi++);
+          toBARK(rate/(2*n)*hi)<(bark+vi->noisewindowhi));hi++) {;
+}
 
     p->bark[i]=((lo-1)<<16)+(hi-1);
 
   }
 
-  for(i=0;i<n;i++)
+  for(i=0;i<n;i++) {
     p->octave[i]=toOC((i+.25f)*.5*rate/n)*(1<<(p->shiftoc+1))+.5f;
+}
 
   p->tonecurves=setup_tone_curves(vi->toneatt,rate*.5/n,n,
                                   vi->tone_centerboost,vi->tone_decay);
 
   /* set up rolling noise median */
   p->noiseoffset=_ogg_malloc(P_NOISECURVES*sizeof(*p->noiseoffset));
-  for(i=0;i<P_NOISECURVES;i++)
+  for(i=0;i<P_NOISECURVES;i++) {
     p->noiseoffset[i]=_ogg_malloc(n*sizeof(**p->noiseoffset));
+}
 
   for(i=0;i<n;i++){
     float halfoc=toOC((i+.5)*rate/(2.*n))*2.;
     int inthalfoc;
     float del;
 
-    if(halfoc<0)halfoc=0;
-    if(halfoc>=P_BANDS-1)halfoc=P_BANDS-1;
+    if(halfoc<0) {halfoc=0;
+}
+    if(halfoc>=P_BANDS-1) {halfoc=P_BANDS-1;
+}
     inthalfoc=(int)halfoc;
     del=halfoc-inthalfoc;
 
-    for(j=0;j<P_NOISECURVES;j++)
+    for(j=0;j<P_NOISECURVES;j++) {
       p->noiseoffset[j][i]=
         p->vi->noiseoff[j][inthalfoc]*(1.-del) +
         p->vi->noiseoff[j][inthalfoc+1]*del;
+}
 
   }
 #if 0
@@ -360,9 +405,12 @@ void _vp_psy_init(vorbis_look_psy *p,vorbis_info_psy *vi,
 void _vp_psy_clear(vorbis_look_psy *p){
   int i,j;
   if(p){
-    if(p->ath)_ogg_free(p->ath);
-    if(p->octave)_ogg_free(p->octave);
-    if(p->bark)_ogg_free(p->bark);
+    if(p->ath) {_ogg_free(p->ath);
+}
+    if(p->octave) {_ogg_free(p->octave);
+}
+    if(p->bark) {_ogg_free(p->bark);
+}
     if(p->tonecurves){
       for(i=0;i<P_BANDS;i++){
         for(j=0;j<P_LEVELS;j++){
@@ -403,10 +451,12 @@ static void seed_curve(float *seed,
   for(i=posts[0];i<post1;i++){
     if(seedptr>0){
       float lin=amp+curve[i];
-      if(seed[seedptr]<lin)seed[seedptr]=lin;
+      if(seed[seedptr]<lin) {seed[seedptr]=lin;
+}
     }
     seedptr+=linesper;
-    if(seedptr>=n)break;
+    if(seedptr>=n) {break;
+}
   }
 }
 
@@ -427,14 +477,17 @@ static void seed_loop(vorbis_look_psy *p,
     long oc=p->octave[i];
     while(i+1<n && p->octave[i+1]==oc){
       i++;
-      if(f[i]>max)max=f[i];
+      if(f[i]>max) {max=f[i];
+}
     }
 
     if(max+6.f>flr[i]){
       oc=oc>>p->shiftoc;
 
-      if(oc>=P_BANDS)oc=P_BANDS-1;
-      if(oc<0)oc=0;
+      if(oc>=P_BANDS) {oc=P_BANDS-1;
+}
+      if(oc<0) {oc=0;
+}
 
       seed_curve(seed,
                  curves[oc],
@@ -493,9 +546,11 @@ static void seed_chase(float *seeds, int linesper, long n){
       endpos=posstack[i]+linesper+1; /* +1 is important, else bin 0 is
                                         discarded in short frames */
     }
-    if(endpos>n)endpos=n;
-    for(;pos<endpos;pos++)
+    if(endpos>n) {endpos=n;
+}
+    for(;pos<endpos;pos++) {
       seeds[pos]=ampstack[i];
+}
   }
 
   /* there.  Linear time.  I now remember this was on a problem set I
@@ -520,22 +575,28 @@ static void max_seeds(vorbis_look_psy *p,
   while(linpos+1<p->n){
     float minV=seed[pos];
     long end=((p->octave[linpos]+p->octave[linpos+1])>>1)-p->firstoc;
-    if(minV>p->vi->tone_abs_limit)minV=p->vi->tone_abs_limit;
+    if(minV>p->vi->tone_abs_limit) {minV=p->vi->tone_abs_limit;
+}
     while(pos+1<=end){
       pos++;
-      if((seed[pos]>NEGINF && seed[pos]<minV) || minV==NEGINF)
+      if((seed[pos]>NEGINF && seed[pos]<minV) || minV==NEGINF) {
         minV=seed[pos];
+}
     }
 
     end=pos+p->firstoc;
-    for(;linpos<p->n && p->octave[linpos]<=end;linpos++)
-      if(flr[linpos]<minV)flr[linpos]=minV;
+    for(;linpos<p->n && p->octave[linpos]<=end;linpos++) {
+      if(flr[linpos]<minV) {flr[linpos]=minV;
+}
+}
   }
 
   {
     float minV=seed[p->total_octave_lines-1];
-    for(;linpos<p->n;linpos++)
-      if(flr[linpos]<minV)flr[linpos]=minV;
+    for(;linpos<p->n;linpos++) {
+      if(flr[linpos]<minV) {flr[linpos]=minV;
+}
+}
   }
 
 }
@@ -565,7 +626,8 @@ static void bark_noise_hybridmp(int n,const long *b,
   tN = tX = tXX = tY = tXY = 0.f;
 
   y = f[0] + offset;
-  if (y < 1.f) y = 1.f;
+  if (y < 1.f) { y = 1.f;
+}
 
   w = y * y * .5;
 
@@ -582,7 +644,8 @@ static void bark_noise_hybridmp(int n,const long *b,
   for (i = 1, x = 1.f; i < n; i++, x += 1.f) {
 
     y = f[i] + offset;
-    if (y < 1.f) y = 1.f;
+    if (y < 1.f) { y = 1.f;
+}
 
     w = y * y;
 
@@ -603,8 +666,10 @@ static void bark_noise_hybridmp(int n,const long *b,
 
     lo = b[i] >> 16;
     hi = b[i] & 0xffff;
-    if( lo>=0 || -lo>=n ) break;
-    if( hi>=n ) break;
+    if( lo>=0 || -lo>=n ) { break;
+}
+    if( hi>=n ) { break;
+}
 
     tN = N[hi] + N[-lo];
     tX = X[hi] - X[-lo];
@@ -616,7 +681,8 @@ static void bark_noise_hybridmp(int n,const long *b,
     B = tN * tXY - tX * tY;
     D = tN * tXX - tX * tX;
     R = (A + x * B) / D;
-    if (R < 0.f) R = 0.f;
+    if (R < 0.f) { R = 0.f;
+}
 
     noise[i] = R - offset;
   }
@@ -625,8 +691,10 @@ static void bark_noise_hybridmp(int n,const long *b,
 
     lo = b[i] >> 16;
     hi = b[i] & 0xffff;
-    if( lo<0 || lo>=n ) break;
-    if( hi>=n ) break;
+    if( lo<0 || lo>=n ) { break;
+}
+    if( hi>=n ) { break;
+}
 
     tN = N[hi] - N[lo];
     tX = X[hi] - X[lo];
@@ -638,7 +706,8 @@ static void bark_noise_hybridmp(int n,const long *b,
     B = tN * tXY - tX * tY;
     D = tN * tXX - tX * tX;
     R = (A + x * B) / D;
-    if (R < 0.f) R = 0.f;
+    if (R < 0.f) { R = 0.f;
+}
 
     noise[i] = R - offset;
   }
@@ -646,18 +715,22 @@ static void bark_noise_hybridmp(int n,const long *b,
   for ( ; i < n; i++, x += 1.f) {
 
     R = (A + x * B) / D;
-    if (R < 0.f) R = 0.f;
+    if (R < 0.f) { R = 0.f;
+}
 
     noise[i] = R - offset;
   }
 
-  if (fixed <= 0) return;
+  if (fixed <= 0) { return;
+}
 
   for (i = 0, x = 0.f; i < n; i++, x += 1.f) {
     hi = i + fixed / 2;
     lo = hi - fixed;
-    if ( hi>=n ) break;
-    if ( lo>=0 ) break;
+    if ( hi>=n ) { break;
+}
+    if ( lo>=0 ) { break;
+}
 
     tN = N[hi] + N[-lo];
     tX = X[hi] - X[-lo];
@@ -671,14 +744,17 @@ static void bark_noise_hybridmp(int n,const long *b,
     D = tN * tXX - tX * tX;
     R = (A + x * B) / D;
 
-    if (R - offset < noise[i]) noise[i] = R - offset;
+    if (R - offset < noise[i]) { noise[i] = R - offset;
+}
   }
   for ( ; i < n; i++, x += 1.f) {
 
     hi = i + fixed / 2;
     lo = hi - fixed;
-    if ( hi>=n ) break;
-    if ( lo<0 ) break;
+    if ( hi>=n ) { break;
+}
+    if ( lo<0 ) { break;
+}
 
     tN = N[hi] - N[lo];
     tX = X[hi] - X[lo];
@@ -691,11 +767,13 @@ static void bark_noise_hybridmp(int n,const long *b,
     D = tN * tXX - tX * tX;
     R = (A + x * B) / D;
 
-    if (R - offset < noise[i]) noise[i] = R - offset;
+    if (R - offset < noise[i]) { noise[i] = R - offset;
+}
   }
   for ( ; i < n; i++, x += 1.f) {
     R = (A + x * B) / D;
-    if (R - offset < noise[i]) noise[i] = R - offset;
+    if (R - offset < noise[i]) { noise[i] = R - offset;
+}
   }
 }
 
@@ -709,12 +787,14 @@ void _vp_noisemask(vorbis_look_psy *p,
   bark_noise_hybridmp(n,p->bark,logmdct,logmask,
                       140.,-1);
 
-  for(i=0;i<n;i++)work[i]=logmdct[i]-logmask[i];
+  for(i=0;i<n;i++) {work[i]=logmdct[i]-logmask[i];
+}
 
   bark_noise_hybridmp(n,p->bark,work,logmask,0.,
                       p->vi->noisewindowfixed);
 
-  for(i=0;i<n;i++)work[i]=logmdct[i]-work[i];
+  for(i=0;i<n;i++) {work[i]=logmdct[i]-work[i];
+}
 
 #if 0
   {
@@ -740,8 +820,10 @@ void _vp_noisemask(vorbis_look_psy *p,
 
   for(i=0;i<n;i++){
     int dB=logmask[i]+.5;
-    if(dB>=NOISE_COMPAND_LEVELS)dB=NOISE_COMPAND_LEVELS-1;
-    if(dB<0)dB=0;
+    if(dB>=NOISE_COMPAND_LEVELS) {dB=NOISE_COMPAND_LEVELS-1;
+}
+    if(dB<0) {dB=0;
+}
     logmask[i]= work[i]+p->vi->noisecompand[dB];
   }
 
@@ -757,14 +839,17 @@ void _vp_tonemask(vorbis_look_psy *p,
 
   float *seed=alloca(sizeof(*seed)*p->total_octave_lines);
   float att=local_specmax+p->vi->ath_adjatt;
-  for(i=0;i<p->total_octave_lines;i++)seed[i]=NEGINF;
+  for(i=0;i<p->total_octave_lines;i++) {seed[i]=NEGINF;
+}
 
   /* set the ATH (floating below localmax, not global max by a
      specified att) */
-  if(att<p->vi->ath_maxatt)att=p->vi->ath_maxatt;
+  if(att<p->vi->ath_maxatt) {att=p->vi->ath_maxatt;
+}
 
-  for(i=0;i<n;i++)
+  for(i=0;i<n;i++) {
     logmask[i]=p->ath[i]+att;
+}
 
   /* tone masking */
   seed_loop(p,(const float ***)p->tonecurves,logfft,logmask,seed,global_specmax);
@@ -787,7 +872,8 @@ void _vp_offset_and_mix(vorbis_look_psy *p,
 
   for(i=0;i<n;i++){
     float val= noise[i]+p->noiseoffset[offset_select][i];
-    if(val>p->vi->noisemaxsupp)val=p->vi->noisemaxsupp;
+    if(val>p->vi->noisemaxsupp) {val=p->vi->noisemaxsupp;
+}
     logmask[i]=max(val,tone[i]+toneatt);
 
 
@@ -814,11 +900,13 @@ void _vp_offset_and_mix(vorbis_look_psy *p,
            -1.64 dB boost if mdct value is +17.2dB (relative to floor)
            etc... */
 
-        if(de < 0) de = 0.0001;
-      }else
+        if(de < 0) { de = 0.0001;
+}
+      }else {
         /* mdct value is <= -17.2 dB below floor */
 
         de = 1.0-((val-coeffi)*0.0003*cx);
+}
       /* pro-rated attenuation:
          +0.00 dB atten if mdct value is -17.2dB (relative to floor)
          +0.45 dB atten if mdct value is -34.4dB (relative to floor)
@@ -839,7 +927,8 @@ float _vp_ampmax_decay(float amp,vorbis_dsp_state *vd){
   float secs=(float)n/vi->rate;
 
   amp+=secs*gi->ampmax_att_per_sec;
-  if(amp<-9999)amp=-9999;
+  if(amp<-9999) {amp=-9999;
+}
   return(amp);
 }
 
@@ -923,10 +1012,11 @@ static void flag_lossless(int limit, float prepoint, float postpoint, float *mdc
   for(j=0;j<jn;j++){
     float point = j>=limit-i ? postpoint : prepoint;
     float r = fabs(mdct[j])/floor[j];
-    if(r<point)
+    if(r<point) {
       flag[j]=0;
-    else
+    } else {
       flag[j]=1;
+}
   }
 }
 
@@ -940,7 +1030,8 @@ static float noise_normalize(vorbis_look_psy *p, int limit, float *r, float *q, 
   float **sort = alloca(n*sizeof(*sort));
   int j,count=0;
   int start = (vi->normal_p ? vi->normal_start-i : n);
-  if(start>n)start=n;
+  if(start>n) {start=n;
+}
 
   /* force classic behavior where only energy in the current band is considered */
   acc=0.f;
@@ -952,10 +1043,11 @@ static float noise_normalize(vorbis_look_psy *p, int limit, float *r, float *q, 
                                 Don't touch; requantizing based on
                                 energy would be incorrect. */
       float ve = q[j]/f[j];
-      if(r[j]<0)
+      if(r[j]<0) {
         out[j] = -rint(sqrt(ve));
-      else
+      } else {
         out[j] = rint(sqrt(ve));
+}
     }
   }
 
@@ -975,10 +1067,11 @@ static float noise_normalize(vorbis_look_psy *p, int limit, float *r, float *q, 
         sort[count++]=q+j; /* q is fabs(r) for unflagged element */
       }else{
         /* For now: no acc adjustment for nonzero quantization.  populate *out and q as this value is final. */
-        if(r[j]<0)
+        if(r[j]<0) {
           out[j] = -rint(sqrt(ve));
-        else
+        } else {
           out[j] = rint(sqrt(ve));
+}
         q[j] = out[j]*out[j]*f[j];
       }
     }/* else{
@@ -1049,8 +1142,9 @@ void _vp_couple_quantize_normalize(int blobno,
   float  *acc   = alloca((ch+vi->coupling_steps)*sizeof(*acc));
 
   /* The threshold of a stereo is changed with the size of n */
-  if(n > 1000)
+  if(n > 1000) {
     postpoint=stereo_threshholds_limited[g->coupling_postpointamp[blobno]];
+}
 
   raw[0]   = alloca(ch*partition*sizeof(**raw));
   quant[0] = alloca(ch*partition*sizeof(**quant));
@@ -1063,8 +1157,9 @@ void _vp_couple_quantize_normalize(int blobno,
     floor[i] = &floor[0][partition*i];
     flag[i]  = &flag[0][partition*i];
   }
-  for(i=0;i<ch+vi->coupling_steps;i++)
+  for(i=0;i<ch+vi->coupling_steps;i++) {
     acc[i]=0.f;
+}
 
   for(i=0;i<n;i+=partition){
     int k,j,jn = partition > n-i ? n-i : partition;
@@ -1078,14 +1173,16 @@ void _vp_couple_quantize_normalize(int blobno,
       int *iout = &iwork[k][i];
       if(nz[k]){
 
-        for(j=0;j<jn;j++)
+        for(j=0;j<jn;j++) {
           floor[k][j] = FLOOR1_fromdB_LOOKUP[iout[j]];
+}
 
         flag_lossless(limit,prepoint,postpoint,&mdct[k][i],floor[k],flag[k],i,jn);
 
         for(j=0;j<jn;j++){
           quant[k][j] = raw[k][j] = mdct[k][i+j]*mdct[k][i+j];
-          if(mdct[k][i+j]<0.f) raw[k][j]*=-1.f;
+          if(mdct[k][i+j]<0.f) { raw[k][j]*=-1.f;
+}
           floor[k][j]*=floor[k][j];
         }
 

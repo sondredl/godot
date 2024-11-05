@@ -116,17 +116,18 @@
         hint->csCoord = stemHint->max;
         hint->flags   = CF2_GhostBottom;
       }
-      else
+      else {
         hint->flags = 0;
+}
     }
 
     else if ( width == cf2_intToFixed( -20 ) )
     {
       /* ghost top */
 
-      if ( bottom )
+      if ( bottom ) {
         hint->flags = 0;
-      else
+      } else
       {
         hint->csCoord = stemHint->min;
         hint->flags   = CF2_GhostTop;
@@ -184,8 +185,9 @@
     /* Now that ghost hints have been detected, adjust this edge for      */
     /* darkening.  Bottoms are not changed; tops are incremented by twice */
     /* `darkenY'.                                                         */
-    if ( cf2_hint_isTop( hint ) )
+    if ( cf2_hint_isTop( hint ) ) {
       hint->csCoord = ADD_INT32( hint->csCoord, 2 * font->darkenY );
+}
 
     hint->csCoord = ADD_INT32( hint->csCoord, hintOrigin );
     hint->scale   = scale;
@@ -194,15 +196,17 @@
     /* if original stem hint has been used, use the same position */
     if ( hint->flags != 0 && stemHint->used )
     {
-      if ( cf2_hint_isTop( hint ) )
+      if ( cf2_hint_isTop( hint ) ) {
         hint->dsCoord = stemHint->maxDS;
-      else
+      } else {
         hint->dsCoord = stemHint->minDS;
+}
 
       cf2_hint_lock( hint );
     }
-    else
-      hint->dsCoord = FT_MulFix( hint->csCoord, scale );
+    else {
+      h
+}int->dsCoord = FT_MulFix( hint->csCoord, scale );
   }
 
 

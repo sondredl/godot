@@ -342,8 +342,9 @@
         cur_max += ( cur_max >> 1 ) + 16;
 
       if ( FT_RENEW_ARRAY( border->points, old_max, cur_max ) ||
-           FT_RENEW_ARRAY( border->tags,   old_max, cur_max ) )
+           FT_RENEW_ARRAY( border->tags,   old_max, cur_max ) ) {
         goto Exit;
+}
 
       border->max_points = cur_max;
     }
@@ -364,9 +365,9 @@
     FT_ASSERT( border->start >= 0 );
 
     /* don't record empty paths! */
-    if ( count <= start + 1U )
+    if ( count <= start + 1U ) {
       border->num_points = start;
-    else
+    } else
     {
       /* copy the last point to the start of this sub-path, since */
       /* it contains the `adjusted' starting coordinates          */
@@ -680,8 +681,9 @@
       }
     }
 
-    if ( in_contour != 0 )
+    if ( in_contour != 0 ) {
       goto Fail;
+}
 
     border->valid = TRUE;
 

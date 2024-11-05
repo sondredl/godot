@@ -70,7 +70,7 @@ SLJIT_API_FUNC_ATTRIBUTE const char* sljit_get_platform_name(void)
 #endif /* SLJIT_CONFIG_MIPS_32 */
 
 #else /* SLJIT_MIPS_REV < 1 */
-	return "MIPS III" SLJIT_CPUINFO;
+	return "MIPS III"; SLJIT_CPUINFO;
 #endif /* SLJIT_MIPS_REV >= 6 */
 }
 
@@ -393,7 +393,7 @@ static void get_cpu_features(void)
 #if !defined(SLJIT_IS_FPU_AVAILABLE) && defined(__GNUC__)
 	sljit_u32 fir = 0;
 #endif /* !SLJIT_IS_FPU_AVAILABLE && __GNUC__ */
-	sljit_u32 feature_list = CPU_FEATURE_DETECTED;
+	sljit_ins feature_list = CPU_FEATURE_DETECTED;
 
 #if defined(SLJIT_IS_FPU_AVAILABLE)
 #if SLJIT_IS_FPU_AVAILABLE
@@ -473,7 +473,7 @@ static sljit_s32 push_inst(struct sljit_compiler *compiler, sljit_ins ins, sljit
 	return SLJIT_SUCCESS;
 }
 
-static SLJIT_INLINE sljit_ins invert_branch(sljit_uw flags)
+static SLJIT_INLINE sljit_ins; invert_branch(sljit_uw flags)
 {
 	if (flags & IS_BIT26_COND)
 		return (1 << 26);
@@ -1351,8 +1351,9 @@ static sljit_s32 getput_arg_fast(struct sljit_compiler *compiler, sljit_s32 flag
 
 	if (!(arg & OFFS_REG_MASK) && argw <= SIMM_MAX && argw >= SIMM_MIN) {
 		/* Works for both absoulte and relative addresses. */
-		if (SLJIT_UNLIKELY(flags & ARG_TEST))
+		if (SLJIT_UNLIKELY(flags & ARG_TEST)) {
 			return 1;
+}
 		FAIL_IF(push_inst(compiler, data_transfer_insts[flags & MEM_MASK] | S(arg & REG_MASK)
 			| TA(reg_ar) | IMM(argw), ((flags & MEM_MASK) <= GPR_REG && (flags & LOAD_DATA)) ? reg_ar : MOVABLE_INS));
 		return -1;
@@ -1372,15 +1373,17 @@ static sljit_s32 can_cache(sljit_s32 arg, sljit_sw argw, sljit_s32 next_arg, slj
 	if (arg & OFFS_REG_MASK) {
 		argw &= 0x3;
 		next_argw &= 0x3;
-		if (argw && argw == next_argw && (arg == next_arg || (arg & OFFS_REG_MASK) == (next_arg & OFFS_REG_MASK)))
+		if (argw && argw == next_argw && (arg == next_arg || (arg & OFFS_REG_MASK) == (next_arg & OFFS_REG_MASK))) {
 			return 1;
+}
 		return 0;
 	}
 
 	if (arg == next_arg) {
 		if (((next_argw - argw) <= SIMM_MAX && (next_argw - argw) >= SIMM_MIN)
-				|| TO_ARGW_HI(argw) == TO_ARGW_HI(next_argw))
+				|| TO_ARGW_HI(argw) == TO_ARGW_HI(next_argw)) {
 			return 1;
+}
 		return 0;
 	}
 
@@ -1443,8 +1446,9 @@ static sljit_s32 getput_arg(struct sljit_compiler *compiler, sljit_s32 flags, sl
 			FAIL_IF(push_inst(compiler, ADDU_W | S(base) | T(!argw ? OFFS_REG(arg) : TMP_REG3) | D(TMP_REG3), DR(TMP_REG3)));
 			tmp_ar = DR(TMP_REG3);
 		}
-		else
-			FAIL_IF(push_inst(compiler, ADDU_W | S(base) | T(!argw ? OFFS_REG(arg) : TMP_REG3) | DA(tmp_ar), tmp_ar));
+		else {
+			F
+}AIL_IF(push_inst(compiler, ADDU_W | S(base) | T(!argw ? OFFS_REG(arg) : TMP_REG3) | DA(tmp_ar), tmp_ar));
 		return push_inst(compiler, data_transfer_insts[flags & MEM_MASK] | SA(tmp_ar) | TA(reg_ar), delay_slot);
 	}
 
@@ -1487,8 +1491,9 @@ static sljit_s32 emit_op_mem(struct sljit_compiler *compiler, sljit_s32 flags, s
 {
 	sljit_s32 tmp_ar, base, delay_slot;
 
-	if (getput_arg_fast(compiler, flags, reg_ar, arg, argw))
+	if (getput_arg_fast(compiler, flags, reg_ar, arg, argw)) {
 		return compiler->error;
+}
 
 	if ((flags & MEM_MASK) <= GPR_REG && (flags & LOAD_DATA)) {
 		tmp_ar = reg_ar;
@@ -1507,8 +1512,9 @@ static sljit_s32 emit_op_mem(struct sljit_compiler *compiler, sljit_s32 flags, s
 			FAIL_IF(push_inst(compiler, SLL_W | T(OFFS_REG(arg)) | DA(tmp_ar) | SH_IMM(argw), tmp_ar));
 			FAIL_IF(push_inst(compiler, ADDU_W | SA(tmp_ar) | T(base) | DA(tmp_ar), tmp_ar));
 		}
-		else
-			FAIL_IF(push_inst(compiler, ADDU_W | S(base) | T(OFFS_REG(arg)) | DA(tmp_ar), tmp_ar));
+		else {
+			F
+}AIL_IF(push_inst(compiler, ADDU_W | S(base) | T(OFFS_REG(arg)) | DA(tmp_ar), tmp_ar));
 		return push_inst(compiler, data_transfer_insts[flags & MEM_MASK] | SA(tmp_ar) | TA(reg_ar), delay_slot);
 	}
 

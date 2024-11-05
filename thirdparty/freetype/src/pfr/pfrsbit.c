@@ -344,8 +344,9 @@
 
     /* ignore bitmaps in case table is not valid     */
     /* (this might be sanitized, but PFR is dead...) */
-    if ( !( *flags & PFR_BITMAP_VALID_CHARCODES ) )
+    if ( !( *flags & PFR_BITMAP_VALID_CHARCODES ) ) {
       goto Fail;
+}
 
     min = 0;
     max = count;
@@ -364,12 +365,13 @@
       else
         code = PFR_NEXT_BYTE( buff );
 
-      if ( char_code < code )
+      if ( char_code < code ) {
         max = mid;
-      else if ( char_code > code )
+      } else if ( char_code > code ) {
         min = mid + 1;
-      else
+      } else {
         goto Found_It;
+}
 
       /* reasonable prediction in a continuous block */
       mid += char_code - code;
@@ -541,7 +543,7 @@
                         FT_Bool     decreasing,
                         FT_Bitmap*  target )
   {
-    FT_Error          error = FT_Err_Ok;
+    = FT_Err_Ok;
     PFR_BitWriterRec  writer;
 
 

@@ -33,11 +33,12 @@ png_read_data(png_structrp png_ptr, png_bytep data, size_t length)
 {
    png_debug1(4, "reading %d bytes", (int)length);
 
-   if (png_ptr->read_data_fn != NULL)
+   if (png_ptr->read_data_fn != NULL) {
       (*(png_ptr->read_data_fn))(png_ptr, data, length);
 
-   else
+   } else {
       png_error(png_ptr, "Call to NULL read function");
+}
 }
 
 #ifdef PNG_STDIO_SUPPORTED
@@ -51,16 +52,18 @@ png_default_read_data(png_structp png_ptr, png_bytep data, size_t length)
 {
    size_t check;
 
-   if (png_ptr == NULL)
+   if (png_ptr == NULL) {
       return;
+}
 
    /* fread() returns 0 on error, so it is OK to store this in a size_t
     * instead of an int, which is what fread() actually returns.
     */
    check = fread(data, 1, length, png_voidcast(png_FILE_p, png_ptr->io_ptr));
 
-   if (check != length)
+   if (check != length) {
       png_error(png_ptr, "Read Error");
+}
 }
 #endif
 
@@ -87,17 +90,19 @@ void PNGAPI
 png_set_read_fn(png_structrp png_ptr, png_voidp io_ptr,
     png_rw_ptr read_data_fn)
 {
-   if (png_ptr == NULL)
+   if (png_ptr == NULL) {
       return;
+}
 
    png_ptr->io_ptr = io_ptr;
 
 #ifdef PNG_STDIO_SUPPORTED
-   if (read_data_fn != NULL)
+   if (read_data_fn != NULL) {
       png_ptr->read_data_fn = read_data_fn;
 
-   else
+   } else {
       png_ptr->read_data_fn = png_default_read_data;
+}
 #else
    png_ptr->read_data_fn = read_data_fn;
 #endif

@@ -2315,20 +2315,21 @@
       cur = parser->root.cursor;
 
       /* look for `eexec' */
-      if ( IS_PS_TOKEN( cur, limit, "eexec" ) )
+      if ( IS_PS_TOKEN( cur, limit, "eexec" ) ) {
         break;
 
       /* look for `closefile' which ends the eexec section */
-      else if ( IS_PS_TOKEN( cur, limit, "closefile" ) )
+      } else if ( IS_PS_TOKEN( cur, limit, "closefile" ) ) {
         break;
 
       /* in a synthetic font the base font starts after a           */
       /* `FontDictionary' token that is placed after a Private dict */
-      else if ( IS_PS_TOKEN( cur, limit, "FontDirectory" ) )
+      } else if ( IS_PS_TOKEN( cur, limit, "FontDirectory" ) )
       {
-        if ( loader->keywords_encountered & T1_PRIVATE )
+        if ( loader->keywords_encountered & T1_PRIVATE ) {
           loader->keywords_encountered |=
             T1_FONTDIR_AFTER_PRIVATE;
+}
         parser->root.cursor += 13;
       }
 
@@ -2337,8 +2338,9 @@
       {
         start_binary = cur;
         T1_Skip_PS_Token( parser );
-        if ( parser->root.error )
+        if ( parser->root.error ) {
           goto Exit;
+}
         have_integer = 1;
       }
 
@@ -2381,8 +2383,9 @@
 
         parser->root.cursor = cur;
         T1_Skip_PS_Token( parser );
-        if ( parser->root.error )
+        if ( parser->root.error ) {
           goto Exit;
+}
 
         len = (FT_UInt)( parser->root.cursor - cur );
 
@@ -2398,8 +2401,9 @@
 
 
             name = (FT_Byte*)keyword->ident;
-            if ( !name )
+            if ( !name ) {
               break;
+}
 
             if ( cur[0] == name[0]                      &&
                  len == ft_strlen( (const char *)name ) &&
@@ -2473,8 +2477,9 @@
       else
       {
         T1_Skip_PS_Token( parser );
-        if ( parser->root.error )
+        if ( parser->root.error ) {
           goto Exit;
+}
         have_integer = 0;
       }
 

@@ -28,7 +28,6 @@
 #include "misc.h"
 #include "os.h"
 
-#include "misc.h"
 #include <stdio.h>
 
 typedef struct {
@@ -60,8 +59,10 @@ static void floor0_free_look(vorbis_look_floor *i){
 
     if(look->linearmap){
 
-      if(look->linearmap[0])_ogg_free(look->linearmap[0]);
-      if(look->linearmap[1])_ogg_free(look->linearmap[1]);
+      if(look->linearmap[0]) {_ogg_free(look->linearmap[0]);
+}
+      if(look->linearmap[1]) {_ogg_free(look->linearmap[1]);
+}
 
       _ogg_free(look->linearmap);
     }
@@ -82,16 +83,23 @@ static vorbis_info_floor *floor0_unpack (vorbis_info *vi,oggpack_buffer *opb){
   info->ampdB=oggpack_read(opb,8);
   info->numbooks=oggpack_read(opb,4)+1;
 
-  if(info->order<1)goto err_out;
-  if(info->rate<1)goto err_out;
-  if(info->barkmap<1)goto err_out;
-  if(info->numbooks<1)goto err_out;
+  if(info->order<1) {goto err_out;
+}
+  if(info->rate<1) {goto err_out;
+}
+  if(info->barkmap<1) {goto err_out;
+}
+  if(info->numbooks<1) {goto err_out;
+}
 
   for(j=0;j<info->numbooks;j++){
     info->books[j]=oggpack_read(opb,8);
-    if(info->books[j]<0 || info->books[j]>=ci->books)goto err_out;
-    if(ci->book_param[info->books[j]]->maptype==0)goto err_out;
-    if(ci->book_param[info->books[j]]->dim<1)goto err_out;
+    if(info->books[j]<0 || info->books[j]>=ci->books) {goto err_out;
+}
+    if(ci->book_param[info->books[j]]->maptype==0) {goto err_out;
+}
+    if(ci->book_param[info->books[j]]->dim<1) {goto err_out;
+}
   }
   return(info);
 
@@ -134,7 +142,8 @@ static void floor0_map_lazy_init(vorbis_block      *vb,
     for(j=0;j<n;j++){
       int val=floor( toBARK((info->rate/2.f)/n*j)
                      *scale); /* bark numbers represent band edges */
-      if(val>=look->ln)val=look->ln-1; /* guard against the approximation */
+      if(val>=look->ln) {val=look->ln-1; /* guard against the approximation */
+}
       look->linearmap[W][j]=val;
     }
     look->linearmap[W][j]=-1;
@@ -179,9 +188,11 @@ static void *floor0_inverse1(vorbis_block *vb,vorbis_look_floor *i){
          vector */
       float *lsp=_vorbis_block_alloc(vb,sizeof(*lsp)*(look->m+b->dim+1));
 
-      if(vorbis_book_decodev_set(b,lsp,&vb->opb,look->m)==-1)goto eop;
+      if(vorbis_book_decodev_set(b,lsp,&vb->opb,look->m)==-1) {goto eop;
+}
       for(j=0;j<look->m;){
-        for(k=0;j<look->m && k<b->dim;k++,j++)lsp[j]+=last;
+        for(k=0;j<look->m && k<b->dim;k++,j++) {lsp[j]+=last;
+}
         last=lsp[j-1];
       }
 

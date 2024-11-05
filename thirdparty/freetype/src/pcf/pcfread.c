@@ -341,8 +341,9 @@ THE SOFTWARE.
 
 
       /* parsing compressed metrics */
-      if ( FT_STREAM_READ_FIELDS( pcf_compressed_metric_header, &compr ) )
+      if ( FT_STREAM_READ_FIELDS( pcf_compressed_metric_header, &compr ) ) {
         goto Exit;
+}
 
       metric->leftSideBearing  = (FT_Short)( compr.leftSideBearing  - 0x80 );
       metric->rightSideBearing = (FT_Short)( compr.rightSideBearing - 0x80 );
@@ -994,11 +995,13 @@ THE SOFTWARE.
                                     PCF_BDF_ENCODINGS,
                                     &format,
                                     &size );
-    if ( error )
+    if ( error ) {
       goto Bail;
+}
 
-    if ( FT_READ_ULONG_LE( format ) )
+    if ( FT_READ_ULONG_LE( format ) ) {
       goto Bail;
+}
 
     FT_TRACE4(( "pcf_get_encodings:\n" ));
     FT_TRACE4(( "  format: 0x%lX (%s)\n",
@@ -1011,13 +1014,15 @@ THE SOFTWARE.
 
     if ( PCF_BYTE_ORDER( format ) == MSBFirst )
     {
-      if ( FT_STREAM_READ_FIELDS( pcf_enc_msb_header, enc ) )
+      if ( FT_STREAM_READ_FIELDS( pcf_enc_msb_header, enc ) ) {
         goto Bail;
+}
     }
     else
     {
-      if ( FT_STREAM_READ_FIELDS( pcf_enc_header, enc ) )
+      if ( FT_STREAM_READ_FIELDS( pcf_enc_header, enc ) ) {
         goto Bail;
+}
     }
 
     FT_TRACE4(( "  firstCol 0x%X, lastCol 0x%X\n",
@@ -1058,8 +1063,9 @@ THE SOFTWARE.
                 (FT_ULong)( enc->lastRow - enc->firstRow + 1 );
 
     error = FT_Stream_EnterFrame( stream, 2 * nencoding );
-    if ( error )
+    if ( error ) {
       goto Bail;
+}
 
     /*
      * FreeType mandates that glyph index 0 is the `undefined glyph', which
@@ -1106,8 +1112,9 @@ THE SOFTWARE.
     /* copy metrics of default character to index 0 */
     face->metrics[0] = face->metrics[defaultCharEncodingOffset];
 
-    if ( FT_QNEW_ARRAY( enc->offset, nencoding ) )
+    if ( FT_QNEW_ARRAY( enc->offset, nencoding ) ) {
       goto Bail;
+}
 
     /* now loop over all values */
     offset = enc->offset;
@@ -1196,11 +1203,13 @@ THE SOFTWARE.
                                     type,
                                     &format,
                                     &size );
-    if ( error )
+    if ( error ) {
       goto Bail;
+}
 
-    if ( FT_READ_ULONG_LE( format ) )
+    if ( FT_READ_ULONG_LE( format ) ) {
       goto Bail;
+}
 
     FT_TRACE4(( "pcf_get_accel%s:\n",
                 type == PCF_BDF_ACCELERATORS ? " (getting BDF accelerators)"
@@ -1212,18 +1221,21 @@ THE SOFTWARE.
                   "accelerated" : "not accelerated" ));
 
     if ( !PCF_FORMAT_MATCH( format, PCF_DEFAULT_FORMAT )    &&
-         !PCF_FORMAT_MATCH( format, PCF_ACCEL_W_INKBOUNDS ) )
+         !PCF_FORMAT_MATCH( format, PCF_ACCEL_W_INKBOUNDS ) ) {
       goto Bail;
+}
 
     if ( PCF_BYTE_ORDER( format ) == MSBFirst )
     {
-      if ( FT_STREAM_READ_FIELDS( pcf_accel_msb_header, accel ) )
+      if ( FT_STREAM_READ_FIELDS( pcf_accel_msb_header, accel ) ) {
         goto Bail;
+}
     }
     else
     {
-      if ( FT_STREAM_READ_FIELDS( pcf_accel_header, accel ) )
+      if ( FT_STREAM_READ_FIELDS( pcf_accel_header, accel ) ) {
         goto Bail;
+}
     }
 
     FT_TRACE5(( "  noOverlap=%s, constantMetrics=%s,"
@@ -1259,15 +1271,17 @@ THE SOFTWARE.
     error = pcf_get_metric( stream,
                             format & ( ~PCF_FORMAT_MASK ),
                             &(accel->minbounds) );
-    if ( error )
+    if ( error ) {
       goto Bail;
+}
 
     FT_TRACE5(( "  maxbounds:" ));
     error = pcf_get_metric( stream,
                             format & ( ~PCF_FORMAT_MASK ),
                             &(accel->maxbounds) );
-    if ( error )
+    if ( error ) {
       goto Bail;
+}
 
     if ( PCF_FORMAT_MATCH( format, PCF_ACCEL_W_INKBOUNDS ) )
     {
@@ -1275,15 +1289,17 @@ THE SOFTWARE.
       error = pcf_get_metric( stream,
                               format & ( ~PCF_FORMAT_MASK ),
                               &(accel->ink_minbounds) );
-      if ( error )
+      if ( error ) {
         goto Bail;
+}
 
       FT_TRACE5(( "  ink maxbounds:" ));
       error = pcf_get_metric( stream,
                               format & ( ~PCF_FORMAT_MASK ),
                               &(accel->ink_maxbounds) );
-      if ( error )
+      if ( error ) {
         goto Bail;
+}
     }
     else
     {
@@ -1333,14 +1349,16 @@ THE SOFTWARE.
     prop = pcf_find_property( pcf, "SETWIDTH_NAME" );
     if ( prop && prop->isString                                        &&
          *(prop->value.atom)                                           &&
-         !( *(prop->value.atom) == 'N' || *(prop->value.atom) == 'n' ) )
+         !( *(prop->value.atom) == 'N' || *(prop->value.atom) == 'n' ) ) {
       strings[3] = (const char*)( prop->value.atom );
+}
 
     prop = pcf_find_property( pcf, "ADD_STYLE_NAME" );
     if ( prop && prop->isString                                        &&
          *(prop->value.atom)                                           &&
-         !( *(prop->value.atom) == 'N' || *(prop->value.atom) == 'n' ) )
+         !( *(prop->value.atom) == 'N' || *(prop->value.atom) == 'n' ) ) {
       strings[0] = (const char*)( prop->value.atom );
+}
 
     for ( len = 0, nn = 0; nn < 4; nn++ )
     {

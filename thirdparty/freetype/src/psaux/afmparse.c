@@ -105,14 +105,16 @@
     int  ch = 0;  /* make stupid compiler happy */
 
 
-    if ( AFM_STATUS_EOC( stream ) )
+    if ( AFM_STATUS_EOC( stream ) ) {
       return ';';
+}
 
     while ( 1 )
     {
       ch = AFM_GETC();
-      if ( !AFM_IS_SPACE( ch ) )
+      if ( !AFM_IS_SPACE( ch ) ) {
         break;
+}
     }
 
     if ( AFM_IS_NEWLINE( ch ) )
@@ -144,9 +146,9 @@
       int  ch = AFM_GETC();
 
 
-      if ( AFM_IS_SPACE( ch ) )
+      if ( AFM_IS_SPACE( ch ) ) {
         break;
-      else if ( AFM_IS_NEWLINE( ch ) )
+      } else if ( AFM_IS_NEWLINE( ch ) )
       {
         stream->status = AFM_STREAM_STATUS_EOL;
         break;

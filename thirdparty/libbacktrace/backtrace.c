@@ -82,16 +82,19 @@ unwind (struct _Unwind_Context *context, void *vdata)
       return _URC_NO_REASON;
     }
 
-  if (!ip_before_insn)
+  if (!ip_before_insn) {
     --pc;
+}
 
-  if (!bdata->can_alloc)
+  if (!bdata->can_alloc) {
     bdata->ret = bdata->callback (bdata->data, pc, NULL, 0, NULL);
-  else
+  } else {
     bdata->ret = backtrace_pcinfo (bdata->state, pc, bdata->callback,
 				   bdata->error_callback, bdata->data);
-  if (bdata->ret != 0)
+}
+  if (bdata->ret != 0) {
     return _URC_END_OF_STACK;
+}
 
   return _URC_NO_REASON;
 }
@@ -116,9 +119,9 @@ backtrace_full (struct backtrace_state *state, int skip,
   /* If we can't allocate any memory at all, don't try to produce
      file/line information.  */
   p = backtrace_alloc (state, 4096, NULL, NULL);
-  if (p == NULL)
+  if (p == NULL) {
     bdata.can_alloc = 0;
-  else
+  } else
     {
       backtrace_free (state, p, 4096, NULL, NULL);
       bdata.can_alloc = 1;

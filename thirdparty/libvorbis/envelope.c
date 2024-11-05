@@ -75,8 +75,9 @@ void _ve_envelope_init(envelope_lookup *e,vorbis_info *vi){
 void _ve_envelope_clear(envelope_lookup *e){
   int i;
   mdct_clear(&e->mdct);
-  for(i=0;i<VE_BANDS;i++)
+  for(i=0;i<VE_BANDS;i++) {
     _ogg_free(e->band[i].window);
+}
   _ogg_free(e->mdct_win);
   _ogg_free(e->filter);
   _ogg_free(e->mark);
@@ -107,15 +108,18 @@ static int _ve_amp(envelope_lookup *ve,
      considered prevoius-to-potential-trigger */
   int stretch=max(VE_MINSTRETCH,ve->stretch/2);
   float penalty=gi->stretch_penalty-(ve->stretch/2-VE_MINSTRETCH);
-  if(penalty<0.f)penalty=0.f;
-  if(penalty>gi->stretch_penalty)penalty=gi->stretch_penalty;
+  if(penalty<0.f) {penalty=0.f;
+}
+  if(penalty>gi->stretch_penalty) {penalty=gi->stretch_penalty;
+}
 
   /*_analysis_output_always("lpcm",seq2,data,n,0,0,
     totalshift+pos*ve->searchstep);*/
 
  /* window and transform */
-  for(i=0;i<n;i++)
+  for(i=0;i<n;i++) {
     vec[i]=data[i]*ve->mdct_win[i];
+}
   mdct_forward(&ve->mdct,vec,vec);
 
   /*_analysis_output_always("mdct",seq2,vec,n/2,0,1,0); */
@@ -140,7 +144,8 @@ static int _ve_amp(envelope_lookup *ve,
 
     decay*=(1./(VE_NEARDC+1));
     filters->nearptr++;
-    if(filters->nearptr>=VE_NEARDC)filters->nearptr=0;
+    if(filters->nearptr>=VE_NEARDC) {filters->nearptr=0;
+}
     decay=todB(&decay)*.5-15.f;
   }
 
@@ -150,8 +155,10 @@ static int _ve_amp(envelope_lookup *ve,
   for(i=0;i<n/2;i+=2){
     float val=vec[i]*vec[i]+vec[i+1]*vec[i+1];
     val=todB(&val)*.5f;
-    if(val<decay)val=decay;
-    if(val<minV)val=minV;
+    if(val<decay) {val=decay;
+}
+    if(val<minV) {val=minV;
+}
     vec[i>>1]=val;
     decay-=8.;
   }
@@ -164,8 +171,9 @@ static int _ve_amp(envelope_lookup *ve,
     float valmax,valmin;
 
     /* accumulate amplitude */
-    for(i=0;i<bands[j].end;i++)
+    for(i=0;i<bands[j].end;i++) {
       acc+=vec[i+bands[j].begin]*bands[j].window[i];
+}
 
     acc*=bands[j].total;
 
@@ -176,13 +184,15 @@ static int _ve_amp(envelope_lookup *ve,
 
       p=this;
       p--;
-      if(p<0)p+=VE_AMP;
+      if(p<0) {p+=VE_AMP;
+}
       postmax=max(acc,filters[j].ampbuf[p]);
       postmin=min(acc,filters[j].ampbuf[p]);
 
       for(i=0;i<stretch;i++){
         p--;
-        if(p<0)p+=VE_AMP;
+        if(p<0) {p+=VE_AMP;
+}
         premax=max(premax,filters[j].ampbuf[p]);
         premin=min(premin,filters[j].ampbuf[p]);
       }
@@ -193,7 +203,8 @@ static int _ve_amp(envelope_lookup *ve,
       /*filters[j].markers[pos]=valmax;*/
       filters[j].ampbuf[this]=acc;
       filters[j].ampptr++;
-      if(filters[j].ampptr>=VE_AMP)filters[j].ampptr=0;
+      if(filters[j].ampptr>=VE_AMP) {filters[j].ampptr=0;
+}
     }
 
     /* look at min/max, decide trigger */
@@ -201,7 +212,8 @@ static int _ve_amp(envelope_lookup *ve,
       ret|=1;
       ret|=4;
     }
-    if(valmin<gi->postecho_thresh[j]-penalty)ret|=2;
+    if(valmin<gi->postecho_thresh[j]-penalty) {ret|=2;
+}
   }
 
   return(ret);
@@ -221,7 +233,8 @@ long _ve_envelope_search(vorbis_dsp_state *v){
 
   int first=ve->current/ve->searchstep;
   int last=v->pcm_current/ve->searchstep-VE_WIN;
-  if(first<0)first=0;
+  if(first<0) {first=0;
+}
 
   /* make sure we have enough storage to match the PCM */
   if(last+VE_WIN+VE_POST>ve->storage){
@@ -233,8 +246,9 @@ long _ve_envelope_search(vorbis_dsp_state *v){
     int ret=0;
 
     ve->stretch++;
-    if(ve->stretch>VE_MAXSTRETCH*2)
+    if(ve->stretch>VE_MAXSTRETCH*2) {
       ve->stretch=VE_MAXSTRETCH*2;
+}
 
     for(i=0;i<ve->ch;i++){
       float *pcm=v->pcm[i]+ve->searchstep*(j);
@@ -249,10 +263,12 @@ long _ve_envelope_search(vorbis_dsp_state *v){
 
     if(ret&2){
       ve->mark[j]=1;
-      if(j>0)ve->mark[j-1]=1;
+      if(j>0) {ve->mark[j-1]=1;
+}
     }
 
-    if(ret&4)ve->stretch=-1;
+    if(ret&4) {ve->stretch=-1;
+}
   }
 
   ve->current=last*ve->searchstep;
@@ -269,7 +285,8 @@ long _ve_envelope_search(vorbis_dsp_state *v){
 
     while(j<ve->current-(ve->searchstep)){/* account for postecho
                                              working back one window */
-      if(j>=testW)return(1);
+      if(j>=testW) {return(1);
+}
 
       ve->cursor=j;
 
@@ -315,7 +332,8 @@ long _ve_envelope_search(vorbis_dsp_state *v){
 #endif
 
           ve->curmark=j;
-          if(j>=testW)return(1);
+          if(j>=testW) {return(1);
+}
           return(0);
         }
       }
@@ -341,13 +359,16 @@ int _ve_envelope_mark(vorbis_dsp_state *v){
     endW+=ci->blocksizes[0]/4;
   }
 
-  if(ve->curmark>=beginW && ve->curmark<endW)return(1);
+  if(ve->curmark>=beginW && ve->curmark<endW) {return(1);
+}
   {
     long first=beginW/ve->searchstep;
     long last=endW/ve->searchstep;
     long i;
-    for(i=first;i<last;i++)
-      if(ve->mark[i])return(1);
+    for(i=first;i<last;i++) {
+      if(ve->mark[i]) {return(1);
+}
+}
   }
   return(0);
 }
@@ -368,7 +389,8 @@ void _ve_envelope_shift(envelope_lookup *e,long shift){
 #endif
 
   e->current-=shift;
-  if(e->curmark>=0)
+  if(e->curmark>=0) {
     e->curmark-=shift;
+}
   e->cursor-=shift;
 }

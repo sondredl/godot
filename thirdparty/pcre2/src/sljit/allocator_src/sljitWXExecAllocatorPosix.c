@@ -84,8 +84,9 @@ SLJIT_API_FUNC_ATTRIBUTE void* sljit_malloc_exec(sljit_uw size)
 	int prot = PROT_READ | PROT_WRITE;
 	sljit_uw* ptr;
 
-	if (SLJIT_UNLIKELY(wx_block > 0))
+	if (SLJIT_UNLIKELY(wx_block > 0)) {
 		return NULL;
+}
 
 #ifdef PROT_MAX
 	prot |= PROT_MAX(PROT_READ | PROT_WRITE | PROT_EXEC);
@@ -94,8 +95,9 @@ SLJIT_API_FUNC_ATTRIBUTE void* sljit_malloc_exec(sljit_uw size)
 	size += sizeof(sljit_uw);
 	ptr = (sljit_uw*)mmap(NULL, size, prot, MAP_PRIVATE | MAP_ANON, -1, 0);
 
-	if (ptr == MAP_FAILED)
+	if (ptr == MAP_FAILED) {
 		return NULL;
+}
 
 	if (SLJIT_UNLIKELY(wx_block < 0)) {
 		SLJIT_SE_LOCK();

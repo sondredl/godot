@@ -705,7 +705,8 @@ static int AllocateMemory(VP8Decoder* const dec) {
                         + cache_size + alpha_size + WEBP_ALIGN_CST;
   uint8_t* mem;
 
-  if (!CheckSizeOverflow(needed)) return 0;  // check for overflow
+  if (!CheckSizeOverflow(needed)) { return 0;  // check for overflow
+}
   if (needed > dec->mem_size_) {
     WebPSafeFree(dec->mem_);
     dec->mem_size_ = 0;
@@ -793,8 +794,10 @@ static void InitIo(VP8Decoder* const dec, VP8Io* io) {
 }
 
 int VP8InitFrame(VP8Decoder* const dec, VP8Io* const io) {
-  if (!InitThreadContext(dec)) return 0;  // call first. Sets dec->num_caches_.
-  if (!AllocateMemory(dec)) return 0;
+  if (!InitThreadContext(dec)) { return 0;  // call first. Sets dec->num_caches_.
+}
+  if (!AllocateMemory(dec)) { return 0;
+}
   InitIo(dec, io);
   VP8DspInit();  // Init critical function pointers and look-up tables.
   return 1;

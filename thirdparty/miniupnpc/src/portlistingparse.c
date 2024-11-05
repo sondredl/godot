@@ -15,7 +15,7 @@
 #if defined(__HAIKU__)
 /* rename our private function because Haiku already defines a atoui() function */
 #define atoui atoui2
-#endif 
+#endif
 
 /* list of the elements */
 static const struct {
@@ -41,10 +41,11 @@ atoui(const char * p, int l)
 	UNSIGNED_INTEGER r = 0;
 	while(l > 0 && *p)
 	{
-		if(*p >= '0' && *p <= '9')
+		if(*p >= '0' && *p <= '9') {
 			r = r*10 + (*p - '0');
-		else
+		} else {
 			break;
+}
 		p++;
 		l--;
 	}
@@ -101,10 +102,12 @@ data(void * d, const char * data, int l)
 	struct PortMapping * pm;
 	struct PortMappingParserData * pdata = (struct PortMappingParserData *)d;
 	pm = pdata->l_head;
-	if(!pm)
+	if(!pm) {
 		return;
-	if(l > 63)
+}
+	if(l > 63) {
 		l = 63;
+}
 	switch(pdata->curelt)
 	{
 	case NewRemoteHost:
@@ -115,8 +118,9 @@ data(void * d, const char * data, int l)
 		pm->externalPort = (unsigned short)atoui(data, l);
 		break;
 	case NewProtocol:
-		if(l > 3)
+		if(l > 3) {
 			l = 3;
+}
 		memcpy(pm->protocol, data, l);
 		pm->protocol[l] = '\0';
 		break;

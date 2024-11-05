@@ -61,8 +61,9 @@ png_write_sig(png_structrp png_ptr)
    png_write_data(png_ptr, &png_signature[png_ptr->sig_bytes],
        (size_t)(8 - png_ptr->sig_bytes));
 
-   if (png_ptr->sig_bytes < 3)
+   if (png_ptr->sig_bytes < 3) {
       png_ptr->mode |= PNG_HAVE_PNG_SIGNATURE;
+}
 }
 
 /* Write the start of a PNG chunk.  The type is the chunk type.
@@ -80,8 +81,9 @@ png_write_chunk_header(png_structrp png_ptr, png_uint_32 chunk_name,
    png_debug2(0, "Writing %s chunk, length = %lu", buf, (unsigned long)length);
 #endif
 
-   if (png_ptr == NULL)
+   if (png_ptr == NULL) {
       return;
+}
 
 #ifdef PNG_IO_STATE_SUPPORTED
    /* Inform the I/O callback that the chunk header is being written.
@@ -127,8 +129,9 @@ void PNGAPI
 png_write_chunk_data(png_structrp png_ptr, png_const_bytep data, size_t length)
 {
    /* Write the data, and run the CRC over it */
-   if (png_ptr == NULL)
+   if (png_ptr == NULL) {
       return;
+}
 
    if (data != NULL && length > 0)
    {
@@ -147,7 +150,8 @@ png_write_chunk_end(png_structrp png_ptr)
 {
    png_byte buf[4];
 
-   if (png_ptr == NULL) return;
+   if (png_ptr == NULL) { return;
+}
 
 #ifdef PNG_IO_STATE_SUPPORTED
    /* Inform the I/O callback that the chunk CRC is being written.
@@ -175,12 +179,14 @@ static void
 png_write_complete_chunk(png_structrp png_ptr, png_uint_32 chunk_name,
     png_const_bytep data, size_t length)
 {
-   if (png_ptr == NULL)
+   if (png_ptr == NULL) {
       return;
+}
 
    /* On 64-bit architectures 'length' may not fit in a png_uint_32. */
-   if (length > PNG_UINT_31_MAX)
+   if (length > PNG_UINT_31_MAX) {
       png_error(png_ptr, "length exceeds PNG maximum");
+}
 
    png_write_chunk_header(png_ptr, chunk_name, (png_uint_32)length);
    png_write_chunk_data(png_ptr, data, length);
@@ -224,19 +230,22 @@ png_image_size(png_structrp png_ptr)
          {
             png_uint_32 pw = PNG_PASS_COLS(w, pass);
 
-            if (pw > 0)
+            if (pw > 0) {
                cb_base += (PNG_ROWBYTES(pd, pw)+1) * PNG_PASS_ROWS(h, pass);
+}
          }
 
          return cb_base;
       }
 
-      else
+      else {
          return (png_ptr->rowbytes+1) * h;
+}
    }
 
-   else
+   else {
       return 0xffffffffU;
+}
 }
 
 #ifdef PNG_WRITE_OPTIMIZE_CMF_SUPPORTED
@@ -333,14 +342,15 @@ png_deflate_claim(png_structrp png_ptr, png_uint_32 owner,
 
       if (owner == png_IDAT)
       {
-         if ((png_ptr->flags & PNG_FLAG_ZLIB_CUSTOM_STRATEGY) != 0)
+         if ((png_ptr->flags & PNG_FLAG_ZLIB_CUSTOM_STRATEGY) != 0) {
             strategy = png_ptr->zlib_strategy;
 
-         else if (png_ptr->do_filter != PNG_FILTER_NONE)
+         } else if (png_ptr->do_filter != PNG_FILTER_NONE) {
             strategy = PNG_Z_DEFAULT_STRATEGY;
 
-         else
+         } else {
             strategy = PNG_Z_DEFAULT_NOFILTER_STRATEGY;
+}
       }
 
       else
@@ -392,8 +402,9 @@ png_deflate_claim(png_structrp png_ptr, png_uint_32 owner,
          png_ptr->zlib_set_mem_level != memLevel ||
          png_ptr->zlib_set_strategy != strategy))
       {
-         if (deflateEnd(&png_ptr->zstream) != Z_OK)
+         if (deflateEnd(&png_ptr->zstream) != Z_OK) {
             png_warning(png_ptr, "deflateEnd failed (ignored)");
+}
 
          png_ptr->flags &= ~PNG_FLAG_ZSTREAM_INITIALIZED;
       }
@@ -409,26 +420,28 @@ png_deflate_claim(png_structrp png_ptr, png_uint_32 owner,
       /* Now initialize if required, setting the new parameters, otherwise just
        * do a simple reset to the previous parameters.
        */
-      if ((png_ptr->flags & PNG_FLAG_ZSTREAM_INITIALIZED) != 0)
+      if ((png_ptr->flags & PNG_FLAG_ZSTREAM_INITIALIZED) != 0) {
          ret = deflateReset(&png_ptr->zstream);
 
-      else
+      } else
       {
          ret = deflateInit2(&png_ptr->zstream, level, method, windowBits,
              memLevel, strategy);
 
-         if (ret == Z_OK)
+         if (ret == Z_OK) {
             png_ptr->flags |= PNG_FLAG_ZSTREAM_INITIALIZED;
+}
       }
 
       /* The return code is from either deflateReset or deflateInit2; they have
        * pretty much the same set of error codes.
        */
-      if (ret == Z_OK)
+      if (ret == Z_OK) {
          png_ptr->zowner = owner;
 
-      else
+      } else {
          png_zstream_error(png_ptr, ret);
+}
 
       return ret;
    }
@@ -502,8 +515,9 @@ png_text_compress(png_structrp png_ptr, png_uint_32 chunk_name,
     */
    ret = png_deflate_claim(png_ptr, chunk_name, comp->input_len);
 
-   if (ret != Z_OK)
+   if (ret != Z_OK) {
       return ret;
+}
 
    /* Set up the compression buffers, we need a loop here to avoid overflowing a
     * uInt.  Use ZLIB_IO_MAX to limit the input.  The output is always limited
@@ -528,8 +542,9 @@ png_text_compress(png_structrp png_ptr, png_uint_32 chunk_name,
       {
          uInt avail_in = ZLIB_IO_MAX;
 
-         if (avail_in > input_len)
+         if (avail_in > input_len) {
             avail_in = (uInt)input_len;
+}
 
          input_len -= avail_in;
 
@@ -605,8 +620,9 @@ png_text_compress(png_structrp png_ptr, png_uint_32 chunk_name,
          ret = Z_MEM_ERROR;
       }
 
-      else
+      else {
          png_zstream_error(png_ptr, ret);
+}
 
       /* Reset zlib for another zTXt/iTXt or image data */
       png_ptr->zowner = 0;
@@ -627,8 +643,9 @@ png_text_compress(png_structrp png_ptr, png_uint_32 chunk_name,
          return Z_OK;
       }
 
-      else
+      else {
          return ret;
+}
    }
 }
 
@@ -643,15 +660,17 @@ png_write_compressed_data_out(png_structrp png_ptr, compression_state *comp)
 
    for (;;)
    {
-      if (avail > output_len)
+      if (avail > output_len) {
          avail = output_len;
+}
 
       png_write_chunk_data(png_ptr, output, avail);
 
       output_len -= avail;
 
-      if (output_len == 0 || next == NULL)
+      if (output_len == 0 || next == NULL) {
          break;
+}
 
       avail = png_ptr->zbuffer_size;
       output = next->output;
@@ -659,8 +678,9 @@ png_write_compressed_data_out(png_structrp png_ptr, compression_state *comp)
    }
 
    /* This is an internal error; 'next' must have been NULL! */
-   if (output_len > 0)
+   if (output_len > 0) {
       png_error(png_ptr, "error writing ancillary chunked compressed data");
+}
 }
 #endif /* WRITE_COMPRESSED_TEXT */
 
@@ -704,8 +724,9 @@ png_write_IHDR(png_structrp png_ptr, png_uint_32 width, png_uint_32 height,
 #ifdef PNG_WRITE_16BIT_SUPPORTED
          is_invalid_depth = (is_invalid_depth && bit_depth != 16);
 #endif
-         if (is_invalid_depth)
+         if (is_invalid_depth) {
             png_error(png_ptr, "Invalid bit depth for RGB image");
+}
 
          png_ptr->channels = 3;
          break;
@@ -730,8 +751,9 @@ png_write_IHDR(png_structrp png_ptr, png_uint_32 width, png_uint_32 height,
 #ifdef PNG_WRITE_16BIT_SUPPORTED
          is_invalid_depth = (is_invalid_depth && bit_depth != 16);
 #endif
-         if (is_invalid_depth)
+         if (is_invalid_depth) {
             png_error(png_ptr, "Invalid bit depth for grayscale+alpha image");
+}
 
          png_ptr->channels = 2;
          break;
@@ -741,8 +763,9 @@ png_write_IHDR(png_structrp png_ptr, png_uint_32 width, png_uint_32 height,
 #ifdef PNG_WRITE_16BIT_SUPPORTED
          is_invalid_depth = (is_invalid_depth && bit_depth != 16);
 #endif
-         if (is_invalid_depth)
+         if (is_invalid_depth) {
             png_error(png_ptr, "Invalid bit depth for RGBA image");
+}
 
          png_ptr->channels = 4;
          break;
@@ -824,11 +847,12 @@ png_write_IHDR(png_structrp png_ptr, png_uint_32 width, png_uint_32 height,
    if ((png_ptr->do_filter) == PNG_NO_FILTERS)
    {
       if (png_ptr->color_type == PNG_COLOR_TYPE_PALETTE ||
-          png_ptr->bit_depth < 8)
+          png_ptr->bit_depth < 8) {
          png_ptr->do_filter = PNG_FILTER_NONE;
 
-      else
+      } else {
          png_ptr->do_filter = PNG_ALL_FILTERS;
+}
    }
 
    png_ptr->mode = PNG_HAVE_IHDR; /* not READY_FOR_ZTXT */
@@ -945,12 +969,14 @@ png_compress_IDAT(png_structrp png_ptr, png_const_bytep input,
          png_ptr->zbuffer_list->next = NULL;
       }
 
-      else
+      else {
          png_free_buffer_list(png_ptr, &png_ptr->zbuffer_list->next);
+}
 
       /* It is a terminal error if we can't claim the zstream. */
-      if (png_deflate_claim(png_ptr, png_IDAT, png_image_size(png_ptr)) != Z_OK)
+      if (png_deflate_claim(png_ptr, png_IDAT, png_image_size(png_ptr)) != Z_OK) {
          png_error(png_ptr, png_ptr->zstream.msg);
+}
 
       /* The output state is maintained in png_ptr->zstream, so it must be
        * initialized here after the claim.
@@ -972,8 +998,9 @@ png_compress_IDAT(png_structrp png_ptr, png_const_bytep input,
       /* INPUT: from the row data */
       uInt avail = ZLIB_IO_MAX;
 
-      if (avail > input_len)
+      if (avail > input_len) {
          avail = (uInt)input_len; /* safe because of the check */
+}
 
       png_ptr->zstream.avail_in = avail;
       input_len -= avail;
@@ -998,12 +1025,14 @@ png_compress_IDAT(png_structrp png_ptr, png_const_bytep input,
           */
 #ifdef PNG_WRITE_OPTIMIZE_CMF_SUPPORTED
             if ((png_ptr->mode & PNG_HAVE_IDAT) == 0 &&
-                png_ptr->compression_type == PNG_COMPRESSION_TYPE_BASE)
+                png_ptr->compression_type == PNG_COMPRESSION_TYPE_BASE) {
                optimize_cmf(data, png_image_size(png_ptr));
+}
 #endif
 
-         if (size > 0)
+         if (size > 0) {
             png_write_complete_chunk(png_ptr, png_IDAT, data, size);
+}
          png_ptr->mode |= PNG_HAVE_IDAT;
 
          png_ptr->zstream.next_out = data;
@@ -1013,8 +1042,9 @@ png_compress_IDAT(png_structrp png_ptr, png_const_bytep input,
           * the same flush parameter until it has finished output, for NO_FLUSH
           * it doesn't matter.
           */
-         if (ret == Z_OK && flush != Z_NO_FLUSH)
+         if (ret == Z_OK && flush != Z_NO_FLUSH) {
             continue;
+}
       }
 
       /* The order of these checks doesn't matter much; it just affects which
@@ -1028,8 +1058,9 @@ png_compress_IDAT(png_structrp png_ptr, png_const_bytep input,
           */
          if (input_len == 0)
          {
-            if (flush == Z_FINISH)
+            if (flush == Z_FINISH) {
                png_error(png_ptr, "Z_OK on Z_FINISH with output space");
+}
 
             return;
          }
@@ -1045,12 +1076,14 @@ png_compress_IDAT(png_structrp png_ptr, png_const_bytep input,
 
 #ifdef PNG_WRITE_OPTIMIZE_CMF_SUPPORTED
          if ((png_ptr->mode & PNG_HAVE_IDAT) == 0 &&
-             png_ptr->compression_type == PNG_COMPRESSION_TYPE_BASE)
+             png_ptr->compression_type == PNG_COMPRESSION_TYPE_BASE) {
             optimize_cmf(data, png_image_size(png_ptr));
+}
 #endif
 
-         if (size > 0)
+         if (size > 0) {
             png_write_complete_chunk(png_ptr, png_IDAT, data, size);
+}
          png_ptr->zstream.avail_out = 0;
          png_ptr->zstream.next_out = NULL;
          png_ptr->mode |= PNG_HAVE_IDAT | PNG_AFTER_IDAT;
@@ -1102,9 +1135,10 @@ png_write_sRGB(png_structrp png_ptr, int srgb_intent)
 
    png_debug(1, "in png_write_sRGB");
 
-   if (srgb_intent >= PNG_sRGB_INTENT_LAST)
+   if (srgb_intent >= PNG_sRGB_INTENT_LAST) {
       png_warning(png_ptr,
           "Invalid sRGB rendering intent specified");
+}
 
    buf[0]=(png_byte)srgb_intent;
    png_write_complete_chunk(png_ptr, png_sRGB, buf, 1);
@@ -1128,29 +1162,34 @@ png_write_iCCP(png_structrp png_ptr, png_const_charp name,
    /* These are all internal problems: the profile should have been checked
     * before when it was stored.
     */
-   if (profile == NULL)
+   if (profile == NULL) {
       png_error(png_ptr, "No profile for iCCP chunk"); /* internal error */
+}
 
    profile_len = png_get_uint_32(profile);
 
-   if (profile_len < 132)
+   if (profile_len < 132) {
       png_error(png_ptr, "ICC profile too short");
+}
 
    temp = (png_uint_32) (*(profile+8));
-   if (temp > 3 && (profile_len & 0x03))
+   if (temp > 3 && (profile_len & 0x03)) {
       png_error(png_ptr, "ICC profile length invalid (not a multiple of 4)");
+}
 
    {
       png_uint_32 embedded_profile_len = png_get_uint_32(profile);
 
-      if (profile_len != embedded_profile_len)
+      if (profile_len != embedded_profile_len) {
          png_error(png_ptr, "Profile length does not match profile");
+}
    }
 
    name_len = png_check_keyword(png_ptr, name, new_name);
 
-   if (name_len == 0)
+   if (name_len == 0) {
       png_error(png_ptr, "iCCP: invalid keyword");
+}
 
    new_name[++name_len] = PNG_COMPRESSION_TYPE_BASE;
 
@@ -1160,8 +1199,9 @@ png_write_iCCP(png_structrp png_ptr, png_const_charp name,
    png_text_compress_init(&comp, profile, profile_len);
 
    /* Allow for keyword terminator and compression byte */
-   if (png_text_compress(png_ptr, png_iCCP, &comp, name_len) != Z_OK)
+   if (png_text_compress(png_ptr, png_iCCP, &comp, name_len) != Z_OK) {
       png_error(png_ptr, png_ptr->zstream.msg);
+}
 
    png_write_chunk_header(png_ptr, png_iCCP, name_len + comp.output_len);
 
@@ -1192,8 +1232,9 @@ png_write_sPLT(png_structrp png_ptr, png_const_sPLT_tp spalette)
 
    name_len = png_check_keyword(png_ptr, spalette->name, new_name);
 
-   if (name_len == 0)
+   if (name_len == 0) {
       png_error(png_ptr, "sPLT: invalid keyword");
+}
 
    /* Make sure we include the NULL after the name */
    png_write_chunk_header(png_ptr, png_sPLT,
@@ -1537,17 +1578,20 @@ png_write_tEXt(png_structrp png_ptr, png_const_charp key, png_const_charp text,
 
    key_len = png_check_keyword(png_ptr, key, new_key);
 
-   if (key_len == 0)
+   if (key_len == 0) {
       png_error(png_ptr, "tEXt: invalid keyword");
+}
 
-   if (text == NULL || *text == '\0')
+   if (text == NULL || *text == '\0') {
       text_len = 0;
 
-   else
+   } else {
       text_len = strlen(text);
+}
 
-   if (text_len > PNG_UINT_31_MAX - (key_len+1))
+   if (text_len > PNG_UINT_31_MAX - (key_len+1)) {
       png_error(png_ptr, "tEXt: text too long");
+}
 
    /* Make sure we include the 0 after the key */
    png_write_chunk_header(png_ptr, png_tEXt,
@@ -1560,8 +1604,9 @@ png_write_tEXt(png_structrp png_ptr, png_const_charp key, png_const_charp text,
     */
    png_write_chunk_data(png_ptr, new_key, key_len + 1);
 
-   if (text_len != 0)
+   if (text_len != 0) {
       png_write_chunk_data(png_ptr, (png_const_bytep)text, text_len);
+}
 
    png_write_chunk_end(png_ptr);
 }
@@ -1585,13 +1630,15 @@ png_write_zTXt(png_structrp png_ptr, png_const_charp key, png_const_charp text,
       return;
    }
 
-   if (compression != PNG_TEXT_COMPRESSION_zTXt)
+   if (compression != PNG_TEXT_COMPRESSION_zTXt) {
       png_error(png_ptr, "zTXt: invalid compression type");
+}
 
    key_len = png_check_keyword(png_ptr, key, new_key);
 
-   if (key_len == 0)
+   if (key_len == 0) {
       png_error(png_ptr, "zTXt: invalid keyword");
+}
 
    /* Add the compression method and 1 for the keyword separator. */
    new_key[++key_len] = PNG_COMPRESSION_TYPE_BASE;
@@ -1601,8 +1648,9 @@ png_write_zTXt(png_structrp png_ptr, png_const_charp key, png_const_charp text,
    png_text_compress_init(&comp, (png_const_bytep)text,
        text == NULL ? 0 : strlen(text));
 
-   if (png_text_compress(png_ptr, png_zTXt, &comp, key_len) != Z_OK)
+   if (png_text_compress(png_ptr, png_zTXt, &comp, key_len) != Z_OK) {
       png_error(png_ptr, png_ptr->zstream.msg);
+}
 
    /* Write start of chunk */
    png_write_chunk_header(png_ptr, png_zTXt, key_len + comp.output_len);
@@ -1633,8 +1681,9 @@ png_write_iTXt(png_structrp png_ptr, int compression, png_const_charp key,
 
    key_len = png_check_keyword(png_ptr, key, new_key);
 
-   if (key_len == 0)
+   if (key_len == 0) {
       png_error(png_ptr, "iTXt: invalid keyword");
+}
 
    /* Set the compression flag */
    switch (compression)
@@ -1666,35 +1715,42 @@ png_write_iTXt(png_structrp png_ptr, int compression, png_const_charp key,
     *
     * TODO: validate the language tag correctly (see the spec.)
     */
-   if (lang == NULL) lang = ""; /* empty language is valid */
+   if (lang == NULL) { lang = ""; /* empty language is valid */
+}
    lang_len = strlen(lang)+1;
-   if (lang_key == NULL) lang_key = ""; /* may be empty */
+   if (lang_key == NULL) { lang_key = ""; /* may be empty */
+}
    lang_key_len = strlen(lang_key)+1;
-   if (text == NULL) text = ""; /* may be empty */
+   if (text == NULL) { text = ""; /* may be empty */
+}
 
    prefix_len = key_len;
-   if (lang_len > PNG_UINT_31_MAX-prefix_len)
+   if (lang_len > PNG_UINT_31_MAX-prefix_len) {
       prefix_len = PNG_UINT_31_MAX;
-   else
+   } else {
       prefix_len = (png_uint_32)(prefix_len + lang_len);
+}
 
-   if (lang_key_len > PNG_UINT_31_MAX-prefix_len)
+   if (lang_key_len > PNG_UINT_31_MAX-prefix_len) {
       prefix_len = PNG_UINT_31_MAX;
-   else
+   } else {
       prefix_len = (png_uint_32)(prefix_len + lang_key_len);
+}
 
    png_text_compress_init(&comp, (png_const_bytep)text, strlen(text));
 
    if (compression != 0)
    {
-      if (png_text_compress(png_ptr, png_iTXt, &comp, prefix_len) != Z_OK)
+      if (png_text_compress(png_ptr, png_iTXt, &comp, prefix_len) != Z_OK) {
          png_error(png_ptr, png_ptr->zstream.msg);
+}
    }
 
    else
    {
-      if (comp.input_len > PNG_UINT_31_MAX-prefix_len)
+      if (comp.input_len > PNG_UINT_31_MAX-prefix_len) {
          png_error(png_ptr, "iTXt: uncompressed text too long");
+}
 
       /* So the string will fit in a chunk: */
       comp.output_len = (png_uint_32)/*SAFE*/comp.input_len;
@@ -1708,11 +1764,12 @@ png_write_iTXt(png_structrp png_ptr, int compression, png_const_charp key,
 
    png_write_chunk_data(png_ptr, (png_const_bytep)lang_key, lang_key_len);
 
-   if (compression != 0)
+   if (compression != 0) {
       png_write_compressed_data_out(png_ptr, &comp);
 
-   else
+   } else {
       png_write_chunk_data(png_ptr, (png_const_bytep)text, comp.output_len);
+}
 
    png_write_chunk_end(png_ptr);
 }
@@ -1728,8 +1785,9 @@ png_write_oFFs(png_structrp png_ptr, png_int_32 x_offset, png_int_32 y_offset,
 
    png_debug(1, "in png_write_oFFs");
 
-   if (unit_type >= PNG_OFFSET_LAST)
+   if (unit_type >= PNG_OFFSET_LAST) {
       png_warning(png_ptr, "Unrecognized unit type for oFFs chunk");
+}
 
    png_save_int_32(buf, x_offset);
    png_save_int_32(buf + 4, y_offset);
@@ -1754,13 +1812,15 @@ png_write_pCAL(png_structrp png_ptr, png_charp purpose, png_int_32 X0,
 
    png_debug1(1, "in png_write_pCAL (%d parameters)", nparams);
 
-   if (type >= PNG_EQUATION_LAST)
+   if (type >= PNG_EQUATION_LAST) {
       png_error(png_ptr, "Unrecognized equation type for pCAL chunk");
+}
 
    purpose_len = png_check_keyword(png_ptr, purpose, new_purpose);
 
-   if (purpose_len == 0)
+   if (purpose_len == 0) {
       png_error(png_ptr, "pCAL: invalid keyword");
+}
 
    ++purpose_len; /* terminator */
 
@@ -1844,8 +1904,9 @@ png_write_pHYs(png_structrp png_ptr, png_uint_32 x_pixels_per_unit,
 
    png_debug(1, "in png_write_pHYs");
 
-   if (unit_type >= PNG_RESOLUTION_LAST)
+   if (unit_type >= PNG_RESOLUTION_LAST) {
       png_warning(png_ptr, "Unrecognized unit type for pHYs chunk");
+}
 
    png_save_uint_32(buf, x_pixels_per_unit);
    png_save_uint_32(buf + 4, y_pixels_per_unit);
@@ -1929,14 +1990,17 @@ png_write_start_row(png_structrp png_ptr)
 #ifdef PNG_WRITE_FILTER_SUPPORTED
    filters = png_ptr->do_filter;
 
-   if (png_ptr->height == 1)
+   if (png_ptr->height == 1) {
       filters &= 0xff & ~(PNG_FILTER_UP|PNG_FILTER_AVG|PNG_FILTER_PAETH);
+}
 
-   if (png_ptr->width == 1)
+   if (png_ptr->width == 1) {
       filters &= 0xff & ~(PNG_FILTER_SUB|PNG_FILTER_AVG|PNG_FILTER_PAETH);
+}
 
-   if (filters == 0)
+   if (filters == 0) {
       filters = PNG_FILTER_NONE;
+}
 
    png_ptr->do_filter = filters;
 
@@ -1947,29 +2011,35 @@ png_write_start_row(png_structrp png_ptr)
 
       png_ptr->try_row = png_voidcast(png_bytep, png_malloc(png_ptr, buf_size));
 
-      if (filters & PNG_FILTER_SUB)
+      if (filters & PNG_FILTER_SUB) {
          num_filters++;
+}
 
-      if (filters & PNG_FILTER_UP)
+      if (filters & PNG_FILTER_UP) {
          num_filters++;
+}
 
-      if (filters & PNG_FILTER_AVG)
+      if (filters & PNG_FILTER_AVG) {
          num_filters++;
+}
 
-      if (filters & PNG_FILTER_PAETH)
+      if (filters & PNG_FILTER_PAETH) {
          num_filters++;
+}
 
-      if (num_filters > 1)
+      if (num_filters > 1) {
          png_ptr->tst_row = png_voidcast(png_bytep, png_malloc(png_ptr,
              buf_size));
+}
    }
 
    /* We only need to keep the previous row if we are using one of the following
     * filters.
     */
-   if ((filters & (PNG_FILTER_AVG | PNG_FILTER_UP | PNG_FILTER_PAETH)) != 0)
+   if ((filters & (PNG_FILTER_AVG | PNG_FILTER_UP | PNG_FILTER_PAETH)) != 0) {
       png_ptr->prev_row = png_voidcast(png_bytep,
           png_calloc(png_ptr, buf_size));
+}
 #endif /* WRITE_FILTER */
 
 #ifdef PNG_WRITE_INTERLACING_SUPPORTED
@@ -2026,8 +2096,9 @@ png_write_finish_row(png_structrp png_ptr)
    png_ptr->row_number++;
 
    /* See if we are done */
-   if (png_ptr->row_number < png_ptr->num_rows)
+   if (png_ptr->row_number < png_ptr->num_rows) {
       return;
+}
 
 #ifdef PNG_WRITE_INTERLACING_SUPPORTED
    /* If interlaced, go to next pass */
@@ -2046,8 +2117,9 @@ png_write_finish_row(png_structrp png_ptr)
          {
             png_ptr->pass++;
 
-            if (png_ptr->pass >= 7)
+            if (png_ptr->pass >= 7) {
                break;
+}
 
             png_ptr->usr_width = (png_ptr->width +
                 png_pass_inc[png_ptr->pass] - 1 -
@@ -2059,8 +2131,9 @@ png_write_finish_row(png_structrp png_ptr)
                 png_pass_ystart[png_ptr->pass]) /
                 png_pass_yinc[png_ptr->pass];
 
-            if ((png_ptr->transformations & PNG_INTERLACE) != 0)
+            if ((png_ptr->transformations & PNG_INTERLACE) != 0) {
                break;
+}
 
          } while (png_ptr->usr_width == 0 || png_ptr->num_rows == 0);
 
@@ -2069,10 +2142,11 @@ png_write_finish_row(png_structrp png_ptr)
       /* Reset the row above the image for the next pass */
       if (png_ptr->pass < 7)
       {
-         if (png_ptr->prev_row != NULL)
+         if (png_ptr->prev_row != NULL) {
             memset(png_ptr->prev_row, 0,
                 PNG_ROWBYTES(png_ptr->usr_channels *
                 png_ptr->usr_bit_depth, png_ptr->width) + 1);
+}
 
          return;
       }
@@ -2139,12 +2213,14 @@ png_do_write_interlace(png_row_infop row_info, png_bytep row, int pass)
                   d = 0;
                }
 
-               else
+               else {
                   shift--;
+}
 
             }
-            if (shift != 7)
+            if (shift != 7) {
                *dp = (png_byte)d;
+}
 
             break;
          }
@@ -2177,11 +2253,13 @@ png_do_write_interlace(png_row_infop row_info, png_bytep row, int pass)
                   d = 0;
                }
 
-               else
+               else {
                   shift -= 2;
+}
             }
-            if (shift != 6)
+            if (shift != 6) {
                *dp = (png_byte)d;
+}
 
             break;
          }
@@ -2213,11 +2291,13 @@ png_do_write_interlace(png_row_infop row_info, png_bytep row, int pass)
                   d = 0;
                }
 
-               else
+               else {
                   shift -= 4;
+}
             }
-            if (shift != 4)
+            if (shift != 4) {
                *dp = (png_byte)d;
+}
 
             break;
          }
@@ -2244,8 +2324,9 @@ png_do_write_interlace(png_row_infop row_info, png_bytep row, int pass)
                sp = row + (size_t)i * pixel_bytes;
 
                /* Move the pixel */
-               if (dp != sp)
+               if (dp != sp) {
                   memcpy(dp, sp, pixel_bytes);
+}
 
                /* Next pixel */
                dp += pixel_bytes;
@@ -2307,8 +2388,9 @@ png_setup_sub_row(png_structrp png_ptr, png_uint_32 bpp,
       sum += (v < 128) ? v : 256 - v;
 #endif
 
-      if (sum > lmins)  /* We are already worse, don't continue. */
+      if (sum > lmins) {  /* We are already worse, don't continue. */
         break;
+}
    }
 
    return sum;
@@ -2357,8 +2439,9 @@ png_setup_up_row(png_structrp png_ptr, size_t row_bytes, size_t lmins)
       sum += (v < 128) ? v : 256 - v;
 #endif
 
-      if (sum > lmins)  /* We are already worse, don't continue. */
+      if (sum > lmins) {  /* We are already worse, don't continue. */
         break;
+}
    }
 
    return sum;
@@ -2413,8 +2496,9 @@ png_setup_avg_row(png_structrp png_ptr, png_uint_32 bpp,
       sum += (v < 128) ? v : 256 - v;
 #endif
 
-      if (sum > lmins)  /* We are already worse, don't continue. */
+      if (sum > lmins) {  /* We are already worse, don't continue. */
         break;
+}
    }
 
    return sum;
@@ -2496,8 +2580,9 @@ png_setup_paeth_row(png_structrp png_ptr, png_uint_32 bpp,
       sum += (v < 128) ? v : 256 - v;
 #endif
 
-      if (sum > lmins)  /* We are already worse, don't continue. */
+      if (sum > lmins) {  /* We are already worse, don't continue. */
         break;
+}
    }
 
    return sum;

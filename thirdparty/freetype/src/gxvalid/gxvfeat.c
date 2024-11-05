@@ -220,8 +220,9 @@
     if ( settingTable < reserved_size )
       FT_INVALID_OFFSET;
 
-    if ( ( featureFlags & GXV_FEAT_MASK_UNUSED ) == 0 )
+    if ( ( featureFlags & GXV_FEAT_MASK_UNUSED ) == 0 ) {
       GXV_SET_ERR_IF_PARANOID( FT_INVALID_DATA );
+}
 
     exclusive = FT_BOOL( featureFlags & GXV_FEAT_MASK_EXCLUSIVE_SETTINGS );
     if ( exclusive )

@@ -44,7 +44,8 @@ static void oc_unpack_octets(oc_pack_buf *_opb,char *_buf,size_t _len){
 static long oc_unpack_length(oc_pack_buf *_opb){
   long ret[4];
   int  i;
-  for(i=0;i<4;i++)ret[i]=oc_pack_read(_opb,8);
+  for(i=0;i<4;i++) {ret[i]=oc_pack_read(_opb,8);
+}
   return ret[0]|ret[1]<<8|ret[2]<<16|ret[3]<<24;
 }
 
@@ -111,9 +112,11 @@ static int oc_info_unpack(oc_pack_buf *_opb,th_info *_info){
   _info->keyframe_granule_shift=(int)val;
   val=oc_pack_read(_opb,2);
   _info->pixel_fmt=(th_pixel_fmt)val;
-  if(_info->pixel_fmt==TH_PF_RSVD)return TH_EBADHEADER;
+  if(_info->pixel_fmt==TH_PF_RSVD) {return TH_EBADHEADER;
+}
   val=oc_pack_read(_opb,3);
-  if(val!=0||oc_pack_bytes_left(_opb)<0)return TH_EBADHEADER;
+  if(val!=0||oc_pack_bytes_left(_opb)<0) {return TH_EBADHEADER;
+}
   return 0;
 }
 
@@ -122,9 +125,11 @@ static int oc_comment_unpack(oc_pack_buf *_opb,th_comment *_tc){
   int  i;
   /*Read the vendor string.*/
   len=oc_unpack_length(_opb);
-  if(len<0||len>oc_pack_bytes_left(_opb))return TH_EBADHEADER;
+  if(len<0||len>oc_pack_bytes_left(_opb)) {return TH_EBADHEADER;
+}
   _tc->vendor=_ogg_malloc((size_t)len+1);
-  if(_tc->vendor==NULL)return TH_EFAULT;
+  if(_tc->vendor==NULL) {return TH_EFAULT;
+}
   oc_unpack_octets(_opb,_tc->vendor,len);
   _tc->vendor[len]='\0';
   /*Read the user comments.*/
@@ -164,7 +169,8 @@ static int oc_setup_unpack(oc_pack_buf *_opb,th_setup_info *_setup){
   int ret;
   /*Read the quantizer tables.*/
   ret=oc_quant_params_unpack(_opb,&_setup->qinfo);
-  if(ret<0)return ret;
+  if(ret<0) {return ret;
+}
   /*Read the Huffman trees.*/
   return oc_huff_trees_unpack(_opb,_setup->huff_tables);
 }
@@ -187,54 +193,67 @@ static int oc_dec_headerin(oc_pack_buf *_opb,th_info *_info,
     /*Check to make sure we received all three headers...
       If we haven't seen any valid headers, assume this is not actually
        Theora.*/
-    if(_info->frame_width<=0)return TH_ENOTFORMAT;
+    if(_info->frame_width<=0) {return TH_ENOTFORMAT;
+}
     /*Follow our documentation, which says we'll return TH_EFAULT if this
        are NULL (_info was checked by our caller).*/
-    if(_tc==NULL)return TH_EFAULT;
+    if(_tc==NULL) {return TH_EFAULT;
+}
     /*And if any other headers were missing, declare this packet "out of
        sequence" instead.*/
-    if(_tc->vendor==NULL)return TH_EBADHEADER;
+    if(_tc->vendor==NULL) {return TH_EBADHEADER;
+}
     /*Don't check this until it's needed, since we allow passing NULL for the
        arguments that we're not expecting the next header to fill in yet.*/
-    if(_setup==NULL)return TH_EFAULT;
-    if(*_setup==NULL)return TH_EBADHEADER;
+    if(_setup==NULL) {return TH_EFAULT;
+}
+    if(*_setup==NULL) {return TH_EBADHEADER;
+}
     /*If we got everything, we're done.*/
     return 0;
   }
   /*Check the codec string.*/
   oc_unpack_octets(_opb,buffer,6);
-  if(memcmp(buffer,"theora",6)!=0)return TH_ENOTFORMAT;
+  if(memcmp(buffer,"theora",6)!=0) {return TH_ENOTFORMAT;
+}
   switch(packtype){
     /*Codec info header.*/
     case 0x80:{
       /*This should be the first packet, and we should not already be
          initialized.*/
-      if(!_op->b_o_s||_info->frame_width>0)return TH_EBADHEADER;
+      if(!_op->b_o_s||_info->frame_width>0) {return TH_EBADHEADER;
+}
       ret=oc_info_unpack(_opb,_info);
-      if(ret<0)th_info_clear(_info);
-      else ret=3;
+      if(ret<0) {th_info_clear(_info);
+      } else { ret=3;
+}
     }break;
     /*Comment header.*/
     case 0x81:{
-      if(_tc==NULL)return TH_EFAULT;
+      if(_tc==NULL) {return TH_EFAULT;
+}
       /*We shoud have already decoded the info header, and should not yet have
          decoded the comment header.*/
-      if(_info->frame_width==0||_tc->vendor!=NULL)return TH_EBADHEADER;
+      if(_info->frame_width==0||_tc->vendor!=NULL) {return TH_EBADHEADER;
+}
       ret=oc_comment_unpack(_opb,_tc);
-      if(ret<0)th_comment_clear(_tc);
-      else ret=2;
+      if(ret<0) {th_comment_clear(_tc);
+      } else { ret=2;
+}
     }break;
     /*Codec setup header.*/
     case 0x82:{
       oc_setup_info *setup;
-      if(_tc==NULL||_setup==NULL)return TH_EFAULT;
+      if(_tc==NULL||_setup==NULL) {return TH_EFAULT;
+}
       /*We should have already decoded the info header and the comment header,
          and should not yet have decoded the setup header.*/
       if(_info->frame_width==0||_tc->vendor==NULL||*_setup!=NULL){
         return TH_EBADHEADER;
       }
       setup=(oc_setup_info *)_ogg_calloc(1,sizeof(*setup));
-      if(setup==NULL)return TH_EFAULT;
+      if(setup==NULL) {return TH_EFAULT;
+}
       ret=oc_setup_unpack(_opb,setup);
       if(ret<0){
         oc_setup_clear(setup);
@@ -260,8 +279,10 @@ static int oc_dec_headerin(oc_pack_buf *_opb,th_info *_info,
 int th_decode_headerin(th_info *_info,th_comment *_tc,
  th_setup_info **_setup,ogg_packet *_op){
   oc_pack_buf opb;
-  if(_op==NULL)return TH_EBADHEADER;
-  if(_info==NULL)return TH_EFAULT;
+  if(_op==NULL) {return TH_EBADHEADER;
+}
+  if(_info==NULL) {return TH_EFAULT;
+}
   oc_pack_readinit(&opb,_op->packet,_op->bytes);
   return oc_dec_headerin(&opb,_info,_tc,_setup,_op);
 }

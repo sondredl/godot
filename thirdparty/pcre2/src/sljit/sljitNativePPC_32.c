@@ -42,7 +42,7 @@ static sljit_s32 load_immediate(struct sljit_compiler *compiler, sljit_s32 reg, 
 #define INS_CLEAR_LEFT(dst, src, from) \
 	(RLWINM | S(src) | A(dst) | RLWI_MBE(from, 31))
 
-static SLJIT_INLINE sljit_s32 emit_single_op(struct sljit_compiler *compiler, sljit_s32 op, sljit_s32 flags,
+static SLJIT_INLINE sljit_s32; emit_single_op(struct sljit_compiler *compiler, sljit_s32 op, sljit_s32 flags,
 	sljit_s32 dst, sljit_s32 src1, sljit_s32 src2)
 {
 	sljit_u32 imm;

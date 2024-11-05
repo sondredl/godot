@@ -68,7 +68,8 @@ float vorbis_lpc_from_data(float *data,float *lpci,int n,int m){
   j=m+1;
   while(j--){
     double d=0; /* double needed for accumulator depth */
-    for(i=j;i<n;i++)d+=(double)data[i]*data[i-j];
+    for(i=j;i<n;i++) {d+=(double)data[i]*data[i-j];
+}
     aut[j]=d;
   }
 
@@ -91,7 +92,8 @@ float vorbis_lpc_from_data(float *data,float *lpci,int n,int m){
        and needs reflection coefficients, save the results of 'r' from
        each iteration. */
 
-    for(j=0;j<i;j++)r-=lpc[j]*aut[i-j];
+    for(j=0;j<i;j++) {r-=lpc[j]*aut[i-j];
+}
     r/=error;
 
     /* Update LPC coefficients and total error */
@@ -103,7 +105,8 @@ float vorbis_lpc_from_data(float *data,float *lpci,int n,int m){
       lpc[j]+=r*lpc[i-1-j];
       lpc[i-1-j]+=r*tmp;
     }
-    if(i&1)lpc[j]+=lpc[j]*r;
+    if(i&1) {lpc[j]+=lpc[j]*r;
+}
 
     error*=1.-r*r;
 
@@ -121,7 +124,8 @@ float vorbis_lpc_from_data(float *data,float *lpci,int n,int m){
     }
   }
 
-  for(j=0;j<m;j++)lpci[j]=(float)lpc[j];
+  for(j=0;j<m;j++) {lpci[j]=(float)lpc[j];
+}
 
   /* we need the error value to know how big an impulse to hit the
      filter with later */
@@ -140,19 +144,23 @@ void vorbis_lpc_predict(float *coeff,float *prime,int m,
   float y;
   float *work=alloca(sizeof(*work)*(m+n));
 
-  if(!prime)
-    for(i=0;i<m;i++)
+  if(!prime) {
+    for(i=0;i<m;i++) {
       work[i]=0.f;
-  else
-    for(i=0;i<m;i++)
+}
+  } else {
+    for(i=0;i<m;i++) {
       work[i]=prime[i];
+}
+}
 
   for(i=0;i<n;i++){
     y=0;
     o=i;
     p=m;
-    for(j=0;j<m;j++)
+    for(j=0;j<m;j++) {
       y-=work[o++]*coeff[--p];
+}
 
     data[i]=work[o]=y;
   }

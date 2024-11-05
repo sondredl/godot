@@ -74,8 +74,9 @@
   {
     FT_UNUSED( msg_tag );
 
-    if ( gid < gxvalid->face->num_glyphs )
+    if ( gid < gxvalid->face->num_glyphs ) {
       return;
+}
 
     GXV_TRACE(( "just table includes too large %s"
                 " GID=%d > %ld (in maxp)\n",
@@ -293,18 +294,20 @@
 
     gxvalid->subtable_length = (FT_ULong)( p - table );
 
-    if ( variantsAxis != 0x64756374L ) /* 'duct' */
+    if ( variantsAxis != 0x64756374L ) { /* 'duct' */
       GXV_TRACE(( "variantsAxis 0x%08lx is non default value",
                    variantsAxis ));
+}
 
-    if ( minimumLimit > noStretchValue )
+    if ( minimumLimit > noStretchValue ) {
       GXV_TRACE(( "type4:minimumLimit 0x%08lx > noStretchValue 0x%08lx\n",
                   minimumLimit, noStretchValue ));
-    else if ( noStretchValue > maximumLimit )
+    } else if ( noStretchValue > maximumLimit ) {
       GXV_TRACE(( "type4:noStretchValue 0x%08lx > maximumLimit 0x%08lx\n",
                   noStretchValue, maximumLimit ));
-    else if ( !IS_PARANOID_VALIDATION )
+    } else if ( !IS_PARANOID_VALIDATION ) {
       return;
+}
 
     FT_INVALID_DATA;
   }
@@ -324,9 +327,10 @@
     flags = FT_NEXT_USHORT( p );
     glyph = FT_NEXT_USHORT( p );
 
-    if ( flags )
+    if ( flags ) {
       GXV_TRACE(( "type5: nonzero value 0x%04x in unused flags\n",
                    flags ));
+}
     gxv_just_check_max_gid( glyph, "type5:glyph", gxvalid );
 
     gxvalid->subtable_length = (FT_ULong)( p - table );
@@ -353,18 +357,20 @@
     actionLength = FT_NEXT_ULONG( p );
 
     /* actionClass is related with justClass using 7bit only */
-    if ( ( actionClass & 0xFF80 ) != 0 )
+    if ( ( actionClass & 0xFF80 ) != 0 ) {
       GXV_SET_ERR_IF_PARANOID( FT_INVALID_DATA );
+}
 
-    if ( actionType == 0 )
+    if ( actionType == 0 ) {
       gxv_just_actSubrecord_type0_validate( p, limit, gxvalid );
-    else if ( actionType == 1 )
+    } else if ( actionType == 1 ) {
       gxv_just_actSubrecord_type1_validate( p, limit, gxvalid );
-    else if ( actionType == 2 )
+    } else if ( actionType == 2 ) {
       gxv_just_actSubrecord_type2_validate( p, limit, gxvalid );
-    else if ( actionType == 3 )
+    } else if ( actionType == 3 ) {
       ;                         /* Stretch glyph action: no actionData */
-    else if ( actionType == 4 )
+    } else { i
+}f ( actionType == 4 )
       gxv_just_actSubrecord_type4_validate( p, limit, gxvalid );
     else if ( actionType == 5 )
       gxv_just_actSubrecord_type5_validate( p, limit, gxvalid );
@@ -515,14 +521,16 @@
     subFeatureFlags = FT_NEXT_ULONG( p );
 
     GXV_TRACE(( "  justClassTable: coverage = 0x%04x ", coverage ));
-    if ( ( coverage & 0x4000 ) == 0  )
+    if ( ( coverage & 0x4000 ) == 0  ) {
       GXV_TRACE(( "ascending\n" ));
-    else
+    } else {
       GXV_TRACE(( "descending\n" ));
+}
 
-    if ( subFeatureFlags )
+    if ( subFeatureFlags ) {
       GXV_TRACE(( "  justClassTable: nonzero value (0x%08lx)"
                   " in unused subFeatureFlags\n", subFeatureFlags ));
+}
 
     gxvalid->statetable.optdata               = NULL;
     gxvalid->statetable.optdata_load_func     = NULL;

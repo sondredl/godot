@@ -91,7 +91,8 @@ const unsigned char OC_DCT_TOKEN_EXTRA_BITS[TH_NDCT_TOKENS]={
 
 int oc_ilog(unsigned _v){
   int ret;
-  for(ret=0;_v;ret++)_v>>=1;
+  for(ret=0;_v;ret++) {_v>>=1;
+}
   return ret;
 }
 
@@ -99,7 +100,8 @@ int oc_ilog(unsigned _v){
 
 void *oc_aligned_malloc(size_t _sz,size_t _align){
   unsigned char *p;
-  if(_align-1>UCHAR_MAX||(_align&_align-1)||_sz>~(size_t)0-_align)return NULL;
+  if(_align-1>UCHAR_MAX||(_align&_align-1)||_sz>~(size_t)0-_align) {return NULL;
+}
   p=(unsigned char *)_ogg_malloc(_sz+_align);
   if(p!=NULL){
     int offs;
@@ -138,7 +140,8 @@ void **oc_malloc_2d(size_t _height,size_t _width,size_t _sz){
     char    *datptr;
     p=(void **)ret;
     i=_height;
-    for(datptr=ret+colsz;i-->0;p++,datptr+=rowsz)*p=(void *)datptr;
+    for(datptr=ret+colsz;i-->0;p++,datptr+=rowsz) {*p=(void *)datptr;
+}
   }
   return (void **)ret;
 }
@@ -160,7 +163,8 @@ void **oc_calloc_2d(size_t _height,size_t _width,size_t _sz){
     char    *datptr;
     p=(void **)ret;
     i=_height;
-    for(datptr=ret+colsz;i-->0;p++,datptr+=rowsz)*p=(void *)datptr;
+    for(datptr=ret+colsz;i-->0;p++,datptr+=rowsz) {*p=(void *)datptr;
+}
   }
   return (void **)ret;
 }

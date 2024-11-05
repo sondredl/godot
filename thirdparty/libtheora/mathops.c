@@ -147,8 +147,10 @@ ogg_int64_t oc_bexp64(ogg_int64_t _z){
   ogg_int64_t z;
   int         ipart;
   ipart=(int)(_z>>57);
-  if(ipart<0)return 0;
-  if(ipart>=63)return 0x7FFFFFFFFFFFFFFFLL;
+  if(ipart<0) {return 0;
+}
+  if(ipart>=63) {return 0x7FFFFFFFFFFFFFFFLL;
+}
   z=_z-OC_Q57(ipart);
   if(z){
     ogg_int64_t mask;
@@ -174,7 +176,8 @@ ogg_int64_t oc_bexp64(ogg_int64_t _z){
       w+=(w>>i+1)+mask^mask;
       z-=OC_ATANH_LOG2[i]+mask^mask;
       /*Repeat iteration 4.*/
-      if(i>=3)break;
+      if(i>=3) {break;
+}
       z<<=1;
     }
     for(;;i++){
@@ -182,7 +185,8 @@ ogg_int64_t oc_bexp64(ogg_int64_t _z){
       w+=(w>>i+1)+mask^mask;
       z-=OC_ATANH_LOG2[i]+mask^mask;
       /*Repeat iteration 13.*/
-      if(i>=12)break;
+      if(i>=12) {break;
+}
       z<<=1;
     }
     for(;i<32;i++){
@@ -206,7 +210,8 @@ ogg_int64_t oc_bexp64(ogg_int64_t _z){
         wlo+=(w>>i)+mask^mask;
         z-=OC_ATANH_LOG2[31]+mask^mask;
         /*Repeat iteration 40.*/
-        if(i>=39)break;
+        if(i>=39) {break;
+}
         z<<=1;
       }
       for(;i<61;i++){
@@ -217,7 +222,8 @@ ogg_int64_t oc_bexp64(ogg_int64_t _z){
     }
     w=(w<<1)+wlo;
   }
-  else w=(ogg_int64_t)1<<62;
+  else { w
+}=(ogg_int64_t)1<<62;
   if(ipart<62)w=(w>>61-ipart)+1>>1;
   return w;
 }
@@ -226,7 +232,8 @@ ogg_int64_t oc_bexp64(ogg_int64_t _z){
 ogg_int64_t oc_blog64(ogg_int64_t _w){
   ogg_int64_t z;
   int         ipart;
-  if(_w<=0)return -1;
+  if(_w<=0) {return -1;
+}
   ipart=OC_ILOGNZ_64(_w)-1;
   if(ipart>61)_w>>=ipart-61;
   else _w<<=61-ipart;
@@ -306,7 +313,8 @@ int oc_blog32_q10(ogg_uint32_t _w){
   int n;
   int ipart;
   int fpart;
-  if(_w<=0)return -1;
+  if(_w<=0) {return -1;
+}
   ipart=OC_ILOGNZ_32(_w);
   n=(ipart-16>0?_w>>ipart-16:_w<<16-ipart)-32768-16384;
   fpart=(n*((n*((n*((n*-1402>>15)+2546)>>15)-5216)>>15)+15745)>>15)-6793;

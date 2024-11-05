@@ -53,7 +53,8 @@ static double AccumulateLSIM(const uint8_t* src, int src_stride,
         for (i = x_0; i < x_1; ++i) {
           const double diff = s[i] - value;
           const double sse = diff * diff;
-          if (sse < best_sse) best_sse = sse;
+          if (sse < best_sse) { best_sse = sse;
+}
         }
       }
       total_sse += best_sse;
@@ -150,7 +151,8 @@ int WebPPlaneDistortion(const uint8_t* src, size_t src_stride,
     uint8_t* tmp2;
     allocated =
         (uint8_t*)WebPSafeMalloc(2ULL * width * height, sizeof(*allocated));
-    if (allocated == NULL) return 0;
+    if (allocated == NULL) { return 0;
+}
     tmp1 = allocated;
     tmp2 = tmp1 + (size_t)width * height;
     for (y = 0; y < height; ++y) {
@@ -189,15 +191,20 @@ int WebPPictureDistortion(const WebPPicture* src, const WebPPicture* ref,
   }
 
   VP8SSIMDspInit();
-  if (!WebPPictureInit(&p0) || !WebPPictureInit(&p1)) return 0;
+  if (!WebPPictureInit(&p0) || !WebPPictureInit(&p1)) { return 0;
+}
   w = src->width;
   h = src->height;
-  if (!WebPPictureView(src, 0, 0, w, h, &p0)) goto Error;
-  if (!WebPPictureView(ref, 0, 0, w, h, &p1)) goto Error;
+  if (!WebPPictureView(src, 0, 0, w, h, &p0)) { goto Error;
+}
+  if (!WebPPictureView(ref, 0, 0, w, h, &p1)) { goto Error;
+}
 
   // We always measure distortion in ARGB space.
-  if (p0.use_argb == 0 && !WebPPictureYUVAToARGB(&p0)) goto Error;
-  if (p1.use_argb == 0 && !WebPPictureYUVAToARGB(&p1)) goto Error;
+  if (p0.use_argb == 0 && !WebPPictureYUVAToARGB(&p0)) { goto Error;
+}
+  if (p1.use_argb == 0 && !WebPPictureYUVAToARGB(&p1)) { goto Error;
+}
   for (c = 0; c < 4; ++c) {
     float distortion;
     const size_t stride0 = 4 * (size_t)p0.argb_stride;

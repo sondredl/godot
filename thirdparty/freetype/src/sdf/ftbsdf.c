@@ -318,8 +318,9 @@
     FT_Int   num_neighbors = 0;
 
 
-    if ( dm->alpha == 0 )
+    if ( dm->alpha == 0 ) {
       goto Done;
+}
 
     if ( dm->alpha > 0 && dm->alpha < 255 )
     {
@@ -452,8 +453,9 @@
     /* Since our spread cannot be 0, this condition */
     /* can never be true.                           */
     if ( x <= 0 || x >= w - 1 ||
-         y <= 0 || y >= r - 1 )
+         y <= 0 || y >= r - 1 ) {
       return g;
+}
 
     /* initialize the alphas */
     alphas[0] = 256 * (FT_16D16)current[-w - 1].alpha;
@@ -501,9 +503,9 @@
     /* approximate direction of the edge, we can     */
     /* approximate the edge distance much better.    */
 
-    if ( g.x == 0 || g.y == 0 )
+    if ( g.x == 0 || g.y == 0 ) {
       dist = ONE / 2 - alphas[4];
-    else
+    } else
     {
       gx = g.x;
       gy = g.y;
@@ -520,20 +522,21 @@
 
       a1 = FT_DivFix( gy, gx ) / 2;
 
-      if ( current_alpha < a1 )
+      if ( current_alpha < a1 ) {
         dist = ( gx + gy ) / 2 -
                square_root( 2 * FT_MulFix( gx,
                                            FT_MulFix( gy,
                                                       current_alpha ) ) );
 
-      else if ( current_alpha < ( ONE - a1 ) )
+      } else if ( current_alpha < ( ONE - a1 ) ) {
         dist = FT_MulFix( ONE / 2 - current_alpha, gx );
 
-      else
+      } else {
         dist = -( gx + gy ) / 2 +
                square_root( 2 * FT_MulFix( gx,
                                            FT_MulFix( gy,
                                                       ONE - current_alpha ) ) );
+}
     }
 
     g.x = FT_MulFix( g.x, dist );
@@ -1299,8 +1302,9 @@
 
     /* allocate the distance map */
     if ( FT_QALLOC_MULT( worker.distance_map, target->rows,
-                         target->width * sizeof ( *worker.distance_map ) ) )
+                         target->width * sizeof ( *worker.distance_map ) ) ) {
       goto Exit;
+}
 
     worker.width  = (int)target->width;
     worker.rows   = (int)target->rows;
@@ -1316,8 +1320,9 @@
                   (long)sizeof ( *worker.distance_map ) ));
 
   Exit:
-    if ( worker.distance_map )
+    if ( worker.distance_map ) {
       FT_FREE( worker.distance_map );
+}
 
     return error;
   }

@@ -249,7 +249,8 @@ void vorbis_lsp_to_curve(float *curve,int *map,int n,int ln,float *lsp,int m,
                             float amp,float ampoffset){
   int i;
   float wdel=M_PI/ln;
-  for(i=0;i<m;i++)lsp[i]=2.f*cos(lsp[i]);
+  for(i=0;i<m;i++) {lsp[i]=2.f*cos(lsp[i]);
+}
 
   i=0;
   while(i<n){
@@ -276,7 +277,8 @@ void vorbis_lsp_to_curve(float *curve,int *map,int n,int ln,float *lsp,int m,
     q=fromdB(amp/sqrt(p+q)-ampoffset);
 
     curve[i]*=q;
-    while(map[++i]==k)curve[i]*=q;
+    while(map[++i]==k) {curve[i]*=q;
+}
   }
 }
 
@@ -310,7 +312,8 @@ static int comp(const void *a,const void *b){
 static int Laguerre_With_Deflation(float *a,int ord,float *r){
   int i,m;
   double *defl=alloca(sizeof(*defl)*(ord+1));
-  for(i=0;i<=ord;i++)defl[i]=a[i];
+  for(i=0;i<=ord;i++) {defl[i]=a[i];
+}
 
   for(m=ord;m>0;m--){
     double new=0.f,delta;
@@ -328,31 +331,37 @@ static int Laguerre_With_Deflation(float *a,int ord,float *r){
 
       /* Laguerre's method */
       denom=(m-1) * ((m-1)*pp*pp - m*p*ppp);
-      if(denom<0)
+      if(denom<0) {
         return(-1);  /* complex root!  The LPC generator handed us a bad filter */
+}
 
       if(pp>0){
         denom = pp + sqrt(denom);
-        if(denom<EPSILON)denom=EPSILON;
+        if(denom<EPSILON) {denom=EPSILON;
+}
       }else{
         denom = pp - sqrt(denom);
-        if(denom>-(EPSILON))denom=-(EPSILON);
+        if(denom>-(EPSILON)) {denom=-(EPSILON);
+}
       }
 
       delta  = m*p/denom;
       new   -= delta;
 
-      if(delta<0.f)delta*=-1;
+      if(delta<0.f) {delta*=-1;
+}
 
-      if(fabs(delta/new)<10e-12)break;
+      if(fabs(delta/new)<10e-12) {break;
+}
     }
 
     r[m-1]=new;
 
     /* forward deflation */
 
-    for(i=m;i>0;i--)
+    for(i=m;i>0;i--) {
       defl[i-1]+=new*defl[i];
+}
     defl++;
 
   }
@@ -366,7 +375,8 @@ static int Newton_Raphson(float *a,int ord,float *r){
   double error=1.f;
   double *root=alloca(ord*sizeof(*root));
 
-  for(i=0; i<ord;i++) root[i] = r[i];
+  for(i=0; i<ord;i++) { root[i] = r[i];
+}
 
   while(error>1e-20){
     error=0;
@@ -386,7 +396,8 @@ static int Newton_Raphson(float *a,int ord,float *r){
       error+= delta*delta;
     }
 
-    if(count>40)return(-1);
+    if(count>40) {return(-1);
+}
 
     count++;
   }
@@ -394,7 +405,8 @@ static int Newton_Raphson(float *a,int ord,float *r){
   /* Replaced the original bubble sort with a real sort.  With your
      help, we can eliminate the bubble sort in our lifetime. --Monty */
 
-  for(i=0; i<ord;i++) r[i] = root[i];
+  for(i=0; i<ord;i++) { r[i] = root[i];
+}
   return(0);
 }
 
@@ -419,15 +431,20 @@ int vorbis_lpc_to_lsp(float *lpc,float *lsp,int m){
   /* Remove the roots at +1 and -1. */
 
   g1[g1_order] = 1.f;
-  for(i=1;i<=g1_order;i++) g1[g1_order-i] = lpc[i-1]+lpc[m-i];
+  for(i=1;i<=g1_order;i++) { g1[g1_order-i] = lpc[i-1]+lpc[m-i];
+}
   g2[g2_order] = 1.f;
-  for(i=1;i<=g2_order;i++) g2[g2_order-i] = lpc[i-1]-lpc[m-i];
+  for(i=1;i<=g2_order;i++) { g2[g2_order-i] = lpc[i-1]-lpc[m-i];
+}
 
   if(g1_order>g2_order){
-    for(i=2; i<=g2_order;i++) g2[g2_order-i] += g2[g2_order-i+2];
+    for(i=2; i<=g2_order;i++) { g2[g2_order-i] += g2[g2_order-i+2];
+}
   }else{
-    for(i=1; i<=g1_order;i++) g1[g1_order-i] -= g1[g1_order-i+1];
-    for(i=1; i<=g2_order;i++) g2[g2_order-i] += g2[g2_order-i+1];
+    for(i=1; i<=g1_order;i++) { g1[g1_order-i] -= g1[g1_order-i+1];
+}
+    for(i=1; i<=g2_order;i++) { g2[g2_order-i] += g2[g2_order-i+1];
+}
   }
 
   /* Convert into polynomials in cos(alpha) */
@@ -436,8 +453,9 @@ int vorbis_lpc_to_lsp(float *lpc,float *lsp,int m){
 
   /* Find the roots of the 2 even polynomials.*/
   if(Laguerre_With_Deflation(g1,g1_order,g1r) ||
-     Laguerre_With_Deflation(g2,g2_order,g2r))
+     Laguerre_With_Deflation(g2,g2_order,g2r)) {
     return(-1);
+}
 
   Newton_Raphson(g1,g1_order,g1r); /* if it fails, it leaves g1r alone */
   Newton_Raphson(g2,g2_order,g2r); /* if it fails, it leaves g2r alone */
@@ -445,10 +463,12 @@ int vorbis_lpc_to_lsp(float *lpc,float *lsp,int m){
   qsort(g1r,g1_order,sizeof(*g1r),comp);
   qsort(g2r,g2_order,sizeof(*g2r),comp);
 
-  for(i=0;i<g1_order;i++)
+  for(i=0;i<g1_order;i++) {
     lsp[i*2] = acos(g1r[i]);
+}
 
-  for(i=0;i<g2_order;i++)
+  for(i=0;i<g2_order;i++) {
     lsp[i*2+1] = acos(g2r[i]);
+}
   return(0);
 }

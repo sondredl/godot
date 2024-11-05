@@ -108,7 +108,8 @@ int WebPGetDemuxVersion(void) {
 
 static int RemapMemBuffer(MemBuffer* const mem,
                           const uint8_t* data, size_t size) {
-  if (size < mem->buf_size_) return 0;  // can't remap to a shorter buffer!
+  if (size < mem->buf_size_) { return 0;  // can't remap to a shorter buffer!
+}
 
   mem->buf_ = data;
   mem->end_ = mem->buf_size_ = size;

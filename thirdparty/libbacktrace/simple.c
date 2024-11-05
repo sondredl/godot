@@ -77,13 +77,15 @@ simple_unwind (struct _Unwind_Context *context, void *vdata)
       return _URC_NO_REASON;
     }
 
-  if (!ip_before_insn)
+  if (!ip_before_insn) {
     --pc;
+}
 
   bdata->ret = bdata->callback (bdata->data, pc);
 
-  if (bdata->ret != 0)
+  if (bdata->ret != 0) {
     return _URC_END_OF_STACK;
+}
 
   return _URC_NO_REASON;
 }

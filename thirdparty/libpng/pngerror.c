@@ -79,9 +79,10 @@ png_error,(png_const_structrp png_ptr, png_const_charp error_message),
       }
    }
 #endif
-   if (png_ptr != NULL && png_ptr->error_fn != NULL)
+   if (png_ptr != NULL && png_ptr->error_fn != NULL) {
       (*(png_ptr->error_fn))(png_constcast(png_structrp,png_ptr),
           error_message);
+}
 
    /* If the custom handler doesn't exist, or if it returns,
       use the default handler, which will not return. */
@@ -114,9 +115,11 @@ png_safecat(png_charp buffer, size_t bufsize, size_t pos,
 {
    if (buffer != NULL && pos < bufsize)
    {
-      if (string != NULL)
-         while (*string != '\0' && pos < bufsize-1)
+      if (string != NULL) {
+         while (*string != '\0' && pos < bufsize-1) {
            buffer[pos++] = *string++;
+}
+}
 
       buffer[pos] = '\0';
    }
@@ -195,10 +198,11 @@ png_format_number(png_const_charp start, png_charp end, int format,
           * drop the decimal point.  If the number is a true zero handle that
           * here.
           */
-         if (output != 0)
+         if (output != 0) {
             *--end = '.';
-         else if (number == 0) /* and !output */
+         } else if (number == 0) { /* and !output */
             *--end = '0';
+}
       }
    }
 
@@ -225,17 +229,20 @@ png_warning(png_const_structrp png_ptr, png_const_charp warning_message)
       {
          if (*warning_message == PNG_LITERAL_SHARP)
          {
-            for (offset = 1; offset < 15; offset++)
-               if (warning_message[offset] == ' ')
+            for (offset = 1; offset < 15; offset++) {
+               if (warning_message[offset] == ' ') {
                   break;
+}
+}
          }
       }
    }
-   if (png_ptr != NULL && png_ptr->warning_fn != NULL)
+   if (png_ptr != NULL && png_ptr->warning_fn != NULL) {
       (*(png_ptr->warning_fn))(png_constcast(png_structrp,png_ptr),
           warning_message + offset);
-   else
+   } else {
       png_default_warning(png_ptr, warning_message + offset);
+}
 }
 
 /* These functions support 'formatted' warning messages with up to
@@ -247,8 +254,9 @@ void
 png_warning_parameter(png_warning_parameters p, int number,
     png_const_charp string)
 {
-   if (number > 0 && number <= PNG_WARNING_PARAMETER_COUNT)
+   if (number > 0 && number <= PNG_WARNING_PARAMETER_COUNT) {
       (void)png_safecat(p[number-1], (sizeof p[number-1]), 0, string);
+}
 }
 
 void
@@ -269,13 +277,15 @@ png_warning_parameter_signed(png_warning_parameters p, int number, int format,
 
    /* Avoid overflow by doing the negate in a png_alloc_size_t: */
    u = (png_alloc_size_t)value;
-   if (value < 0)
+   if (value < 0) {
       u = ~u + 1;
+}
 
    str = PNG_FORMAT_NUMBER(buffer, format, u);
 
-   if (value < 0 && str > buffer)
+   if (value < 0 && str > buffer) {
       *--str = '-';
+}
 
    png_warning_parameter(p, number, str);
 }
@@ -313,8 +323,9 @@ png_formatted_warning(png_const_structrp png_ptr, png_warning_parameters p,
           * parameter to use.
           */
          while (valid_parameters[parameter] != parameter_char &&
-            valid_parameters[parameter] != '\0')
+            valid_parameters[parameter] != '\0') {
             ++parameter;
+}
 
          /* If the parameter digit is out of range it will just get printed. */
          if (parameter < PNG_WARNING_PARAMETER_COUNT)
@@ -327,8 +338,9 @@ png_formatted_warning(png_const_structrp png_ptr, png_warning_parameters p,
              * that parm[] has been initialized, so there is no guarantee of a
              * trailing '\0':
              */
-            while (i<(sizeof msg)-1 && *parm != '\0' && parm < pend)
+            while (i<(sizeof msg)-1 && *parm != '\0' && parm < pend) {
                msg[i++] = *parm++;
+}
 
             /* Consume the parameter digit too: */
             ++message;
@@ -365,22 +377,24 @@ png_benign_error(png_const_structrp png_ptr, png_const_charp error_message)
    {
 #     ifdef PNG_READ_SUPPORTED
          if ((png_ptr->mode & PNG_IS_READ_STRUCT) != 0 &&
-            png_ptr->chunk_name != 0)
+            png_ptr->chunk_name != 0) {
             png_chunk_warning(png_ptr, error_message);
-         else
+         } else {
 #     endif
       png_warning(png_ptr, error_message);
+}
    }
 
    else
    {
 #     ifdef PNG_READ_SUPPORTED
          if ((png_ptr->mode & PNG_IS_READ_STRUCT) != 0 &&
-            png_ptr->chunk_name != 0)
+            png_ptr->chunk_name != 0) {
             png_chunk_error(png_ptr, error_message);
-         else
+         } else {
 #     endif
       png_error(png_ptr, error_message);
+}
    }
 
 #  ifndef PNG_ERROR_TEXT_SUPPORTED
@@ -391,10 +405,11 @@ png_benign_error(png_const_structrp png_ptr, png_const_charp error_message)
 void /* PRIVATE */
 png_app_warning(png_const_structrp png_ptr, png_const_charp error_message)
 {
-   if ((png_ptr->flags & PNG_FLAG_APP_WARNINGS_WARN) != 0)
+   if ((png_ptr->flags & PNG_FLAG_APP_WARNINGS_WARN) != 0) {
       png_warning(png_ptr, error_message);
-   else
+   } else {
       png_error(png_ptr, error_message);
+}
 
 #  ifndef PNG_ERROR_TEXT_SUPPORTED
       PNG_UNUSED(error_message)
@@ -404,10 +419,11 @@ png_app_warning(png_const_structrp png_ptr, png_const_charp error_message)
 void /* PRIVATE */
 png_app_error(png_const_structrp png_ptr, png_const_charp error_message)
 {
-   if ((png_ptr->flags & PNG_FLAG_APP_ERRORS_WARN) != 0)
+   if ((png_ptr->flags & PNG_FLAG_APP_ERRORS_WARN) != 0) {
       png_warning(png_ptr, error_message);
-   else
+   } else {
       png_error(png_ptr, error_message);
+}
 
 #  ifndef PNG_ERROR_TEXT_SUPPORTED
       PNG_UNUSED(error_message)
@@ -456,18 +472,19 @@ png_format_buffer(png_const_structrp png_ptr, png_charp buffer, png_const_charp
       }
    }
 
-   if (error_message == NULL)
+   if (error_message == NULL) {
       buffer[iout] = '\0';
 
-   else
+   } else
    {
       int iin = 0;
 
       buffer[iout++] = ':';
       buffer[iout++] = ' ';
 
-      while (iin < PNG_MAX_ERROR_TEXT-1 && error_message[iin] != '\0')
+      while (iin < PNG_MAX_ERROR_TEXT-1 && error_message[iin] != '\0') {
          buffer[iout++] = error_message[iin++];
+}
 
       /* iin < PNG_MAX_ERROR_TEXT, so the following is safe: */
       buffer[iout] = '\0';
@@ -481,10 +498,10 @@ png_chunk_error,(png_const_structrp png_ptr, png_const_charp error_message),
     PNG_NORETURN)
 {
    char msg[18+PNG_MAX_ERROR_TEXT];
-   if (png_ptr == NULL)
+   if (png_ptr == NULL) {
       png_error(png_ptr, error_message);
 
-   else
+   } else
    {
       png_format_buffer(png_ptr, msg, error_message);
       png_error(png_ptr, msg);
@@ -497,10 +514,10 @@ void PNGAPI
 png_chunk_warning(png_const_structrp png_ptr, png_const_charp warning_message)
 {
    char msg[18+PNG_MAX_ERROR_TEXT];
-   if (png_ptr == NULL)
+   if (png_ptr == NULL) {
       png_warning(png_ptr, warning_message);
 
-   else
+   } else
    {
       png_format_buffer(png_ptr, msg, warning_message);
       png_warning(png_ptr, msg);
@@ -514,11 +531,12 @@ void PNGAPI
 png_chunk_benign_error(png_const_structrp png_ptr, png_const_charp
     error_message)
 {
-   if ((png_ptr->flags & PNG_FLAG_BENIGN_ERRORS_WARN) != 0)
+   if ((png_ptr->flags & PNG_FLAG_BENIGN_ERRORS_WARN) != 0) {
       png_chunk_warning(png_ptr, error_message);
 
-   else
+   } else {
       png_chunk_error(png_ptr, error_message);
+}
 
 #  ifndef PNG_ERROR_TEXT_SUPPORTED
       PNG_UNUSED(error_message)
@@ -543,11 +561,12 @@ png_chunk_report(png_const_structrp png_ptr, png_const_charp message, int error)
 
 #  ifdef PNG_READ_SUPPORTED
       {
-         if (error < PNG_CHUNK_ERROR)
+         if (error < PNG_CHUNK_ERROR) {
             png_chunk_warning(png_ptr, message);
 
-         else
+         } else {
             png_chunk_benign_error(png_ptr, message);
+}
       }
 #  endif
 
@@ -557,11 +576,12 @@ png_chunk_report(png_const_structrp png_ptr, png_const_charp message, int error)
 
 #  ifdef PNG_WRITE_SUPPORTED
       {
-         if (error < PNG_CHUNK_WRITE_ERROR)
+         if (error < PNG_CHUNK_WRITE_ERROR) {
             png_app_warning(png_ptr, message);
 
-         else
+         } else {
             png_app_error(png_ptr, message);
+}
       }
 #  endif
 }
@@ -577,12 +597,13 @@ png_fixed_error,(png_const_structrp png_ptr, png_const_charp name),PNG_NORETURN)
    char msg[fixed_message_ln+PNG_MAX_ERROR_TEXT];
    memcpy(msg, fixed_message, fixed_message_ln);
    iin = 0;
-   if (name != NULL)
+   if (name != NULL) {
       while (iin < (PNG_MAX_ERROR_TEXT-1) && name[iin] != 0)
       {
          msg[fixed_message_ln + iin] = name[iin];
          ++iin;
       }
+}
    msg[fixed_message_ln + iin] = 0;
    png_error(png_ptr, msg);
 }
@@ -607,23 +628,25 @@ png_set_longjmp_fn(png_structrp png_ptr, png_longjmp_ptr longjmp_fn,
     * the buffer is allocated and this may fail, causing the function to return
     * NULL.
     */
-   if (png_ptr == NULL)
+   if (png_ptr == NULL) {
       return NULL;
+}
 
    if (png_ptr->jmp_buf_ptr == NULL)
    {
       png_ptr->jmp_buf_size = 0; /* not allocated */
 
-      if (jmp_buf_size <= (sizeof png_ptr->jmp_buf_local))
+      if (jmp_buf_size <= (sizeof png_ptr->jmp_buf_local)) {
          png_ptr->jmp_buf_ptr = &png_ptr->jmp_buf_local;
 
-      else
+      } else
       {
          png_ptr->jmp_buf_ptr = png_voidcast(jmp_buf *,
              png_malloc_warn(png_ptr, jmp_buf_size));
 
-         if (png_ptr->jmp_buf_ptr == NULL)
+         if (png_ptr->jmp_buf_ptr == NULL) {
             return NULL; /* new NULL return on OOM */
+}
 
          png_ptr->jmp_buf_size = jmp_buf_size;
       }
@@ -759,8 +782,9 @@ png_longjmp,(png_const_structrp png_ptr, int val),PNG_NORETURN)
 {
 #ifdef PNG_SETJMP_SUPPORTED
    if (png_ptr != NULL && png_ptr->longjmp_fn != NULL &&
-       png_ptr->jmp_buf_ptr != NULL)
+       png_ptr->jmp_buf_ptr != NULL) {
       png_ptr->longjmp_fn(*png_ptr->jmp_buf_ptr, val);
+}
 #else
    PNG_UNUSED(png_ptr)
    PNG_UNUSED(val)
@@ -835,8 +859,9 @@ void PNGAPI
 png_set_error_fn(png_structrp png_ptr, png_voidp error_ptr,
     png_error_ptr error_fn, png_error_ptr warning_fn)
 {
-   if (png_ptr == NULL)
+   if (png_ptr == NULL) {
       return;
+}
 
    png_ptr->error_ptr = error_ptr;
    png_ptr->error_fn = error_fn;
@@ -855,8 +880,9 @@ png_set_error_fn(png_structrp png_ptr, png_voidp error_ptr,
 png_voidp PNGAPI
 png_get_error_ptr(png_const_structrp png_ptr)
 {
-   if (png_ptr == NULL)
+   if (png_ptr == NULL) {
       return NULL;
+}
 
    return (png_voidp)png_ptr->error_ptr;
 }
@@ -900,8 +926,9 @@ png_safe_error),(png_structp png_nonconst_ptr, png_const_charp error_message),
        * C++ compilation too is pretty tricky: C++ wants a pointer to the first
        * element of a jmp_buf, but C doesn't tell us the type of that.
        */
-      if (image->opaque != NULL && image->opaque->error_buf != NULL)
+      if (image->opaque != NULL && image->opaque->error_buf != NULL) {
          longjmp(png_control_jmp_buf(image->opaque), 1);
+}
 
       /* Missing longjmp buffer, the following is to help debugging: */
       {

@@ -48,8 +48,9 @@ static SLJIT_INLINE void* alloc_chunk(sljit_uw size)
 #endif /* MAP_ANON */
 
 	retval = mmap(NULL, size, prot, flags, fd, 0);
-	if (retval == MAP_FAILED)
+	if (retval == MAP_FAILED) {
 		return NULL;
+}
 
 	return retval;
 }

@@ -265,8 +265,9 @@
         GXV_LIMIT_CHECK( 2 );
         lig_gid = FT_NEXT_USHORT( p );
 
-        if ( gxvalid->face->num_glyphs < lig_gid )
+        if ( gxvalid->face->num_glyphs < lig_gid ) {
           GXV_SET_ERR_IF_PARANOID( FT_INVALID_GLYPH_ID );
+}
       }
     }
     GXV_EXIT;

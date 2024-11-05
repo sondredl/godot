@@ -586,8 +586,9 @@
     old_string_size = 0;
     ttf_count       = 0;
     ttf_reserved    = 12;
-    if ( FT_QALLOC( t42face->ttf_data, ttf_reserved ) )
+    if ( FT_QALLOC( t42face->ttf_data, ttf_reserved ) ) {
       goto Fail;
+}
 
     FT_TRACE2(( "\n" ));
     FT_TRACE2(( "t42_parse_sfnts:\n" ));
@@ -617,8 +618,9 @@
         }
 
         T1_Skip_PS_Token( parser );
-        if ( parser->root.error )
+        if ( parser->root.error ) {
           goto Exit;
+}
 
         /* don't include delimiters */
         string_size = (FT_ULong)( ( parser->root.cursor - cur - 2 + 1 ) / 2 );
@@ -628,8 +630,9 @@
           error = FT_THROW( Invalid_File_Format );
           goto Fail;
         }
-        if ( FT_QREALLOC( string_buf, old_string_size, string_size ) )
+        if ( FT_QREALLOC( string_buf, old_string_size, string_size ) ) {
           goto Fail;
+}
 
         allocated = 1;
 
@@ -659,12 +662,14 @@
           error = FT_THROW( Invalid_File_Format );
           goto Fail;
         }
-        else
-          string_size = (FT_ULong)tmp;
+        else {
+          s
+}tring_size = (FT_ULong)tmp;
 
         T1_Skip_PS_Token( parser );             /* `RD' */
-        if ( parser->root.error )
+        if ( parser->root.error ) {
           return;
+}
 
         string_buf = parser->root.cursor + 1;   /* one space after `RD' */
 
@@ -674,8 +679,9 @@
           error = FT_THROW( Invalid_File_Format );
           goto Fail;
         }
-        else
-          parser->root.cursor += string_size + 1;
+        else {
+          p
+}arser->root.cursor += string_size + 1;
       }
 
       if ( !string_buf )
@@ -859,8 +865,9 @@
     if ( ft_isdigit( *parser->root.cursor ) )
     {
       loader->num_glyphs = T1_ToInt( parser );
-      if ( parser->root.error )
+      if ( parser->root.error ) {
         return;
+}
       if ( loader->num_glyphs < 0 )
       {
         FT_ERROR(( "t42_parse_encoding: invalid number of glyphs\n" ));
@@ -887,24 +894,26 @@
 
 
       T1_Skip_PS_Token( parser );
-      if ( parser->root.error )
+      if ( parser->root.error ) {
         return;
+}
       T1_Skip_Spaces( parser );
       cur = parser->root.cursor;
 
       while ( parser->root.cursor < limit )
       {
-        if ( *parser->root.cursor == '/' )
+        if ( *parser->root.cursor == '/' ) {
           count++;
-        else if ( *parser->root.cursor == '>' )
+        } else if ( *parser->root.cursor == '>' )
         {
           loader->num_glyphs  = count;
           parser->root.cursor = cur;        /* rewind */
           break;
         }
         T1_Skip_PS_Token( parser );
-        if ( parser->root.error )
+        if ( parser->root.error ) {
           return;
+}
         T1_Skip_Spaces( parser );
       }
     }
@@ -936,21 +945,24 @@
     error = psaux->ps_table_funcs->init( code_table,
                                          loader->num_glyphs,
                                          memory );
-    if ( error )
+    if ( error ) {
       goto Fail;
+}
 
     error = psaux->ps_table_funcs->init( name_table,
                                          loader->num_glyphs,
                                          memory );
-    if ( error )
+    if ( error ) {
       goto Fail;
+}
 
     /* Initialize table for swapping index notdef_index and */
     /* index 0 names and codes (if necessary).              */
 
     error = psaux->ps_table_funcs->init( swap_table, 4, memory );
-    if ( error )
+    if ( error ) {
       goto Fail;
+}
 
     n = 0;
 
@@ -967,18 +979,21 @@
       T1_Skip_Spaces( parser );
 
       cur = parser->root.cursor;
-      if ( cur >= limit )
+      if ( cur >= limit ) {
         break;
+}
 
       /* We stop when we find an `end' keyword or '>' */
       if ( *cur   == 'e'          &&
            cur + 3 < limit        &&
            cur[1] == 'n'          &&
            cur[2] == 'd'          &&
-           t42_is_space( cur[3] ) )
+           t42_is_space( cur[3] ) ) {
         break;
-      if ( *cur == '>' )
+}
+      if ( *cur == '>' ) {
         break;
+}
 
       T1_Skip_PS_Token( parser );
       if ( parser->root.cursor >= limit )
@@ -987,8 +1002,9 @@
         error = FT_THROW( Invalid_File_Format );
         goto Fail;
       }
-      if ( parser->root.error )
+      if ( parser->root.error ) {
         return;
+}
 
       if ( *cur == '/' || *cur == '(' )
       {
@@ -1009,8 +1025,9 @@
           len--;
 
         error = T1_Add_Table( name_table, n, cur, len + 1 );
-        if ( error )
+        if ( error ) {
           goto Fail;
+}
 
         /* add a trailing zero to the name table */
         name_table->elements[n][len] = '\0';
@@ -1026,8 +1043,9 @@
 
         T1_Skip_Spaces( parser );
 
-        if ( have_literal )
+        if ( have_literal ) {
           T1_Skip_PS_Token( parser );
+}
 
         cur = parser->root.cursor;
 
@@ -1042,14 +1060,16 @@
         len = (FT_UInt)( parser->root.cursor - cur );
 
         error = T1_Add_Table( code_table, n, cur, len + 1 );
-        if ( error )
+        if ( error ) {
           goto Fail;
+}
 
         code_table->elements[n][len] = '\0';
 
         n++;
-        if ( n >= loader->num_glyphs )
+        if ( n >= loader->num_glyphs ) {
           break;
+}
       }
     }
 
@@ -1075,53 +1095,61 @@
       error = T1_Add_Table( swap_table, 0,
                             name_table->elements[0],
                             name_table->lengths [0] );
-      if ( error )
+      if ( error ) {
         goto Fail;
+}
 
       /* Index 0 code */
       error = T1_Add_Table( swap_table, 1,
                             code_table->elements[0],
                             code_table->lengths [0] );
-      if ( error )
+      if ( error ) {
         goto Fail;
+}
 
       /* Index notdef_index name */
       error = T1_Add_Table( swap_table, 2,
                             name_table->elements[notdef_index],
                             name_table->lengths [notdef_index] );
-      if ( error )
+      if ( error ) {
         goto Fail;
+}
 
       /* Index notdef_index code */
       error = T1_Add_Table( swap_table, 3,
                             code_table->elements[notdef_index],
                             code_table->lengths [notdef_index] );
-      if ( error )
+      if ( error ) {
         goto Fail;
+}
 
       error = T1_Add_Table( name_table, notdef_index,
                             swap_table->elements[0],
                             swap_table->lengths [0] );
-      if ( error )
+      if ( error ) {
         goto Fail;
+}
 
       error = T1_Add_Table( code_table, notdef_index,
                             swap_table->elements[1],
                             swap_table->lengths [1] );
-      if ( error )
+      if ( error ) {
         goto Fail;
+}
 
       error = T1_Add_Table( name_table, 0,
                             swap_table->elements[2],
                             swap_table->lengths [2] );
-      if ( error )
+      if ( error ) {
         goto Fail;
+}
 
       error = T1_Add_Table( code_table, 0,
                             swap_table->elements[3],
                             swap_table->lengths [3] );
-      if ( error )
+      if ( error ) {
         goto Fail;
+}
 
     }
 

@@ -40,8 +40,9 @@ httpWrite(SOCKET fd, const char * body, int bodysize,
 	char * p;
 	/* TODO: AVOID MALLOC, we could use writev() for that */
 	p = malloc(headerssize+bodysize);
-	if(!p)
+	if(!p) {
 	  return -1;
+}
 	memcpy(p, headers, headerssize);
 	memcpy(p+headerssize, body, bodysize);
 	/*n = write(fd, p, headerssize+bodysize);*/
@@ -85,8 +86,9 @@ int soapPostSubmit(SOCKET fd,
 	 * transfer encoding. */
     /* Connection: close is normally there only in HTTP/1.1 but who knows */
 	portstr[0] = '\0';
-	if(port != 80)
+	if(port != 80) {
 		snprintf(portstr, sizeof(portstr), ":%hu", port);
+}
 	headerssize = snprintf(headerbuf, sizeof(headerbuf),
                        "POST %s HTTP/%s\r\n"
 	                   "Host: %s%s\r\n"
@@ -102,8 +104,9 @@ int soapPostSubmit(SOCKET fd,
 					   "Cache-Control: no-cache\r\n"	/* ??? */
 					   "\r\n",
 					   url, httpversion, host, portstr, bodysize, action);
-	if ((unsigned int)headerssize >= sizeof(headerbuf))
+	if ((unsigned int)headerssize >= sizeof(headerbuf)) {
 		return -1;
+}
 #ifdef DEBUG
 	/*printf("SOAP request : headersize=%d bodysize=%d\n",
 	       headerssize, bodysize);

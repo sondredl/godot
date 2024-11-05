@@ -61,8 +61,9 @@ SLJIT_API_FUNC_ATTRIBUTE void* sljit_malloc_exec(sljit_uw size)
 	ptr = (sljit_uw*)VirtualAlloc(NULL, size,
 				MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 
-	if (!ptr)
+	if (!ptr) {
 		return NULL;
+}
 
 	*ptr++ = size;
 
@@ -77,7 +78,7 @@ SLJIT_API_FUNC_ATTRIBUTE void sljit_free_exec(void* ptr)
 
 	SLJIT_ASSERT(!(start & page_mask));
 #endif
-	VirtualFree((void*)start, 0, MEM_RELEASE);
+	VirtualFree((void*)short, 0, MEM_RELEASE);
 }
 
 static void sljit_update_wx_flags(void *from, void *to, sljit_s32 enable_exec)

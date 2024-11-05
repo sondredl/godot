@@ -134,8 +134,9 @@
 
 
           /* if we can't expand the array, leave immediately */
-          if ( FT_QRENEW_ARRAY( cache->buckets, size, size * 2 ) )
+          if ( FT_QRENEW_ARRAY( cache->buckets, size, size * 2 ) ) {
             break;
+}
 
           cache->mask = 2 * size - 1;
           half        = size;
@@ -147,8 +148,9 @@
         for (;;)
         {
           node = *pnode;
-          if ( !node )
+          if ( !node ) {
             break;
+}
 
           if ( node->hash & half )
           {
@@ -156,8 +158,9 @@
             node->link = new_list;
             new_list   = node;
           }
-          else
-            pnode = &node->link;
+          else {
+            p
+}node = &node->link;
         }
 
         cache->buckets[p] = new_list;
@@ -175,18 +178,20 @@
         FTC_Node  old_list = cache->buckets[--p];
 
 
-        if ( p < FTC_HASH_INITIAL_SIZE )
+        if ( p < FTC_HASH_INITIAL_SIZE ) {
           break;
+}
 
         if ( p == half )
         {
           FT_Memory  memory = cache->memory;
-          FT_Error   error;
+
 
 
           /* if we can't shrink the array, leave immediately */
-          if ( FT_QRENEW_ARRAY( cache->buckets, size, half ) )
+          if ( FT_QRENEW_ARRAY( cache->buckets, size, half ) ) {
             break;
+}
 
           cache->mask = half - 1;
         }
@@ -207,8 +212,9 @@
       }
 
       /* otherwise, the hash table is balanced */
-      else
+      else {
         break;
+}
     }
   }
 
@@ -232,8 +238,9 @@
         return;
       }
 
-      if ( node == node0 )
+      if ( node == node0 ) {
         break;
+}
 
       pnode = &node->link;
     }

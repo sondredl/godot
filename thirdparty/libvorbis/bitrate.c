@@ -57,7 +57,6 @@ void vorbis_bitrate_init(vorbis_info *vi,bitrate_manager_state *bm){
 
 void vorbis_bitrate_clear(bitrate_manager_state *bm){
   memset(bm,0,sizeof(*bm));
-  return;
 }
 
 int vorbis_bitrate_managed(vorbis_block *vb){
@@ -65,7 +64,8 @@ int vorbis_bitrate_managed(vorbis_block *vb){
   private_state         *b=vd->backend_state;
   bitrate_manager_state *bm=&b->bms;
 
-  if(bm && bm->managed)return(1);
+  if(bm && bm->managed) {return(1);
+}
   return(0);
 }
 
@@ -89,7 +89,8 @@ int vorbis_bitrate_addblock(vorbis_block *vb){
     /* not a bitrate managed stream, but for API simplicity, we'll
        buffer the packet to keep the code path clean */
 
-    if(bm->vb)return(-1); /* one has been submitted without
+    if(bm->vb) {return(-1);
+}/* one has been submitted without
                              being claimed */
     bm->vb=vb;
     return(0);
@@ -129,8 +130,10 @@ int vorbis_bitrate_addblock(vorbis_block *vb){
     }
 
     slew=rint(choice-bm->avgfloat)/samples*vi->rate;
-    if(slew<-slewlimit)slew=-slewlimit;
-    if(slew>slewlimit)slew=slewlimit;
+    if(slew<-slewlimit) {slew=-slewlimit;
+}
+    if(slew>slewlimit) {slew=slewlimit;
+}
     choice=rint(bm->avgfloat+= slew/vi->rate*samples);
     this_bits=oggpack_bytes(vbi->packetblob[choice])*8;
   }
@@ -143,7 +146,8 @@ int vorbis_bitrate_addblock(vorbis_block *vb){
     if(this_bits<min_target_bits){
       while(bm->minmax_reservoir-(min_target_bits-this_bits)<0){
         choice++;
-        if(choice>=PACKETBLOBS)break;
+        if(choice>=PACKETBLOBS) {break;
+}
         this_bits=oggpack_bytes(vbi->packetblob[choice])*8;
       }
     }
@@ -155,7 +159,8 @@ int vorbis_bitrate_addblock(vorbis_block *vb){
     if(this_bits>max_target_bits){
       while(bm->minmax_reservoir+(this_bits-max_target_bits)>bi->reservoir_bits){
         choice--;
-        if(choice<0)break;
+        if(choice<0) {break;
+}
         this_bits=oggpack_bytes(vbi->packetblob[choice])*8;
       }
     }
@@ -177,14 +182,16 @@ int vorbis_bitrate_addblock(vorbis_block *vb){
     }
   }else{
     long minsize=(min_target_bits-bm->minmax_reservoir+7)/8;
-    if(choice>=PACKETBLOBS)
+    if(choice>=PACKETBLOBS) {
       choice=PACKETBLOBS-1;
+}
 
     bm->choice=choice;
 
     /* prop up bitrate according to demand. pad this frame out with zeroes */
     minsize-=oggpack_bytes(vbi->packetblob[choice]);
-    while(minsize-->0)oggpack_write(vbi->packetblob[choice],0,8);
+    while(minsize-->0) {oggpack_write(vbi->packetblob[choice],0,8);
+}
     this_bits=oggpack_bytes(vbi->packetblob[choice])*8;
 
   }
@@ -202,14 +209,16 @@ int vorbis_bitrate_addblock(vorbis_block *vb){
       if(bm->minmax_reservoir>desired_fill){
         if(max_target_bits>0){ /* logical bulletproofing against initialization state */
           bm->minmax_reservoir+=(this_bits-max_target_bits);
-          if(bm->minmax_reservoir<desired_fill)bm->minmax_reservoir=desired_fill;
+          if(bm->minmax_reservoir<desired_fill) {bm->minmax_reservoir=desired_fill;
+}
         }else{
           bm->minmax_reservoir=desired_fill;
         }
       }else{
         if(min_target_bits>0){ /* logical bulletproofing against initialization state */
           bm->minmax_reservoir+=(this_bits-min_target_bits);
-          if(bm->minmax_reservoir>desired_fill)bm->minmax_reservoir=desired_fill;
+          if(bm->minmax_reservoir>desired_fill) {bm->minmax_reservoir=desired_fill;
+}
         }else{
           bm->minmax_reservoir=desired_fill;
         }
@@ -231,13 +240,15 @@ int vorbis_bitrate_flushpacket(vorbis_dsp_state *vd,ogg_packet *op){
   bitrate_manager_state *bm=&b->bms;
   vorbis_block          *vb=bm->vb;
   int                    choice=PACKETBLOBS/2;
-  if(!vb)return 0;
+  if(!vb) {return 0;
+}
 
   if(op){
     vorbis_block_internal *vbi=vb->internal;
 
-    if(vorbis_bitrate_managed(vb))
+    if(vorbis_bitrate_managed(vb)) {
       choice=bm->choice;
+}
 
     op->packet=oggpack_get_buffer(vbi->packetblob[choice]);
     op->bytes=oggpack_bytes(vbi->packetblob[choice]);

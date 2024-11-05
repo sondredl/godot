@@ -98,7 +98,8 @@ void WebPReplaceTransparentPixels(WebPPicture* const pic, uint32_t color) {
 
 void WebPCleanupTransparentArea(WebPPicture* pic) {
   int x, y, w, h;
-  if (pic == NULL) return;
+  if (pic == NULL) { return;
+}
   w = pic->width / SIZE;
   h = pic->height / SIZE;
 

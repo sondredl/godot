@@ -167,8 +167,9 @@
     error = render->raster_render( render->raster, &params );
     x = sub[0].x;
     y = sub[0].y;
-    if ( error )
+    if ( error ) {
       goto Exit;
+}
 
     target.origin++;
     FT_Outline_Translate( outline,
@@ -177,8 +178,9 @@
     error = render->raster_render( render->raster, &params );
     x = sub[1].x;
     y = sub[1].y;
-    if ( error )
+    if ( error ) {
       goto Exit;
+}
 
     target.origin++;
     FT_Outline_Translate( outline,
@@ -224,8 +226,9 @@
     error = render->raster_render( render->raster, &params );
     x = sub[0].y;
     y = -sub[0].x;
-    if ( error )
+    if ( error ) {
       goto Exit;
+}
 
     bitmap->buffer += pitch;
     FT_Outline_Translate( outline,
@@ -235,8 +238,9 @@
     x = sub[1].y;
     y = -sub[1].x;
     bitmap->buffer -= pitch;
-    if ( error )
+    if ( error ) {
       goto Exit;
+}
 
     bitmap->buffer += 2 * pitch;
     FT_Outline_Translate( outline,
@@ -478,12 +482,14 @@
       goto Exit;
     }
 
-    if ( !bitmap->rows || !bitmap->pitch )
+    if ( !bitmap->rows || !bitmap->pitch ) {
       goto Exit;
+}
 
     /* allocate new one */
-    if ( FT_ALLOC_MULT( bitmap->buffer, bitmap->rows, bitmap->pitch ) )
+    if ( FT_ALLOC_MULT( bitmap->buffer, bitmap->rows, bitmap->pitch ) ) {
       goto Exit;
+}
 
     slot->internal->flags |= FT_GLYPH_OWN_BITMAP;
 
@@ -507,9 +513,9 @@
     if ( mode == FT_RENDER_MODE_NORMAL ||
          mode == FT_RENDER_MODE_LIGHT  )
     {
-      if ( outline->flags & FT_OUTLINE_OVERLAP )
+      if ( outline->flags & FT_OUTLINE_OVERLAP ) {
         error = ft_smooth_raster_overlap( render, outline, bitmap );
-      else
+      } else
       {
         FT_Raster_Params  params;
 

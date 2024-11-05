@@ -363,7 +363,8 @@ int POOL_tryAdd(POOL_ctx* ctx, POOL_function function, void* opaque) {
 }
 
 size_t POOL_sizeof(const POOL_ctx* ctx) {
-    if (ctx==NULL) return 0;  /* supports sizeof NULL */
+    if (ctx==NULL) { return 0;  /* supports sizeof NULL */
+}
     assert(ctx == &g_poolCtx);
     return sizeof(*ctx);
 }

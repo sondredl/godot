@@ -118,13 +118,15 @@ static int MuxImageParse(const WebPChunk* const chunk, int copy_data,
     const WebPData temp = { bytes, hdr_size };
     // Each of ANMF chunk contain a header at the beginning. So, its size should
     // be at least 'hdr_size'.
-    if (size < hdr_size) goto Fail;
+    if (size < hdr_size) { goto Fail;
+}
     if (ChunkAssignData(&subchunk, &temp, copy_data,
                         chunk->tag_) != WEBP_MUX_OK) {
       goto Fail;
     }
   }
-  if (ChunkSetHead(&subchunk, &wpi->header_) != WEBP_MUX_OK) goto Fail;
+  if (ChunkSetHead(&subchunk, &wpi->header_) != WEBP_MUX_OK) { goto Fail;
+}
   wpi->is_partial_ = 1;  // Waiting for ALPH and/or VP8/VP8L chunks.
 
   // Rest of the chunks.
@@ -140,14 +142,19 @@ static int MuxImageParse(const WebPChunk* const chunk, int copy_data,
     }
     switch (ChunkGetIdFromTag(subchunk.tag_)) {
       case WEBP_CHUNK_ALPHA:
-        if (wpi->alpha_ != NULL) goto Fail;  // Consecutive ALPH chunks.
-        if (ChunkSetHead(&subchunk, &wpi->alpha_) != WEBP_MUX_OK) goto Fail;
+        if (wpi->alpha_ != NULL) { goto Fail;  // Consecutive ALPH chunks.
+}
+        if (ChunkSetHead(&subchunk, &wpi->alpha_) != WEBP_MUX_OK) { goto Fail;
+}
         wpi->is_partial_ = 1;  // Waiting for a VP8 chunk.
         break;
       case WEBP_CHUNK_IMAGE:
-        if (wpi->img_ != NULL) goto Fail;  // Only 1 image chunk allowed.
-        if (ChunkSetHead(&subchunk, &wpi->img_) != WEBP_MUX_OK) goto Fail;
-        if (!MuxImageFinalize(wpi)) goto Fail;
+        if (wpi->img_ != NULL) { goto Fail;  // Only 1 image chunk allowed.
+}
+        if (ChunkSetHead(&subchunk, &wpi->img_) != WEBP_MUX_OK) { goto Fail;
+}
+        if (!MuxImageFinalize(wpi)) { goto Fail;
+}
         wpi->is_partial_ = 0;  // wpi is completely filled.
         break;
       case WEBP_CHUNK_UNKNOWN:
@@ -166,7 +173,8 @@ static int MuxImageParse(const WebPChunk* const chunk, int copy_data,
     bytes += subchunk_size;
     size -= subchunk_size;
   }
-  if (wpi->is_partial_) goto Fail;
+  if (wpi->is_partial_) { goto Fail;
+}
   return 1;
 
  Fail:
@@ -218,13 +226,16 @@ WebPMux* WebPMuxCreateInternal(const WebPData* bitstream, int copy_data,
   }
 
   riff_size = GetLE32(data + TAG_SIZE);
-  if (riff_size > MAX_CHUNK_PAYLOAD) goto Err;
+  if (riff_size > MAX_CHUNK_PAYLOAD) { goto Err;
+}
 
   // Note this padding is historical and differs from demux.c which does not
   // pad the file size.
   riff_size = SizeWithPadding(riff_size);
-  if (riff_size < CHUNK_HEADER_SIZE) goto Err;
-  if (riff_size > size) goto Err;
+  if (riff_size < CHUNK_HEADER_SIZE) { goto Err;
+}
+  if (riff_size > size) { goto Err;
+}
   // There's no point in reading past the end of the RIFF chunk.
   if (size > riff_size + CHUNK_HEADER_SIZE) {
     size = riff_size + CHUNK_HEADER_SIZE;
@@ -235,7 +246,8 @@ WebPMux* WebPMuxCreateInternal(const WebPData* bitstream, int copy_data,
   size -= RIFF_HEADER_SIZE;
 
   wpi = (WebPMuxImage*)WebPSafeMalloc(1ULL, sizeof(*wpi));
-  if (wpi == NULL) goto Err;
+  if (wpi == NULL) { goto Err;
+}
   MuxImageInit(wpi);
 
   // Loop over chunks.
@@ -250,34 +262,44 @@ WebPMux* WebPMuxCreateInternal(const WebPData* bitstream, int copy_data,
     id = ChunkGetIdFromTag(chunk.tag_);
     switch (id) {
       case WEBP_CHUNK_ALPHA:
-        if (wpi->alpha_ != NULL) goto Err;  // Consecutive ALPH chunks.
-        if (ChunkSetHead(&chunk, &wpi->alpha_) != WEBP_MUX_OK) goto Err;
+        if (wpi->alpha_ != NULL) { goto Err;  // Consecutive ALPH chunks.
+}
+        if (ChunkSetHead(&chunk, &wpi->alpha_) != WEBP_MUX_OK) { goto Err;
+}
         wpi->is_partial_ = 1;  // Waiting for a VP8 chunk.
         break;
       case WEBP_CHUNK_IMAGE:
-        if (ChunkSetHead(&chunk, &wpi->img_) != WEBP_MUX_OK) goto Err;
-        if (!MuxImageFinalize(wpi)) goto Err;
+        if (ChunkSetHead(&chunk, &wpi->img_) != WEBP_MUX_OK) { goto Err;
+}
+        if (!MuxImageFinalize(wpi)) { goto Err;
+}
         wpi->is_partial_ = 0;  // wpi is completely filled.
  PushImage:
         // Add this to mux->images_ list.
-        if (MuxImagePush(wpi, &mux->images_) != WEBP_MUX_OK) goto Err;
+        if (MuxImagePush(wpi, &mux->images_) != WEBP_MUX_OK) { goto Err;
+}
         MuxImageInit(wpi);  // Reset for reading next image.
         break;
       case WEBP_CHUNK_ANMF:
-        if (wpi->is_partial_) goto Err;  // Previous wpi is still incomplete.
-        if (!MuxImageParse(&chunk, copy_data, wpi)) goto Err;
+        if (wpi->is_partial_) { goto Err;  // Previous wpi is still incomplete.
+}
+        if (!MuxImageParse(&chunk, copy_data, wpi)) { goto Err;
+}
         ChunkRelease(&chunk);
         goto PushImage;
       default:  // A non-image chunk.
-        if (wpi->is_partial_) goto Err;  // Encountered a non-image chunk before
+        if (wpi->is_partial_) { goto Err;  // Encountered a non-image chunk before
+}
                                          // getting all chunks of an image.
         if (chunk_list_ends[id] == NULL) {
           chunk_list_ends[id] =
               MuxGetChunkListFromId(mux, id);  // List to add this chunk.
         }
-        if (ChunkAppend(&chunk, &chunk_list_ends[id]) != WEBP_MUX_OK) goto Err;
+        if (ChunkAppend(&chunk, &chunk_list_ends[id]) != WEBP_MUX_OK) { goto Err;
+}
         if (id == WEBP_CHUNK_VP8X) {  // grab global specs
-          if (data_size < CHUNK_HEADER_SIZE + VP8X_CHUNK_SIZE) goto Err;
+          if (data_size < CHUNK_HEADER_SIZE + VP8X_CHUNK_SIZE) { goto Err;
+}
           mux->canvas_width_ = GetLE24(data + 12) + 1;
           mux->canvas_height_ = GetLE24(data + 15) + 1;
         }
@@ -289,10 +311,12 @@ WebPMux* WebPMuxCreateInternal(const WebPData* bitstream, int copy_data,
   }
 
   // Incomplete image.
-  if (wpi->is_partial_) goto Err;
+  if (wpi->is_partial_) { goto Err;
+}
 
   // Validate mux if complete.
-  if (MuxValidate(mux) != WEBP_MUX_OK) goto Err;
+  if (MuxValidate(mux) != WEBP_MUX_OK) { goto Err;
+}
 
   MuxImageDelete(wpi);
   return mux;  // All OK;
@@ -356,8 +380,10 @@ static WebPMuxError MuxGetCanvasInfo(const WebPMux* const mux,
   }
   if (w * (uint64_t)h >= MAX_IMAGE_AREA) return WEBP_MUX_BAD_DATA;
 
-  if (width != NULL) *width = w;
-  if (height != NULL) *height = h;
+  if (width != NULL) { *width = w;
+}
+  if (height != NULL) { *height = h;
+}
   if (flags != NULL) *flags = f;
   return WEBP_MUX_OK;
 }

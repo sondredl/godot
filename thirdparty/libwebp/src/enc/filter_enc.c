@@ -78,7 +78,8 @@ static int GetILevel(int sharpness, int level) {
       level = 9 - sharpness;
     }
   }
-  if (level < 1) level = 1;
+  if (level < 1) { level = 1;
+}
   return level;
 }
 
@@ -165,7 +166,8 @@ void VP8StoreFilterStats(VP8EncIterator* const it) {
   const int delta_max = enc->dqm_[s].quant_;
   const int step_size = (delta_max - delta_min >= 4) ? 4 : 1;
 
-  if (it->lf_stats_ == NULL) return;
+  if (it->lf_stats_ == NULL) { return;
+}
 
   // NOTE: Currently we are applying filter only across the sublock edges
   // There are two reasons for that.
@@ -173,7 +175,8 @@ void VP8StoreFilterStats(VP8EncIterator* const it) {
   // the left and top macro blocks. That will be hard to restore
   // 2. Macro Blocks on the bottom and right are not yet compressed. So we
   // cannot apply filter on the right and bottom macro block edges.
-  if (it->mb_->type_ == 1 && it->mb_->skip_) return;
+  if (it->mb_->type_ == 1 && it->mb_->skip_) { return;
+}
 
   // Always try filter level  zero
   (*it->lf_stats_)[s][0] += GetMBSSIM(it->yuv_in_, it->yuv_out_);

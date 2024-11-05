@@ -43,8 +43,9 @@ static SLJIT_INLINE struct sljit_chunk_header* alloc_chunk(sljit_uw size)
 			PROT_READ | PROT_WRITE | PROT_MPROTECT(PROT_EXEC),
 			MAP_ANON | MAP_SHARED, -1, 0);
 
-	if (retval == MAP_FAILED)
+	if (retval == MAP_FAILED) {
 		return NULL;
+}
 
 	retval->executable = mremap(retval, size, NULL, size, MAP_REMAPDUP);
 	if (retval->executable == MAP_FAILED) {

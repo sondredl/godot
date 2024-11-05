@@ -587,9 +587,9 @@ typedef ptrdiff_t  FT_PtrDist;
     TCoord  ey_index = ey - ras.min_ey;
 
 
-    if ( ey_index < 0 || ey_index >= ras.count_ey || ex >= ras.max_ex )
+    if ( ey_index < 0 || ey_index >= ras.count_ey || ex >= ras.max_ex ) {
       ras.cell = ras.cell_null;
-    else
+    } else
     {
       PCell*  pcell = ras.ycells + ey_index;
       PCell   cell;
@@ -601,19 +601,22 @@ typedef ptrdiff_t  FT_PtrDist;
       {
         cell = *pcell;
 
-        if ( cell->x > ex )
+        if ( cell->x > ex ) {
           break;
+}
 
-        if ( cell->x == ex )
+        if ( cell->x == ex ) {
           goto Found;
+}
 
         pcell = &cell->next;
       }
 
       /* insert new cell */
       cell = ras.cell_free++;
-      if ( cell >= ras.cell_null )
+      if ( cell >= ras.cell_null ) {
         ft_longjmp( ras.jump_buffer, 1 );
+}
 
       cell->x     = ex;
       cell->area  = 0;
@@ -661,8 +664,9 @@ typedef ptrdiff_t  FT_PtrDist;
 
     /* everything is located in a single cell.  That is easy! */
     /*                                                        */
-    if ( ex1 == ex2 )
+    if ( ex1 == ex2 ) {
       goto End;
+}
 
     /* ok, we'll have to render a run of adjacent cells on the same */
     /* scanline...                                                  */
@@ -744,8 +748,9 @@ typedef ptrdiff_t  FT_PtrDist;
 
     /* perform vertical clipping */
     if ( ( ey1 >= ras.max_ey && ey2 >= ras.max_ey ) ||
-         ( ey1 <  ras.min_ey && ey2 <  ras.min_ey ) )
+         ( ey1 <  ras.min_ey && ey2 <  ras.min_ey ) ) {
       goto End;
+}
 
     fy1 = FRACT( ras.y );
     fy2 = FRACT( to_y );
@@ -1291,8 +1296,9 @@ typedef ptrdiff_t  FT_PtrDist;
 
     dx = FT_ABS( arc[2].x + arc[0].x - 2 * arc[1].x );
     dy = FT_ABS( arc[2].y + arc[0].y - 2 * arc[1].y );
-    if ( dx < dy )
+    if ( dx < dy ) {
       dx = dy;
+}
 
     /* We can calculate the number of necessary bisections because  */
     /* each bisection predictably reduces deviation exactly 4-fold. */
@@ -1408,13 +1414,15 @@ typedef ptrdiff_t  FT_PtrDist;
       if ( FT_ABS( 2 * arc[0].x - 3 * arc[1].x + arc[3].x ) > ONE_PIXEL / 2 ||
            FT_ABS( 2 * arc[0].y - 3 * arc[1].y + arc[3].y ) > ONE_PIXEL / 2 ||
            FT_ABS( arc[0].x - 3 * arc[2].x + 2 * arc[3].x ) > ONE_PIXEL / 2 ||
-           FT_ABS( arc[0].y - 3 * arc[2].y + 2 * arc[3].y ) > ONE_PIXEL / 2 )
+           FT_ABS( arc[0].y - 3 * arc[2].y + 2 * arc[3].y ) > ONE_PIXEL / 2 ) {
         goto Split;
+}
 
       gray_render_line( RAS_VAR_ arc[0].x, arc[0].y );
 
-      if ( arc == bez_stack )
+      if ( arc == bez_stack ) {
         return;
+}
 
       arc -= 3;
       continue;
@@ -1928,11 +1936,13 @@ typedef ptrdiff_t  FT_PtrDist;
 
     if ( ft_setjmp( ras.jump_buffer ) == 0 )
     {
-      if ( continued )
+      if ( continued ) {
         FT_Trace_Disable();
+}
       error = FT_Outline_Decompose( &ras.outline, &func_interface, &ras );
-      if ( continued )
+      if ( continued ) {
         FT_Trace_Enable();
+}
 
       FT_TRACE7(( "band [%d..%d]: %td cell%s remaining/\n",
                   ras.min_ey,
@@ -2002,8 +2012,9 @@ typedef ptrdiff_t  FT_PtrDist;
         int     error;
 
 
-        for ( w = 0; w < width; ++w )
+        for ( w = 0; w < width; ++w ) {
           ras.ycells[w] = ras.cell_null;
+}
 
         /* memory management: skip ycells */
         n = ( (size_t)width * sizeof ( PCell ) + sizeof ( TCell ) - 1 ) /
@@ -2020,15 +2031,17 @@ typedef ptrdiff_t  FT_PtrDist;
 
         if ( !error )
         {
-          if ( ras.render_span )  /* for FT_RASTER_FLAG_DIRECT only */
+          if ( ras.render_span ) {  /* for FT_RASTER_FLAG_DIRECT only */
             gray_sweep_direct( RAS_VAR );
-          else
+          } else {
             gray_sweep( RAS_VAR );
+}
           band--;
           continue;
         }
-        else if ( error != Smooth_Err_Raster_Overflow )
+        else if ( error != Smooth_Err_Raster_Overflow ) {
           return error;
+}
 
         /* render pool overflow; we will reduce the render band by half */
         width >>= 1;

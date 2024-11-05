@@ -88,7 +88,8 @@ PRIV(memctl_malloc)(size_t size, pcre2_memctl *memctl)
 pcre2_memctl *newmemctl;
 void *yield = (memctl == NULL)? malloc(size) :
   memctl->malloc(size, memctl->memory_data);
-if (yield == NULL) return NULL;
+if (yield == NULL) { return NULL;
+}
 newmemctl = (pcre2_memctl *)yield;
 if (memctl == NULL)
   {
@@ -96,7 +97,8 @@ if (memctl == NULL)
   newmemctl->free = default_free;
   newmemctl->memory_data = NULL;
   }
-else *newmemctl = *memctl;
+else { *newmemctl = *memctl;
+}
 return yield;
 }
 

@@ -1,4 +1,4 @@
-/** 
+/**
  @file compress.c
  @brief An adaptive order-2 PPM range coder
 */
@@ -18,7 +18,7 @@ typedef struct _ENetSymbol
     enet_uint16 symbols;
     enet_uint16 escapes;
     enet_uint16 total;
-    enet_uint16 parent; 
+    enet_uint16 parent;
 } ENetSymbol;
 
 /* adaptation constants tuned aggressively for small packet sizes rather than large file compression */
@@ -49,8 +49,9 @@ void *
 enet_range_coder_create (void)
 {
     ENetRangeCoder * rangeCoder = (ENetRangeCoder *) enet_malloc (sizeof (ENetRangeCoder));
-    if (rangeCoder == NULL)
+    if (rangeCoder == NULL) {
       return NULL;
+}
 
     return rangeCoder;
 }
@@ -59,8 +60,9 @@ void
 enet_range_coder_destroy (void * context)
 {
     ENetRangeCoder * rangeCoder = (ENetRangeCoder *) context;
-    if (rangeCoder == NULL)
+    if (rangeCoder == NULL) {
       return;
+}
 
     enet_free (rangeCoder);
 }
@@ -98,9 +100,10 @@ enet_symbol_rescale (ENetSymbol * symbol)
         if (symbol -> left)
           symbol -> under += enet_symbol_rescale (symbol + symbol -> left);
         total += symbol -> under;
-        if (! symbol -> right) break;
+        if (! symbol -> right) { break;
+}
         symbol += symbol -> right;
-    } 
+    }
     return total;
 }
 
@@ -254,8 +257,9 @@ enet_range_coder_compress (void * context, const ENetBuffer * inBuffers, size_t 
     enet_uint16 predicted = 0;
     size_t order = 0, nextSymbol = 0;
 
-    if (rangeCoder == NULL || inBufferCount <= 0 || inLimit <= 0)
+    if (rangeCoder == NULL || inBufferCount <= 0 || inLimit <= 0) {
       return 0;
+}
 
     inData = (const enet_uint8 *) inBuffers -> data;
     inEnd = & inData [inBuffers -> dataLength];
@@ -274,19 +278,20 @@ enet_range_coder_compress (void * context, const ENetBuffer * inBuffers, size_t 
         enet_uint16 count, under, * parent = & predicted, total;
         if (inData >= inEnd)
         {
-            if (inBufferCount <= 0)
+            if (inBufferCount <= 0) {
               break;
+}
             inData = (const enet_uint8 *) inBuffers -> data;
             inEnd = & inData [inBuffers -> dataLength];
             inBuffers ++;
             inBufferCount --;
         }
         value = * inData ++;
-    
-        for (subcontext = & rangeCoder -> symbols [predicted]; 
-             subcontext != root; 
+
+        for (subcontext = & rangeCoder -> symbols [predicted];
+             subcontext != root;
 #ifdef ENET_CONTEXT_EXCLUSION
-             childContext = subcontext, 
+             childContext = subcontext,
 #endif
                 subcontext = & rangeCoder -> symbols [subcontext -> parent])
         {
@@ -304,15 +309,16 @@ enet_range_coder_compress (void * context, const ENetBuffer * inBuffers, size_t 
             }
             else
             {
-                if (subcontext -> escapes > 0 && subcontext -> escapes < total) 
-                    ENET_RANGE_CODER_ENCODE (0, subcontext -> escapes, total); 
+                if (subcontext -> escapes > 0 && subcontext -> escapes < total)
+                    ENET_RANGE_CODER_ENCODE (0, subcontext -> escapes, total);
                 subcontext -> escapes += ENET_SUBCONTEXT_ESCAPE_DELTA;
                 subcontext -> total += ENET_SUBCONTEXT_ESCAPE_DELTA;
             }
             subcontext -> total += ENET_SUBCONTEXT_SYMBOL_DELTA;
             if (count > 0xFF - 2*ENET_SUBCONTEXT_SYMBOL_DELTA || subcontext -> total > ENET_RANGE_CODER_BOTTOM - 0x100)
               ENET_CONTEXT_RESCALE (subcontext, 0);
-            if (count > 0) goto nextInput;
+            if (count > 0) { goto nextInput;
+}
         }
 
         ENET_CONTEXT_ENCODE (root, symbol, value, under, count, ENET_CONTEXT_SYMBOL_DELTA, ENET_CONTEXT_SYMBOL_MINIMUM);
@@ -321,18 +327,19 @@ enet_range_coder_compress (void * context, const ENetBuffer * inBuffers, size_t 
         total = root -> total;
 #ifdef ENET_CONTEXT_EXCLUSION
         if (childContext -> total > ENET_SUBCONTEXT_SYMBOL_DELTA + ENET_SUBCONTEXT_ESCAPE_DELTA)
-          ENET_CONTEXT_ENCODE_EXCLUDE (childContext, value, under, total, ENET_CONTEXT_SYMBOL_MINIMUM); 
+          ENET_CONTEXT_ENCODE_EXCLUDE (childContext, value, under, total, ENET_CONTEXT_SYMBOL_MINIMUM);
 #endif
         ENET_RANGE_CODER_ENCODE (root -> escapes + under, count, total);
-        root -> total += ENET_CONTEXT_SYMBOL_DELTA; 
+        root -> total += ENET_CONTEXT_SYMBOL_DELTA;
         if (count > 0xFF - 2*ENET_CONTEXT_SYMBOL_DELTA + ENET_CONTEXT_SYMBOL_MINIMUM || root -> total > ENET_RANGE_CODER_BOTTOM - 0x100)
           ENET_CONTEXT_RESCALE (root, ENET_CONTEXT_SYMBOL_MINIMUM);
 
     nextInput:
-        if (order >= ENET_SUBCONTEXT_ORDER) 
+        if (order >= ENET_SUBCONTEXT_ORDER) {
           predicted = rangeCoder -> symbols [predicted].parent;
-        else 
+        } else {
           order ++;
+}
         ENET_RANGE_CODER_FREE_SYMBOLS;
     }
 
@@ -509,9 +516,10 @@ enet_range_coder_decompress (void * context, const enet_uint8 * inData, size_t i
     ENetExclude excludes [256];
     ENetExclude * nextExclude = excludes;
 #endif
-  
-    if (rangeCoder == NULL || inLimit <= 0)
+
+    if (rangeCoder == NULL || inLimit <= 0) {
       return 0;
+}
 
     ENET_CONTEXT_CREATE (root, ENET_CONTEXT_ESCAPE_MINIMUM, ENET_CONTEXT_SYMBOL_MINIMUM);
 
@@ -529,35 +537,37 @@ enet_range_coder_decompress (void * context, const enet_uint8 * inData, size_t i
         for (subcontext = & rangeCoder -> symbols [predicted];
              subcontext != root;
 #ifdef ENET_CONTEXT_EXCLUSION
-             childContext = subcontext, 
+             childContext = subcontext,
 #endif
                 subcontext = & rangeCoder -> symbols [subcontext -> parent])
         {
-            if (subcontext -> escapes <= 0)
+            if (subcontext -> escapes <= 0) {
               continue;
+}
             total = subcontext -> total;
 #ifdef ENET_CONTEXT_EXCLUSION
-            if (childContext -> total > 0) 
-              ENET_CONTEXT_DECODE_EXCLUDE (childContext, total, 0); 
+            if (childContext -> total > 0)
+              ENET_CONTEXT_DECODE_EXCLUDE (childContext, total, 0);
 #endif
-            if (subcontext -> escapes >= total)
+            if (subcontext -> escapes >= total) {
               continue;
+}
             code = ENET_RANGE_CODER_READ (total);
-            if (code < subcontext -> escapes) 
+            if (code < subcontext -> escapes)
             {
-                ENET_RANGE_CODER_DECODE (0, subcontext -> escapes, total); 
+                ENET_RANGE_CODER_DECODE (0, subcontext -> escapes, total);
                 continue;
             }
             code -= subcontext -> escapes;
 #ifdef ENET_CONTEXT_EXCLUSION
             if (childContext -> total > 0)
             {
-                ENET_CONTEXT_TRY_DECODE (subcontext, symbol, code, value, under, count, ENET_SUBCONTEXT_SYMBOL_DELTA, 0, ENET_CONTEXT_EXCLUDED); 
+                ENET_CONTEXT_TRY_DECODE (subcontext, symbol, code, value, under, count, ENET_SUBCONTEXT_SYMBOL_DELTA, 0, ENET_CONTEXT_EXCLUDED);
             }
             else
 #endif
             {
-                ENET_CONTEXT_TRY_DECODE (subcontext, symbol, code, value, under, count, ENET_SUBCONTEXT_SYMBOL_DELTA, 0, ENET_CONTEXT_NOT_EXCLUDED); 
+                ENET_CONTEXT_TRY_DECODE (subcontext, symbol, code, value, under, count, ENET_SUBCONTEXT_SYMBOL_DELTA, 0, ENET_CONTEXT_NOT_EXCLUDED);
             }
             bottom = symbol - rangeCoder -> symbols;
             ENET_RANGE_CODER_DECODE (subcontext -> escapes + under, count, total);
@@ -570,7 +580,7 @@ enet_range_coder_decompress (void * context, const enet_uint8 * inData, size_t i
         total = root -> total;
 #ifdef ENET_CONTEXT_EXCLUSION
         if (childContext -> total > 0)
-          ENET_CONTEXT_DECODE_EXCLUDE (childContext, total, ENET_CONTEXT_SYMBOL_MINIMUM);  
+          ENET_CONTEXT_DECODE_EXCLUDE (childContext, total, ENET_CONTEXT_SYMBOL_MINIMUM);
 #endif
         code = ENET_RANGE_CODER_READ (total);
         if (code < root -> escapes)
@@ -582,12 +592,12 @@ enet_range_coder_decompress (void * context, const enet_uint8 * inData, size_t i
 #ifdef ENET_CONTEXT_EXCLUSION
         if (childContext -> total > 0)
         {
-            ENET_CONTEXT_ROOT_DECODE (root, symbol, code, value, under, count, ENET_CONTEXT_SYMBOL_DELTA, ENET_CONTEXT_SYMBOL_MINIMUM, ENET_CONTEXT_EXCLUDED); 
+            ENET_CONTEXT_ROOT_DECODE (root, symbol, code, value, under, count, ENET_CONTEXT_SYMBOL_DELTA, ENET_CONTEXT_SYMBOL_MINIMUM, ENET_CONTEXT_EXCLUDED);
         }
         else
 #endif
         {
-            ENET_CONTEXT_ROOT_DECODE (root, symbol, code, value, under, count, ENET_CONTEXT_SYMBOL_DELTA, ENET_CONTEXT_SYMBOL_MINIMUM, ENET_CONTEXT_NOT_EXCLUDED); 
+            ENET_CONTEXT_ROOT_DECODE (root, symbol, code, value, under, count, ENET_CONTEXT_SYMBOL_DELTA, ENET_CONTEXT_SYMBOL_MINIMUM, ENET_CONTEXT_NOT_EXCLUDED);
         }
         bottom = symbol - rangeCoder -> symbols;
         ENET_RANGE_CODER_DECODE (root -> escapes + under, count, total);
@@ -608,7 +618,7 @@ enet_range_coder_decompress (void * context, const enet_uint8 * inData, size_t i
                 patch -> escapes += ENET_SUBCONTEXT_ESCAPE_DELTA;
                 patch -> total += ENET_SUBCONTEXT_ESCAPE_DELTA;
             }
-            patch -> total += ENET_SUBCONTEXT_SYMBOL_DELTA; 
+            patch -> total += ENET_SUBCONTEXT_SYMBOL_DELTA;
             if (count > 0xFF - 2*ENET_SUBCONTEXT_SYMBOL_DELTA || patch -> total > ENET_RANGE_CODER_BOTTOM - 0x100)
               ENET_CONTEXT_RESCALE (patch, 0);
         }
@@ -616,13 +626,14 @@ enet_range_coder_decompress (void * context, const enet_uint8 * inData, size_t i
 
         ENET_RANGE_CODER_OUTPUT (value);
 
-        if (order >= ENET_SUBCONTEXT_ORDER)
+        if (order >= ENET_SUBCONTEXT_ORDER) {
           predicted = rangeCoder -> symbols [predicted].parent;
-        else
+        } else {
           order ++;
+}
         ENET_RANGE_CODER_FREE_SYMBOLS;
     }
-                        
+
     return (size_t) (outData - outStart);
 }
 
@@ -640,15 +651,16 @@ enet_host_compress_with_range_coder (ENetHost * host)
     ENetCompressor compressor;
     memset (& compressor, 0, sizeof (compressor));
     compressor.context = enet_range_coder_create();
-    if (compressor.context == NULL)
+    if (compressor.context == NULL) {
       return -1;
+}
     compressor.compress = enet_range_coder_compress;
     compressor.decompress = enet_range_coder_decompress;
     compressor.destroy = enet_range_coder_destroy;
     enet_host_compress (host, & compressor);
     return 0;
 }
-    
+
 /** @} */
-    
-     
+
+

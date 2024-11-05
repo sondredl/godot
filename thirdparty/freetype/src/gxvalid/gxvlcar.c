@@ -72,8 +72,9 @@
   {
     GXV_NAME_ENTER( "partial" );
 
-    if ( GXV_LCAR_DATA( format ) != 1 )
+    if ( GXV_LCAR_DATA( format ) != 1 ) {
       goto Exit;
+}
 
     gxv_ctlPoint_validate( glyph, (FT_UShort)partial, gxvalid );
 

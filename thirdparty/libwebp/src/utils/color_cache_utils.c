@@ -26,7 +26,8 @@ int VP8LColorCacheInit(VP8LColorCache* const color_cache, int hash_bits) {
   assert(hash_bits > 0);
   color_cache->colors_ = (uint32_t*)WebPSafeCalloc(
       (uint64_t)hash_size, sizeof(*color_cache->colors_));
-  if (color_cache->colors_ == NULL) return 0;
+  if (color_cache->colors_ == NULL) { return 0;
+}
   color_cache->hash_shift_ = 32 - hash_bits;
   color_cache->hash_bits_ = hash_bits;
   return 1;

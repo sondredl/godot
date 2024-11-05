@@ -51,7 +51,7 @@ void oc_dequant_tables_init(ogg_uint16_t *_dequant[64][3][2],
   int          qti;
   /*Y', C_b, C_r*/
   int          pli;
-  for(qti=0;qti<2;qti++)for(pli=0;pli<3;pli++){
+  for(qti=0;qti<2;qti++) {for(pli=0;pli<3;pli++){
     /*Quality index.*/
     int qi;
     /*Range iterator.*/
@@ -64,8 +64,9 @@ void oc_dequant_tables_init(ogg_uint16_t *_dequant[64][3][2],
       memcpy(base,_qinfo->qi_ranges[qti][pli].base_matrices[qri],
        sizeof(base));
       qi_start=qi;
-      if(qri==_qinfo->qi_ranges[qti][pli].nranges)qi_end=qi+1;
-      else qi_end=qi+_qinfo->qi_ranges[qti][pli].sizes[qri];
+      if(qri==_qinfo->qi_ranges[qti][pli].nranges) {qi_end=qi+1;
+      } else { qi_end=qi+_qinfo->qi_ranges[qti][pli].sizes[qri];
+}
       /*Iterate over quality indicies in this range.*/
       for(;;){
         ogg_uint32_t qfac;
@@ -108,11 +109,13 @@ void oc_dequant_tables_init(ogg_uint16_t *_dequant[64][3][2],
                 break;
               }
             }
-            if(dupe)break;
+            if(dupe) {break;
+}
           }
           if(dupe)_dequant[qi][pli][qti]=_dequant[qi][plj][qtj];
         }
-        if(++qi>=qi_end)break;
+        if(++qi>=qi_end) {break;
+}
         /*Interpolate the next base matrix.*/
         for(ci=0;ci<64;ci++){
           base[ci]=(unsigned char)(
@@ -124,4 +127,5 @@ void oc_dequant_tables_init(ogg_uint16_t *_dequant[64][3][2],
       }
     }
   }
+}
 }

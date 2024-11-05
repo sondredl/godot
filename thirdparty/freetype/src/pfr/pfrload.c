@@ -760,8 +760,9 @@
 
     if ( ok )
     {
-      if ( FT_QALLOC( result, len + 1 ) )
+      if ( FT_QALLOC( result, len + 1 ) ) {
         goto Exit;
+}
 
       FT_MEM_COPY( result, p, len );
       result[len] = 0;

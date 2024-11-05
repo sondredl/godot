@@ -56,7 +56,8 @@ int oc_quant_params_unpack(oc_pack_buf *_opb,th_quant_info *_qinfo){
   val=oc_pack_read(_opb,9);
   nbase_mats=(int)val+1;
   base_mats=_ogg_malloc(nbase_mats*sizeof(base_mats[0]));
-  if(base_mats==NULL)return TH_EFAULT;
+  if(base_mats==NULL) {return TH_EFAULT;
+}
   for(bmi=0;bmi<nbase_mats;bmi++){
     for(ci=0;ci<64;ci++){
       val=oc_pack_read(_opb,8);

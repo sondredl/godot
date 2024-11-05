@@ -138,8 +138,10 @@ void ZSTD_ldm_adjustParameters(ldmParams_t* params,
     params->windowLog = cParams->windowLog;
     ZSTD_STATIC_ASSERT(LDM_BUCKET_SIZE_LOG <= ZSTD_LDM_BUCKETSIZELOG_MAX);
     DEBUGLOG(4, "ZSTD_ldm_adjustParameters");
-    if (!params->bucketSizeLog) params->bucketSizeLog = LDM_BUCKET_SIZE_LOG;
-    if (!params->minMatchLength) params->minMatchLength = LDM_MIN_MATCH_LENGTH;
+    if (!params->bucketSizeLog) { params->bucketSizeLog = LDM_BUCKET_SIZE_LOG;
+}
+    if (!params->minMatchLength) { params->minMatchLength = LDM_MIN_MATCH_LENGTH;
+}
     if (params->hashLog == 0) {
         params->hashLog = MAX(ZSTD_HASHLOG_MIN, params->windowLog - LDM_HASH_RLOG);
         assert(params->hashLog <= ZSTD_HASHLOG_MAX);
@@ -355,8 +357,9 @@ size_t ZSTD_ldm_generateSequences_internal(
     ldmMatchCandidate_t* const candidates = ldmState->matchCandidates;
     unsigned numSplits;
 
-    if (srcSize < minMatchLength)
+    if (srcSize < minMatchLength) {
         return iend - anchor;
+}
 
     /* Initialize the rolling hash state with the first minMatchLength bytes */
     ZSTD_ldm_gear_init(&hashState, params);
@@ -460,8 +463,9 @@ size_t ZSTD_ldm_generateSequences_internal(
                 rawSeq* const seq = rawSeqStore->seq + rawSeqStore->size;
 
                 /* Out of sequence storage */
-                if (rawSeqStore->size == rawSeqStore->capacity)
+                if (rawSeqStore->size == rawSeqStore->capacity) {
                     return ERROR(dstSize_tooSmall);
+}
                 seq->litLength = (U32)(split - backwardMatchLength - anchor);
                 seq->matchLength = (U32)mLength;
                 seq->offset = offset;
@@ -503,8 +507,9 @@ static void ZSTD_ldm_reduceTable(ldmEntry_t* const table, U32 const size,
 {
     U32 u;
     for (u = 0; u < size; u++) {
-        if (table[u].offset < reducerValue) table[u].offset = 0;
-        else table[u].offset -= reducerValue;
+        if (table[u].offset < reducerValue) { table[u].offset = 0;
+        } else { table[u].offset -= reducerValue;
+}
     }
 }
 
@@ -567,8 +572,9 @@ size_t ZSTD_ldm_generateSequences(
         /* 3. Generate the sequences for the chunk, and get newLeftoverSize. */
         newLeftoverSize = ZSTD_ldm_generateSequences_internal(
             ldmState, sequences, params, chunkStart, chunkSize);
-        if (ZSTD_isError(newLeftoverSize))
+        if (ZSTD_isError(newLeftoverSize)) {
             return newLeftoverSize;
+}
         /* 4. We add the leftover literals from previous iterations to the first
          *    newly generated sequence, or add the `newLeftoverSize` if none are
          *    generated.
@@ -696,8 +702,9 @@ size_t ZSTD_ldm_blockCompress(rawSeqStore_t* rawSeqStore,
         rawSeq const sequence = maybeSplitSequence(rawSeqStore,
                                                    (U32)(iend - ip), minMatch);
         /* End signal */
-        if (sequence.offset == 0)
+        if (sequence.offset == 0) {
             break;
+}
 
         assert(ip + sequence.litLength + sequence.matchLength <= iend);
 
@@ -712,8 +719,9 @@ size_t ZSTD_ldm_blockCompress(rawSeqStore_t* rawSeqStore,
                 blockCompressor(ms, seqStore, rep, ip, sequence.litLength);
             ip += sequence.litLength;
             /* Update the repcodes */
-            for (i = ZSTD_REP_NUM - 1; i > 0; i--)
+            for (i = ZSTD_REP_NUM - 1; i > 0; i--) {
                 rep[i] = rep[i-1];
+}
             rep[0] = sequence.offset;
             /* Store the sequence */
             ZSTD_storeSeq(seqStore, newLitLength, ip - newLitLength, iend,

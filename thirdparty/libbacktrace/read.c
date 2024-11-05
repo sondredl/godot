@@ -66,8 +66,9 @@ backtrace_get_view (struct backtrace_state *state, int descriptor,
     }
 
   view->base = backtrace_alloc (state, size, error_callback, data);
-  if (view->base == NULL)
+  if (view->base == NULL) {
     return 0;
+}
   view->data = view->base;
   view->len = size;
 
@@ -81,8 +82,9 @@ backtrace_get_view (struct backtrace_state *state, int descriptor,
 	  free (view->base);
 	  return 0;
 	}
-      if (r == 0)
+      if (r == 0) {
 	break;
+}
       got += (uint64_t) r;
     }
 

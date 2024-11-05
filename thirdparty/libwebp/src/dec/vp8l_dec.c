@@ -126,11 +126,13 @@ int VP8LCheckSignature(const uint8_t* const data, size_t size) {
 static int ReadImageInfo(VP8LBitReader* const br,
                          int* const width, int* const height,
                          int* const has_alpha) {
-  if (VP8LReadBits(br, 8) != VP8L_MAGIC_BYTE) return 0;
+  if (VP8LReadBits(br, 8) != VP8L_MAGIC_BYTE) { return 0;
+}
   *width = VP8LReadBits(br, VP8L_IMAGE_SIZE_BITS) + 1;
   *height = VP8LReadBits(br, VP8L_IMAGE_SIZE_BITS) + 1;
   *has_alpha = VP8LReadBits(br, 1);
-  if (VP8LReadBits(br, VP8L_VERSION_BITS) != 0) return 0;
+  if (VP8LReadBits(br, VP8L_VERSION_BITS) != 0) { return 0;
+}
   return !br->eos_;
 }
 
@@ -147,9 +149,12 @@ int VP8LGetInfo(const uint8_t* data, size_t data_size,
     if (!ReadImageInfo(&br, &w, &h, &a)) {
       return 0;
     }
-    if (width != NULL) *width = w;
-    if (height != NULL) *height = h;
-    if (has_alpha != NULL) *has_alpha = a;
+    if (width != NULL) { *width = w;
+}
+    if (height != NULL) { *height = h;
+}
+    if (has_alpha != NULL) { *has_alpha = a;
+}
     return 1;
   }
 }
@@ -284,14 +289,16 @@ static int ReadHuffmanCodeLengths(
   while (symbol < num_symbols) {
     const HuffmanCode* p;
     int code_len;
-    if (max_symbol-- == 0) break;
+    if (max_symbol-- == 0) { break;
+}
     VP8LFillBitWindow(br);
     p = &tables.curr_segment->start[VP8LPrefetchBits(br) & LENGTHS_TABLE_MASK];
     VP8LSetBitPos(br, br->bit_pos_ + p->bits);
     code_len = p->value;
     if (code_len < kCodeLengthLiterals) {
       code_lengths[symbol++] = code_len;
-      if (code_len != 0) prev_code_len = code_len;
+      if (code_len != 0) { prev_code_len = code_len;
+}
     } else {
       const int use_prev = (code_len == kCodeLengthRepeatCode);
       const int slot = code_len - kCodeLengthLiterals;
@@ -302,7 +309,8 @@ static int ReadHuffmanCodeLengths(
         goto End;
       } else {
         const int length = use_prev ? prev_code_len : 0;
-        while (repeat-- > 0) code_lengths[symbol++] = length;
+        while (repeat-- > 0) { code_lengths[symbol++] = length;
+}
       }
     }
   }
@@ -418,7 +426,8 @@ static int ReadHuffmanCodes(VP8LDecoder* const dec, int xsize, int ysize,
       for (num_htree_groups = 0, i = 0; i < huffman_pixs; ++i) {
         // Get the current mapping for the group and remap the Huffman image.
         int* const mapped_group = &mapping[huffman_image[i]];
-        if (*mapped_group == -1) *mapped_group = num_htree_groups++;
+        if (*mapped_group == -1) { *mapped_group = num_htree_groups++;
+}
         huffman_image[i] = *mapped_group;
       }
     } else {
@@ -426,7 +435,8 @@ static int ReadHuffmanCodes(VP8LDecoder* const dec, int xsize, int ysize,
     }
   }
 
-  if (br->eos_) goto Error;
+  if (br->eos_) { goto Error;
+}
 
   if (!ReadHuffmanCodesHelper(color_cache_bits, num_htree_groups,
                               num_htree_groups_max, mapping, dec,
@@ -753,7 +763,8 @@ static int SetCropWindow(VP8Io* const io, int y_start, int y_end,
     y_start = io->crop_top;
     *in_data += delta * pixel_stride;
   }
-  if (y_start >= y_end) return 0;  // Crop window is empty.
+  if (y_start >= y_end) { return 0;  // Crop window is empty.
+}
 
   *in_data += io->crop_left * sizeof(uint32_t);
 
@@ -767,7 +778,8 @@ static int SetCropWindow(VP8Io* const io, int y_start, int y_end,
 
 static WEBP_INLINE int GetMetaIndex(
     const uint32_t* const image, int xsize, int bits, int x, int y) {
-  if (bits == 0) return 0;
+  if (bits == 0) { return 0;
+}
   return image[xsize * (y >> bits) + (x >> bits)];
 }
 
@@ -856,7 +868,8 @@ static void ProcessRows(VP8LDecoder* const dec, int row) {
 // transform (color indexing), and trivial non-green literals.
 static int Is8bOptimizable(const VP8LMetadata* const hdr) {
   int i;
-  if (hdr->color_cache_size_ > 0) return 0;
+  if (hdr->color_cache_size_ > 0) { return 0;
+}
   // When the Huffman tree contains only one symbol, we can skip the
   // call to ReadSymbol() for red/blue/alpha channels.
   for (i = 0; i < hdr->num_htree_groups_; ++i) {

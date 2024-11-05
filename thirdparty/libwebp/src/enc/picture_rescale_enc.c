@@ -50,20 +50,27 @@ static int AdjustAndCheckRectangle(const WebPPicture* const pic,
                                    int* const left, int* const top,
                                    int width, int height) {
   SnapTopLeftPosition(pic, left, top);
-  if ((*left) < 0 || (*top) < 0) return 0;
-  if (width <= 0 || height <= 0) return 0;
-  if ((*left) + width > pic->width) return 0;
-  if ((*top) + height > pic->height) return 0;
+  if ((*left) < 0 || (*top) < 0) { return 0;
+}
+  if (width <= 0 || height <= 0) { return 0;
+}
+  if ((*left) + width > pic->width) { return 0;
+}
+  if ((*top) + height > pic->height) { return 0;
+}
   return 1;
 }
 
 #if !defined(WEBP_REDUCE_SIZE)
 int WebPPictureCopy(const WebPPicture* src, WebPPicture* dst) {
-  if (src == NULL || dst == NULL) return 0;
-  if (src == dst) return 1;
+  if (src == NULL || dst == NULL) { return 0;
+}
+  if (src == dst) { return 1;
+}
 
   PictureGrabSpecs(src, dst);
-  if (!WebPPictureAlloc(dst)) return 0;
+  if (!WebPPictureAlloc(dst)) { return 0;
+}
 
   if (!src->use_argb) {
     WebPCopyPlane(src->y, src->y_stride,
@@ -86,7 +93,8 @@ int WebPPictureCopy(const WebPPicture* src, WebPPicture* dst) {
 #endif  // !defined(WEBP_REDUCE_SIZE)
 
 int WebPPictureIsView(const WebPPicture* picture) {
-  if (picture == NULL) return 0;
+  if (picture == NULL) { return 0;
+}
   if (picture->use_argb) {
     return (picture->memory_argb_ == NULL);
   }
@@ -96,10 +104,12 @@ int WebPPictureIsView(const WebPPicture* picture) {
 int WebPPictureView(const WebPPicture* src,
                     int left, int top, int width, int height,
                     WebPPicture* dst) {
-  if (src == NULL || dst == NULL) return 0;
+  if (src == NULL || dst == NULL) { return 0;
+}
 
   // verify rectangle position.
-  if (!AdjustAndCheckRectangle(src, &left, &top, width, height)) return 0;
+  if (!AdjustAndCheckRectangle(src, &left, &top, width, height)) { return 0;
+}
 
   if (src != dst) {  // beware of aliasing! We don't want to leak 'memory_'.
     PictureGrabSpecs(src, dst);
@@ -131,8 +141,10 @@ int WebPPictureCrop(WebPPicture* pic,
                     int left, int top, int width, int height) {
   WebPPicture tmp;
 
-  if (pic == NULL) return 0;
-  if (!AdjustAndCheckRectangle(pic, &left, &top, width, height)) return 0;
+  if (pic == NULL) { return 0;
+}
+  if (!AdjustAndCheckRectangle(pic, &left, &top, width, height)) { return 0;
+}
 
   PictureGrabSpecs(pic, &tmp);
   tmp.width = width;
@@ -209,7 +221,8 @@ int WebPPictureRescale(WebPPicture* picture, int width, int height) {
   int prev_width, prev_height;
   rescaler_t* work;
 
-  if (picture == NULL) return 0;
+  if (picture == NULL) { return 0;
+}
   prev_width = picture->width;
   prev_height = picture->height;
   if (!WebPRescalerGetScaledDimensions(

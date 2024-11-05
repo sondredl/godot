@@ -517,7 +517,8 @@ int oc_enc_tokenize_ac(oc_enc_ctx *_enc,int _pli,ptrdiff_t _fragi,
            token followed by a 1 value token), but zeros are so common that
            this becomes very computationally expensive (quadratic instead of
            linear in the number of coefficients), for a marginal gain.*/
-        while(zzi>1&&!_qdct[zzi-1])zzi--;
+        while(zzi>1&&!_qdct[zzi-1]) {zzi--;
+}
         /*The distortion of coefficients originally quantized to zero is
            treated as zero (since we'll never quantize them to anything else).*/
         d2=0;
@@ -600,7 +601,8 @@ int oc_enc_tokenize_ac(oc_enc_ctx *_enc,int _pli,ptrdiff_t _fragi,
             }
           }
           /*zzj can't be coded as a zero, so stop trying to extend the run.*/
-          if(!(zflags>>zzj&1))break;
+          if(!(zflags>>zzj&1)) {break;
+}
         }
         /*We could try to consider _all_ potentially non-zero coefficients, but
            if we already found a bunch of them not worth coding, it's fairly
@@ -613,7 +615,8 @@ int oc_enc_tokenize_ac(oc_enc_ctx *_enc,int _pli,ptrdiff_t _fragi,
             bits=oc_token_bits(_enc,huffi,zzi,oc_make_eob_token(eob+1))
              -(eob>0?oc_token_bits(_enc,huffi,zzi,oc_make_eob_token(eob)):0);
           }
-          else bits=oc_token_bits(_enc,huffi,zzi,OC_DCT_EOB1_TOKEN);
+          else { bits=oc_token_bits(_enc,huffi,zzi,OC_DCT_EOB1_TOKEN);
+}
           cost=sum_d2+bits*_lambda;
           /*If the best route so far is still a pure zero run to the end of the
              block, force coding it as an EOB.
@@ -643,7 +646,8 @@ int oc_enc_tokenize_ac(oc_enc_ctx *_enc,int _pli,ptrdiff_t _fragi,
       zflags|=(ogg_int64_t)1<<zzi;
       if(qc_m){
         dq=_dequant[zzi];
-        if(zzi<_acmin)_lambda=0;
+        if(zzi<_acmin) {_lambda=0;
+}
         e=dq-c;
         d2=e*(ogg_int32_t)e;
         token=OC_ONE_TOKEN-s;
@@ -665,7 +669,8 @@ int oc_enc_tokenize_ac(oc_enc_ctx *_enc,int _pli,ptrdiff_t _fragi,
     else{
       int alt_qc;
       eob=eob_run[zzi];
-      if(zzi<_acmin)_lambda=0;
+      if(zzi<_acmin) {_lambda=0;
+}
       dq=_dequant[zzi];
       /*No zero run can extend past this point.*/
       d2_accum[zzi]=0;
@@ -814,7 +819,8 @@ int oc_enc_tokenize_ac_fast(oc_enc_ctx *_enc,int _pli,ptrdiff_t _fragi,
     if(eob>0&&d1==0&&zzk==_zzi){
       eob_bits=oc_token_bits(_enc,huffi,zzi,OC_DCT_EOB1_TOKEN);
     }
-    else eob_bits=0;
+    else { eob_bits=0;
+}
     if(zzj==zzi){
       /*No active zero run.*/
       int best_token;
@@ -932,7 +938,8 @@ int oc_enc_tokenize_ac_fast(oc_enc_ctx *_enc,int _pli,ptrdiff_t _fragi,
         d=d1;
         _idct[dct_fzig_zzj]=dq1;
       }
-      else _idct[dct_fzig_zzj]=dq0;
+      else { _
+}idct[dct_fzig_zzj]=dq0;
       oc_enc_tokenlog_checkpoint(_enc,stack++,_pli,zzi);
       if(eob){
         oc_enc_eob_log(_enc,_pli,zzi,eob);
@@ -1015,8 +1022,9 @@ void oc_enc_pred_dc_frag_rows(oc_enc_ctx *_enc,
       u_ref=u_frags[fragi].refi;
       for(fragx=0;fragx<nhfrags;fragx++,fragi++){
         int ur_ref;
-        if(fragx+1>=nhfrags)ur_ref=-1;
-        else ur_ref=u_frags[fragi+1].refi;
+        if(fragx+1>=nhfrags) {ur_ref=-1;
+        } else { ur_ref=u_frags[fragi+1].refi;
+}
         if(frags[fragi].coded){
           int pred;
           int refi;
@@ -1057,16 +1065,18 @@ void oc_enc_pred_dc_frag_rows(oc_enc_ctx *_enc,
               p1=u_frags[fragi-1].dc;
               p2=u_frags[fragi].dc;
               pred=(29*(p0+p2)-26*p1)/32;
-              if(abs(pred-p2)>128)pred=p2;
-              else if(abs(pred-p0)>128)pred=p0;
-              else if(abs(pred-p1)>128)pred=p1;
+              if(abs(pred-p2)>128) {pred=p2;
+              } else if(abs(pred-p0)>128) {pred=p0;
+              } else if(abs(pred-p1)>128) {pred=p1;
+}
             }break;
           }
           frag_dc[fragi]=(ogg_int16_t)(frags[fragi].dc-pred);
           pred_last[refi]=frags[fragi].dc;
           l_ref=refi;
         }
-        else l_ref=-1;
+        else { l_ref=-1;
+}
         ul_ref=u_ref;
         u_ref=ur_ref;
       }
@@ -1095,7 +1105,8 @@ void oc_enc_tokenize_dc_frag_list(oc_enc_ctx *_enc,int _pli,
   int                eb1=eb1;
   /*Return immediately if there are no coded fragments; otherwise we'd flush
      any trailing EOB run into the AC 1 list and never read it back out.*/
-  if(_ncoded_fragis<=0)return;
+  if(_ncoded_fragis<=0) {return;
+}
   frag_dc=_enc->frag_dc;
   dct_tokens0=_enc->dct_tokens[_pli][0];
   dct_tokens1=_enc->dct_tokens[_pli][1];
@@ -1107,7 +1118,8 @@ void oc_enc_tokenize_dc_frag_list(oc_enc_ctx *_enc,int _pli,
   /*Flush any trailing EOB run for the 1st AC coefficient.
     This is needed to allow us to track tokens to the end of the list.*/
   eob_run1=_enc->eob_run[_pli][1];
-  if(eob_run1>0)oc_enc_eob_log(_enc,_pli,1,eob_run1);
+  if(eob_run1>0) {oc_enc_eob_log(_enc,_pli,1,eob_run1);
+}
   /*If there was an active EOB run at the start of the 1st AC stack, read it
      in and decode it.*/
   if(_prev_eob_run1>0){
@@ -1118,7 +1130,8 @@ void oc_enc_tokenize_dc_frag_list(oc_enc_ctx *_enc,int _pli,
     /*Consume the portion of the run that came before these fragments.*/
     neobs1=eob_run1-_prev_eob_run1;
   }
-  else eob_run1=neobs1=0;
+  else { eob_run1=neobs1=0;
+}
   for(fragii=0;fragii<_ncoded_fragis;fragii++){
     int val;
     /*All tokens in the 1st AC coefficient stack are regenerated as the DC
@@ -1312,14 +1325,16 @@ void oc_enc_tokenize_finish(oc_enc_ctx *_enc){
   int pli;
   int zzi;
   /*Emit final EOB runs.*/
-  for(pli=0;pli<3;pli++)for(zzi=0;zzi<64;zzi++){
+  for(pli=0;pli<3;pli++) {for(zzi=0;zzi<64;zzi++){
     int eob_run;
     eob_run=_enc->eob_run[pli][zzi];
-    if(eob_run>0)oc_enc_eob_log(_enc,pli,zzi,eob_run);
+    if(eob_run>0) {oc_enc_eob_log(_enc,pli,zzi,eob_run);
+}
   }
+}
   /*Merge the final EOB run of one token list with the start of the next, if
      possible.*/
-  for(zzi=0;zzi<64;zzi++)for(pli=0;pli<3;pli++){
+  for(zzi=0;zzi<64;zzi++) {for(pli=0;pli<3;pli++){
     int       old_tok1;
     int       old_tok2;
     int       old_eb1;
@@ -1331,10 +1346,12 @@ void oc_enc_tokenize_finish(oc_enc_ctx *_enc){
     ptrdiff_t ti=ti;
     int       run_count;
     /*Make sure this coefficient has tokens at all.*/
-    if(_enc->ndct_tokens[pli][zzi]<=0)continue;
+    if(_enc->ndct_tokens[pli][zzi]<=0) {continue;
+}
     /*Ensure the first token is an EOB run.*/
     old_tok2=_enc->dct_tokens[pli][zzi][0];
-    if(old_tok2>=OC_NDCT_EOB_TOKEN_MAX)continue;
+    if(old_tok2>=OC_NDCT_EOB_TOKEN_MAX) {continue;
+}
     /*Search for a previous coefficient that has any tokens at all.*/
     old_tok1=OC_NDCT_EOB_TOKEN_MAX;
     for(zzj=zzi,plj=pli;zzj>=0;zzj--){
@@ -1345,11 +1362,13 @@ void oc_enc_tokenize_finish(oc_enc_ctx *_enc){
           break;
         }
       }
-      if(plj>=0)break;
+      if(plj>=0) {break;
+}
       plj=3;
     }
     /*Ensure its last token was an EOB run.*/
-    if(old_tok1>=OC_NDCT_EOB_TOKEN_MAX)continue;
+    if(old_tok1>=OC_NDCT_EOB_TOKEN_MAX) {continue;
+}
     /*Pull off the associated extra bits, if any, and decode the runs.*/
     old_eb1=_enc->extra_bits[plj][zzj][ti];
     old_eb2=_enc->extra_bits[pli][zzi][0];
@@ -1358,11 +1377,13 @@ void oc_enc_tokenize_finish(oc_enc_ctx *_enc){
     /*We can't possibly combine these into one run.
       It might be possible to split them more optimally, but we'll just leave
        them as-is.*/
-    if(run_count>=4096)continue;
+    if(run_count>=4096) {continue;
+}
     /*We CAN combine them into one run.*/
     new_tok=oc_make_eob_token_full(run_count,&new_eb);
     _enc->dct_tokens[plj][zzj][ti]=(unsigned char)new_tok;
     _enc->extra_bits[plj][zzj][ti]=(ogg_uint16_t)new_eb;
     _enc->dct_token_offs[pli][zzi]++;
   }
+}
 }

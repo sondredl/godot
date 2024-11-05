@@ -513,8 +513,9 @@
   sdf_edge_done( FT_Memory   memory,
                  SDF_Edge**  edge )
   {
-    if ( !memory || !edge || !*edge )
+    if ( !memory || !edge || !*edge ) {
       return;
+}
 
     FT_FREE( *edge );
   }
@@ -557,8 +558,9 @@
     SDF_Edge*  temp;
 
 
-    if ( !memory || !contour || !*contour )
+    if ( !memory || !contour || !*contour ) {
       return;
+}
 
     edges = (*contour)->edges;
 
@@ -613,14 +615,16 @@
     SDF_Contour*  temp;
 
 
-    if ( !shape || !*shape )
+    if ( !shape || !*shape ) {
       return;
+}
 
     memory   = (*shape)->memory;
     contours = (*shape)->contours;
 
-    if ( !memory )
+    if ( !memory ) {
       return;
+}
 
     /* release all contours */
     while ( contours )
@@ -696,8 +700,9 @@
     contour = shape->contours;
 
     if ( contour->last_pos.x == to->x &&
-         contour->last_pos.y == to->y )
+         contour->last_pos.y == to->y ) {
       goto Exit;
+}
 
     FT_CALL( sdf_edge_new( memory, &edge ) );
 
@@ -962,8 +967,9 @@
 
 
     /* return none if invalid parameters */
-    if ( !contour || !contour->edges )
+    if ( !contour || !contour->edges ) {
       return SDF_ORIENTATION_NONE;
+}
 
     head = contour->edges;
 
@@ -1002,10 +1008,11 @@
 
     /* Clockwise contours cover a positive area, and counter-clockwise */
     /* contours cover a negative area.                                 */
-    if ( area > 0 )
+    if ( area > 0 ) {
       return SDF_ORIENTATION_CW;
-    else
+    } else {
       return SDF_ORIENTATION_CCW;
+}
   }
 
 
@@ -1101,8 +1108,9 @@
     /* If max number of splits is done */
     /* then stop and add the lines to  */
     /* the list.                       */
-    if ( max_splits <= 2 )
+    if ( max_splits <= 2 ) {
       goto Append;
+}
 
     /* Otherwise keep splitting. */
     FT_CALL( split_sdf_conic( memory, &cpos[0], max_splits / 2, out ) );
@@ -1186,8 +1194,9 @@
     /* If max number of splits is done */
     /* then stop and add the lines to  */
     /* the list.                       */
-    if ( max_splits <= 2 )
+    if ( max_splits <= 2 ) {
       goto Append;
+}
 
     /* Otherwise keep splitting. */
     FT_CALL( split_sdf_cubic( memory, &cpos[0], max_splits / 2, out ) );
@@ -1287,8 +1296,9 @@
 
             dx = FT_ABS( ctrls[2].x + ctrls[0].x - 2 * ctrls[1].x );
             dy = FT_ABS( ctrls[2].y + ctrls[0].y - 2 * ctrls[1].y );
-            if ( dx < dy )
+            if ( dx < dy ) {
               dx = dy;
+}
 
             /* Calculate the number of necessary bisections.  Each      */
             /* bisection causes a four-fold reduction of the deviation, */
@@ -1325,8 +1335,9 @@
           error = FT_THROW( Invalid_Argument );
         }
 
-        if ( error != FT_Err_Ok )
+        if ( error != FT_Err_Ok ) {
           goto Exit;
+}
 
         edges = edges->next;
       }
@@ -1940,10 +1951,12 @@
     factor = FT_DivFix( factor, sq_line_length );
 
     /* clamp the factor between 0.0 and 1.0 in fixed-point */
-    if ( factor > FT_INT_16D16( 1 ) )
+    if ( factor > FT_INT_16D16( 1 ) ) {
       factor = FT_INT_16D16( 1 );
-    if ( factor < 0 )
+}
+    if ( factor < 0 ) {
       factor = 0;
+}
 
     nearest_point.x = FT_MulFix( FT_26D6_16D16( line_segment.x ),
                                  factor );
@@ -1967,9 +1980,9 @@
     /* directly set it here.  This is more efficient     */
     /* because if the distance is perpendicular we can   */
     /* directly set it to 1.                             */
-    if ( factor != 0 && factor != FT_INT_16D16( 1 ) )
+    if ( factor != 0 && factor != FT_INT_16D16( 1 ) ) {
       out->cross = FT_INT_16D16( 1 );
-    else
+    } else
     {
       /* [OPTIMIZATION]: Pre-compute this direction. */
       /* If not perpendicular then compute `cross`.  */
@@ -2536,9 +2549,9 @@
     out->distance = min;
     out->sign     = cross < 0 ? 1 : -1;
 
-    if ( min_factor != 0 && min_factor != FT_INT_16D16( 1 ) )
+    if ( min_factor != 0 && min_factor != FT_INT_16D16( 1 ) ) {
       out->cross = FT_INT_16D16( 1 );   /* the two are perpendicular */
-    else
+    } else
     {
       /* convert to nearest vector */
       nearest_point.x -= FT_26D6_16D16( p.x );
@@ -2863,9 +2876,9 @@
     out->distance = min;
     out->sign     = cross < 0 ? 1 : -1;
 
-    if ( min_factor != 0 && min_factor != FT_INT_16D16( 1 ) )
+    if ( min_factor != 0 && min_factor != FT_INT_16D16( 1 ) ) {
       out->cross = FT_INT_16D16( 1 );   /* the two are perpendicular */
-    else
+    } else
     {
       /* convert to nearest vector */
       nearest_point.x -= FT_26D6_16D16( p.x );
@@ -3282,8 +3295,9 @@
     }
 
     if ( FT_ALLOC( dists,
-                   bitmap->width * bitmap->rows * sizeof ( *dists ) ) )
+                   bitmap->width * bitmap->rows * sizeof ( *dists ) ) ) {
       goto Exit;
+}
 
     contours = shape->contours;
     width    = (FT_Int)bitmap->width;
@@ -3598,13 +3612,15 @@
 
     /* allocate the bitmaps to generate SDF for separate contours */
     if ( FT_ALLOC( bitmaps,
-                   (FT_UInt)num_contours * sizeof ( *bitmaps ) ) )
+                   (FT_UInt)num_contours * sizeof ( *bitmaps ) ) ) {
       goto Exit;
+}
 
     /* allocate array to hold orientation for all contours */
     if ( FT_ALLOC( orientations,
-                   (FT_UInt)num_contours * sizeof ( *orientations ) ) )
+                   (FT_UInt)num_contours * sizeof ( *orientations ) ) ) {
       goto Exit;
+}
 
     contour = shape->contours;
 
@@ -3731,15 +3747,16 @@
 
   Exit:
     /* deallocate orientations array */
-    if ( orientations )
+    if ( orientations ) {
       FT_FREE( orientations );
+}
 
     /* deallocate temporary bitmaps */
     if ( bitmaps )
     {
-      if ( num_contours == 0 )
+      if ( num_contours == 0 ) {
         error = FT_THROW( Raster_Corrupted );
-      else
+      } else
       {
         for ( i = 0; i < num_contours; i++ )
           FT_FREE( bitmaps[i].buffer );
@@ -3837,8 +3854,9 @@
     }
 
     /* if the outline is empty, return */
-    if ( outline->n_points <= 0 || outline->n_contours <= 0 )
+    if ( outline->n_points <= 0 || outline->n_contours <= 0 ) {
       goto Exit;
+}
 
     /* check whether the outline has valid fields */
     if ( !outline->contours || !outline->points )
@@ -3889,17 +3907,19 @@
 
     FT_CALL( sdf_outline_decompose( outline, shape ) );
 
-    if ( sdf_params->overlaps )
+    if ( sdf_params->overlaps ) {
       FT_CALL( sdf_generate_with_overlaps( internal_params,
                                            shape, sdf_params->spread,
                                            sdf_params->root.target ) );
-    else
+    } else {
       FT_CALL( sdf_generate_subdivision( internal_params,
                                          shape, sdf_params->spread,
                                          sdf_params->root.target ) );
+}
 
-    if ( shape )
+    if ( shape ) {
       sdf_shape_done( &shape );
+}
 
   Exit:
     return error;

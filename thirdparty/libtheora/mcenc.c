@@ -348,7 +348,8 @@ void oc_mcenc_search_frame(oc_enc_ctx *_enc,oc_mv _accum,int _mbi,int _frame,
       /*If we've already examined this vector, then we would be using it if it
          was better than what we are using.*/
       hitbit=(ogg_int32_t)1<<candx+15;
-      if(hit_cache[candy+15]&hitbit)continue;
+      if(hit_cache[candy+15]&hitbit) {continue;
+}
       hit_cache[candy+15]|=hitbit;
       err=oc_mcenc_ysad_check_mbcandidate_fullpel(_enc,
        frag_buf_offs,fragis,candx,candy,src,ref,ystride,block_err);
@@ -358,11 +359,12 @@ void oc_mcenc_search_frame(oc_enc_ctx *_enc,oc_mv _accum,int _mbi,int _frame,
         best_vec[1]=candy;
       }
       if(_frame==OC_FRAME_PREV){
-        for(bi=0;bi<4;bi++)if(block_err[bi]<best_block_err[bi]){
+        for(bi=0;bi<4;bi++) {if(block_err[bi]<best_block_err[bi]){
           best_block_err[bi]=block_err[bi];
           best_block_vec[bi][0]=candx;
           best_block_vec[bi][1]=candy;
         }
+}
       }
     }
     if(best_err>t2){
@@ -372,7 +374,8 @@ void oc_mcenc_search_frame(oc_enc_ctx *_enc,oc_mv _accum,int _mbi,int _frame,
         candx=OC_DIV2(mcenc.candidates[ci][0]);
         candy=OC_DIV2(mcenc.candidates[ci][1]);
         hitbit=(ogg_int32_t)1<<candx+15;
-        if(hit_cache[candy+15]&hitbit)continue;
+        if(hit_cache[candy+15]&hitbit) {continue;
+}
         hit_cache[candy+15]|=hitbit;
         err=oc_mcenc_ysad_check_mbcandidate_fullpel(_enc,
          frag_buf_offs,fragis,candx,candy,src,ref,ystride,block_err);
@@ -382,11 +385,12 @@ void oc_mcenc_search_frame(oc_enc_ctx *_enc,oc_mv _accum,int _mbi,int _frame,
           best_vec[1]=candy;
         }
         if(_frame==OC_FRAME_PREV){
-          for(bi=0;bi<4;bi++)if(block_err[bi]<best_block_err[bi]){
+          for(bi=0;bi<4;bi++) {if(block_err[bi]<best_block_err[bi]){
             best_block_err[bi]=block_err[bi];
             best_block_vec[bi][0]=candx;
             best_block_vec[bi][1]=candy;
           }
+}
         }
       }
       /*Use the same threshold for set B as in set A.*/
@@ -408,7 +412,8 @@ void oc_mcenc_search_frame(oc_enc_ctx *_enc,oc_mv _accum,int _mbi,int _frame,
             candx=best_vec[0]+OC_SQUARE_DX[site];
             candy=best_vec[1]+OC_SQUARE_DY[site];
             hitbit=(ogg_int32_t)1<<candx+15;
-            if(hit_cache[candy+15]&hitbit)continue;
+            if(hit_cache[candy+15]&hitbit) {continue;
+}
             hit_cache[candy+15]|=hitbit;
             err=oc_mcenc_ysad_check_mbcandidate_fullpel(_enc,
              frag_buf_offs,fragis,candx,candy,src,ref,ystride,block_err);
@@ -417,14 +422,16 @@ void oc_mcenc_search_frame(oc_enc_ctx *_enc,oc_mv _accum,int _mbi,int _frame,
               best_site=site;
             }
             if(_frame==OC_FRAME_PREV){
-              for(bi=0;bi<4;bi++)if(block_err[bi]<best_block_err[bi]){
+              for(bi=0;bi<4;bi++) {if(block_err[bi]<best_block_err[bi]){
                 best_block_err[bi]=block_err[bi];
                 best_block_vec[bi][0]=candx;
                 best_block_vec[bi][1]=candy;
               }
+}
             }
           }
-          if(best_site==4)break;
+          if(best_site==4) {break;
+}
           best_vec[0]+=OC_SQUARE_DX[best_site];
           best_vec[1]+=OC_SQUARE_DY[best_site];
         }
@@ -473,7 +480,8 @@ void oc_mcenc_search_frame(oc_enc_ctx *_enc,oc_mv _accum,int _mbi,int _frame,
                   candx=bestx+OC_SQUARE_DX[site];
                   candy=besty+OC_SQUARE_DY[site];
                   hitbit=(ogg_int32_t)1<<candx+15;
-                  if(hit_cache[candy+15]&hitbit)continue;
+                  if(hit_cache[candy+15]&hitbit) {continue;
+}
                   hit_cache[candy+15]|=hitbit;
                   err=oc_mcenc_ysad_check_mbcandidate_fullpel(_enc,
                    frag_buf_offs,fragis,candx,candy,src,ref,ystride,block_err);
@@ -482,11 +490,12 @@ void oc_mcenc_search_frame(oc_enc_ctx *_enc,oc_mv _accum,int _mbi,int _frame,
                     best_vec[0]=candx;
                     best_vec[1]=candy;
                   }
-                  for(bj=0;bj<4;bj++)if(block_err[bj]<best_block_err[bj]){
+                  for(bj=0;bj<4;bj++) {if(block_err[bj]<best_block_err[bj]){
                     best_block_err[bj]=block_err[bj];
                     best_block_vec[bj][0]=candx;
                     best_block_vec[bj][1]=candy;
                   }
+}
                 }
                 if(best_block_vec[bi][0]==bestx&&best_block_vec[bi][1]==besty){
                   break;
@@ -521,8 +530,9 @@ void oc_mcenc_search(oc_enc_ctx *_enc,int _mbi){
   oc_mv   accum_g;
   oc_mv   mv2_p;
   mvs=_enc->mb_info[_mbi].analysis_mv;
-  if(_enc->prevframe_dropped)accum_p=mvs[0][OC_FRAME_PREV];
-  else accum_p=0;
+  if(_enc->prevframe_dropped) {accum_p=mvs[0][OC_FRAME_PREV];
+  } else { accum_p=0;
+}
   accum_g=mvs[2][OC_FRAME_GOLD];
   /*Move the motion vector predictors back a frame.*/
   mv2_p=mvs[2][OC_FRAME_PREV];

@@ -42,8 +42,8 @@ static sljit_s32 emit_copysign(struct sljit_compiler *compiler, sljit_s32 op,
 			break;
 #endif /* SLJIT_MIPS_REV >= 2 */
 		default:
-			src1_r |= (1 << 11);
-			src2_r |= (1 << 11);
+			src1 |= (1 << 11);
+			src2 |= (1 << 11);
 			dst_r |= (1 << 11);
 			break;
 		}

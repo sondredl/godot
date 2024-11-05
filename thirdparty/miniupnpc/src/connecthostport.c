@@ -170,8 +170,9 @@ SOCKET connecthostport(const char * host, unsigned short port,
 		for(i = 0, j = 1; host[j] && (host[j] != ']') && i < MAXHOSTNAMELEN; i++, j++)
 		{
 			tmp_host[i] = host[j];
-			if(0 == strncmp(host+j, "%25", 3))	/* %25 is just url encoding for '%' */
+			if(0 == strncmp(host+j, "%25", 3)) {	/* %25 is just url encoding for '%' */
 				j+=2;							/* skip "25" */
+}
 		}
 		tmp_host[i] = '\0';
 	}
@@ -193,15 +194,17 @@ SOCKET connecthostport(const char * host, unsigned short port,
 	s = INVALID_SOCKET;
 	for(p = ai; p; p = p->ai_next)
 	{
-		if(!ISINVALID(s))
+		if(!ISINVALID(s)) {
 			closesocket(s);
+}
 #ifdef DEBUG
 		printf("ai_family=%d ai_socktype=%d ai_protocol=%d (PF_INET=%d, PF_INET6=%d)\n",
 		       p->ai_family, p->ai_socktype, p->ai_protocol, PF_INET, PF_INET6);
 #endif
 		s = socket(p->ai_family, p->ai_socktype, p->ai_protocol);
-		if(ISINVALID(s))
+		if(ISINVALID(s)) {
 			continue;
+}
 		if(p->ai_addr->sa_family == AF_INET6 && scope_id > 0) {
 			struct sockaddr_in6 * addr6 = (struct sockaddr_in6 *)p->ai_addr;
 			addr6->sin6_scope_id = scope_id;
@@ -240,8 +243,9 @@ SOCKET connecthostport(const char * host, unsigned short port,
 #else
 			n = select(s + 1, NULL, &wset, NULL, NULL);
 #endif
-			if(n == -1 && errno == EINTR)
+			if(n == -1 && errno == EINTR) {
 				continue;
+}
 #ifdef MINIUPNPC_SET_SOCKET_TIMEOUT
 			if(n == 0) {
 				errno = ETIMEDOUT;
@@ -264,8 +268,9 @@ SOCKET connecthostport(const char * host, unsigned short port,
 			}
 		}
 #endif /* #ifdef MINIUPNPC_IGNORE_EINTR */
-		if(n >= 0)	/* connect() was successful */
+		if(n >= 0) {	/* connect() was successful */
 			break;
+}
 	}
 	freeaddrinfo(ai);
 	if(ISINVALID(s))

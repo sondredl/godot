@@ -347,9 +347,9 @@ ktxTexture_CreateFromStream(ktxStream* pStream,
         tex = ktxTexture(tex2);
     }
 
-    if (result == KTX_SUCCESS)
+    if (result == KTX_SUCCESS) {
         *newTex = (ktxTexture*)tex;
-    else {
+    } else {
         free(tex);
         *newTex = NULL;
     }

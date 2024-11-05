@@ -39,7 +39,8 @@ void theora_info_clear(theora_info *_ci){
   api=(th_api_wrapper *)_ci->codec_setup;
   memset(_ci,0,sizeof(*_ci));
   if(api!=NULL){
-    if(api->clear!=NULL)(*api->clear)(api);
+    if(api->clear!=NULL) {(*api->clear)(api);
+}
     _ogg_free(api);
   }
 }
@@ -52,7 +53,8 @@ void theora_clear(theora_state *_th){
   if(_th->internal_encode!=NULL){
     (*((oc_state_dispatch_vtable *)_th->internal_encode)->clear)(_th);
   }
-  if(_th->i!=NULL)theora_info_clear(_th->i);
+  if(_th->i!=NULL) {theora_info_clear(_th->i);
+}
   memset(_th,0,sizeof(*_th));
 }
 
@@ -66,7 +68,8 @@ int theora_control(theora_state *_th,int _req,void *_buf,size_t _buf_sz){
     return (*((oc_state_dispatch_vtable *)_th->internal_encode)->control)(_th,
      _req,_buf,_buf_sz);
   }
-  else return TH_EINVAL;
+  else { return TH_EINVAL;
+}
 }
 
 ogg_int64_t theora_granule_frame(theora_state *_th,ogg_int64_t _gp){
@@ -79,7 +82,8 @@ ogg_int64_t theora_granule_frame(theora_state *_th,ogg_int64_t _gp){
     return (*((oc_state_dispatch_vtable *)_th->internal_encode)->granule_frame)(
      _th,_gp);
   }
-  else return -1;
+  else { return -1;
+}
 }
 
 double theora_granule_time(theora_state *_th, ogg_int64_t _gp){
@@ -92,7 +96,8 @@ double theora_granule_time(theora_state *_th, ogg_int64_t _gp){
     return (*((oc_state_dispatch_vtable *)_th->internal_encode)->granule_time)(
      _th,_gp);
   }
-  else return -1;
+  else { return -1;
+}
 }
 
 void oc_theora_info2th_info(th_info *_info,const theora_info *_ci){

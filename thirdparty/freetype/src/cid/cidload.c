@@ -447,12 +447,14 @@
 
         cur = parser->root.cursor;
         /* no error can occur in cid_parser_skip_spaces */
-        if ( cur >= limit )
+        if ( cur >= limit ) {
           break;
+}
 
         cid_parser_skip_PS_token( parser );
-        if ( parser->root.cursor >= limit || parser->root.error )
+        if ( parser->root.cursor >= limit || parser->root.error ) {
           break;
+}
 
         /* look for immediates */
         if ( *cur == '/' && cur + 2 < limit )
@@ -475,8 +477,9 @@
 
 
               name = (FT_Byte*)keyword->ident;
-              if ( !name )
+              if ( !name ) {
                 break;
+}
 
               if ( cur[0] == name[0]                     &&
                    len == ft_strlen( (const char*)name ) )
@@ -494,8 +497,9 @@
                   parser->root.error = cid_load_keyword( face,
                                                          loader,
                                                          keyword );
-                  if ( parser->root.error )
+                  if ( parser->root.error ) {
                     return parser->root.error;
+}
                   break;
                 }
               }
@@ -533,8 +537,9 @@
     PSAux_Service  psaux = (PSAux_Service)face->psaux;
 
 
-    if ( FT_NEW_ARRAY( face->subrs, cid->num_dicts ) )
+    if ( FT_NEW_ARRAY( face->subrs, cid->num_dicts ) ) {
       goto Exit;
+}
 
     subr = face->subrs;
     for ( n = 0; n < cid->num_dicts; n++, subr++ )
@@ -691,8 +696,9 @@
     FT_Bool    upper_nibble, done;
 
 
-    if ( FT_STREAM_SEEK( offset ) )
+    if ( FT_STREAM_SEEK( offset ) ) {
       goto Exit;
+}
 
     dlimit = d + data_len;
     p      = buffer;
@@ -715,19 +721,20 @@
           goto Exit;
         }
 
-        if ( FT_STREAM_READ( buffer, 256 > size ? size : 256 ) )
+        if ( FT_STREAM_READ( buffer, 256 > size ? size : 256 ) ) {
           goto Exit;
+}
         p      = buffer;
         plimit = p + FT_STREAM_POS() - oldpos;
       }
 
-      if ( ft_isdigit( *p ) )
+      if ( ft_isdigit( *p ) ) {
         val = (FT_Byte)( *p - '0' );
-      else if ( *p >= 'a' && *p <= 'f' )
+      } else if ( *p >= 'a' && *p <= 'f' ) {
         val = (FT_Byte)( *p - 'a' + 10 );
-      else if ( *p >= 'A' && *p <= 'F' )
+      } else if ( *p >= 'A' && *p <= 'F' ) {
         val = (FT_Byte)( *p - 'A' + 10 );
-      else if ( *p == ' '  ||
+      } else if ( *p == ' '  ||
                 *p == '\t' ||
                 *p == '\r' ||
                 *p == '\n' ||
@@ -748,9 +755,9 @@
         goto Exit;
       }
 
-      if ( upper_nibble )
+      if ( upper_nibble ) {
         *d = (FT_Byte)( val << 4 );
-      else
+      } else
       {
         *d = (FT_Byte)( *d + val );
         d++;
@@ -758,8 +765,9 @@
 
       upper_nibble = (FT_Byte)( 1 - upper_nibble );
 
-      if ( done )
+      if ( done ) {
         break;
+}
 
       p++;
     }

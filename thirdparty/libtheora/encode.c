@@ -414,7 +414,8 @@ static void oc_sb_run_pack(oggpack_buffer *_opb,ptrdiff_t _run_count,
       else if(!_done)oggpackB_write(_opb,!_flag,1);
     }
     while(_run_count>=4129);
-    if(_run_count<=0)return;
+    if(_run_count<=0) {return;
+}
   }
   for(i=0;_run_count>=OC_SB_RUN_VAL_MIN[i+1];i++);
   oggpackB_write(_opb,OC_SB_RUN_CODE_PREFIX[i]+_run_count-OC_SB_RUN_VAL_MIN[i],
@@ -468,9 +469,11 @@ static void oc_enc_frame_header_pack(oc_enc_ctx *_enc){
       oggpackB_write(&_enc->opb,1,1);
       oggpackB_write(&_enc->opb,_enc->state.qis[2],6);
     }
-    else oggpackB_write(&_enc->opb,0,1);
+    else { oggpackB_write(&_enc->opb,0,1);
+}
   }
-  else oggpackB_write(&_enc->opb,0,1);
+  else { oggpackB_write(&_enc->opb,0,1);
+}
   if(_enc->state.frame_type==OC_INTRA_FRAME){
     /*Key frames have 3 unused configuration bits, holdovers from the VP3 days.
       Most of the other unused bits in the VP3 headers were eliminated.
@@ -499,7 +502,8 @@ static unsigned oc_enc_partial_sb_flags_pack(oc_enc_ctx *_enc){
   do{
     unsigned run_count;
     for(run_count=0;sbi<nsbs;sbi++){
-      if(sb_flags[sbi].coded_partially!=flag)break;
+      if(sb_flags[sbi].coded_partially!=flag) {break;
+}
       run_count++;
       npartial+=flag;
     }
@@ -522,14 +526,17 @@ static void oc_enc_coded_sb_flags_pack(oc_enc_ctx *_enc){
   sb_flags=_enc->state.sb_flags;
   nsbs=_enc->state.nsbs;
   /*Skip partially coded super blocks; their flags have already been coded.*/
-  for(sbi=0;sb_flags[sbi].coded_partially;sbi++);
+  for(sbi=0;sb_flags[sbi].coded_partially;sbi++) {;
+}
   flag=sb_flags[sbi].coded_fully;
   oggpackB_write(&_enc->opb,flag,1);
   do{
     unsigned run_count;
     for(run_count=0;sbi<nsbs;sbi++){
-      if(sb_flags[sbi].coded_partially)continue;
-      if(sb_flags[sbi].coded_fully!=flag)break;
+      if(sb_flags[sbi].coded_partially) {continue;
+}
+      if(sb_flags[sbi].coded_fully!=flag) {break;
+}
       run_count++;
     }
     oc_sb_run_pack(&_enc->opb,run_count,flag,sbi>=nsbs);
@@ -549,12 +556,14 @@ static void oc_enc_coded_flags_pack(oc_enc_ctx *_enc){
   int                pli;
   unsigned           sbi;
   npartial=oc_enc_partial_sb_flags_pack(_enc);
-  if(npartial<_enc->state.nsbs)oc_enc_coded_sb_flags_pack(_enc);
+  if(npartial<_enc->state.nsbs) {oc_enc_coded_sb_flags_pack(_enc);
+}
   sb_maps=(const oc_sb_map *)_enc->state.sb_maps;
   sb_flags=_enc->state.sb_flags;
   nsbs=_enc->state.nsbs;
   frags=_enc->state.frags;
-  for(sbi=0;sbi<nsbs&&!sb_flags[sbi].coded_partially;sbi++);
+  for(sbi=0;sbi<nsbs&&!sb_flags[sbi].coded_partially;sbi++) {;
+}
   /*If there's at least one partial SB, store individual coded block flags.*/
   if(sbi<nsbs){
     flag=frags[sb_maps[sbi][0][0]].coded;
@@ -577,7 +586,8 @@ static void oc_enc_coded_flags_pack(oc_enc_ctx *_enc){
                   flag=!flag;
                   run_count=1;
                 }
-                else run_count++;
+                else { run_count++;
+}
               }
             }
           }
@@ -691,9 +701,11 @@ static void oc_enc_block_qis_pack(oc_enc_ctx *_enc){
   ptrdiff_t          run_count;
   ptrdiff_t          nqi0;
   int                flag;
-  if(_enc->state.nqis<=1)return;
+  if(_enc->state.nqis<=1) {return;
+}
   ncoded_fragis=_enc->state.ntotal_coded_fragis;
-  if(ncoded_fragis<=0)return;
+  if(ncoded_fragis<=0) {return;
+}
   coded_fragis=_enc->state.coded_fragis;
   frags=_enc->state.frags;
   flag=!!frags[coded_fragis[0]].qii;
@@ -701,23 +713,28 @@ static void oc_enc_block_qis_pack(oc_enc_ctx *_enc){
   nqi0=0;
   for(fragii=0;fragii<ncoded_fragis;){
     for(run_count=0;fragii<ncoded_fragis;fragii++){
-      if(!!frags[coded_fragis[fragii]].qii!=flag)break;
+      if(!!frags[coded_fragis[fragii]].qii!=flag) {break;
+}
       run_count++;
       nqi0+=!flag;
     }
     oc_sb_run_pack(&_enc->opb,run_count,flag,fragii>=ncoded_fragis);
     flag=!flag;
   }
-  if(_enc->state.nqis<3||nqi0>=ncoded_fragis)return;
-  for(fragii=0;!frags[coded_fragis[fragii]].qii;fragii++);
+  if(_enc->state.nqis<3||nqi0>=ncoded_fragis) {return;
+}
+  for(fragii=0;!frags[coded_fragis[fragii]].qii;fragii++) {;
+}
   flag=frags[coded_fragis[fragii]].qii-1;
   oggpackB_write(&_enc->opb,flag,1);
   while(fragii<ncoded_fragis){
     for(run_count=0;fragii<ncoded_fragis;fragii++){
       int qii;
       qii=frags[coded_fragis[fragii]].qii;
-      if(!qii)continue;
-      if(qii-1!=flag)break;
+      if(!qii) {continue;
+}
+      if(qii-1!=flag) {break;
+}
       run_count++;
     }
     oc_sb_run_pack(&_enc->opb,run_count,flag,fragii>=ncoded_fragis);
@@ -780,9 +797,10 @@ static int oc_select_huff_idx(size_t _bit_counts[16]){
   int best_huffi;
   int huffi;
   best_huffi=0;
-  for(huffi=1;huffi<16;huffi++)if(_bit_counts[huffi]<_bit_counts[best_huffi]){
+  for(huffi=1;huffi<16;huffi++) {if(_bit_counts[huffi]<_bit_counts[best_huffi]){
     best_huffi=huffi;
   }
+}
   return best_huffi;
 }
 
@@ -927,7 +945,8 @@ static void oc_enc_frame_pack(oc_enc_ctx *_enc){
   /*If there are no coded blocks, we can drop this frame simply by emitting a
      0 byte packet.
     We emit an inter frame with no coded blocks in VP3-compatibility mode.*/
-  else if(_enc->vp3_compatible)oc_enc_drop_frame_pack(_enc);
+  else if(_enc->vp3_compatible) {oc_enc_drop_frame_pack(_enc);
+}
   /*Success: Mark the packet as ready to be flushed.*/
   _enc->packet_state=OC_PACKET_READY;
 #if defined(OC_COLLECT_METRICS)
@@ -1021,25 +1040,30 @@ static void oc_enc_mb_info_init(oc_enc_ctx *_enc){
         int      nmby;
         int      ni;
         mbi=(sby*nhsbs+sbx<<2)+quadi;
-        if(mb_modes[mbi]==OC_MODE_INVALID)continue;
+        if(mb_modes[mbi]==OC_MODE_INVALID) {continue;
+}
         mbx=2*sbx+(quadi>>1);
         mby=2*sby+(quadi+1>>1&1);
         /*Fill in the neighbors with current motion vectors available.*/
         for(ni=0;ni<NCNEIGHBORS[quadi];ni++){
           nmbx=mbx+CDX[quadi][ni];
           nmby=mby+CDY[quadi][ni];
-          if(nmbx<0||nmbx>=nhmbs||nmby<0||nmby>=nvmbs)continue;
+          if(nmbx<0||nmbx>=nhmbs||nmby<0||nmby>=nvmbs) {continue;
+}
           nmbi=(nmby&~1)*nhmbs+((nmbx&~1)<<1)+OC_MB_MAP[nmby&1][nmbx&1];
-          if(mb_modes[nmbi]==OC_MODE_INVALID)continue;
+          if(mb_modes[nmbi]==OC_MODE_INVALID) {continue;
+}
           embs[mbi].cneighbors[embs[mbi].ncneighbors++]=nmbi;
         }
         /*Fill in the neighbors with previous motion vectors available.*/
         for(ni=0;ni<4;ni++){
           nmbx=mbx+PDX[ni];
           nmby=mby+PDY[ni];
-          if(nmbx<0||nmbx>=nhmbs||nmby<0||nmby>=nvmbs)continue;
+          if(nmbx<0||nmbx>=nhmbs||nmby<0||nmby>=nvmbs) {continue;
+}
           nmbi=(nmby&~1)*nhmbs+((nmbx&~1)<<1)+OC_MB_MAP[nmby&1][nmbx&1];
-          if(mb_modes[nmbi]==OC_MODE_INVALID)continue;
+          if(mb_modes[nmbi]==OC_MODE_INVALID) {continue;
+}
           embs[mbi].pneighbors[embs[mbi].npneighbors++]=nmbi;
         }
       }
@@ -1050,13 +1074,17 @@ static void oc_enc_mb_info_init(oc_enc_ctx *_enc){
 static int oc_enc_set_huffman_codes(oc_enc_ctx *_enc,
  const th_huff_code _codes[TH_NHUFFMAN_TABLES][TH_NDCT_TOKENS]){
   int ret;
-  if(_enc==NULL)return TH_EFAULT;
-  if(_enc->packet_state>OC_PACKET_SETUP_HDR)return TH_EINVAL;
-  if(_codes==NULL)_codes=TH_VP31_HUFF_CODES;
+  if(_enc==NULL) {return TH_EFAULT;
+}
+  if(_enc->packet_state>OC_PACKET_SETUP_HDR) {return TH_EINVAL;
+}
+  if(_codes==NULL) {_codes=TH_VP31_HUFF_CODES;
+}
   /*Validate the codes.*/
   oggpackB_reset(&_enc->opb);
   ret=oc_huff_codes_pack(&_enc->opb,_codes);
-  if(ret<0)return ret;
+  if(ret<0) {return ret;
+}
   memcpy(_enc->huff_codes,_codes,sizeof(_enc->huff_codes));
   return 0;
 }
@@ -1070,33 +1098,41 @@ static void oc_enc_enquant_tables_init(oc_enc_ctx *_enc,
   int            qi;
   int            pli;
   int            qti;
-  for(qi=0;qi<64;qi++)for(pli=0;pli<3;pli++)for(qti=0;qti<2;qti++){
+  for(qi=0;qi<64;qi++) {for(pli=0;pli<3;pli++) {for(qti=0;qti<2;qti++){
     _enc->state.dequant_tables[qi][pli][qti]=
      _enc->state.dequant_table_data[qi][pli][qti];
   }
+}
+}
   /*Initialize the dequantization tables.*/
   oc_dequant_tables_init(_enc->state.dequant_tables,NULL,_qinfo);
   /*And save off the DC values.*/
-  for(qi=0;qi<64;qi++)for(pli=0;pli<3;pli++)for(qti=0;qti<2;qti++){
+  for(qi=0;qi<64;qi++) {for(pli=0;pli<3;pli++) {for(qti=0;qti<2;qti++){
     _enc->dequant_dc[qi][pli][qti]=_enc->state.dequant_tables[qi][pli][qti][0];
   }
+}
+}
   /*Set up storage for the quantization tables.*/
   etd=_enc->enquant_table_data;
   ets=_enc->opt_data.enquant_table_size;
   align=-(etd-(unsigned char *)0)&_enc->opt_data.enquant_table_alignment-1;
   etd+=align;
   /*Set up the main tables.*/
-  for(qi=0;qi<64;qi++)for(pli=0;pli<3;pli++)for(qti=0;qti<2;qti++){
+  for(qi=0;qi<64;qi++) {for(pli=0;pli<3;pli++) {for(qti=0;qti<2;qti++){
     _enc->enquant_tables[qi][pli][qti]=etd;
     oc_enc_enquant_table_init(_enc,etd,
      _enc->state.dequant_tables[qi][pli][qti]);
     etd+=ets;
   }
+}
+}
   /*Set up storage for the local copies we modify for each frame.*/
-  for(pli=0;pli<3;pli++)for(qii=0;qii<3;qii++)for(qti=0;qti<2;qti++){
+  for(pli=0;pli<3;pli++) {for(qii=0;qii<3;qii++) {for(qti=0;qti<2;qti++){
     _enc->enquant[pli][qii][qti]=etd;
     etd+=ets;
   }
+}
+}
 }
 
 /*Updates the encoder state after the quantization parameters have been
@@ -1121,9 +1157,12 @@ static int oc_enc_set_quant_params(oc_enc_ctx *_enc,
  const th_quant_info *_qinfo){
   th_quant_info old_qinfo;
   int           ret;
-  if(_enc==NULL)return TH_EFAULT;
-  if(_enc->packet_state>OC_PACKET_SETUP_HDR)return TH_EINVAL;
-  if(_qinfo==NULL)_qinfo=&TH_DEF_QUANT_INFO;
+  if(_enc==NULL) {return TH_EFAULT;
+}
+  if(_enc->packet_state>OC_PACKET_SETUP_HDR) {return TH_EINVAL;
+}
+  if(_qinfo==NULL) {_qinfo=&TH_DEF_QUANT_INFO;
+}
   memcpy(&old_qinfo,&_enc->qinfo,sizeof(old_qinfo));
   ret=oc_quant_params_clone(&_enc->qinfo,_qinfo);
   if(ret<0){
@@ -1131,7 +1170,8 @@ static int oc_enc_set_quant_params(oc_enc_ctx *_enc,
     memcpy(&_enc->qinfo,&old_qinfo,sizeof(old_qinfo));
     return ret;
   }
-  else oc_quant_params_clear(&old_qinfo);
+  else { oc_quant_params_clear(&old_qinfo);
+}
   oc_enc_quant_params_updated(_enc,_qinfo);
   return 0;
 }
@@ -1152,12 +1192,16 @@ static int oc_enc_init(oc_enc_ctx *_enc,const th_info *_info){
   info.version_major=TH_VERSION_MAJOR;
   info.version_minor=TH_VERSION_MINOR;
   info.version_subminor=TH_VERSION_SUB;
-  if(info.quality>63)info.quality=63;
-  if(info.quality<0)info.quality=32;
-  if(info.target_bitrate<0)info.target_bitrate=0;
+  if(info.quality>63) {info.quality=63;
+}
+  if(info.quality<0) {info.quality=32;
+}
+  if(info.target_bitrate<0) {info.target_bitrate=0;
+}
   /*Initialize the shared encoder/decoder state.*/
   ret=oc_state_init(&_enc->state,&info,6);
-  if(ret<0)return ret;
+  if(ret<0) {return ret;
+}
   oc_enc_accel_init(_enc);
   _enc->mb_info=_ogg_calloc(_enc->state.nmbs,sizeof(*_enc->mb_info));
   _enc->frag_dc=_ogg_calloc(_enc->state.nfrags,sizeof(*_enc->frag_dc));
@@ -1268,7 +1312,8 @@ static void oc_enc_drop_frame(th_enc_ctx *_enc){
   /*Zero the packet.*/
   oggpackB_reset(&_enc->opb);
   /*Emit an inter frame with no coded blocks in VP3-compatibility mode.*/
-  if(_enc->vp3_compatible)oc_enc_drop_frame_pack(_enc);
+  if(_enc->vp3_compatible) {oc_enc_drop_frame_pack(_enc);
+}
 }
 
 static void oc_enc_compress_keyframe(oc_enc_ctx *_enc,int _recode){
@@ -1341,7 +1386,8 @@ static void oc_enc_set_granpos(oc_enc_ctx *_enc){
 
 th_enc_ctx *th_encode_alloc(const th_info *_info){
   oc_enc_ctx *enc;
-  if(_info==NULL)return NULL;
+  if(_info==NULL) {return NULL;
+}
   enc=oc_aligned_malloc(sizeof(*enc),16);
   if(enc==NULL||oc_enc_init(enc,_info)<0){
     oc_aligned_free(enc);
@@ -1375,8 +1421,10 @@ int th_encode_ctl(th_enc_ctx *_enc,int _req,void *_buf,size_t _buf_sz){
     }break;
     case TH_ENCCTL_SET_KEYFRAME_FREQUENCY_FORCE:{
       ogg_uint32_t keyframe_frequency_force;
-      if(_enc==NULL||_buf==NULL)return TH_EFAULT;
-      if(_buf_sz!=sizeof(keyframe_frequency_force))return TH_EINVAL;
+      if(_enc==NULL||_buf==NULL) {return TH_EFAULT;
+}
+      if(_buf_sz!=sizeof(keyframe_frequency_force)) {return TH_EINVAL;
+}
       keyframe_frequency_force=*(ogg_uint32_t *)_buf;
       if(keyframe_frequency_force<=0)keyframe_frequency_force=1;
       if(_enc->packet_state==OC_PACKET_INFO_HDR){
@@ -1393,16 +1441,21 @@ int th_encode_ctl(th_enc_ctx *_enc,int _req,void *_buf,size_t _buf_sz){
     case TH_ENCCTL_SET_VP3_COMPATIBLE:{
       int vp3_compatible;
       int ret;
-      if(_enc==NULL||_buf==NULL)return TH_EFAULT;
-      if(_buf_sz!=sizeof(vp3_compatible))return TH_EINVAL;
+      if(_enc==NULL||_buf==NULL) {return TH_EFAULT;
+}
+      if(_buf_sz!=sizeof(vp3_compatible)) {return TH_EINVAL;
+}
       /*Try this before we change anything else, because it can fail.*/
       ret=oc_enc_set_quant_params(_enc,&TH_VP31_QUANT_INFO);
       /*If we can't allocate enough memory, don't change any of the state.*/
-      if(ret==TH_EFAULT)return ret;
+      if(ret==TH_EFAULT) {return ret;
+}
       vp3_compatible=*(int *)_buf;
       _enc->vp3_compatible=vp3_compatible;
-      if(oc_enc_set_huffman_codes(_enc,TH_VP31_HUFF_CODES)<0)vp3_compatible=0;
-      if(ret<0)vp3_compatible=0;
+      if(oc_enc_set_huffman_codes(_enc,TH_VP31_HUFF_CODES)<0) {vp3_compatible=0;
+}
+      if(ret<0) {vp3_compatible=0;
+}
       if(_enc->state.info.pixel_fmt!=TH_PF_420||
        _enc->state.info.pic_width<_enc->state.info.frame_width||
        _enc->state.info.pic_height<_enc->state.info.frame_height||
@@ -1420,41 +1473,54 @@ int th_encode_ctl(th_enc_ctx *_enc,int _req,void *_buf,size_t _buf_sz){
       return 0;
     }break;
     case TH_ENCCTL_GET_SPLEVEL_MAX:{
-      if(_enc==NULL||_buf==NULL)return TH_EFAULT;
-      if(_buf_sz!=sizeof(int))return TH_EINVAL;
+      if(_enc==NULL||_buf==NULL) {return TH_EFAULT;
+}
+      if(_buf_sz!=sizeof(int)) {return TH_EINVAL;
+}
       *(int *)_buf=OC_SP_LEVEL_MAX;
       return 0;
     }break;
     case TH_ENCCTL_SET_SPLEVEL:{
       int speed;
-      if(_enc==NULL||_buf==NULL)return TH_EFAULT;
-      if(_buf_sz!=sizeof(speed))return TH_EINVAL;
+      if(_enc==NULL||_buf==NULL) {return TH_EFAULT;
+}
+      if(_buf_sz!=sizeof(speed)) {return TH_EINVAL;
+}
       speed=*(int *)_buf;
-      if(speed<0||speed>OC_SP_LEVEL_MAX)return TH_EINVAL;
+      if(speed<0||speed>OC_SP_LEVEL_MAX) {return TH_EINVAL;
+}
       _enc->sp_level=speed;
       return 0;
     }break;
     case TH_ENCCTL_GET_SPLEVEL:{
-      if(_enc==NULL||_buf==NULL)return TH_EFAULT;
-      if(_buf_sz!=sizeof(int))return TH_EINVAL;
+      if(_enc==NULL||_buf==NULL) {return TH_EFAULT;
+}
+      if(_buf_sz!=sizeof(int)) {return TH_EINVAL;
+}
       *(int *)_buf=_enc->sp_level;
       return 0;
     }
     case TH_ENCCTL_SET_DUP_COUNT:{
       int dup_count;
-      if(_enc==NULL||_buf==NULL)return TH_EFAULT;
-      if(_buf_sz!=sizeof(dup_count))return TH_EINVAL;
+      if(_enc==NULL||_buf==NULL) {return TH_EFAULT;
+}
+      if(_buf_sz!=sizeof(dup_count)) {return TH_EINVAL;
+}
       dup_count=*(int *)_buf;
-      if(dup_count>=_enc->keyframe_frequency_force)return TH_EINVAL;
+      if(dup_count>=_enc->keyframe_frequency_force) {return TH_EINVAL;
+}
       _enc->dup_count=OC_MAXI(dup_count,0);
       return 0;
     }break;
     case TH_ENCCTL_SET_QUALITY:{
       int qi;
-      if(_enc==NULL||_buf==NULL)return TH_EFAULT;
-      if(_enc->state.info.target_bitrate>0)return TH_EINVAL;
+      if(_enc==NULL||_buf==NULL) {return TH_EFAULT;
+}
+      if(_enc->state.info.target_bitrate>0) {return TH_EINVAL;
+}
       qi=*(int *)_buf;
-      if(qi<0||qi>63)return TH_EINVAL;
+      if(qi<0||qi>63) {return TH_EINVAL;
+}
       _enc->state.info.quality=qi;
       _enc->state.qis[0]=(unsigned char)qi;
       _enc->state.nqis=1;
@@ -1463,20 +1529,26 @@ int th_encode_ctl(th_enc_ctx *_enc,int _req,void *_buf,size_t _buf_sz){
     case TH_ENCCTL_SET_BITRATE:{
       long bitrate;
       int  reset;
-      if(_enc==NULL||_buf==NULL)return TH_EFAULT;
+      if(_enc==NULL||_buf==NULL) {return TH_EFAULT;
+}
       bitrate=*(long *)_buf;
-      if(bitrate<=0)return TH_EINVAL;
+      if(bitrate<=0) {return TH_EINVAL;
+}
       reset=_enc->state.info.target_bitrate<=0;
       _enc->state.info.target_bitrate=bitrate>INT_MAX?INT_MAX:bitrate;
-      if(reset)oc_rc_state_init(&_enc->rc,_enc);
-      else oc_enc_rc_resize(_enc);
+      if(reset) {oc_rc_state_init(&_enc->rc,_enc);
+      } else { oc_enc_rc_resize(_enc);
+}
       return 0;
     }break;
     case TH_ENCCTL_SET_RATE_FLAGS:{
       int set;
-      if(_enc==NULL||_buf==NULL)return TH_EFAULT;
-      if(_buf_sz!=sizeof(set))return TH_EINVAL;
-      if(_enc->state.info.target_bitrate<=0)return TH_EINVAL;
+      if(_enc==NULL||_buf==NULL) {return TH_EFAULT;
+}
+      if(_buf_sz!=sizeof(set)) {return TH_EINVAL;
+}
+      if(_enc->state.info.target_bitrate<=0) {return TH_EINVAL;
+}
       set=*(int *)_buf;
       _enc->rc.drop_frames=set&TH_RATECTL_DROP_FRAMES;
       _enc->rc.cap_overflow=set&TH_RATECTL_CAP_OVERFLOW;
@@ -1485,9 +1557,12 @@ int th_encode_ctl(th_enc_ctx *_enc,int _req,void *_buf,size_t _buf_sz){
     }break;
     case TH_ENCCTL_SET_RATE_BUFFER:{
       int set;
-      if(_enc==NULL||_buf==NULL)return TH_EFAULT;
-      if(_buf_sz!=sizeof(set))return TH_EINVAL;
-      if(_enc->state.info.target_bitrate<=0)return TH_EINVAL;
+      if(_enc==NULL||_buf==NULL) {return TH_EFAULT;
+}
+      if(_buf_sz!=sizeof(set)) {return TH_EINVAL;
+}
+      if(_enc->state.info.target_bitrate<=0) {return TH_EINVAL;
+}
       set=*(int *)_buf;
       _enc->rc.buf_delay=set;
       oc_enc_rc_resize(_enc);
@@ -1495,7 +1570,8 @@ int th_encode_ctl(th_enc_ctx *_enc,int _req,void *_buf,size_t _buf_sz){
       return 0;
     }break;
     case TH_ENCCTL_2PASS_OUT:{
-      if(_enc==NULL||_buf==NULL)return TH_EFAULT;
+      if(_enc==NULL||_buf==NULL) {return TH_EFAULT;
+}
       if(_enc->state.info.target_bitrate<=0||
        _enc->state.curframe_num>=0&&_enc->rc.twopass!=1||
        _buf_sz!=sizeof(unsigned char *)){
@@ -1504,7 +1580,8 @@ int th_encode_ctl(th_enc_ctx *_enc,int _req,void *_buf,size_t _buf_sz){
       return oc_enc_rc_2pass_out(_enc,(unsigned char **)_buf);
     }break;
     case TH_ENCCTL_2PASS_IN:{
-      if(_enc==NULL)return TH_EFAULT;
+      if(_enc==NULL) {return TH_EFAULT;
+}
       if(_enc->state.info.target_bitrate<=0||
        _enc->state.curframe_num>=0&&_enc->rc.twopass!=2){
         return TH_EINVAL;
@@ -1518,13 +1595,18 @@ int th_encode_ctl(th_enc_ctx *_enc,int _req,void *_buf,size_t _buf_sz){
       th_huff_code  huff_codes[TH_NHUFFMAN_TABLES][TH_NDCT_TOKENS];
       int           ret;
       int           i;
-      if(_enc==NULL||_buf==NULL)return TH_EFAULT;
-      if(_enc->packet_state>OC_PACKET_SETUP_HDR)return TH_EINVAL;
+      if(_enc==NULL||_buf==NULL) {return TH_EFAULT;
+}
+      if(_enc->packet_state>OC_PACKET_SETUP_HDR) {return TH_EINVAL;
+}
       oc_pack_readinit(&opb,_buf,_buf_sz);
       /*Validate the setup packet header.*/
-      for(i=0;i<7;i++)buf[i]=(unsigned char)oc_pack_read(&opb,8);
-      if(!(buf[0]&0x80)||memcmp(buf+1,"theora",6)!=0)return TH_ENOTFORMAT;
-      if(buf[0]!=0x82)return TH_EBADHEADER;
+      for(i=0;i<7;i++) {buf[i]=(unsigned char)oc_pack_read(&opb,8);
+}
+      if(!(buf[0]&0x80)||memcmp(buf+1,"theora",6)!=0) {return TH_ENOTFORMAT;
+}
+      if(buf[0]!=0x82) {return TH_EBADHEADER;
+}
       /*Reads its contents.*/
       ret=oc_quant_params_unpack(&opb,&qinfo);
       if(ret<0){
@@ -1554,7 +1636,8 @@ int th_encode_ctl(th_enc_ctx *_enc,int _req,void *_buf,size_t _buf_sz){
 }
 
 int th_encode_flushheader(th_enc_ctx *_enc,th_comment *_tc,ogg_packet *_op){
-  if(_enc==NULL)return TH_EFAULT;
+  if(_enc==NULL) {return TH_EFAULT;
+}
   return oc_state_flushheader(&_enc->state,&_enc->packet_state,&_enc->opb,
    &_enc->qinfo,(const th_huff_table *)_enc->huff_codes,th_version_string(),
    _tc,_op);
@@ -1658,9 +1741,12 @@ int th_encode_ycbcr_in(th_enc_ctx *_enc,th_ycbcr_buffer _img){
   int             refi;
   int             drop;
   /*Step 1: validate parameters.*/
-  if(_enc==NULL||_img==NULL)return TH_EFAULT;
-  if(_enc->packet_state==OC_PACKET_DONE)return TH_EINVAL;
-  if(_enc->rc.twopass&&_enc->rc.twopass_buffer_bytes==0)return TH_EINVAL;
+  if(_enc==NULL||_img==NULL) {return TH_EFAULT;
+}
+  if(_enc->packet_state==OC_PACKET_DONE) {return TH_EINVAL;
+}
+  if(_enc->rc.twopass&&_enc->rc.twopass_buffer_bytes==0) {return TH_EINVAL;
+}
   hdec=!(_enc->state.info.pixel_fmt&1);
   vdec=!(_enc->state.info.pixel_fmt&2);
   frame_width=_enc->state.info.frame_width;
@@ -1725,7 +1811,8 @@ int th_encode_ycbcr_in(th_enc_ctx *_enc,th_ycbcr_buffer _img){
   }
   /*Select a free buffer to use for the incoming frame*/
   for(refi=3;refi==_enc->state.ref_frame_idx[OC_FRAME_GOLD_ORIG]||
-   refi==_enc->state.ref_frame_idx[OC_FRAME_PREV_ORIG];refi++);
+   refi==_enc->state.ref_frame_idx[OC_FRAME_PREV_ORIG];refi++) {;
+}
   _enc->state.ref_frame_idx[OC_FRAME_IO]=refi;
   _enc->state.ref_frame_data[OC_FRAME_IO]=
    _enc->state.ref_frame_bufs[refi][0].data;
@@ -1745,7 +1832,8 @@ int th_encode_ycbcr_in(th_enc_ctx *_enc,th_ycbcr_buffer _img){
   }
   /*Select a free buffer to use for the reconstructed version of this frame.*/
   for(refi=0;refi==_enc->state.ref_frame_idx[OC_FRAME_GOLD]||
-   refi==_enc->state.ref_frame_idx[OC_FRAME_PREV];refi++);
+   refi==_enc->state.ref_frame_idx[OC_FRAME_PREV];refi++) {;
+}
   _enc->state.ref_frame_idx[OC_FRAME_SELF]=refi;
   _enc->state.ref_frame_data[OC_FRAME_SELF]=
    _enc->state.ref_frame_bufs[refi][0].data;
@@ -1769,10 +1857,12 @@ int th_encode_ycbcr_in(th_enc_ctx *_enc,th_ycbcr_buffer _img){
     drop=oc_enc_update_rc_state(_enc,oggpackB_bytes(&_enc->opb)<<3,
      _enc->state.frame_type,_enc->state.qis[0],0,drop);
   }
-  else drop=0;
+  else { drop=0;
+}
   /*drop now indicates if the frame was dropped.*/
-  if(drop)oc_enc_drop_frame(_enc);
-  else _enc->prevframe_dropped=0;
+  if(drop) {oc_enc_drop_frame(_enc);
+  } else { _enc->prevframe_dropped=0;
+}
   _enc->packet_state=OC_PACKET_READY;
   _enc->prev_dup_count=_enc->nqueued_dups=_enc->dup_count;
   _enc->dup_count=0;
@@ -1786,13 +1876,15 @@ int th_encode_ycbcr_in(th_enc_ctx *_enc,th_ycbcr_buffer _img){
 
 int th_encode_packetout(th_enc_ctx *_enc,int _last_p,ogg_packet *_op){
   unsigned char *packet;
-  if(_enc==NULL||_op==NULL)return TH_EFAULT;
+  if(_enc==NULL||_op==NULL) {return TH_EFAULT;
+}
   if(_enc->packet_state==OC_PACKET_READY){
     _enc->packet_state=OC_PACKET_EMPTY;
     if(_enc->rc.twopass!=1){
       packet=oggpackB_get_buffer(&_enc->opb);
       /*If there's no packet, malloc failed while writing; it's lost forever.*/
-      if(packet==NULL)return TH_EFAULT;
+      if(packet==NULL) {return TH_EFAULT;
+}
       _op->packet=packet;
       _op->bytes=oggpackB_bytes(&_enc->opb);
     }
@@ -1812,7 +1904,8 @@ int th_encode_packetout(th_enc_ctx *_enc,int _last_p,ogg_packet *_op){
         packet=oggpackB_get_buffer(&_enc->opb);
         /*If there's no packet, malloc failed while writing; it's lost
            forever.*/
-        if(packet==NULL)return TH_EFAULT;
+        if(packet==NULL) {return TH_EFAULT;
+}
         _op->packet=packet;
         _op->bytes=oggpackB_bytes(&_enc->opb);
       }
@@ -1823,17 +1916,20 @@ int th_encode_packetout(th_enc_ctx *_enc,int _last_p,ogg_packet *_op){
       }
     }
     else{
-      if(_last_p)_enc->packet_state=OC_PACKET_DONE;
+      if(_last_p) {_enc->packet_state=OC_PACKET_DONE;
+}
       return 0;
     }
   }
-  else return 0;
+  else { return 0;
+}
   _last_p=_last_p&&_enc->nqueued_dups<=0;
   _op->b_o_s=0;
   _op->e_o_s=_last_p;
   oc_enc_set_granpos(_enc);
   _op->packetno=th_granule_frame(_enc,_enc->state.granpos)+3;
   _op->granulepos=_enc->state.granpos;
-  if(_last_p)_enc->packet_state=OC_PACKET_DONE;
+  if(_last_p) {_enc->packet_state=OC_PACKET_DONE;
+}
   return 1+_enc->nqueued_dups;
 }

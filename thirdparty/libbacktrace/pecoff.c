@@ -235,9 +235,11 @@ coff_short_name_len (const char *name)
 {
   int i;
 
-  for (i = 0; i < 8; i++)
-    if (name[i] == 0)
+  for (i = 0; i < 8; i++) {
+    if (name[i] == 0) {
       return i;
+}
+}
   return 8;
 }
 
@@ -251,10 +253,12 @@ coff_short_name_eq (const char *name, const char *cname)
 
   for (i = 0; i < 8; i++)
     {
-      if (name[i] != cname[i])
+      if (name[i] != cname[i]) {
 	return 0;
-      if (name[i] == 0)
+}
+      if (name[i] == 0) {
 	return 1;
+}
     }
   return name[8] == 0;
 }
@@ -265,8 +269,9 @@ static int
 coff_long_name_eq (const char *name, unsigned int off,
 		   struct backtrace_view *str_view)
 {
-  if (off >= str_view->len)
+  if (off >= str_view->len) {
     return 0;
+}
   return strcmp (name, (const char *)str_view->data + off) == 0;
 }
 
@@ -278,12 +283,13 @@ coff_symbol_compare (const void *v1, const void *v2)
   const struct coff_symbol *e1 = (const struct coff_symbol *) v1;
   const struct coff_symbol *e2 = (const struct coff_symbol *) v2;
 
-  if (e1->address < e2->address)
+  if (e1->address < e2->address) {
     return -1;
-  else if (e1->address > e2->address)
+  } else if (e1->address > e2->address) {
     return 1;
-  else
+  } else {
     return 0;
+}
 }
 
 /* Convert SYM to internal (and aligned) format ISYM, using string table
@@ -300,16 +306,18 @@ coff_expand_symbol (b_coff_internal_symbol *isym,
   isym->sec = coff_read2 (sym->section_number);
   isym->sc = sym->storage_class;
 
-  if (isym->sec > 0 && (uint16_t) isym->sec > sects_num)
+  if (isym->sec > 0 && (uint16_t) isym->sec > sects_num) {
     return -1;
-  if (sym->name.short_name[0] != 0)
+}
+  if (sym->name.short_name[0] != 0) {
     isym->name = sym->name.short_name;
-  else
+  } else
     {
       uint32_t off = coff_read4 (sym->name.long_name.off);
 
-      if (off >= strtab_size)
+      if (off >= strtab_size) {
 	return -1;
+}
       isym->name = (const char *) strtab + off;
     }
   return 0;
@@ -366,8 +374,9 @@ coff_initialize_syminfo (struct backtrace_state *state,
       if (coff_is_function_symbol (&isym))
 	{
 	  ++coff_symbol_count;
-	  if (asym->name.short_name[0] != 0)
+	  if (asym->name.short_name[0] != 0) {
 	    coff_symstr_len += coff_short_name_len (asym->name.short_name) + 1;
+}
 	}
 
       i += asym->number_of_aux_symbols;
@@ -377,8 +386,9 @@ coff_initialize_syminfo (struct backtrace_state *state,
   coff_symbols = ((struct coff_symbol *)
 		  backtrace_alloc (state, coff_symbol_size, error_callback,
 				   data));
-  if (coff_symbols == NULL)
+  if (coff_symbols == NULL) {
     return 0;
+}
 
   /* Allocate memory for symbols strings.  */
   if (coff_symstr_len > 0)
@@ -393,8 +403,9 @@ coff_initialize_syminfo (struct backtrace_state *state,
 	  return 0;
 	}
     }
-  else
+  else {
     coff_symstr = NULL;
+}
 
   /* Copy symbols.  */
   coff_sym = coff_symbols;
@@ -423,14 +434,16 @@ coff_initialize_syminfo (struct backtrace_state *state,
 	      coff_str[len] = 0;
 	      coff_str += len + 1;
 	    }
-	  else
+	  else {
 	    name = isym.name;
+}
 
 	  if (!is_64)
 	    {
 	      /* Strip leading '_'.  */
-	      if (name[0] == '_')
+	      if (name[0] == '_') {
 		name++;
+}
 	    }
 
 	  /* Symbol value is section relative, so we need to read the address
@@ -473,8 +486,9 @@ coff_add_syminfo_data (struct backtrace_state *state,
 
       for (pp = (struct coff_syminfo_data **) (void *) &state->syminfo_data;
 	   *pp != NULL;
-	   pp = &(*pp)->next)
+	   pp = &(*pp)->next) {
 	;
+}
       *pp = sdata;
     }
   else
@@ -491,14 +505,16 @@ coff_add_syminfo_data (struct backtrace_state *state,
 
 	      p = backtrace_atomic_load_pointer (pp);
 
-	      if (p == NULL)
+	      if (p == NULL) {
 		break;
+}
 
 	      pp = &p->next;
 	    }
 
-	  if (__sync_bool_compare_and_swap (pp, NULL, sdata))
+	  if (__sync_bool_compare_and_swap (pp, NULL, sdata)) {
 	    break;
+}
 	}
     }
 }
@@ -515,12 +531,13 @@ coff_symbol_search (const void *vkey, const void *ventry)
   uintptr_t addr;
 
   addr = *key;
-  if (addr < entry->address)
+  if (addr < entry->address) {
     return -1;
-  else if (addr >= entry[1].address)
+  } else if (addr >= entry[1].address) {
     return 1;
-  else
+  } else {
     return 0;
+}
 }
 
 /* Return the symbol name and value for an ADDR.  */
@@ -543,8 +560,9 @@ coff_syminfo (struct backtrace_state *state, uintptr_t addr,
 	  sym = ((struct coff_symbol *)
 		 bsearch (&addr, sdata->symbols, sdata->count,
 			  sizeof (struct coff_symbol), coff_symbol_search));
-	  if (sym != NULL)
+	  if (sym != NULL) {
 	    break;
+}
 	}
     }
   else
@@ -555,23 +573,26 @@ coff_syminfo (struct backtrace_state *state, uintptr_t addr,
       while (1)
 	{
 	  sdata = backtrace_atomic_load_pointer (pp);
-	  if (sdata == NULL)
+	  if (sdata == NULL) {
 	    break;
+}
 
 	  sym = ((struct coff_symbol *)
 		 bsearch (&addr, sdata->symbols, sdata->count,
 			  sizeof (struct coff_symbol), coff_symbol_search));
-	  if (sym != NULL)
+	  if (sym != NULL) {
 	    break;
+}
 
 	  pp = &sdata->next;
 	}
     }
 
-  if (sym == NULL)
+  if (sym == NULL) {
     callback (data, addr, NULL, 0, 0);
-  else
+  } else {
     callback (data, addr, sym->name, sym->address, 0);
+}
 }
 
 /* Add the backtrace data for one PE/COFF file.  Returns 1 on success,
@@ -622,16 +643,18 @@ coff_add (struct backtrace_state *state, int descriptor,
 
   /* Map the MS-DOS stub (if any) and extract file header offset.  */
   if (!backtrace_get_view (state, descriptor, 0, 0x40, error_callback,
-			   data, &fhdr_view))
+			   data, &fhdr_view)) {
     goto fail;
+}
 
   {
     const unsigned char *vptr = fhdr_view.data;
 
-    if (vptr[0] == 'M' && vptr[1] == 'Z')
+    if (vptr[0] == 'M' && vptr[1] == 'Z') {
       fhdr_off = coff_read4 (vptr + 0x3c);
-    else
+    } else {
       fhdr_off = 0;
+}
   }
 
   backtrace_release_view (state, &fhdr_view, error_callback, data);
@@ -639,8 +662,9 @@ coff_add (struct backtrace_state *state, int descriptor,
   /* Map the coff file header.  */
   if (!backtrace_get_view (state, descriptor, fhdr_off,
 			   sizeof (b_coff_file_header) + 4,
-			   error_callback, data, &fhdr_view))
+			   error_callback, data, &fhdr_view)) {
     goto fail;
+}
 
   if (fhdr_off != 0)
     {
@@ -677,8 +701,9 @@ coff_add (struct backtrace_state *state, int descriptor,
   /* Read the optional header and the section headers.  */
 
   if (!backtrace_get_view (state, descriptor, opt_sects_off, opt_sects_size,
-			   error_callback, data, &sects_view))
+			   error_callback, data, &sects_view)) {
     goto fail;
+}
   sects_view_valid = 1;
   opt_hdr = (const b_coff_optional_header *) sects_view.data;
   sects = (const b_coff_section_header *)
@@ -687,9 +712,9 @@ coff_add (struct backtrace_state *state, int descriptor,
   is_64 = 0;
   if (fhdr.size_of_optional_header > sizeof (*opt_hdr))
     {
-      if (opt_hdr->magic == PE_MAGIC)
+      if (opt_hdr->magic == PE_MAGIC) {
 	image_base = opt_hdr->u.pe.image_base;
-      else if (opt_hdr->magic == PEP_MAGIC)
+      } else if (opt_hdr->magic == PEP_MAGIC)
 	{
 	  image_base = opt_hdr->u.pep.image_base;
 	  is_64 = 1;
@@ -700,8 +725,9 @@ coff_add (struct backtrace_state *state, int descriptor,
 	  goto fail;
 	}
     }
-  else
+  else {
     image_base = 0;
+}
 
   /* Read the symbol table and the string table.  */
 
@@ -722,8 +748,9 @@ coff_add (struct backtrace_state *state, int descriptor,
       syms_size = syms_num * SYM_SZ;
 
       if (!backtrace_get_view (state, descriptor, syms_off, syms_size + 4,
-			       error_callback, data, &syms_view))
+			       error_callback, data, &syms_view)) {
 	goto fail;
+}
       syms_view_valid = 1;
 
       str_size = coff_read4 (syms_view.data + syms_size);
@@ -735,8 +762,9 @@ coff_add (struct backtrace_state *state, int descriptor,
 	  /* Map string table (including the length word).  */
 
 	  if (!backtrace_get_view (state, descriptor, str_off, str_size,
-				   error_callback, data, &str_view))
+				   error_callback, data, &str_view)) {
 	    goto fail;
+}
 	  str_view_valid = 1;
 	}
     }
@@ -755,18 +783,20 @@ coff_add (struct backtrace_state *state, int descriptor,
 	  /* Extended section name.  */
 	  str_off = atoi (s->name + 1);
 	}
-      else
+      else {
 	str_off = 0;
+}
 
       for (j = 0; j < (int) DEBUG_MAX; ++j)
 	{
 	  const char *dbg_name = debug_section_names[j];
 	  int match;
 
-	  if (str_off != 0)
+	  if (str_off != 0) {
 	    match = coff_long_name_eq (dbg_name, str_off, &str_view);
-	  else
+	  } else {
 	    match = coff_short_name_eq (dbg_name, s->name);
+}
 	  if (match)
 	    {
 	      sections[j].offset = s->pointer_to_raw_data;
@@ -783,8 +813,9 @@ coff_add (struct backtrace_state *state, int descriptor,
 
       sdata = ((struct coff_syminfo_data *)
 	       backtrace_alloc (state, sizeof *sdata, error_callback, data));
-      if (sdata == NULL)
+      if (sdata == NULL) {
 	goto fail;
+}
 
       if (!coff_initialize_syminfo (state, image_base, is_64,
 				    sects, sects_num,
@@ -818,66 +849,79 @@ coff_add (struct backtrace_state *state, int descriptor,
     {
       off_t end;
 
-      if (sections[i].size == 0)
+      if (sections[i].size == 0) {
 	continue;
-      if (min_offset == 0 || sections[i].offset < min_offset)
+}
+      if (min_offset == 0 || sections[i].offset < min_offset) {
 	min_offset = sections[i].offset;
+}
       end = sections[i].offset + sections[i].size;
-      if (end > max_offset)
+      if (end > max_offset) {
 	max_offset = end;
+}
     }
   if (min_offset == 0 || max_offset == 0)
     {
-      if (!backtrace_close (descriptor, error_callback, data))
+      if (!backtrace_close (descriptor, error_callback, data)) {
 	goto fail;
+}
       *fileline_fn = coff_nodebug;
       return 1;
     }
 
   if (!backtrace_get_view (state, descriptor, min_offset,
 			   max_offset - min_offset,
-			   error_callback, data, &debug_view))
+			   error_callback, data, &debug_view)) {
     goto fail;
+}
   debug_view_valid = 1;
 
   /* We've read all we need from the executable.  */
-  if (!backtrace_close (descriptor, error_callback, data))
+  if (!backtrace_close (descriptor, error_callback, data)) {
     goto fail;
+}
   descriptor = -1;
 
   for (i = 0; i < (int) DEBUG_MAX; ++i)
     {
       size_t size = sections[i].size;
       dwarf_sections.size[i] = size;
-      if (size == 0)
+      if (size == 0) {
 	dwarf_sections.data[i] = NULL;
-      else
+      } else {
 	dwarf_sections.data[i] = ((const unsigned char *) debug_view.data
 				  + (sections[i].offset - min_offset));
+}
     }
 
   if (!backtrace_dwarf_add (state, /* base_address */ 0, &dwarf_sections,
 			    0, /* FIXME: is_bigendian */
 			    NULL, /* altlink */
 			    error_callback, data, fileline_fn,
-			    NULL /* returned fileline_entry */))
+			    NULL /* returned fileline_entry */)) {
     goto fail;
+}
 
   *found_dwarf = 1;
 
   return 1;
 
  fail:
-  if (sects_view_valid)
+  if (sects_view_valid) {
     backtrace_release_view (state, &sects_view, error_callback, data);
-  if (str_view_valid)
+}
+  if (str_view_valid) {
     backtrace_release_view (state, &str_view, error_callback, data);
-  if (syms_view_valid)
+}
+  if (syms_view_valid) {
     backtrace_release_view (state, &syms_view, error_callback, data);
-  if (debug_view_valid)
+}
+  if (debug_view_valid) {
     backtrace_release_view (state, &debug_view, error_callback, data);
-  if (descriptor != -1)
+}
+  if (descriptor != -1) {
     backtrace_close (descriptor, error_callback, data);
+}
   return 0;
 }
 
@@ -898,37 +942,42 @@ backtrace_initialize (struct backtrace_state *state,
 
   ret = coff_add (state, descriptor, error_callback, data,
 		  &coff_fileline_fn, &found_sym, &found_dwarf);
-  if (!ret)
+  if (!ret) {
     return 0;
+}
 
   if (!state->threaded)
     {
-      if (found_sym)
+      if (found_sym) {
 	state->syminfo_fn = coff_syminfo;
-      else if (state->syminfo_fn == NULL)
+      } else if (state->syminfo_fn == NULL) {
 	state->syminfo_fn = coff_nosyms;
+}
     }
   else
     {
-      if (found_sym)
+      if (found_sym) {
 	backtrace_atomic_store_pointer (&state->syminfo_fn, coff_syminfo);
-      else
+      } else {
 	(void) __sync_bool_compare_and_swap (&state->syminfo_fn, NULL,
 					     coff_nosyms);
+}
     }
 
   if (!state->threaded)
     {
-      if (state->fileline_fn == NULL || state->fileline_fn == coff_nodebug)
+      if (state->fileline_fn == NULL || state->fileline_fn == coff_nodebug) {
 	*fileline_fn = coff_fileline_fn;
+}
     }
   else
     {
       fileline current_fn;
 
       current_fn = backtrace_atomic_load_pointer (&state->fileline_fn);
-      if (current_fn == NULL || current_fn == coff_nodebug)
+      if (current_fn == NULL || current_fn == coff_nodebug) {
 	*fileline_fn = coff_fileline_fn;
+}
     }
 
   return 1;

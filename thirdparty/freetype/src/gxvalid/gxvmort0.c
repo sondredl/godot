@@ -118,8 +118,9 @@
       GXV_TRACE(( " non-zero bits found in reserved range\n" ));
       GXV_SET_ERR_IF_PARANOID( FT_INVALID_DATA );
     }
-    else
+    else {
       GXV_TRACE(( "\n" ));
+}
   }
 
 

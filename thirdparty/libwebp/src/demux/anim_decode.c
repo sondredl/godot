@@ -114,17 +114,20 @@ WebPAnimDecoder* WebPAnimDecoderNewInternal(
 
   // Note: calloc() so that the pointer members are initialized to NULL.
   dec = (WebPAnimDecoder*)WebPSafeCalloc(1ULL, sizeof(*dec));
-  if (dec == NULL) goto Error;
+  if (dec == NULL) { goto Error;
+}
 
   if (dec_options != NULL) {
     options = *dec_options;
   } else {
     DefaultDecoderOptions(&options);
   }
-  if (!ApplyDecoderOptions(&options, dec)) goto Error;
+  if (!ApplyDecoderOptions(&options, dec)) { goto Error;
+}
 
   dec->demux_ = WebPDemux(webp_data);
-  if (dec->demux_ == NULL) goto Error;
+  if (dec->demux_ == NULL) { goto Error;
+}
 
   dec->info_.canvas_width = WebPDemuxGetI(dec->demux_, WEBP_FF_CANVAS_WIDTH);
   dec->info_.canvas_height = WebPDemuxGetI(dec->demux_, WEBP_FF_CANVAS_HEIGHT);
@@ -135,10 +138,12 @@ WebPAnimDecoder* WebPAnimDecoderNewInternal(
   // Note: calloc() because we fill frame with zeroes as well.
   dec->curr_frame_ = (uint8_t*)WebPSafeCalloc(
       dec->info_.canvas_width * NUM_CHANNELS, dec->info_.canvas_height);
-  if (dec->curr_frame_ == NULL) goto Error;
+  if (dec->curr_frame_ == NULL) { goto Error;
+}
   dec->prev_frame_disposed_ = (uint8_t*)WebPSafeCalloc(
       dec->info_.canvas_width * NUM_CHANNELS, dec->info_.canvas_height);
-  if (dec->prev_frame_disposed_ == NULL) goto Error;
+  if (dec->prev_frame_disposed_ == NULL) { goto Error;
+}
 
   WebPAnimDecoderReset(dec);
   return dec;
@@ -149,7 +154,8 @@ WebPAnimDecoder* WebPAnimDecoderNewInternal(
 }
 
 int WebPAnimDecoderGetInfo(const WebPAnimDecoder* dec, WebPAnimInfo* info) {
-  if (dec == NULL || info == NULL) return 0;
+  if (dec == NULL || info == NULL) { return 0;
+}
   *info = dec->info_;
   return 1;
 }
@@ -165,7 +171,8 @@ WEBP_NODISCARD static int ZeroFillCanvas(uint8_t* buf, uint32_t canvas_width,
                                          uint32_t canvas_height) {
   const uint64_t size =
       (uint64_t)canvas_width * canvas_height * NUM_CHANNELS * sizeof(*buf);
-  if (!CheckSizeOverflow(size)) return 0;
+  if (!CheckSizeOverflow(size)) { return 0;
+}
   memset(buf, 0, (size_t)size);
   return 1;
 }
@@ -186,7 +193,8 @@ static void ZeroFillFrameRect(uint8_t* buf, int buf_stride, int x_offset,
 WEBP_NODISCARD static int CopyCanvas(const uint8_t* src, uint8_t* dst,
                                      uint32_t width, uint32_t height) {
   const uint64_t size = (uint64_t)width * height * NUM_CHANNELS;
-  if (!CheckSizeOverflow(size)) return 0;
+  if (!CheckSizeOverflow(size)) { return 0;
+}
   assert(src != NULL && dst != NULL);
   memcpy(dst, src, (size_t)size);
   return 1;

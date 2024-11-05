@@ -64,8 +64,9 @@ backtrace_create_state (const char *filename, int threaded,
 
   state = ((struct backtrace_state *)
 	   backtrace_alloc (&init_state, sizeof *state, error_callback, data));
-  if (state == NULL)
+  if (state == NULL) {
     return NULL;
+}
   *state = init_state;
 
   return state;

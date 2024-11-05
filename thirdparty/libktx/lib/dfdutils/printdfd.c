@@ -19,7 +19,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include <KHR/khr_df.h>
+#include "KHR/khr_df.h"
 #include "dfd.h"
 
 enum {
@@ -246,8 +246,9 @@ const char* dfdToStringColorModel(khr_df_model_e value) {
 }
 
 const char* dfdToStringSampleDatatypeQualifiers(uint32_t bit_index, bool bit_value) {
-    if (!bit_value)
+    if (!bit_value) {
         return NULL;
+}
 
     switch (1u << bit_index) {
     case KHR_DF_SAMPLE_DATATYPE_LINEAR:
@@ -683,8 +684,9 @@ static void printFlagBitsJSON(uint32_t indent, const char* nl, uint32_t flags, c
             first = false;
         }
     }
-    if (!first)
+    if (!first) {
         printf("%s", nl);
+}
 }
 
 /**
@@ -712,8 +714,9 @@ void printDFD(uint32_t *DFD, uint32_t dataSize)
 
     uint32_t dfdTotalSize = dataSize >= sizeof_dfdTotalSize ? DFD[0] : 0;
     uint32_t remainingSize = dfdTotalSize < dataSize ? dfdTotalSize : dataSize;
-    if (remainingSize < sizeof_dfdTotalSize)
+    if (remainingSize < sizeof_dfdTotalSize) {
         return; // Invalid DFD: dfdTotalSize must be present
+}
 
     uint32_t* block = DFD + 1;
     remainingSize -= sizeof_dfdTotalSize;
@@ -721,8 +724,9 @@ void printDFD(uint32_t *DFD, uint32_t dataSize)
     printf("DFD total bytes: %u\n", dfdTotalSize);
 
     for (int i = 0; i < MAX_NUM_DFD_BLOCKS; ++i) { // At most only iterate MAX_NUM_DFD_BLOCKS block
-        if (remainingSize < sizeof_DFDBHeader)
+        if (remainingSize < sizeof_DFDBHeader) {
             break; // Invalid DFD: Missing or partial block header
+}
 
         const khr_df_vendorid_e vendorID = KHR_DFDVAL(block, VENDORID);
         const khr_df_khr_descriptortype_e descriptorType = KHR_DFDVAL(block, DESCRIPTORTYPE);
@@ -739,8 +743,9 @@ void printDFD(uint32_t *DFD, uint32_t dataSize)
         printf("\n");
 
         if (vendorID == KHR_DF_VENDORID_KHRONOS && descriptorType == KHR_DF_KHR_DESCRIPTORTYPE_BASICFORMAT) {
-            if (remainingSize < sizeof_BDFD)
+            if (remainingSize < sizeof_BDFD) {
                 break; // Invalid DFD: Missing or partial basic DFD block
+}
 
             const int model = KHR_DFDVAL(block, MODEL);
 
@@ -771,11 +776,13 @@ void printDFD(uint32_t *DFD, uint32_t dataSize)
                    KHR_DFDVAL(block, BYTESPLANE7));
 
             int samples = (blockSize - sizeof_BDFD) / sizeof_BDFDSample;
-            if (samples > MAX_NUM_BDFD_SAMPLES)
+            if (samples > MAX_NUM_BDFD_SAMPLES) {
                 samples = MAX_NUM_BDFD_SAMPLES; // Too many BDFD samples
+}
             for (int sample = 0; sample < samples; ++sample) {
-                if (remainingSize < sizeof_BDFD + (sample + 1) * sizeof_BDFDSample)
+                if (remainingSize < sizeof_BDFD + (sample + 1) * sizeof_BDFDSample) {
                     break; // Invalid DFD: Missing or partial basic DFD sample
+}
 
                 khr_df_model_channels_e channelType = KHR_DFDSVAL(block, sample, CHANNELID);
                 printf("Sample %u:\n", sample);
@@ -787,10 +794,11 @@ void printDFD(uint32_t *DFD, uint32_t dataSize)
                 printf("    Channel Type: 0x%X", channelType);
                 {
                     const char* str = dfdToStringChannelId(model, channelType);
-                    if (str)
+                    if (str) {
                         printf(" (%s)\n", str);
-                    else
+                    } else {
                         printf(" (%u)\n", channelType);
+}
                 }
                 printf("    Length: %u bits Offset: %u\n",
                        KHR_DFDSVAL(block, sample, BITLENGTH) + 1,
@@ -813,8 +821,9 @@ void printDFD(uint32_t *DFD, uint32_t dataSize)
         }
 
         const uint32_t advance = sizeof_DFDBHeader > blockSize ? sizeof_DFDBHeader : blockSize;
-        if (advance > remainingSize)
+        if (advance > remainingSize) {
             break;
+}
         remainingSize -= advance;
         block += advance / 4;
     }
@@ -889,8 +898,9 @@ void printDFDJSON(uint32_t* DFD, uint32_t dataSize, uint32_t base_indent, uint32
     PRINT_INDENT(0, "\"blocks\":%s[", space)
 
     for (int i = 0; i < MAX_NUM_DFD_BLOCKS; ++i) { // At most only iterate MAX_NUM_DFD_BLOCKS block
-        if (remainingSize < sizeof_DFDBHeader)
+        if (remainingSize < sizeof_DFDBHeader) {
             break; // Invalid DFD: Missing or partial block header
+}
 
         const khr_df_vendorid_e vendorID = KHR_DFDVAL(block, VENDORID);
         const khr_df_khr_descriptortype_e descriptorType = KHR_DFDVAL(block, DESCRIPTORTYPE);
@@ -944,14 +954,17 @@ void printDFDJSON(uint32_t* DFD, uint32_t dataSize, uint32_t base_indent, uint32
 
             PRINT_INDENT(2, "\"samples\":%s[%s", space, nl)
             int samples = (blockSize - sizeof_BDFD) / sizeof_BDFDSample;
-            if (samples > MAX_NUM_BDFD_SAMPLES)
+            if (samples > MAX_NUM_BDFD_SAMPLES) {
                 samples = MAX_NUM_BDFD_SAMPLES;
+}
             for (int sample = 0; sample < samples; ++sample) {
-                if (remainingSize < sizeof_BDFD + (sample + 1) * sizeof_BDFDSample)
+                if (remainingSize < sizeof_BDFD + (sample + 1) * sizeof_BDFDSample) {
                     break; // Invalid DFD: Missing or partial basic DFD sample
+}
 
-                if (sample != 0)
+                if (sample != 0) {
                     printf(",%s", nl);
+}
                 PRINT_INDENT(3, "{%s", nl)
 
                 khr_df_sample_datatype_qualifiers_e qualifiers = KHR_DFDSVAL(block, sample, QUALIFIERS);
@@ -1009,8 +1022,9 @@ void printDFDJSON(uint32_t* DFD, uint32_t dataSize, uint32_t base_indent, uint32
         PRINT_INDENT_NOARG(1, "}") // End of block
 
         const uint32_t advance = sizeof_DFDBHeader > blockSize ? sizeof_DFDBHeader : blockSize;
-        if (advance > remainingSize)
+        if (advance > remainingSize) {
             break;
+}
         remainingSize -= advance;
         block += advance / 4;
     }

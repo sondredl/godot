@@ -238,14 +238,16 @@ THE SOFTWARE.
     prop = bdf_get_font_property( font, "SETWIDTH_NAME" );
     if ( prop && prop->format == BDF_ATOM                              &&
          prop->value.atom && *(prop->value.atom)                       &&
-         !( *(prop->value.atom) == 'N' || *(prop->value.atom) == 'n' ) )
+         !( *(prop->value.atom) == 'N' || *(prop->value.atom) == 'n' ) ) {
       strings[3] = (const char *)(prop->value.atom);
+}
 
     prop = bdf_get_font_property( font, "ADD_STYLE_NAME" );
     if ( prop && prop->format == BDF_ATOM                              &&
          prop->value.atom && *(prop->value.atom)                       &&
-         !( *(prop->value.atom) == 'N' || *(prop->value.atom) == 'n' ) )
+         !( *(prop->value.atom) == 'N' || *(prop->value.atom) == 'n' ) ) {
       strings[0] = (const char *)(prop->value.atom);
+}
 
     for ( len = 0, nn = 0; nn < 4; nn++ )
     {

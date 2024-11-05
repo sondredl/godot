@@ -37,7 +37,7 @@ static const double kGammaF = 1. / 0.45;
 
 static volatile int kGammaTablesSOk = 0;
 void SharpYuvInitGammaTables(void) {
-  assert(GAMMA_TO_LINEAR_BITS <= 16);
+  static_assert(GAMMA_TO_LINEAR_BITS <= 16, "");
   if (!kGammaTablesSOk) {
     int v;
     const double a = 0.09929682680944;

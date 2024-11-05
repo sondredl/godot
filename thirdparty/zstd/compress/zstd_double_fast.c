@@ -46,8 +46,9 @@ void ZSTD_fillDoubleHashTableForCDict(ZSTD_matchState_t* ms,
                 ZSTD_writeTaggedIndex(hashLarge, lgHashAndTag, curr + i);
             }
             /* Only load extra positions for ZSTD_dtlm_full */
-            if (dtlm == ZSTD_dtlm_fast)
+            if (dtlm == ZSTD_dtlm_fast) {
                 break;
+}
     }   }
 }
 
@@ -77,13 +78,16 @@ void ZSTD_fillDoubleHashTableForCCtx(ZSTD_matchState_t* ms,
         for (i = 0; i < fastHashFillStep; ++i) {
             size_t const smHash = ZSTD_hashPtr(ip + i, hBitsS, mls);
             size_t const lgHash = ZSTD_hashPtr(ip + i, hBitsL, 8);
-            if (i == 0)
+            if (i == 0) {
                 hashSmall[smHash] = curr + i;
-            if (i == 0 || hashLarge[lgHash] == 0)
+}
+            if (i == 0 || hashLarge[lgHash] == 0) {
                 hashLarge[lgHash] = curr + i;
+}
             /* Only load extra positions for ZSTD_dtlm_full */
-            if (dtlm == ZSTD_dtlm_fast)
+            if (dtlm == ZSTD_dtlm_fast) {
                 break;
+}
         }   }
 }
 
@@ -154,8 +158,10 @@ size_t ZSTD_compressBlock_doubleFast_noDict_generic(
         U32 const current = (U32)(ip - base);
         U32 const windowLow = ZSTD_getLowestPrefixIndex(ms, current, cParams->windowLog);
         U32 const maxRep = current - windowLow;
-        if (offset_2 > maxRep) offsetSaved2 = offset_2, offset_2 = 0;
-        if (offset_1 > maxRep) offsetSaved1 = offset_1, offset_1 = 0;
+        if (offset_2 > maxRep) { offsetSaved2 = offset_2, offset_2 = 0;
+}
+        if (offset_1 > maxRep) { offsetSaved1 = offset_1, offset_1 = 0;
+}
     }
 
     /* Outer Loop: one iteration per match found and stored */
@@ -304,7 +310,7 @@ _match_stored:
                 ZSTD_storeSeq(seqStore, 0, anchor, iend, REPCODE1_TO_OFFBASE, rLength);
                 ip += rLength;
                 anchor = ip;
-                continue;   /* faster when present ... (?) */
+/* faster when present ... (?) */
             }
         }
     }
@@ -629,8 +635,9 @@ size_t ZSTD_compressBlock_doubleFast_extDict_generic(
     DEBUGLOG(5, "ZSTD_compressBlock_doubleFast_extDict_generic (srcSize=%zu)", srcSize);
 
     /* if extDict is invalidated due to maxDistance, switch to "regular" variant */
-    if (prefixStartIndex == dictStartIndex)
+    if (prefixStartIndex == dictStartIndex) {
         return ZSTD_compressBlock_doubleFast(ms, seqStore, rep, src, srcSize);
+}
 
     /* Search Loop */
     while (ip < ilimit) {  /* < instead of <=, because (ip+1) */

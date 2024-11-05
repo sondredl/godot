@@ -79,8 +79,10 @@ void mdct_init(mdct_lookup *lookup,int n){
     int msb=1<<(log2n-2);
     for(i=0;i<n/8;i++){
       int acc=0;
-      for(j=0;msb>>j;j++)
-        if((msb>>j)&i)acc|=1<<j;
+      for(j=0;msb>>j;j++) {
+        if((msb>>j)&i) {acc|=1<<j;
+}
+}
       bitrev[i*2]=((~acc)&mask)-1;
       bitrev[i*2+1]=acc;
 
@@ -326,19 +328,23 @@ STIN void mdct_butterflies(mdct_lookup *init,
   }
 
   for(i=1;--stages>0;i++){
-    for(j=0;j<(1<<i);j++)
+    for(j=0;j<(1<<i);j++) {
       mdct_butterfly_generic(T,x+(points>>i)*j,points>>i,4<<i);
+}
   }
 
-  for(j=0;j<points;j+=32)
+  for(j=0;j<points;j+=32) {
     mdct_butterfly_32(x+j);
+}
 
 }
 
 void mdct_clear(mdct_lookup *l){
   if(l){
-    if(l->trig)_ogg_free(l->trig);
-    if(l->bitrev)_ogg_free(l->bitrev);
+    if(l->trig) {_ogg_free(l->trig);
+}
+    if(l->bitrev) {_ogg_free(l->bitrev);
+}
     memset(l,0,sizeof(*l));
   }
 }

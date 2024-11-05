@@ -83,8 +83,9 @@
                     FT_Hashkey*  b )
   {
     if ( a->str[0] == b->str[0]           &&
-         ft_strcmp( a->str, b->str ) == 0 )
+         ft_strcmp( a->str, b->str ) == 0 ) {
       return 1;
+}
 
     return 0;
   }
@@ -94,8 +95,9 @@
   hash_num_compare( FT_Hashkey*  a,
                     FT_Hashkey*  b )
   {
-    if ( a->num == b->num )
+    if ( a->num == b->num ) {
       return 1;
+}
 
     return 0;
   }
@@ -115,8 +117,9 @@
     ndp = bp + ( res % hash->size );
     while ( *ndp )
     {
-      if ( (hash->compare)( &(*ndp)->key, &key ) )
+      if ( (hash->compare)( &(*ndp)->key, &key ) ) {
         break;
+}
 
       ndp--;
       if ( ndp < bp )
@@ -142,8 +145,9 @@
     hash->size <<= 1;
     hash->limit  = hash->size / 3;
 
-    if ( FT_NEW_ARRAY( hash->table, hash->size ) )
+    if ( FT_NEW_ARRAY( hash->table, hash->size ) ) {
       goto Exit;
+}
 
     for ( i = 0, bp = obp; i < sz; i++, bp++ )
     {
@@ -243,8 +247,9 @@
     nn = *bp;
     if ( !nn )
     {
-      if ( FT_QNEW( nn ) )
+      if ( FT_QNEW( nn ) ) {
         goto Exit;
+}
       *bp = nn;
 
       nn->key  = key;
@@ -253,14 +258,16 @@
       if ( hash->used >= hash->limit )
       {
         error = hash_rehash( hash, memory );
-        if ( error )
+        if ( error ) {
           goto Exit;
+}
       }
 
       hash->used++;
     }
-    else
-      nn->data = data;
+    else {
+      n
+}n->data = data;
 
   Exit:
     return error;

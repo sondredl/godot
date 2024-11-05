@@ -112,12 +112,14 @@
 
     *darkenAmount = 0;
 
-    if ( boldenAmount == 0 && !stemDarkened )
+    if ( boldenAmount == 0 && !stemDarkened ) {
       return;
+}
 
     /* protect against range problems and divide by zero */
-    if ( emRatio < cf2_doubleToFixed( .01 ) )
+    if ( emRatio < cf2_doubleToFixed( .01 ) ) {
       return;
+}
 
     if ( stemDarkened )
     {
@@ -163,10 +165,10 @@
 
       /* now apply the darkening parameters */
 
-      if ( scaledStem < cf2_intToFixed( x1 ) )
+      if ( scaledStem < cf2_intToFixed( x1 ) ) {
         *darkenAmount = FT_DivFix( cf2_intToFixed( y1 ), ppem );
 
-      else if ( scaledStem < cf2_intToFixed( x2 ) )
+      } else if ( scaledStem < cf2_intToFixed( x2 ) )
       {
         FT_Int  xdelta = x2 - x1;
         FT_Int  ydelta = y2 - y1;
@@ -174,8 +176,9 @@
                            FT_DivFix( cf2_intToFixed( x1 ), ppem );
 
 
-        if ( !xdelta )
+        if ( !xdelta ) {
           goto Try_x3;
+}
 
         *darkenAmount = FT_MulDiv( x, ydelta, xdelta ) +
                           FT_DivFix( cf2_intToFixed( y1 ), ppem );
@@ -191,8 +194,9 @@
                              FT_DivFix( cf2_intToFixed( x2 ), ppem );
 
 
-          if ( !xdelta )
+          if ( !xdelta ) {
             goto Try_x4;
+}
 
           *darkenAmount = FT_MulDiv( x, ydelta, xdelta ) +
                             FT_DivFix( cf2_intToFixed( y2 ), ppem );
@@ -209,8 +213,9 @@
                              FT_DivFix( cf2_intToFixed( x3 ), ppem );
 
 
-          if ( !xdelta )
+          if ( !xdelta ) {
             goto Use_y4;
+}
 
           *darkenAmount = FT_MulDiv( x, ydelta, xdelta ) +
                             FT_DivFix( cf2_intToFixed( y3 ), ppem );
@@ -430,8 +435,9 @@
                               FALSE,
                               font->darkenParams );
       }
-      else
-        cf2_computeDarkening( emRatio,
+      else {
+        c
+}f2_computeDarkening( emRatio,
                               ppem,
                               font->stdVW,
                               &font->darkenX,
@@ -451,9 +457,9 @@
       /* choose a constant for StdHW that depends on font contrast       */
       stdHW = cf2_getStdHW( decoder );
 
-      if ( stdHW > 0 && font->stdVW > MUL_INT32( 2, stdHW ) )
+      if ( stdHW > 0 && font->stdVW > MUL_INT32( 2, stdHW ) ) {
         font->stdHW = FT_DivFix( cf2_intToFixed( 75 ), emRatio );
-      else
+      } else
       {
         /* low contrast font gets less hstem darkening */
         font->stdHW = FT_DivFix( cf2_intToFixed( 110 ), emRatio );

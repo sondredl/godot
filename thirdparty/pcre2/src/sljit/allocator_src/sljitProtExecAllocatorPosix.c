@@ -85,8 +85,9 @@ static SLJIT_INLINE int create_tempfile(void)
 #ifdef P_tmpdir
 	if (!tmp_name_len) {
 		tmp_name_len = strlen(P_tmpdir);
-		if (tmp_name_len > 0 && tmp_name_len < sizeof(tmp_name))
+		if (tmp_name_len > 0 && tmp_name_len < sizeof(tmp_name)) {
 			strcpy(tmp_name, P_tmpdir);
+}
 	}
 #endif
 	if (!tmp_name_len) {
@@ -96,15 +97,18 @@ static SLJIT_INLINE int create_tempfile(void)
 
 	SLJIT_ASSERT(tmp_name_len > 0 && tmp_name_len < sizeof(tmp_name));
 
-	if (tmp_name_len > 1 && tmp_name[tmp_name_len - 1] == '/')
+	if (tmp_name_len > 1 && tmp_name[tmp_name_len - 1] == '/') {
 		tmp_name[--tmp_name_len] = '\0';
+}
 
 	fd = open(tmp_name, O_TMPFILE | O_EXCL | O_RDWR | O_NOATIME | O_CLOEXEC, 0);
-	if (fd != -1)
+	if (fd != -1) {
 		return fd;
+}
 
-	if (tmp_name_len >= sizeof(tmp_name) - 7)
+	if (tmp_name_len >= sizeof(tmp_name) - 7) {
 		return -1;
+}
 
 	strcpy(tmp_name + tmp_name_len, "/XXXXXX");
 #if defined(SLJIT_SINGLE_THREADED) && SLJIT_SINGLE_THREADED
@@ -117,8 +121,9 @@ static SLJIT_INLINE int create_tempfile(void)
 	fchmod(fd, 0);
 #endif
 
-	if (fd == -1)
+	if (fd == -1) {
 		return -1;
+}
 
 	if (unlink(tmp_name)) {
 		close(fd);
@@ -134,8 +139,9 @@ static SLJIT_INLINE struct sljit_chunk_header* alloc_chunk(sljit_uw size)
 	int fd;
 
 	fd = create_tempfile();
-	if (fd == -1)
+	if (fd == -1) {
 		return NULL;
+}
 
 	if (ftruncate(fd, (off_t)size)) {
 		close(fd);

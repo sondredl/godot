@@ -46,7 +46,8 @@ int WebPPictureInitInternal(WebPPicture* picture, int version) {
 //------------------------------------------------------------------------------
 
 int WebPValidatePicture(const WebPPicture* const picture) {
-  if (picture == NULL) return 0;
+  if (picture == NULL) { return 0;
+}
   if (picture->width <= 0 || picture->height <= 0) {
     return WebPEncodingSetError(picture, VP8_ENC_ERROR_BAD_DIMENSION);
   }
@@ -85,7 +86,8 @@ int WebPPictureAllocARGB(WebPPicture* const picture) {
   const int height = picture->height;
   const uint64_t argb_size = (uint64_t)width * height;
 
-  if (!WebPValidatePicture(picture)) return 0;
+  if (!WebPValidatePicture(picture)) { return 0;
+}
 
   WebPSafeFree(picture->memory_argb_);
   WebPPictureResetBufferARGB(picture);
@@ -113,7 +115,8 @@ int WebPPictureAllocYUVA(WebPPicture* const picture) {
   uint64_t y_size, uv_size, a_size, total_size;
   uint8_t* mem;
 
-  if (!WebPValidatePicture(picture)) return 0;
+  if (!WebPValidatePicture(picture)) { return 0;
+}
 
   WebPSafeFree(picture->memory_);
   WebPPictureResetBufferYUVA(picture);
@@ -245,7 +248,8 @@ static size_t Encode(const uint8_t* rgba, int width, int height, int stride,
   WebPMemoryWriter wrt;
   int ok;
 
-  if (output == NULL) return 0;
+  if (output == NULL) { return 0;
+}
 
   if (!WebPConfigPreset(&config, WEBP_PRESET_DEFAULT, quality_factor) ||
       !WebPPictureInit(&pic)) {
