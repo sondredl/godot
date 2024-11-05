@@ -33,7 +33,7 @@
 
 // ResourceImporterTextureSettings contains code used by
 // multiple texture importers and the export dialog.
-namespace ResourceImporterTextureSettings; {
+namespace ResourceImporterTextureSettings {
 bool should_import_s3tc_bptc();
 bool should_import_etc2_astc();
 } //namespace ResourceImporterTextureSettings

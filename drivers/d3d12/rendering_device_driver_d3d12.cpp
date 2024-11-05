@@ -2026,7 +2026,7 @@ static D3D12_BARRIER_LAYOUT _rd_texture_layout_to_d3d12_barrier_layout(RDD::Text
 		case RDD::TEXTURE_LAYOUT_VRS_ATTACHMENT_OPTIMAL:
 			return D3D12_BARRIER_LAYOUT_SHADING_RATE_SOURCE;
 		default:
-			DEV_ASSERT(false);
+			DEV_ASSERT(false && "Unknown texture layout.");
 			return D3D12_BARRIER_LAYOUT_UNDEFINED;
 	}
 }
