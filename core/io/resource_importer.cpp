@@ -101,7 +101,7 @@ Error ResourceFormatImporter::_get_path_and_type(const String &p_path, PathAndTy
 			} else if (assign == "metadata") {
 				r_path_and_type.metadata = value;
 			} else if (assign == "valid") {
-				if (*r_valid) {
+				if (r_valid) {
 					*r_valid = value;
 				}
 			}

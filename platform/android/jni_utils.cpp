@@ -210,7 +210,7 @@ String _get_class_name(JNIEnv *env, jclass cls, bool *array) {
 	jmethodID getName = env->GetMethodID(cclass, "getName", "()Ljava/lang/String;");
 	jstring clsName = (jstring)env->CallObjectMethod(cls, getName);
 
-	if (*array) {
+	if (array) {
 		jmethodID isArray = env->GetMethodID(cclass, "isArray", "()Z");
 		jboolean isarr = env->CallBooleanMethod(cls, isArray);
 		(*array) = isarr != 0;

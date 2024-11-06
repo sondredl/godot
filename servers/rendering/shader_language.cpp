@@ -1390,7 +1390,7 @@ bool ShaderLanguage::_find_identifier(const BlockNode *p_block, bool p_allow_rea
 			if (r_data_type) {
 				*r_data_type = p_function_info.built_ins[p_identifier].type;
 			}
-			if (*r_is_const) {
+			if (r_is_const) {
 				*r_is_const = p_function_info.built_ins[p_identifier].constant;
 			}
 			if (r_type) {
@@ -1420,7 +1420,7 @@ bool ShaderLanguage::_find_identifier(const BlockNode *p_block, bool p_allow_rea
 			if (r_data_type) {
 				*r_data_type = p_block->variables[p_identifier].type;
 			}
-			if (*r_is_const) {
+			if (r_is_const) {
 				*r_is_const = p_block->variables[p_identifier].is_const;
 			}
 			if (r_array_size) {
@@ -5273,7 +5273,12 @@ bool ShaderLanguage::_propagate_function_call_sampler_uniform_settings(const Str
 				return false;
 			} else if (arg->tex_argument_check) {
 				// Was checked, verify that filter, repeat, and hint are the same.
-				return arg->tex_argument_filter == p_filter && arg->tex_argument_repeat == p_repeat && arg->tex_hint == _sanitize_hint(p_hint);
+				if (arg->tex_argument_filter == p_filter && arg->tex_argument_repeat == p_repeat && arg->tex_hint == _sanitize_hint(p_hint)) {
+					return true;
+				} else {
+					_set_error(vformat(RTR("Sampler argument %d of function '%s' called more than once using textures that differ in either filter, repeat, or texture hint setting."), p_argument, String(p_name)));
+					return false;
+				}
 			} else {
 				arg->tex_argument_check = true;
 				arg->tex_argument_filter = p_filter;
@@ -5303,7 +5308,12 @@ bool ShaderLanguage::_propagate_function_call_sampler_builtin_reference(const St
 				return false;
 			} else if (arg->tex_builtin_check) {
 				//was checked, verify that the built-in is the same
-				return arg->tex_builtin == p_builtin;
+				if (arg->tex_builtin == p_builtin) {
+					return true;
+				} else {
+					_set_error(vformat(RTR("Sampler argument %d of function '%s' called more than once using different built-ins. Only calling with the same built-in is supported."), p_argument, String(p_name)));
+					return false;
+				}
 			} else {
 				arg->tex_builtin_check = true;
 				arg->tex_builtin = p_builtin;
@@ -10696,7 +10706,17 @@ Error ShaderLanguage::_parse_shader(const HashMap<StringName, FunctionInfo> &p_f
 }
 
 bool ShaderLanguage::has_builtin(const HashMap<StringName, ShaderLanguage::FunctionInfo> &p_functions, const StringName &p_name, bool p_check_global_funcs) {
-	return p_check_global_funcs && global_func_set.has(p_name);
+	if (p_check_global_funcs && global_func_set.has(p_name)) {
+		return true;
+	}
+
+	for (const KeyValue<StringName, ShaderLanguage::FunctionInfo> &E : p_functions) {
+		if (E.value.built_ins.has(p_name)) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 Error ShaderLanguage::_find_last_flow_op_in_op(ControlFlowNode *p_flow, FlowOperation p_op) {
