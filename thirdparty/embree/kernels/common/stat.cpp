@@ -5,12 +5,12 @@
 
 namespace embree
 {
-  Stat Stat::instance;
-
+  Stat Stat::instance; 
+  
   Stat::Stat () {
   }
 
-  Stat::~Stat ()
+  Stat::~Stat () 
   {
 #ifdef EMBREE_STAT_COUNTERS
     Stat::print(std::cout);
@@ -37,13 +37,13 @@ namespace embree
 
     size_t normal_box_hits = 0;
     size_t weighted_box_hits = 0;
-    for (size_t i=0;i<SIZE_HISTOGRAM;i++) {
+    for (size_t i=0;i<SIZE_HISTOGRAM;i++) { 
       normal_box_hits += data.normal.trav_hit_boxes[i];
       weighted_box_hits += data.normal.trav_hit_boxes[i]*i;
     }
     cout << "    #hit_boxes    = " << normal_box_hits << " (total) distribution: ";
     float average = 0.0f;
-    for (size_t i=0;i<SIZE_HISTOGRAM;i++)
+    for (size_t i=0;i<SIZE_HISTOGRAM;i++) 
     {
       float value = 100.0f * data.normal.trav_hit_boxes[i] / normal_box_hits;
       cout << "[" << i << "] " << value << " ";
@@ -67,7 +67,7 @@ namespace embree
       size_t shadow_box_hits = 0;
       size_t weighted_shadow_box_hits = 0;
 
-      for (size_t i=0;i<SIZE_HISTOGRAM;i++) {
+      for (size_t i=0;i<SIZE_HISTOGRAM;i++) {        
         shadow_box_hits += data.shadow.trav_hit_boxes[i];
         weighted_shadow_box_hits += data.shadow.trav_hit_boxes[i]*i;
       }

@@ -307,7 +307,7 @@ namespace embree
           for (size_t j=0;j<num_geomIDs;j++)
             if (new_geomID == geomIDs[j])
             { found = true; break; }
-          if (!found)
+          if (!found) 
             geomIDs[num_geomIDs++] = new_geomID;
         }
 
@@ -350,7 +350,7 @@ namespace embree
     {
       typedef BVHN<N> BVH;
       typedef typename BVHN<N>::NodeRef NodeRef;
-
+      
       BVH* bvh;
       Scene* scene;
       GridMesh* mesh;
@@ -372,7 +372,7 @@ namespace embree
         if (mesh && mesh->numPrimitives != numPreviousPrimitives) {
           bvh->alloc.clear();
         }
-
+        
         /* if we use the primrefarray for allocations we have to take it back from the BVH */
         if (settings.primrefarrayalloc != size_t(inf))
           bvh->alloc.unshare(prims);
@@ -448,7 +448,7 @@ namespace embree
     /************************************************************************************/
     /************************************************************************************/
 
-
+    
 #if defined(EMBREE_GEOMETRY_TRIANGLE)
     Builder* BVH4Triangle4MeshBuilderSAH  (void* bvh, TriangleMesh* mesh, unsigned int geomID, size_t mode) { return new BVHNBuilderSAH<4,Triangle4>((BVH4*)bvh,mesh,geomID,4,1.0f,4,inf,TriangleMesh::geom_type); }
     Builder* BVH4Triangle4vMeshBuilderSAH (void* bvh, TriangleMesh* mesh, unsigned int geomID, size_t mode) { return new BVHNBuilderSAH<4,Triangle4v>((BVH4*)bvh,mesh,geomID,4,1.0f,4,inf,TriangleMesh::geom_type); }
@@ -470,7 +470,7 @@ namespace embree
     Builder* BVH8QuantizedTriangle4iSceneBuilderSAH  (void* bvh, Scene* scene, size_t mode) { return new BVHNBuilderSAHQuantized<8,Triangle4i>((BVH8*)bvh,scene,4,1.0f,4,inf,TriangleMesh::geom_type); }
     Builder* BVH8QuantizedTriangle4SceneBuilderSAH  (void* bvh, Scene* scene, size_t mode) { return new BVHNBuilderSAHQuantized<8,Triangle4>((BVH8*)bvh,scene,4,1.0f,4,inf,TriangleMesh::geom_type); }
 
-
+    
 
 #endif
 #endif

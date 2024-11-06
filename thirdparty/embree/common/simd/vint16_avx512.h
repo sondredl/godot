@@ -12,27 +12,27 @@
 #define vdouble vdouble_impl
 
 namespace embree
-{
+{ 
   /* 16-wide AVX-512 integer type */
   template<>
   struct vint<16>
   {
     ALIGNED_STRUCT_(64);
-
+    
     typedef vboolf16 Bool;
     typedef vint16   Int;
     typedef vfloat16 Float;
 
     enum  { size = 16 }; // number of SIMD elements
     union {              // data
-      __m512i v;
-      int i[16];
+      __m512i v; 
+      int i[16]; 
     };
-
+    
     ////////////////////////////////////////////////////////////////////////////////
     /// Constructors, Assignment & Cast Operators
     ////////////////////////////////////////////////////////////////////////////////
-
+       
     __forceinline vint() {}
     __forceinline vint(const vint16& t) { v = t.v; }
     __forceinline vint16& operator =(const vint16& f) { v = f.v; return *this; }
@@ -44,9 +44,9 @@ namespace embree
     __forceinline vint(int i) {
       v = _mm512_set1_epi32(i);
     }
-
+    
     __forceinline vint(int a, int b, int c, int d) {
-      v = _mm512_set4_epi32(d,c,b,a);
+      v = _mm512_set4_epi32(d,c,b,a);      
     }
 
     __forceinline vint(int a0 , int a1 , int a2 , int a3,
@@ -76,15 +76,15 @@ namespace embree
       v = _mm512_castsi256_si512(a);
       v = _mm512_inserti64x4(v, b, 1);
     }
-
+   
     __forceinline explicit vint(const __m512& f) {
       v = _mm512_cvtps_epi32(f);
     }
-
+    
     ////////////////////////////////////////////////////////////////////////////////
     /// Constants
     ////////////////////////////////////////////////////////////////////////////////
-
+    
     __forceinline vint(ZeroTy)   : v(_mm512_setzero_epi32()) {}
     __forceinline vint(OneTy)    : v(_mm512_set1_epi32(1)) {}
     __forceinline vint(PosInfTy) : v(_mm512_set1_epi32(pos_inf)) {}
@@ -111,7 +111,7 @@ namespace embree
 
     static __forceinline void store (void* ptr, const vint16& v) { _mm512_store_si512 (ptr,v); }
     static __forceinline void storeu(void* ptr, const vint16& v) { _mm512_storeu_si512(ptr,v); }
-
+ 
     static __forceinline void store (const vboolf16& mask, void* addr, const vint16& v2) { _mm512_mask_store_epi32(addr,mask,v2); }
     static __forceinline void storeu(const vboolf16& mask, void* ptr,  const vint16& f) { _mm512_mask_storeu_epi32((int*)ptr,mask,f); }
 
@@ -157,14 +157,14 @@ namespace embree
     ////////////////////////////////////////////////////////////////////////////////
     /// Array Access
     ////////////////////////////////////////////////////////////////////////////////
-
+    
     __forceinline       int& operator [](size_t index)       { assert(index < 16); return i[index]; }
     __forceinline const int& operator [](size_t index) const { assert(index < 16); return i[index]; }
 
     __forceinline unsigned int uint    (size_t index) const { assert(index < 16); return ((unsigned int*)i)[index]; }
     __forceinline size_t&      uint64_t(size_t index) const { assert(index < 8);  return ((size_t*)i)[index]; }
   };
-
+  
   ////////////////////////////////////////////////////////////////////////////////
   /// Unary Operators
   ////////////////////////////////////////////////////////////////////////////////
@@ -211,7 +211,7 @@ namespace embree
   __forceinline vint16 sll (const vint16& a, int b) { return _mm512_slli_epi32(a, b); }
   __forceinline vint16 sra (const vint16& a, int b) { return _mm512_srai_epi32(a, b); }
   __forceinline vint16 srl (const vint16& a, int b) { return _mm512_srli_epi32(a, b); }
-
+  
   __forceinline vint16 min(const vint16& a, const vint16& b) { return _mm512_min_epi32(a, b); }
   __forceinline vint16 min(const vint16& a, int           b) { return min(a,vint16(b)); }
   __forceinline vint16 min(int           a, const vint16& b) { return min(vint16(a),b); }
@@ -219,7 +219,7 @@ namespace embree
   __forceinline vint16 max(const vint16& a, const vint16& b) { return _mm512_max_epi32(a, b); }
   __forceinline vint16 max(const vint16& a, int           b) { return max(a,vint16(b)); }
   __forceinline vint16 max(int           a, const vint16& b) { return max(vint16(a),b); }
-
+  
   __forceinline vint16 umin(const vint16& a, const vint16& b) { return _mm512_min_epu32(a, b); }
   __forceinline vint16 umax(const vint16& a, const vint16& b) { return _mm512_max_epu32(a, b); }
 
@@ -235,19 +235,19 @@ namespace embree
 
   __forceinline vint16& operator +=(vint16& a, const vint16& b) { return a = a + b; }
   __forceinline vint16& operator +=(vint16& a, int           b) { return a = a + b; }
-
+  
   __forceinline vint16& operator -=(vint16& a, const vint16& b) { return a = a - b; }
   __forceinline vint16& operator -=(vint16& a, int           b) { return a = a - b; }
 
   __forceinline vint16& operator *=(vint16& a, const vint16& b) { return a = a * b; }
   __forceinline vint16& operator *=(vint16& a, int           b) { return a = a * b; }
-
+  
   __forceinline vint16& operator &=(vint16& a, const vint16& b) { return a = a & b; }
   __forceinline vint16& operator &=(vint16& a, int           b) { return a = a & b; }
-
+  
   __forceinline vint16& operator |=(vint16& a, const vint16& b) { return a = a | b; }
   __forceinline vint16& operator |=(vint16& a, int           b) { return a = a | b; }
-
+  
   __forceinline vint16& operator <<=(vint16& a, int b) { return a = a << b; }
   __forceinline vint16& operator >>=(vint16& a, int b) { return a = a >> b; }
 
@@ -259,15 +259,15 @@ namespace embree
   __forceinline vboolf16 operator ==(const vint16& a, const vint16& b) { return _mm512_cmp_epi32_mask(a,b,_MM_CMPINT_EQ); }
   __forceinline vboolf16 operator ==(const vint16& a, int           b) { return a == vint16(b); }
   __forceinline vboolf16 operator ==(int           a, const vint16& b) { return vint16(a) == b; }
-
+  
   __forceinline vboolf16 operator !=(const vint16& a, const vint16& b) { return _mm512_cmp_epi32_mask(a,b,_MM_CMPINT_NE); }
   __forceinline vboolf16 operator !=(const vint16& a, int           b) { return a != vint16(b); }
   __forceinline vboolf16 operator !=(int           a, const vint16& b) { return vint16(a) != b; }
-
+  
   __forceinline vboolf16 operator < (const vint16& a, const vint16& b) { return _mm512_cmp_epi32_mask(a,b,_MM_CMPINT_LT); }
   __forceinline vboolf16 operator < (const vint16& a, int           b) { return a <  vint16(b); }
   __forceinline vboolf16 operator < (int           a, const vint16& b) { return vint16(a) <  b; }
-
+  
   __forceinline vboolf16 operator >=(const vint16& a, const vint16& b) { return _mm512_cmp_epi32_mask(a,b,_MM_CMPINT_GE); }
   __forceinline vboolf16 operator >=(const vint16& a, int           b) { return a >= vint16(b); }
   __forceinline vboolf16 operator >=(int           a, const vint16& b) { return vint16(a) >= b; }
@@ -297,10 +297,10 @@ namespace embree
   __forceinline vboolf16 le(const vboolf16 mask, const vint16& a, const vint16& b) { return _mm512_mask_cmp_epi32_mask(mask,a,b,_MM_CMPINT_LE); }
   __forceinline vboolf16 uint_le(const vboolf16 mask, const vint16& a, const vint16& b) { return _mm512_mask_cmp_epu32_mask(mask,a,b,_MM_CMPINT_LE); }
   __forceinline vboolf16 uint_gt(const vboolf16 mask, const vint16& a, const vint16& b) { return _mm512_mask_cmp_epu32_mask(mask,a,b,_MM_CMPINT_GT); }
-
-
+    
+ 
   __forceinline vint16 select(const vboolf16& m, const vint16& t, const vint16& f) {
-    return _mm512_mask_or_epi32(f,m,t,t);
+    return _mm512_mask_or_epi32(f,m,t,t); 
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -386,13 +386,13 @@ namespace embree
   __forceinline vint16 vreduce_add4(vint16 x) { x = vreduce_add2(x); return x + shuffle<2,3,0,1>(x); }
   __forceinline vint16 vreduce_add8(vint16 x) { x = vreduce_add4(x); return x + shuffle4<1,0,3,2>(x); }
   __forceinline vint16 vreduce_add (vint16 x) { x = vreduce_add8(x); return x + shuffle4<2,3,0,1>(x); }
-
+  
   __forceinline int reduce_min(const vint16& v) { return toScalar(vreduce_min(v)); }
   __forceinline int reduce_max(const vint16& v) { return toScalar(vreduce_max(v)); }
   __forceinline int reduce_and(const vint16& v) { return toScalar(vreduce_and(v)); }
   __forceinline int reduce_or (const vint16& v) { return toScalar(vreduce_or (v)); }
   __forceinline int reduce_add(const vint16& v) { return toScalar(vreduce_add(v)); }
-
+  
   ////////////////////////////////////////////////////////////////////////////////
   /// Memory load and store operations
   ////////////////////////////////////////////////////////////////////////////////
@@ -405,21 +405,21 @@ namespace embree
   __forceinline vint16 conflict(const vboolf16& mask, vint16& dest, const vint16& index)
   {
     return _mm512_mask_conflict_epi32(dest,mask,index);
-  }
+  }    
 
   __forceinline vint16 convert_uint32_t(const __m512& f) {
     return _mm512_cvtps_epu32(f);
   }
 
   __forceinline vint16 permute(vint16 v, vint16 index) {
-    return _mm512_permutexvar_epi32(index,v);
+    return _mm512_permutexvar_epi32(index,v);  
   }
 
   __forceinline vint16 reverse(const vint16 &a) {
     return permute(a,vint16(reverse_step));
   }
 
-  __forceinline vint16 prefix_sum(const vint16& a)
+  __forceinline vint16 prefix_sum(const vint16& a) 
   {
     const vint16 z(zero);
     vint16 v = a;
@@ -427,10 +427,10 @@ namespace embree
     v = v + align_shift_right<16-2>(v,z);
     v = v + align_shift_right<16-4>(v,z);
     v = v + align_shift_right<16-8>(v,z);
-    return v;
+    return v;  
   }
 
-  __forceinline vint16 reverse_prefix_sum(const vint16& a)
+  __forceinline vint16 reverse_prefix_sum(const vint16& a) 
   {
     const vint16 z(zero);
     vint16 v = a;
@@ -438,7 +438,7 @@ namespace embree
     v = v + align_shift_right<2>(z,v);
     v = v + align_shift_right<4>(z,v);
     v = v + align_shift_right<8>(z,v);
-    return v;
+    return v;  
   }
 
   /* this should use a vbool8 and a vint8_64...*/
@@ -449,11 +449,11 @@ namespace embree
     _mm512_mask_prefetch_i64gather_pd(offset, mask, base_addr, scale, hint);
 #endif
   }
-
+  
   ////////////////////////////////////////////////////////////////////////////////
   /// Output Operators
   ////////////////////////////////////////////////////////////////////////////////
-
+  
   __forceinline embree_ostream operator <<(embree_ostream cout, const vint16& v)
   {
     cout << "<" << v[0];

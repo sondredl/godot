@@ -18624,7 +18624,7 @@ void CompilerMSL::analyze_argument_buffers()
 				set_extended_member_decoration(buffer_type.self, member_index, SPIRVCrossDecorationOverlappingBinding);
 			member_index++;
 		}
-
+		
 		if (msl_options.replace_recursive_inputs && type_contains_recursion(buffer_type))
 		{
 			recursive_inputs.insert(type_id);

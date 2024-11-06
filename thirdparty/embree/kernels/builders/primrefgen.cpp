@@ -14,7 +14,7 @@ namespace embree
     PrimInfo createPrimRefArray(Geometry* geometry, unsigned int geomID, const size_t numPrimRefs, mvector<PrimRef>& prims, BuildProgressMonitor& progressMonitor)
     {
       ParallelPrefixSumState<PrimInfo> pstate;
-
+      
       /* first try */
       progressMonitor(0);
       PrimInfo pinfo = parallel_prefix_sum( pstate, size_t(0), geometry->size(), size_t(1024), PrimInfo(empty), [&](const range<size_t>& r, const PrimInfo& base) -> PrimInfo {
@@ -36,14 +36,14 @@ namespace embree
     {
       ParallelForForPrefixSumState<PrimInfo> pstate;
       Scene::Iterator2 iter(scene,types,mblur);
-
+      
       /* first try */
       progressMonitor(0);
       pstate.init(iter,size_t(1024));
       PrimInfo pinfo = parallel_for_for_prefix_sum0( pstate, iter, PrimInfo(empty), [&](Geometry* mesh, const range<size_t>& r, size_t k, size_t geomID) -> PrimInfo {
           return mesh->createPrimRefArray(prims,r,k,(unsigned)geomID);
         }, [](const PrimInfo& a, const PrimInfo& b) -> PrimInfo { return PrimInfo::merge(a,b); });
-
+      
       /* if we need to filter out geometry, run again */
       if (pinfo.size() != numPrimRefs)
       {
@@ -59,14 +59,14 @@ namespace embree
     {
       ParallelForForPrefixSumState<PrimInfo> pstate;
       Scene::Iterator2 iter(scene,types,mblur);
-
+      
       /* first try */
       progressMonitor(0);
       pstate.init(iter,size_t(1024));
       PrimInfo pinfo = parallel_for_for_prefix_sum0( pstate, iter, PrimInfo(empty), [&](Geometry* mesh, const range<size_t>& r, size_t k, size_t geomID) -> PrimInfo {
          return mesh->createPrimRefArray(prims,sgrids,r,k,(unsigned)geomID);
        }, [](const PrimInfo& a, const PrimInfo& b) -> PrimInfo { return PrimInfo::merge(a,b); });
-
+      
       /* if we need to filter out geometry, run again */
       if (pinfo.size() != numPrimRefs)
       {
@@ -82,14 +82,14 @@ namespace embree
     {
       ParallelForForPrefixSumState<PrimInfo> pstate;
       Scene::Iterator2 iter(scene,types,true);
-
+      
       /* first try */
       progressMonitor(0);
       pstate.init(iter,size_t(1024));
       PrimInfo pinfo = parallel_for_for_prefix_sum0( pstate, iter, PrimInfo(empty), [&](Geometry* mesh, const range<size_t>& r, size_t k, size_t geomID) -> PrimInfo {
           return mesh->createPrimRefArrayMB(prims,itime,r,k,(unsigned)geomID);
         }, [](const PrimInfo& a, const PrimInfo& b) -> PrimInfo { return PrimInfo::merge(a,b); });
-
+      
       /* if we need to filter out geometry, run again */
       if (pinfo.size() != numPrimRefs)
       {
@@ -105,14 +105,14 @@ namespace embree
     {
       ParallelForForPrefixSumState<PrimInfoMB> pstate;
       Scene::Iterator2 iter(scene,types,true);
-
+      
       /* first try */
       progressMonitor(0);
       pstate.init(iter,size_t(1024));
       PrimInfoMB pinfo = parallel_for_for_prefix_sum0( pstate, iter, PrimInfoMB(empty), [&](Geometry* mesh, const range<size_t>& r, size_t k, size_t geomID) -> PrimInfoMB {
           return mesh->createPrimRefMBArray(prims,t0t1,r,k,(unsigned)geomID);
       }, [](const PrimInfoMB& a, const PrimInfoMB& b) -> PrimInfoMB { return PrimInfoMB::merge2(a,b); });
-
+      
       /* if we need to filter out geometry, run again */
       if (pinfo.size() != numPrimRefs)
       {
@@ -131,14 +131,14 @@ namespace embree
     {
       ParallelForForPrefixSumState<PrimInfoMB> pstate;
       Scene::Iterator2 iter(scene,types,true);
-
+      
       /* first try */
       progressMonitor(0);
       pstate.init(iter,size_t(1024));
       PrimInfoMB pinfo = parallel_for_for_prefix_sum0( pstate, iter, PrimInfoMB(empty), [&](Geometry* mesh, const range<size_t>& r, size_t k, size_t geomID) -> PrimInfoMB {
          return mesh->createPrimRefMBArray(prims,sgrids,t0t1,r,k,(unsigned)geomID);
       }, [](const PrimInfoMB& a, const PrimInfoMB& b) -> PrimInfoMB { return PrimInfoMB::merge2(a,b); });
-
+      
       /* if we need to filter out geometry, run again */
       if (pinfo.size() != numPrimRefs)
       {
@@ -160,12 +160,12 @@ namespace embree
 
       /* compute scene bounds */
       std::pair<size_t,BBox3fa> cb_empty(0,empty);
-      auto cb = parallel_reduce
+      auto cb = parallel_reduce 
         ( size_t(0), numPrimitives, size_t(1024), cb_empty, [&](const range<size_t>& r) -> std::pair<size_t,BBox3fa>
           {
             size_t num = 0;
             BBox3fa bounds = empty;
-
+            
             for (size_t j=r.begin(); j<r.end(); j++)
             {
               BBox3fa prim_bounds = empty;
@@ -175,13 +175,13 @@ namespace embree
             }
             return std::make_pair(num,bounds);
           }, [] (const std::pair<size_t,BBox3fa>& a, const std::pair<size_t,BBox3fa>& b) {
-          return std::make_pair(a.first + b.first,merge(a.second,b.second));
+          return std::make_pair(a.first + b.first,merge(a.second,b.second)); 
         });
-
-
+      
+      
       size_t numPrimitivesGen = cb.first;
       const BBox3fa centBounds = cb.second;
-
+      
       /* compute morton codes */
       if (likely(numPrimitivesGen == numPrimitives))
       {
@@ -210,7 +210,7 @@ namespace embree
             }
             return num;
           }, std::plus<size_t>());
-
+        
         parallel_prefix_sum( pstate, size_t(0), numPrimitives, size_t(1024), size_t(0), [&](const range<size_t>& r, const size_t base) -> size_t {
             size_t num = 0;
             BVHBuilderMorton::MortonCodeGenerator generator(mapping,&morton.data()[base]);
@@ -222,7 +222,7 @@ namespace embree
               num++;
             }
             return num;
-          }, std::plus<size_t>());
+          }, std::plus<size_t>());          
       }
       return numPrimitivesGen;
     }
@@ -238,7 +238,7 @@ namespace embree
     {
       PrimInfo pinfo(empty);
       size_t numPrimitives = 0;
-
+      
       /* first run to get #primitives */
 
       ParallelForForPrefixSumState<PrimInfo> pstate;
@@ -260,10 +260,10 @@ namespace embree
           return pinfo;
         }, [](const PrimInfo& a, const PrimInfo& b) -> PrimInfo { return PrimInfo::merge(a,b); });
       numPrimitives = pinfo.size();
-
+          
       /* resize arrays */
-      sgrids.resize(numPrimitives);
-      prims.resize(numPrimitives);
+      sgrids.resize(numPrimitives); 
+      prims.resize(numPrimitives); 
 
       /* second run to fill primrefs and SubGridBuildData arrays */
       pinfo = parallel_for_for_prefix_sum1( pstate, iter, PrimInfo(empty), [&](GridMesh* mesh, const range<size_t>& r, size_t k, size_t geomID, const PrimInfo& base) -> PrimInfo {
@@ -279,7 +279,7 @@ namespace embree
 
       PrimInfo pinfo(empty);
       size_t numPrimitives = 0;
-
+      
       ParallelPrefixSumState<PrimInfo> pstate;
       /* iterate over all grids in a single mesh */
       pinfo = parallel_prefix_sum( pstate, size_t(0), mesh->size(), size_t(1024), PrimInfo(empty), [&](const range<size_t>& r, const PrimInfo& base) -> PrimInfo
@@ -296,8 +296,8 @@ namespace embree
                                    }, [](const PrimInfo& a, const PrimInfo& b) -> PrimInfo { return PrimInfo::merge(a,b); });
       numPrimitives = pinfo.size();
       /* resize arrays */
-      sgrids.resize(numPrimitives);
-      prims.resize(numPrimitives);
+      sgrids.resize(numPrimitives); 
+      prims.resize(numPrimitives); 
 
       /* second run to fill primrefs and SubGridBuildData arrays */
       pinfo = parallel_prefix_sum( pstate, size_t(0), mesh->size(), size_t(1024), PrimInfo(empty), [&](const range<size_t>& r, const PrimInfo& base) -> PrimInfo {
@@ -312,11 +312,11 @@ namespace embree
       /* first run to get #primitives */
       ParallelForForPrefixSumState<PrimInfoMB> pstate;
       Scene::Iterator<GridMesh,true> iter(scene);
-
+      
       pstate.init(iter,size_t(1024));
       /* iterate over all meshes in the scene */
       PrimInfoMB pinfoMB = parallel_for_for_prefix_sum0( pstate, iter, PrimInfoMB(empty), [&](GridMesh* mesh, const range<size_t>& r, size_t k, size_t /*geomID*/) -> PrimInfoMB {
-
+                                                                                            
          PrimInfoMB pinfoMB(empty);
          for (size_t j=r.begin(); j<r.end(); j++)
          {
@@ -327,29 +327,29 @@ namespace embree
          }
          return pinfoMB;
       }, [](const PrimInfoMB& a, const PrimInfoMB& b) -> PrimInfoMB { return PrimInfoMB::merge2(a,b); });
-
+      
       size_t numPrimitives = pinfoMB.size();
       if (numPrimitives == 0) return pinfoMB;
-
+      
       /* resize arrays */
-      sgrids.resize(numPrimitives);
-      prims.resize(numPrimitives);
+      sgrids.resize(numPrimitives); 
+      prims.resize(numPrimitives); 
       /* second run to fill primrefs and SubGridBuildData arrays */
       pinfoMB = parallel_for_for_prefix_sum1( pstate, iter, PrimInfoMB(empty), [&](GridMesh* mesh, const range<size_t>& r, size_t k, size_t geomID, const PrimInfoMB& base) -> PrimInfoMB {
-        return mesh->createPrimRefMBArray(prims,sgrids,t0t1,r,base.size(),(unsigned)geomID);
+        return mesh->createPrimRefMBArray(prims,sgrids,t0t1,r,base.size(),(unsigned)geomID);                                                                                 
       }, [](const PrimInfoMB& a, const PrimInfoMB& b) -> PrimInfoMB { return PrimInfoMB::merge2(a,b); });
-
+      
       assert(pinfoMB.size() == numPrimitives);
       pinfoMB.time_range = t0t1;
       return pinfoMB;
     }
-
+    
 #endif
-
+    
     // ====================================================================================================
     // ====================================================================================================
     // ====================================================================================================
-
+    
     IF_ENABLED_TRIS (template size_t createMortonCodeArray<TriangleMesh>(TriangleMesh* mesh COMMA mvector<BVHBuilderMorton::BuildPrim>& morton COMMA BuildProgressMonitor& progressMonitor));
     IF_ENABLED_QUADS(template size_t createMortonCodeArray<QuadMesh>(QuadMesh* mesh COMMA mvector<BVHBuilderMorton::BuildPrim>& morton COMMA BuildProgressMonitor& progressMonitor));
     IF_ENABLED_USER (template size_t createMortonCodeArray<UserGeometry>(UserGeometry* mesh COMMA mvector<BVHBuilderMorton::BuildPrim>& morton COMMA BuildProgressMonitor& progressMonitor));

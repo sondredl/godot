@@ -124,7 +124,7 @@ typedef HANDLE MemoryMap;
 
         /* open the input file */
 #if U_PLATFORM_HAS_WINUWP_API == 0
-        // Note: In the non-UWP code-path (ie: Win32), the value of the path variable might have come from
+        // Note: In the non-UWP code-path (ie: Win32), the value of the path variable might have come from 
         // the CRT 'getenv' function, and would be therefore be encoded in the default ANSI code page.
         // This means that we can't call the *W version of API below, whereas in the UWP code-path
         // there is no 'getenv' call, and thus the string will be only UTF-8/Invariant characters.
@@ -166,7 +166,7 @@ typedef HANDLE MemoryMap;
 
         CloseHandle(file);
         if (map == nullptr) {
-            // If we failed to create the mapping due to an out-of-memory error, then
+            // If we failed to create the mapping due to an out-of-memory error, then 
             // we want to report that error back to the caller.
             if (HRESULT_FROM_WIN32(GetLastError()) == E_OUTOFMEMORY) {
                 *status = U_MEMORY_ALLOCATION_ERROR;

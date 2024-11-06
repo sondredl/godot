@@ -44,21 +44,21 @@ namespace jpge
 
 		bool m_two_pass_flag;
 
-		// By default we use the same quantization tables as mozjpeg's default.
+		// By default we use the same quantization tables as mozjpeg's default. 
 		// Set to true to use the traditional tables from JPEG Annex K.
 		bool m_use_std_tables;
 	};
 
-	// Writes JPEG image to a file.
+	// Writes JPEG image to a file. 
 	// num_channels must be 1 (Y) or 3 (RGB), image pitch must be width*num_channels.
 	bool compress_image_to_jpeg_file(const char* pFilename, int width, int height, int num_channels, const uint8* pImage_data, const params& comp_params = params());
 
-	// Writes JPEG image to memory buffer.
-	// On entry, buf_size is the size of the output buffer pointed at by pBuf, which should be at least ~1024 bytes.
+	// Writes JPEG image to memory buffer. 
+	// On entry, buf_size is the size of the output buffer pointed at by pBuf, which should be at least ~1024 bytes. 
 	// If return value is true, buf_size will be set to the size of the compressed data.
 	bool compress_image_to_jpeg_file_in_memory(void* pBuf, int& buf_size, int width, int height, int num_channels, const uint8* pImage_data, const params& comp_params = params());
 
-	// Output stream abstract class - used by the jpeg_encoder class to write to the output stream.
+	// Output stream abstract class - used by the jpeg_encoder class to write to the output stream. 
 	// put_buf() is generally called with len==JPGE_OUT_BUF_SIZE bytes, but for headers it'll be called with smaller amounts.
 	class output_stream
 	{

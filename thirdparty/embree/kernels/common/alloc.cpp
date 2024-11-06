@@ -12,14 +12,14 @@ namespace embree
   __thread FastAllocator::ThreadLocal2* FastAllocator::thread_local_allocator2 = nullptr;
   MutexSys FastAllocator::s_thread_local_allocators_lock;
   std::vector<std::unique_ptr<FastAllocator::ThreadLocal2>> FastAllocator::s_thread_local_allocators;
-
+   
   struct fast_allocator_regression_test : public RegressionTest
   {
     BarrierSys barrier;
     std::atomic<size_t> numFailed;
     std::unique_ptr<FastAllocator> alloc;
 
-    fast_allocator_regression_test()
+    fast_allocator_regression_test() 
       : RegressionTest("fast_allocator_regression_test"), numFailed(0)
     {
       registerRegressionTest(this);
@@ -38,13 +38,13 @@ namespace embree
           *ptrs[i] = size_t(threadalloc.talloc0) + i;
         }
         for (size_t i=0; i<1000; i++) {
-          if (*ptrs[i] != size_t(threadalloc.talloc0) + i)
+          if (*ptrs[i] != size_t(threadalloc.talloc0) + i) 
             This->numFailed++;
         }
         This->barrier.wait();
       }
     }
-
+    
     bool run ()
     {
       alloc = make_unique(new FastAllocator(nullptr,false));
@@ -58,14 +58,14 @@ namespace embree
       for (size_t i=0; i<numThreads; i++)
         threads.push_back(createThread((thread_func)thread_alloc,this));
 
-      /* run test */
+      /* run test */ 
       for (size_t i=0; i<1000; i++)
       {
         alloc->reset();
         barrier.wait();
         barrier.wait();
       }
-
+     
       /* destroy threads */
       for (size_t i=0; i<numThreads; i++)
         join(threads[i]);

@@ -176,7 +176,7 @@ struct TNotifyInOutAdaptor
 {
     EShLanguage stage;
     TIoMapResolver& resolver;
-    inline TNotifyInOutAdaptor(EShLanguage s, TIoMapResolver& r)
+    inline TNotifyInOutAdaptor(EShLanguage s, TIoMapResolver& r) 
       : stage(s)
       , resolver(r)
     {

@@ -12,25 +12,25 @@
 #define vdouble vdouble_impl
 
 namespace embree
-{
+{ 
   /* 4-wide AVX 64-bit double type */
   template<>
   struct vdouble<4>
   {
     ALIGNED_STRUCT_(32);
-
+            
     typedef vboold4 Bool;
 
     enum  { size = 4 }; // number of SIMD elements
     union {             // data
-      __m256d v;
-      double i[4];
+      __m256d v; 
+      double i[4]; 
     };
-
+    
     ////////////////////////////////////////////////////////////////////////////////
     /// Constructors, Assignment & Cast Operators
     ////////////////////////////////////////////////////////////////////////////////
-
+       
     __forceinline vdouble() {}
     __forceinline vdouble(const vdouble4& t) { v = t.v; }
     __forceinline vdouble4& operator =(const vdouble4& f) { v = f.v; return *this; }
@@ -41,16 +41,16 @@ namespace embree
     __forceinline vdouble(double i) {
       v = _mm256_set1_pd(i);
     }
-
+    
     __forceinline vdouble(double a, double b, double c, double d) {
-      v = _mm256_set_pd(d,c,b,a);
+      v = _mm256_set_pd(d,c,b,a);      
     }
-
-
+   
+    
     ////////////////////////////////////////////////////////////////////////////////
     /// Constants
     ////////////////////////////////////////////////////////////////////////////////
-
+    
     __forceinline vdouble(ZeroTy) : v(_mm256_setzero_pd()) {}
     __forceinline vdouble(OneTy)  : v(_mm256_set1_pd(1)) {}
     __forceinline vdouble(StepTy) : v(_mm256_set_pd(3.0,2.0,1.0,0.0)) {}
@@ -89,11 +89,11 @@ namespace embree
     ////////////////////////////////////////////////////////////////////////////////
     /// Array Access
     ////////////////////////////////////////////////////////////////////////////////
-
+    
     __forceinline       double& operator [](size_t index)       { assert(index < 4); return i[index]; }
     __forceinline const double& operator [](size_t index) const { assert(index < 4); return i[index]; }
   };
-
+  
   ////////////////////////////////////////////////////////////////////////////////
   /// Unary Operators
   ////////////////////////////////////////////////////////////////////////////////
@@ -133,7 +133,7 @@ namespace embree
   __forceinline vdouble4 operator ^(const vdouble4& a, const vdouble4& b) { return _mm256_xor_pd(a, b); }
   __forceinline vdouble4 operator ^(const vdouble4& a, double          b) { return a ^ vdouble4(b); }
   __forceinline vdouble4 operator ^(double          a, const vdouble4& b) { return vdouble4(a) ^ b; }
-
+  
   __forceinline vdouble4 min(const vdouble4& a, const vdouble4& b) { return _mm256_min_pd(a, b); }
   __forceinline vdouble4 min(const vdouble4& a, double          b) { return min(a,vdouble4(b)); }
   __forceinline vdouble4 min(double          a, const vdouble4& b) { return min(vdouble4(a),b); }
@@ -141,7 +141,7 @@ namespace embree
   __forceinline vdouble4 max(const vdouble4& a, const vdouble4& b) { return _mm256_max_pd(a, b); }
   __forceinline vdouble4 max(const vdouble4& a, double          b) { return max(a,vdouble4(b)); }
   __forceinline vdouble4 max(double          a, const vdouble4& b) { return max(vdouble4(a),b); }
-
+  
   ////////////////////////////////////////////////////////////////////////////////
   /// Ternary Operators
   ////////////////////////////////////////////////////////////////////////////////
@@ -164,19 +164,19 @@ namespace embree
 
   __forceinline vdouble4& operator +=(vdouble4& a, const vdouble4& b) { return a = a + b; }
   __forceinline vdouble4& operator +=(vdouble4& a, double          b) { return a = a + b; }
-
+  
   __forceinline vdouble4& operator -=(vdouble4& a, const vdouble4& b) { return a = a - b; }
   __forceinline vdouble4& operator -=(vdouble4& a, double          b) { return a = a - b; }
 
   __forceinline vdouble4& operator *=(vdouble4& a, const vdouble4& b) { return a = a * b; }
   __forceinline vdouble4& operator *=(vdouble4& a, double          b) { return a = a * b; }
-
+  
   __forceinline vdouble4& operator &=(vdouble4& a, const vdouble4& b) { return a = a & b; }
   __forceinline vdouble4& operator &=(vdouble4& a, double          b) { return a = a & b; }
-
+  
   __forceinline vdouble4& operator |=(vdouble4& a, const vdouble4& b) { return a = a | b; }
   __forceinline vdouble4& operator |=(vdouble4& a, double          b) { return a = a | b; }
-
+  
 
   ////////////////////////////////////////////////////////////////////////////////
   /// Comparison Operators + Select
@@ -245,7 +245,7 @@ namespace embree
   __forceinline vboold4 gt(const vboold4& mask, const vdouble4& a, const vdouble4& b) { return mask & (a >  b); }
   __forceinline vboold4 le(const vboold4& mask, const vdouble4& a, const vdouble4& b) { return mask & (a <= b); }
 #endif
-
+ 
   __forceinline vdouble4 select(const vboold4& m, const vdouble4& t, const vdouble4& f) {
 #if defined(__AVX512VL__)
     return _mm256_mask_blend_pd(m, f, t);
@@ -305,11 +305,11 @@ namespace embree
   ////////////////////////////////////////////////////////////////////////////////
 
 
-
+  
   ////////////////////////////////////////////////////////////////////////////////
   /// Output Operators
   ////////////////////////////////////////////////////////////////////////////////
-
+  
   __forceinline embree_ostream operator <<(embree_ostream cout, const vdouble4& v)
   {
     cout << "<" << v[0];

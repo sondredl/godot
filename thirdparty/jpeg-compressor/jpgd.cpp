@@ -3,7 +3,7 @@
 // Supports box and linear chroma upsampling.
 //
 // Released under two licenses. You are free to choose which license you want:
-// License 1:
+// License 1: 
 // Public Domain
 //
 // License 2:
@@ -158,7 +158,7 @@ namespace jpgd {
 	{
 		static void idct(int* pTemp, const jpgd_block_coeff_t* pSrc)
 		{
-			(void)pTemp;
+			(void)pTemp; 
 			(void)pSrc;
 		}
 	};
@@ -273,10 +273,10 @@ namespace jpgd {
 	  8,8,8,8,8,7,6,4, 8,8,8,8,8,7,6,5, 8,8,8,8,8,7,6,6, 8,8,8,8,8,7,7,6, 8,8,8,8,8,8,7,6, 8,8,8,8,8,8,8,6, 8,8,8,8,8,8,8,7, 8,8,8,8,8,8,8,8,
 	};
 
-	static const uint8 s_idct_col_table[] =
-	{
-		1, 1, 2, 3, 3, 3, 3, 3, 3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-		7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8
+	static const uint8 s_idct_col_table[] = 
+	{ 
+		1, 1, 2, 3, 3, 3, 3, 3, 3, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 
+		7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8 
 	};
 
 	// Scalar "fast pathing" IDCT.
@@ -286,7 +286,7 @@ namespace jpgd {
 
 		assert(block_max_zag >= 1);
 		assert(block_max_zag <= 64);
-
+				
 		if (block_max_zag <= 1)
 		{
 			int k = ((pSrc_ptr[0] + 4) >> 3) + 128;
@@ -642,7 +642,7 @@ namespace jpgd {
 		free_all_blocks();
 		longjmp(m_jmp_state, status);
 	}
-
+		
 	void* jpeg_decoder::alloc(size_t nSize, bool zero)
 	{
 		nSize = (JPGD_MAX(nSize, 1) + 3) & ~3;
@@ -1191,7 +1191,7 @@ namespace jpgd {
 		m_image_x_size = m_image_y_size = 0;
 		m_pStream = pStream;
 		m_progressive_flag = JPGD_FALSE;
-
+				
 		memset(m_huff_ac, 0, sizeof(m_huff_ac));
 		memset(m_huff_num, 0, sizeof(m_huff_num));
 		memset(m_huff_val, 0, sizeof(m_huff_val));
@@ -2642,7 +2642,7 @@ namespace jpgd {
 
 		// Allocate the coefficient buffer, enough for one MCU
 		m_pMCU_coefficients = (jpgd_block_coeff_t *)alloc_aligned(m_max_blocks_per_mcu * 64 * sizeof(jpgd_block_coeff_t));
-
+				
 		for (i = 0; i < m_max_blocks_per_mcu; i++)
 			m_mcu_block_max_zag[i] = 64;
 

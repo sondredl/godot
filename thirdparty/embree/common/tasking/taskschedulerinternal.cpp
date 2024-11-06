@@ -9,7 +9,7 @@
 namespace embree
 {
   RTC_NAMESPACE_BEGIN
-
+  
   static MutexSys g_mutex;
   size_t TaskScheduler::g_numThreads = 0;
   __thread TaskScheduler* TaskScheduler::g_instance = nullptr;

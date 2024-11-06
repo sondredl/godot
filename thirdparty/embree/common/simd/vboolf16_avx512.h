@@ -23,18 +23,18 @@ namespace embree
 
     enum { size = 16 }; // number of SIMD elements
     __mmask16 v;        // data
-
+    
     ////////////////////////////////////////////////////////////////////////////////
     /// Constructors, Assignment & Cast Operators
     ////////////////////////////////////////////////////////////////////////////////
-
+    
     __forceinline vboolf() {}
     __forceinline vboolf(const vboolf16& t) { v = t.v; }
     __forceinline vboolf16& operator =(const vboolf16& f) { v = f.v; return *this; }
 
     __forceinline vboolf(const __mmask16& t) { v = t; }
     __forceinline operator __mmask16() const { return v; }
-
+    
     __forceinline vboolf(bool b) { v = b ? 0xFFFF : 0x0000; }
     __forceinline vboolf(int t) { v = (__mmask16)t; }
     __forceinline vboolf(unsigned int t) { v = (__mmask16)t; }
@@ -59,7 +59,7 @@ namespace embree
     ////////////////////////////////////////////////////////////////////////////////
     /// Array Access
     ////////////////////////////////////////////////////////////////////////////////
-
+  
     __forceinline bool operator [](size_t index) const {
       assert(index < 16); return (mm512_mask2int(v) >> index) & 1;
     }
@@ -68,34 +68,34 @@ namespace embree
   ////////////////////////////////////////////////////////////////////////////////
   /// Unary Operators
   ////////////////////////////////////////////////////////////////////////////////
-
+  
   __forceinline vboolf16 operator !(const vboolf16& a) { return _mm512_knot(a); }
-
+  
    ////////////////////////////////////////////////////////////////////////////////
    /// Binary Operators
    ////////////////////////////////////////////////////////////////////////////////
-
+  
   __forceinline vboolf16 operator &(const vboolf16& a, const vboolf16& b) { return _mm512_kand(a,b); }
   __forceinline vboolf16 operator |(const vboolf16& a, const vboolf16& b) { return _mm512_kor(a,b); }
   __forceinline vboolf16 operator ^(const vboolf16& a, const vboolf16& b) { return _mm512_kxor(a,b); }
 
   __forceinline vboolf16 andn(const vboolf16& a, const vboolf16& b) { return _mm512_kandn(b,a); }
-
+  
   ////////////////////////////////////////////////////////////////////////////////
   /// Assignment Operators
   ////////////////////////////////////////////////////////////////////////////////
-
+  
   __forceinline vboolf16& operator &=(vboolf16& a, const vboolf16& b) { return a = a & b; }
   __forceinline vboolf16& operator |=(vboolf16& a, const vboolf16& b) { return a = a | b; }
   __forceinline vboolf16& operator ^=(vboolf16& a, const vboolf16& b) { return a = a ^ b; }
-
+  
   ////////////////////////////////////////////////////////////////////////////////
   /// Comparison Operators + Select
   ////////////////////////////////////////////////////////////////////////////////
-
+  
   __forceinline vboolf16 operator !=(const vboolf16& a, const vboolf16& b) { return _mm512_kxor(a, b); }
   __forceinline vboolf16 operator ==(const vboolf16& a, const vboolf16& b) { return _mm512_kxnor(a, b); }
-
+  
   __forceinline vboolf16 select(const vboolf16& s, const vboolf16& a, const vboolf16& b) {
     return _mm512_kor(_mm512_kand(s,a),_mm512_kandn(s,b));
   }
@@ -103,7 +103,7 @@ namespace embree
   ////////////////////////////////////////////////////////////////////////////////
   /// Reduction Operations
   ////////////////////////////////////////////////////////////////////////////////
-
+  
   __forceinline int all (const vboolf16& a) { return  _mm512_kortestc(a,a) != 0; }
   __forceinline int any (const vboolf16& a) { return  _mm512_kortestz(a,a) == 0; }
   __forceinline int none(const vboolf16& a) { return  _mm512_kortestz(a,a) != 0; }
@@ -111,10 +111,10 @@ namespace embree
   __forceinline int all (const vboolf16& valid, const vboolf16& b) { return all((!valid) | b); }
   __forceinline int any (const vboolf16& valid, const vboolf16& b) { return any(valid & b); }
   __forceinline int none(const vboolf16& valid, const vboolf16& b) { return none(valid & b); }
-
+  
   __forceinline size_t movemask(const vboolf16& a) { return _mm512_kmov(a); }
   __forceinline size_t popcnt  (const vboolf16& a) { return popcnt(a.v); }
-
+  
   ////////////////////////////////////////////////////////////////////////////////
   /// Conversion Operations
   ////////////////////////////////////////////////////////////////////////////////
@@ -133,7 +133,7 @@ namespace embree
   ////////////////////////////////////////////////////////////////////////////////
   /// Output Operators
   ////////////////////////////////////////////////////////////////////////////////
-
+  
   __forceinline embree_ostream operator <<(embree_ostream cout, const vboolf16& a)
   {
     cout << "<";

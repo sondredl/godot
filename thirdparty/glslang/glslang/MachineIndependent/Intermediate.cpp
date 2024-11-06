@@ -1680,7 +1680,7 @@ bool TIntermediate::canImplicitlyPromote(TBasicType from, TBasicType to, TOperat
                 }
             default:
                 return false;
-        }
+        }        
     } else {
         switch (to) {
         case EbtDouble:
@@ -1894,8 +1894,8 @@ std::tuple<TBasicType, TBasicType> TIntermediate::getConversionDestinationType(T
     TBasicType res0 = EbtNumTypes;
     TBasicType res1 = EbtNumTypes;
 
-    if ((isEsProfile() &&
-        (version < 310 || !numericFeatures.contains(TNumericFeatures::shader_implicit_conversions))) ||
+    if ((isEsProfile() && 
+        (version < 310 || !numericFeatures.contains(TNumericFeatures::shader_implicit_conversions))) || 
         version == 110)
         return std::make_tuple(res0, res1);
 

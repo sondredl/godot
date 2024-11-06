@@ -1511,7 +1511,7 @@ int ShLinkExt(
 
     if (linker == nullptr)
         return 0;
-
+    
     SetThreadPoolAllocator(linker->getPool());
     linker->infoSink.info.erase();
 

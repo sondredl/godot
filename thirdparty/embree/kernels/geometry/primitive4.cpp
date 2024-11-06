@@ -375,7 +375,7 @@ namespace embree
   }
 
   SubGrid::Type SubGrid::type;
-
+  
   /********************** SubGridQBVH4 **************************/
 
   template<>

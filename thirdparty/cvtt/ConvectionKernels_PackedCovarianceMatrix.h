@@ -13,7 +13,7 @@ namespace cvtt
         public:
             // 0: xx,
             // 1: xy, yy
-            // 3: xz, yz, zz
+            // 3: xz, yz, zz 
             // 6: xw, yw, zw, ww
             // ... etc.
             static const int PyramidSize = (TMatrixSize * (TMatrixSize + 1)) / 2;

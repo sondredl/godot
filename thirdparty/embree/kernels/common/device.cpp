@@ -39,7 +39,7 @@ namespace embree
   static MutexSys g_mutex;
   static std::map<Device*,size_t> g_cache_size_map;
   static std::map<Device*,size_t> g_num_threads_map;
-
+  
   struct TaskArena
   {
 #if USE_TASK_ARENA
@@ -87,11 +87,11 @@ namespace embree
     State::parseString(cfg);
     State::verify();
 
-    /* check whether selected ISA is supported by the HW, as the user could have forced an unsupported ISA */
+    /* check whether selected ISA is supported by the HW, as the user could have forced an unsupported ISA */    
     if (!checkISASupport()) {
       throw_RTCError(RTC_ERROR_UNSUPPORTED_CPU,"CPU does not support selected ISA");
-    }
-
+    }    
+    
     /*! do some internal tests */
     assert(isa::Cylinder::verify());
 
@@ -101,7 +101,7 @@ namespace embree
       State::hugepages_success &= win_enable_selockmemoryprivilege(State::verbosity(3));
 #endif
     State::hugepages_success &= os_init(State::hugepages,State::verbosity(3));
-
+    
     /*! set tessellation cache size */
     setCacheSize( State::tessellation_cache_size );
 
@@ -117,11 +117,11 @@ namespace embree
       //exceptions &= ~_MM_MASK_INEXACT;
       _MM_SET_EXCEPTION_MASK(exceptions);
     }
-
+    
     /* print info header */
     if (State::verbosity(1))
       print();
-    if (State::verbosity(2))
+    if (State::verbosity(2)) 
       State::print();
 
     /* register all algorithms */
@@ -230,23 +230,23 @@ namespace embree
     std::cout << std::endl;
 
     /* check of FTZ and DAZ flags are set in CSR */
-    if (!hasFTZ || !hasDAZ)
+    if (!hasFTZ || !hasDAZ) 
     {
 #if !defined(_DEBUG)
-      if (State::verbosity(1))
+      if (State::verbosity(1)) 
 #endif
       {
         std::cout << std::endl;
         std::cout << "================================================================================" << std::endl;
-        std::cout << "  WARNING: \"Flush to Zero\" or \"Denormals are Zero\" mode not enabled "         << std::endl
+        std::cout << "  WARNING: \"Flush to Zero\" or \"Denormals are Zero\" mode not enabled "         << std::endl 
                   << "           in the MXCSR control and status register. This can have a severe "     << std::endl
                   << "           performance impact. Please enable these modes for each application "   << std::endl
                   << "           thread the following way:" << std::endl
-                  << std::endl
-                  << "           #include \"xmmintrin.h\"" << std::endl
-                  << "           #include \"pmmintrin.h\"" << std::endl
-                  << std::endl
-                  << "           _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);" << std::endl
+                  << std::endl 
+                  << "           #include \"xmmintrin.h\"" << std::endl 
+                  << "           #include \"pmmintrin.h\"" << std::endl 
+                  << std::endl 
+                  << "           _MM_SET_FLUSH_ZERO_MODE(_MM_FLUSH_ZERO_ON);" << std::endl 
                   << "           _MM_SET_DENORMALS_ZERO_MODE(_MM_DENORMALS_ZERO_ON);" << std::endl;
         std::cout << "================================================================================" << std::endl;
         std::cout << std::endl;
@@ -286,13 +286,13 @@ namespace embree
   }
 
   void Device::process_error(Device* device, RTCError error, const char* str)
-  {
+  { 
     /* store global error code when device construction failed */
     if (!device)
       return setThreadErrorCode(error);
 
     /* print error when in verbose mode */
-    if (device->verbosity(1))
+    if (device->verbosity(1)) 
     {
       switch (error) {
       case RTC_ERROR_NONE         : std::cerr << "Embree: No error"; break;
@@ -301,15 +301,15 @@ namespace embree
       case RTC_ERROR_INVALID_OPERATION: std::cerr << "Embree: Invalid operation"; break;
       case RTC_ERROR_OUT_OF_MEMORY    : std::cerr << "Embree: Out of memory"; break;
       case RTC_ERROR_UNSUPPORTED_CPU  : std::cerr << "Embree: Unsupported CPU"; break;
-      default                   : std::cerr << "Embree: Invalid error code"; break;
+      default                   : std::cerr << "Embree: Invalid error code"; break;                   
       };
       if (str) std::cerr << ", (" << str << ")";
       std::cerr << std::endl;
     }
 
     /* call user specified error callback */
-    if (device->error_function)
-      device->error_function(device->error_function_userptr,error,str);
+    if (device->error_function) 
+      device->error_function(device->error_function_userptr,error,str); 
 
     /* record error code */
     device->setDeviceErrorCode(error);
@@ -343,25 +343,25 @@ namespace embree
       maxCacheSize = max(maxCacheSize, (*i).second);
     return maxCacheSize;
   }
-
-  void Device::setCacheSize(size_t bytes)
+ 
+  void Device::setCacheSize(size_t bytes) 
   {
 #if defined(EMBREE_GEOMETRY_SUBDIVISION)
     Lock<MutexSys> lock(g_mutex);
     if (bytes == 0) g_cache_size_map.erase(this);
     else            g_cache_size_map[this] = bytes;
-
+    
     size_t maxCacheSize = getMaxCacheSize();
     resizeTessellationCache(maxCacheSize);
 #endif
   }
 
-  void Device::initTaskingSystem(size_t numThreads)
+  void Device::initTaskingSystem(size_t numThreads) 
   {
     Lock<MutexSys> lock(g_mutex);
-    if (numThreads == 0)
+    if (numThreads == 0) 
       g_num_threads_map[this] = std::numeric_limits<size_t>::max();
-    else
+    else 
       g_num_threads_map[this] = numThreads;
 
     /* create task scheduler */
@@ -374,7 +374,7 @@ namespace embree
 #endif
   }
 
-  void Device::exitTaskingSystem()
+  void Device::exitTaskingSystem() 
   {
     Lock<MutexSys> lock(g_mutex);
     g_num_threads_map.erase(this);
@@ -382,7 +382,7 @@ namespace embree
     /* terminate tasking system */
     if (g_num_threads_map.size() == 0) {
       TaskScheduler::destroy();
-    }
+    } 
     /* or configure new number of threads */
     else {
       size_t maxNumThreads = getMaxNumThreads();
@@ -441,7 +441,7 @@ namespace embree
     }
 
     /* documented properties */
-    switch (prop)
+    switch (prop) 
     {
     case RTC_DEVICE_PROPERTY_VERSION_MAJOR: return RTC_VERSION_MAJOR;
     case RTC_DEVICE_PROPERTY_VERSION_MINOR: return RTC_VERSION_MINOR;
@@ -525,7 +525,7 @@ namespace embree
 #else
     case RTC_DEVICE_PROPERTY_TRIANGLE_GEOMETRY_SUPPORTED: return 0;
 #endif
-
+        
 #if defined(EMBREE_GEOMETRY_QUAD)
     case RTC_DEVICE_PROPERTY_QUAD_GEOMETRY_SUPPORTED: return 1;
 #else
@@ -591,7 +591,7 @@ namespace embree
     /* initialize ZeWrapper */
     if (ZeWrapper::init() != ZE_RESULT_SUCCESS)
        throw_RTCError(RTC_ERROR_UNKNOWN, "cannot initialize ZeWrapper");
-
+     
     /* take first device as default device */
     auto devices = gpu_context.get_devices();
     if (devices.size() == 0)
@@ -601,13 +601,13 @@ namespace embree
     /* check if RTAS build extension is available */
     sycl::platform platform = gpu_device.get_platform();
     ze_driver_handle_t hDriver = sycl::get_native<sycl::backend::ext_oneapi_level_zero>(platform);
-
+    
     uint32_t count = 0;
     std::vector<ze_driver_extension_properties_t> extensions;
     ze_result_t result = ZeWrapper::zeDriverGetExtensionProperties(hDriver,&count,extensions.data());
     if (result != ZE_RESULT_SUCCESS)
       throw_RTCError(RTC_ERROR_UNKNOWN, "zeDriverGetExtensionProperties failed");
-
+    
     extensions.resize(count);
     result = ZeWrapper::zeDriverGetExtensionProperties(hDriver,&count,extensions.data());
     if (result != ZE_RESULT_SUCCESS)
@@ -649,7 +649,7 @@ namespace embree
       ZeWrapper::zeRTASParallelOperationDestroyExp(hParallelOperation);
 
     gpu_maxWorkGroupSize = getGPUDevice().get_info<sycl::info::device::max_work_group_size>();
-    gpu_maxComputeUnits  = getGPUDevice().get_info<sycl::info::device::max_compute_units>();
+    gpu_maxComputeUnits  = getGPUDevice().get_info<sycl::info::device::max_compute_units>();    
 
     if (State::verbosity(1))
     {
@@ -660,7 +660,7 @@ namespace embree
       std::cout << "    Max Compute Units   : " << gpu_maxComputeUnits  << std::endl;
       std::cout << std::endl;
     }
-
+    
     dispatchGlobalsPtr = zeRTASInitExp(gpu_device, gpu_context);
   }
 
@@ -688,7 +688,7 @@ namespace embree
   void DeviceGPU::setSYCLDevice(const sycl::device sycl_device_in) {
     gpu_device = sycl_device_in;
   }
-
+  
 #endif
 
   DeviceEnterLeave::DeviceEnterLeave (RTCDevice hdevice)
@@ -698,7 +698,7 @@ namespace embree
     device->refInc();
     device->enter();
   }
-
+  
   DeviceEnterLeave::DeviceEnterLeave (RTCScene hscene)
     : device(((Scene*)hscene)->device)
   {
@@ -706,7 +706,7 @@ namespace embree
     device->refInc();
     device->enter();
   }
-
+  
   DeviceEnterLeave::DeviceEnterLeave (RTCGeometry hgeometry)
     : device(((Geometry*)hgeometry)->device)
   {
@@ -714,7 +714,7 @@ namespace embree
     device->refInc();
     device->enter();
   }
-
+  
   DeviceEnterLeave::DeviceEnterLeave (RTCBuffer hbuffer)
     : device(((Buffer*)hbuffer)->device)
   {
@@ -722,7 +722,7 @@ namespace embree
     device->refInc();
     device->enter();
   }
-
+  
   DeviceEnterLeave::~DeviceEnterLeave() {
     device->leave();
     device->refDec();

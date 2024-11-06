@@ -1617,7 +1617,7 @@ UBool UnicodeSet::allocateStrings(UErrorCode &status) {
         delete strings_;
         strings_ = nullptr;
         return false;
-    }
+    } 
     return true;
 }
 

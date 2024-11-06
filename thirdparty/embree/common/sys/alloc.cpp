@@ -9,19 +9,19 @@
 ////////////////////////////////////////////////////////////////////////////////
 /// All Platforms
 ////////////////////////////////////////////////////////////////////////////////
-
+  
 namespace embree
 {
   size_t total_allocations = 0;
 
 #if defined(EMBREE_SYCL_SUPPORT)
-
+  
   __thread sycl::context* tls_context_tutorial = nullptr;
   __thread sycl::device* tls_device_tutorial = nullptr;
-
+  
   __thread sycl::context* tls_context_embree = nullptr;
   __thread sycl::device* tls_device_embree = nullptr;
-
+  
   void enableUSMAllocEmbree(sycl::context* context, sycl::device* device)
   {
     // -- GODOT start --
@@ -74,13 +74,13 @@ namespace embree
       abort();
     }
     // -- GODOT end --
-
+    
     tls_context_tutorial = nullptr;
     tls_device_tutorial = nullptr;
   }
 
 #endif
-
+  
   void* alignedMalloc(size_t size, size_t align)
   {
     if (size == 0)
@@ -105,24 +105,24 @@ namespace embree
   }
 
 #if defined(EMBREE_SYCL_SUPPORT)
-
+  
   void* alignedSYCLMalloc(sycl::context* context, sycl::device* device, size_t size, size_t align, EmbreeUSMMode mode)
   {
     assert(context);
     assert(device);
-
+    
     if (size == 0)
       return nullptr;
 
     assert((align & (align-1)) == 0);
-    total_allocations++;
+    total_allocations++;    
 
     void* ptr = nullptr;
     if (mode == EMBREE_USM_SHARED_DEVICE_READ_ONLY)
       ptr = sycl::aligned_alloc_shared(align,size,*device,*context,sycl::ext::oneapi::property::usm::device_read_only());
     else
       ptr = sycl::aligned_alloc_shared(align,size,*device,*context);
-
+      
     // -- GODOT start --
     // if (size != 0 && ptr == nullptr)
     //   throw std::bad_alloc();
@@ -133,9 +133,9 @@ namespace embree
 
     return ptr;
   }
-
+  
   static MutexSys g_alloc_mutex;
-
+  
   void* alignedSYCLMalloc(size_t size, size_t align, EmbreeUSMMode mode)
   {
     if (tls_context_tutorial) return alignedSYCLMalloc(tls_context_tutorial, tls_device_tutorial, size, align, mode);
@@ -221,22 +221,22 @@ namespace embree
       if (verbose) std::cout << "WARNING: LookupPrivilegeValue failed while trying to enable SeLockMemoryPrivilege: " << GetLastError() << std::endl;
       return false;
     }
-
+    
     SetLastError(ERROR_SUCCESS);
     if (!AdjustTokenPrivileges(hToken, FALSE, &tp, sizeof(tp), nullptr, 0)) {
       if (verbose) std::cout << "WARNING: AdjustTokenPrivileges failed while trying to enable SeLockMemoryPrivilege" << std::endl;
       return false;
     }
-
+    
     if (GetLastError() == ERROR_NOT_ALL_ASSIGNED) {
       if (verbose) std::cout << "WARNING: AdjustTokenPrivileges failed to enable SeLockMemoryPrivilege: Add SeLockMemoryPrivilege for current user and run process in elevated mode (Run as administrator)." << std::endl;
       return false;
-    }
+    } 
 
     return true;
   }
 
-  bool os_init(bool hugepages, bool verbose)
+  bool os_init(bool hugepages, bool verbose) 
   {
     Lock<MutexSys> lock(os_init_mutex);
 
@@ -262,7 +262,7 @@ namespace embree
     }
 
     /* try direct huge page allocation first */
-    if (isHugePageCandidate(bytes))
+    if (isHugePageCandidate(bytes)) 
     {
       int flags = MEM_COMMIT | MEM_RESERVE | MEM_LARGE_PAGES;
       char* ptr = (char*) VirtualAlloc(nullptr,bytes,flags,PAGE_READWRITE);
@@ -270,7 +270,7 @@ namespace embree
         hugepages = true;
         return ptr;
       }
-    }
+    } 
 
     /* fall back to 4k pages */
     int flags = MEM_COMMIT | MEM_RESERVE;
@@ -285,7 +285,7 @@ namespace embree
     return ptr;
   }
 
-  size_t os_shrink(void* ptr, size_t bytesNew, size_t bytesOld, bool hugepages)
+  size_t os_shrink(void* ptr, size_t bytesNew, size_t bytesOld, bool hugepages) 
   {
     if (hugepages) // decommitting huge pages seems not to work under Windows
       return bytesOld;
@@ -307,9 +307,9 @@ namespace embree
     return bytesNew;
   }
 
-  void os_free(void* ptr, size_t bytes, bool hugepages)
+  void os_free(void* ptr, size_t bytes, bool hugepages) 
   {
-    if (bytes == 0)
+    if (bytes == 0) 
       return;
 
     // -- GODOT start --
@@ -346,7 +346,7 @@ namespace embree
 
 namespace embree
 {
-  bool os_init(bool hugepages, bool verbose)
+  bool os_init(bool hugepages, bool verbose) 
   {
     Lock<MutexSys> lock(os_init_mutex);
 
@@ -359,14 +359,14 @@ namespace embree
 
     int hugepagesize = 0;
 
-    std::ifstream file;
+    std::ifstream file; 
     file.open("/proc/meminfo",std::ios::in);
     if (!file.is_open()) {
       if (verbose) std::cout << "WARNING: Could not open /proc/meminfo. Huge page support cannot get enabled!" << std::endl;
       huge_pages_enabled = false;
       return false;
     }
-
+    
     std::string line;
     while (getline(file,line))
     {
@@ -382,8 +382,8 @@ namespace embree
 	break;
       }
     }
-
-    if (hugepagesize != PAGE_SIZE_2M)
+    
+    if (hugepagesize != PAGE_SIZE_2M) 
     {
       if (verbose) std::cout << "WARNING: Only 2MB huge pages supported. Huge page support cannot get enabled!" << std::endl;
       huge_pages_enabled = false;
@@ -396,14 +396,14 @@ namespace embree
   }
 
   void* os_malloc(size_t bytes, bool& hugepages)
-  {
+  { 
     if (bytes == 0) {
       hugepages = false;
       return nullptr;
     }
 
     /* try direct huge page allocation first */
-    if (isHugePageCandidate(bytes))
+    if (isHugePageCandidate(bytes)) 
     {
 #if defined(__MACOSX__)
       void* ptr = mmap(0, bytes, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, VM_FLAGS_SUPERPAGE_SIZE_2MB, 0);
@@ -418,7 +418,7 @@ namespace embree
         return ptr;
       }
 #endif
-    }
+    } 
 
     /* fallback to 4k pages */
     void* ptr = (char*) mmap(0, bytes, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANON, -1, 0);
@@ -435,7 +435,7 @@ namespace embree
     return ptr;
   }
 
-  size_t os_shrink(void* ptr, size_t bytesNew, size_t bytesOld, bool hugepages)
+  size_t os_shrink(void* ptr, size_t bytesNew, size_t bytesOld, bool hugepages) 
   {
     const size_t pageSize = hugepages ? PAGE_SIZE_2M : PAGE_SIZE_4K;
     bytesNew = (bytesNew+pageSize-1) & ~(pageSize-1);
@@ -454,7 +454,7 @@ namespace embree
     return bytesNew;
   }
 
-  void os_free(void* ptr, size_t bytes, bool hugepages)
+  void os_free(void* ptr, size_t bytes, bool hugepages) 
   {
     if (bytes == 0)
       return;
@@ -475,7 +475,7 @@ namespace embree
   void os_advise(void* pptr, size_t bytes)
   {
 #if defined(MADV_HUGEPAGE)
-    madvise(pptr,bytes,MADV_HUGEPAGE);
+    madvise(pptr,bytes,MADV_HUGEPAGE); 
 #endif
   }
 }

@@ -28,7 +28,7 @@
 ///
 /// @ingroup CPU
 #define FFX_FALSE (0)
-
+ 
 #if !defined(FFX_STATIC)
 /// A define to abstract declaration of static variables and functions.
 ///
@@ -46,7 +46,7 @@
 ///
 /// @returns
 /// An unsigned 32bit integer value containing the bit pattern of <c><i>x</i></c>.
-///
+/// 
 /// @ingroup CPU
 FFX_STATIC FfxUInt32 ffxAsUInt32(FfxFloat32 x)
 {
@@ -128,7 +128,7 @@ FFX_STATIC FfxUInt32 AShrSU1(FfxUInt32 a, FfxUInt32 b)
 
 /// Compute the factional part of a decimal value.
 ///
-/// This function calculates <c><i>x - floor(x)</i></c>.
+/// This function calculates <c><i>x - floor(x)</i></c>. 
 ///
 /// @param [in] x               The value to compute the fractional part from.
 ///
@@ -231,20 +231,20 @@ FFX_STATIC void opARcpF3(FfxFloat32x3 d, FfxFloat32x3 a)
 }
 
 /// Convert FfxFloat32 to half (in lower 16-bits of output).
-///
+/// 
 /// This function implements the same fast technique that is documented here: ftp://ftp.fox-toolkit.org/pub/fasthalffloatconversion.pdf
-///
+/// 
 /// The function supports denormals.
-///
+/// 
 /// Some conversion rules are to make computations possibly "safer" on the GPU,
 ///  -INF & -NaN -> -65504
 ///  +INF & +NaN -> +65504
 ///
 /// @param [in] f               The 32bit floating point value to convert.
-///
+/// 
 /// @returns
 /// The closest 16bit floating point value to <c><i>f</i></c>.
-///
+/// 
 /// @ingroup CPU
 FFX_STATIC FfxUInt32 f32tof16(FfxFloat32 f)
 {
@@ -277,7 +277,7 @@ FFX_STATIC FfxUInt32 f32tof16(FfxFloat32 f)
         0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff,
         0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff, 0xfbff
     };
-
+    
     static FfxUInt8 shift[512] = {
         0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18,
         0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18, 0x18,

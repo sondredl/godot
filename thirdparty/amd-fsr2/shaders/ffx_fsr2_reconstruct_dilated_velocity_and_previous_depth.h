@@ -28,13 +28,13 @@ void ReconstructPrevDepth(FfxInt32x2 iPxPos, FfxFloat32 fDepth, FfxFloat32x2 fMo
 
     FfxFloat32x2 fUv = (iPxPos + FfxFloat32(0.5)) / iPxDepthSize;
     FfxFloat32x2 fReprojectedUv = fUv + fMotionVector;
-
+ 
     BilinearSamplingData bilinearInfo = GetBilinearSamplingData(fReprojectedUv, RenderSize());
 
     // Project current depth into previous frame locations.
     // Push to all pixels having some contribution if reprojection is using bilinear logic.
     for (FfxInt32 iSampleIndex = 0; iSampleIndex < 4; iSampleIndex++) {
-
+        
         const FfxInt32x2 iOffset = bilinearInfo.iOffsets[iSampleIndex];
         FfxFloat32 fWeight = bilinearInfo.fWeights[iSampleIndex];
 

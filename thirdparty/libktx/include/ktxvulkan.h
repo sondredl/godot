@@ -173,7 +173,7 @@ ktxVulkanTexture_Destruct(ktxVulkanTexture* This, VkDevice device,
  * @code
     ktxVulkanDeviceInfo vdi;
     ktxVulkanTexture texture;
-
+ 
     vdi = ktxVulkanDeviceInfo_create(physicalDevice,
                                      device,
                                      queue,

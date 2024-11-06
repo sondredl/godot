@@ -3542,7 +3542,7 @@ bool Compiler::AnalyzeVariableScopeAccessHandler::handle(spv::Op op, const uint3
 
 	case OpCopyObject:
 	{
-		// OpCopyObject copies the underlying non-pointer type,
+		// OpCopyObject copies the underlying non-pointer type, 
 		// so any temp variable should be declared using the underlying type.
 		// If the type is a pointer, get its base type and overwrite the result type mapping.
 		auto &type = compiler.get<SPIRType>(result_type);

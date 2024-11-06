@@ -49,10 +49,10 @@ namespace {
 inline bool _isIDSeparator(char a) { return a == '_' || a == '-'; }
 }  // namespace
 
-U_CFUNC const char*
+U_CFUNC const char* 
 uloc_getCurrentCountryID(const char* oldID);
 
-U_CFUNC const char*
+U_CFUNC const char* 
 uloc_getCurrentLanguageID(const char* oldID);
 
 U_EXPORT std::optional<std::string_view>

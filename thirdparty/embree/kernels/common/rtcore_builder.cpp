@@ -13,7 +13,7 @@
 #include "../builders/bvh_builder_morton.h"
 
 namespace embree
-{
+{ 
   namespace isa // FIXME: support more ISAs for builders
   {
     struct BVH : public RefCount
@@ -46,9 +46,9 @@ namespace embree
       RTCCreateLeafFunction createLeaf = arguments->createLeaf;
       RTCProgressMonitorFunction buildProgress = arguments->buildProgress;
       void* userPtr = arguments->userPtr;
-
+        
       std::atomic<size_t> progress(0);
-
+      
       /* initialize temporary arrays for morton builder */
       PrimRef* prims = (PrimRef*) prims_i;
       mvector<BVHBuilderMorton::BuildPrim>& morton_src = bvh->morton_src;
@@ -60,11 +60,11 @@ namespace embree
       const BBox3fa centBounds = parallel_reduce ( size_t(0), primitiveCount, BBox3fa(empty), [&](const range<size_t>& r) -> BBox3fa {
 
           BBox3fa bounds(empty);
-          for (size_t i=r.begin(); i<r.end(); i++)
+          for (size_t i=r.begin(); i<r.end(); i++) 
             bounds.extend(prims[i].bounds().center2());
           return bounds;
         }, BBox3fa::merge);
-
+      
       /* compute morton codes */
       BVHBuilderMorton::MortonCodeMapping mapping(centBounds);
       parallel_for ( size_t(0), primitiveCount, [&](const range<size_t>& r) {
@@ -76,17 +76,17 @@ namespace embree
 
       /* start morton build */
       std::pair<void*,BBox3fa> root = BVHBuilderMorton::build<std::pair<void*,BBox3fa>>(
-
+        
         /* thread local allocator for fast allocations */
-        [&] () -> FastAllocator::CachedAllocator {
+        [&] () -> FastAllocator::CachedAllocator { 
           return bvh->allocator.getCachedAllocator();
         },
-
+        
         /* lambda function that allocates BVH nodes */
         [&] ( const FastAllocator::CachedAllocator& alloc, size_t N ) -> void* {
           return createNode((RTCThreadLocalAllocator)&alloc, (unsigned int)N,userPtr);
         },
-
+        
         /* lambda function that sets bounds */
         [&] (void* node, const std::pair<void*,BBox3fa>* children, size_t N) -> std::pair<void*,BBox3fa>
         {
@@ -102,7 +102,7 @@ namespace embree
           setNodeChildren(node,childptrs, (unsigned int)N,userPtr);
           return std::make_pair(node,bounds);
         },
-
+        
         /* lambda function that creates BVH leaves */
         [&]( const range<unsigned>& current, const FastAllocator::CachedAllocator& alloc) -> std::pair<void*,BBox3fa>
         {
@@ -117,12 +117,12 @@ namespace embree
           void* node = createLeaf((RTCThreadLocalAllocator)&alloc,localBuildPrims,current.size(),userPtr);
           return std::make_pair(node,bounds);
         },
-
+        
         /* lambda that calculates the bounds for some primitive */
         [&] (const BVHBuilderMorton::BuildPrim& morton) -> BBox3fa {
           return prims[morton.index].bounds();
         },
-
+        
         /* progress monitor function */
         [&] (size_t dn) {
           if (!buildProgress) return true;
@@ -130,7 +130,7 @@ namespace embree
           const double f = std::min(1.0,double(n)/double(primitiveCount));
           return buildProgress(userPtr,f);
         },
-
+        
         morton_src.data(),morton_tmp.data(),primitiveCount,
         *arguments);
 
@@ -149,9 +149,9 @@ namespace embree
       RTCCreateLeafFunction createLeaf = arguments->createLeaf;
       RTCProgressMonitorFunction buildProgress = arguments->buildProgress;
       void* userPtr = arguments->userPtr;
-
+      
       std::atomic<size_t> progress(0);
-
+  
       /* calculate priminfo */
       auto computeBounds = [&](const range<size_t>& r) -> CentGeomBBox3fa
         {
@@ -160,16 +160,16 @@ namespace embree
             bounds.extend((BBox3fa&)prims[j]);
           return bounds;
         };
-      const CentGeomBBox3fa bounds =
+      const CentGeomBBox3fa bounds = 
         parallel_reduce(size_t(0),primitiveCount,size_t(1024),size_t(1024),CentGeomBBox3fa(empty), computeBounds, CentGeomBBox3fa::merge2);
 
       const PrimInfo pinfo(0,primitiveCount,bounds);
-
+      
       /* build BVH */
       void* root = BVHBuilderBinnedSAH::build<void*>(
-
+        
         /* thread local allocator for fast allocations */
-        [&] () -> FastAllocator::CachedAllocator {
+        [&] () -> FastAllocator::CachedAllocator { 
           return bvh->allocator.getCachedAllocator();
         },
 
@@ -188,12 +188,12 @@ namespace embree
           setNodeChildren(node,children, (unsigned int)N,userPtr);
           return node;
         },
-
+        
         /* lambda function that creates BVH leaves */
         [&](const PrimRef* prims, const range<size_t>& range, const FastAllocator::CachedAllocator& alloc) -> void* {
           return createLeaf((RTCThreadLocalAllocator)&alloc,(RTCBuildPrimitive*)(prims+range.begin()),range.size(),userPtr);
         },
-
+        
         /* progress monitor function */
         [&] (size_t dn) {
           if (!buildProgress) return true;
@@ -201,16 +201,16 @@ namespace embree
           const double f = std::min(1.0,double(n)/double(primitiveCount));
           return buildProgress(userPtr,f);
         },
-
+        
         (PrimRef*)prims,pinfo,*arguments);
-
+        
       bvh->allocator.cleanup();
       return root;
     }
 
     static __forceinline const std::pair<CentGeomBBox3fa,unsigned int> mergePair(const std::pair<CentGeomBBox3fa,unsigned int>& a, const std::pair<CentGeomBBox3fa,unsigned int>& b) {
       CentGeomBBox3fa centBounds = CentGeomBBox3fa::merge2(a.first,b.first);
-      unsigned int maxGeomID = max(a.second,b.second);
+      unsigned int maxGeomID = max(a.second,b.second); 
       return std::pair<CentGeomBBox3fa,unsigned int>(centBounds,maxGeomID);
     }
 
@@ -226,9 +226,9 @@ namespace embree
       RTCSplitPrimitiveFunction splitPrimitive = arguments->splitPrimitive;
       RTCProgressMonitorFunction buildProgress = arguments->buildProgress;
       void* userPtr = arguments->userPtr;
-
+      
       std::atomic<size_t> progress(0);
-
+  
       /* calculate priminfo */
 
       auto computeBounds = [&](const range<size_t>& r) -> std::pair<CentGeomBBox3fa,unsigned int>
@@ -244,12 +244,12 @@ namespace embree
         };
 
 
-      const std::pair<CentGeomBBox3fa,unsigned int> pair =
+      const std::pair<CentGeomBBox3fa,unsigned int> pair = 
         parallel_reduce(size_t(0),primitiveCount,size_t(1024),size_t(1024),std::pair<CentGeomBBox3fa,unsigned int>(CentGeomBBox3fa(empty),0), computeBounds, mergePair);
 
       CentGeomBBox3fa bounds = pair.first;
       const unsigned int maxGeomID = pair.second;
-
+      
       if (unlikely(maxGeomID >= ((unsigned int)1 << (32-RESERVED_NUM_SPATIAL_SPLITS_GEOMID_BITS))))
         {
           /* fallback code for max geomID larger than threshold */
@@ -263,8 +263,8 @@ namespace embree
       {
         Splitter (RTCSplitPrimitiveFunction splitPrimitive, unsigned geomID, unsigned primID, void* userPtr)
           : splitPrimitive(splitPrimitive), geomID(geomID), primID(primID), userPtr(userPtr) {}
-
-        __forceinline void operator() (PrimRef& prim, const size_t dim, const float pos, PrimRef& left_o, PrimRef& right_o) const
+        
+        __forceinline void operator() (PrimRef& prim, const size_t dim, const float pos, PrimRef& left_o, PrimRef& right_o) const 
         {
           prim.geomIDref() &= BVHBuilderBinnedFastSpatialSAH::GEOMID_MASK;
           splitPrimitive((RTCBuildPrimitive*)&prim,(unsigned)dim,pos,(RTCBounds*)&left_o,(RTCBounds*)&right_o,userPtr);
@@ -272,12 +272,12 @@ namespace embree
           right_o.geomIDref() = geomID; right_o.primIDref() = primID;
         }
 
-        __forceinline void operator() (const BBox3fa& box, const size_t dim, const float pos, BBox3fa& left_o, BBox3fa& right_o) const
+        __forceinline void operator() (const BBox3fa& box, const size_t dim, const float pos, BBox3fa& left_o, BBox3fa& right_o) const 
         {
           PrimRef prim(box,geomID & BVHBuilderBinnedFastSpatialSAH::GEOMID_MASK,primID);
           splitPrimitive((RTCBuildPrimitive*)&prim,(unsigned)dim,pos,(RTCBounds*)&left_o,(RTCBounds*)&right_o,userPtr);
         }
-
+   
         RTCSplitPrimitiveFunction splitPrimitive;
         unsigned geomID;
         unsigned primID;
@@ -286,9 +286,9 @@ namespace embree
 
       /* build BVH */
       void* root = BVHBuilderBinnedFastSpatialSAH::build<void*>(
-
+        
         /* thread local allocator for fast allocations */
-        [&] () -> FastAllocator::CachedAllocator {
+        [&] () -> FastAllocator::CachedAllocator { 
           return bvh->allocator.getCachedAllocator();
         },
 
@@ -307,12 +307,12 @@ namespace embree
           setNodeChildren(node,children, (unsigned int)N,userPtr);
           return node;
         },
-
+        
         /* lambda function that creates BVH leaves */
         [&] (const PrimRef* prims, const range<size_t>& range, const FastAllocator::CachedAllocator& alloc) -> void* {
           return createLeaf((RTCThreadLocalAllocator)&alloc,(RTCBuildPrimitive*)(prims+range.begin()),range.size(),userPtr);
         },
-
+        
         /* returns the splitter */
         [&] ( const PrimRef& prim ) -> Splitter {
           return Splitter(splitPrimitive,prim.geomID(),prim.primID(),userPtr);
@@ -325,11 +325,11 @@ namespace embree
           const double f = std::min(1.0,double(n)/double(primitiveCount));
           return buildProgress(userPtr,f);
         },
-
+        
         (PrimRef*)prims,
         arguments->primitiveArrayCapacity,
         pinfo,*arguments);
-
+        
       bvh->allocator.cleanup();
       return root;
     }
@@ -427,7 +427,7 @@ RTC_NAMESPACE_BEGIN
       bvh->refInc();
       RTC_CATCH_END(device);
     }
-
+    
     RTC_API void rtcReleaseBVH(RTCBVH hbvh)
     {
       BVH* bvh = (BVH*) hbvh;

@@ -47,7 +47,7 @@ namespace embree
     Index sused=0;
     Index sfree=0;
     Index pfree[MAX_TASKS];
-    for (Index i=0; i<taskCount; i++)
+    for (Index i=0; i<taskCount; i++) 
     {
       sused+=nused[i];
       Index cfree = nfree[i]; pfree[i] = sfree; sfree+=cfree;

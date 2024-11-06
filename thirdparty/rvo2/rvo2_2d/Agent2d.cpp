@@ -404,7 +404,7 @@ namespace RVO2D {
 	void Agent2D::insertObstacleNeighbor(const Obstacle2D *obstacle, float rangeSq)
 	{
 		const Obstacle2D *const nextObstacle = obstacle->nextObstacle_;
-
+		
 		// ignore obstacle if no matching layer/mask
 		if ((avoidance_mask_ & nextObstacle->avoidance_layers_) == 0) {
 			return;

@@ -140,7 +140,7 @@ bool FeatureMap::readFeats(const Face & face)
         }
 
         ::new (m_feats + i) FeatureRef (face, bits, maxVal,
-                                       label, uiName,
+                                       label, uiName, 
                                        FeatureRef::flags_t(flags),
                                        uiSet, num_settings);
     }

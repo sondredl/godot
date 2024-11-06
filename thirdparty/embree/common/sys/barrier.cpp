@@ -15,21 +15,21 @@ namespace embree
 {
   struct BarrierSysImplementation
   {
-    __forceinline BarrierSysImplementation (size_t N)
-      : i(0), enterCount(0), exitCount(0), barrierSize(0)
+    __forceinline BarrierSysImplementation (size_t N) 
+      : i(0), enterCount(0), exitCount(0), barrierSize(0) 
     {
       events[0] = CreateEvent(nullptr, TRUE, FALSE, nullptr);
       events[1] = CreateEvent(nullptr, TRUE, FALSE, nullptr);
       init(N);
     }
-
+    
     __forceinline ~BarrierSysImplementation ()
     {
       CloseHandle(events[0]);
       CloseHandle(events[1]);
     }
-
-    __forceinline void init(size_t N)
+    
+    __forceinline void init(size_t N) 
     {
       barrierSize = N;
       enterCount.store(N);
@@ -43,14 +43,14 @@ namespace embree
       size_t cnt0 = enterCount--;
 
       /* all threads except the last one are wait in the barrier */
-      if (cnt0 > 1)
+      if (cnt0 > 1) 
       {
         if (WaitForSingleObject(events[i0], INFINITE) != WAIT_OBJECT_0)
           THROW_RUNTIME_ERROR("WaitForSingleObjects failed");
       }
-
+      
       /* the last thread starts all threads waiting at the barrier */
-      else
+      else 
       {
         i = 1-i;
         enterCount.store(barrierSize);
@@ -62,7 +62,7 @@ namespace embree
       size_t cnt1 = exitCount--;
 
       /* the last thread that left the barrier resets the event again */
-      if (cnt1 == 1)
+      if (cnt1 == 1) 
       {
         exitCount.store(barrierSize);
         if (ResetEvent(events[i0]) == 0)
@@ -85,13 +85,13 @@ namespace embree
 {
   struct BarrierSysImplementation
   {
-    __forceinline BarrierSysImplementation (size_t N)
-      : count(0), barrierSize(0)
+    __forceinline BarrierSysImplementation (size_t N) 
+      : count(0), barrierSize(0) 
     {
       init(N);
     }
-
-    __forceinline void init(size_t N)
+    
+    __forceinline void init(size_t N) 
     {
       assert(count == 0);
       count = 0;
@@ -102,14 +102,14 @@ namespace embree
     {
       mutex.lock();
       count++;
-
+      
       if (count == barrierSize) {
         count = 0;
         cond.notify_all();
         mutex.unlock();
         return;
       }
-
+      
       cond.wait(mutex);
       mutex.unlock();
       return;
@@ -143,20 +143,20 @@ namespace embree
     ((BarrierSysImplementation*) opaque)->wait();
   }
 
-  LinearBarrierActive::LinearBarrierActive (size_t N)
+  LinearBarrierActive::LinearBarrierActive (size_t N) 
     : count0(nullptr), count1(nullptr), mode(0), flag0(0), flag1(0), threadCount(0)
-  {
+  { 
     if (N == 0) N = getNumberOfLogicalThreads();
     init(N);
   }
 
-  LinearBarrierActive::~LinearBarrierActive()
+  LinearBarrierActive::~LinearBarrierActive() 
   {
     delete[] count0;
     delete[] count1;
   }
 
-  void LinearBarrierActive::init(size_t N)
+  void LinearBarrierActive::init(size_t N) 
   {
     if (threadCount != N) {
       threadCount = N;
@@ -173,59 +173,59 @@ namespace embree
   void LinearBarrierActive::wait (const size_t threadIndex)
   {
     if (mode == 0)
-    {
+    {			
       if (threadIndex == 0)
-      {
+      {	
         for (size_t i=0; i<threadCount; i++)
           count1[i] = 0;
-
+        
         for (size_t i=1; i<threadCount; i++)
         {
-          while (likely(count0[i] == 0))
+          while (likely(count0[i] == 0)) 
             pause_cpu();
         }
         mode  = 1;
         flag1 = 0;
         __memory_barrier();
         flag0 = 1;
-      }
+      }			
       else
-      {
+      {					
         count0[threadIndex] = 1;
         {
           while (likely(flag0 == 0))
             pause_cpu();
         }
-
-      }
-    }
-    else
+        
+      }		
+    }					
+    else						
     {
       if (threadIndex == 0)
-      {
+      {	
         for (size_t i=0; i<threadCount; i++)
           count0[i] = 0;
-
+        
         for (size_t i=1; i<threadCount; i++)
-        {
+        {		
           while (likely(count1[i] == 0))
             pause_cpu();
         }
-
+        
         mode  = 0;
         flag0 = 0;
         __memory_barrier();
         flag1 = 1;
-      }
+      }			
       else
-      {
+      {					
         count1[threadIndex] = 1;
         {
           while (likely(flag1 == 0))
             pause_cpu();
         }
-      }
-    }
+      }		
+    }					
   }
 
   struct barrier_sys_regression_test : public RegressionTest
@@ -235,7 +235,7 @@ namespace embree
     std::atomic<size_t> numFailed;
     std::vector<size_t> threadResults;
 
-    barrier_sys_regression_test()
+    barrier_sys_regression_test() 
       : RegressionTest("barrier_sys_regression_test"), threadID(0), numFailed(0)
     {
       registerRegressionTest(this);
@@ -251,7 +251,7 @@ namespace embree
         This->barrier.wait();
       }
     }
-
+    
     bool run ()
     {
       threadID.store(0);
@@ -266,7 +266,7 @@ namespace embree
       for (size_t i=0; i<numThreads; i++)
         threads.push_back(createThread((thread_func)thread_alloc,this));
 
-      /* run test */
+      /* run test */ 
       for (size_t i=0; i<1000; i++)
       {
         for (size_t i=0; i<numThreads; i++) threadResults[i] = 0;

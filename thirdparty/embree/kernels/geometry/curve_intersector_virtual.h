@@ -39,13 +39,13 @@ namespace embree
   {
     typedef void (*Intersect1Ty)(void* pre, void* ray, RayQueryContext* context, const void* primitive);
     typedef bool (*Occluded1Ty )(void* pre, void* ray, RayQueryContext* context, const void* primitive);
-
+    
     typedef void (*Intersect4Ty)(void* pre, void* ray, size_t k, RayQueryContext* context, const void* primitive);
     typedef bool (*Occluded4Ty) (void* pre, void* ray, size_t k, RayQueryContext* context, const void* primitive);
-
+    
     typedef void (*Intersect8Ty)(void* pre, void* ray, size_t k, RayQueryContext* context, const void* primitive);
     typedef bool (*Occluded8Ty) (void* pre, void* ray, size_t k, RayQueryContext* context, const void* primitive);
-
+    
     typedef void (*Intersect16Ty)(void* pre, void* ray, size_t k, RayQueryContext* context, const void* primitive);
     typedef bool (*Occluded16Ty) (void* pre, void* ray, size_t k, RayQueryContext* context, const void* primitive);
 
@@ -53,7 +53,7 @@ namespace embree
     struct Intersectors
     {
       Intersectors() {} // WARNING: Do not zero initialize this, as we otherwise get problems with thread unsafe local static variable initialization (e.g. on VS2013) in curve_intersector_virtual.cpp.
-
+      
       template<int K> void intersect(void* pre, void* ray, RayQueryContext* context, const void* primitive);
       template<int K> bool occluded (void* pre, void* ray, RayQueryContext* context, const void* primitive);
 
@@ -70,33 +70,33 @@ namespace embree
       Intersect16Ty intersect16;
       Occluded16Ty  occluded16;
     };
-
+    
     Intersectors vtbl[Geometry::GTY_END];
   };
 
   template<> __forceinline void VirtualCurveIntersector::Intersectors::intersect<1> (void* pre, void* ray, RayQueryContext* context, const void* primitive) { assert(intersect1); intersect1(pre,ray,context,primitive); }
   template<> __forceinline bool VirtualCurveIntersector::Intersectors::occluded<1>  (void* pre, void* ray, RayQueryContext* context, const void* primitive) { assert(occluded1); return occluded1(pre,ray,context,primitive); }
-
+      
   template<> __forceinline void VirtualCurveIntersector::Intersectors::intersect<4>(void* pre, void* ray, size_t k, RayQueryContext* context, const void* primitive) { assert(intersect4); intersect4(pre,ray,k,context,primitive); }
   template<> __forceinline bool VirtualCurveIntersector::Intersectors::occluded<4> (void* pre, void* ray, size_t k, RayQueryContext* context, const void* primitive) { assert(occluded4); return occluded4(pre,ray,k,context,primitive); }
-
+      
 #if defined(__AVX__)
   template<> __forceinline void VirtualCurveIntersector::Intersectors::intersect<8>(void* pre, void* ray, size_t k, RayQueryContext* context, const void* primitive) { assert(intersect8); intersect8(pre,ray,k,context,primitive); }
   template<> __forceinline bool VirtualCurveIntersector::Intersectors::occluded<8> (void* pre, void* ray, size_t k, RayQueryContext* context, const void* primitive) { assert(occluded8); return occluded8(pre,ray,k,context,primitive); }
 #endif
-
+  
 #if defined(__AVX512F__)
   template<> __forceinline void VirtualCurveIntersector::Intersectors::intersect<16>(void* pre, void* ray, size_t k, RayQueryContext* context, const void* primitive) { assert(intersect16); intersect16(pre,ray,k,context,primitive); }
   template<> __forceinline bool VirtualCurveIntersector::Intersectors::occluded<16> (void* pre, void* ray, size_t k, RayQueryContext* context, const void* primitive) { assert(occluded16); return occluded16(pre,ray,k,context,primitive); }
 #endif
-
+  
   namespace isa
   {
     struct VirtualCurveIntersector1
     {
       typedef unsigned char Primitive;
       typedef CurvePrecalculations1 Precalculations;
-
+      
       template<int N, bool robust>
         static __forceinline void intersect(const Accel::Intersectors* This, Precalculations& pre, RayHit& ray, RayQueryContext* context, const Primitive* prim, size_t num, const TravRay<N,robust> &tray, size_t& lazy_node)
       {
@@ -107,7 +107,7 @@ namespace embree
         leafIntersector.intersect<1>(&pre,&ray,context,prim);
       }
 
-      template<int N, bool robust>
+      template<int N, bool robust>      
         static __forceinline bool occluded(const Accel::Intersectors* This, Precalculations& pre, Ray& ray, RayQueryContext* context, const Primitive* prim, size_t num, const TravRay<N,robust> &tray, size_t& lazy_node)
       {
         assert(num == 1);
@@ -119,12 +119,12 @@ namespace embree
     };
 
     template<int K>
-      struct VirtualCurveIntersectorK
+      struct VirtualCurveIntersectorK 
       {
         typedef unsigned char Primitive;
         typedef CurvePrecalculationsK<K> Precalculations;
-
-        template<bool robust>
+        
+        template<bool robust>        
         static __forceinline void intersect(const vbool<K>& valid_i, const Accel::Intersectors* This, Precalculations& pre, RayHitK<K>& ray, RayQueryContext* context, const Primitive* prim, size_t num, const TravRayK<K, robust> &tray, size_t& lazy_node)
         {
           assert(num == 1);
@@ -134,8 +134,8 @@ namespace embree
           size_t mask = movemask(valid_i);
           while (mask) leafIntersector.intersect<K>(&pre,&ray,bscf(mask),context,prim);
         }
-
-        template<bool robust>
+        
+        template<bool robust>        
         static __forceinline vbool<K> occluded(const vbool<K>& valid_i, const Accel::Intersectors* This, Precalculations& pre, RayK<K>& ray, RayQueryContext* context, const Primitive* prim, size_t num, const TravRayK<K, robust> &tray, size_t& lazy_node)
         {
           assert(num == 1);
@@ -151,8 +151,8 @@ namespace embree
           }
           return valid_o;
         }
-
-        template<int N, bool robust>
+        
+        template<int N, bool robust>              
         static __forceinline void intersect(const Accel::Intersectors* This, Precalculations& pre, RayHitK<K>& ray, size_t k, RayQueryContext* context, const Primitive* prim, size_t num, const TravRay<N,robust> &tray, size_t& lazy_node)
         {
           assert(num == 1);
@@ -161,8 +161,8 @@ namespace embree
           VirtualCurveIntersector::Intersectors& leafIntersector = ((VirtualCurveIntersector*) This->leafIntersector)->vtbl[ty];
           leafIntersector.intersect<K>(&pre,&ray,k,context,prim);
         }
-
-        template<int N, bool robust>
+        
+        template<int N, bool robust>      
         static __forceinline bool occluded(const Accel::Intersectors* This, Precalculations& pre, RayK<K>& ray, size_t k, RayQueryContext* context, const Primitive* prim, size_t num, const TravRay<N,robust> &tray, size_t& lazy_node)
         {
           assert(num == 1);
@@ -268,7 +268,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<int N>
       static VirtualCurveIntersector::Intersectors LinearRibbonNiMBIntersectors()
     {
@@ -287,7 +287,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<int N>
       static VirtualCurveIntersector::Intersectors SphereNiIntersectors()
     {
@@ -306,7 +306,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<int N>
       static VirtualCurveIntersector::Intersectors SphereNiMBIntersectors()
     {
@@ -325,7 +325,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<int N>
       static VirtualCurveIntersector::Intersectors DiscNiIntersectors()
     {
@@ -344,7 +344,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<int N>
       static VirtualCurveIntersector::Intersectors DiscNiMBIntersectors()
     {
@@ -363,7 +363,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<int N>
       static VirtualCurveIntersector::Intersectors OrientedDiscNiIntersectors()
     {
@@ -382,7 +382,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<int N>
       static VirtualCurveIntersector::Intersectors OrientedDiscNiMBIntersectors()
     {
@@ -401,7 +401,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<template<typename Ty> class Curve, int N>
       static VirtualCurveIntersector::Intersectors RibbonNiIntersectors()
     {
@@ -420,7 +420,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<template<typename Ty> class Curve, int N>
       static VirtualCurveIntersector::Intersectors RibbonNvIntersectors()
     {
@@ -439,7 +439,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<template<typename Ty> class Curve, int N>
       static VirtualCurveIntersector::Intersectors RibbonNiMBIntersectors()
     {
@@ -458,7 +458,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<template<typename Ty> class Curve, int N>
       static VirtualCurveIntersector::Intersectors CurveNiIntersectors()
     {
@@ -477,7 +477,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<template<typename Ty> class Curve, int N>
       static VirtualCurveIntersector::Intersectors CurveNvIntersectors()
     {
@@ -496,7 +496,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<template<typename Ty> class Curve, int N>
       static VirtualCurveIntersector::Intersectors CurveNiMBIntersectors()
     {
@@ -515,7 +515,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<template<typename Ty> class Curve, int N>
       static VirtualCurveIntersector::Intersectors OrientedCurveNiIntersectors()
     {
@@ -534,7 +534,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<template<typename Ty> class Curve, int N>
       static VirtualCurveIntersector::Intersectors OrientedCurveNiMBIntersectors()
     {
@@ -553,7 +553,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<template<typename Ty> class Curve, int N>
       static VirtualCurveIntersector::Intersectors HermiteRibbonNiIntersectors()
     {
@@ -572,7 +572,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<template<typename Ty> class Curve, int N>
       static VirtualCurveIntersector::Intersectors HermiteRibbonNiMBIntersectors()
     {
@@ -591,7 +591,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<template<typename Ty> class Curve, int N>
       static VirtualCurveIntersector::Intersectors HermiteCurveNiIntersectors()
     {
@@ -610,7 +610,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<template<typename Ty> class Curve, int N>
       static VirtualCurveIntersector::Intersectors HermiteCurveNiMBIntersectors()
     {
@@ -629,7 +629,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<template<typename Ty> class Curve, int N>
       static VirtualCurveIntersector::Intersectors HermiteOrientedCurveNiIntersectors()
     {
@@ -648,7 +648,7 @@ namespace embree
 #endif
       return intersectors;
     }
-
+    
     template<template<typename Ty> class Curve, int N>
       static VirtualCurveIntersector::Intersectors HermiteOrientedCurveNiMBIntersectors()
     {

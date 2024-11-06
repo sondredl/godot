@@ -1,15 +1,15 @@
 /* Copyright (c) 2011 Khaled Mamou (kmamou at gmail dot com)
  All rights reserved.
-
-
+ 
+ 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-
+ 
  1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-
+ 
  2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-
+ 
  3. The names of the contributors may not be used to endorse or promote products derived from this software without specific prior written permission.
-
+ 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
@@ -1304,7 +1304,7 @@ void VHACD::MergeConvexHulls(const Parameters& params)
 	// Iteration counter
     int32_t iteration = 0;
 	// While we have more than at least one convex hull and the user has not asked us to cancel the operation
-    if (nConvexHulls > 1 && !m_cancel)
+    if (nConvexHulls > 1 && !m_cancel) 
 	{
 		// Get the gamma error threshold for when to exit
         SArray<Vec3<double> > pts;
@@ -1314,10 +1314,10 @@ void VHACD::MergeConvexHulls(const Parameters& params)
         size_t idx = 0;
         SArray<float> costMatrix;
         costMatrix.Resize(((nConvexHulls * nConvexHulls) - nConvexHulls) >> 1);
-        for (size_t p1 = 1; p1 < nConvexHulls; ++p1)
+        for (size_t p1 = 1; p1 < nConvexHulls; ++p1) 
 		{
             const float volume1 = m_convexHulls[p1]->ComputeVolume();
-            for (size_t p2 = 0; p2 < p1; ++p2)
+            for (size_t p2 = 0; p2 < p1; ++p2) 
 			{
                 ComputeConvexHull(m_convexHulls[p1], m_convexHulls[p2], pts, &combinedCH);
                 costMatrix[idx++] = ComputeConcavity(volume1 + m_convexHulls[p2]->ComputeVolume(), combinedCH.ComputeVolume(), m_volumeCH0);
@@ -1326,7 +1326,7 @@ void VHACD::MergeConvexHulls(const Parameters& params)
 
         // Until we cant merge below the maximum cost
         size_t costSize = m_convexHulls.Size();
-        while (!m_cancel)
+        while (!m_cancel) 
 		{
             msg.str("");
             msg << "Iteration " << iteration++;
@@ -1347,7 +1347,7 @@ void VHACD::MergeConvexHulls(const Parameters& params)
             assert(p1 < costSize);
             assert(p2 < costSize);
 
-            if (params.m_logger)
+            if (params.m_logger) 
 			{
                 msg.str("");
                 msg << "\t\t Merging (" << p1 << ", " << p2 << ") " << bestCost << std::endl
@@ -1370,14 +1370,14 @@ void VHACD::MergeConvexHulls(const Parameters& params)
             // Calculate costs versus the new hull
             size_t rowIdx = ((p2 - 1) * p2) >> 1;
             const float volume1 = m_convexHulls[p2]->ComputeVolume();
-            for (size_t i = 0; (i < p2) && (!m_cancel); ++i)
+            for (size_t i = 0; (i < p2) && (!m_cancel); ++i) 
 			{
                 ComputeConvexHull(m_convexHulls[p2], m_convexHulls[i], pts, &combinedCH);
                 costMatrix[rowIdx++] = ComputeConcavity(volume1 + m_convexHulls[i]->ComputeVolume(), combinedCH.ComputeVolume(), m_volumeCH0);
             }
 
             rowIdx += p2;
-            for (size_t i = p2 + 1; (i < costSize) && (!m_cancel); ++i)
+            for (size_t i = p2 + 1; (i < costSize) && (!m_cancel); ++i) 
 			{
                 ComputeConvexHull(m_convexHulls[p2], m_convexHulls[i], pts, &combinedCH);
                 costMatrix[rowIdx] = ComputeConcavity(volume1 + m_convexHulls[i]->ComputeVolume(), combinedCH.ComputeVolume(), m_volumeCH0);
@@ -1427,7 +1427,7 @@ void VHACD::SimplifyConvexHull(Mesh* const ch, const size_t nvertices, const dou
     if (mRaycastMesh)
     {
         // We project these points onto the original source mesh to increase precision
-        // The voxelization process drops floating point precision so returned data points are not exactly lying on the
+        // The voxelization process drops floating point precision so returned data points are not exactly lying on the 
         // surface of the original source mesh.
         // The first step is we need to compute the bounding box of the mesh we are trying to build a convex hull for.
         // From this bounding box, we compute the length of the diagonal to get a relative size and center for point projection

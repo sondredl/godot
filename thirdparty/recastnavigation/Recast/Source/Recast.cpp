@@ -453,13 +453,13 @@ bool rcBuildCompactHeightfield(rcContext* context, const int walkableHeight, con
 	for (int columnIndex = 0; columnIndex < numColumns; ++columnIndex)
 	{
 		const rcSpan* span = heightfield.spans[columnIndex];
-
+			
 		// If there are no spans at this cell, just leave the data to index=0, count=0.
 		if (span == NULL)
 		{
 			continue;
 		}
-
+			
 		rcCompactCell& cell = compactHeightfield.cells[columnIndex];
 		cell.index = currentCellIndex;
 		cell.count = 0;
@@ -478,7 +478,7 @@ bool rcBuildCompactHeightfield(rcContext* context, const int walkableHeight, con
 			}
 		}
 	}
-
+	
 	// Find neighbour connections.
 	const int MAX_LAYERS = RC_NOT_CONNECTED - 1;
 	int maxLayerIndex = 0;

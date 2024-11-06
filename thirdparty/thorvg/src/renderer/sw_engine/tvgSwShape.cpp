@@ -73,7 +73,7 @@ static void _outlineCubicTo(SwOutline& outline, const Point* ctrl1, const Point*
     outline.types.push(SW_CURVE_TYPE_CUBIC);
 
     outline.pts.push(mathTransform(ctrl2, transform));
-    outline.types.push(SW_CURVE_TYPE_CUBIC);
+    outline.types.push(SW_CURVE_TYPE_CUBIC);    
 
     outline.pts.push(mathTransform(to, transform));
     outline.types.push(SW_CURVE_TYPE_POINT);

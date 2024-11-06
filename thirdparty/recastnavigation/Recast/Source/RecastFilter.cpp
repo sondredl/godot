@@ -63,13 +63,13 @@ void rcFilterLedgeSpans(rcContext* context, const int walkableHeight, const int 
                         rcHeightfield& heightfield)
 {
 	rcAssert(context);
-
+	
 	rcScopedTimer timer(context, RC_TIMER_FILTER_BORDER);
 
 	const int xSize = heightfield.width;
 	const int zSize = heightfield.height;
 	const int MAX_HEIGHT = 0xffff; // TODO (graham): Move this to a more visible constant and update usages.
-
+	
 	// Mark border spans.
 	for (int z = 0; z < zSize; ++z)
 	{
@@ -108,7 +108,7 @@ void rcFilterLedgeSpans(rcContext* context, const int walkableHeight, const int 
 					const rcSpan* neighborSpan = heightfield.spans[dx + dy * xSize];
 					int neighborBot = -walkableClimb;
 					int neighborTop = neighborSpan ? (int)neighborSpan->smin : MAX_HEIGHT;
-
+					
 					// Skip neighbour if the gap between the spans is too small.
 					if (rcMin(top, neighborTop) - rcMax(bot, neighborBot) > walkableHeight)
 					{
@@ -120,13 +120,13 @@ void rcFilterLedgeSpans(rcContext* context, const int walkableHeight, const int 
 					{
 						neighborBot = (int)neighborSpan->smax;
 						neighborTop = neighborSpan->next ? (int)neighborSpan->next->smin : MAX_HEIGHT;
-
+						
 						// Skip neighbour if the gap between the spans is too small.
 						if (rcMin(top, neighborTop) - rcMax(bot, neighborBot) > walkableHeight)
 						{
 							minNeighborHeight = rcMin(minNeighborHeight, neighborBot - bot);
 
-							// Find min/max accessible neighbour height.
+							// Find min/max accessible neighbour height. 
 							if (rcAbs(neighborBot - bot) <= walkableClimb)
 							{
 								if (neighborBot < accessibleNeighborMinHeight) accessibleNeighborMinHeight = neighborBot;
@@ -157,13 +157,13 @@ void rcFilterLedgeSpans(rcContext* context, const int walkableHeight, const int 
 void rcFilterWalkableLowHeightSpans(rcContext* context, const int walkableHeight, rcHeightfield& heightfield)
 {
 	rcAssert(context);
-
+	
 	rcScopedTimer timer(context, RC_TIMER_FILTER_WALKABLE);
-
+	
 	const int xSize = heightfield.width;
 	const int zSize = heightfield.height;
 	const int MAX_HEIGHT = 0xffff;
-
+	
 	// Remove walkable flag from spans which do not have enough
 	// space above them for the agent to stand there.
 	for (int z = 0; z < zSize; ++z)

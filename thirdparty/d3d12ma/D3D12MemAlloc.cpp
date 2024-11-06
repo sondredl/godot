@@ -681,7 +681,7 @@ static UINT GetBitsPerPixel(DXGI_FORMAT format)
         return 0;
     }
 }
-
+    
 template<typename D3D12_RESOURCE_DESC_T>
 static ResourceClass ResourceDescToResourceClass(const D3D12_RESOURCE_DESC_T& resDesc)
 {
@@ -692,7 +692,7 @@ static ResourceClass ResourceDescToResourceClass(const D3D12_RESOURCE_DESC_T& re
         (resDesc.Flags & (D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET | D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL)) != 0;
     return isRenderTargetOrDepthStencil ? ResourceClass::RT_DS_Texture : ResourceClass::Non_RT_DS_Texture;
 }
-
+    
 // This algorithm is overly conservative.
 template<typename D3D12_RESOURCE_DESC_T>
 static bool CanUseSmallAlignment(const D3D12_RESOURCE_DESC_T& resourceDesc)
@@ -733,7 +733,7 @@ static bool CanUseSmallAlignment(const D3D12_RESOURCE_DESC_T& resourceDesc)
     const UINT tileCount = DivideRoundingUp(sizeX, tileSizeX) * DivideRoundingUp(sizeY, tileSizeY);
     return tileCount <= 16;
 }
-
+    
 static bool ValidateAllocateMemoryParameters(
     const ALLOCATION_DESC* pAllocDesc,
     const D3D12_RESOURCE_ALLOCATION_INFO* pAllocInfo,
@@ -750,7 +750,7 @@ static bool ValidateAllocateMemoryParameters(
 }
 
 #endif // _D3D12MA_FUNCTIONS
-
+    
 #ifndef _D3D12MA_STATISTICS_FUNCTIONS
 
 static void ClearStatistics(Statistics& outStats)
@@ -803,7 +803,7 @@ static void AddDetailedStatisticsUnusedRange(DetailedStatistics& inoutStats, UIN
     inoutStats.UnusedRangeSizeMin = D3D12MA_MIN(inoutStats.UnusedRangeSizeMin, size);
     inoutStats.UnusedRangeSizeMax = D3D12MA_MAX(inoutStats.UnusedRangeSizeMax, size);
 }
-
+    
 #endif // _D3D12MA_STATISTICS_FUNCTIONS
 
 
@@ -815,7 +815,7 @@ static void AddDetailedStatisticsUnusedRange(DetailedStatistics& inoutStats, UIN
     public:
         void Lock() { m_Mutex.lock(); }
         void Unlock() { m_Mutex.unlock(); }
-
+    
     private:
         std::mutex m_Mutex;
     };
@@ -832,7 +832,7 @@ static void AddDetailedStatisticsUnusedRange(DetailedStatistics& inoutStats, UIN
         void UnlockRead() { ReleaseSRWLockShared(&m_Lock); }
         void LockWrite() { AcquireSRWLockExclusive(&m_Lock); }
         void UnlockWrite() { ReleaseSRWLockExclusive(&m_Lock); }
-
+    
     private:
         SRWLOCK m_Lock;
     };
@@ -845,7 +845,7 @@ static void AddDetailedStatisticsUnusedRange(DetailedStatistics& inoutStats, UIN
         void UnlockRead() { m_Mutex.unlock_shared(); }
         void LockWrite() { m_Mutex.lock(); }
         void UnlockWrite() { m_Mutex.unlock(); }
-
+    
     private:
         std::shared_timed_mutex m_Mutex;
     };
@@ -861,7 +861,7 @@ public:
     MutexLock(D3D12MA_MUTEX& mutex, bool useMutex = true) :
         m_pMutex(useMutex ? &mutex : NULL)
     {
-        if (m_pMutex) m_pMutex->Lock();
+        if (m_pMutex) m_pMutex->Lock(); 
     }
     ~MutexLock() { if (m_pMutex) m_pMutex->Unlock(); }
 
@@ -896,7 +896,7 @@ public:
     MutexLockWrite(D3D12MA_RW_MUTEX& mutex, bool useMutex)
         : m_pMutex(useMutex ? &mutex : NULL)
     {
-        if (m_pMutex) m_pMutex->LockWrite();
+        if (m_pMutex) m_pMutex->LockWrite(); 
     }
     ~MutexLockWrite() { if (m_pMutex) m_pMutex->UnlockWrite(); }
 
@@ -1961,7 +1961,7 @@ public:
     // Intentionally not calling Clear, because that would be unnecessary
     // computations to return all items to m_ItemAllocator as free.
     ~List() = default;
-
+    
     size_t GetCount() const { return m_Count; }
     bool IsEmpty() const { return m_Count == 0; }
 
@@ -5089,7 +5089,7 @@ private:
             void* privateData;
         };
     };
-
+    
     size_t m_AllocCount = 0;
     // Total number of free blocks besides null block
     size_t m_BlocksFreeCount = 0;
@@ -5985,7 +5985,7 @@ public:
     D3D12_HEAP_TYPE GetHeapType() const { return m_HeapType; }
     PoolPimpl* GetPool() const { return m_Pool; }
     UINT GetMemorySegmentGroup(AllocatorPimpl* allocator) const;
-
+    
     void AddStatistics(Statistics& inoutStats);
     void AddDetailedStatistics(DetailedStatistics& inoutStats);
     // Writes JSON array with the list of allocations.
@@ -6025,8 +6025,8 @@ struct CREATE_RESOURCE_PARAMS
 {
     CREATE_RESOURCE_PARAMS() = delete;
     CREATE_RESOURCE_PARAMS(
-        const D3D12_RESOURCE_DESC* pResourceDesc,
-        D3D12_RESOURCE_STATES InitialResourceState,
+        const D3D12_RESOURCE_DESC* pResourceDesc, 
+        D3D12_RESOURCE_STATES InitialResourceState, 
         const D3D12_CLEAR_VALUE* pOptimizedClearValue)
         : Variant(VARIANT_WITH_STATE)
         , pResourceDesc(pResourceDesc)
@@ -6036,8 +6036,8 @@ struct CREATE_RESOURCE_PARAMS
     }
 #ifdef __ID3D12Device8_INTERFACE_DEFINED__
     CREATE_RESOURCE_PARAMS(
-        const D3D12_RESOURCE_DESC1* pResourceDesc,
-        D3D12_RESOURCE_STATES InitialResourceState,
+        const D3D12_RESOURCE_DESC1* pResourceDesc, 
+        D3D12_RESOURCE_STATES InitialResourceState, 
         const D3D12_CLEAR_VALUE* pOptimizedClearValue)
         : Variant(VARIANT_WITH_STATE_AND_DESC1)
         , pResourceDesc1(pResourceDesc)
@@ -6717,7 +6717,7 @@ private:
     void UnregisterPool(Pool* pool, D3D12_HEAP_TYPE heapType);
 
     HRESULT UpdateD3D12Budget();
-
+    
     D3D12_RESOURCE_ALLOCATION_INFO GetResourceAllocationInfoNative(const D3D12_RESOURCE_DESC& resourceDesc) const;
 #ifdef __ID3D12Device8_INTERFACE_DEFINED__
     D3D12_RESOURCE_ALLOCATION_INFO GetResourceAllocationInfoNative(const D3D12_RESOURCE_DESC1& resourceDesc) const;
@@ -6779,7 +6779,7 @@ HRESULT AllocatorPimpl::Init(const ALLOCATOR_DESC& desc)
 
 #ifdef __ID3D12Device8_INTERFACE_DEFINED__
     m_Device->QueryInterface(D3D12MA_IID_PPV_ARGS(&m_Device8));
-
+    
     if((desc.Flags & ALLOCATOR_FLAG_DEFAULT_POOLS_NOT_ZEROED) != 0)
     {
         D3D12_FEATURE_DATA_D3D12_OPTIONS7 options7 = {};
@@ -6968,7 +6968,7 @@ HRESULT AllocatorPimpl::CreatePlacedResourceWrap(
         return m_Device8->CreatePlacedResource1(pHeap, HeapOffset,
             createParams.GetResourceDesc1(), createParams.GetInitialResourceState(),
             createParams.GetOptimizedClearValue(), riidResource, ppvResource);
-    } else
+    } else 
 #endif
     if (createParams.Variant == CREATE_RESOURCE_PARAMS::VARIANT_WITH_STATE)
     {
@@ -7046,7 +7046,7 @@ HRESULT AllocatorPimpl::CreateResource(
     BlockVector* blockVector = NULL;
     CommittedAllocationParameters committedAllocationParams = {};
     bool preferCommitted = false;
-
+    
     HRESULT hr;
 #ifdef __ID3D12Device8_INTERFACE_DEFINED__
     if (createParams.Variant >= CREATE_RESOURCE_PARAMS::VARIANT_WITH_STATE_AND_DESC1)
@@ -7461,7 +7461,7 @@ void AllocatorPimpl::BuildStatsString(WCHAR** ppStatsString, BOOL detailedMap)
                 json.WriteNumber((UINT64)m_AdapterDesc.DedicatedSystemMemory);
                 json.WriteString(L"SharedSystemMemory");
                 json.WriteNumber((UINT64)m_AdapterDesc.SharedSystemMemory);
-
+                
                 json.WriteString(L"ResourceHeapTier");
                 json.WriteNumber(static_cast<UINT>(m_D3D12Options.ResourceHeapTier));
 
@@ -7790,7 +7790,7 @@ HRESULT AllocatorPimpl::AllocateCommittedResource(
         hr = AllocateHeap(committedAllocParams, heapAllocInfo, withinBudget, pPrivateData, ppAllocation);
         if (SUCCEEDED(hr))
         {
-            hr = CreatePlacedResourceWrap((*ppAllocation)->GetHeap(), 0,
+            hr = CreatePlacedResourceWrap((*ppAllocation)->GetHeap(), 0, 
                     createParams, D3D12MA_IID_PPV_ARGS(&res));
             if (SUCCEEDED(hr))
             {
@@ -9384,7 +9384,7 @@ bool DefragmentationContextPimpl::ReallocWithinBlock(BlockVector& vector, Normal
         case CounterStatus::Pass:
             break;
         }
-
+        
         UINT64 offset = moveData.move.pSrcAllocation->GetOffset();
         if (offset != 0 && metadata->GetSumFreeSize() >= moveData.size)
         {
@@ -10178,10 +10178,10 @@ HRESULT Allocator::CreateResource(
     }
     D3D12MA_DEBUG_GLOBAL_MUTEX_LOCK
     return m_Pimpl->CreateResource(
-        pAllocDesc,
-        CREATE_RESOURCE_PARAMS(pResourceDesc, InitialResourceState, pOptimizedClearValue),
-        ppAllocation,
-        riidResource,
+        pAllocDesc, 
+        CREATE_RESOURCE_PARAMS(pResourceDesc, InitialResourceState, pOptimizedClearValue), 
+        ppAllocation, 
+        riidResource, 
         ppvResource);
 }
 
@@ -10202,10 +10202,10 @@ HRESULT Allocator::CreateResource2(
     }
     D3D12MA_DEBUG_GLOBAL_MUTEX_LOCK
     return m_Pimpl->CreateResource(
-        pAllocDesc,
-        CREATE_RESOURCE_PARAMS(pResourceDesc, InitialResourceState, pOptimizedClearValue),
-        ppAllocation,
-        riidResource,
+        pAllocDesc, 
+        CREATE_RESOURCE_PARAMS(pResourceDesc, InitialResourceState, pOptimizedClearValue), 
+        ppAllocation, 
+        riidResource, 
         ppvResource);
 }
 #endif // #ifdef __ID3D12Device8_INTERFACE_DEFINED__
@@ -10229,10 +10229,10 @@ HRESULT Allocator::CreateResource3(
     }
     D3D12MA_DEBUG_GLOBAL_MUTEX_LOCK
     return m_Pimpl->CreateResource(
-        pAllocDesc,
-        CREATE_RESOURCE_PARAMS(pResourceDesc, InitialLayout, pOptimizedClearValue, NumCastableFormats, pCastableFormats),
-        ppAllocation,
-        riidResource,
+        pAllocDesc, 
+        CREATE_RESOURCE_PARAMS(pResourceDesc, InitialLayout, pOptimizedClearValue, NumCastableFormats, pCastableFormats), 
+        ppAllocation, 
+        riidResource, 
         ppvResource);
 }
 #endif // #ifdef __ID3D12Device10_INTERFACE_DEFINED__
@@ -10267,10 +10267,10 @@ HRESULT Allocator::CreateAliasingResource(
     }
     D3D12MA_DEBUG_GLOBAL_MUTEX_LOCK
     return m_Pimpl->CreateAliasingResource(
-        pAllocation,
-        AllocationLocalOffset,
-        CREATE_RESOURCE_PARAMS(pResourceDesc, InitialResourceState, pOptimizedClearValue),
-        riidResource,
+        pAllocation, 
+        AllocationLocalOffset, 
+        CREATE_RESOURCE_PARAMS(pResourceDesc, InitialResourceState, pOptimizedClearValue), 
+        riidResource, 
         ppvResource);
 }
 
@@ -10291,10 +10291,10 @@ HRESULT Allocator::CreateAliasingResource1(
     }
     D3D12MA_DEBUG_GLOBAL_MUTEX_LOCK
     return m_Pimpl->CreateAliasingResource(
-        pAllocation,
-        AllocationLocalOffset,
-        CREATE_RESOURCE_PARAMS(pResourceDesc, InitialResourceState, pOptimizedClearValue),
-        riidResource,
+        pAllocation, 
+        AllocationLocalOffset, 
+        CREATE_RESOURCE_PARAMS(pResourceDesc, InitialResourceState, pOptimizedClearValue), 
+        riidResource, 
         ppvResource);
 }
 #endif  // #ifdef __ID3D12Device8_INTERFACE_DEFINED__
@@ -10318,10 +10318,10 @@ HRESULT Allocator::CreateAliasingResource2(
     }
     D3D12MA_DEBUG_GLOBAL_MUTEX_LOCK
     return m_Pimpl->CreateAliasingResource(
-        pAllocation,
-        AllocationLocalOffset,
+        pAllocation, 
+        AllocationLocalOffset, 
         CREATE_RESOURCE_PARAMS(pResourceDesc, InitialLayout, pOptimizedClearValue, NumCastableFormats, pCastableFormats),
-        riidResource,
+        riidResource, 
         ppvResource);
 }
 #endif  // #ifdef __ID3D12Device10_INTERFACE_DEFINED__

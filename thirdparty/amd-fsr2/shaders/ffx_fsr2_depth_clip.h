@@ -53,7 +53,7 @@ FfxFloat32 ComputeDepthClip(FfxFloat32x2 fUvSample, FfxFloat32 fCurrentDepthSamp
 #else
                     const FfxFloat32 fPlaneDepth = ffxMax(fPrevDepthSample, fCurrentDepthSample);
 #endif
-
+                    
                     const FfxFloat32x3 fCenter = GetViewSpacePosition(FfxInt32x2(RenderSize() * 0.5f), RenderSize(), fPlaneDepth);
                     const FfxFloat32x3 fCorner = GetViewSpacePosition(FfxInt32x2(0, 0), RenderSize(), fPlaneDepth);
 

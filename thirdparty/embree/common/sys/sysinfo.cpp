@@ -24,8 +24,8 @@ typedef cpuset_t cpu_set_t;
 namespace embree
 {
   NullTy null;
-
-  std::string getPlatformName()
+  
+  std::string getPlatformName() 
   {
 #if defined(__ANDROID__) && !defined(__64BIT__)
     return "Android (32bit)";
@@ -90,8 +90,8 @@ namespace embree
   std::string getCPUVendor()
   {
 #if defined(__X86_ASM__)
-    int cpuinfo[4];
-    __cpuid (cpuinfo, 0);
+    int cpuinfo[4]; 
+    __cpuid (cpuinfo, 0); 
     int name[4];
     name[0] = cpuinfo[1];
     name[1] = cpuinfo[3];
@@ -105,12 +105,12 @@ namespace embree
 #endif
   }
 
-  CPU getCPUModel()
+  CPU getCPUModel() 
   {
 #if defined(__X86_ASM__)
     if (getCPUVendor() != "GenuineIntel")
       return CPU::UNKNOWN;
-
+    
     int out[4];
     __cpuid(out, 0);
     if (out[0] < 1) return CPU::UNKNOWN;
@@ -119,14 +119,14 @@ namespace embree
     /* please see CPUID documentation for these formulas */
     uint32_t family_ID          = (out[0] >>  8) & 0x0F;
     uint32_t extended_family_ID = (out[0] >> 20) & 0xFF;
-
+    
     uint32_t model_ID           = (out[0] >>  4) & 0x0F;
     uint32_t extended_model_ID  = (out[0] >> 16) & 0x0F;
-
+    
     uint32_t DisplayFamily = family_ID;
     if (family_ID == 0x0F)
       DisplayFamily += extended_family_ID;
-
+    
     uint32_t DisplayModel = model_ID;
     if (family_ID == 0x06 || family_ID == 0x0F)
       DisplayModel += extended_model_ID << 4;
@@ -173,11 +173,11 @@ namespace embree
 
     if (DisplayFamily_DisplayModel == 0x0685) return CPU::XEON_PHI_KNIGHTS_MILL;
     if (DisplayFamily_DisplayModel == 0x0657) return CPU::XEON_PHI_KNIGHTS_LANDING;
-
+    
 #elif defined(__ARM_NEON)
     return CPU::ARM;
 #endif
-
+    
     return CPU::UNKNOWN;
   }
 
@@ -250,13 +250,13 @@ namespace embree
   static const int CPU_FEATURE_BIT_AVX512BW = 1 << 30;    // AVX512BW (byte and word instructions)
   static const int CPU_FEATURE_BIT_AVX512VL = 1 << 31;    // AVX512VL (vector length extensions)
   static const int CPU_FEATURE_BIT_AVX512IFMA = 1 << 21;  // AVX512IFMA (integer fused multiple-add instructions)
-
+  
   /* cpuid[eax=7,ecx=0].ecx */
   static const int CPU_FEATURE_BIT_AVX512VBMI = 1 << 1;   // AVX512VBMI (vector bit manipulation instructions)
 #endif
 
 #if defined(__X86_ASM__)
-  __noinline int64_t get_xcr0()
+  __noinline int64_t get_xcr0() 
   {
 #if defined (__WIN32__) && !defined (__MINGW32__) && defined(_XCR_XFEATURE_ENABLED_MASK)
     int64_t xcr0 = 0; // int64_t is workaround for compiler bug under VS2013, Win32
@@ -275,16 +275,16 @@ namespace embree
 #if defined(__X86_ASM__)
     /* cache CPU features access */
     static int cpu_features = 0;
-    if (cpu_features)
+    if (cpu_features) 
       return cpu_features;
 
     /* get number of CPUID leaves */
-    int cpuid_leaf0[4];
+    int cpuid_leaf0[4]; 
     __cpuid(cpuid_leaf0, 0x00000000);
-    unsigned nIds = cpuid_leaf0[EAX];
+    unsigned nIds = cpuid_leaf0[EAX];  
 
     /* get number of extended CPUID leaves */
-    int cpuid_leafe[4];
+    int cpuid_leafe[4]; 
     __cpuid(cpuid_leafe, 0x80000000);
     unsigned nExIds = cpuid_leafe[EAX];
 
@@ -316,7 +316,7 @@ namespace embree
     if (xmm_enabled) cpu_features |= CPU_FEATURE_XMM_ENABLED;
     if (ymm_enabled) cpu_features |= CPU_FEATURE_YMM_ENABLED;
     if (zmm_enabled) cpu_features |= CPU_FEATURE_ZMM_ENABLED;
-
+    
     if (cpuid_leaf_1[EDX] & CPU_FEATURE_BIT_SSE   ) cpu_features |= CPU_FEATURE_SSE;
     if (cpuid_leaf_1[EDX] & CPU_FEATURE_BIT_SSE2  ) cpu_features |= CPU_FEATURE_SSE2;
     if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_SSE3  ) cpu_features |= CPU_FEATURE_SSE3;
@@ -324,7 +324,7 @@ namespace embree
     if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_SSE4_1) cpu_features |= CPU_FEATURE_SSE41;
     if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_SSE4_2) cpu_features |= CPU_FEATURE_SSE42;
     if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_POPCNT) cpu_features |= CPU_FEATURE_POPCNT;
-
+    
     if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_AVX   ) cpu_features |= CPU_FEATURE_AVX;
     if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_F16C  ) cpu_features |= CPU_FEATURE_F16C;
     if (cpuid_leaf_1[ECX] & CPU_FEATURE_BIT_RDRAND) cpu_features |= CPU_FEATURE_RDRAND;
@@ -337,7 +337,7 @@ namespace embree
     if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512F   ) cpu_features |= CPU_FEATURE_AVX512F;
     if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512DQ  ) cpu_features |= CPU_FEATURE_AVX512DQ;
     if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512PF  ) cpu_features |= CPU_FEATURE_AVX512PF;
-    if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512ER  ) cpu_features |= CPU_FEATURE_AVX512ER;
+    if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512ER  ) cpu_features |= CPU_FEATURE_AVX512ER; 
     if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512CD  ) cpu_features |= CPU_FEATURE_AVX512CD;
     if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512BW  ) cpu_features |= CPU_FEATURE_AVX512BW;
     if (cpuid_leaf_7[EBX] & CPU_FEATURE_BIT_AVX512IFMA) cpu_features |= CPU_FEATURE_AVX512IFMA;
@@ -403,7 +403,7 @@ namespace embree
     if (features & CPU_FEATURE_NEON_2X) str += "2xNEON ";
     return str;
   }
-
+  
   std::string stringOfISA (int isa)
   {
     if (isa == SSE) return "SSE";
@@ -424,7 +424,7 @@ namespace embree
   bool hasISA(int features, int isa) {
     return (features & isa) == isa;
   }
-
+  
   std::string supportedTargetList (int features)
   {
     std::string v;
@@ -464,7 +464,7 @@ namespace embree
     return std::string(filename);
   }
 
-  unsigned int getNumberOfLogicalThreads()
+  unsigned int getNumberOfLogicalThreads() 
   {
     static int nThreads = -1;
     if (nThreads != -1) return nThreads;
@@ -475,11 +475,11 @@ namespace embree
     GetActiveProcessorGroupCountFunc pGetActiveProcessorGroupCount = (GetActiveProcessorGroupCountFunc)GetProcAddress(hlib, "GetActiveProcessorGroupCount");
     GetActiveProcessorCountFunc      pGetActiveProcessorCount      = (GetActiveProcessorCountFunc)     GetProcAddress(hlib, "GetActiveProcessorCount");
 
-    if (pGetActiveProcessorGroupCount && pGetActiveProcessorCount)
+    if (pGetActiveProcessorGroupCount && pGetActiveProcessorCount) 
     {
       int groups = pGetActiveProcessorGroupCount();
       int totalProcessors = 0;
-      for (int i = 0; i < groups; i++)
+      for (int i = 0; i < groups; i++) 
         totalProcessors += pGetActiveProcessorCount(i);
       nThreads = totalProcessors;
     }
@@ -493,7 +493,7 @@ namespace embree
     return nThreads;
   }
 
-  int getTerminalWidth()
+  int getTerminalWidth() 
   {
     HANDLE handle = GetStdHandle(STD_OUTPUT_HANDLE);
     if (handle == INVALID_HANDLE_VALUE) return 80;
@@ -503,7 +503,7 @@ namespace embree
     return info.dwSize.X;
   }
 
-  double getSeconds()
+  double getSeconds() 
   {
     LARGE_INTEGER freq, val;
     QueryPerformanceFrequency(&freq);
@@ -542,7 +542,7 @@ namespace embree
 
 namespace embree
 {
-  std::string getExecutableFileName()
+  std::string getExecutableFileName() 
   {
     std::string pid = "/proc/" + toString(getpid()) + "/exe";
     char buf[4096];
@@ -595,7 +595,7 @@ namespace embree
   size_t getVirtualMemoryBytes() {
     return 0;
   }
-
+   
   size_t getResidentMemoryBytes() {
     return 0;
   }
@@ -625,7 +625,7 @@ namespace embree
   size_t getVirtualMemoryBytes() {
     return 0;
   }
-
+   
   size_t getResidentMemoryBytes() {
     return 0;
   }
@@ -656,7 +656,7 @@ extern int godot_js_os_hw_concurrency_get();
 
 namespace embree
 {
-  unsigned int getNumberOfLogicalThreads()
+  unsigned int getNumberOfLogicalThreads() 
   {
     static int nThreads = -1;
     if (nThreads != -1) return nThreads;
@@ -673,12 +673,12 @@ namespace embree
     if (pthread_getaffinity_np(pthread_self(), sizeof(set), &set) == 0)
       nThreads = CPU_COUNT(&set);
 #endif
-
+    
     assert(nThreads);
     return nThreads;
   }
 
-  int getTerminalWidth()
+  int getTerminalWidth() 
   {
     struct winsize info;
     if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &info) < 0) return 80;

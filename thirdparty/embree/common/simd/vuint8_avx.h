@@ -17,7 +17,7 @@ namespace embree
   template<>
   struct vuint<8>
   {
-    ALIGNED_STRUCT_(32);
+    ALIGNED_STRUCT_(32);   
 
     typedef vboolf8 Bool;
     typedef vuint8   Int;
@@ -28,7 +28,7 @@ namespace embree
       __m256i v;
       struct { __m128i vl,vh; };
       unsigned int i[8];
-    };
+    }; 
 
     ////////////////////////////////////////////////////////////////////////////////
     /// Constructors, Assignment & Cast Operators
@@ -45,7 +45,7 @@ namespace embree
     __forceinline explicit vuint(const vuint4& a) : v(_mm256_insertf128_si256(_mm256_castsi128_si256(a),a,1)) {}
     __forceinline vuint(const vuint4& a, const vuint4& b) : v(_mm256_insertf128_si256(_mm256_castsi128_si256(a),b,1)) {}
     __forceinline vuint(const __m128i& a, const __m128i& b) : vl(a), vh(b) {}
-
+ 
     __forceinline explicit vuint(const unsigned int* a) : v(_mm256_castps_si256(_mm256_loadu_ps((const float*)a))) {}
     __forceinline vuint(unsigned int a) : v(_mm256_set1_epi32(a)) {}
     __forceinline vuint(unsigned int a, unsigned int b) : v(_mm256_set_epi32(b, a, b, a, b, a, b, a)) {}
@@ -76,7 +76,7 @@ namespace embree
 
     static __forceinline void store (void* ptr, const vuint8& f) { _mm256_store_ps((float*)ptr,_mm256_castsi256_ps(f)); }
     static __forceinline void storeu(void* ptr, const vuint8& f) { _mm256_storeu_ps((float*)ptr,_mm256_castsi256_ps(f)); }
-
+    
     static __forceinline void store (const vboolf8& mask, void* ptr, const vuint8& f) { _mm256_maskstore_ps((float*)ptr,_mm256_castps_si256(mask.v),_mm256_castsi256_ps(f)); }
     static __forceinline void storeu(const vboolf8& mask, void* ptr, const vuint8& f) { _mm256_maskstore_ps((float*)ptr,_mm256_castps_si256(mask.v),_mm256_castsi256_ps(f)); }
 
@@ -175,7 +175,7 @@ namespace embree
 
 
     static __forceinline vuint8 broadcast64(const long long& a) { return _mm256_set1_epi64x(a); }
-
+    
     ////////////////////////////////////////////////////////////////////////////////
     /// Array Access
     ////////////////////////////////////////////////////////////////////////////////
@@ -226,7 +226,7 @@ namespace embree
   __forceinline vuint8 sll (const vuint8& a, unsigned int b) { return vuint8(_mm_slli_epi32(a.vl, b), _mm_slli_epi32(a.vh, b)); }
   __forceinline vuint8 sra (const vuint8& a, unsigned int b) { return vuint8(_mm_srai_epi32(a.vl, b), _mm_srai_epi32(a.vh, b)); }
   __forceinline vuint8 srl (const vuint8& a, unsigned int b) { return vuint8(_mm_srli_epi32(a.vl, b), _mm_srli_epi32(a.vh, b)); }
-
+  
   __forceinline vuint8 min(const vuint8& a, const vuint8& b) { return vuint8(_mm_min_epu32(a.vl, b.vl), _mm_min_epu32(a.vh, b.vh)); }
   __forceinline vuint8 min(const vuint8& a, unsigned int          b) { return min(a,vuint8(b)); }
   __forceinline vuint8 min(unsigned int          a, const vuint8& b) { return min(vuint8(a),b); }
@@ -241,19 +241,19 @@ namespace embree
 
   __forceinline vuint8& operator +=(vuint8& a, const vuint8& b) { return a = a + b; }
   __forceinline vuint8& operator +=(vuint8& a, unsigned int          b) { return a = a + b; }
-
+  
   __forceinline vuint8& operator -=(vuint8& a, const vuint8& b) { return a = a - b; }
   __forceinline vuint8& operator -=(vuint8& a, unsigned int          b) { return a = a - b; }
-
+  
   //__forceinline vuint8& operator *=(vuint8& a, const vuint8& b) { return a = a * b; }
   //__forceinline vuint8& operator *=(vuint8& a, unsigned int          b) { return a = a * b; }
-
+  
   __forceinline vuint8& operator &=(vuint8& a, const vuint8& b) { return a = a & b; }
   __forceinline vuint8& operator &=(vuint8& a, unsigned int          b) { return a = a & b; }
-
+  
   __forceinline vuint8& operator |=(vuint8& a, const vuint8& b) { return a = a | b; }
   __forceinline vuint8& operator |=(vuint8& a, unsigned int          b) { return a = a | b; }
-
+  
   __forceinline vuint8& operator <<=(vuint8& a, unsigned int b) { return a = a << b; }
   __forceinline vuint8& operator >>=(vuint8& a, unsigned int b) { return a = a >> b; }
 
@@ -265,16 +265,16 @@ namespace embree
                                                                                        _mm_castsi128_ps(_mm_cmpeq_epi32 (a.vh, b.vh))); }
   __forceinline vboolf8 operator ==(const vuint8& a, unsigned int          b) { return a == vuint8(b); }
   __forceinline vboolf8 operator ==(unsigned int          a, const vuint8& b) { return vuint8(a) == b; }
-
+  
   __forceinline vboolf8 operator !=(const vuint8& a, const vuint8& b) { return !(a == b); }
   __forceinline vboolf8 operator !=(const vuint8& a, unsigned int          b) { return a != vuint8(b); }
   __forceinline vboolf8 operator !=(unsigned int          a, const vuint8& b) { return vuint8(a) != b; }
-
+  
   //__forceinline vboolf8 operator < (const vuint8& a, const vuint8& b) { return vboolf8(_mm_castsi128_ps(_mm_cmplt_epu32 (a.vl, b.vl)),
   //                                                                                     _mm_castsi128_ps(_mm_cmplt_epu32 (a.vh, b.vh))); }
   //__forceinline vboolf8 operator < (const vuint8& a, unsigned int          b) { return a <  vuint8(b); }
   //__forceinline vboolf8 operator < (unsigned int          a, const vuint8& b) { return vuint8(a) <  b; }
-
+  
   //__forceinline vboolf8 operator >=(const vuint8& a, const vuint8& b) { return !(a <  b); }
   //__forceinline vboolf8 operator >=(const vuint8& a, unsigned int          b) { return a >= vuint8(b); }
   //__forceinline vboolf8 operator >=(unsigned int          a, const vuint8& b) { return vuint8(a) >= b; }
@@ -295,7 +295,7 @@ namespace embree
   __forceinline vboolf8 ne(const vboolf8& mask, const vuint8& a, const vuint8& b) { return mask & (a != b); }
 
   __forceinline vuint8 select(const vboolf8& m, const vuint8& t, const vuint8& f) {
-    return _mm256_castps_si256(_mm256_blendv_ps(_mm256_castsi256_ps(f), _mm256_castsi256_ps(t), m));
+    return _mm256_castps_si256(_mm256_blendv_ps(_mm256_castsi256_ps(f), _mm256_castsi256_ps(t), m)); 
   }
 
 

@@ -32,7 +32,7 @@ public:
 		mVHACD->Release();
 	}
 
-
+	
 	virtual bool Compute(const double* const _points,
 		const uint32_t countPoints,
 		const uint32_t* const _triangles,
@@ -66,7 +66,7 @@ public:
 		const uint32_t countPoints,
 		const uint32_t* const triangles,
 		const uint32_t countTriangles,
-		const Parameters& _desc)
+		const Parameters& _desc) 
 	{
 		uint32_t ret = 0;
 
@@ -220,7 +220,7 @@ public:
 	{
 		return mVHACD->OCLInit(oclDevice, logger);
 	}
-
+		
 	virtual bool OCLRelease(IVHACD::IUserLogger* const logger = 0) final
 	{
 		return mVHACD->OCLRelease(logger);
@@ -253,7 +253,7 @@ public:
 	virtual bool IsReady(void) const final
 	{
 		processPendingMessages();
-		return !mRunning;
+		return !mRunning; 
 	}
 
 	// As a convenience for the calling application we only send it update and log messages from it's own main

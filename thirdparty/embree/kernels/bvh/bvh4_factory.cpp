@@ -31,7 +31,7 @@ namespace embree
   DECLARE_ISA_FUNCTION(VirtualCurveIntersector*,VirtualCurveIntersector8v,void);
   DECLARE_ISA_FUNCTION(VirtualCurveIntersector*,VirtualCurveIntersector4iMB,void);
   DECLARE_ISA_FUNCTION(VirtualCurveIntersector*,VirtualCurveIntersector8iMB,void);
-
+    
   DECLARE_SYMBOL2(Accel::Intersector1,BVH4OBBVirtualCurveIntersector1);
   DECLARE_SYMBOL2(Accel::Intersector1,BVH4OBBVirtualCurveIntersector1MB);
   DECLARE_SYMBOL2(Accel::Intersector1,BVH4OBBVirtualCurveIntersectorRobust1);
@@ -60,7 +60,7 @@ namespace embree
 
   DECLARE_SYMBOL2(Accel::Intersector1,BVH4SubdivPatch1Intersector1);
   DECLARE_SYMBOL2(Accel::Intersector1,BVH4SubdivPatch1MBIntersector1);
-
+  
   DECLARE_SYMBOL2(Accel::Intersector1,BVH4VirtualIntersector1);
   DECLARE_SYMBOL2(Accel::Intersector1,BVH4VirtualMBIntersector1);
 
@@ -101,7 +101,7 @@ namespace embree
 
   DECLARE_SYMBOL2(Accel::Intersector4,BVH4SubdivPatch1Intersector4);
   DECLARE_SYMBOL2(Accel::Intersector4,BVH4SubdivPatch1MBIntersector4);
-
+  
   DECLARE_SYMBOL2(Accel::Intersector4,BVH4VirtualIntersector4Chunk);
   DECLARE_SYMBOL2(Accel::Intersector4,BVH4VirtualMBIntersector4Chunk);
 
@@ -142,7 +142,7 @@ namespace embree
 
   DECLARE_SYMBOL2(Accel::Intersector8,BVH4SubdivPatch1Intersector8);
   DECLARE_SYMBOL2(Accel::Intersector8,BVH4SubdivPatch1MBIntersector8);
-
+  
   DECLARE_SYMBOL2(Accel::Intersector8,BVH4VirtualIntersector8Chunk);
   DECLARE_SYMBOL2(Accel::Intersector8,BVH4VirtualMBIntersector8Chunk);
 
@@ -183,7 +183,7 @@ namespace embree
 
   DECLARE_SYMBOL2(Accel::Intersector16,BVH4SubdivPatch1Intersector16);
   DECLARE_SYMBOL2(Accel::Intersector16,BVH4SubdivPatch1MBIntersector16);
-
+  
   DECLARE_SYMBOL2(Accel::Intersector16,BVH4VirtualIntersector16Chunk);
   DECLARE_SYMBOL2(Accel::Intersector16,BVH4VirtualMBIntersector16Chunk);
 
@@ -316,13 +316,13 @@ namespace embree
     IF_ENABLED_CURVES_OR_POINTS(SELECT_SYMBOL_INIT_AVX_AVX2_AVX512(features,VirtualCurveIntersector8v));
     IF_ENABLED_CURVES_OR_POINTS(SELECT_SYMBOL_DEFAULT_AVX_AVX2_AVX512(features,VirtualCurveIntersector4iMB));
     IF_ENABLED_CURVES_OR_POINTS(SELECT_SYMBOL_INIT_AVX_AVX2_AVX512(features,VirtualCurveIntersector8iMB));
-
+    
     /* select intersectors1 */
     IF_ENABLED_CURVES_OR_POINTS(SELECT_SYMBOL_DEFAULT_AVX_AVX2_AVX512(features,BVH4OBBVirtualCurveIntersector1));
     IF_ENABLED_CURVES_OR_POINTS(SELECT_SYMBOL_DEFAULT_AVX_AVX2_AVX512(features,BVH4OBBVirtualCurveIntersector1MB));
     IF_ENABLED_CURVES_OR_POINTS(SELECT_SYMBOL_DEFAULT_AVX_AVX2_AVX512(features,BVH4OBBVirtualCurveIntersectorRobust1));
     IF_ENABLED_CURVES_OR_POINTS(SELECT_SYMBOL_DEFAULT_AVX_AVX2_AVX512(features,BVH4OBBVirtualCurveIntersectorRobust1MB));
-
+    
     IF_ENABLED_TRIS(SELECT_SYMBOL_DEFAULT_AVX_AVX2_AVX512(features,BVH4Triangle4Intersector1Moeller));
     IF_ENABLED_TRIS(SELECT_SYMBOL_DEFAULT_SSE42_AVX_AVX512(features,BVH4Triangle4iIntersector1Moeller));
     IF_ENABLED_TRIS(SELECT_SYMBOL_DEFAULT_SSE42_AVX_AVX512(features,BVH4Triangle4vIntersector1Pluecker));
@@ -346,7 +346,7 @@ namespace embree
 
     IF_ENABLED_SUBDIV(SELECT_SYMBOL_DEFAULT_SSE42_AVX_AVX2_AVX512(features,BVH4SubdivPatch1Intersector1));
     IF_ENABLED_SUBDIV(SELECT_SYMBOL_DEFAULT_SSE42_AVX_AVX2_AVX512(features,BVH4SubdivPatch1MBIntersector1));
-
+    
     IF_ENABLED_USER(SELECT_SYMBOL_DEFAULT_SSE42_AVX_AVX2_AVX512(features,BVH4VirtualIntersector1));
     IF_ENABLED_USER(SELECT_SYMBOL_DEFAULT_SSE42_AVX_AVX2_AVX512(features,BVH4VirtualMBIntersector1));
 
@@ -390,7 +390,7 @@ namespace embree
 
     IF_ENABLED_SUBDIV(SELECT_SYMBOL_DEFAULT_SSE42_AVX_AVX2_AVX512(features,BVH4SubdivPatch1Intersector4));
     IF_ENABLED_SUBDIV(SELECT_SYMBOL_DEFAULT_SSE42_AVX_AVX2_AVX512(features,BVH4SubdivPatch1MBIntersector4));
-
+    
     IF_ENABLED_USER(SELECT_SYMBOL_DEFAULT_SSE42_AVX_AVX2_AVX512(features,BVH4VirtualIntersector4Chunk));
     IF_ENABLED_USER(SELECT_SYMBOL_DEFAULT_SSE42_AVX_AVX2_AVX512(features,BVH4VirtualMBIntersector4Chunk));
 
@@ -476,7 +476,7 @@ namespace embree
 
     IF_ENABLED_SUBDIV(SELECT_SYMBOL_INIT_AVX512(features,BVH4SubdivPatch1Intersector16));
     IF_ENABLED_SUBDIV(SELECT_SYMBOL_INIT_AVX512(features,BVH4SubdivPatch1MBIntersector16));
-
+    
     IF_ENABLED_USER(SELECT_SYMBOL_INIT_AVX512(features,BVH4VirtualIntersector16Chunk));
     IF_ENABLED_USER(SELECT_SYMBOL_INIT_AVX512(features,BVH4VirtualMBIntersector16Chunk));
 
@@ -875,7 +875,7 @@ namespace embree
 #endif
     return intersectors;
   }
-
+  
   Accel::Intersectors BVH4Factory::BVH4SubdivPatch1Intersectors(BVH4* bvh)
   {
     Accel::Intersectors intersectors;
@@ -970,7 +970,7 @@ namespace embree
     return new AccelInstance(accel,builder,intersectors);
   }
 #endif
-
+  
   Accel* BVH4Factory::BVH4Triangle4(Scene* scene, BuildVariant bvariant, IntersectVariant ivariant)
   {
     BVH4* accel = new BVH4(Triangle4::type,scene);
@@ -1301,7 +1301,7 @@ namespace embree
       intersectors.intersector4  = BVH4GridIntersector4HybridPluecker();
       intersectors.intersector8  = BVH4GridIntersector8HybridPluecker();
       intersectors.intersector16 = BVH4GridIntersector16HybridPluecker();
-#endif
+#endif      
     }
     return intersectors;
   }
@@ -1329,8 +1329,8 @@ namespace embree
       builder = BVH4GridSceneBuilderSAH(accel,scene,0);
     }
     else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->grid_builder+" for BVH4<GridMesh>");
-
-    return new AccelInstance(accel,builder,intersectors);
+    
+    return new AccelInstance(accel,builder,intersectors);    
   }
 
   Accel* BVH4Factory::BVH4GridMB(Scene* scene, BuildVariant bvariant, IntersectVariant ivariant)
@@ -1342,7 +1342,7 @@ namespace embree
       builder = BVH4GridMBSceneBuilderSAH(accel,scene,0);
     }
     else throw_RTCError(RTC_ERROR_INVALID_ARGUMENT,"unknown builder "+scene->device->grid_builder+" for BVH4MB<GridMesh>");
-    return new AccelInstance(accel,builder,intersectors);
+    return new AccelInstance(accel,builder,intersectors);        
   }
 
 }

@@ -672,7 +672,7 @@ void* SwRenderer::prepareCommon(SwTask* task, const Matrix& transform, const Arr
 
     task->clips = clips;
     task->transform = transform;
-
+    
     //zero size?
     if (task->transform.e11 == 0.0f && task->transform.e12 == 0.0f) return task; //zero width
     if (task->transform.e21 == 0.0f && task->transform.e22 == 0.0f) return task; //zero height

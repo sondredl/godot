@@ -426,7 +426,7 @@ static FfxErrorCode createPipelineStates(FfxFsr2Context_Private* context)
     FFX_VALIDATE(context->contextDescription.callbacks.fpCreatePipeline(&context->contextDescription.callbacks, FFX_FSR2_PASS_LOCK, &pipelineDescription, &context->pipelineLock));
     FFX_VALIDATE(context->contextDescription.callbacks.fpCreatePipeline(&context->contextDescription.callbacks, FFX_FSR2_PASS_ACCUMULATE, &pipelineDescription, &context->pipelineAccumulate));
     FFX_VALIDATE(context->contextDescription.callbacks.fpCreatePipeline(&context->contextDescription.callbacks, FFX_FSR2_PASS_ACCUMULATE_SHARPEN, &pipelineDescription, &context->pipelineAccumulateSharpen));
-
+    
     // for each pipeline: re-route/fix-up IDs based on names
     patchResourceBindings(&context->pipelineDepthClip);
     patchResourceBindings(&context->pipelineReconstructPreviousDepth);
@@ -519,7 +519,7 @@ static FfxErrorCode fsr2Create(FfxFsr2Context_Private* context, const FfxFsr2Con
 
         {   FFX_FSR2_RESOURCE_IDENTIFIER_DILATED_DEPTH, L"FSR2_DilatedDepth", (FfxResourceUsage)(FFX_RESOURCE_USAGE_RENDERTARGET | FFX_RESOURCE_USAGE_UAV),
             FFX_SURFACE_FORMAT_R32_FLOAT, contextDescription->maxRenderSize.width, contextDescription->maxRenderSize.height, 1, FFX_RESOURCE_FLAGS_ALIASABLE },
-
+            
         {   FFX_FSR2_RESOURCE_IDENTIFIER_LOCK_STATUS_1, L"FSR2_LockStatus1", (FfxResourceUsage)(FFX_RESOURCE_USAGE_RENDERTARGET | FFX_RESOURCE_USAGE_UAV),
             FFX_SURFACE_FORMAT_R16G16_FLOAT, contextDescription->displaySize.width, contextDescription->displaySize.height, 1, FFX_RESOURCE_FLAGS_NONE },
 
@@ -752,7 +752,7 @@ static void scheduleDispatch(FfxFsr2Context_Private* context, const FfxFsr2Dispa
             jobDescriptor.uavMip[currentUnorderedAccessViewIndex] = 0;
         }
     }
-
+    
     jobDescriptor.dimensions[0] = dispatchX;
     jobDescriptor.dimensions[1] = dispatchY;
     jobDescriptor.dimensions[2] = 1;
@@ -838,19 +838,19 @@ static FfxErrorCode fsr2Dispatch(FfxFsr2Context_Private* context, const FfxFsr2D
             context->contextDescription.callbacks.fpRegisterResource(&context->contextDescription.callbacks, &params->exposure, &context->srvResources[FFX_FSR2_RESOURCE_IDENTIFIER_INPUT_EXPOSURE]);
         }
     }
-
+ 
     if (params->enableAutoReactive)
     {
         context->contextDescription.callbacks.fpRegisterResource(&context->contextDescription.callbacks, &params->colorOpaqueOnly, &context->srvResources[FFX_FSR2_RESOURCE_IDENTIFIER_PREV_PRE_ALPHA_COLOR]);
     }
-
+    
     if (ffxFsr2ResourceIsNull(params->reactive)) {
         context->srvResources[FFX_FSR2_RESOURCE_IDENTIFIER_INPUT_REACTIVE_MASK] = context->srvResources[FFX_FSR2_RESOURCE_IDENTIFIER_INTERNAL_DEFAULT_REACTIVITY];
     }
     else {
         context->contextDescription.callbacks.fpRegisterResource(&context->contextDescription.callbacks, &params->reactive, &context->srvResources[FFX_FSR2_RESOURCE_IDENTIFIER_INPUT_REACTIVE_MASK]);
     }
-
+    
     if (ffxFsr2ResourceIsNull(params->transparencyAndComposition)) {
         context->srvResources[FFX_FSR2_RESOURCE_IDENTIFIER_INPUT_TRANSPARENCY_AND_COMPOSITION_MASK] = context->srvResources[FFX_FSR2_RESOURCE_IDENTIFIER_INTERNAL_DEFAULT_REACTIVITY];
     } else {
@@ -1271,7 +1271,7 @@ FfxErrorCode ffxFsr2ContextGenerateReactiveMask(FfxFsr2Context* context, const F
     contextPrivate->contextDescription.callbacks.fpRegisterResource(&contextPrivate->contextDescription.callbacks, &params->colorOpaqueOnly, &contextPrivate->srvResources[FFX_FSR2_RESOURCE_IDENTIFIER_INPUT_OPAQUE_ONLY]);
     contextPrivate->contextDescription.callbacks.fpRegisterResource(&contextPrivate->contextDescription.callbacks, &params->colorPreUpscale, &contextPrivate->srvResources[FFX_FSR2_RESOURCE_IDENTIFIER_INPUT_COLOR]);
     contextPrivate->contextDescription.callbacks.fpRegisterResource(&contextPrivate->contextDescription.callbacks, &params->outReactive, &contextPrivate->uavResources[FFX_FSR2_RESOURCE_IDENTIFIER_AUTOREACTIVE]);
-
+    
     jobDescriptor.uavs[0] = contextPrivate->uavResources[FFX_FSR2_RESOURCE_IDENTIFIER_AUTOREACTIVE];
 
     wcscpy_s(jobDescriptor.srvNames[0], pipeline->srvResourceBindings[0].name);

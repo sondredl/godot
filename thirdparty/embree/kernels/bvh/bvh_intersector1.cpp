@@ -34,11 +34,11 @@ namespace embree
                                                                               RayQueryContext* __restrict__ context)
     {
       const BVH* __restrict__ bvh = (const BVH*)This->ptr;
-
+      
       /* we may traverse an empty BVH in case all geometry was invalid */
       if (bvh->root == BVH::emptyNode)
         return;
-
+      
       /* perform per ray precalculations required by the primitive intersector */
       Precalculations pre(ray, bvh);
 
@@ -48,10 +48,10 @@ namespace embree
       StackItemT<NodeRef>* stackEnd = stack+stackSize;
       stack[0].ptr  = bvh->root;
       stack[0].dist = neg_inf;
-
+      
       if (bvh->root == BVH::emptyNode)
         return;
-
+      
       /* filter out invalid rays */
 #if defined(EMBREE_IGNORE_INVALID_RAYS)
       if (!ray.valid()) return;
@@ -119,11 +119,11 @@ namespace embree
                                                                              RayQueryContext* __restrict__ context)
     {
       const BVH* __restrict__ bvh = (const BVH*)This->ptr;
-
+      
       /* we may traverse an empty BVH in case all geometry was invalid */
       if (bvh->root == BVH::emptyNode)
         return;
-
+       
       /* early out for already occluded rays */
       if (unlikely(ray.tfar < 0.0f))
         return;
@@ -211,18 +211,18 @@ namespace embree
       static __forceinline bool pointQuery(const Accel::Intersectors* This, PointQuery* query, PointQueryContext* context)
       {
         const BVH* __restrict__ bvh = (const BVH*)This->ptr;
-
+        
         /* we may traverse an empty BVH in case all geometry was invalid */
         if (bvh->root == BVH::emptyNode)
           return false;
-
+        
         /* stack state */
         StackItemT<NodeRef> stack[stackSize];    // stack of nodes
         StackItemT<NodeRef>* stackPtr = stack+1; // current stack pointer
         StackItemT<NodeRef>* stackEnd = stack+stackSize;
         stack[0].ptr  = bvh->root;
         stack[0].dist = neg_inf;
-
+        
         /* verify correct input */
         assert(!(types & BVH_MB) || (query->time >= 0.0f && query->time <= 1.0f));
 
@@ -301,12 +301,12 @@ namespace embree
     struct PointQueryDispatch<N, types, robust, VirtualCurveIntersector1> {
       static __forceinline bool pointQuery(const Accel::Intersectors* This, PointQuery* query, PointQueryContext* context) { return false; }
     };
-
+    
     template<int N, int types, bool robust>
     struct PointQueryDispatch<N, types, robust, SubdivPatch1Intersector1> {
       static __forceinline bool pointQuery(const Accel::Intersectors* This, PointQuery* query, PointQueryContext* context) { return false; }
     };
-
+    
     template<int N, int types, bool robust>
     struct PointQueryDispatch<N, types, robust, SubdivPatch1MBIntersector1> {
       static __forceinline bool pointQuery(const Accel::Intersectors* This, PointQuery* query, PointQueryContext* context) { return false; }

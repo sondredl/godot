@@ -34,9 +34,9 @@ namespace embree
     while (!filename.empty() && filename[filename.size()-1] == path_sep)
       filename.resize(filename.size()-1);
   }
-
+  
   /*! returns path to home folder */
-  FileName FileName::homeFolder()
+  FileName FileName::homeFolder() 
   {
 #ifdef __WIN32__
     const char* home = getenv("UserProfile");
@@ -125,7 +125,7 @@ namespace embree
   bool operator== (const FileName& a, const FileName& b) {
     return a.filename == b.filename;
   }
-
+  
   /*! != operator */
   bool operator!= (const FileName& a, const FileName& b) {
     return a.filename != b.filename;

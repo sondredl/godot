@@ -18,7 +18,7 @@ namespace embree
   struct vuint<8>
   {
     ALIGNED_STRUCT_(32);
-
+        
     typedef vboolf8 Bool;
     typedef vuint8   Int;
     typedef vfloat8 Float;
@@ -27,7 +27,7 @@ namespace embree
     union {             // data
       __m256i v;
       unsigned int i[8];
-    };
+    }; 
 
     ////////////////////////////////////////////////////////////////////////////////
     /// Constructors, Assignment & Cast Operators
@@ -44,7 +44,7 @@ namespace embree
     __forceinline explicit vuint(const vuint4& a) : v(_mm256_insertf128_si256(_mm256_castsi128_si256(a),a,1)) {}
     __forceinline vuint(const vuint4& a, const vuint4& b) : v(_mm256_insertf128_si256(_mm256_castsi128_si256(a),b,1)) {}
     __forceinline vuint(const __m128i& a, const __m128i& b) : v(_mm256_insertf128_si256(_mm256_castsi128_si256(a),b,1)) {}
-
+ 
     __forceinline explicit vuint(const unsigned int* a) : v(_mm256_castps_si256(_mm256_loadu_ps((const float*)a))) {}
     __forceinline vuint(unsigned int a) : v(_mm256_set1_epi32(a)) {}
     __forceinline vuint(unsigned int a, unsigned int b) : v(_mm256_set_epi32(b, a, b, a, b, a, b, a)) {}
@@ -106,7 +106,7 @@ namespace embree
     static __forceinline void store (const vboolf8& mask, void* ptr, const vuint8& v) { _mm256_maskstore_epi32((int*)ptr,mask,v); }
     static __forceinline void storeu(const vboolf8& mask, void* ptr, const vuint8& v) { _mm256_maskstore_epi32((int*)ptr,mask,v); }
 #endif
-
+    
     static __forceinline vuint8 load_nt(void* ptr) {
       return _mm256_stream_load_si256((__m256i*)ptr);
     }
@@ -176,7 +176,7 @@ namespace embree
     }
 
     static __forceinline vuint8 broadcast64(const long long &a) { return _mm256_set1_epi64x(a); }
-
+    
     ////////////////////////////////////////////////////////////////////////////////
     /// Array Access
     ////////////////////////////////////////////////////////////////////////////////
@@ -238,7 +238,7 @@ namespace embree
   __forceinline vuint8 sll(const vuint8& a, const vuint8& b) { return _mm256_sllv_epi32(a, b); }
   __forceinline vuint8 sra(const vuint8& a, const vuint8& b) { return _mm256_srav_epi32(a, b); }
   __forceinline vuint8 srl(const vuint8& a, const vuint8& b) { return _mm256_srlv_epi32(a, b); }
-
+  
   __forceinline vuint8 min(const vuint8& a, const vuint8& b) { return _mm256_min_epu32(a, b); }
   __forceinline vuint8 min(const vuint8& a, unsigned int          b) { return min(a,vuint8(b)); }
   __forceinline vuint8 min(unsigned int          a, const vuint8& b) { return min(vuint8(a),b); }
@@ -253,19 +253,19 @@ namespace embree
 
   __forceinline vuint8& operator +=(vuint8& a, const vuint8& b) { return a = a + b; }
   __forceinline vuint8& operator +=(vuint8& a, unsigned int          b) { return a = a + b; }
-
+  
   __forceinline vuint8& operator -=(vuint8& a, const vuint8& b) { return a = a - b; }
   __forceinline vuint8& operator -=(vuint8& a, unsigned int          b) { return a = a - b; }
-
+  
   //__forceinline vuint8& operator *=(vuint8& a, const vuint8& b) { return a = a * b; }
   //__forceinline vuint8& operator *=(vuint8& a, unsigned int          b) { return a = a * b; }
-
+  
   __forceinline vuint8& operator &=(vuint8& a, const vuint8& b) { return a = a & b; }
   __forceinline vuint8& operator &=(vuint8& a, unsigned int          b) { return a = a & b; }
-
+  
   __forceinline vuint8& operator |=(vuint8& a, const vuint8& b) { return a = a | b; }
   __forceinline vuint8& operator |=(vuint8& a, unsigned int          b) { return a = a | b; }
-
+  
   __forceinline vuint8& operator <<=(vuint8& a, const unsigned int b) { return a = a << b; }
   __forceinline vuint8& operator >>=(vuint8& a, const unsigned int b) { return a = a >> b; }
 
@@ -397,11 +397,11 @@ namespace embree
   template<int i>
   __forceinline vuint8 align_shift_right(const vuint8& a, const vuint8& b) {
 #if defined(__AVX512VL__)
-    return _mm256_alignr_epi32(a, b, i);
+    return _mm256_alignr_epi32(a, b, i);    
 #else
     return _mm256_alignr_epi8(a, b, 4*i);
 #endif
-  }
+  }  
 #endif // !defined(__aarch64__)
 
   ////////////////////////////////////////////////////////////////////////////////

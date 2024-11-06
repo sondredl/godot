@@ -39,9 +39,9 @@ static bool overlapBounds(const float* aMin, const float* aMax, const float* bMi
 
 /// Allocates a new span in the heightfield.
 /// Use a memory pool and free list to minimize actual allocations.
-///
+/// 
 /// @param[in]	hf		The heightfield
-/// @returns A pointer to the allocated or re-used span memory.
+/// @returns A pointer to the allocated or re-used span memory. 
 static rcSpan* allocSpan(rcHeightfield& hf)
 {
 	// If necessary, allocate new page and update the freelist.
@@ -58,7 +58,7 @@ static rcSpan* allocSpan(rcHeightfield& hf)
 		// Add the pool into the list of pools.
 		spanPool->next = hf.pools;
 		hf.pools = spanPool;
-
+		
 		// Add new spans to the free list.
 		rcSpan* freeList = hf.freelist;
 		rcSpan* head = &spanPool->items[0];
@@ -118,11 +118,11 @@ static bool addSpan(rcHeightfield& hf,
 	newSpan->smax = max;
 	newSpan->area = areaID;
 	newSpan->next = NULL;
-
+	
 	const int columnIndex = x + z * hf.width;
 	rcSpan* previousSpan = NULL;
 	rcSpan* currentSpan = hf.spans[columnIndex];
-
+	
 	// Insert the new span, possibly merging it with existing spans.
 	while (currentSpan != NULL)
 	{
@@ -131,7 +131,7 @@ static bool addSpan(rcHeightfield& hf,
 			// Current span is completely after the new span, break.
 			break;
 		}
-
+		
 		if (currentSpan->smax < newSpan->smin)
 		{
 			// Current span is completely before the new span.  Keep going.
@@ -149,14 +149,14 @@ static bool addSpan(rcHeightfield& hf,
 			{
 				newSpan->smax = currentSpan->smax;
 			}
-
+			
 			// Merge flags.
 			if (rcAbs((int)newSpan->smax - (int)currentSpan->smax) <= flagMergeThreshold)
 			{
 				// Higher area ID numbers indicate higher resolution priority.
 				newSpan->area = rcMax(newSpan->area, currentSpan->area);
 			}
-
+			
 			// Remove the current span since it's now merged with newSpan.
 			// Keep going because there might be other overlapping spans that also need to be merged.
 			rcSpan* next = currentSpan->next;
@@ -172,7 +172,7 @@ static bool addSpan(rcHeightfield& hf,
 			currentSpan = next;
 		}
 	}
-
+	
 	// Insert new span after prev
 	if (previousSpan != NULL)
 	{
@@ -214,7 +214,7 @@ enum rcAxis
 
 /// Divides a convex polygon of max 12 vertices into two convex polygons
 /// across a separating axis.
-///
+/// 
 /// @param[in]	inVerts			The input polygon vertices
 /// @param[in]	inVertsCount	The number of input polygon vertices
 /// @param[out]	outVerts1		Resulting polygon 1's vertices
@@ -229,7 +229,7 @@ static void dividePoly(const float* inVerts, int inVertsCount,
                        float axisOffset, rcAxis axis)
 {
 	rcAssert(inVertsCount <= 12);
-
+	
 	// How far positive or negative away from the separating axis is each vertex.
 	float inVertAxisDelta[12];
 	for (int inVert = 0; inVert < inVertsCount; ++inVert)
@@ -253,7 +253,7 @@ static void dividePoly(const float* inVerts, int inVertsCount,
 			rcVcopy(&outVerts2[poly2Vert * 3], &outVerts1[poly1Vert * 3]);
 			poly1Vert++;
 			poly2Vert++;
-
+			
 			// add the inVertA point to the right polygon. Do NOT add points that are on the dividing line
 			// since these were already added above
 			if (inVertAxisDelta[inVertA] > 0)
@@ -291,7 +291,7 @@ static void dividePoly(const float* inVerts, int inVertsCount,
 ///	Rasterize a single triangle to the heightfield.
 ///
 ///	This code is extremely hot, so much care should be given to maintaining maximum perf here.
-///
+/// 
 /// @param[in] 	v0					Triangle vertex 0
 /// @param[in] 	v1					Triangle vertex 1
 /// @param[in] 	v2					Triangle vertex 2
@@ -302,7 +302,7 @@ static void dividePoly(const float* inVerts, int inVertsCount,
 /// @param[in] 	cellSize			The x and z axis size of a voxel in the heightfield
 /// @param[in] 	inverseCellSize		1 / cellSize
 /// @param[in] 	inverseCellHeight	1 / cellHeight
-/// @param[in] 	flagMergeThreshold	The threshold in which area flags will be merged
+/// @param[in] 	flagMergeThreshold	The threshold in which area flags will be merged 
 /// @returns true if the operation completes successfully.  false if there was an error adding spans to the heightfield.
 static bool rasterizeTri(const float* v0, const float* v1, const float* v2,
                          const unsigned char areaID, rcHeightfield& hf,
@@ -358,7 +358,7 @@ static bool rasterizeTri(const float* v0, const float* v1, const float* v2,
 		const float cellZ = hfBBMin[2] + (float)z * cellSize;
 		dividePoly(in, nvIn, inRow, &nvRow, p1, &nvIn, cellZ + cellSize, RC_AXIS_Z);
 		rcSwap(in, p1);
-
+		
 		if (nvRow < 3)
 		{
 			continue;
@@ -367,7 +367,7 @@ static bool rasterizeTri(const float* v0, const float* v1, const float* v2,
 		{
 			continue;
 		}
-
+		
 		// find X-axis bounds of the row
 		float minX = inRow[0];
 		float maxX = inRow[0];
@@ -400,7 +400,7 @@ static bool rasterizeTri(const float* v0, const float* v1, const float* v2,
 			const float cx = hfBBMin[0] + (float)x * cellSize;
 			dividePoly(inRow, nv2, p1, &nv, p2, &nv2, cx + cellSize, RC_AXIS_X);
 			rcSwap(inRow, p2);
-
+			
 			if (nv < 3)
 			{
 				continue;
@@ -409,7 +409,7 @@ static bool rasterizeTri(const float* v0, const float* v1, const float* v2,
 			{
 				continue;
 			}
-
+			
 			// Calculate min and max of the span.
 			float spanMin = p1[1];
 			float spanMax = p1[1];
@@ -420,7 +420,7 @@ static bool rasterizeTri(const float* v0, const float* v1, const float* v2,
 			}
 			spanMin -= hfBBMin[1];
 			spanMax -= hfBBMin[1];
-
+			
 			// Skip the span if it's completely outside the heightfield bounding box
 			if (spanMax < 0.0f)
 			{
@@ -430,7 +430,7 @@ static bool rasterizeTri(const float* v0, const float* v1, const float* v2,
 			{
 				continue;
 			}
-
+			
 			// Clamp the span to the heightfield bounding box.
 			if (spanMin < 0.0f)
 			{
@@ -483,7 +483,7 @@ bool rcRasterizeTriangles(rcContext* context,
 	rcAssert(context != NULL);
 
 	rcScopedTimer timer(context, RC_TIMER_RASTERIZE_TRIANGLES);
-
+	
 	// Rasterize the triangles.
 	const float inverseCellSize = 1.0f / heightfield.cs;
 	const float inverseCellHeight = 1.0f / heightfield.ch;
@@ -536,7 +536,7 @@ bool rcRasterizeTriangles(rcContext* context,
 	rcAssert(context != NULL);
 
 	rcScopedTimer timer(context, RC_TIMER_RASTERIZE_TRIANGLES);
-
+	
 	// Rasterize the triangles.
 	const float inverseCellSize = 1.0f / heightfield.cs;
 	const float inverseCellHeight = 1.0f / heightfield.ch;

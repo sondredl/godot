@@ -27,7 +27,7 @@ namespace embree
     "flat_catmull_rom_curve",
     "round_catmull_rom_curve",
     "oriented_catmull_rom_curve",
-    "",
+    "",    
     "triangles",
     "quads",
     "grid",
@@ -41,8 +41,8 @@ namespace embree
     "instance_cheap",
     "instance_expensive",
   };
-
-  Geometry::Geometry (Device* device, GType gtype, unsigned int numPrimitives, unsigned int numTimeSteps)
+     
+  Geometry::Geometry (Device* device, GType gtype, unsigned int numPrimitives, unsigned int numTimeSteps) 
     : device(device), userPtr(nullptr),
       numPrimitives(numPrimitives), numTimeSteps(unsigned(numTimeSteps)), fnumTimeSegments(float(numTimeSteps-1)), time_range(0.0f,1.0f),
       mask(1),
@@ -63,11 +63,11 @@ namespace embree
   }
 
   void Geometry::setNumPrimitives(unsigned int numPrimitives_in)
-  {
+  {      
     if (numPrimitives_in == numPrimitives) return;
-
+    
     numPrimitives = numPrimitives_in;
-
+    
     Geometry::update();
   }
 
@@ -76,10 +76,10 @@ namespace embree
     if (numTimeSteps_in == numTimeSteps) {
       return;
     }
-
+    
     numTimeSteps = numTimeSteps_in;
     fnumTimeSegments = float(numTimeSteps_in-1);
-
+    
     Geometry::update();
   }
 
@@ -88,7 +88,7 @@ namespace embree
     time_range = range;
     Geometry::update();
   }
-
+  
   BBox1f Geometry::getTimeRange () const
   {
     return time_range;
@@ -99,8 +99,8 @@ namespace embree
     ++modCounter_; // FIXME: required?
     state = (unsigned)State::MODIFIED;
   }
-
-  void Geometry::commit()
+  
+  void Geometry::commit() 
   {
     ++modCounter_;
     state = (unsigned)State::COMMITTED;
@@ -116,20 +116,20 @@ namespace embree
   {
   }
 
-  void Geometry::enable ()
+  void Geometry::enable () 
   {
-    if (isEnabled())
+    if (isEnabled()) 
       return;
 
     enabled = true;
     ++modCounter_;
   }
 
-  void Geometry::disable ()
+  void Geometry::disable () 
   {
-    if (isDisabled())
+    if (isDisabled()) 
       return;
-
+    
     enabled = false;
     ++modCounter_;
   }
@@ -138,24 +138,24 @@ namespace embree
   {
     userPtr = ptr;
   }
-
-  void Geometry::setIntersectionFilterFunctionN (RTCFilterFunctionN filter)
+  
+  void Geometry::setIntersectionFilterFunctionN (RTCFilterFunctionN filter) 
   {
     if (!(getTypeMask() & (MTY_TRIANGLE_MESH | MTY_QUAD_MESH | MTY_CURVES | MTY_SUBDIV_MESH | MTY_USER_GEOMETRY | MTY_GRID_MESH)))
-      throw_RTCError(RTC_ERROR_INVALID_OPERATION,"filter functions not supported for this geometry");
+      throw_RTCError(RTC_ERROR_INVALID_OPERATION,"filter functions not supported for this geometry"); 
 
     intersectionFilterN = filter;
   }
 
-  void Geometry::setOcclusionFilterFunctionN (RTCFilterFunctionN filter)
+  void Geometry::setOcclusionFilterFunctionN (RTCFilterFunctionN filter) 
   {
     if (!(getTypeMask() & (MTY_TRIANGLE_MESH | MTY_QUAD_MESH | MTY_CURVES | MTY_SUBDIV_MESH | MTY_USER_GEOMETRY | MTY_GRID_MESH)))
-      throw_RTCError(RTC_ERROR_INVALID_OPERATION,"filter functions not supported for this geometry");
+      throw_RTCError(RTC_ERROR_INVALID_OPERATION,"filter functions not supported for this geometry"); 
 
     occlusionFilterN = filter;
   }
-
-  void Geometry::setPointQueryFunction (RTCPointQueryFunction func)
+  
+  void Geometry::setPointQueryFunction (RTCPointQueryFunction func) 
   {
     pointQueryFunc = func;
   }
@@ -179,7 +179,7 @@ namespace embree
 
     if (valueCount > 256) throw_RTCError(RTC_ERROR_INVALID_OPERATION,"maximally 256 floating point values can be interpolated per vertex");
     const int* valid = (const int*) valid_i;
-
+ 
     __aligned(64) float P_tmp[256];
     __aligned(64) float dPdu_tmp[256];
     __aligned(64) float dPdv_tmp[256];
@@ -192,7 +192,7 @@ namespace embree
     if (dPdu) { dPdut = dPdu_tmp; dPdvt = dPdv_tmp; }
     float* ddPdudut = nullptr, *ddPdvdvt = nullptr, *ddPdudvt = nullptr;
     if (ddPdudu) { ddPdudut = ddPdudu_tmp; ddPdvdvt = ddPdvdv_tmp; ddPdudvt = ddPdudv_tmp; }
-
+    
     for (unsigned int i=0; i<N; i++)
     {
       if (valid && !valid[i]) continue;
@@ -211,19 +211,19 @@ namespace embree
       iargs.ddPdudv = ddPdudvt;
       iargs.valueCount = valueCount;
       interpolate(&iargs);
-
+      
       if (likely(P)) {
-        for (unsigned int j=0; j<valueCount; j++)
+        for (unsigned int j=0; j<valueCount; j++) 
           P[j*N+i] = Pt[j];
       }
-      if (likely(dPdu))
+      if (likely(dPdu)) 
       {
         for (unsigned int j=0; j<valueCount; j++) {
           dPdu[j*N+i] = dPdut[j];
           dPdv[j*N+i] = dPdvt[j];
         }
       }
-      if (likely(ddPdudu))
+      if (likely(ddPdudu)) 
       {
         for (unsigned int j=0; j<valueCount; j++) {
           ddPdudu[j*N+i] = ddPdudut[j];

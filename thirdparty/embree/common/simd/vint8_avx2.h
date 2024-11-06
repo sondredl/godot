@@ -27,7 +27,7 @@ namespace embree
     union {             // data
       __m256i v;
       int i[8];
-    };
+    }; 
 
     ////////////////////////////////////////////////////////////////////////////////
     /// Constructors, Assignment & Cast Operators
@@ -44,7 +44,7 @@ namespace embree
     __forceinline explicit vint(const vint4& a) : v(_mm256_insertf128_si256(_mm256_castsi128_si256(a),a,1)) {}
     __forceinline vint(const vint4& a, const vint4& b) : v(_mm256_insertf128_si256(_mm256_castsi128_si256(a),b,1)) {}
     __forceinline vint(const __m128i& a, const __m128i& b) : v(_mm256_insertf128_si256(_mm256_castsi128_si256(a),b,1)) {}
-
+ 
     __forceinline explicit vint(const int* a) : v(_mm256_castps_si256(_mm256_loadu_ps((const float*)a))) {}
     __forceinline vint(int a) : v(_mm256_set1_epi32(a)) {}
     __forceinline vint(int a, int b) : v(_mm256_set_epi32(b, a, b, a, b, a, b, a)) {}
@@ -107,7 +107,7 @@ namespace embree
     static __forceinline void store (const vboolf8& mask, void* ptr, const vint8& v) { _mm256_maskstore_epi32((int*)ptr,mask,v); }
     static __forceinline void storeu(const vboolf8& mask, void* ptr, const vint8& v) { _mm256_maskstore_epi32((int*)ptr,mask,v); }
 #endif
-
+    
     static __forceinline vint8 load_nt(void* ptr) {
       return _mm256_stream_load_si256((__m256i*)ptr);
     }
@@ -177,7 +177,7 @@ namespace embree
     }
 
     static __forceinline vint8 broadcast64(const long long &a) { return _mm256_set1_epi64x(a); }
-
+    
     ////////////////////////////////////////////////////////////////////////////////
     /// Array Access
     ////////////////////////////////////////////////////////////////////////////////
@@ -241,7 +241,7 @@ namespace embree
   __forceinline vint8 sll(const vint8& a, const vint8& b) { return _mm256_sllv_epi32(a, b); }
   __forceinline vint8 sra(const vint8& a, const vint8& b) { return _mm256_srav_epi32(a, b); }
   __forceinline vint8 srl(const vint8& a, const vint8& b) { return _mm256_srlv_epi32(a, b); }
-
+  
   __forceinline vint8 min(const vint8& a, const vint8& b) { return _mm256_min_epi32(a, b); }
   __forceinline vint8 min(const vint8& a, int          b) { return min(a,vint8(b)); }
   __forceinline vint8 min(int          a, const vint8& b) { return min(vint8(a),b); }
@@ -259,19 +259,19 @@ namespace embree
 
   __forceinline vint8& operator +=(vint8& a, const vint8& b) { return a = a + b; }
   __forceinline vint8& operator +=(vint8& a, int          b) { return a = a + b; }
-
+  
   __forceinline vint8& operator -=(vint8& a, const vint8& b) { return a = a - b; }
   __forceinline vint8& operator -=(vint8& a, int          b) { return a = a - b; }
-
+  
   __forceinline vint8& operator *=(vint8& a, const vint8& b) { return a = a * b; }
   __forceinline vint8& operator *=(vint8& a, int          b) { return a = a * b; }
-
+  
   __forceinline vint8& operator &=(vint8& a, const vint8& b) { return a = a & b; }
   __forceinline vint8& operator &=(vint8& a, int          b) { return a = a & b; }
-
+  
   __forceinline vint8& operator |=(vint8& a, const vint8& b) { return a = a | b; }
   __forceinline vint8& operator |=(vint8& a, int          b) { return a = a | b; }
-
+  
   __forceinline vint8& operator <<=(vint8& a, const int b) { return a = a << b; }
   __forceinline vint8& operator >>=(vint8& a, const int b) { return a = a >> b; }
 
@@ -405,11 +405,11 @@ namespace embree
   template<int i>
   static __forceinline vint8 align_shift_right(const vint8& a, const vint8& b) {
 #if defined(__AVX512VL__)
-    return _mm256_alignr_epi32(a, b, i);
+    return _mm256_alignr_epi32(a, b, i);    
 #else
     return _mm256_alignr_epi8(a, b, 4*i);
 #endif
-  }
+  }  
 
 #endif
 

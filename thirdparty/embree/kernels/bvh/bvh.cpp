@@ -17,7 +17,7 @@ namespace embree
   template<int N>
   BVHN<N>::~BVHN ()
   {
-    for (size_t i=0; i<objects.size(); i++)
+    for (size_t i=0; i<objects.size(); i++) 
       delete objects[i];
   }
 
@@ -34,7 +34,7 @@ namespace embree
     this->root = root;
     this->bounds = bounds;
     this->numPrimitives = numPrimitives;
-  }
+  }	
 
   template<int N>
   void BVHN<N>::clearBarrier(NodeRef& node)
@@ -52,7 +52,7 @@ namespace embree
   void BVHN<N>::layoutLargeNodes(size_t num)
   {
 #if defined(__64BIT__) // do not use tree rotations on 32 bit platforms, barrier bit in NodeRef will cause issues
-    struct NodeArea
+    struct NodeArea 
     {
       __forceinline NodeArea() {}
 
@@ -85,11 +85,11 @@ namespace embree
 
     for (size_t i=0; i<lst.size(); i++)
       lst[i].node->setBarrier();
-
+      
     root = layoutLargeNodesRecursion(root,alloc.getCachedAllocator());
 #endif
   }
-
+  
   template<int N>
   typename BVHN<N>::NodeRef BVHN<N>::layoutLargeNodesRecursion(NodeRef& node, const FastAllocator::CachedAllocator& allocator)
   {
@@ -97,7 +97,7 @@ namespace embree
       node.clearBarrier();
       return node;
     }
-    else if (node.isAABBNode())
+    else if (node.isAABBNode()) 
     {
       AABBNode* oldnode = node.getAABBNode();
       AABBNode* newnode = (BVHN::AABBNode*) allocator.malloc0(sizeof(BVHN::AABBNode),byteNodeAlignment);
@@ -112,7 +112,7 @@ namespace embree
   template<int N>
   double BVHN<N>::preBuild(const std::string& builderName)
   {
-    if (builderName == "")
+    if (builderName == "") 
       return inf;
 
     if (device->verbosity(2))
@@ -131,9 +131,9 @@ namespace embree
   {
     if (t0 == double(inf))
       return;
-
+    
     double dt = 0.0;
-    if (device->benchmark || device->verbosity(2))
+    if (device->benchmark || device->verbosity(2)) 
       dt = getSeconds()-t0;
 
     std::unique_ptr<BVHNStatistics<N>> stat;
@@ -145,7 +145,7 @@ namespace embree
       const size_t usedBytes = alloc.getUsedBytes();
       Lock<MutexSys> lock(g_printMutex);
       std::cout << "finished BVH" << N << "<" << primTy->name() << "> : " << 1000.0f*dt << "ms, " << 1E-6*double(numPrimitives)/dt << " Mprim/s, " << 1E-9*double(usedBytes)/dt << " GB/s" << std::endl;
-
+    
       if (device->verbosity(2))
         std::cout << stat->str();
 
@@ -163,7 +163,7 @@ namespace embree
       {
         alloc.print_blocks();
         for (size_t i=0; i<objects.size(); i++)
-          if (objects[i])
+          if (objects[i]) 
             objects[i]->alloc.print_blocks();
       }
 

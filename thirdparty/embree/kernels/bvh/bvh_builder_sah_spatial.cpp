@@ -100,13 +100,13 @@ namespace embree
         /* enable os_malloc for two level build */
         if (mesh)
           bvh->alloc.setOSallocation(true);
-
+	
 	NodeRef root(0);
 	PrimInfo pinfo;
-
+	
 
         if (likely(usePreSplits))
-	  {
+	  {		     
             /* spatial presplit SAH BVH builder */
 	    pinfo = mesh ?
 	      createPrimRefArray_presplit<Mesh,Splitter>(mesh,maxGeomID,numOriginalPrimitives,prims0,bvh->scene->progressInterface) :
@@ -129,7 +129,7 @@ namespace embree
 	    pinfo = mesh ?
 	      createPrimRefArray(mesh,geomID_,numSplitPrimitives,prims0,bvh->scene->progressInterface) :
 	      createPrimRefArray(scene,Mesh::geom_type,false,numSplitPrimitives,prims0,bvh->scene->progressInterface);
-
+	
 	    Splitter splitter(scene);
 
 	    const size_t node_bytes = pinfo.size()*sizeof(typename BVH::AABBNode)/(4*N);

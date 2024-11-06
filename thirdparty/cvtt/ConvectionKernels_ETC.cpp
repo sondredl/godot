@@ -204,7 +204,7 @@ void cvtt::Internal::ETCComputer::TestHalfBlockPunchthrough(MFloat &outError, MU
         // Remap selector 1 to 2, and 2 to 3
         bestSelector = ParallelMath::Min(ParallelMath::MakeUInt15(3), bestSelector << 1);
 
-        // Mark zero transparent as
+        // Mark zero transparent as 
         ParallelMath::ConditionalSet(bestError, isTransparentFloat, ParallelMath::MakeFloatZero());
         ParallelMath::ConditionalSet(bestSelector, isTransparent[px], ParallelMath::MakeUInt15(1));
 
@@ -1208,7 +1208,7 @@ void cvtt::Internal::ETCComputer::EncodeVirtualTModePunchthrough(uint8_t *output
                 ParallelMath::ConditionalSet(bestTable, errorBetter, ParallelMath::MakeUInt15(table));
                 ParallelMath::ConditionalSet(bestIsHMode, errorBetter, useHMode);
                 ParallelMath::ConditionalSet(bestHModeColor2, errorBetter, packedHModeColor2);
-
+                
                 bestIsThisMode = bestIsThisMode | errorBetter;
             }
         }

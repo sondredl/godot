@@ -7975,7 +7975,7 @@ spv::Id TGlslangToSpvTraverser::createAtomicOperation(glslang::TOperator op, spv
     case glslang::EOpAtomicExchange:
     case glslang::EOpImageAtomicExchange:
     case glslang::EOpAtomicCounterExchange:
-        if ((typeProxy == glslang::EbtFloat16) &&
+        if ((typeProxy == glslang::EbtFloat16) && 
             (opType.getVectorSize() == 2 || opType.getVectorSize() == 4)) {
                 builder.addExtension(spv::E_SPV_NV_shader_atomic_fp16_vector);
                 builder.addCapability(spv::CapabilityAtomicFloat16VectorNV);
