@@ -64,11 +64,7 @@ bool SkinTool::_capture_nodes_in_skin(const Vector<Ref<GLTFNode>> &nodes, Ref<GL
 		}
 	}
 
-	if (p_skin->joints.find(p_node_index) > 0) {
-		return true;
-	}
-
-	return false;
+	return p_skin->joints.find(p_node_index) > 0;
 }
 
 void SkinTool::_capture_nodes_for_multirooted_skin(Vector<Ref<GLTFNode>> &r_nodes, Ref<GLTFSkin> p_skin) {
@@ -719,27 +715,7 @@ String SkinTool::_gen_unique_name(HashSet<String> &unique_names, const String &p
 }
 
 bool SkinTool::_skins_are_same(const Ref<Skin> p_skin_a, const Ref<Skin> p_skin_b) {
-	if (p_skin_a->get_bind_count() != p_skin_b->get_bind_count()) {
-		return false;
-	}
-
-	for (int i = 0; i < p_skin_a->get_bind_count(); ++i) {
-		if (p_skin_a->get_bind_bone(i) != p_skin_b->get_bind_bone(i)) {
-			return false;
-		}
-		if (p_skin_a->get_bind_name(i) != p_skin_b->get_bind_name(i)) {
-			return false;
-		}
-
-		Transform3D a_xform = p_skin_a->get_bind_pose(i);
-		Transform3D b_xform = p_skin_b->get_bind_pose(i);
-
-		if (a_xform != b_xform) {
-			return false;
-		}
-	}
-
-	return true;
+	return (!p_skin_a->get_bind_count()) != p_skin_b->get_bind_count();
 }
 
 void SkinTool::_remove_duplicate_skins(Vector<Ref<GLTFSkin>> &r_skins) {

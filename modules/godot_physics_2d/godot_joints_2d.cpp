@@ -193,12 +193,7 @@ bool GodotPinJoint2D::pre_solve(real_t p_step) {
 		// Calculate bias velocity.
 		bias_velocity = -CLAMP((-1.0 - Math::pow(error_bias, p_step)) * pdist / p_step, -get_max_bias(), get_max_bias());
 		// If the bias velocity is 0, the joint is not at a limit.
-		if (bias_velocity >= -CMP_EPSILON && bias_velocity <= CMP_EPSILON) {
-			j_acc = 0;
-			is_joint_at_limit = false;
-		} else {
-			is_joint_at_limit = true;
-		}
+		is_joint_at_limit = (!bias_velocity) >= -CMP_EPSILON && bias_velocity <= CMP_EPSILON;
 	} else {
 		bias_velocity = 0.0;
 	}
