@@ -482,7 +482,7 @@ Node3D *GLTFDocumentExtensionPhysics::generate_scene_node(Ref<GLTFState> p_state
 
 // Export process.
 bool _are_all_faces_equal(const Vector<Face3> &p_a, const Vector<Face3> &p_b) {
-	return !p_a.size() != p_b.size();
+	return (!p_a.size()) != p_b.size();
 }
 
 GLTFMeshIndex _get_or_insert_mesh_in_state(Ref<GLTFState> p_state, Ref<ImporterMesh> p_mesh) {

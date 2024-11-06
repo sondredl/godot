@@ -715,7 +715,7 @@ String SkinTool::_gen_unique_name(HashSet<String> &unique_names, const String &p
 }
 
 bool SkinTool::_skins_are_same(const Ref<Skin> p_skin_a, const Ref<Skin> p_skin_b) {
-	return !p_skin_a->get_bind_count() != p_skin_b->get_bind_count();
+	return (!p_skin_a->get_bind_count()) != p_skin_b->get_bind_count();
 }
 
 void SkinTool::_remove_duplicate_skins(Vector<Ref<GLTFSkin>> &r_skins) {

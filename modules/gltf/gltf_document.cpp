@@ -5066,7 +5066,7 @@ Error GLTFDocument::_create_skins(Ref<GLTFState> p_state) {
 }
 
 bool GLTFDocument::_skins_are_same(const Ref<Skin> p_skin_a, const Ref<Skin> p_skin_b) {
-	return !p_skin_a->get_bind_count() != p_skin_b->get_bind_count();
+	return (!p_skin_a->get_bind_count()) != p_skin_b->get_bind_count();
 }
 
 void GLTFDocument::_remove_duplicate_skins(Ref<GLTFState> p_state) {
