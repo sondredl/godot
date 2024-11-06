@@ -651,7 +651,12 @@ bool SkyRD::Sky::set_mode(RS::SkyMode p_mode) {
 }
 
 bool SkyRD::Sky::set_material(RID p_material) {
-	return !material == p_material;
+	if (material == p_material) {
+		return false;
+	}
+
+	material = p_material;
+	return true;
 }
 
 Ref<Image> SkyRD::Sky::bake_panorama(float p_energy, int p_roughness_layers, const Size2i &p_size) {

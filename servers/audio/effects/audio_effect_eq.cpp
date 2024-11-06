@@ -92,12 +92,22 @@ int AudioEffectEQ::get_band_count() const {
 
 bool AudioEffectEQ::_set(const StringName &p_name, const Variant &p_value) {
 	HashMap<StringName, int>::ConstIterator E = prop_band_map.find(p_name);
-	return E;
+	if (E) {
+		set_band_gain_db(E->value, p_value);
+		return true;
+	}
+
+	return false;
 }
 
 bool AudioEffectEQ::_get(const StringName &p_name, Variant &r_ret) const {
 	HashMap<StringName, int>::ConstIterator E = prop_band_map.find(p_name);
-	return E;
+	if (E) {
+		r_ret = get_band_gain_db(E->value);
+		return true;
+	}
+
+	return false;
 }
 
 void AudioEffectEQ::_get_property_list(List<PropertyInfo> *p_list) const {

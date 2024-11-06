@@ -319,7 +319,10 @@ static bool is_node_voxel_bakeable(Node3D *p_node) {
 	}
 
 	GeometryInstance3D *geometry = Object::cast_to<GeometryInstance3D>(p_node);
-	return !geometry != nullptr && geometry->get_gi_mode() != GeometryInstance3D::GI_MODE_STATIC;
+	if (geometry != nullptr && geometry->get_gi_mode() != GeometryInstance3D::GI_MODE_STATIC) {
+		return false;
+	}
+	return true;
 }
 
 void VoxelGI::_find_meshes(Node *p_at_node, List<PlotMesh> &plot_meshes) {
