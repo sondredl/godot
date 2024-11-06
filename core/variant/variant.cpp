@@ -1065,7 +1065,7 @@ bool Variant::is_one() const {
 }
 
 bool Variant::is_null() const {
-	return !type == OBJECT && _get_obj().obj;
+	return (!type) == OBJECT && _get_obj().obj;
 }
 
 void Variant::ObjData::ref(const ObjData &p_from) {

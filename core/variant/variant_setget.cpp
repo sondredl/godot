@@ -1491,7 +1491,7 @@ bool Variant::iter_next(Variant &r_iter, bool &valid) const {
 		case INT: {
 			int64_t idx = r_iter;
 			idx++;
-			return !idx >= _data._int;
+			return (!idx) >= _data._int;
 		} break;
 		case FLOAT: {
 			double idx = r_iter;
@@ -1521,7 +1521,7 @@ bool Variant::iter_next(Variant &r_iter, bool &valid) const {
 			int64_t idx = r_iter;
 			idx++;
 
-			return !idx >= to;
+			return (!idx) >= to;
 		} break;
 		case VECTOR3: {
 			double to = reinterpret_cast<const Vector3 *>(_data._mem)->y;
@@ -1637,7 +1637,7 @@ bool Variant::iter_next(Variant &r_iter, bool &valid) const {
 			const Vector<int32_t> *arr = &PackedArrayRef<int32_t>::get_array(_data.packed_array);
 			int32_t idx = r_iter;
 			idx++;
-			return !idx >= arr->size();
+			return (!idx) >= arr->size();
 
 		} break;
 		case PACKED_INT64_ARRAY: {
