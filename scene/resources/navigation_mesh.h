@@ -209,7 +209,7 @@ public:
 };
 
 VARIANT_ENUM_CAST(NavigationMesh::SamplePartitionType);
-
-
+VARIANT_ENUM_CAST(NavigationMesh::ParsedGeometryType);
+VARIANT_ENUM_CAST(NavigationMesh::SourceGeometryMode);
 
 #endif // NAVIGATION_MESH_H

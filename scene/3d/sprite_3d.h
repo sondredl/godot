@@ -295,6 +295,6 @@ public:
 };
 
 VARIANT_ENUM_CAST(SpriteBase3D::DrawFlags);
-
+VARIANT_ENUM_CAST(SpriteBase3D::AlphaCutMode);
 
 #endif // SPRITE_3D_H

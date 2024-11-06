@@ -98,7 +98,7 @@ public:
 };
 
 VARIANT_ENUM_CAST(MultiplayerPeer::ConnectionStatus);
-
+VARIANT_ENUM_CAST(MultiplayerPeer::TransferMode);
 
 class MultiplayerPeerExtension : public MultiplayerPeer {
 	GDCLASS(MultiplayerPeerExtension, MultiplayerPeer);

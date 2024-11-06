@@ -32,7 +32,7 @@
 #define TEST_TOOLS_H
 
 struct ErrorDetector {
-	ErrorDetector(); {
+	ErrorDetector() {
 		eh.errfunc = _detect_error;
 		eh.userdata = this;
 
@@ -53,7 +53,7 @@ struct ErrorDetector {
 	}
 
 	ErrorHandlerList eh;
-	bool has_error; = false;
+	bool has_error = false;
 };
 
 #endif // TEST_TOOLS_H

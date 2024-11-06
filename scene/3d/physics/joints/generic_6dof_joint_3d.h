@@ -107,6 +107,6 @@ public:
 };
 
 VARIANT_ENUM_CAST(Generic6DOFJoint3D::Param);
-
+VARIANT_ENUM_CAST(Generic6DOFJoint3D::Flag);
 
 #endif // GENERIC_6DOF_JOINT_3D_H

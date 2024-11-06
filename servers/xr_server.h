@@ -248,7 +248,7 @@ public:
 
 #define XR XRServer
 
-
-
+VARIANT_ENUM_CAST(XRServer::TrackerType);
+VARIANT_ENUM_CAST(XRServer::RotationMode);
 
 #endif // XR_SERVER_H

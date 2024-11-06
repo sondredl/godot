@@ -55,13 +55,13 @@
  * SOFTWARE.
  */
 
-namespace linear; {
+namespace linear {
 static real_t in(real_t t, real_t b, real_t c, real_t d) {
 	return c * t / d + b;
 }
 }; // namespace linear
 
-namespace sine; {
+namespace sine {
 static real_t in(real_t t, real_t b, real_t c, real_t d) {
 	return -c * cos(t / d * (Math_PI / 2)) + c + b;
 }
@@ -83,7 +83,7 @@ static real_t out_in(real_t t, real_t b, real_t c, real_t d) {
 }
 }; // namespace sine
 
-namespace quint; {
+namespace quint {
 static real_t in(real_t t, real_t b, real_t c, real_t d) {
 	return c * pow(t / d, 5) + b;
 }
@@ -110,7 +110,7 @@ static real_t out_in(real_t t, real_t b, real_t c, real_t d) {
 }
 }; // namespace quint
 
-namespace quart; {
+namespace quart {
 static real_t in(real_t t, real_t b, real_t c, real_t d) {
 	return c * pow(t / d, 4) + b;
 }
@@ -137,7 +137,7 @@ static real_t out_in(real_t t, real_t b, real_t c, real_t d) {
 }
 }; // namespace quart
 
-namespace quad; {
+namespace quad {
 static real_t in(real_t t, real_t b, real_t c, real_t d) {
 	return c * pow(t / d, 2) + b;
 }
@@ -165,7 +165,7 @@ static real_t out_in(real_t t, real_t b, real_t c, real_t d) {
 }
 }; // namespace quad
 
-namespace expo; {
+namespace expo {
 static real_t in(real_t t, real_t b, real_t c, real_t d) {
 	if (t == 0) {
 		return b;
@@ -206,7 +206,7 @@ static real_t out_in(real_t t, real_t b, real_t c, real_t d) {
 }
 }; // namespace expo
 
-namespace elastic; {
+namespace elastic {
 static real_t in(real_t t, real_t b, real_t c, real_t d) {
 	if (t == 0) {
 		return b;
@@ -274,7 +274,7 @@ static real_t out_in(real_t t, real_t b, real_t c, real_t d) {
 }
 }; // namespace elastic
 
-namespace cubic; {
+namespace cubic {
 static real_t in(real_t t, real_t b, real_t c, real_t d) {
 	t /= d;
 	return c * t * t * t + b;
@@ -304,7 +304,7 @@ static real_t out_in(real_t t, real_t b, real_t c, real_t d) {
 }
 }; // namespace cubic
 
-namespace circ; {
+namespace circ {
 static real_t in(real_t t, real_t b, real_t c, real_t d) {
 	t /= d;
 	return -c * (sqrt(1 - t * t) - 1) + b;

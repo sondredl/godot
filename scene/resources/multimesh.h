@@ -131,6 +131,6 @@ public:
 };
 
 VARIANT_ENUM_CAST(MultiMesh::TransformFormat);
-
+VARIANT_ENUM_CAST(MultiMesh::PhysicsInterpolationQuality);
 
 #endif // MULTIMESH_H

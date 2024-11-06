@@ -72,6 +72,6 @@ public:
 };
 
 VARIANT_ENUM_CAST(HingeJoint3D::Param);
-
+VARIANT_ENUM_CAST(HingeJoint3D::Flag);
 
 #endif // HINGE_JOINT_3D_H

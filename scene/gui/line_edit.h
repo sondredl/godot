@@ -407,6 +407,6 @@ public:
 };
 
 VARIANT_ENUM_CAST(LineEdit::MenuItems);
-
+VARIANT_ENUM_CAST(LineEdit::VirtualKeyboardType);
 
 #endif // LINE_EDIT_H

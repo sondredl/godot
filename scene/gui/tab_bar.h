@@ -287,6 +287,6 @@ public:
 };
 
 VARIANT_ENUM_CAST(TabBar::AlignmentMode);
-
+VARIANT_ENUM_CAST(TabBar::CloseButtonDisplayPolicy);
 
 #endif // TAB_BAR_H

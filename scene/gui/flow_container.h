@@ -115,6 +115,6 @@ public:
 };
 
 VARIANT_ENUM_CAST(FlowContainer::AlignmentMode);
-
+VARIANT_ENUM_CAST(FlowContainer::LastWrapAlignmentMode);
 
 #endif // FLOW_CONTAINER_H

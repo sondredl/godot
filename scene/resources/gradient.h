@@ -241,6 +241,6 @@ public:
 };
 
 VARIANT_ENUM_CAST(Gradient::InterpolationMode);
-
+VARIANT_ENUM_CAST(Gradient::ColorSpace);
 
 #endif // GRADIENT_H

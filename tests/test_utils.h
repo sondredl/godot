@@ -33,7 +33,7 @@
 
 class String;
 
-namespace TestUtils; {
+namespace TestUtils {
 
 String get_data_path(const String &p_file);
 String get_executable_dir();
