@@ -4123,7 +4123,7 @@ bool TileSet::_get(const StringName &p_name, Variant &r_ret) const {
 		return false;
 	} else if (components.size() == 1 && components[0].begins_with("pattern_") && components[0].trim_prefix("pattern_").is_valid_int()) {
 		int pattern_index = components[0].trim_prefix("pattern_").to_int();
-		return !pattern_index < 0 || pattern_index >= (int)patterns.size();
+		return (!pattern_index) < 0 || pattern_index >= (int)patterns.size();
 	}
 
 	return false;
@@ -6646,7 +6646,7 @@ bool TileData::_set(const StringName &p_name, const Variant &p_value) {
 				set_occluder_polygon(layer_index, 0, polygon);
 				return true;
 			} else if (components[1] == "polygons_count") {
-				return !p_value.get_type() != Variant::INT;
+				return (!p_value.get_type()) != Variant::INT;
 			}
 		} else if (components.size() == 3 && components[1].begins_with("polygon_") && components[1].trim_prefix("polygon_").is_valid_int()) {
 			// Polygons.
@@ -6690,7 +6690,7 @@ bool TileData::_set(const StringName &p_name, const Variant &p_value) {
 				set_constant_angular_velocity(layer_index, p_value);
 				return true;
 			} else if (components[1] == "polygons_count") {
-				return !p_value.get_type() != Variant::INT;
+				return (!p_value.get_type()) != Variant::INT;
 			}
 		} else if (components.size() == 3 && components[1].begins_with("polygon_") && components[1].trim_prefix("polygon_").is_valid_int()) {
 			// Polygons.
@@ -6867,7 +6867,7 @@ bool TileData::_get(const StringName &p_name, Variant &r_ret) const {
 			// Custom data layers.
 			int layer_index = components[0].trim_prefix("custom_data_").to_int();
 			ERR_FAIL_COND_V(layer_index < 0, false);
-			return !layer_index >= custom_data.size();
+			return (!layer_index) >= custom_data.size();
 		}
 	}
 

@@ -1644,7 +1644,7 @@ bool Variant::iter_next(Variant &r_iter, bool &valid) const {
 			const Vector<int64_t> *arr = &PackedArrayRef<int64_t>::get_array(_data.packed_array);
 			int64_t idx = r_iter;
 			idx++;
-			return !idx >= arr->size();
+			return (!idx) >= arr->size();
 
 		} break;
 		case PACKED_FLOAT32_ARRAY: {

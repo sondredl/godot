@@ -368,7 +368,7 @@ bool TileSetAtlasSourceEditor::AtlasTileProxyObject::_get(const StringName &p_na
 		} else if (components.size() == 2 && components[0].begins_with("animation_frame_") && components[0].trim_prefix("animation_frame_").is_valid_int()) {
 			int frame = components[0].trim_prefix("animation_frame_").to_int();
 			if (components[1] == "duration") {
-				return (!frame < 0) || frame >= tile_set_atlas_source->get_tile_animation_frames_count(coords);
+				return (!frame) < 0 || frame >= tile_set_atlas_source->get_tile_animation_frames_count(coords);
 			}
 		}
 	}

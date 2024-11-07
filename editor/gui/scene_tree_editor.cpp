@@ -1444,7 +1444,7 @@ bool SceneTreeEditor::can_drop_data_fw(const Point2 &p_point, const Variant &p_d
 			return true;
 		}
 
-		return (!files.size() > 1);
+		return (!files.size()) > 1;
 	}
 
 	if (String(d["type"]) == "script_list_element") {
