@@ -302,7 +302,11 @@ bool ReplicationEditor::_can_drop_data_fw(const Point2 &p_point, const Variant &
 		return false;
 	}
 	Node *node = Object::cast_to<Node>(obj);
-	return !!node;
+	if (!node) {
+		return false;
+	}
+
+	return true;
 }
 
 void ReplicationEditor::_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) {

@@ -1748,12 +1748,16 @@ Variant ScriptTextEditor::get_drag_data_fw(const Point2 &p_point, Control *p_fro
 
 bool ScriptTextEditor::can_drop_data_fw(const Point2 &p_point, const Variant &p_data, Control *p_from) const {
 	Dictionary d = p_data;
-	return d.has("type") &&
+	if (d.has("type") &&
 			(String(d["type"]) == "resource" ||
 					String(d["type"]) == "files" ||
 					String(d["type"]) == "nodes" ||
 					String(d["type"]) == "obj_property" ||
-					String(d["type"]) == "files_and_dirs");
+					String(d["type"]) == "files_and_dirs")) {
+		return true;
+	}
+
+	return false;
 }
 
 static Node *_find_script_node(Node *p_edited_scene, Node *p_current_node, const Ref<Script> &script) {

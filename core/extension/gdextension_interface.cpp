@@ -68,7 +68,10 @@ class CallableCustomExtension : public CallableCustom {
 		const CallableCustomExtension *a = static_cast<const CallableCustomExtension *>(p_a);
 		const CallableCustomExtension *b = static_cast<const CallableCustomExtension *>(p_b);
 
-		return !(a->call_func != b->call_func || a->userdata != b->userdata);
+		if (a->call_func != b->call_func || a->userdata != b->userdata) {
+			return false;
+		}
+		return true;
 	}
 
 	static bool default_compare_less(const CallableCustom *p_a, const CallableCustom *p_b) {

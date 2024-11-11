@@ -35,12 +35,21 @@ bool MissingResource::_set(const StringName &p_name, const Variant &p_value) {
 		properties.insert(p_name, p_value);
 		return true; //always valid to set (add)
 	} else {
-		return !!properties.has(p_name);
+		if (!properties.has(p_name)) {
+			return false;
+		}
+
+		properties[p_name] = p_value;
+		return true;
 	}
 }
 
 bool MissingResource::_get(const StringName &p_name, Variant &r_ret) const {
-	return !!properties.has(p_name);
+	if (!properties.has(p_name)) {
+		return false;
+	}
+	r_ret = properties[p_name];
+	return true;
 }
 
 void MissingResource::_get_property_list(List<PropertyInfo> *p_list) const {

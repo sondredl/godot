@@ -255,7 +255,10 @@ bool TileSet::TerrainsPattern::operator==(const TerrainsPattern &p_terrains_patt
 			return false;
 		}
 	}
-	return terrain == p_terrains_pattern.terrain;
+	if (terrain != p_terrains_pattern.terrain) {
+		return false;
+	}
+	return true;
 }
 
 void TileSet::TerrainsPattern::set_terrain(int p_terrain) {

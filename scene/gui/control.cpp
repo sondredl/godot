@@ -586,7 +586,11 @@ void Control::_validate_property(PropertyInfo &p_property) const {
 }
 
 bool Control::_property_can_revert(const StringName &p_name) const {
-	return p_name == "layout_mode" || p_name == "anchors_preset";
+	if (p_name == "layout_mode" || p_name == "anchors_preset") {
+		return true;
+	}
+
+	return false;
 }
 
 bool Control::_property_get_revert(const StringName &p_name, Variant &r_property) const {

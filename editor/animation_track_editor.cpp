@@ -4233,7 +4233,10 @@ bool AnimationTrackEditor::has_track(Node3D *p_node, const String &p_sub, const 
 	}
 
 	int track_id = animation->find_track(path, p_type);
-	return track_id >= 0;
+	if (track_id >= 0) {
+		return true;
+	}
+	return false;
 }
 
 void AnimationTrackEditor::_insert_animation_key(NodePath p_path, const Variant &p_value) {
