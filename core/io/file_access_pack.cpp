@@ -303,7 +303,11 @@ bool FileAccessPack::is_open() const {
 void FileAccessPack::seek(uint64_t p_position) {
 	ERR_FAIL_COND_MSG(f.is_null(), "File must be opened before use.");
 
-	eof = p_position > pf.size;
+	if (p_position > pf.size) {
+		eof = true;
+	} else {
+		eof = false;
+	}
 
 	f->seek(off + p_position);
 	pos = p_position;

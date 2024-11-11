@@ -513,7 +513,7 @@ AnimationNode::NodeTimeInfo AnimationNodeOneShot::_process(const AnimationMixer:
 
 	bool is_shooting = true;
 	bool clear_remaining_fade = false;
-	bool is_fading_out = cur_active && !cur_internal_active;
+	bool is_fading_out = cur_active == true && cur_internal_active == false;
 
 	double p_time = p_playback_info.time;
 	double p_delta = p_playback_info.delta;
@@ -1015,7 +1015,10 @@ bool AnimationNodeTransition::_set(const StringName &p_path, const Variant &p_va
 	String what = path.get_slicec('/', 1);
 
 	if (which == get_input_count() && what == "name") {
-		return add_input(p_value);
+		if (add_input(p_value)) {
+			return true;
+		}
+		return false;
 	}
 
 	ERR_FAIL_INDEX_V(which, get_input_count(), false);

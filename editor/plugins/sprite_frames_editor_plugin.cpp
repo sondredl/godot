@@ -2469,7 +2469,10 @@ bool SpriteFramesEditorPlugin::handles(Object *p_object) const {
 		return true;
 	}
 	SpriteFrames *frames = Object::cast_to<SpriteFrames>(p_object);
-	return frames && (frames_editor->get_sprite_frames().is_null() || frames_editor->get_sprite_frames() == frames);
+	if (frames && (frames_editor->get_sprite_frames().is_null() || frames_editor->get_sprite_frames() == frames)) {
+		return true;
+	}
+	return false;
 }
 
 void SpriteFramesEditorPlugin::make_visible(bool p_visible) {

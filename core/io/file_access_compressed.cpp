@@ -320,7 +320,10 @@ void FileAccessCompressed::store_buffer(const uint8_t *p_src, uint64_t p_length)
 
 bool FileAccessCompressed::file_exists(const String &p_name) {
 	Ref<FileAccess> fa = FileAccess::open(p_name, FileAccess::READ);
-	return !fa.is_null();
+	if (fa.is_null()) {
+		return false;
+	}
+	return true;
 }
 
 uint64_t FileAccessCompressed::_get_modified_time(const String &p_file) {

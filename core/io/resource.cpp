@@ -638,7 +638,11 @@ bool ResourceCache::has(const String &p_path) {
 		}
 	}
 
-	return res != nullptr;
+	if (!res) {
+		return false;
+	}
+
+	return true;
 }
 
 Ref<Resource> ResourceCache::get_ref(const String &p_path) {
