@@ -55,7 +55,8 @@ target_sources(
 
 target_link_libraries(
   CORE
-  PUBLIC config
+  PUBLIC PLATFORM
+         config
          crypto
          debugger
          error
