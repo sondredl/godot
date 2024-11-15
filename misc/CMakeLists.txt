@@ -1,1 +1,6 @@
-
+add_subdirectory(dist)
+add_subdirectory(error_suppressions)
+add_subdirectory(extension_api_validation)
+add_subdirectory(msvs)
+add_subdirectory(scripts)
+add_subdirectory(utility)
