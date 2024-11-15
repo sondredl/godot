@@ -1,0 +1,69 @@
+{
+  "profiles": [
+    {
+      "name": "Debug-x11",
+      "buildRoot": "$PROJECT_DIR$/cmake-build-debug-x11",
+      "cmakeOptions": [
+        {"key": "CMAKE_BUILD_TYPE", "value": "Debug"},
+        {"key": "GODOT_PLATFORM", "value": "x11"},
+        {"key": "GODOT_DEBUG", "value": "ON"}
+      ],
+      "toolchain": null,
+      "environment": {}
+    },
+    {
+      "name": "Release-x11",
+      "buildRoot": "$PROJECT_DIR$/cmake-build-release-x11",
+      "cmakeOptions": [
+        {"key": "CMAKE_BUILD_TYPE", "value": "Release"},
+        {"key": "GODOT_PLATFORM", "value": "x11"}
+      ],
+      "toolchain": null,
+      "environment": {}
+    },
+    {
+      "name": "Debug-Windows",
+      "buildRoot": "$PROJECT_DIR$/cmake-build-debug-windows",
+      "cmakeOptions": [
+        {"key": "CMAKE_BUILD_TYPE", "value": "Debug"},
+        {"key": "GODOT_PLATFORM", "value": "windows"},
+        {"key": "GODOT_DEBUG", "value": "ON"}
+      ],
+      "toolchain": null,
+      "environment": {}
+    },
+    {
+      "name": "Release-Windows",
+      "buildRoot": "$PROJECT_DIR$/cmake-build-release-windows",
+      "cmakeOptions": [
+        {"key": "CMAKE_BUILD_TYPE", "value": "Release"},
+        {"key": "GODOT_PLATFORM", "value": "windows"}
+      ],
+      "toolchain": null,
+      "environment": {}
+    },
+    {
+      "name": "Editor-Debug-x11",
+      "buildRoot": "$PROJECT_DIR$/cmake-build-editor-debug-x11",
+      "cmakeOptions": [
+        {"key": "CMAKE_BUILD_TYPE", "value": "Debug"},
+        {"key": "GODOT_PLATFORM", "value": "x11"},
+        {"key": "GODOT_DEBUG", "value": "ON"},
+        {"key": "GODOT_EDITOR", "value": "ON"}
+      ],
+      "toolchain": null,
+      "environment": {}
+    },
+    {
+      "name": "Editor-Release-x11",
+      "buildRoot": "$PROJECT_DIR$/cmake-build-editor-release-x11",
+      "cmakeOptions": [
+        {"key": "CMAKE_BUILD_TYPE", "value": "Release"},
+        {"key": "GODOT_PLATFORM", "value": "x11"},
+        {"key": "GODOT_EDITOR", "value": "ON"}
+      ],
+      "toolchain": null,
+      "environment": {}
+    }
+  ]
+}
