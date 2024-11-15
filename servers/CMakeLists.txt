@@ -9,7 +9,7 @@ add_subdirectory(rendering)
 add_subdirectory(text)
 add_subdirectory(xr)
 
-add_library(SERVERS PRIVATE)
+add_library(SERVERS STATIC)
 
 target_sources(
   SERVERS

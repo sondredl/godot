@@ -17,7 +17,7 @@ add_subdirectory(windows)
 add_subdirectory(winmidi)
 add_subdirectory(xaudio2)
 
-add_library(DRIVERS PRIVATE)
+add_library(DRIVERS STATIC)
 target_sources(
   DRIVERS
   PRIVATE # register_driver_types.h

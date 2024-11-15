@@ -52,7 +52,7 @@ add_subdirectory(webxr)
 add_subdirectory(xatlas_unwrap)
 add_subdirectory(zip)
 
-add_library(MODULES PRIVATE)
+add_library(MODULES STATIC)
 target_sources(MODULES PRIVATE # modules_enabled.gen.h register_module_types.h
                                register_module_types.gen.cpp CMakeLists.txt)
 # SCsub

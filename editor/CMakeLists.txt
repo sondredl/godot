@@ -9,6 +9,7 @@ add_subdirectory(project_manager)
 add_subdirectory(themes)
 add_subdirectory(translations)
 
+add_library(EDITOR STATIC)
 target_sources(
   EDITOR
   PRIVATE action_map_editor.cpp

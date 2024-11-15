@@ -4,7 +4,7 @@ add_subdirectory(python_build)
 add_subdirectory(scene)
 add_subdirectory(servers)
 
-add_library(TESTS PRIVATE)
+add_library(TESTS STATIC)
 target_sources(
   TESTS
   PRIVATE # display_server_mock.h test_macros.h test_main.h test_tools.h

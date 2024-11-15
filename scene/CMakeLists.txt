@@ -8,7 +8,7 @@ add_subdirectory(main)
 add_subdirectory(resources)
 add_subdirectory(theme)
 
-add_library(SCENE PRIVATE)
+add_library(SCENE STATIC)
 
 target_sources(
   SCENE

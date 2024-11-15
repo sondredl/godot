@@ -1,6 +1,6 @@
 # __pycache__/
 
-add_library(MAIN PRIVATE)
+add_library(MAIN STATIC)
 target_sources(
   MAIN
   PRIVATE # app_icon.gen.h main.h main_timer_sync.h performance.h splash.gen.h
