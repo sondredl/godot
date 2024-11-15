@@ -1,1 +1,15 @@
+project(Godot)
 
+add_executable(${PROJECT_NAME})
+
+add_subdirectory(core)
+add_subdirectory(drivers)
+add_subdirectory(editor)
+add_subdirectory(main)
+add_subdirectory(misc)
+add_subdirectory(modules)
+add_subdirectory(platform)
+add_subdirectory(scene)
+add_subdirectory(servers)
+add_subdirectory(tests)
+add_subdirectory(thirdparty)

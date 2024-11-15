@@ -17,8 +17,7 @@ add_library(CORE PRIVATE)
 library_add_sources(
   CORE
   PRIVATE
-  # CMakeLists.txt
-  # authors.gen.h core_bind.h core_constants.h core_globals.h
+  # CMakeLists.txt authors.gen.h core_bind.h core_constants.h core_globals.h
   # core_string_names.h disabled_classes.gen.h doc_data.h donors.gen.h
   # license.gen.h register_core_types.h typedefs.h version.h
   # version_generated.gen.h
@@ -32,3 +31,20 @@ library_add_sources(
   version_hash.gen.cpp
   # SCsub core_bind.compat.inc
   core_builders.py)
+
+target_link_library(
+  CORE
+  PRIVATE
+  config
+  crypto
+  debugger
+  error
+  extension
+  input
+  io
+  math
+  object
+  os
+  string
+  templates
+  variant)
