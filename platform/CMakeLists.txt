@@ -6,8 +6,7 @@ add_subdirectory(web)
 add_subdirectory(windows)
 
 add_library(PLATFORM PRIVATE)
-target_add_sources(
-  PLATFORM PRIVATE
-  # register_platform_apis.h
-  register_platform_apis.gen.cpp CMakeLists.txt # SCsub
+target_sources(
+  PLATFORM PRIVATE # register_platform_apis.h
+                   register_platform_apis.gen.cpp CMakeLists.txt # SCsub
 )

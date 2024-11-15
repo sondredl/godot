@@ -30,9 +30,20 @@ include_directories(${ROOT_DIR} ${CORE_DIR} ${SCENE_DIR} ${MODULES_DIR}
 # Define the executable
 add_executable(godot ${GODOT_SRC})
 
+add_subdirectory(core)
+add_subdirectory(drivers)
+add_subdirectory(editor)
+add_subdirectory(main)
+add_subdirectory(misc)
+add_subdirectory(modules)
+add_subdirectory(platform)
+add_subdirectory(scene)
+add_subdirectory(servers)
+add_subdirectory(tests)
+add_subdirectory(thirdparty)
 # Link third-party libraries (example)
 find_package(OpenGL REQUIRED)
-target_link_libraries(godot PRIVATE OpenGL::GL)
+target_link_libraries(godot PRIVATE OpenGL::GL MAIN EDITOR)
 
 # Platform-specific settings
 if(GODOT_PLATFORM STREQUAL "x11")

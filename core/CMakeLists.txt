@@ -14,37 +14,35 @@ add_subdirectory(variant)
 
 add_library(CORE PRIVATE)
 
-library_add_sources(
+target_sources(
   CORE
-  PRIVATE
-  # CMakeLists.txt authors.gen.h core_bind.h core_constants.h core_globals.h
-  # core_string_names.h disabled_classes.gen.h doc_data.h donors.gen.h
-  # license.gen.h register_core_types.h typedefs.h version.h
-  # version_generated.gen.h
-  core_bind.cpp
-  core_constants.cpp
-  core_globals.cpp
-  core_string_names.cpp
-  doc_data.cpp
-  register_core_types.cpp
-  script_encryption_key.gen.cpp
-  version_hash.gen.cpp
-  # SCsub core_bind.compat.inc
-  core_builders.py)
+  PRIVATE # CMakeLists.txt authors.gen.h core_bind.h core_constants.h
+          # core_globals.h core_string_names.h disabled_classes.gen.h doc_data.h
+          # donors.gen.h license.gen.h register_core_types.h typedefs.h
+          # version.h version_generated.gen.h
+          core_bind.cpp
+          core_constants.cpp
+          core_globals.cpp
+          core_string_names.cpp
+          doc_data.cpp
+          register_core_types.cpp
+          script_encryption_key.gen.cpp
+          version_hash.gen.cpp
+          # SCsub core_bind.compat.inc
+          core_builders.py)
 
-target_link_library(
+target_link_libraries(
   CORE
-  PRIVATE
-  config
-  crypto
-  debugger
-  error
-  extension
-  input
-  io
-  math
-  object
-  os
-  string
-  templates
-  variant)
+  PRIVATE config
+          crypto
+          debugger
+          error
+          extension
+          input
+          io
+          math
+          object
+          os
+          string
+          templates
+          variant)

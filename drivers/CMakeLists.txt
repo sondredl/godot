@@ -18,10 +18,11 @@ add_subdirectory(winmidi)
 add_subdirectory(xaudio2)
 
 add_library(DRIVERS PRIVATE)
-target_add_sources(
-  DRIVERS PRIVATE
-  # register_driver_types.h
-  register_driver_types.cpp CMakeLists.txt
-  # SCsub libdrivers.linuxbsd.editor.x86_64.a
-  # register_driver_types.linuxbsd.editor.x86_64.o
+target_sources(
+  DRIVERS
+  PRIVATE # register_driver_types.h
+          register_driver_types.cpp
+          CMakeLists.txt
+          # SCsub libdrivers.linuxbsd.editor.x86_64.a
+          # register_driver_types.linuxbsd.editor.x86_64.o
 )
