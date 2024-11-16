@@ -1835,7 +1835,11 @@ bool EditorAnimationMultiTransitionEdit::_set(const StringName &p_name, const Va
 
 	bool found;
 	transitions.write[index].transition->set(prop, p_property, &found);
-	return found;
+	if (found) {
+		return true;
+	}
+
+	return false;
 }
 
 bool EditorAnimationMultiTransitionEdit::_get(const StringName &p_name, Variant &r_property) const {
@@ -1849,7 +1853,11 @@ bool EditorAnimationMultiTransitionEdit::_get(const StringName &p_name, Variant 
 
 	bool found;
 	r_property = transitions[index].transition->get(prop, &found);
-	return found;
+	if (found) {
+		return true;
+	}
+
+	return false;
 }
 
 void EditorAnimationMultiTransitionEdit::_get_property_list(List<PropertyInfo> *p_list) const {

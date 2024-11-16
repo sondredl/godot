@@ -40,10 +40,10 @@
 #include "core/debugger/script_debugger.h"
 #include "core/io/marshalls.h"
 #include "core/version_generated.gen.h"
-#include "drivers/unix/net_socket_posix.h"
 #include "drivers/windows/dir_access_windows.h"
 #include "drivers/windows/file_access_windows.h"
 #include "drivers/windows/file_access_windows_pipe.h"
+#include "drivers/windows/net_socket_winsock.h"
 #include "main/main.h"
 #include "servers/audio_server.h"
 #include "servers/rendering/rendering_server_default.h"
@@ -209,7 +209,7 @@ void OS_Windows::initialize() {
 	DirAccess::make_default<DirAccessWindows>(DirAccess::ACCESS_USERDATA);
 	DirAccess::make_default<DirAccessWindows>(DirAccess::ACCESS_FILESYSTEM);
 
-	NetSocketPosix::make_default();
+	NetSocketWinSock::make_default();
 
 	// We need to know how often the clock is updated
 	QueryPerformanceFrequency((LARGE_INTEGER *)&ticks_per_second);
@@ -303,7 +303,7 @@ void OS_Windows::finalize_core() {
 	timeEndPeriod(1);
 
 	memdelete(process_map);
-	NetSocketPosix::cleanup();
+	NetSocketWinSock::cleanup();
 
 #ifdef WINDOWS_DEBUG_OUTPUT_ENABLED
 	remove_error_handler(&error_handlers);
@@ -1740,6 +1740,34 @@ String OS_Windows::get_locale() const {
 	return "en";
 }
 
+String OS_Windows::get_model_name() const {
+	HKEY hkey;
+	if (RegOpenKeyExW(HKEY_LOCAL_MACHINE, L"Hardware\\Description\\System\\BIOS", 0, KEY_QUERY_VALUE, &hkey) != ERROR_SUCCESS) {
+		return OS::get_model_name();
+	}
+
+	String sys_name;
+	String board_name;
+	WCHAR buffer[256];
+	DWORD buffer_len = 256;
+	DWORD vtype = REG_SZ;
+	if (RegQueryValueExW(hkey, L"SystemProductName", nullptr, &vtype, (LPBYTE)buffer, &buffer_len) == ERROR_SUCCESS && buffer_len != 0) {
+		sys_name = String::utf16((const char16_t *)buffer, buffer_len).strip_edges();
+	}
+	buffer_len = 256;
+	if (RegQueryValueExW(hkey, L"BaseBoardProduct", nullptr, &vtype, (LPBYTE)buffer, &buffer_len) == ERROR_SUCCESS && buffer_len != 0) {
+		board_name = String::utf16((const char16_t *)buffer, buffer_len).strip_edges();
+	}
+	RegCloseKey(hkey);
+	if (!sys_name.is_empty() && sys_name.to_lower() != "system product name") {
+		return sys_name;
+	}
+	if (!board_name.is_empty() && board_name.to_lower() != "base board product") {
+		return board_name;
+	}
+	return OS::get_model_name();
+}
+
 String OS_Windows::get_processor_name() const {
 	const String id = "Hardware\\Description\\System\\CentralProcessor\\0";
 
@@ -1931,7 +1959,11 @@ bool OS_Windows::_check_internal_feature_support(const String &p_feature) {
 	if (p_feature == "system_fonts") {
 		return dwrite_init;
 	}
-	return p_feature == "pc";
+	if (p_feature == "pc") {
+		return true;
+	}
+
+	return false;
 }
 
 void OS_Windows::disable_crash_handler() {

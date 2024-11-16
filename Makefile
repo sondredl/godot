@@ -1,5 +1,5 @@
 all:
-	scons platform=linuxbsd
+	scons platform=linuxbsd tests=yes
 mac:
 	scons platform=macos arch=arm64
 analyze:

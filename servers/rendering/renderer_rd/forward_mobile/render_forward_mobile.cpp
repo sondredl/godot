@@ -340,7 +340,10 @@ uint32_t RenderForwardMobile::get_pipeline_compilations(RS::PipelineSource p_sou
 }
 
 bool RenderForwardMobile::free(RID p_rid) {
-	return RendererSceneRenderRD::free(p_rid);
+	if (RendererSceneRenderRD::free(p_rid)) {
+		return true;
+	}
+	return false;
 }
 
 void RenderForwardMobile::update() {

@@ -1189,7 +1189,11 @@ bool ProjectSettings::_property_can_revert(const StringName &p_name) const {
 
 bool ProjectSettings::_property_get_revert(const StringName &p_name, Variant &r_property) const {
 	const RBMap<StringName, ProjectSettings::VariantContainer>::Element *value = props.find(p_name);
-	return value;
+	if (value) {
+		r_property = value->value().initial.duplicate();
+		return true;
+	}
+	return false;
 }
 
 void ProjectSettings::set_setting(const String &p_setting, const Variant &p_value) {

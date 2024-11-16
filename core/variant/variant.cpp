@@ -951,7 +951,7 @@ bool Variant::is_zero() const {
 			return *reinterpret_cast<const ::RID *>(_data._mem) == ::RID();
 		}
 		case OBJECT: {
-			return _get_obj().obj == nullptr;
+			return get_validated_object() == nullptr;
 		}
 		case CALLABLE: {
 			return reinterpret_cast<const Callable *>(_data._mem)->is_null();
@@ -1065,7 +1065,11 @@ bool Variant::is_one() const {
 }
 
 bool Variant::is_null() const {
-	return !type == OBJECT && _get_obj().obj;
+	if (type == OBJECT && _get_obj().obj) {
+		return false;
+	} else {
+		return true;
+	}
 }
 
 void Variant::ObjData::ref(const ObjData &p_from) {
@@ -3447,14 +3451,22 @@ bool Variant::hash_compare(const Variant &p_variant, int recursion_count, bool s
 			const Array &l = *(reinterpret_cast<const Array *>(_data._mem));
 			const Array &r = *(reinterpret_cast<const Array *>(p_variant._data._mem));
 
-			return !!l.recursive_equal(r, recursion_count + 1);
+			if (!l.recursive_equal(r, recursion_count + 1)) {
+				return false;
+			}
+
+			return true;
 		} break;
 
 		case DICTIONARY: {
 			const Dictionary &l = *(reinterpret_cast<const Dictionary *>(_data._mem));
 			const Dictionary &r = *(reinterpret_cast<const Dictionary *>(p_variant._data._mem));
 
-			return !!l.recursive_equal(r, recursion_count + 1);
+			if (!l.recursive_equal(r, recursion_count + 1)) {
+				return false;
+			}
+
+			return true;
 		} break;
 
 		// This is for floating point comparisons only.

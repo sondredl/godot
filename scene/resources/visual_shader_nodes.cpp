@@ -1714,7 +1714,10 @@ String VisualShaderNodeWorldPositionFromDepth::get_input_port_name(int p_port) c
 }
 
 bool VisualShaderNodeWorldPositionFromDepth::is_input_port_default(int p_port, Shader::Mode p_mode) const {
-	return p_port == 0;
+	if (p_port == 0) {
+		return true;
+	}
+	return false;
 }
 
 int VisualShaderNodeWorldPositionFromDepth::get_output_port_count() const {
@@ -1778,7 +1781,10 @@ String VisualShaderNodeScreenNormalWorldSpace::get_input_port_name(int p_port) c
 }
 
 bool VisualShaderNodeScreenNormalWorldSpace::is_input_port_default(int p_port, Shader::Mode p_mode) const {
-	return p_port == 0;
+	if (p_port == 0) {
+		return true;
+	}
+	return false;
 }
 
 int VisualShaderNodeScreenNormalWorldSpace::get_output_port_count() const {
@@ -6255,7 +6261,10 @@ bool VisualShaderNodeTransformParameter::is_use_prop_slots() const {
 }
 
 bool VisualShaderNodeTransformParameter::is_qualifier_supported(Qualifier p_qual) const {
-	return (!p_qual) == Qualifier::QUAL_INSTANCE;
+	if (p_qual == Qualifier::QUAL_INSTANCE) {
+		return false;
+	}
+	return true;
 }
 
 bool VisualShaderNodeTransformParameter::is_convertible_to_constant() const {
@@ -7195,7 +7204,10 @@ String VisualShaderNodeFresnel::get_output_port_name(int p_port) const {
 }
 
 bool VisualShaderNodeFresnel::is_generate_input_var(int p_port) const {
-	return p_port != 2;
+	if (p_port == 2) {
+		return false;
+	}
+	return true;
 }
 
 String VisualShaderNodeFresnel::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {
@@ -8355,7 +8367,10 @@ String VisualShaderNodeRotationByAxis::get_output_port_name(int p_port) const {
 }
 
 bool VisualShaderNodeRotationByAxis::has_output_port_preview(int p_port) const {
-	return p_port == 0;
+	if (p_port == 0) {
+		return true;
+	}
+	return false;
 }
 
 String VisualShaderNodeRotationByAxis::generate_code(Shader::Mode p_mode, VisualShader::Type p_type, int p_id, const String *p_input_vars, const String *p_output_vars, bool p_for_preview) const {

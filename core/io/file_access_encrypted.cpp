@@ -245,7 +245,10 @@ void FileAccessEncrypted::flush() {
 
 bool FileAccessEncrypted::file_exists(const String &p_name) {
 	Ref<FileAccess> fa = FileAccess::open(p_name, FileAccess::READ);
-	return !fa.is_null();
+	if (fa.is_null()) {
+		return false;
+	}
+	return true;
 }
 
 uint64_t FileAccessEncrypted::_get_modified_time(const String &p_file) {
