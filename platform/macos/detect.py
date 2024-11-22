@@ -2,7 +2,7 @@ import os
 import sys
 from typing import TYPE_CHECKING
 
-from methods import detect_darwin_sdk_path, get_compiler_version, is_vanilla_clang, print_error, print_warning
+from methods import detect_darwin_sdk_path, get_compiler_version, is_apple_clang, print_error, print_warning
 from platform_methods import detect_arch, detect_mvk, validate_arch
 
 if TYPE_CHECKING:
@@ -70,7 +70,7 @@ def configure(env: "SConsEnvironment"):
     supported_arches = ["x86_64", "arm64"]
     validate_arch(env["arch"], get_name(), supported_arches)
 
-    ## Build type
+    # Build type
 
     if env["target"] == "template_release":
         if env["arch"] != "arm64":
@@ -78,7 +78,7 @@ def configure(env: "SConsEnvironment"):
     elif env.dev_build:
         env.Prepend(LINKFLAGS=["-Xlinker", "-no_deduplicate"])
 
-    ## Compiler configuration
+    # Compiler configuration
 
     # Save this in environment for use by other modules
     if "OSXCROSS_ROOT" in os.environ:
@@ -101,10 +101,10 @@ def configure(env: "SConsEnvironment"):
     cc_version = get_compiler_version(env)
     cc_version_major = cc_version["apple_major"]
     cc_version_minor = cc_version["apple_minor"]
-    vanilla = is_vanilla_clang(env)
 
     # Workaround for Xcode 15 linker bug.
-    if not vanilla and cc_version_major == 1500 and cc_version_minor == 0:
+    if is_apple_clang(
+            env) and cc_version_major == 1500 and cc_version_minor == 0:
         env.Prepend(LINKFLAGS=["-ld_classic"])
 
     env.Append(CCFLAGS=["-fobjc-arc"])
@@ -114,10 +114,14 @@ def configure(env: "SConsEnvironment"):
             mpprefix = os.environ.get("MACPORTS_PREFIX", "/opt/local")
             mpclangver = env["macports_clang"]
             env["CC"] = mpprefix + "/libexec/llvm-" + mpclangver + "/bin/clang"
-            env["CXX"] = mpprefix + "/libexec/llvm-" + mpclangver + "/bin/clang++"
-            env["AR"] = mpprefix + "/libexec/llvm-" + mpclangver + "/bin/llvm-ar"
-            env["RANLIB"] = mpprefix + "/libexec/llvm-" + mpclangver + "/bin/llvm-ranlib"
-            env["AS"] = mpprefix + "/libexec/llvm-" + mpclangver + "/bin/llvm-as"
+            env["CXX"] = mpprefix + "/libexec/llvm-" + \
+                mpclangver + "/bin/clang++"
+            env["AR"] = mpprefix + "/libexec/llvm-" + \
+                mpclangver + "/bin/llvm-ar"
+            env["RANLIB"] = mpprefix + "/libexec/llvm-" + \
+                mpclangver + "/bin/llvm-ranlib"
+            env["AS"] = mpprefix + "/libexec/llvm-" + \
+                mpclangver + "/bin/llvm-as"
         else:
             env["CC"] = "clang"
             env["CXX"] = "clang++"
@@ -129,9 +133,11 @@ def configure(env: "SConsEnvironment"):
     else:  # osxcross build
         root = os.environ.get("OSXCROSS_ROOT", "")
         if env["arch"] == "arm64":
-            basecmd = root + "/target/bin/arm64-apple-" + env["osxcross_sdk"] + "-"
+            basecmd = root + "/target/bin/arm64-apple-" + \
+                env["osxcross_sdk"] + "-"
         else:
-            basecmd = root + "/target/bin/x86_64-apple-" + env["osxcross_sdk"] + "-"
+            basecmd = root + "/target/bin/x86_64-apple-" + \
+                env["osxcross_sdk"] + "-"
 
         ccache_path = os.environ.get("CCACHE")
         if ccache_path is None:
@@ -139,7 +145,8 @@ def configure(env: "SConsEnvironment"):
             env["CXX"] = basecmd + "c++"
         else:
             # there aren't any ccache wrappers available for macOS cross-compile,
-            # to enable caching we need to prepend the path to the ccache binary
+            # to enable caching we need to prepend the path to the ccache
+            # binary
             env["CC"] = ccache_path + " " + basecmd + "cc"
             env["CXX"] = ccache_path + " " + basecmd + "c++"
         env["AR"] = basecmd + "ar"
@@ -148,7 +155,9 @@ def configure(env: "SConsEnvironment"):
 
     # LTO
 
-    if env["lto"] == "auto":  # LTO benefits for macOS (size, performance) haven't been clearly established yet.
+    # LTO benefits for macOS (size, performance) haven't been clearly
+    # established yet.
+    if env["lto"] == "auto":
         env["lto"] = "none"
 
     if env["lto"] != "none":
@@ -172,10 +181,12 @@ def configure(env: "SConsEnvironment"):
                 ]
             )
             env.Append(LINKFLAGS=["-fsanitize=undefined"])
-            env.Append(CCFLAGS=["-fsanitize=nullability-return,nullability-arg,function,nullability-assign"])
+            env.Append(CCFLAGS=[
+                       "-fsanitize=nullability-return,nullability-arg,function,nullability-assign"])
 
         if env["use_asan"]:
-            env.Append(CCFLAGS=["-fsanitize=address,pointer-subtract,pointer-compare"])
+            env.Append(
+                CCFLAGS=["-fsanitize=address,pointer-subtract,pointer-compare"])
             env.Append(LINKFLAGS=["-fsanitize=address"])
 
         if env["use_tsan"]:
@@ -190,15 +201,20 @@ def configure(env: "SConsEnvironment"):
         env.Append(CCFLAGS=["-ftest-coverage", "-fprofile-arcs"])
         env.Append(LINKFLAGS=["-ftest-coverage", "-fprofile-arcs"])
 
-    ## Dependencies
+    # Dependencies
 
     if env["builtin_libtheora"] and env["arch"] == "x86_64":
         env["x86_libtheora_opt_gcc"] = True
 
-    ## Flags
+    # Flags
 
     env.Prepend(CPPPATH=["#platform/macos"])
-    env.Append(CPPDEFINES=["MACOS_ENABLED", "UNIX_ENABLED", "COREAUDIO_ENABLED", "COREMIDI_ENABLED"])
+    env.Append(
+        CPPDEFINES=[
+            "MACOS_ENABLED",
+            "UNIX_ENABLED",
+            "COREAUDIO_ENABLED",
+            "COREMIDI_ENABLED"])
     env.Append(
         LINKFLAGS=[
             "-framework",
@@ -241,10 +257,17 @@ def configure(env: "SConsEnvironment"):
             env.Append(LINKFLAGS=["-lGLES.macos." + env["arch"]])
         env.Prepend(CPPPATH=["#thirdparty/angle/include"])
 
-    env.Append(LINKFLAGS=["-rpath", "@executable_path/../Frameworks", "-rpath", "@executable_path"])
+    env.Append(
+        LINKFLAGS=[
+            "-rpath",
+            "@executable_path/../Frameworks",
+            "-rpath",
+            "@executable_path"])
 
     if env["metal"] and env["arch"] != "arm64":
-        print_warning("Target architecture '{}' does not support the Metal rendering driver".format(env["arch"]))
+        print_warning(
+            "Target architecture '{}' does not support the Metal rendering driver".format(
+                env["arch"]))
         env["metal"] = False
 
     extra_frameworks = set()
@@ -279,5 +302,7 @@ def configure(env: "SConsEnvironment"):
                 sys.exit(255)
 
     if len(extra_frameworks) > 0:
-        frameworks = [item for key in extra_frameworks for item in ["-framework", key]]
+        frameworks = [
+            item for key in extra_frameworks for item in [
+                "-framework", key]]
         env.Append(LINKFLAGS=frameworks)

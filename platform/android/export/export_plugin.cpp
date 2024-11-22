@@ -68,6 +68,7 @@ static const char *android_perms[] = {
 	"ACCESS_COARSE_LOCATION",
 	"ACCESS_FINE_LOCATION",
 	"ACCESS_LOCATION_EXTRA_COMMANDS",
+	"ACCESS_MEDIA_LOCATION",
 	"ACCESS_MOCK_LOCATION",
 	"ACCESS_NETWORK_STATE",
 	"ACCESS_SURFACE_FLINGER",
@@ -155,6 +156,10 @@ static const char *android_perms[] = {
 	"READ_HISTORY_BOOKMARKS",
 	"READ_INPUT_STATE",
 	"READ_LOGS",
+	"READ_MEDIA_AUDIO",
+	"READ_MEDIA_IMAGES",
+	"READ_MEDIA_VIDEO",
+	"READ_MEDIA_VISUAL_USER_SELECTED",
 	"READ_PHONE_STATE",
 	"READ_PROFILE",
 	"READ_SMS",
@@ -783,15 +788,16 @@ Error EditorExportPlatformAndroid::save_apk_so(void *p_userdata, const SharedObj
 	return OK;
 }
 
-Error EditorExportPlatformAndroid::save_apk_file(void *p_userdata, const String &p_path, const Vector<uint8_t> &p_data, int p_file, int p_total, const Vector<String> &p_enc_in_filters, const Vector<String> &p_enc_ex_filters, const Vector<uint8_t> &p_key) {
+Error EditorExportPlatformAndroid::save_apk_file(void *p_userdata, const String &p_path, const Vector<uint8_t> &p_data, int p_file, int p_total, const Vector<String> &p_enc_in_filters, const Vector<String> &p_enc_ex_filters, const Vector<uint8_t> &p_key, uint64_t p_seed) {
 	APKExportData *ed = static_cast<APKExportData *>(p_userdata);
-	String dst_path = p_path.replace_first("res://", "assets/");
+	const String path = ResourceUID::ensure_path(p_path);
+	const String dst_path = path.replace_first("res://", "assets/");
 
-	store_in_apk(ed, dst_path, p_data, _should_compress_asset(p_path, p_data) ? Z_DEFLATED : 0);
+	store_in_apk(ed, dst_path, p_data, _should_compress_asset(path, p_data) ? Z_DEFLATED : 0);
 	return OK;
 }
 
-Error EditorExportPlatformAndroid::ignore_apk_file(void *p_userdata, const String &p_path, const Vector<uint8_t> &p_data, int p_file, int p_total, const Vector<String> &p_enc_in_filters, const Vector<String> &p_enc_ex_filters, const Vector<uint8_t> &p_key) {
+Error EditorExportPlatformAndroid::ignore_apk_file(void *p_userdata, const String &p_path, const Vector<uint8_t> &p_data, int p_file, int p_total, const Vector<String> &p_enc_in_filters, const Vector<String> &p_enc_ex_filters, const Vector<uint8_t> &p_key, uint64_t p_seed) {
 	return OK;
 }
 
@@ -1559,7 +1565,7 @@ void EditorExportPlatformAndroid::_fix_resources(const Ref<EditorExportPreset> &
 				str = get_project_name(package_name);
 
 			} else {
-				String lang = str.substr(str.rfind("-") + 1, str.length()).replace("-", "_");
+				String lang = str.substr(str.rfind_char('-') + 1, str.length()).replace("-", "_");
 				if (appnames.has(lang)) {
 					str = appnames[lang];
 				} else {
