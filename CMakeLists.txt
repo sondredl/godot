@@ -43,7 +43,7 @@ add_subdirectory(tests)
 add_subdirectory(thirdparty)
 # Link third-party libraries (example)
 find_package(OpenGL REQUIRED)
-target_link_libraries(godot PRIVATE OpenGL::GL MAIN EDITOR)
+target_link_libraries(godot PRIVATE OpenGL::GL MAIN EDITOR CORE PLATFORM)
 
 # Platform-specific settings
 if(GODOT_PLATFORM STREQUAL "x11")

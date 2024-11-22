@@ -29,3 +29,8 @@ target_sources(
           CMakeLists.txt
           # SCsub gdvirtual.gen.inc make_virtuals.py
 )
+
+target_link_libraries(CORE_OBJECTS PUBLIC PLATFORM)
+
+target_include_directories(CORE_OBJECTS
+                           PUBLIC ${CMAKE_CURRENT_LIST_DIR}/../../platform)
