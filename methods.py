@@ -65,12 +65,14 @@ class ANSI(Enum):
 
 def print_warning(*values: object) -> None:
     """Prints a warning message with formatting."""
-    print(f"{ANSI.YELLOW}{ANSI.BOLD}WARNING:{ANSI.REGULAR}", *values, ANSI.RESET, file=sys.stderr)
+    print(f"{ANSI.YELLOW}{ANSI.BOLD}WARNING:{ANSI.REGULAR}",
+          *values, ANSI.RESET, file=sys.stderr)
 
 
 def print_error(*values: object) -> None:
     """Prints an error message with formatting."""
-    print(f"{ANSI.RED}{ANSI.BOLD}ERROR:{ANSI.REGULAR}", *values, ANSI.RESET, file=sys.stderr)
+    print(f"{ANSI.RED}{ANSI.BOLD}ERROR:{ANSI.REGULAR}",
+          *values, ANSI.RESET, file=sys.stderr)
 
 
 def add_source_files_orig(self, sources, files, allow_gen=False):
@@ -83,11 +85,13 @@ def add_source_files_orig(self, sources, files, allow_gen=False):
         if skip_gen_cpp and not allow_gen:
             files = [f for f in files if not str(f).endswith(".gen.cpp")]
 
-    # Add each path as compiled Object following environment (self) configuration
+    # Add each path as compiled Object following environment (self)
+    # configuration
     for path in files:
         obj = self.Object(path)
         if obj in sources:
-            print_warning('Object "{}" already included in environment sources.'.format(obj))
+            print_warning(
+                'Object "{}" already included in environment sources.'.format(obj))
             continue
         sources.append(obj)
 
@@ -109,7 +113,12 @@ def add_source_files_scu(self, sources, files, allow_gen=False):
             return False
 
         # Add all the gen.cpp files in the SCU directory
-        add_source_files_orig(self, sources, subdir + "scu/scu_*.gen.cpp", True)
+        add_source_files_orig(
+            self,
+            sources,
+            subdir +
+            "scu/scu_*.gen.cpp",
+            True)
         return True
     return False
 
@@ -129,9 +138,15 @@ def disable_warnings(self):
     if self.msvc and not using_clang(self):
         # We have to remove existing warning level defines before appending /w,
         # otherwise we get: "warning D9025 : overriding '/W3' with '/w'"
-        self["CCFLAGS"] = [x for x in self["CCFLAGS"] if not (x.startswith("/W") or x.startswith("/w"))]
-        self["CFLAGS"] = [x for x in self["CFLAGS"] if not (x.startswith("/W") or x.startswith("/w"))]
-        self["CXXFLAGS"] = [x for x in self["CXXFLAGS"] if not (x.startswith("/W") or x.startswith("/w"))]
+        self["CCFLAGS"] = [
+            x for x in self["CCFLAGS"] if not (
+                x.startswith("/W") or x.startswith("/w"))]
+        self["CFLAGS"] = [
+            x for x in self["CFLAGS"] if not (
+                x.startswith("/W") or x.startswith("/w"))]
+        self["CXXFLAGS"] = [
+            x for x in self["CXXFLAGS"] if not (
+                x.startswith("/W") or x.startswith("/w"))]
         self.AppendUnique(CCFLAGS=["/w"])
     else:
         self.AppendUnique(CCFLAGS=["-w"])
@@ -145,9 +160,11 @@ def force_optimization_on_debug(self):
     if self.msvc:
         # We have to remove existing optimization level defines before appending /O2,
         # otherwise we get: "warning D9025 : overriding '/0d' with '/02'"
-        self["CCFLAGS"] = [x for x in self["CCFLAGS"] if not x.startswith("/O")]
+        self["CCFLAGS"] = [
+            x for x in self["CCFLAGS"] if not x.startswith("/O")]
         self["CFLAGS"] = [x for x in self["CFLAGS"] if not x.startswith("/O")]
-        self["CXXFLAGS"] = [x for x in self["CXXFLAGS"] if not x.startswith("/O")]
+        self["CXXFLAGS"] = [
+            x for x in self["CXXFLAGS"] if not x.startswith("/O")]
         self.AppendUnique(CCFLAGS=["/O2"])
     else:
         self.AppendUnique(CCFLAGS=["-O3"])
@@ -180,11 +197,13 @@ def get_version_info(module_version_string="", silent=False):
     }
 
     # For dev snapshots (alpha, beta, RC, etc.) we do not commit status change to Git,
-    # so this define provides a way to override it without having to modify the source.
+    # so this define provides a way to override it without having to modify
+    # the source.
     if os.getenv("GODOT_VERSION_STATUS") is not None:
         version_info["status"] = str(os.getenv("GODOT_VERSION_STATUS"))
         if not silent:
-            print(f"Using version status '{version_info['status']}', overriding the original '{version.status}'.")
+            print(
+                f"Using version status '{version_info['status']}', overriding the original '{version.status}'.")
 
     # Parse Git hash if we're in a Git repo.
     githash = ""
@@ -213,7 +232,10 @@ def get_version_info(module_version_string="", silent=False):
             elif os.path.isfile(packedrefs):
                 # Git may pack refs into a single file. This code searches .git/packed-refs file for the current ref's hash.
                 # https://mirrors.edge.kernel.org/pub/software/scm/git/docs/git-pack-refs.html
-                for line in open(packedrefs, "r", encoding="utf-8").read().splitlines():
+                for line in open(
+                    packedrefs,
+                    "r",
+                        encoding="utf-8").read().splitlines():
                     if line.startswith("#"):
                         continue
                     (line_hash, line_ref) = line.split(" ")
@@ -224,7 +246,8 @@ def get_version_info(module_version_string="", silent=False):
             githash = head
 
     version_info["git_hash"] = githash
-    # Fallback to 0 as a timestamp (will be treated as "unknown" in the engine).
+    # Fallback to 0 as a timestamp (will be treated as "unknown" in the
+    # engine).
     version_info["git_timestamp"] = 0
 
     # Get the UNIX timestamp of the build commit.
@@ -335,7 +358,9 @@ def convert_custom_modules_path(path):
     if not os.path.isdir(path):
         raise ValueError(err_msg % "point to an existing directory.")
     if path == os.path.realpath("modules"):
-        raise ValueError(err_msg % "be a directory other than built-in `modules` directory.")
+        raise ValueError(
+            err_msg %
+            "be a directory other than built-in `modules` directory.")
     return path
 
 
@@ -360,19 +385,19 @@ def module_check_dependencies(self, module):
     Returns a boolean (True if dependencies are satisfied).
     """
     missing_deps = set()
-    required_deps = self.module_dependencies[module][0] if module in self.module_dependencies else []
+    required_deps = self.module_dependencies[module][0] if module in self.module_dependencies else [
+    ]
     for dep in required_deps:
         opt = "module_{}_enabled".format(dep)
-        if opt not in self or not self[opt] or not module_check_dependencies(self, dep):
+        if opt not in self or not self[opt] or not module_check_dependencies(
+                self, dep):
             missing_deps.add(dep)
 
     if missing_deps:
         if module not in self.disabled_modules:
             print_warning(
                 "Disabling '{}' module as the following dependencies are not satisfied: {}".format(
-                    module, ", ".join(missing_deps)
-                )
-            )
+                    module, ", ".join(missing_deps)))
             self.disabled_modules.add(module)
         return False
     else:
@@ -380,7 +405,8 @@ def module_check_dependencies(self, module):
 
 
 def sort_module_list(env):
-    deps = {k: v[0] + list(filter(lambda x: x in env.module_list, v[1])) for k, v in env.module_dependencies.items()}
+    deps = {k: v[0] + list(filter(lambda x: x in env.module_list, v[1]))
+            for k, v in env.module_dependencies.items()}
 
     frontier = list(env.module_list.keys())
     explored = []
@@ -445,14 +471,22 @@ def no_verbose(env):
     # There is a space before "..." to ensure that source file names can be
     # Ctrl + clicked in the VS Code terminal.
     compile_source_message = "{}Compiling {}$SOURCE{} ...{}".format(*colors)
-    java_compile_source_message = "{}Compiling {}$SOURCE{} ...{}".format(*colors)
-    compile_shared_source_message = "{}Compiling shared {}$SOURCE{} ...{}".format(*colors)
-    link_program_message = "{}Linking Program {}$TARGET{} ...{}".format(*colors)
-    link_library_message = "{}Linking Static Library {}$TARGET{} ...{}".format(*colors)
-    ranlib_library_message = "{}Ranlib Library {}$TARGET{} ...{}".format(*colors)
-    link_shared_library_message = "{}Linking Shared Library {}$TARGET{} ...{}".format(*colors)
-    java_library_message = "{}Creating Java Archive {}$TARGET{} ...{}".format(*colors)
-    compiled_resource_message = "{}Creating Compiled Resource {}$TARGET{} ...{}".format(*colors)
+    java_compile_source_message = "{}Compiling {}$SOURCE{} ...{}".format(
+        *colors)
+    compile_shared_source_message = "{}Compiling shared {}$SOURCE{} ...{}".format(
+        *colors)
+    link_program_message = "{}Linking Program {}$TARGET{} ...{}".format(
+        *colors)
+    link_library_message = "{}Linking Static Library {}$TARGET{} ...{}".format(
+        *colors)
+    ranlib_library_message = "{}Ranlib Library {}$TARGET{} ...{}".format(
+        *colors)
+    link_shared_library_message = "{}Linking Shared Library {}$TARGET{} ...{}".format(
+        *colors)
+    java_library_message = "{}Creating Java Archive {}$TARGET{} ...{}".format(
+        *colors)
+    compiled_resource_message = "{}Creating Compiled Resource {}$TARGET{} ...{}".format(
+        *colors)
     zip_archive_message = "{}Archiving {}$TARGET{} ...{}".format(*colors)
     generated_file_message = "{}Generating {}$TARGET{} ...{}".format(*colors)
 
@@ -501,15 +535,17 @@ def detect_visual_c_compiler_version(tools_env):
     if "VCTOOLSINSTALLDIR" in tools_env:
         # Newer versions have a different path available
         vc_amd64_compiler_detection_index = (
-            tools_env["PATH"].upper().find(tools_env["VCTOOLSINSTALLDIR"].upper() + "BIN\\HOSTX64\\X64;")
-        )
+            tools_env["PATH"].upper().find(
+                tools_env["VCTOOLSINSTALLDIR"].upper() +
+                "BIN\\HOSTX64\\X64;"))
         if vc_amd64_compiler_detection_index > -1:
             vc_chosen_compiler_index = vc_amd64_compiler_detection_index
             vc_chosen_compiler_str = "amd64"
 
         vc_amd64_x86_compiler_detection_index = (
-            tools_env["PATH"].upper().find(tools_env["VCTOOLSINSTALLDIR"].upper() + "BIN\\HOSTX64\\X86;")
-        )
+            tools_env["PATH"].upper().find(
+                tools_env["VCTOOLSINSTALLDIR"].upper() +
+                "BIN\\HOSTX64\\X86;"))
         if vc_amd64_x86_compiler_detection_index > -1 and (
             vc_chosen_compiler_index == -1 or vc_chosen_compiler_index > vc_amd64_x86_compiler_detection_index
         ):
@@ -517,8 +553,9 @@ def detect_visual_c_compiler_version(tools_env):
             vc_chosen_compiler_str = "amd64_x86"
 
         vc_x86_compiler_detection_index = (
-            tools_env["PATH"].upper().find(tools_env["VCTOOLSINSTALLDIR"].upper() + "BIN\\HOSTX86\\X86;")
-        )
+            tools_env["PATH"].upper().find(
+                tools_env["VCTOOLSINSTALLDIR"].upper() +
+                "BIN\\HOSTX86\\X86;"))
         if vc_x86_compiler_detection_index > -1 and (
             vc_chosen_compiler_index == -1 or vc_chosen_compiler_index > vc_x86_compiler_detection_index
         ):
@@ -526,8 +563,9 @@ def detect_visual_c_compiler_version(tools_env):
             vc_chosen_compiler_str = "x86"
 
         vc_x86_amd64_compiler_detection_index = (
-            tools_env["PATH"].upper().find(tools_env["VCTOOLSINSTALLDIR"].upper() + "BIN\\HOSTX86\\X64;")
-        )
+            tools_env["PATH"].upper().find(
+                tools_env["VCTOOLSINSTALLDIR"].upper() +
+                "BIN\\HOSTX86\\X64;"))
         if vc_x86_amd64_compiler_detection_index > -1 and (
             vc_chosen_compiler_index == -1 or vc_chosen_compiler_index > vc_x86_amd64_compiler_detection_index
         ):
@@ -537,7 +575,8 @@ def detect_visual_c_compiler_version(tools_env):
 
 
 def find_visual_c_batch_file(env):
-    # TODO: We should investigate if we can avoid relying on SCons internals here.
+    # TODO: We should investigate if we can avoid relying on SCons internals
+    # here.
     from SCons.Tool.MSCommon.vc import find_batch_file, find_vc_pdir, get_default_version, get_host_target
 
     msvc_version = get_default_version(env)
@@ -549,19 +588,29 @@ def find_visual_c_batch_file(env):
         (host_platform, target_platform, _) = get_host_target(env)
 
     if env.scons_version < (4, 6, 0):
-        return find_batch_file(env, msvc_version, host_platform, target_platform)[0]
+        return find_batch_file(
+            env,
+            msvc_version,
+            host_platform,
+            target_platform)[0]
 
     # SCons 4.6.0+ removed passing env, so we need to get the product_dir ourselves first,
     # then pass that as the last param instead of env as the first param as before.
-    # Param names need to be explicit, as they were shuffled around in SCons 4.8.0.
+    # Param names need to be explicit, as they were shuffled around in SCons
+    # 4.8.0.
     product_dir = find_vc_pdir(msvc_version=msvc_version, env=env)
 
-    return find_batch_file(msvc_version, host_platform, target_platform, product_dir)[0]
+    return find_batch_file(
+        msvc_version,
+        host_platform,
+        target_platform,
+        product_dir)[0]
 
 
 def generate_cpp_hint_file(filename):
     if os.path.isfile(filename):
-        # Don't overwrite an existing hint file since the user may have customized it.
+        # Don't overwrite an existing hint file since the user may have
+        # customized it.
         pass
     else:
         try:
@@ -642,15 +691,18 @@ def detect_darwin_sdk_path(platform, env):
         sdk_name = "iphonesimulator"
         var_name = "IOS_SDK_PATH"
     else:
-        raise Exception("Invalid platform argument passed to detect_darwin_sdk_path")
+        raise Exception(
+            "Invalid platform argument passed to detect_darwin_sdk_path")
 
     if not env[var_name]:
         try:
-            sdk_path = subprocess.check_output(["xcrun", "--sdk", sdk_name, "--show-sdk-path"]).strip().decode("utf-8")
+            sdk_path = subprocess.check_output(
+                ["xcrun", "--sdk", sdk_name, "--show-sdk-path"]).strip().decode("utf-8")
             if sdk_path:
                 env[var_name] = sdk_path
         except (subprocess.CalledProcessError, OSError):
-            print_error("Failed to find SDK path while running xcrun --sdk {} --show-sdk-path.".format(sdk_name))
+            print_error(
+                "Failed to find SDK path while running xcrun --sdk {} --show-sdk-path.".format(sdk_name))
             raise
 
 
@@ -660,9 +712,11 @@ def is_apple_clang(env):
     if not using_clang(env):
         return False
     try:
-        version = subprocess.check_output([env.subst(env["CXX"]), "--version"]).strip().decode("utf-8")
+        version = subprocess.check_output(
+            [env.subst(env["CXX"]), "--version"]).strip().decode("utf-8")
     except (subprocess.CalledProcessError, OSError):
-        print_warning("Couldn't parse CXX environment variable to infer compiler version.")
+        print_warning(
+            "Couldn't parse CXX environment variable to infer compiler version.")
         return False
     return version.startswith("Apple")
 
@@ -718,7 +772,8 @@ def get_compiler_version(env):
                 if split[0] == "catalog_buildVersion":
                     ret["metadata1"] = split[1]
         except (subprocess.CalledProcessError, OSError):
-            print_warning("Couldn't find vswhere to determine compiler version.")
+            print_warning(
+                "Couldn't find vswhere to determine compiler version.")
         return ret
 
     # Not using -dumpversion as some GCC distros only return major, and
@@ -728,7 +783,8 @@ def get_compiler_version(env):
             [env.subst(env["CXX"]), "--version"], shell=(os.name == "nt"), encoding="utf-8"
         ).strip()
     except (subprocess.CalledProcessError, OSError):
-        print_warning("Couldn't parse CXX environment variable to infer compiler version.")
+        print_warning(
+            "Couldn't parse CXX environment variable to infer compiler version.")
         return ret
 
     match = re.search(
@@ -829,15 +885,26 @@ def show_progress(env):
 
     env.AlwaysBuild(
         env.CommandNoCache(
-            "progress_finish", [], env.Action(progress_finish, "Building node count database .scons_node_count")
-        )
-    )
+            "progress_finish",
+            [],
+            env.Action(
+                progress_finish,
+                "Building node count database .scons_node_count")))
 
 
 def convert_size(size_bytes: int) -> str:
     if size_bytes == 0:
         return "0 bytes"
-    SIZE_NAMES = ["bytes", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"]
+    SIZE_NAMES = [
+        "bytes",
+        "KiB",
+        "MiB",
+        "GiB",
+        "TiB",
+        "PiB",
+        "EiB",
+        "ZiB",
+        "YiB"]
     index = math.floor(math.log(size_bytes, 1024))
     power = math.pow(1024, index)
     size = round(size_bytes / power, 2)
@@ -858,7 +925,8 @@ def clean_cache(cache_path: str, cache_limit: int, verbose: bool):
     if not files:
         return
 
-    # Remove all text files, store binary files in list of (filename, size, atime).
+    # Remove all text files, store binary files in list of (filename, size,
+    # atime).
     purge = []
     texts = []
     stats = []
@@ -866,7 +934,8 @@ def clean_cache(cache_path: str, cache_limit: int, verbose: bool):
         try:
             # Save file stats to rewrite after modifying.
             tmp_stat = os.stat(file)
-            # Failing a utf-8 decode is the easiest way to determine if a file is binary.
+            # Failing a utf-8 decode is the easiest way to determine if a file
+            # is binary.
             try:
                 with open(file, encoding="utf-8") as out:
                     out.read(1024)
@@ -888,7 +957,9 @@ def clean_cache(cache_path: str, cache_limit: int, verbose: bool):
                 print_error(f'Failed to remove cache file "{file}"; skipping.')
                 count -= 1
         if verbose:
-            print("Purging %d text %s from cache..." % (count, "files" if count > 1 else "file"))
+            print(
+                "Purging %d text %s from cache..." %
+                (count, "files" if count > 1 else "file"))
 
     if cache_limit:
         # Sort by most recent access (most sensible to keep) first. Search for the first entry where
@@ -910,7 +981,8 @@ def clean_cache(cache_path: str, cache_limit: int, verbose: bool):
                 print_error(f'Failed to remove cache file "{file}"; skipping.')
                 count -= 1
         if verbose:
-            print("Purging %d %s from cache..." % (count, "files" if count > 1 else "file"))
+            print("Purging %d %s from cache..." %
+                  (count, "files" if count > 1 else "file"))
 
 
 def prepare_cache(env) -> None:
@@ -921,7 +993,8 @@ def prepare_cache(env) -> None:
     if env["cache_path"]:
         cache_path = cast(str, env["cache_path"])
     elif os.environ.get("SCONS_CACHE"):
-        print_warning("Environment variable `SCONS_CACHE` is deprecated; use `cache_path` argument instead.")
+        print_warning(
+            "Environment variable `SCONS_CACHE` is deprecated; use `cache_path` argument instead.")
         cache_path = cast(str, os.environ.get("SCONS_CACHE"))
 
     if not cache_path:
@@ -933,8 +1006,10 @@ def prepare_cache(env) -> None:
     if env["cache_limit"]:
         cache_limit = float(env["cache_limit"])
     elif os.environ.get("SCONS_CACHE_LIMIT"):
-        print_warning("Environment variable `SCONS_CACHE_LIMIT` is deprecated; use `cache_limit` argument instead.")
-        cache_limit = float(os.getenv("SCONS_CACHE_LIMIT", "0")) / 1024  # Old method used MiB, convert to GiB
+        print_warning(
+            "Environment variable `SCONS_CACHE_LIMIT` is deprecated; use `cache_limit` argument instead.")
+        # Old method used MiB, convert to GiB
+        cache_limit = float(os.getenv("SCONS_CACHE_LIMIT", "0")) / 1024
 
     # Convert GiB to bytes; treat negative numbers as 0 (unlimited).
     cache_limit = max(0, int(cache_limit * 1024 * 1024 * 1024))
@@ -980,7 +1055,8 @@ def dump(env):
 # To generate AND build from the command line:
 #   scons vsproj=yes vsproj_gen_only=no
 def generate_vs_project(env, original_args, project_name="godot"):
-    # Augmented glob_recursive that also fills the dirs argument with traversed directories that have content.
+    # Augmented glob_recursive that also fills the dirs argument with
+    # traversed directories that have content.
     def glob_recursive_2(pattern, dirs, node="."):
         from SCons import Node
         from SCons.Script import Glob
@@ -1043,7 +1119,8 @@ def generate_vs_project(env, original_args, project_name="godot"):
 
     filtered_args = original_args.copy()
 
-    # Ignore the "vsproj" option to not regenerate the VS project on every build
+    # Ignore the "vsproj" option to not regenerate the VS project on every
+    # build
     filtered_args.pop("vsproj", None)
 
     # This flag allows users to regenerate the proj files but skip the building process.
@@ -1055,10 +1132,12 @@ def generate_vs_project(env, original_args, project_name="godot"):
     # and build commands.
     filtered_args.pop("vsproj_props_only", None)
 
-    # The "progress" option is ignored as the current compilation progress indication doesn't work in VS
+    # The "progress" option is ignored as the current compilation progress
+    # indication doesn't work in VS
     filtered_args.pop("progress", None)
 
-    # We add these three manually because they might not be explicitly passed in, and it's important to always set them.
+    # We add these three manually because they might not be explicitly passed
+    # in, and it's important to always set them.
     filtered_args.pop("platform", None)
     filtered_args.pop("target", None)
     filtered_args.pop("arch", None)
@@ -1088,11 +1167,15 @@ def generate_vs_project(env, original_args, project_name="godot"):
             for plat in vs_plats:
                 val += [{"platform": plat[0], "architecture": plat[1]}]
 
-            vsconf = {"platform": platform_name, "targets": vs_confs, "arches": val}
+            vsconf = {
+                "platform": platform_name,
+                "targets": vs_confs,
+                "arches": val}
             confs += [vsconf]
 
             # Save additional information about the configuration for the actively selected platform,
-            # so we can generate the platform-specific props file with all the build commands/defines/etc
+            # so we can generate the platform-specific props file with all the
+            # build commands/defines/etc
             if platform == platform_name:
                 common_build_prefix = msvs.get_build_prefix(env)
                 vs_configuration = vsconf
@@ -1130,26 +1213,36 @@ def generate_vs_project(env, original_args, project_name="godot"):
     import json
 
     md5 = hashlib.md5(
-        json.dumps(sorted(headers + headers_dirs + sources + sources_dirs + others + others_dirs)).encode("utf-8")
-    ).hexdigest()
+        json.dumps(
+            sorted(
+                headers +
+                headers_dirs +
+                sources +
+                sources_dirs +
+                others +
+                others_dirs)).encode("utf-8")).hexdigest()
 
     if os.path.exists(f"{project_name}.vcxproj.filters"):
         with open(f"{project_name}.vcxproj.filters", "r", encoding="utf-8") as file:
             existing_filters = file.read()
-        match = re.search(r"(?ms)^<!-- CHECKSUM$.([0-9a-f]{32})", existing_filters)
+        match = re.search(
+            r"(?ms)^<!-- CHECKSUM$.([0-9a-f]{32})",
+            existing_filters)
         if match is not None and md5 == match.group(1):
             skip_filters = True
 
     import uuid
 
-    # Don't regenerate the filters file if nothing has changed, so we keep the existing UUIDs.
+    # Don't regenerate the filters file if nothing has changed, so we keep the
+    # existing UUIDs.
     if not skip_filters:
         print(f"Regenerating {project_name}.vcxproj.filters")
 
         with open("misc/msvs/vcxproj.filters.template", "r", encoding="utf-8") as file:
             filters_template = file.read()
         for i in range(1, 10):
-            filters_template = filters_template.replace(f"%%UUID{i}%%", str(uuid.uuid4()))
+            filters_template = filters_template.replace(
+                f"%%UUID{i}%%", str(uuid.uuid4()))
 
         filters = ""
 
@@ -1192,8 +1285,12 @@ def generate_vs_project(env, original_args, project_name="godot"):
     others_active = []
 
     get_dependencies(
-        env.File(f"#bin/godot{env['PROGSUFFIX']}"), env, extensions, headers_active, sources_active, others_active
-    )
+        env.File(f"#bin/godot{env['PROGSUFFIX']}"),
+        env,
+        extensions,
+        headers_active,
+        sources_active,
+        others_active)
 
     all_items = []
     properties = []
@@ -1240,7 +1337,8 @@ def generate_vs_project(env, original_args, project_name="godot"):
                 vsconf = f'{target}|{a["platform"]}'
                 break
 
-        condition = "'$(GodotConfiguration)|$(GodotPlatform)'=='" + vsconf + "'"
+        condition = "'$(GodotConfiguration)|$(GodotPlatform)'=='" + \
+            vsconf + "'"
         itemlist = {}
         for item in activeItems:
             key = os.path.dirname(item).replace("\\", "_")
@@ -1251,8 +1349,9 @@ def generate_vs_project(env, original_args, project_name="godot"):
 
         for x in itemlist.keys():
             properties.append(
-                "<ActiveProjectItemList_%s>;%s;</ActiveProjectItemList_%s>" % (x, ";".join(itemlist[x]), x)
-            )
+                "<ActiveProjectItemList_%s>;%s;</ActiveProjectItemList_%s>" %
+                (x, ";".join(
+                    itemlist[x]), x))
         output = f'bin\\godot{env["PROGSUFFIX"]}'
 
         with open("misc/msvs/props.template", "r", encoding="utf-8") as file:
@@ -1260,23 +1359,29 @@ def generate_vs_project(env, original_args, project_name="godot"):
 
         props_template = props_template.replace("%%VSCONF%%", vsconf)
         props_template = props_template.replace("%%CONDITION%%", condition)
-        props_template = props_template.replace("%%PROPERTIES%%", "\n    ".join(properties))
-        props_template = props_template.replace("%%EXTRA_ITEMS%%", "\n    ".join(extraItems))
+        props_template = props_template.replace(
+            "%%PROPERTIES%%", "\n    ".join(properties))
+        props_template = props_template.replace(
+            "%%EXTRA_ITEMS%%", "\n    ".join(extraItems))
 
         props_template = props_template.replace("%%OUTPUT%%", output)
 
         proplist = [format_key_value(v) for v in list(env["CPPDEFINES"])]
-        proplist += [format_key_value(j) for j in env.get("VSHINT_DEFINES", [])]
-        props_template = props_template.replace("%%DEFINES%%", ";".join(proplist))
+        proplist += [format_key_value(j)
+                     for j in env.get("VSHINT_DEFINES", [])]
+        props_template = props_template.replace(
+            "%%DEFINES%%", ";".join(proplist))
 
         proplist = [str(j) for j in env["CPPPATH"]]
         proplist += [str(j) for j in env.get("VSHINT_INCLUDES", [])]
-        props_template = props_template.replace("%%INCLUDES%%", ";".join(proplist))
+        props_template = props_template.replace(
+            "%%INCLUDES%%", ";".join(proplist))
 
         proplist = env["CCFLAGS"]
         proplist += [x for x in env["CXXFLAGS"] if not x.startswith("$")]
         proplist += [str(j) for j in env.get("VSHINT_OPTIONS", [])]
-        props_template = props_template.replace("%%OPTIONS%%", " ".join(proplist))
+        props_template = props_template.replace(
+            "%%OPTIONS%%", " ".join(proplist))
 
         # Windows allows us to have spaces in paths, so we need
         # to double quote off the directory. However, the path ends
@@ -1308,15 +1413,19 @@ def generate_vs_project(env, original_args, project_name="godot"):
         if len(common_build_prefix) == 0:
             commands = "echo Starting SCons &amp;&amp; cmd /V /C " + commands
         else:
-            common_build_prefix[0] = "echo Starting SCons &amp;&amp; cmd /V /C " + common_build_prefix[0]
+            common_build_prefix[0] = "echo Starting SCons &amp;&amp; cmd /V /C " + \
+                common_build_prefix[0]
 
-        cmd = " ^&amp; ".join(common_build_prefix + [" ".join([commands] + common_build_postfix)])
+        cmd = " ^&amp; ".join(common_build_prefix +
+                              [" ".join([commands] + common_build_postfix)])
         props_template = props_template.replace("%%BUILD%%", cmd)
 
-        cmd = " ^&amp; ".join(common_build_prefix + [" ".join([commands] + cmd_rebuild)])
+        cmd = " ^&amp; ".join(common_build_prefix +
+                              [" ".join([commands] + cmd_rebuild)])
         props_template = props_template.replace("%%REBUILD%%", cmd)
 
-        cmd = " ^&amp; ".join(common_build_prefix + [" ".join([commands] + cmd_clean)])
+        cmd = " ^&amp; ".join(common_build_prefix +
+                              [" ".join([commands] + cmd_clean)])
         props_template = props_template.replace("%%CLEAN%%", cmd)
 
         with open(
@@ -1328,16 +1437,20 @@ def generate_vs_project(env, original_args, project_name="godot"):
     sln_uuid = str(uuid.uuid4())
 
     if os.path.exists(f"{project_name}.sln"):
-        for line in open(f"{project_name}.sln", "r", encoding="utf-8").read().splitlines():
-            if line.startswith('Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}")'):
+        for line in open(
+            f"{project_name}.sln",
+            "r",
+                encoding="utf-8").read().splitlines():
+            if line.startswith(
+                    'Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}")'):
                 proj_uuid = re.search(
                     r"\"{(\b[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-\b[0-9a-fA-F]{12}\b)}\"$",
                     line,
                 ).group(1)
             elif line.strip().startswith("SolutionGuid ="):
                 sln_uuid = re.search(
-                    r"{(\b[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-\b[0-9a-fA-F]{12}\b)}", line
-                ).group(1)
+                    r"{(\b[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-\b[0-9a-fA-F]{12}\b)}",
+                    line).group(1)
                 break
 
     configurations = []
@@ -1354,17 +1467,18 @@ def generate_vs_project(env, original_args, project_name="godot"):
 
             # Redirect editor configurations for non-Windows platforms to the Windows one, so the solution has all the permutations
             # and VS doesn't complain about missing project configurations.
-            # These configurations are disabled, so they show up but won't build.
+            # These configurations are disabled, so they show up but won't
+            # build.
             if godot_platform != "windows":
                 section1 += [f"editor|{sln_plat} = editor|{proj_plat}"]
                 section2 += [
-                    f"{{{proj_uuid}}}.editor|{proj_plat}.ActiveCfg = editor|{proj_plat}",
-                ]
+                    f"{{{proj_uuid}}}.editor|{proj_plat}.ActiveCfg = editor|{proj_plat}", ]
 
             for t in conf["targets"]:
                 godot_target = t
 
-                # Windows x86 is a special little flower that requires a project platform == Win32 but a solution platform == x86.
+                # Windows x86 is a special little flower that requires a
+                # project platform == Win32 but a solution platform == x86.
                 if godot_platform == "windows" and godot_target == "editor" and godot_arch == "x86_32":
                     sln_plat = "x86"
 
@@ -1409,7 +1523,8 @@ def generate_vs_project(env, original_args, project_name="godot"):
                     f"{{{proj_uuid}}}.{godot_target}|{sln_plat}.Build.0 = {godot_target}|{proj_plat}",
                 ]
 
-    # Add an extra import for a local user props file at the end, so users can add more overrides.
+    # Add an extra import for a local user props file at the end, so users can
+    # add more overrides.
     imports += [
         f'<Import Project="$(MSBuildProjectDirectory)\\{project_name}.vs.user.props" Condition="Exists(\'$(MSBuildProjectDirectory)\\{project_name}.vs.user.props\')"/>'
     ]
@@ -1420,10 +1535,14 @@ def generate_vs_project(env, original_args, project_name="godot"):
         with open("misc/msvs/vcxproj.template", "r", encoding="utf-8") as file:
             proj_template = file.read()
         proj_template = proj_template.replace("%%UUID%%", proj_uuid)
-        proj_template = proj_template.replace("%%CONFS%%", "\n    ".join(configurations))
-        proj_template = proj_template.replace("%%IMPORTS%%", "\n  ".join(imports))
-        proj_template = proj_template.replace("%%DEFAULT_ITEMS%%", "\n    ".join(all_items))
-        proj_template = proj_template.replace("%%PROPERTIES%%", "\n  ".join(properties))
+        proj_template = proj_template.replace(
+            "%%CONFS%%", "\n    ".join(configurations))
+        proj_template = proj_template.replace(
+            "%%IMPORTS%%", "\n  ".join(imports))
+        proj_template = proj_template.replace(
+            "%%DEFAULT_ITEMS%%", "\n    ".join(all_items))
+        proj_template = proj_template.replace(
+            "%%PROPERTIES%%", "\n  ".join(properties))
 
         with open(f"{project_name}.vcxproj", "w", encoding="utf-8", newline="\r\n") as f:
             f.write(proj_template)
@@ -1434,8 +1553,10 @@ def generate_vs_project(env, original_args, project_name="godot"):
         sln_template = sln_template.replace("%%NAME%%", project_name)
         sln_template = sln_template.replace("%%UUID%%", proj_uuid)
         sln_template = sln_template.replace("%%SLNUUID%%", sln_uuid)
-        sln_template = sln_template.replace("%%SECTION1%%", "\n\t\t".join(section1))
-        sln_template = sln_template.replace("%%SECTION2%%", "\n\t\t".join(section2))
+        sln_template = sln_template.replace(
+            "%%SECTION1%%", "\n\t\t".join(section1))
+        sln_template = sln_template.replace(
+            "%%SECTION2%%", "\n\t\t".join(section2))
 
         with open(f"{project_name}.sln", "w", encoding="utf-8", newline="\r\n") as f:
             f.write(sln_template)
@@ -1479,13 +1600,16 @@ def generate_copyright_header(filename: str) -> str:
 """
     filename = filename.split("/")[-1].ljust(MARGIN)
     if len(filename) > MARGIN:
-        print(f'WARNING: Filename "{filename}" too large for copyright header.')
+        print(
+            f'WARNING: Filename "{filename}" too large for copyright header.')
     return TEMPLATE % filename
 
 
 @contextlib.contextmanager
 def generated_wrapper(
-    path,  # FIXME: type with `Union[str, Node, List[Node]]` when pytest conflicts are resolved
+    # FIXME: type with `Union[str, Node, List[Node]]` when pytest conflicts
+    # are resolved
+    path,
     guard: Optional[bool] = None,
     prefix: str = "",
     suffix: str = "",
@@ -1512,18 +1636,19 @@ def generated_wrapper(
             if len(path) > 1:
                 print_warning(
                     "Attempting to use generated wrapper with multiple targets; "
-                    f"will only use first entry: {path[0]}"
-                )
+                    f"will only use first entry: {path[0]}")
             path = path[0]
         if not hasattr(path, "get_abspath"):
-            raise TypeError(f'Expected type "str", "Node" or "List[Node]"; was passed {type(path)}.')
+            raise TypeError(
+                f'Expected type "str", "Node" or "List[Node]"; was passed {type(path)}.')
         path = path.get_abspath()
 
     path = str(path).replace("\\", "/")
     if guard is None:
         guard = path.endswith((".h", ".hh", ".hpp", ".inc"))
     if not guard and (prefix or suffix):
-        print_warning(f'Trying to assign header guard prefix/suffix while `guard` is disabled: "{path}".')
+        print_warning(
+            f'Trying to assign header guard prefix/suffix while `guard` is disabled: "{path}".')
 
     header_guard = ""
     if guard:
@@ -1532,8 +1657,16 @@ def generated_wrapper(
         if suffix:
             suffix = f"_{suffix}"
         split = path.split("/")[-1].split(".")
-        header_guard = (f"{prefix}{split[0]}{suffix}.{'.'.join(split[1:])}".upper()
-                .replace(".", "_").replace("-", "_").replace(" ", "_").replace("__", "_"))  # fmt: skip
+        header_guard = (
+            f"{prefix}{split[0]}{suffix}.{'.'.join(split[1:])}".upper() .replace(
+                ".",
+                "_").replace(
+                "-",
+                "_").replace(
+                " ",
+                "_").replace(
+                    "__",
+                "_"))  # fmt: skip
 
     with open(path, "wt", encoding="utf-8", newline="\n") as file:
         file.write(generate_copyright_header(path))
@@ -1564,7 +1697,7 @@ def to_raw_cstring(value: Union[str, List[str]]) -> str:
     encoded = value.encode()
 
     while offset <= len(encoded):
-        segment = encoded[offset : offset + MAX_LITERAL]
+        segment = encoded[offset: offset + MAX_LITERAL]
         offset += MAX_LITERAL
         if len(segment) == MAX_LITERAL:
             # Try to segment raw strings at double newlines to keep readable.
@@ -1575,7 +1708,8 @@ def to_raw_cstring(value: Union[str, List[str]]) -> str:
             # If none found, ensure we end with valid utf8.
             # https://github.com/halloleo/unicut/blob/master/truncate.py
             elif segment[-1] & 0b10000000:
-                last_11xxxxxx_index = [i for i in range(-1, -5, -1) if segment[i] & 0b11000000 == 0b11000000][0]
+                last_11xxxxxx_index = [
+                    i for i in range(-1, -5, -1) if segment[i] & 0b11000000 == 0b11000000][0]
                 last_11xxxxxx = segment[last_11xxxxxx_index]
                 if not last_11xxxxxx & 0b00100000:
                     last_char_length = 2

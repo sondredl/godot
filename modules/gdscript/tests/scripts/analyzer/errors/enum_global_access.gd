@@ -1,2 +1,2 @@
 func test():
-	print(Variant.Operator)
+    print(Variant.Operator)

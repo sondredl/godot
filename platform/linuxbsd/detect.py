@@ -73,14 +73,22 @@ def get_flags():
 
 def configure(env: "SConsEnvironment"):
     # Validate arch.
-    supported_arches = ["x86_32", "x86_64", "arm32", "arm64", "rv64", "ppc32", "ppc64"]
+    supported_arches = [
+        "x86_32",
+        "x86_64",
+        "arm32",
+        "arm64",
+        "rv64",
+        "ppc32",
+        "ppc64"]
     validate_arch(env["arch"], get_name(), supported_arches)
 
-    ## Build type
+    # Build type
 
     if env.dev_build:
         # This is needed for our crash handler to work properly.
-        # gdb works fine without it though, so maybe our crash handler could too.
+        # gdb works fine without it though, so maybe our crash handler could
+        # too.
         env.Append(LINKFLAGS=["-rdynamic"])
 
     # Cross-compilation
@@ -95,13 +103,15 @@ def configure(env: "SConsEnvironment"):
 
     # CPU architecture flags.
     if env["arch"] == "rv64":
-        # G = General-purpose extensions, C = Compression extension (very common).
+        # G = General-purpose extensions, C = Compression extension (very
+        # common).
         env.Append(CCFLAGS=["-march=rv64gc"])
 
-    ## Compiler configuration
+    # Compiler configuration
 
     if "CXX" in env and "clang" in os.path.basename(env["CXX"]):
-        # Convenience check to enforce the use_llvm overrides when CXX is clang(++)
+        # Convenience check to enforce the use_llvm overrides when CXX is
+        # clang(++)
         env["use_llvm"] = True
 
     if env["use_llvm"]:
@@ -112,12 +122,17 @@ def configure(env: "SConsEnvironment"):
 
     if env["linker"] != "default":
         print("Using linker program: " + env["linker"])
-        if env["linker"] == "mold" and using_gcc(env):  # GCC < 12.1 doesn't support -fuse-ld=mold.
+        # GCC < 12.1 doesn't support -fuse-ld=mold.
+        if env["linker"] == "mold" and using_gcc(env):
             cc_version = get_compiler_version(env)
             cc_semver = (cc_version["major"], cc_version["minor"])
             if cc_semver < (12, 1):
                 found_wrapper = False
-                for path in ["/usr/libexec", "/usr/local/libexec", "/usr/lib", "/usr/local/lib"]:
+                for path in [
+                    "/usr/libexec",
+                    "/usr/local/libexec",
+                    "/usr/lib",
+                        "/usr/local/lib"]:
                     if os.path.isfile(path + "/mold/ld"):
                         env.Append(LINKFLAGS=["-B" + path + "/mold"])
                         found_wrapper = True
@@ -157,7 +172,8 @@ def configure(env: "SConsEnvironment"):
                 env.Append(CCFLAGS=["-fsanitize=bounds-strict"])
 
         if env["use_asan"]:
-            env.Append(CCFLAGS=["-fsanitize=address,pointer-subtract,pointer-compare"])
+            env.Append(
+                CCFLAGS=["-fsanitize=address,pointer-subtract,pointer-compare"])
             env.Append(LINKFLAGS=["-fsanitize=address"])
 
         if env["use_lsan"]:
@@ -184,7 +200,8 @@ def configure(env: "SConsEnvironment"):
     if env["lto"] != "none":
         if env["lto"] == "thin":
             if not env["use_llvm"]:
-                print_error("ThinLTO is only compatible with LLVM, use `use_llvm=yes` or `lto=full`.")
+                print_error(
+                    "ThinLTO is only compatible with LLVM, use `use_llvm=yes` or `lto=full`.")
                 sys.exit(255)
             env.Append(CCFLAGS=["-flto=thin"])
             env.Append(LINKFLAGS=["-flto=thin"])
@@ -201,23 +218,26 @@ def configure(env: "SConsEnvironment"):
 
     env.Append(CCFLAGS=["-pipe"])
 
-    ## Dependencies
+    # Dependencies
 
     if env["use_sowrap"]:
         env.Append(CPPDEFINES=["SOWRAP_ENABLED"])
 
     if env["wayland"]:
         if os.system("wayland-scanner -v 2>/dev/null") != 0:
-            print_warning("wayland-scanner not found. Disabling Wayland support.")
+            print_warning(
+                "wayland-scanner not found. Disabling Wayland support.")
             env["wayland"] = False
 
     if env["touch"]:
         env.Append(CPPDEFINES=["TOUCH_ENABLED"])
 
-    # FIXME: Check for existence of the libs before parsing their flags with pkg-config
+    # FIXME: Check for existence of the libs before parsing their flags with
+    # pkg-config
 
     # freetype depends on libpng and zlib, so bundling one of them while keeping others
-    # as shared libraries leads to weird issues. And graphite and harfbuzz need freetype.
+    # as shared libraries leads to weird issues. And graphite and harfbuzz
+    # need freetype.
     ft_linked_deps = [
         env["builtin_freetype"],
         env["builtin_libpng"],
@@ -229,8 +249,7 @@ def configure(env: "SConsEnvironment"):
         print_error(
             "These libraries should be either all builtin, or all system provided:\n"
             "freetype, libpng, zlib, graphite, harfbuzz.\n"
-            "Please specify `builtin_<name>=no` for all of them, or none."
-        )
+            "Please specify `builtin_<name>=no` for all of them, or none.")
         sys.exit(255)
 
     if not env["builtin_freetype"]:
@@ -255,21 +274,26 @@ def configure(env: "SConsEnvironment"):
         env.ParseConfig("pkg-config libzstd --cflags --libs")
 
     if env["brotli"] and not env["builtin_brotli"]:
-        env.ParseConfig("pkg-config libbrotlicommon libbrotlidec --cflags --libs")
+        env.ParseConfig(
+            "pkg-config libbrotlicommon libbrotlidec --cflags --libs")
 
     # Sound and video libraries
-    # Keep the order as it triggers chained dependencies (ogg needed by others, etc.)
+    # Keep the order as it triggers chained dependencies (ogg needed by
+    # others, etc.)
 
     if not env["builtin_libtheora"]:
-        env["builtin_libogg"] = False  # Needed to link against system libtheora
-        env["builtin_libvorbis"] = False  # Needed to link against system libtheora
+        # Needed to link against system libtheora
+        env["builtin_libogg"] = False
+        # Needed to link against system libtheora
+        env["builtin_libvorbis"] = False
         env.ParseConfig("pkg-config theora theoradec --cflags --libs")
     else:
         if env["arch"] in ["x86_64", "x86_32"]:
             env["x86_libtheora_opt_gcc"] = True
 
     if not env["builtin_libvorbis"]:
-        env["builtin_libogg"] = False  # Needed to link against system libvorbis
+        # Needed to link against system libvorbis
+        env["builtin_libogg"] = False
         env.ParseConfig("pkg-config vorbis vorbisfile --cflags --libs")
 
     if not env["builtin_libogg"]:
@@ -282,7 +306,8 @@ def configure(env: "SConsEnvironment"):
         # mbedTLS only provides a pkgconfig file since 3.6.0, but we still support 2.28.x,
         # so fallback to manually specifying LIBS if it fails.
         if os.system("pkg-config --exists mbedtls") == 0:  # 0 means found
-            env.ParseConfig("pkg-config mbedtls mbedcrypto mbedx509 --cflags --libs")
+            env.ParseConfig(
+                "pkg-config mbedtls mbedcrypto mbedx509 --cflags --libs")
         else:
             env.Append(LIBS=["mbedtls", "mbedcrypto", "mbedx509"])
 
@@ -311,11 +336,13 @@ def configure(env: "SConsEnvironment"):
 
     if env["fontconfig"]:
         if not env["use_sowrap"]:
-            if os.system("pkg-config --exists fontconfig") == 0:  # 0 means found
+            if os.system(
+                    "pkg-config --exists fontconfig") == 0:  # 0 means found
                 env.ParseConfig("pkg-config fontconfig --cflags --libs")
                 env.Append(CPPDEFINES=["FONTCONFIG_ENABLED"])
             else:
-                print_warning("fontconfig development libraries not found. Disabling the system fonts support.")
+                print_warning(
+                    "fontconfig development libraries not found. Disabling the system fonts support.")
                 env["fontconfig"] = False
         else:
             env.Append(CPPDEFINES=["FONTCONFIG_ENABLED"])
@@ -326,7 +353,8 @@ def configure(env: "SConsEnvironment"):
                 env.ParseConfig("pkg-config alsa --cflags --libs")
                 env.Append(CPPDEFINES=["ALSA_ENABLED", "ALSAMIDI_ENABLED"])
             else:
-                print_warning("ALSA development libraries not found. Disabling the ALSA audio driver.")
+                print_warning(
+                    "ALSA development libraries not found. Disabling the ALSA audio driver.")
                 env["alsa"] = False
         else:
             env.Append(CPPDEFINES=["ALSA_ENABLED", "ALSAMIDI_ENABLED"])
@@ -337,7 +365,8 @@ def configure(env: "SConsEnvironment"):
                 env.ParseConfig("pkg-config libpulse --cflags --libs")
                 env.Append(CPPDEFINES=["PULSEAUDIO_ENABLED"])
             else:
-                print_warning("PulseAudio development libraries not found. Disabling the PulseAudio audio driver.")
+                print_warning(
+                    "PulseAudio development libraries not found. Disabling the PulseAudio audio driver.")
                 env["pulseaudio"] = False
         else:
             env.Append(CPPDEFINES=["PULSEAUDIO_ENABLED", "_REENTRANT"])
@@ -348,18 +377,21 @@ def configure(env: "SConsEnvironment"):
                 env.ParseConfig("pkg-config dbus-1 --cflags --libs")
                 env.Append(CPPDEFINES=["DBUS_ENABLED"])
             else:
-                print_warning("D-Bus development libraries not found. Disabling screensaver prevention.")
+                print_warning(
+                    "D-Bus development libraries not found. Disabling screensaver prevention.")
                 env["dbus"] = False
         else:
             env.Append(CPPDEFINES=["DBUS_ENABLED"])
 
     if env["speechd"]:
         if not env["use_sowrap"]:
-            if os.system("pkg-config --exists speech-dispatcher") == 0:  # 0 means found
+            if os.system(
+                    "pkg-config --exists speech-dispatcher") == 0:  # 0 means found
                 env.ParseConfig("pkg-config speech-dispatcher --cflags --libs")
                 env.Append(CPPDEFINES=["SPEECHD_ENABLED"])
             else:
-                print_warning("speech-dispatcher development libraries not found. Disabling text to speech support.")
+                print_warning(
+                    "speech-dispatcher development libraries not found. Disabling text to speech support.")
                 env["speechd"] = False
         else:
             env.Append(CPPDEFINES=["SPEECHD_ENABLED"])
@@ -370,7 +402,8 @@ def configure(env: "SConsEnvironment"):
             env.Append(CPPDEFINES=["XKB_ENABLED"])
         else:
             if env["wayland"]:
-                print_error("libxkbcommon development libraries required by Wayland not found. Aborting.")
+                print_error(
+                    "libxkbcommon development libraries required by Wayland not found. Aborting.")
                 sys.exit(255)
             else:
                 print_warning(
@@ -383,11 +416,13 @@ def configure(env: "SConsEnvironment"):
         env.Append(CPPDEFINES=["JOYDEV_ENABLED"])
         if env["udev"]:
             if not env["use_sowrap"]:
-                if os.system("pkg-config --exists libudev") == 0:  # 0 means found
+                if os.system(
+                        "pkg-config --exists libudev") == 0:  # 0 means found
                     env.ParseConfig("pkg-config libudev --cflags --libs")
                     env.Append(CPPDEFINES=["UDEV_ENABLED"])
                 else:
-                    print_warning("libudev development libraries not found. Disabling controller hotplugging support.")
+                    print_warning(
+                        "libudev development libraries not found. Disabling controller hotplugging support.")
                     env["udev"] = False
             else:
                 env.Append(CPPDEFINES=["UDEV_ENABLED"])
@@ -445,7 +480,8 @@ def configure(env: "SConsEnvironment"):
     if env["wayland"]:
         if not env["use_sowrap"]:
             if os.system("pkg-config --exists libdecor-0"):
-                print_warning("libdecor development libraries not found. Disabling client-side decorations.")
+                print_warning(
+                    "libdecor development libraries not found. Disabling client-side decorations.")
                 env["libdecor"] = False
             else:
                 env.ParseConfig("pkg-config libdecor-0 --cflags --libs")
@@ -465,7 +501,10 @@ def configure(env: "SConsEnvironment"):
         if env["libdecor"]:
             env.Append(CPPDEFINES=["LIBDECOR_ENABLED"])
 
-        env.Prepend(CPPPATH=["#platform/linuxbsd", "#thirdparty/linuxbsd_headers/wayland/"])
+        env.Prepend(
+            CPPPATH=[
+                "#platform/linuxbsd",
+                "#thirdparty/linuxbsd_headers/wayland/"])
         env.Append(CPPDEFINES=["WAYLAND_ENABLED"])
         env.Append(LIBS=["rt"])  # Needed by glibc, used by _allocate_shm_file
 
@@ -492,7 +531,8 @@ def configure(env: "SConsEnvironment"):
         else:
             # The default crash handler depends on glibc, so if the host uses
             # a different libc (BSD libc, musl), libexecinfo is required.
-            print("Note: Using `execinfo=no` disables the crash handler on platforms where glibc is missing.")
+            print(
+                "Note: Using `execinfo=no` disables the crash handler on platforms where glibc is missing.")
     else:
         env.Append(CPPDEFINES=["CRASH_HANDLER_ENABLED"])
 
