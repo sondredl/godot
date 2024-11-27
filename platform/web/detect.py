@@ -33,20 +33,43 @@ def get_opts():
 
     return [
         ("initial_memory", "Initial WASM memory (in MiB)", 32),
-        # Matches default values from before Emscripten 3.1.27. New defaults are too low for Godot.
+        # Matches default values from before Emscripten 3.1.27. New defaults
+        # are too low for Godot.
         ("stack_size", "WASM stack size (in KiB)", 5120),
-        ("default_pthread_stack_size", "WASM pthread default stack size (in KiB)", 2048),
-        BoolVariable("use_assertions", "Use Emscripten runtime assertions", False),
-        BoolVariable("use_ubsan", "Use Emscripten undefined behavior sanitizer (UBSAN)", False),
-        BoolVariable("use_asan", "Use Emscripten address sanitizer (ASAN)", False),
-        BoolVariable("use_lsan", "Use Emscripten leak sanitizer (LSAN)", False),
-        BoolVariable("use_safe_heap", "Use Emscripten SAFE_HEAP sanitizer", False),
+        ("default_pthread_stack_size",
+         "WASM pthread default stack size (in KiB)", 2048),
+        BoolVariable(
+            "use_assertions",
+            "Use Emscripten runtime assertions",
+            False),
+        BoolVariable(
+            "use_ubsan",
+            "Use Emscripten undefined behavior sanitizer (UBSAN)",
+            False),
+        BoolVariable(
+            "use_asan",
+            "Use Emscripten address sanitizer (ASAN)",
+            False),
+        BoolVariable(
+            "use_lsan",
+            "Use Emscripten leak sanitizer (LSAN)",
+            False),
+        BoolVariable(
+            "use_safe_heap",
+            "Use Emscripten SAFE_HEAP sanitizer",
+            False),
         # eval() can be a security concern, so it can be disabled.
-        BoolVariable("javascript_eval", "Enable JavaScript eval interface", True),
+        BoolVariable(
+            "javascript_eval",
+            "Enable JavaScript eval interface",
+            True),
         BoolVariable(
             "dlink_enabled", "Enable WebAssembly dynamic linking (GDExtension support). Produces bigger binaries", False
         ),
-        BoolVariable("use_closure_compiler", "Use closure compiler to minimize JavaScript code", False),
+        BoolVariable(
+            "use_closure_compiler",
+            "Use closure compiler to minimize JavaScript code",
+            False),
         BoolVariable(
             "proxy_to_pthread",
             "Use Emscripten PROXY_TO_PTHREAD option to run the main application code to a separate thread",
@@ -95,7 +118,7 @@ def configure(env: "SConsEnvironment"):
         print_error("Initial memory must be a valid integer")
         sys.exit(255)
 
-    ## Build type
+    # Build type
 
     if env.debug_features:
         # Retain function names for backtraces at the cost of file size.
@@ -112,7 +135,7 @@ def configure(env: "SConsEnvironment"):
 
     env.Append(LINKFLAGS=["-sINITIAL_MEMORY=%sMB" % env["initial_memory"]])
 
-    ## Copy env variables.
+    # Copy env variables.
     env["ENV"] = os.environ
 
     # LTO
@@ -146,7 +169,10 @@ def configure(env: "SConsEnvironment"):
         # For emscripten support code.
         env.Append(LINKFLAGS=["--closure", "1"])
         # Register builder for our Engine files
-        jscc = env.Builder(generator=run_closure_compiler, suffix=".cc.js", src_suffix=".js")
+        jscc = env.Builder(
+            generator=run_closure_compiler,
+            suffix=".cc.js",
+            src_suffix=".js")
         env.Append(BUILDERS={"BuildJS": jscc})
 
     # Add helper method for adding libraries, externs, pre-js.
@@ -166,7 +192,8 @@ def configure(env: "SConsEnvironment"):
     # Add method for creating the final zip file
     env.AddMethod(create_template_zip, "CreateTemplateZip")
 
-    # Closure compiler extern and support for ecmascript specs (const, let, etc).
+    # Closure compiler extern and support for ecmascript specs (const, let,
+    # etc).
     env["ENV"]["EMCC_CLOSURE_ARGS"] = "--language_in ECMASCRIPT_2021"
 
     env["CC"] = "emcc"
@@ -177,14 +204,17 @@ def configure(env: "SConsEnvironment"):
 
     # Use TempFileMunge since some AR invocations are too long for cmd.exe.
     # Use POSIX-style paths, required with TempFileMunge.
-    env["ARCOM_POSIX"] = env["ARCOM"].replace("$TARGET", "$TARGET.posix").replace("$SOURCES", "$SOURCES.posix")
+    env["ARCOM_POSIX"] = env["ARCOM"].replace(
+        "$TARGET", "$TARGET.posix").replace(
+        "$SOURCES", "$SOURCES.posix")
     env["ARCOM"] = "${TEMPFILE('$ARCOM_POSIX','$ARCOMSTR')}"
 
     # All intermediate files are just object files.
     env["OBJPREFIX"] = ""
     env["OBJSUFFIX"] = ".o"
     env["PROGPREFIX"] = ""
-    # Program() output consists of multiple files, so specify suffixes manually at builder.
+    # Program() output consists of multiple files, so specify suffixes
+    # manually at builder.
     env["PROGSUFFIX"] = ""
     env["LIBPREFIX"] = "lib"
     env["LIBSUFFIX"] = ".a"
@@ -197,20 +227,28 @@ def configure(env: "SConsEnvironment"):
 
     # Minimum emscripten requirements.
     if cc_semver < (3, 1, 62):
-        print_error("The minimum emscripten version to build Godot is 3.1.62, detected: %s.%s.%s" % cc_semver)
+        print_error(
+            "The minimum emscripten version to build Godot is 3.1.62, detected: %s.%s.%s" %
+            cc_semver)
         sys.exit(255)
 
     env.Prepend(CPPPATH=["#platform/web"])
-    env.Append(CPPDEFINES=["WEB_ENABLED", "UNIX_ENABLED"])
+    env.Append(
+        CPPDEFINES=[
+            "WEB_ENABLED",
+            "UNIX_ENABLED",
+            "UNIX_SOCKET_UNAVAILABLE"])
 
     if env["opengl3"]:
         env.AppendUnique(CPPDEFINES=["GLES3_ENABLED"])
-        # This setting just makes WebGL 2 APIs available, it does NOT disable WebGL 1.
+        # This setting just makes WebGL 2 APIs available, it does NOT disable
+        # WebGL 1.
         env.Append(LINKFLAGS=["-sMAX_WEBGL_VERSION=2"])
         # Allow use to take control of swapping WebGL buffers.
         env.Append(LINKFLAGS=["-sOFFSCREEN_FRAMEBUFFER=1"])
         # Disables the use of *glGetProcAddress() which is inefficient.
-        # See https://emscripten.org/docs/tools_reference/settings_reference.html#gl-enable-get-proc-address
+        # See
+        # https://emscripten.org/docs/tools_reference/settings_reference.html#gl-enable-get-proc-address
         env.Append(LINKFLAGS=["-sGL_ENABLE_GET_PROC_ADDRESS=0"])
 
     if env["javascript_eval"]:
@@ -223,25 +261,33 @@ def configure(env: "SConsEnvironment"):
         env.Append(CPPDEFINES=["PTHREAD_NO_RENAME"])
         env.Append(CCFLAGS=["-sUSE_PTHREADS=1"])
         env.Append(LINKFLAGS=["-sUSE_PTHREADS=1"])
-        env.Append(LINKFLAGS=["-sDEFAULT_PTHREAD_STACK_SIZE=%sKB" % env["default_pthread_stack_size"]])
+        env.Append(
+            LINKFLAGS=[
+                "-sDEFAULT_PTHREAD_STACK_SIZE=%sKB" %
+                env["default_pthread_stack_size"]])
         env.Append(LINKFLAGS=["-sPTHREAD_POOL_SIZE=8"])
         env.Append(LINKFLAGS=["-sWASM_MEM_MAX=2048MB"])
         if not env["dlink_enabled"]:
             # Workaround https://github.com/emscripten-core/emscripten/issues/21844#issuecomment-2116936414.
-            # Not needed (and potentially dangerous) when dlink_enabled=yes, since we set EXPORT_ALL=1 in that case.
-            env.Append(LINKFLAGS=["-sEXPORTED_FUNCTIONS=['__emscripten_thread_crashed','_main']"])
+            # Not needed (and potentially dangerous) when dlink_enabled=yes,
+            # since we set EXPORT_ALL=1 in that case.
+            env.Append(
+                LINKFLAGS=["-sEXPORTED_FUNCTIONS=['__emscripten_thread_crashed','_main']"])
 
     elif env["proxy_to_pthread"]:
-        print_warning('"threads=no" support requires "proxy_to_pthread=no", disabling proxy to pthread.')
+        print_warning(
+            '"threads=no" support requires "proxy_to_pthread=no", disabling proxy to pthread.')
         env["proxy_to_pthread"] = False
 
     if env["lto"] != "none":
-        # Workaround https://github.com/emscripten-core/emscripten/issues/16836.
+        # Workaround
+        # https://github.com/emscripten-core/emscripten/issues/16836.
         env.Append(LINKFLAGS=["-Wl,-u,_emscripten_run_callback_on_thread"])
 
     if env["dlink_enabled"]:
         if env["proxy_to_pthread"]:
-            print_warning("GDExtension support requires proxy_to_pthread=no, disabling proxy to pthread.")
+            print_warning(
+                "GDExtension support requires proxy_to_pthread=no, disabling proxy to pthread.")
             env["proxy_to_pthread"] = False
 
         env.Append(CCFLAGS=["-sSIDE_MODULE=2"])
@@ -256,11 +302,13 @@ def configure(env: "SConsEnvironment"):
     if env["proxy_to_pthread"]:
         env.Append(LINKFLAGS=["-sPROXY_TO_PTHREAD=1"])
         env.Append(CPPDEFINES=["PROXY_TO_PTHREAD_ENABLED"])
-        env.Append(LINKFLAGS=["-sEXPORTED_RUNTIME_METHODS=['_emscripten_proxy_main']"])
+        env.Append(
+            LINKFLAGS=["-sEXPORTED_RUNTIME_METHODS=['_emscripten_proxy_main']"])
         # https://github.com/emscripten-core/emscripten/issues/18034#issuecomment-1277561925
         env.Append(LINKFLAGS=["-sTEXTDECODER=0"])
 
-    # Reduce code size by generating less support code (e.g. skip NodeJS support).
+    # Reduce code size by generating less support code (e.g. skip NodeJS
+    # support).
     env.Append(LINKFLAGS=["-sENVIRONMENT=web,worker"])
 
     # Wrap the JavaScript support code around a closure named Godot.
@@ -285,5 +333,6 @@ def configure(env: "SConsEnvironment"):
     env.Append(LINKFLAGS=["-sEXIT_RUNTIME=1"])
 
     # This workaround creates a closure that prevents the garbage collector from freeing the WebGL context.
-    # We also only use WebGL2, and changing context version is not widely supported anyway.
+    # We also only use WebGL2, and changing context version is not widely
+    # supported anyway.
     env.Append(LINKFLAGS=["-sGL_WORKAROUND_SAFARI_GETCONTEXT_BUG=0"])
