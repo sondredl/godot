@@ -1022,7 +1022,7 @@ def make_rst_class(
         output_dir: str) -> None:
     class_name = class_def.name
     with open(
-        os.devnull if dry_run else os.path.join(output_dir, f"class_{class_name.lower()}.rst"),
+        os.devnull if dry_run else os.path.join(output_dir, f"class_{sanitize_class_name(class_name, True)}.rst"),
         "w",
         encoding="utf-8",
         newline="\n",
@@ -1052,7 +1052,7 @@ def make_rst_class(
         f.write(f".. XML source: {source_github_url}.\n\n")
 
         # Document reference id and header.
-        f.write(f".. _class_{class_name}:\n\n")
+        f.write(f".. _class_{sanitize_class_name(class_name)}:\n\n")
         f.write(make_heading(class_name, "=", False))
 
         f.write(make_deprecated_experimental(class_def, state))
@@ -1152,15 +1152,13 @@ def make_rst_class(
                 type_rst = property_def.type_name.to_rst(state)
                 default = property_def.default_value
                 if default is not None and property_def.overrides:
-                    ref = (
-                        f":ref:`{property_def.overrides}<class_{property_def.overrides}_property_{property_def.name}>`"
-                    )
+                    ref = f":ref:`{property_def.overrides}<class_{sanitize_class_name(property_def.overrides)}_property_{property_def.name}>`"
                     # Not using translate() for now as it breaks table
                     # formatting.
                     ml.append(
                         (type_rst, property_def.name, f"{default} (overrides {ref})"))
                 else:
-                    ref = f":ref:`{property_def.name}<class_{class_name}_property_{property_def.name}>`"
+                    ref = f":ref:`{property_def.name}<class_{sanitize_class_name(class_name)}_property_{property_def.name}>`"
                     ml.append((type_rst, ref, default))
 
             format_table(f, ml, True)
@@ -1212,7 +1210,7 @@ def make_rst_class(
 
             ml = []
             for theme_item_def in class_def.theme_items.values():
-                ref = f":ref:`{theme_item_def.name}<class_{class_name}_theme_{theme_item_def.data_name}_{theme_item_def.name}>`"
+                ref = f":ref:`{theme_item_def.name}<class_{sanitize_class_name(class_name)}_theme_{theme_item_def.data_name}_{theme_item_def.name}>`"
                 ml.append((theme_item_def.type_name.to_rst(
                     state), ref, theme_item_def.default_value))
 
@@ -1234,7 +1232,7 @@ def make_rst_class(
 
                 # Create signal signature and anchor point.
 
-                signal_anchor = f"class_{class_name}_signal_{signal.name}"
+                signal_anchor = f"class_{sanitize_class_name(class_name)}_signal_{signal.name}"
                 f.write(f".. _{signal_anchor}:\n\n")
                 self_link = f":ref:`🔗<{signal_anchor}>`"
                 f.write(".. rst-class:: classref-signal\n\n")
@@ -1272,7 +1270,7 @@ def make_rst_class(
 
                 # Create enumeration signature and anchor point.
 
-                enum_anchor = f"enum_{class_name}_{e.name}"
+                enum_anchor = f"enum_{sanitize_class_name(class_name)}_{e.name}"
                 f.write(f".. _{enum_anchor}:\n\n")
                 self_link = f":ref:`🔗<{enum_anchor}>`"
                 f.write(".. rst-class:: classref-enumeration\n\n")
@@ -1287,7 +1285,7 @@ def make_rst_class(
                     # constant.
 
                     f.write(
-                        f".. _class_{class_name}_constant_{value.name}:\n\n")
+                        f".. _class_{sanitize_class_name(class_name)}_constant_{value.name}:\n\n")
                     f.write(".. rst-class:: classref-enumeration-constant\n\n")
 
                     f.write(
@@ -1319,7 +1317,7 @@ def make_rst_class(
             for constant in class_def.constants.values():
                 # Create constant signature and anchor point.
 
-                constant_anchor = f"class_{class_name}_constant_{constant.name}"
+                constant_anchor = f"class_{sanitize_class_name(class_name)}_constant_{constant.name}"
                 f.write(f".. _{constant_anchor}:\n\n")
                 self_link = f":ref:`🔗<{constant_anchor}>`"
                 f.write(".. rst-class:: classref-constant\n\n")
@@ -1358,7 +1356,7 @@ def make_rst_class(
 
                     self_link = ""
                     if i == 0:
-                        annotation_anchor = f"class_{class_name}_annotation_{m.name}"
+                        annotation_anchor = f"class_{sanitize_class_name(class_name)}_annotation_{m.name}"
                         f.write(f".. _{annotation_anchor}:\n\n")
                         self_link = f" :ref:`🔗<{annotation_anchor}>`"
 
@@ -1399,7 +1397,7 @@ def make_rst_class(
 
                 # Create property signature and anchor point.
 
-                property_anchor = f"class_{class_name}_property_{property_def.name}"
+                property_anchor = f"class_{sanitize_class_name(class_name)}_property_{property_def.name}"
                 f.write(f".. _{property_anchor}:\n\n")
                 self_link = f":ref:`🔗<{property_anchor}>`"
                 f.write(".. rst-class:: classref-property\n\n")
@@ -1472,7 +1470,7 @@ def make_rst_class(
 
                     self_link = ""
                     if i == 0:
-                        constructor_anchor = f"class_{class_name}_constructor_{m.name}"
+                        constructor_anchor = f"class_{sanitize_class_name(class_name)}_constructor_{m.name}"
                         f.write(f".. _{constructor_anchor}:\n\n")
                         self_link = f" :ref:`🔗<{constructor_anchor}>`"
 
@@ -1518,7 +1516,7 @@ def make_rst_class(
                         method_qualifier = ""
                         if m.name.startswith("_"):
                             method_qualifier = "private_"
-                        method_anchor = f"class_{class_name}_{method_qualifier}method_{m.name}"
+                        method_anchor = f"class_{sanitize_class_name(class_name)}_{method_qualifier}method_{m.name}"
                         f.write(f".. _{method_anchor}:\n\n")
                         self_link = f" :ref:`🔗<{method_anchor}>`"
 
@@ -1559,7 +1557,9 @@ def make_rst_class(
 
                     # Create operator signature and anchor point.
 
-                    operator_anchor = f"class_{class_name}_operator_{sanitize_operator_name(m.name, state)}"
+                    operator_anchor = (
+                        f"class_{sanitize_class_name(class_name)}_operator_{sanitize_operator_name(m.name, state)}"
+                    )
                     for parameter in m.parameters:
                         operator_anchor += f"_{parameter.type_name.type_name}"
                     f.write(f".. _{operator_anchor}:\n\n")
@@ -1601,7 +1601,9 @@ def make_rst_class(
 
                 # Create theme property signature and anchor point.
 
-                theme_item_anchor = f"class_{class_name}_theme_{theme_item_def.data_name}_{theme_item_def.name}"
+                theme_item_anchor = (
+                    f"class_{sanitize_class_name(class_name)}_theme_{theme_item_def.data_name}_{theme_item_def.name}"
+                )
                 f.write(f".. _{theme_item_anchor}:\n\n")
                 self_link = f":ref:`🔗<{theme_item_anchor}>`"
                 f.write(".. rst-class:: classref-themeproperty\n\n")
@@ -1638,7 +1640,7 @@ def make_type(klass: str, state: State) -> str:
 
     def resolve_type(link_type: str) -> str:
         if link_type in state.classes:
-            return f":ref:`{link_type}<class_{link_type}>`"
+            return f":ref:`{link_type}<class_{sanitize_class_name(link_type)}>`"
         else:
             print_error(
                 f'{state.current_class}.xml: Unresolved type "{link_type}".',
@@ -1660,7 +1662,7 @@ def make_type(klass: str, state: State) -> str:
 
 
 def make_enum(t: str, is_bitfield: bool, state: State) -> str:
-    p = t.find(".")
+    p = t.rfind(".")
     if p >= 0:
         c = t[0:p]
         e = t[p + 1:]
@@ -1679,9 +1681,9 @@ def make_enum(t: str, is_bitfield: bool, state: State) -> str:
             if not state.classes[c].enums[e].is_bitfield:
                 print_error(
                     f'{state.current_class}.xml: Enum "{t}" is not bitfield.', state)
-            return f"|bitfield|\\[:ref:`{e}<enum_{c}_{e}>`\\]"
+            return f"|bitfield|\\[:ref:`{e}<enum_{sanitize_class_name(c)}_{e}>`\\]"
         else:
-            return f":ref:`{e}<enum_{c}_{e}>`"
+            return f":ref:`{e}<enum_{sanitize_class_name(c)}_{e}>`"
 
     print_error(f'{state.current_class}.xml: Unresolved enum "{t}".', state)
 
@@ -1709,7 +1711,7 @@ def make_method_signature(class_def: ClassDef,
         if ref_type == "operator":
             # So operator "<" gets correctly displayed.
             op_name = definition.name.replace("<", "\\<")
-            out += f":ref:`{op_name}<class_{class_def.name}_{ref_type}_{sanitize_operator_name(definition.name, state)}"
+            out += f":ref:`{op_name}<class_{sanitize_class_name(class_def.name)}_{ref_type}_{sanitize_operator_name(definition.name, state)}"
             for parameter in definition.parameters:
                 out += f"_{parameter.type_name.type_name}"
             out += ">`"
@@ -1717,9 +1719,9 @@ def make_method_signature(class_def: ClassDef,
             ref_type_qualifier = ""
             if definition.name.startswith("_"):
                 ref_type_qualifier = "private_"
-            out += f":ref:`{definition.name}<class_{class_def.name}_{ref_type_qualifier}{ref_type}_{definition.name}>`"
+            out += f":ref:`{definition.name}<class_{sanitize_class_name(class_def.name)}_{ref_type_qualifier}{ref_type}_{definition.name}>`"
         else:
-            out += f":ref:`{definition.name}<class_{class_def.name}_{ref_type}_{definition.name}>`"
+            out += f":ref:`{definition.name}<class_{sanitize_class_name(class_def.name)}_{ref_type}_{definition.name}>`"
     else:
         out += f"**{definition.name}**"
 
@@ -1938,14 +1940,16 @@ def make_rst_index(
 
                 if group_name in CLASS_GROUPS_BASE:
                     f.write(
-                        f"    class_{CLASS_GROUPS_BASE[group_name].lower()}\n")
+                        f"    class_{sanitize_class_name(CLASS_GROUPS_BASE[group_name], True)}\n")
 
                 for class_name in grouped_classes[group_name]:
-                    if group_name in CLASS_GROUPS_BASE and CLASS_GROUPS_BASE[group_name].lower(
-                    ) == class_name.lower():
+                    if group_name in CLASS_GROUPS_BASE and sanitize_class_name(
+                        CLASS_GROUPS_BASE[group_name], True
+                    ) == sanitize_class_name(class_name, True):
                         continue
 
-                    f.write(f"    class_{class_name.lower()}\n")
+                    f.write(
+                        f"    class_{sanitize_class_name(class_name, True)}\n")
 
                 f.write("\n")
 
@@ -2455,7 +2459,7 @@ def format_text_block(
                         repl_text = target_name
                         if target_class_name != state.current_class:
                             repl_text = f"{target_class_name}.{target_name}"
-                        tag_text = f":ref:`{repl_text}<class_{target_class_name}{ref_type}_{target_name}>`"
+                        tag_text = f":ref:`{repl_text}<class_{sanitize_class_name(target_class_name)}{ref_type}_{target_name}>`"
                         escape_pre = True
                         escape_post = True
 
@@ -2775,6 +2779,13 @@ def format_table(f: TextIO, data: List[Tuple[Optional[str], ...]],
         f.write(f"   {sep}")
 
     f.write("\n")
+
+
+def sanitize_class_name(dirty_name: str, is_file_name=False) -> str:
+    if is_file_name:
+        return dirty_name.lower().replace('"', "").replace("/", "--")
+    else:
+        return dirty_name.replace('"', "").replace("/", "_").replace(".", "_")
 
 
 def sanitize_operator_name(dirty_name: str, state: State) -> str:
