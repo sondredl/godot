@@ -261,7 +261,7 @@ void ResourceImporterTexture::save_to_ctex_format(Ref<FileAccess> f, const Ref<I
 	switch (p_compress_mode) {
 		case COMPRESS_LOSSLESS: {
 			bool lossless_force_png = GLOBAL_GET("rendering/textures/lossless_compression/force_png") ||
-					!Image::_webp_mem_loader_func; // WebP module disabled.
+					!Image::_webp_mem_loader_func;																	// WebP module disabled.
 			bool use_webp = !lossless_force_png && p_image->get_width() <= 16383 && p_image->get_height() <= 16383; // WebP has a size limit
 			f->store_32(use_webp ? CompressedTexture2D::DATA_FORMAT_WEBP : CompressedTexture2D::DATA_FORMAT_PNG);
 			f->store_16(p_image->get_width());

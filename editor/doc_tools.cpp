@@ -445,7 +445,7 @@ void DocTools::generate(BitField<GenerateFlags> p_flags) {
 			// Otherwise we just use ClassDB's property list (pure registered properties).
 
 			bool properties_from_instance = true; // To skip `script`, etc.
-			bool import_option = false; // Special case for default value.
+			bool import_option = false;			  // Special case for default value.
 			HashMap<StringName, Variant> import_options_default;
 			if (name == "EditorSettings") {
 				// We don't create the full blown EditorSettings (+ config file) with `create()`,

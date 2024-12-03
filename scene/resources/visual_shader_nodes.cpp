@@ -3493,8 +3493,8 @@ void VisualShaderNodeUVFunc::set_function(VisualShaderNodeUVFunc::Function p_fun
 		return;
 	}
 	if (p_func == FUNC_PANNING) {
-		set_input_port_default_value(2, Vector2(), get_input_port_default_value(2)); // offset
-	} else { // FUNC_SCALING
+		set_input_port_default_value(2, Vector2(), get_input_port_default_value(2));		 // offset
+	} else {																				 // FUNC_SCALING
 		set_input_port_default_value(2, Vector2(0.5, 0.5), get_input_port_default_value(2)); // pivot
 	}
 	func = p_func;
@@ -3524,7 +3524,7 @@ void VisualShaderNodeUVFunc::_bind_methods() {
 
 VisualShaderNodeUVFunc::VisualShaderNodeUVFunc() {
 	set_input_port_default_value(1, Vector2(1.0, 1.0)); // scale
-	set_input_port_default_value(2, Vector2()); // offset
+	set_input_port_default_value(2, Vector2());			// offset
 }
 
 ////////////// UV PolarCoord
@@ -3626,8 +3626,8 @@ String VisualShaderNodeUVPolarCoord::generate_code(Shader::Mode p_mode, VisualSh
 
 VisualShaderNodeUVPolarCoord::VisualShaderNodeUVPolarCoord() {
 	set_input_port_default_value(1, Vector2(0.5, 0.5)); // center
-	set_input_port_default_value(2, 1.0); // zoom
-	set_input_port_default_value(3, 1.0); // repeat
+	set_input_port_default_value(2, 1.0);				// zoom
+	set_input_port_default_value(3, 1.0);				// repeat
 
 	simple_decl = false;
 }
@@ -4461,8 +4461,8 @@ void VisualShaderNodeSmoothStep::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(2, Vector2(), get_input_port_default_value(2)); // x
 			break;
 		case OP_TYPE_VECTOR_2D_SCALAR:
-			set_input_port_default_value(0, 0.0, get_input_port_default_value(0)); // edge0
-			set_input_port_default_value(1, 0.0, get_input_port_default_value(1)); // edge1
+			set_input_port_default_value(0, 0.0, get_input_port_default_value(0));		 // edge0
+			set_input_port_default_value(1, 0.0, get_input_port_default_value(1));		 // edge1
 			set_input_port_default_value(2, Vector2(), get_input_port_default_value(2)); // x
 			break;
 		case OP_TYPE_VECTOR_3D:
@@ -4471,8 +4471,8 @@ void VisualShaderNodeSmoothStep::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(2, Vector3(), get_input_port_default_value(2)); // x
 			break;
 		case OP_TYPE_VECTOR_3D_SCALAR:
-			set_input_port_default_value(0, 0.0, get_input_port_default_value(0)); // edge0
-			set_input_port_default_value(1, 0.0, get_input_port_default_value(1)); // edge1
+			set_input_port_default_value(0, 0.0, get_input_port_default_value(0));		 // edge0
+			set_input_port_default_value(1, 0.0, get_input_port_default_value(1));		 // edge1
 			set_input_port_default_value(2, Vector3(), get_input_port_default_value(2)); // x
 			break;
 		case OP_TYPE_VECTOR_4D:
@@ -4481,8 +4481,8 @@ void VisualShaderNodeSmoothStep::set_op_type(OpType p_op_type) {
 			set_input_port_default_value(2, Quaternion(), get_input_port_default_value(2)); // x
 			break;
 		case OP_TYPE_VECTOR_4D_SCALAR:
-			set_input_port_default_value(0, 0.0, get_input_port_default_value(0)); // edge0
-			set_input_port_default_value(1, 0.0, get_input_port_default_value(1)); // edge1
+			set_input_port_default_value(0, 0.0, get_input_port_default_value(0));			// edge0
+			set_input_port_default_value(1, 0.0, get_input_port_default_value(1));			// edge1
 			set_input_port_default_value(2, Quaternion(), get_input_port_default_value(2)); // x
 			break;
 		default:
@@ -4752,7 +4752,7 @@ void VisualShaderNodeMix::set_op_type(OpType p_op_type) {
 		case OP_TYPE_VECTOR_2D_SCALAR: {
 			set_input_port_default_value(0, Vector2(), get_input_port_default_value(0)); // a
 			set_input_port_default_value(1, Vector2(), get_input_port_default_value(1)); // b
-			set_input_port_default_value(2, 0.0, get_input_port_default_value(2)); // weight
+			set_input_port_default_value(2, 0.0, get_input_port_default_value(2));		 // weight
 		} break;
 		case OP_TYPE_VECTOR_3D: {
 			set_input_port_default_value(0, Vector3(), get_input_port_default_value(0)); // a
@@ -4762,7 +4762,7 @@ void VisualShaderNodeMix::set_op_type(OpType p_op_type) {
 		case OP_TYPE_VECTOR_3D_SCALAR: {
 			set_input_port_default_value(0, Vector3(), get_input_port_default_value(0)); // a
 			set_input_port_default_value(1, Vector3(), get_input_port_default_value(1)); // b
-			set_input_port_default_value(2, 0.0, get_input_port_default_value(2)); // weight
+			set_input_port_default_value(2, 0.0, get_input_port_default_value(2));		 // weight
 		} break;
 		case OP_TYPE_VECTOR_4D: {
 			set_input_port_default_value(0, Quaternion(), get_input_port_default_value(0)); // a
@@ -4772,7 +4772,7 @@ void VisualShaderNodeMix::set_op_type(OpType p_op_type) {
 		case OP_TYPE_VECTOR_4D_SCALAR: {
 			set_input_port_default_value(0, Quaternion(), get_input_port_default_value(0)); // a
 			set_input_port_default_value(1, Quaternion(), get_input_port_default_value(1)); // b
-			set_input_port_default_value(2, 0.0, get_input_port_default_value(2)); // weight
+			set_input_port_default_value(2, 0.0, get_input_port_default_value(2));			// weight
 		} break;
 		default:
 			break;

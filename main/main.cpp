@@ -743,7 +743,7 @@ Error Main::test_setup() {
 	register_server_types();
 #ifndef _3D_DISABLED
 	XRServer::set_xr_mode(XRServer::XRMODE_OFF); // Skip in tests.
-#endif // _3D_DISABLED
+#endif											 // _3D_DISABLED
 	initialize_modules(MODULE_INITIALIZATION_LEVEL_SERVERS);
 	GDExtensionManager::get_singleton()->initialize_extensions(GDExtension::INITIALIZATION_LEVEL_SERVERS);
 
@@ -1569,8 +1569,8 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 				OS::get_singleton()->print("Missing relative or absolute path to project for --gdscript-docs, aborting.\n");
 				goto error;
 			}
-#endif // MODULE_GDSCRIPT_ENABLED
-#endif // TOOLS_ENABLED
+#endif								  // MODULE_GDSCRIPT_ENABLED
+#endif								  // TOOLS_ENABLED
 		} else if (arg == "--path") { // set path of project to start or edit
 
 			if (N) {
@@ -2062,7 +2062,7 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 #ifdef GLES3_ENABLED
 		driver_hints = "opengl3";
 		driver_hints_angle = "opengl3,opengl3_angle"; // macOS, Windows.
-		driver_hints_egl = "opengl3,opengl3_es"; // Linux.
+		driver_hints_egl = "opengl3,opengl3_es";	  // Linux.
 #endif
 
 		String default_driver = driver_hints.get_slice(",", 0);
@@ -2091,15 +2091,15 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 	}
 
 		// AMD GPUs.
-		BLOCK_DEVICE("ATI", "Radeon 9"); // ATI Radeon 9000 Series
-		BLOCK_DEVICE("ATI", "Radeon X"); // ATI Radeon X500-X2000 Series
-		BLOCK_DEVICE("ATI", "Radeon HD 2"); // AMD/ATI (Mobility) Radeon HD 2xxx Series
-		BLOCK_DEVICE("ATI", "Radeon HD 3"); // AMD/ATI (Mobility) Radeon HD 3xxx Series
-		BLOCK_DEVICE("ATI", "Radeon HD 4"); // AMD/ATI (Mobility) Radeon HD 4xxx Series
-		BLOCK_DEVICE("ATI", "Radeon HD 5"); // AMD/ATI (Mobility) Radeon HD 5xxx Series
-		BLOCK_DEVICE("ATI", "Radeon HD 6"); // AMD/ATI (Mobility) Radeon HD 6xxx Series
-		BLOCK_DEVICE("ATI", "Radeon HD 7"); // AMD/ATI (Mobility) Radeon HD 7xxx Series
-		BLOCK_DEVICE("ATI", "Radeon HD 8"); // AMD/ATI (Mobility) Radeon HD 8xxx Series
+		BLOCK_DEVICE("ATI", "Radeon 9");			   // ATI Radeon 9000 Series
+		BLOCK_DEVICE("ATI", "Radeon X");			   // ATI Radeon X500-X2000 Series
+		BLOCK_DEVICE("ATI", "Radeon HD 2");			   // AMD/ATI (Mobility) Radeon HD 2xxx Series
+		BLOCK_DEVICE("ATI", "Radeon HD 3");			   // AMD/ATI (Mobility) Radeon HD 3xxx Series
+		BLOCK_DEVICE("ATI", "Radeon HD 4");			   // AMD/ATI (Mobility) Radeon HD 4xxx Series
+		BLOCK_DEVICE("ATI", "Radeon HD 5");			   // AMD/ATI (Mobility) Radeon HD 5xxx Series
+		BLOCK_DEVICE("ATI", "Radeon HD 6");			   // AMD/ATI (Mobility) Radeon HD 6xxx Series
+		BLOCK_DEVICE("ATI", "Radeon HD 7");			   // AMD/ATI (Mobility) Radeon HD 7xxx Series
+		BLOCK_DEVICE("ATI", "Radeon HD 8");			   // AMD/ATI (Mobility) Radeon HD 8xxx Series
 		BLOCK_DEVICE("ATI", "Radeon(TM) R2 Graphics"); // APUs
 		BLOCK_DEVICE("ATI", "Radeon(TM) R3 Graphics");
 		BLOCK_DEVICE("ATI", "Radeon(TM) R4 Graphics");
@@ -2489,7 +2489,7 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 		// The editor and project manager always detect and use hiDPI if needed.
 		OS::get_singleton()->_allow_hidpi = true;
 		// Disable Vulkan overlays in editor, they cause various issues.
-		OS::get_singleton()->set_environment("DISABLE_MANGOHUD", "1"); // GH-57403.
+		OS::get_singleton()->set_environment("DISABLE_MANGOHUD", "1");	 // GH-57403.
 		OS::get_singleton()->set_environment("DISABLE_RTSS_LAYER", "1"); // GH-57937.
 		OS::get_singleton()->set_environment("DISABLE_VKBASALT", "1");
 		OS::get_singleton()->set_environment("DISABLE_VK_LAYER_reshade_1", "1"); // GH-70849.
@@ -2618,7 +2618,7 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 	GLOBAL_DEF_BASIC(PropertyInfo(Variant::INT, "xr/openxr/extensions/debug_message_types", PROPERTY_HINT_FLAGS, "General,Validation,Performance,Conformance"), "15");
 	GLOBAL_DEF_BASIC("xr/openxr/extensions/hand_tracking", false);
 	GLOBAL_DEF_BASIC("xr/openxr/extensions/hand_tracking_unobstructed_data_source", false); // XR_HAND_TRACKING_DATA_SOURCE_UNOBSTRUCTED_EXT
-	GLOBAL_DEF_BASIC("xr/openxr/extensions/hand_tracking_controller_data_source", false); // XR_HAND_TRACKING_DATA_SOURCE_CONTROLLER_EXT
+	GLOBAL_DEF_BASIC("xr/openxr/extensions/hand_tracking_controller_data_source", false);	// XR_HAND_TRACKING_DATA_SOURCE_CONTROLLER_EXT
 	GLOBAL_DEF_RST_BASIC("xr/openxr/extensions/hand_interaction_profile", false);
 	GLOBAL_DEF_BASIC("xr/openxr/extensions/eye_gaze_interaction", false);
 

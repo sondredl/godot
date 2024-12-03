@@ -216,7 +216,7 @@ bool WebSocketMultiplayerPeer::is_server() const {
 
 void WebSocketMultiplayerPeer::_poll_client() {
 	ERR_FAIL_COND(connection_status == CONNECTION_DISCONNECTED); // Bug.
-	ERR_FAIL_COND(!peers_map.has(1) || peers_map[1].is_null()); // Bug.
+	ERR_FAIL_COND(!peers_map.has(1) || peers_map[1].is_null());	 // Bug.
 	Ref<WebSocketPeer> peer = peers_map[1];
 	peer->poll(); // Update state and fetch packets.
 	WebSocketPeer::State ready_state = peer->get_ready_state();
@@ -275,7 +275,7 @@ void WebSocketMultiplayerPeer::_poll_client() {
 }
 
 void WebSocketMultiplayerPeer::_poll_server() {
-	ERR_FAIL_COND(connection_status != CONNECTION_CONNECTED); // Bug.
+	ERR_FAIL_COND(connection_status != CONNECTION_CONNECTED);			// Bug.
 	ERR_FAIL_COND(tcp_server.is_null() || !tcp_server->is_listening()); // Bug.
 
 	// Accept new connections.

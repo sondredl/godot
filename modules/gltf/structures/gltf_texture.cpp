@@ -37,7 +37,7 @@ void GLTFTexture::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_sampler", "sampler"), &GLTFTexture::set_sampler);
 
 	ADD_PROPERTY(PropertyInfo(Variant::INT, "src_image"), "set_src_image", "get_src_image"); // int
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "sampler"), "set_sampler", "get_sampler"); // int
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "sampler"), "set_sampler", "get_sampler");		 // int
 }
 
 GLTFImageIndex GLTFTexture::get_src_image() const {

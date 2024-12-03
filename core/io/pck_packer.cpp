@@ -154,12 +154,12 @@ Error PCKPacker::add_file(const String &p_target_path, const String &p_source_pa
 	pf.encrypted = p_encrypt;
 
 	uint64_t _size = pf.size;
-	if (p_encrypt) { // Add encryption overhead.
+	if (p_encrypt) {	  // Add encryption overhead.
 		if (_size % 16) { // Pad to encryption block size.
 			_size += 16 - (_size % 16);
 		}
 		_size += 16; // hash
-		_size += 8; // data size
+		_size += 8;	 // data size
 		_size += 16; // iv
 	}
 
@@ -208,7 +208,7 @@ Error PCKPacker::flush(bool p_verbose) {
 		}
 
 		fhead->store_64(files[i].ofs);
-		fhead->store_64(files[i].size); // pay attention here, this is where file is
+		fhead->store_64(files[i].size);				 // pay attention here, this is where file is
 		fhead->store_buffer(files[i].md5.ptr(), 16); //also save md5 for file
 
 		uint32_t flags = 0;

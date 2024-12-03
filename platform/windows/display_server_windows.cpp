@@ -209,11 +209,11 @@ void DisplayServerWindows::_register_raw_input_devices(WindowID p_target_window)
 
 	RAWINPUTDEVICE rid[2] = {};
 	rid[0].usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
-	rid[0].usUsage = 0x02; // HID_USAGE_GENERIC_MOUSE
+	rid[0].usUsage = 0x02;	   // HID_USAGE_GENERIC_MOUSE
 	rid[0].dwFlags = 0;
 
 	rid[1].usUsagePage = 0x01; // HID_USAGE_PAGE_GENERIC
-	rid[1].usUsage = 0x06; // HID_USAGE_GENERIC_KEYBOARD
+	rid[1].usUsage = 0x06;	   // HID_USAGE_GENERIC_KEYBOARD
 	rid[1].dwFlags = 0;
 
 	if (p_target_window != INVALID_WINDOW_ID && windows.has(p_target_window)) {
@@ -1554,7 +1554,7 @@ void DisplayServerWindows::show_window(WindowID p_id) {
 	if (wd.maximized) {
 		ShowWindow(wd.hWnd, SW_SHOWMAXIMIZED);
 		SetForegroundWindow(wd.hWnd); // Slightly higher priority.
-		SetFocus(wd.hWnd); // Set keyboard focus.
+		SetFocus(wd.hWnd);			  // Set keyboard focus.
 	} else if (wd.minimized) {
 		ShowWindow(wd.hWnd, SW_SHOWMINIMIZED);
 	} else if (wd.no_focus) {
@@ -1566,7 +1566,7 @@ void DisplayServerWindows::show_window(WindowID p_id) {
 	} else {
 		ShowWindow(wd.hWnd, SW_SHOW);
 		SetForegroundWindow(wd.hWnd); // Slightly higher priority.
-		SetFocus(wd.hWnd); // Set keyboard focus.
+		SetFocus(wd.hWnd);			  // Set keyboard focus.
 	}
 	if (wd.always_on_top) {
 		SetWindowPos(wd.hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_FRAMECHANGED | SWP_NOMOVE | SWP_NOSIZE | ((wd.no_focus || wd.is_popup) ? SWP_NOACTIVATE : 0));
@@ -2916,7 +2916,7 @@ Error DisplayServerWindows::dialog_input_text(String p_title, String p_descripti
 	// NOTE: Use default/placeholder coordinates here. Windows uses its own coordinate system
 	//       specifically for dialogs which relies on font sizes instead of pixels.
 	const struct {
-		WORD dlgVer; // must be 1
+		WORD dlgVer;	// must be 1
 		WORD signature; // must be 0xFFFF
 		DWORD helpID;
 		DWORD exStyle;
@@ -2926,9 +2926,9 @@ Error DisplayServerWindows::dialog_input_text(String p_title, String p_descripti
 		short y;
 		short cx;
 		short cy;
-		WCHAR menu[1]; // must be 0
+		WCHAR menu[1];		  // must be 0
 		WCHAR windowClass[7]; // must be "#32770" -- the default window class for dialogs
-		WCHAR title[1]; // must be 0
+		WCHAR title[1];		  // must be 0
 		WORD pointsize;
 		WORD weight;
 		BYTE italic;
@@ -2950,7 +2950,7 @@ Error DisplayServerWindows::dialog_input_text(String p_title, String p_descripti
 		short cy;
 		DWORD id;
 		WCHAR windowClass[7]; // must be "Button"
-		WCHAR title[3]; // must be "OK"
+		WCHAR title[3];		  // must be "OK"
 		WORD extraCount;
 	} ok_button = {
 		0, 0, WS_VISIBLE | BS_DEFPUSHBUTTON, 0, 0, 50, 14, 1, WC_BUTTONW, L"OK", 0
@@ -2965,7 +2965,7 @@ Error DisplayServerWindows::dialog_input_text(String p_title, String p_descripti
 		short cy;
 		DWORD id;
 		WCHAR windowClass[5]; // must be "Edit"
-		WCHAR title[1]; // must be 0
+		WCHAR title[1];		  // must be 0
 		WORD extraCount;
 	} text_field = {
 		0, 0, WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL, 0, 0, 250, 14, 2, WC_EDITW, L"", 0
@@ -2980,7 +2980,7 @@ Error DisplayServerWindows::dialog_input_text(String p_title, String p_descripti
 		short cy;
 		DWORD id;
 		WCHAR windowClass[7]; // must be "Static"
-		WCHAR title[1]; // must be 0
+		WCHAR title[1];		  // must be 0
 		WORD extraCount;
 	} static_text = {
 		0, 0, WS_VISIBLE, 0, 0, 250, 14, 3, WC_STATICW, L"", 0
@@ -3718,9 +3718,9 @@ bool DisplayServerWindows::is_window_transparency_available() const {
 #define SIGNATURE_MASK 0xFFFFFF00
 // Keeping the name suggested by Microsoft, but this macro really answers:
 // Is this mouse event emulated from touch or pen input?
-#define IsPenEvent(dw) (((dw) & SIGNATURE_MASK) == MI_WP_SIGNATURE)
+#define IsPenEvent(dw) (((dw)&SIGNATURE_MASK) == MI_WP_SIGNATURE)
 // This one tells whether the event comes from touchscreen (and not from pen).
-#define IsTouchEvent(dw) (IsPenEvent(dw) && ((dw) & 0x80))
+#define IsTouchEvent(dw) (IsPenEvent(dw) && ((dw)&0x80))
 
 void DisplayServerWindows::_touch_event(WindowID p_window, bool p_pressed, float p_x, float p_y, int idx) {
 	if (touch_state.has(idx) == p_pressed) {
@@ -4189,9 +4189,9 @@ LRESULT DisplayServerWindows::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
 		{
 			switch (wParam) // Check system calls.
 			{
-				case SC_SCREENSAVE: // Screensaver trying to start?
+				case SC_SCREENSAVE:	  // Screensaver trying to start?
 				case SC_MONITORPOWER: // Monitor trying to enter powersave?
-					return 0; // Prevent from happening.
+					return 0;		  // Prevent from happening.
 				case SC_KEYMENU:
 					Engine *engine = Engine::get_singleton();
 					if (((lParam >> 16) <= 0) && !engine->is_project_manager_hint() && !engine->is_editor_hint() && !GLOBAL_GET("application/run/enable_alt_space_menu")) {
@@ -5893,9 +5893,9 @@ Vector2i _get_device_ids(const String &p_device_name) {
 		return Vector2i();
 	}
 
-	REFCLSID clsid = CLSID_WbemLocator; // Unmarshaler CLSID
-	REFIID uuid = IID_IWbemLocator; // Interface UUID
-	IWbemLocator *wbemLocator = nullptr; // to get the services
+	REFCLSID clsid = CLSID_WbemLocator;	   // Unmarshaler CLSID
+	REFIID uuid = IID_IWbemLocator;		   // Interface UUID
+	IWbemLocator *wbemLocator = nullptr;   // to get the services
 	IWbemServices *wbemServices = nullptr; // to get the class
 	IEnumWbemClassObject *iter = nullptr;
 	IWbemClassObject *pnpSDriverObject[1]; // contains driver name, version, etc.

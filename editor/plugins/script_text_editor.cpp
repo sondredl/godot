@@ -2080,7 +2080,7 @@ void ScriptTextEditor::_text_edit_gui_input(const Ref<InputEvent> &ev) {
 			enum EXPRESSION_PATTERNS {
 				NOT_PARSED,
 				RGBA_PARAMETER, // Color(float,float,float) or Color(float,float,float,float)
-				COLOR_NAME, // Color.COLOR_NAME
+				COLOR_NAME,		// Color.COLOR_NAME
 			} expression_pattern = NOT_PARSED;
 
 			for (int i = mouse_column; i < line.length(); i++) {

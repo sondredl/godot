@@ -102,7 +102,7 @@ RID XRVRS::make_vrs_texture(const Size2 &p_target_size, const PackedVector2Array
 	// Make sure we have at least one pixel.
 	vrs_size = vrs_size.maxf(1.0);
 
-	float max_radius = 0.5 * MIN(vrs_size.x, vrs_size.y); // Maximum radius that fits inside of our image
+	float max_radius = 0.5 * MIN(vrs_size.x, vrs_size.y);	// Maximum radius that fits inside of our image
 	float min_radius = vrs_min_radius * max_radius / 100.0; // Minimum radius as a percentage of our size
 	real_t outer_radius = MAX(1.0, (max_radius - min_radius) / vrs_strength);
 	Size2 vrs_sizei = vrs_size;

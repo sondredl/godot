@@ -252,8 +252,8 @@ size_t PListNode::get_asn1_size(uint8_t p_len_octets) const {
 			size_t size = 0;
 
 			for (const KeyValue<String, Ref<PListNode>> &E : data_dict) {
-				size += 1 + _asn1_size_len(p_len_octets); // Sequence.
-				size += 1 + _asn1_size_len(p_len_octets) + E.key.utf8().length(); //Key.
+				size += 1 + _asn1_size_len(p_len_octets);										 // Sequence.
+				size += 1 + _asn1_size_len(p_len_octets) + E.key.utf8().length();				 //Key.
 				size += 1 + _asn1_size_len(p_len_octets) + E.value->get_asn1_size(p_len_octets); // Value.
 			}
 			return size;

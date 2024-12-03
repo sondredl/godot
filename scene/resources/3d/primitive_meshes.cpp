@@ -389,7 +389,7 @@ void CapsuleMesh::_update_lightmap_size() {
 		Size2i _lightmap_size_hint;
 		float padding = get_uv2_padding();
 
-		float radial_length = radius * Math_PI * 0.5; // circumference of 90 degree bend
+		float radial_length = radius * Math_PI * 0.5;						 // circumference of 90 degree bend
 		float vertical_length = radial_length * 2 + (height - 2.0 * radius); // total vertical length
 
 		_lightmap_size_hint.x = MAX(1.0, 4.0 * radial_length / texel_size) + padding;
@@ -415,10 +415,10 @@ void CapsuleMesh::create_mesh_array(Array &p_arr, const float radius, const floa
 	// Only used if we calculate UV2
 	float radial_width = 2.0 * radius * Math_PI;
 	float radial_h = radial_width / (radial_width + p_uv2_padding);
-	float radial_length = radius * Math_PI * 0.5; // circumference of 90 degree bend
+	float radial_length = radius * Math_PI * 0.5;										 // circumference of 90 degree bend
 	float vertical_length = radial_length * 2 + (height - 2.0 * radius) + p_uv2_padding; // total vertical length
-	float radial_v = radial_length / vertical_length; // v size of top and bottom section
-	float height_v = (height - 2.0 * radius) / vertical_length; // v size of height section
+	float radial_v = radial_length / vertical_length;									 // v size of top and bottom section
+	float height_v = (height - 2.0 * radius) / vertical_length;							 // v size of height section
 
 	// note, this has been aligned with our collision shape but I've left the descriptions as top/middle/bottom
 

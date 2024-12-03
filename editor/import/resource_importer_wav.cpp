@@ -181,8 +181,8 @@ Error ResourceImporterWAV::import(ResourceUID::ID p_source_id, const String &p_s
 
 			format_freq = file->get_32(); //sampling rate
 
-			file->get_32(); // average bits/second (unused)
-			file->get_16(); // block align (unused)
+			file->get_32();				  // average bits/second (unused)
+			file->get_16();				  // block align (unused)
 			format_bits = file->get_16(); // bits per sample
 
 			if (format_bits % 8 || format_bits == 0) {

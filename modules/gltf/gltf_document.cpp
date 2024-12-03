@@ -308,8 +308,8 @@ Error GLTFDocument::_parse_glb(Ref<FileAccess> p_file, Ref<GLTFState> p_state) {
 	ERR_FAIL_COND_V(p_file->get_position() != 0, ERR_FILE_CANT_READ);
 	uint32_t magic = p_file->get_32();
 	ERR_FAIL_COND_V(magic != 0x46546C67, ERR_FILE_UNRECOGNIZED); //glTF
-	p_file->get_32(); // version
-	p_file->get_32(); // length
+	p_file->get_32();											 // version
+	p_file->get_32();											 // length
 	uint32_t chunk_length = p_file->get_32();
 	uint32_t chunk_type = p_file->get_32();
 
@@ -3253,14 +3253,14 @@ Error GLTFDocument::_parse_meshes(Ref<GLTFState> p_state) {
 				// Convert mesh.primitive.mode to Godot Mesh enum. See:
 				// https://www.khronos.org/registry/glTF/specs/2.0/glTF-2.0.html#_mesh_primitive_mode
 				static const Mesh::PrimitiveType primitives2[7] = {
-					Mesh::PRIMITIVE_POINTS, // 0 POINTS
-					Mesh::PRIMITIVE_LINES, // 1 LINES
-					Mesh::PRIMITIVE_LINES, // 2 LINE_LOOP; loop not supported, should be converted
-					Mesh::PRIMITIVE_LINE_STRIP, // 3 LINE_STRIP
-					Mesh::PRIMITIVE_TRIANGLES, // 4 TRIANGLES
+					Mesh::PRIMITIVE_POINTS,			// 0 POINTS
+					Mesh::PRIMITIVE_LINES,			// 1 LINES
+					Mesh::PRIMITIVE_LINES,			// 2 LINE_LOOP; loop not supported, should be converted
+					Mesh::PRIMITIVE_LINE_STRIP,		// 3 LINE_STRIP
+					Mesh::PRIMITIVE_TRIANGLES,		// 4 TRIANGLES
 					Mesh::PRIMITIVE_TRIANGLE_STRIP, // 5 TRIANGLE_STRIP
-					Mesh::PRIMITIVE_TRIANGLES, // 6 TRIANGLE_FAN fan not supported, should be converted
-					// TODO: Line loop and triangle fan are not supported and need to be converted to lines and triangles.
+					Mesh::PRIMITIVE_TRIANGLES,		// 6 TRIANGLE_FAN fan not supported, should be converted
+													// TODO: Line loop and triangle fan are not supported and need to be converted to lines and triangles.
 				};
 
 				primitive = primitives2[mode];
@@ -8251,7 +8251,7 @@ PackedByteArray GLTFDocument::_serialize_glb_buffer(Ref<GLTFState> p_state, Erro
 	Ref<StreamPeerBuffer> buffer;
 	buffer.instantiate();
 	buffer->put_32(magic);
-	buffer->put_32(p_state->major_version); // version
+	buffer->put_32(p_state->major_version);																		  // version
 	buffer->put_32(header_size + chunk_header_size + text_chunk_length + chunk_header_size + binary_data_length); // length
 	buffer->put_32(text_chunk_length);
 	buffer->put_32(text_chunk_type);

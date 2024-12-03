@@ -67,7 +67,7 @@
 #define WM_IconicState 3L // window minimized
 // EWMH
 #define _NET_WM_STATE_REMOVE 0L // remove/unset property
-#define _NET_WM_STATE_ADD 1L // add/set property
+#define _NET_WM_STATE_ADD 1L	// add/set property
 
 // 2.2 is the first release with multitouch
 #define XINPUT_CLIENT_VERSION_MAJOR 2
@@ -610,12 +610,12 @@ String DisplayServerX11::_clipboard_get_impl(Atom p_source, Window x11_window, A
 		unsigned long len, bytes_left, dummy;
 		unsigned char *data;
 		XGetWindowProperty(x11_display, x11_window,
-				selection, // Tricky..
-				0, 0, // offset - len
-				0, // Delete 0==FALSE
-				AnyPropertyType, // flag
-				&type, // return type
-				&format, // return format
+				selection,		   // Tricky..
+				0, 0,			   // offset - len
+				0,				   // Delete 0==FALSE
+				AnyPropertyType,   // flag
+				&type,			   // return type
+				&format,		   // return format
 				&len, &bytes_left, // data length
 				&data);
 
@@ -646,12 +646,12 @@ String DisplayServerX11::_clipboard_get_impl(Atom p_source, Window x11_window, A
 				XEvent ev;
 				while (XCheckIfEvent(x11_display, &ev, _predicate_clipboard_incr, (XPointer)&selection)) {
 					result = XGetWindowProperty(x11_display, x11_window,
-							selection, // selection type
-							0, LONG_MAX, // offset - len
-							True, // delete property to notify the owner
-							AnyPropertyType, // flag
-							&type, // return type
-							&format, // return format
+							selection,		   // selection type
+							0, LONG_MAX,	   // offset - len
+							True,			   // delete property to notify the owner
+							AnyPropertyType,   // flag
+							&type,			   // return type
+							&format,		   // return format
 							&len, &bytes_left, // data length
 							&data);
 
@@ -739,12 +739,12 @@ Atom DisplayServerX11::_clipboard_get_image_target(Atom p_source, Window x11_win
 		int format, result;
 		unsigned long len, bytes_left, dummy;
 		XGetWindowProperty(x11_display, x11_window,
-				selection, // Tricky..
-				0, 0, // offset - len
-				0, // Delete 0==FALSE
-				XA_ATOM, // flag
-				&type, // return type
-				&format, // return format
+				selection,		   // Tricky..
+				0, 0,			   // offset - len
+				0,				   // Delete 0==FALSE
+				XA_ATOM,		   // flag
+				&type,			   // return type
+				&format,		   // return format
 				&len, &bytes_left, // data length
 				(unsigned char **)&valid_targets);
 
@@ -841,8 +841,8 @@ Ref<Image> DisplayServerX11::clipboard_get_image() const {
 		// will send the converted data to.
 		Atom transfer_prop = XA_PRIMARY;
 		XConvertSelection(x11_display,
-				clipboard, // source selection
-				target, // format to convert to
+				clipboard,	   // source selection
+				target,		   // format to convert to
 				transfer_prop, // output property
 				x11_window, CurrentTime);
 
@@ -858,12 +858,12 @@ Ref<Image> DisplayServerX11::clipboard_get_image() const {
 		unsigned long len, bytes_left, dummy;
 		unsigned char *data;
 		XGetWindowProperty(x11_display, x11_window,
-				transfer_prop, // Property data is transferred through
-				0, 1, // offset, len (4 so we can get the size if INCR is used)
-				0, // Delete 0==FALSE
-				AnyPropertyType, // flag
-				&type, // return type
-				&format, // return format
+				transfer_prop,	   // Property data is transferred through
+				0, 1,			   // offset, len (4 so we can get the size if INCR is used)
+				0,				   // Delete 0==FALSE
+				AnyPropertyType,   // flag
+				&type,			   // return type
+				&format,		   // return format
 				&len, &bytes_left, // data length
 				&data);
 
@@ -896,12 +896,12 @@ Ref<Image> DisplayServerX11::clipboard_get_image() const {
 				XEvent ev;
 				while (XCheckIfEvent(x11_display, &ev, _predicate_clipboard_incr, (XPointer)&transfer_prop)) {
 					result = XGetWindowProperty(x11_display, x11_window,
-							transfer_prop, // output property
-							0, LONG_MAX, // offset - len
-							True, // delete property to notify the owner
-							AnyPropertyType, // flag
-							&type, // return type
-							&format, // return format
+							transfer_prop,	   // output property
+							0, LONG_MAX,	   // offset - len
+							True,			   // delete property to notify the owner
+							AnyPropertyType,   // flag
+							&type,			   // return type
+							&format,		   // return format
 							&len, &bytes_left, // data length
 							&data);
 

@@ -1646,7 +1646,7 @@ void EditorExportPlatform::zip_folder_recursive(zipFile &p_zip, const String &p_
 					Z_DEFAULT_STRATEGY,
 					nullptr,
 					0,
-					0x0314, // "version made by", 0x03 - Unix, 0x14 - ZIP specification version 2.0, required to store Unix file permissions
+					0x0314,	  // "version made by", 0x03 - Unix, 0x14 - ZIP specification version 2.0, required to store Unix file permissions
 					1 << 11); // Bit 11 is the language encoding flag. When set, filename and comment fields must be encoded using UTF-8.
 
 			String target = da->read_link(f);
@@ -1690,7 +1690,7 @@ void EditorExportPlatform::zip_folder_recursive(zipFile &p_zip, const String &p_
 					Z_DEFAULT_STRATEGY,
 					nullptr,
 					0,
-					0x0314, // "version made by", 0x03 - Unix, 0x14 - ZIP specification version 2.0, required to store Unix file permissions
+					0x0314,	  // "version made by", 0x03 - Unix, 0x14 - ZIP specification version 2.0, required to store Unix file permissions
 					1 << 11); // Bit 11 is the language encoding flag. When set, filename and comment fields must be encoded using UTF-8.
 
 			Ref<FileAccess> fa = FileAccess::open(dir.path_join(f), FileAccess::READ);
@@ -1990,7 +1990,7 @@ Error EditorExportPlatform::save_pack(const Ref<EditorExportPreset> &p_preset, b
 		}
 
 		fhead->store_64(pd.file_ofs[i].ofs);
-		fhead->store_64(pd.file_ofs[i].size); // pay attention here, this is where file is
+		fhead->store_64(pd.file_ofs[i].size);			   // pay attention here, this is where file is
 		fhead->store_buffer(pd.file_ofs[i].md5.ptr(), 16); //also save md5 for file
 		uint32_t flags = 0;
 		if (pd.file_ofs[i].encrypted) {

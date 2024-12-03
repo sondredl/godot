@@ -337,7 +337,7 @@ int AudioStreamPlaybackPlaylist::mix(AudioFrame *p_buffer, float p_rate_scale, i
 				int idx = play_order[play_index];
 
 				if (restart) {
-					playback[idx]->start(0); // No loop, just cold-restart.
+					playback[idx]->start(0);							 // No loop, just cold-restart.
 					playback[idx]->mix(mix_buffer + i, 1.0, to_mix - i); // Fill rest of mix buffer
 				}
 

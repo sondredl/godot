@@ -1022,7 +1022,7 @@ _FORCE_INLINE_ TextServerAdvanced::FontGlyph TextServerAdvanced::rasterize_msdf(
 		ERR_FAIL_COND_V(tex_pos.index < 0, FontGlyph());
 		ShelfPackTexture &tex = p_data->textures.write[tex_pos.index];
 
-		edgeColoringSimple(shape, 3.0); // Max. angle.
+		edgeColoringSimple(shape, 3.0);		   // Max. angle.
 		msdfgen::Bitmap<float, 4> image(w, h); // Texture size.
 
 		DistancePixelConversion distancePixelConversion(p_pixel_range);

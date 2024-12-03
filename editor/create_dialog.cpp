@@ -742,7 +742,7 @@ CreateDialog::CreateDialog() {
 	base_type = "Object";
 	preferred_search_result_type = "";
 
-	type_blacklist.insert("PluginScript"); // PluginScript must be initialized before use, which is not possible here.
+	type_blacklist.insert("PluginScript");		 // PluginScript must be initialized before use, which is not possible here.
 	type_blacklist.insert("ScriptCreateDialog"); // This is an exposed editor Node that doesn't have an Editor prefix.
 
 	HSplitContainer *hsc = memnew(HSplitContainer);

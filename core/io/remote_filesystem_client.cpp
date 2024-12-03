@@ -227,8 +227,8 @@ Error RemoteFilesystemClient::_synchronize_with_server(const String &p_host, int
 		int res_len = Compression::compress(file_cache_buffer.ptrw(), (const uint8_t *)cs.ptr(), cs.length(), Compression::MODE_ZSTD);
 		file_cache_buffer.resize(res_len);
 
-		tcp_client->put_32(cs.length()); // Size of buffer uncompressed
-		tcp_client->put_32(file_cache_buffer.size()); // Size of buffer compressed
+		tcp_client->put_32(cs.length());										 // Size of buffer uncompressed
+		tcp_client->put_32(file_cache_buffer.size());							 // Size of buffer compressed
 		tcp_client->put_data(file_cache_buffer.ptr(), file_cache_buffer.size()); // Buffer
 	} else {
 		tcp_client->put_32(0); // No file cache buffer

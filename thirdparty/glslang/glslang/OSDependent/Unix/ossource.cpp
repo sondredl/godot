@@ -47,15 +47,14 @@ namespace glslang {
 
 // #define DUMP_COUNTERS
 
-void OS_DumpMemoryCounters()
-{
+void OS_DumpMemoryCounters() {
 #ifdef DUMP_COUNTERS
-    struct rusage usage;
+	struct rusage usage;
 
-    if (getrusage(RUSAGE_SELF, &usage) == 0)
-        printf("Working set size: %ld\n", usage.ru_maxrss * 1024);
+	if (getrusage(RUSAGE_SELF, &usage) == 0)
+		printf("Working set size: %ld\n", usage.ru_maxrss * 1024);
 #else
-    printf("Recompile with DUMP_COUNTERS defined to see counters.\n");
+	printf("Recompile with DUMP_COUNTERS defined to see counters.\n");
 #endif
 }
 

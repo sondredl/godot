@@ -62,7 +62,7 @@ Dictionary GDScriptSyntaxHighlighter::_get_line_syntax_highlighting_impl(int p_l
 	bool in_member_variable = false;
 	bool in_lambda = false;
 
-	bool in_function_name = false; // Any call.
+	bool in_function_name = false;		  // Any call.
 	bool in_function_declaration = false; // Only declaration.
 	bool in_signal_declaration = false;
 	bool is_after_func_signal_declaration = false;
@@ -70,9 +70,9 @@ Dictionary GDScriptSyntaxHighlighter::_get_line_syntax_highlighting_impl(int p_l
 	bool is_after_var_const_declaration = false;
 	bool expect_type = false;
 
-	int in_declaration_params = 0; // The number of opened `(` after func/signal name.
+	int in_declaration_params = 0;		// The number of opened `(` after func/signal name.
 	int in_declaration_param_dicts = 0; // The number of opened `{` inside func params.
-	int in_type_params = 0; // The number of opened `[` after type name.
+	int in_type_params = 0;				// The number of opened `[` after type name.
 
 	Color keyword_color;
 	Color color;

@@ -21,8 +21,8 @@
  * @brief Functions to compress a symbolic block.
  */
 
-#include "astcenc_internal.h"
 #include "astcenc_diagnostic_trace.h"
+#include "astcenc_internal.h"
 
 #include <cassert>
 
@@ -35,11 +35,10 @@
  * @param[out] result             The merged output.
  */
 static void merge_endpoints(
-	const endpoints& ep_plane1,
-	const endpoints& ep_plane2,
-	unsigned int component_plane2,
-	endpoints& result
-) {
+		const endpoints &ep_plane1,
+		const endpoints &ep_plane2,
+		unsigned int component_plane2,
+		endpoints &result) {
 	unsigned int partition_count = ep_plane1.partition_count;
 	assert(partition_count == 1);
 
@@ -67,19 +66,18 @@ static void merge_endpoints(
  * @param[out] scb           The symbolic compressed block output.
  */
 static bool realign_weights_undecimated(
-	astcenc_profile decode_mode,
-	const block_size_descriptor& bsd,
-	const image_block& blk,
-	symbolic_compressed_block& scb
-) {
+		astcenc_profile decode_mode,
+		const block_size_descriptor &bsd,
+		const image_block &blk,
+		symbolic_compressed_block &scb) {
 	// Get the partition descriptor
 	unsigned int partition_count = scb.partition_count;
-	const auto& pi = bsd.get_partition_info(partition_count, scb.partition_index);
+	const auto &pi = bsd.get_partition_info(partition_count, scb.partition_index);
 
 	// Get the quantization table
-	const block_mode& bm = bsd.get_block_mode(scb.block_mode);
+	const block_mode &bm = bsd.get_block_mode(scb.block_mode);
 	unsigned int weight_quant_level = bm.quant_mode;
-	const quant_and_transfer_table& qat = quant_and_xfer_tables[weight_quant_level];
+	const quant_and_transfer_table &qat = quant_and_xfer_tables[weight_quant_level];
 
 	unsigned int max_plane = bm.is_dual_plane;
 	int plane2_component = scb.plane2_component;
@@ -95,24 +93,21 @@ static bool realign_weights_undecimated(
 
 	promise(partition_count > 0);
 
-	for (unsigned int pa_idx = 0; pa_idx < partition_count; pa_idx++)
-	{
+	for (unsigned int pa_idx = 0; pa_idx < partition_count; pa_idx++) {
 		unpack_color_endpoints(decode_mode,
-		                       scb.color_formats[pa_idx],
-		                       scb.color_values[pa_idx],
-		                       rgb_hdr, alpha_hdr,
-		                       endpnt0[pa_idx],
-		                       endpnt1[pa_idx]);
+				scb.color_formats[pa_idx],
+				scb.color_values[pa_idx],
+				rgb_hdr, alpha_hdr,
+				endpnt0[pa_idx],
+				endpnt1[pa_idx]);
 	}
 
-	uint8_t* dec_weights_uquant = scb.weights;
+	uint8_t *dec_weights_uquant = scb.weights;
 	bool adjustments = false;
 
 	// For each plane and partition ...
-	for (unsigned int pl_idx = 0; pl_idx <= max_plane; pl_idx++)
-	{
-		for (unsigned int pa_idx = 0; pa_idx < partition_count; pa_idx++)
-		{
+	for (unsigned int pl_idx = 0; pl_idx <= max_plane; pl_idx++) {
+		for (unsigned int pa_idx = 0; pa_idx < partition_count; pa_idx++) {
 			// Compute the endpoint delta for all components in current plane
 			vint4 epd = endpnt1[pa_idx] - endpnt0[pa_idx];
 			epd = select(epd, vint4::zero(), plane_mask);
@@ -123,8 +118,7 @@ static bool realign_weights_undecimated(
 
 		// For each weight compute previous, current, and next errors
 		promise(bsd.texel_count > 0);
-		for (unsigned int texel = 0; texel < bsd.texel_count; texel++)
-		{
+		for (unsigned int texel = 0; texel < bsd.texel_count; texel++) {
 			int uqw = dec_weights_uquant[texel];
 
 			uint32_t prev_and_next = qat.prev_next_values[uqw];
@@ -138,28 +132,25 @@ static bool realign_weights_undecimated(
 
 			unsigned int partition = pi.partition_of_texel[texel];
 			vfloat4 color_offset = offset[partition];
-			vfloat4 color_base   = endpnt0f[partition];
+			vfloat4 color_base = endpnt0f[partition];
 
 			vfloat4 color = color_base + color_offset * weight_base;
-			vfloat4 orig_color   = blk.texel(texel);
+			vfloat4 orig_color = blk.texel(texel);
 			vfloat4 error_weight = blk.channel_weight;
 
-			vfloat4 color_diff      = color - orig_color;
+			vfloat4 color_diff = color - orig_color;
 			vfloat4 color_diff_down = color_diff + color_offset * weight_down;
-			vfloat4 color_diff_up   = color_diff + color_offset * weight_up;
+			vfloat4 color_diff_up = color_diff + color_offset * weight_up;
 
-			float error_base = dot_s(color_diff      * color_diff,      error_weight);
+			float error_base = dot_s(color_diff * color_diff, error_weight);
 			float error_down = dot_s(color_diff_down * color_diff_down, error_weight);
-			float error_up   = dot_s(color_diff_up   * color_diff_up,   error_weight);
+			float error_up = dot_s(color_diff_up * color_diff_up, error_weight);
 
 			// Check if the prev or next error is better, and if so use it
-			if ((error_up < error_base) && (error_up < error_down) && (uqw < 64))
-			{
+			if ((error_up < error_base) && (error_up < error_down) && (uqw < 64)) {
 				dec_weights_uquant[texel] = static_cast<uint8_t>(uqw_up);
 				adjustments = true;
-			}
-			else if ((error_down < error_base) && (uqw > 0))
-			{
+			} else if ((error_down < error_base) && (uqw > 0)) {
 				dec_weights_uquant[texel] = static_cast<uint8_t>(uqw_down);
 				adjustments = true;
 			}
@@ -186,22 +177,21 @@ static bool realign_weights_undecimated(
  * @param[out] scb           The symbolic compressed block output.
  */
 static bool realign_weights_decimated(
-	astcenc_profile decode_mode,
-	const block_size_descriptor& bsd,
-	const image_block& blk,
-	symbolic_compressed_block& scb
-) {
+		astcenc_profile decode_mode,
+		const block_size_descriptor &bsd,
+		const image_block &blk,
+		symbolic_compressed_block &scb) {
 	// Get the partition descriptor
 	unsigned int partition_count = scb.partition_count;
-	const auto& pi = bsd.get_partition_info(partition_count, scb.partition_index);
+	const auto &pi = bsd.get_partition_info(partition_count, scb.partition_index);
 
 	// Get the quantization table
-	const block_mode& bm = bsd.get_block_mode(scb.block_mode);
+	const block_mode &bm = bsd.get_block_mode(scb.block_mode);
 	unsigned int weight_quant_level = bm.quant_mode;
-	const quant_and_transfer_table& qat = quant_and_xfer_tables[weight_quant_level];
+	const quant_and_transfer_table &qat = quant_and_xfer_tables[weight_quant_level];
 
 	// Get the decimation table
-	const decimation_info& di = bsd.get_decimation_info(bm.decimation_mode);
+	const decimation_info &di = bsd.get_decimation_info(bm.decimation_mode);
 	unsigned int weight_count = di.weight_count;
 	assert(weight_count != bsd.texel_count);
 
@@ -220,24 +210,21 @@ static bool realign_weights_decimated(
 	promise(partition_count > 0);
 	promise(weight_count > 0);
 
-	for (unsigned int pa_idx = 0; pa_idx < partition_count; pa_idx++)
-	{
+	for (unsigned int pa_idx = 0; pa_idx < partition_count; pa_idx++) {
 		unpack_color_endpoints(decode_mode,
-		                       scb.color_formats[pa_idx],
-		                       scb.color_values[pa_idx],
-		                       rgb_hdr, alpha_hdr,
-		                       endpnt0[pa_idx],
-		                       endpnt1[pa_idx]);
+				scb.color_formats[pa_idx],
+				scb.color_values[pa_idx],
+				rgb_hdr, alpha_hdr,
+				endpnt0[pa_idx],
+				endpnt1[pa_idx]);
 	}
 
-	uint8_t* dec_weights_uquant = scb.weights;
+	uint8_t *dec_weights_uquant = scb.weights;
 	bool adjustments = false;
 
 	// For each plane and partition ...
-	for (unsigned int pl_idx = 0; pl_idx <= max_plane; pl_idx++)
-	{
-		for (unsigned int pa_idx = 0; pa_idx < partition_count; pa_idx++)
-		{
+	for (unsigned int pl_idx = 0; pl_idx <= max_plane; pl_idx++) {
+		for (unsigned int pa_idx = 0; pa_idx < partition_count; pa_idx++) {
 			// Compute the endpoint delta for all components in current plane
 			vint4 epd = endpnt1[pa_idx] - endpnt0[pa_idx];
 			epd = select(epd, vint4::zero(), plane_mask);
@@ -248,16 +235,14 @@ static bool realign_weights_decimated(
 
 		// Create an unquantized weight grid for this decimation level
 		ASTCENC_ALIGNAS float uq_weightsf[BLOCK_MAX_WEIGHTS];
-		for (unsigned int we_idx = 0; we_idx < weight_count; we_idx += ASTCENC_SIMD_WIDTH)
-		{
+		for (unsigned int we_idx = 0; we_idx < weight_count; we_idx += ASTCENC_SIMD_WIDTH) {
 			vint unquant_value(dec_weights_uquant + we_idx);
 			vfloat unquant_valuef = int_to_float(unquant_value);
 			storea(unquant_valuef, uq_weightsf + we_idx);
 		}
 
 		// For each weight compute previous, current, and next errors
-		for (unsigned int we_idx = 0; we_idx < weight_count; we_idx++)
-		{
+		for (unsigned int we_idx = 0; we_idx < weight_count; we_idx++) {
 			int uqw = dec_weights_uquant[we_idx];
 			uint32_t prev_and_next = qat.prev_next_values[uqw];
 
@@ -275,16 +260,12 @@ static bool realign_weights_decimated(
 			// Interpolate the colors to create the diffs
 			unsigned int texels_to_evaluate = di.weight_texel_count[we_idx];
 			promise(texels_to_evaluate > 0);
-			for (unsigned int te_idx = 0; te_idx < texels_to_evaluate; te_idx++)
-			{
+			for (unsigned int te_idx = 0; te_idx < texels_to_evaluate; te_idx++) {
 				unsigned int texel = di.weight_texels_tr[te_idx][we_idx];
 
 				float tw_base = di.texel_contrib_for_weight[te_idx][we_idx];
 
-				float weight_base = (uq_weightsf[di.texel_weights_tr[0][texel]] * di.texel_weight_contribs_float_tr[0][texel]
-				                   + uq_weightsf[di.texel_weights_tr[1][texel]] * di.texel_weight_contribs_float_tr[1][texel])
-					              + (uq_weightsf[di.texel_weights_tr[2][texel]] * di.texel_weight_contribs_float_tr[2][texel]
-				                   + uq_weightsf[di.texel_weights_tr[3][texel]] * di.texel_weight_contribs_float_tr[3][texel]);
+				float weight_base = (uq_weightsf[di.texel_weights_tr[0][texel]] * di.texel_weight_contribs_float_tr[0][texel] + uq_weightsf[di.texel_weights_tr[1][texel]] * di.texel_weight_contribs_float_tr[1][texel]) + (uq_weightsf[di.texel_weights_tr[2][texel]] * di.texel_weight_contribs_float_tr[2][texel] + uq_weightsf[di.texel_weights_tr[3][texel]] * di.texel_weight_contribs_float_tr[3][texel]);
 
 				// Ideally this is integer rounded, but IQ gain it isn't worth the overhead
 				// float weight = astc::flt_rd(weight_base + 0.5f);
@@ -295,34 +276,31 @@ static bool realign_weights_decimated(
 
 				unsigned int partition = pi.partition_of_texel[texel];
 				vfloat4 color_offset = offset[partition];
-				vfloat4 color_base   = endpnt0f[partition];
+				vfloat4 color_base = endpnt0f[partition];
 
 				vfloat4 color = color_base + color_offset * weight_base;
 				vfloat4 orig_color = blk.texel(texel);
 
-				vfloat4 color_diff      = color - orig_color;
+				vfloat4 color_diff = color - orig_color;
 				vfloat4 color_down_diff = color_diff + color_offset * weight_down;
-				vfloat4 color_up_diff   = color_diff + color_offset * weight_up;
+				vfloat4 color_up_diff = color_diff + color_offset * weight_up;
 
 				error_basev += color_diff * color_diff;
 				error_downv += color_down_diff * color_down_diff;
-				error_upv   += color_up_diff * color_up_diff;
+				error_upv += color_up_diff * color_up_diff;
 			}
 
 			vfloat4 error_weight = blk.channel_weight;
 			float error_base = hadd_s(error_basev * error_weight);
 			float error_down = hadd_s(error_downv * error_weight);
-			float error_up   = hadd_s(error_upv   * error_weight);
+			float error_up = hadd_s(error_upv * error_weight);
 
 			// Check if the prev or next error is better, and if so use it
-			if ((error_up < error_base) && (error_up < error_down) && (uqw < 64))
-			{
+			if ((error_up < error_base) && (error_up < error_down) && (uqw < 64)) {
 				uq_weightsf[we_idx] = uqw_up;
 				dec_weights_uquant[we_idx] = static_cast<uint8_t>(uqw_up);
 				adjustments = true;
-			}
-			else if ((error_down < error_base) && (uqw > 0))
-			{
+			} else if ((error_down < error_base) && (uqw > 0)) {
 				uq_weightsf[we_idx] = uqw_down;
 				dec_weights_uquant[we_idx] = static_cast<uint8_t>(uqw_down);
 				adjustments = true;
@@ -351,17 +329,16 @@ static bool realign_weights_decimated(
  * @param[out] tmpbuf                    The quantized weights for plane 1.
  */
 static float compress_symbolic_block_for_partition_1plane(
-	const astcenc_config& config,
-	const block_size_descriptor& bsd,
-	const image_block& blk,
-	bool only_always,
-	float tune_errorval_threshold,
-	unsigned int partition_count,
-	unsigned int partition_index,
-	symbolic_compressed_block& scb,
-	compression_working_buffers& tmpbuf,
-	int quant_limit
-) {
+		const astcenc_config &config,
+		const block_size_descriptor &bsd,
+		const image_block &blk,
+		bool only_always,
+		float tune_errorval_threshold,
+		unsigned int partition_count,
+		unsigned int partition_index,
+		symbolic_compressed_block &scb,
+		compression_working_buffers &tmpbuf,
+		int quant_limit) {
 	promise(partition_count > 0);
 	promise(config.tune_candidate_limit > 0);
 	promise(config.tune_refinement_limit > 0);
@@ -369,46 +346,42 @@ static float compress_symbolic_block_for_partition_1plane(
 	int max_weight_quant = astc::min(static_cast<int>(QUANT_32), quant_limit);
 
 	auto compute_difference = &compute_symbolic_block_difference_1plane;
-	if ((partition_count == 1) && !(config.flags & ASTCENC_FLG_MAP_RGBM))
-	{
+	if ((partition_count == 1) && !(config.flags & ASTCENC_FLG_MAP_RGBM)) {
 		compute_difference = &compute_symbolic_block_difference_1plane_1partition;
 	}
 
-	const auto& pi = bsd.get_partition_info(partition_count, partition_index);
+	const auto &pi = bsd.get_partition_info(partition_count, partition_index);
 
 	// Compute ideal weights and endpoint colors, with no quantization or decimation
-	endpoints_and_weights& ei = tmpbuf.ei1;
+	endpoints_and_weights &ei = tmpbuf.ei1;
 	compute_ideal_colors_and_weights_1plane(blk, pi, ei);
 
 	// Compute ideal weights and endpoint colors for every decimation
-	float* dec_weights_ideal = tmpbuf.dec_weights_ideal;
-	uint8_t* dec_weights_uquant = tmpbuf.dec_weights_uquant;
+	float *dec_weights_ideal = tmpbuf.dec_weights_ideal;
+	uint8_t *dec_weights_uquant = tmpbuf.dec_weights_uquant;
 
 	// For each decimation mode, compute an ideal set of weights with no quantization
 	unsigned int max_decimation_modes = only_always ? bsd.decimation_mode_count_always
-	                                                : bsd.decimation_mode_count_selected;
+													: bsd.decimation_mode_count_selected;
 	promise(max_decimation_modes > 0);
-	for (unsigned int i = 0; i < max_decimation_modes; i++)
-	{
-		const auto& dm = bsd.get_decimation_mode(i);
-		if (!dm.is_ref_1plane(static_cast<quant_method>(max_weight_quant)))
-		{
+	for (unsigned int i = 0; i < max_decimation_modes; i++) {
+		const auto &dm = bsd.get_decimation_mode(i);
+		if (!dm.is_ref_1plane(static_cast<quant_method>(max_weight_quant))) {
 			continue;
 		}
 
-		const auto& di = bsd.get_decimation_info(i);
+		const auto &di = bsd.get_decimation_info(i);
 
 		compute_ideal_weights_for_decimation(
-		    ei,
-		    di,
-		    dec_weights_ideal + i * BLOCK_MAX_WEIGHTS);
+				ei,
+				di,
+				dec_weights_ideal + i * BLOCK_MAX_WEIGHTS);
 	}
 
 	// Compute maximum colors for the endpoints and ideal weights, then for each endpoint and ideal
 	// weight pair, compute the smallest weight that will result in a color value greater than 1
 	vfloat4 min_ep(10.0f);
-	for (unsigned int i = 0; i < partition_count; i++)
-	{
+	for (unsigned int i = 0; i < partition_count; i++) {
 		vfloat4 ep = (vfloat4(1.0f) - ei.ep.endpt0[i]) / (ei.ep.endpt1[i] - ei.ep.endpt0[i]);
 
 		vmask4 use_ep = (ep > vfloat4(0.5f)) & (ep < min_ep);
@@ -419,51 +392,46 @@ static float compress_symbolic_block_for_partition_1plane(
 
 	// For each mode, use the angular method to compute a shift
 	compute_angular_endpoints_1plane(
-	    only_always, bsd, dec_weights_ideal, max_weight_quant, tmpbuf);
+			only_always, bsd, dec_weights_ideal, max_weight_quant, tmpbuf);
 
-	float* weight_low_value = tmpbuf.weight_low_value1;
-	float* weight_high_value = tmpbuf.weight_high_value1;
-	int8_t* qwt_bitcounts = tmpbuf.qwt_bitcounts;
-	float* qwt_errors = tmpbuf.qwt_errors;
+	float *weight_low_value = tmpbuf.weight_low_value1;
+	float *weight_high_value = tmpbuf.weight_high_value1;
+	int8_t *qwt_bitcounts = tmpbuf.qwt_bitcounts;
+	float *qwt_errors = tmpbuf.qwt_errors;
 
 	// For each mode (which specifies a decimation and a quantization):
 	//     * Compute number of bits needed for the quantized weights
 	//     * Generate an optimized set of quantized weights
 	//     * Compute quantization errors for the mode
 
-
-	static const int8_t free_bits_for_partition_count[4] {
+	static const int8_t free_bits_for_partition_count[4]{
 		115 - 4, 111 - 4 - PARTITION_INDEX_BITS, 108 - 4 - PARTITION_INDEX_BITS, 105 - 4 - PARTITION_INDEX_BITS
 	};
 
 	unsigned int max_block_modes = only_always ? bsd.block_mode_count_1plane_always
-	                                           : bsd.block_mode_count_1plane_selected;
+											   : bsd.block_mode_count_1plane_selected;
 	promise(max_block_modes > 0);
-	for (unsigned int i = 0; i < max_block_modes; i++)
-	{
-		const block_mode& bm = bsd.block_modes[i];
+	for (unsigned int i = 0; i < max_block_modes; i++) {
+		const block_mode &bm = bsd.block_modes[i];
 
-		if (bm.quant_mode > max_weight_quant)
-		{
+		if (bm.quant_mode > max_weight_quant) {
 			qwt_errors[i] = 1e38f;
 			continue;
 		}
 
 		assert(!bm.is_dual_plane);
 		int bitcount = free_bits_for_partition_count[partition_count - 1] - bm.weight_bits;
-		if (bitcount <= 0)
-		{
+		if (bitcount <= 0) {
 			qwt_errors[i] = 1e38f;
 			continue;
 		}
 
-		if (weight_high_value[i] > 1.02f * min_wt_cutoff)
-		{
+		if (weight_high_value[i] > 1.02f * min_wt_cutoff) {
 			weight_high_value[i] = 1.0f;
 		}
 
 		int decimation_mode = bm.decimation_mode;
-		const auto& di = bsd.get_decimation_info(decimation_mode);
+		const auto &di = bsd.get_decimation_info(decimation_mode);
 
 		qwt_bitcounts[i] = static_cast<int8_t>(bitcount);
 
@@ -471,18 +439,18 @@ static float compress_symbolic_block_for_partition_1plane(
 
 		// Generate the optimized set of weights for the weight mode
 		compute_quantized_weights_for_decimation(
-		    di,
-		    weight_low_value[i], weight_high_value[i],
-		    dec_weights_ideal + BLOCK_MAX_WEIGHTS * decimation_mode,
-		    dec_weights_uquantf,
-		    dec_weights_uquant + BLOCK_MAX_WEIGHTS * i,
-		    bm.get_weight_quant_mode());
+				di,
+				weight_low_value[i], weight_high_value[i],
+				dec_weights_ideal + BLOCK_MAX_WEIGHTS * decimation_mode,
+				dec_weights_uquantf,
+				dec_weights_uquant + BLOCK_MAX_WEIGHTS * i,
+				bm.get_weight_quant_mode());
 
 		// Compute weight quantization errors for the block mode
 		qwt_errors[i] = compute_error_of_weight_set_1plane(
-		    ei,
-		    di,
-		    dec_weights_uquantf);
+				ei,
+				di,
+				dec_weights_uquantf);
 	}
 
 	// Decide the optimal combination of color endpoint encodings and weight encodings
@@ -493,25 +461,24 @@ static float compress_symbolic_block_for_partition_1plane(
 	quant_method color_quant_level_mod[TUNE_MAX_TRIAL_CANDIDATES];
 
 	unsigned int candidate_count = compute_ideal_endpoint_formats(
-	    pi, blk, ei.ep, qwt_bitcounts, qwt_errors,
-	    config.tune_candidate_limit, 0, max_block_modes,
-	    partition_format_specifiers, block_mode_index,
-	    color_quant_level, color_quant_level_mod, tmpbuf);
+			pi, blk, ei.ep, qwt_bitcounts, qwt_errors,
+			config.tune_candidate_limit, 0, max_block_modes,
+			partition_format_specifiers, block_mode_index,
+			color_quant_level, color_quant_level_mod, tmpbuf);
 
 	// Iterate over the N believed-to-be-best modes to find out which one is actually best
 	float best_errorval_in_mode = ERROR_CALC_DEFAULT;
 	float best_errorval_in_scb = scb.errorval;
 
-	for (unsigned int i = 0; i < candidate_count; i++)
-	{
+	for (unsigned int i = 0; i < candidate_count; i++) {
 		TRACE_NODE(node0, "candidate");
 
 		const int bm_packed_index = block_mode_index[i];
 		assert(bm_packed_index >= 0 && bm_packed_index < static_cast<int>(bsd.block_mode_count_1plane_selected));
-		const block_mode& qw_bm = bsd.block_modes[bm_packed_index];
+		const block_mode &qw_bm = bsd.block_modes[bm_packed_index];
 
 		int decimation_mode = qw_bm.decimation_mode;
-		const auto& di = bsd.get_decimation_info(decimation_mode);
+		const auto &di = bsd.get_decimation_info(decimation_mode);
 		promise(di.weight_count > 0);
 
 		trace_add_data("weight_x", di.weight_x);
@@ -526,31 +493,28 @@ static float compress_symbolic_block_for_partition_1plane(
 		symbolic_compressed_block workscb;
 		endpoints workep = ei.ep;
 
-		uint8_t* u8_weight_src = dec_weights_uquant + BLOCK_MAX_WEIGHTS * bm_packed_index;
+		uint8_t *u8_weight_src = dec_weights_uquant + BLOCK_MAX_WEIGHTS * bm_packed_index;
 
-		for (unsigned int j = 0; j < di.weight_count; j++)
-		{
+		for (unsigned int j = 0; j < di.weight_count; j++) {
 			workscb.weights[j] = u8_weight_src[j];
 		}
 
-		for (unsigned int l = 0; l < config.tune_refinement_limit; l++)
-		{
+		for (unsigned int l = 0; l < config.tune_refinement_limit; l++) {
 			recompute_ideal_colors_1plane(
-			    blk, pi, di, workscb.weights,
-			    workep, rgbs_colors, rgbo_colors);
+					blk, pi, di, workscb.weights,
+					workep, rgbs_colors, rgbo_colors);
 
 			// Quantize the chosen color, tracking if worth trying the mod value
 			bool all_same = color_quant_level[i] != color_quant_level_mod[i];
-			for (unsigned int j = 0; j < partition_count; j++)
-			{
+			for (unsigned int j = 0; j < partition_count; j++) {
 				workscb.color_formats[j] = pack_color_endpoints(
-				    workep.endpt0[j],
-				    workep.endpt1[j],
-				    rgbs_colors[j],
-				    rgbo_colors[j],
-				    partition_format_specifiers[i][j],
-				    workscb.color_values[j],
-				    color_quant_level[i]);
+						workep.endpt0[j],
+						workep.endpt1[j],
+						rgbs_colors[j],
+						rgbo_colors[j],
+						partition_format_specifiers[i][j],
+						workscb.color_values[j],
+						color_quant_level[i]);
 
 				all_same = all_same && workscb.color_formats[j] == workscb.color_formats[0];
 			}
@@ -559,37 +523,31 @@ static float compress_symbolic_block_for_partition_1plane(
 			// let's see if we can take advantage of this: requantize all the colors and see if the
 			// endpoint modes remain the same.
 			workscb.color_formats_matched = 0;
-			if (partition_count >= 2 && all_same)
-			{
+			if (partition_count >= 2 && all_same) {
 				uint8_t colorvals[BLOCK_MAX_PARTITIONS][8];
-				uint8_t color_formats_mod[BLOCK_MAX_PARTITIONS] { 0 };
+				uint8_t color_formats_mod[BLOCK_MAX_PARTITIONS]{ 0 };
 				bool all_same_mod = true;
-				for (unsigned int j = 0; j < partition_count; j++)
-				{
+				for (unsigned int j = 0; j < partition_count; j++) {
 					color_formats_mod[j] = pack_color_endpoints(
-					    workep.endpt0[j],
-					    workep.endpt1[j],
-					    rgbs_colors[j],
-					    rgbo_colors[j],
-					    partition_format_specifiers[i][j],
-					    colorvals[j],
-					    color_quant_level_mod[i]);
+							workep.endpt0[j],
+							workep.endpt1[j],
+							rgbs_colors[j],
+							rgbo_colors[j],
+							partition_format_specifiers[i][j],
+							colorvals[j],
+							color_quant_level_mod[i]);
 
 					// Early out as soon as it's no longer possible to use mod
-					if (color_formats_mod[j] != color_formats_mod[0])
-					{
+					if (color_formats_mod[j] != color_formats_mod[0]) {
 						all_same_mod = false;
 						break;
 					}
 				}
 
-				if (all_same_mod)
-				{
+				if (all_same_mod) {
 					workscb.color_formats_matched = 1;
-					for (unsigned int j = 0; j < BLOCK_MAX_PARTITIONS; j++)
-					{
-						for (unsigned int k = 0; k < 8; k++)
-						{
+					for (unsigned int j = 0; j < BLOCK_MAX_PARTITIONS; j++) {
+						for (unsigned int k = 0; k < 8; k++) {
 							workscb.color_values[j][k] = colorvals[j][k];
 						}
 
@@ -607,11 +565,9 @@ static float compress_symbolic_block_for_partition_1plane(
 			workscb.block_type = SYM_BTYPE_NONCONST;
 
 			// Pre-realign test
-			if (l == 0)
-			{
+			if (l == 0) {
 				float errorval = compute_difference(config, bsd, workscb, blk);
-				if (errorval == -ERROR_CALC_DEFAULT)
-				{
+				if (errorval == -ERROR_CALC_DEFAULT) {
 					errorval = -errorval;
 					workscb.block_type = SYM_BTYPE_ERROR;
 				}
@@ -625,19 +581,16 @@ static float compress_symbolic_block_for_partition_1plane(
 				// block we have already.
 				unsigned int iters_remaining = config.tune_refinement_limit - l;
 				float threshold = (0.045f * static_cast<float>(iters_remaining)) + 1.08f;
-				if (errorval > (threshold * best_errorval_in_scb))
-				{
+				if (errorval > (threshold * best_errorval_in_scb)) {
 					break;
 				}
 
-				if (errorval < best_errorval_in_scb)
-				{
+				if (errorval < best_errorval_in_scb) {
 					best_errorval_in_scb = errorval;
 					workscb.errorval = errorval;
 					scb = workscb;
 
-					if (errorval < tune_errorval_threshold)
-					{
+					if (errorval < tune_errorval_threshold) {
 						// Skip remaining candidates - this is "good enough"
 						i = candidate_count;
 						break;
@@ -646,21 +599,17 @@ static float compress_symbolic_block_for_partition_1plane(
 			}
 
 			bool adjustments;
-			if (di.weight_count != bsd.texel_count)
-			{
+			if (di.weight_count != bsd.texel_count) {
 				adjustments = realign_weights_decimated(
-					config.profile, bsd, blk, workscb);
-			}
-			else
-			{
+						config.profile, bsd, blk, workscb);
+			} else {
 				adjustments = realign_weights_undecimated(
-					config.profile, bsd, blk, workscb);
+						config.profile, bsd, blk, workscb);
 			}
 
 			// Post-realign test
 			float errorval = compute_difference(config, bsd, workscb, blk);
-			if (errorval == -ERROR_CALC_DEFAULT)
-			{
+			if (errorval == -ERROR_CALC_DEFAULT) {
 				errorval = -errorval;
 				workscb.block_type = SYM_BTYPE_ERROR;
 			}
@@ -673,27 +622,23 @@ static float compress_symbolic_block_for_partition_1plane(
 			// give benefit of the doubt ...
 			unsigned int iters_remaining = config.tune_refinement_limit - 1 - l;
 			float threshold = (0.045f * static_cast<float>(iters_remaining)) + 1.0f;
-			if (errorval > (threshold * best_errorval_in_scb))
-			{
+			if (errorval > (threshold * best_errorval_in_scb)) {
 				break;
 			}
 
-			if (errorval < best_errorval_in_scb)
-			{
+			if (errorval < best_errorval_in_scb) {
 				best_errorval_in_scb = errorval;
 				workscb.errorval = errorval;
 				scb = workscb;
 
-				if (errorval < tune_errorval_threshold)
-				{
+				if (errorval < tune_errorval_threshold) {
 					// Skip remaining candidates - this is "good enough"
 					i = candidate_count;
 					break;
 				}
 			}
 
-			if (!adjustments)
-			{
+			if (!adjustments) {
 				break;
 			}
 		}
@@ -714,15 +659,14 @@ static float compress_symbolic_block_for_partition_1plane(
  * @param[out] tmpbuf                    The quantized weights for plane 1.
  */
 static float compress_symbolic_block_for_partition_2planes(
-	const astcenc_config& config,
-	const block_size_descriptor& bsd,
-	const image_block& blk,
-	float tune_errorval_threshold,
-	unsigned int plane2_component,
-	symbolic_compressed_block& scb,
-	compression_working_buffers& tmpbuf,
-	int quant_limit
-) {
+		const astcenc_config &config,
+		const block_size_descriptor &bsd,
+		const image_block &blk,
+		float tune_errorval_threshold,
+		unsigned int plane2_component,
+		symbolic_compressed_block &scb,
+		compression_working_buffers &tmpbuf,
+		int quant_limit) {
 	promise(config.tune_candidate_limit > 0);
 	promise(config.tune_refinement_limit > 0);
 	promise(bsd.decimation_mode_count_selected > 0);
@@ -730,35 +674,33 @@ static float compress_symbolic_block_for_partition_2planes(
 	int max_weight_quant = astc::min(static_cast<int>(QUANT_32), quant_limit);
 
 	// Compute ideal weights and endpoint colors, with no quantization or decimation
-	endpoints_and_weights& ei1 = tmpbuf.ei1;
-	endpoints_and_weights& ei2 = tmpbuf.ei2;
+	endpoints_and_weights &ei1 = tmpbuf.ei1;
+	endpoints_and_weights &ei2 = tmpbuf.ei2;
 
 	compute_ideal_colors_and_weights_2planes(bsd, blk, plane2_component, ei1, ei2);
 
 	// Compute ideal weights and endpoint colors for every decimation
-	float* dec_weights_ideal = tmpbuf.dec_weights_ideal;
-	uint8_t* dec_weights_uquant = tmpbuf.dec_weights_uquant;
+	float *dec_weights_ideal = tmpbuf.dec_weights_ideal;
+	uint8_t *dec_weights_uquant = tmpbuf.dec_weights_uquant;
 
 	// For each decimation mode, compute an ideal set of weights with no quantization
-	for (unsigned int i = 0; i < bsd.decimation_mode_count_selected; i++)
-	{
-		const auto& dm = bsd.get_decimation_mode(i);
-		if (!dm.is_ref_2plane(static_cast<quant_method>(max_weight_quant)))
-		{
+	for (unsigned int i = 0; i < bsd.decimation_mode_count_selected; i++) {
+		const auto &dm = bsd.get_decimation_mode(i);
+		if (!dm.is_ref_2plane(static_cast<quant_method>(max_weight_quant))) {
 			continue;
 		}
 
-		const auto& di = bsd.get_decimation_info(i);
+		const auto &di = bsd.get_decimation_info(i);
 
 		compute_ideal_weights_for_decimation(
-		    ei1,
-		    di,
-		    dec_weights_ideal + i * BLOCK_MAX_WEIGHTS);
+				ei1,
+				di,
+				dec_weights_ideal + i * BLOCK_MAX_WEIGHTS);
 
 		compute_ideal_weights_for_decimation(
-		    ei2,
-		    di,
-		    dec_weights_ideal + i * BLOCK_MAX_WEIGHTS + WEIGHTS_PLANE2_OFFSET);
+				ei2,
+				di,
+				dec_weights_ideal + i * BLOCK_MAX_WEIGHTS + WEIGHTS_PLANE2_OFFSET);
 	}
 
 	// Compute maximum colors for the endpoints and ideal weights, then for each endpoint and ideal
@@ -786,78 +728,74 @@ static float compress_symbolic_block_for_partition_2planes(
 	float min_wt_cutoff2 = hmin_s(select(err_max, min_ep2, err_mask));
 
 	compute_angular_endpoints_2planes(
-	    bsd, dec_weights_ideal, max_weight_quant, tmpbuf);
+			bsd, dec_weights_ideal, max_weight_quant, tmpbuf);
 
 	// For each mode (which specifies a decimation and a quantization):
 	//     * Compute number of bits needed for the quantized weights
 	//     * Generate an optimized set of quantized weights
 	//     * Compute quantization errors for the mode
 
-	float* weight_low_value1 = tmpbuf.weight_low_value1;
-	float* weight_high_value1 = tmpbuf.weight_high_value1;
-	float* weight_low_value2 = tmpbuf.weight_low_value2;
-	float* weight_high_value2 = tmpbuf.weight_high_value2;
+	float *weight_low_value1 = tmpbuf.weight_low_value1;
+	float *weight_high_value1 = tmpbuf.weight_high_value1;
+	float *weight_low_value2 = tmpbuf.weight_low_value2;
+	float *weight_high_value2 = tmpbuf.weight_high_value2;
 
-	int8_t* qwt_bitcounts = tmpbuf.qwt_bitcounts;
-	float* qwt_errors = tmpbuf.qwt_errors;
+	int8_t *qwt_bitcounts = tmpbuf.qwt_bitcounts;
+	float *qwt_errors = tmpbuf.qwt_errors;
 
 	unsigned int start_2plane = bsd.block_mode_count_1plane_selected;
 	unsigned int end_2plane = bsd.block_mode_count_1plane_2plane_selected;
 
-	for (unsigned int i = start_2plane; i < end_2plane; i++)
-	{
-		const block_mode& bm = bsd.block_modes[i];
+	for (unsigned int i = start_2plane; i < end_2plane; i++) {
+		const block_mode &bm = bsd.block_modes[i];
 		assert(bm.is_dual_plane);
 
-		if (bm.quant_mode > max_weight_quant)
-		{
+		if (bm.quant_mode > max_weight_quant) {
 			qwt_errors[i] = 1e38f;
 			continue;
 		}
 
 		qwt_bitcounts[i] = static_cast<int8_t>(109 - bm.weight_bits);
 
-		if (weight_high_value1[i] > 1.02f * min_wt_cutoff1)
-		{
+		if (weight_high_value1[i] > 1.02f * min_wt_cutoff1) {
 			weight_high_value1[i] = 1.0f;
 		}
 
-		if (weight_high_value2[i] > 1.02f * min_wt_cutoff2)
-		{
+		if (weight_high_value2[i] > 1.02f * min_wt_cutoff2) {
 			weight_high_value2[i] = 1.0f;
 		}
 
 		unsigned int decimation_mode = bm.decimation_mode;
-		const auto& di = bsd.get_decimation_info(decimation_mode);
+		const auto &di = bsd.get_decimation_info(decimation_mode);
 
 		ASTCENC_ALIGNAS float dec_weights_uquantf[BLOCK_MAX_WEIGHTS];
 
 		// Generate the optimized set of weights for the mode
 		compute_quantized_weights_for_decimation(
-		    di,
-		    weight_low_value1[i],
-		    weight_high_value1[i],
-		    dec_weights_ideal + BLOCK_MAX_WEIGHTS * decimation_mode,
-		    dec_weights_uquantf,
-		    dec_weights_uquant + BLOCK_MAX_WEIGHTS * i,
-		    bm.get_weight_quant_mode());
+				di,
+				weight_low_value1[i],
+				weight_high_value1[i],
+				dec_weights_ideal + BLOCK_MAX_WEIGHTS * decimation_mode,
+				dec_weights_uquantf,
+				dec_weights_uquant + BLOCK_MAX_WEIGHTS * i,
+				bm.get_weight_quant_mode());
 
 		compute_quantized_weights_for_decimation(
-		    di,
-		    weight_low_value2[i],
-		    weight_high_value2[i],
-		    dec_weights_ideal + BLOCK_MAX_WEIGHTS * decimation_mode + WEIGHTS_PLANE2_OFFSET,
-		    dec_weights_uquantf + WEIGHTS_PLANE2_OFFSET,
-		    dec_weights_uquant + BLOCK_MAX_WEIGHTS * i + WEIGHTS_PLANE2_OFFSET,
-		    bm.get_weight_quant_mode());
+				di,
+				weight_low_value2[i],
+				weight_high_value2[i],
+				dec_weights_ideal + BLOCK_MAX_WEIGHTS * decimation_mode + WEIGHTS_PLANE2_OFFSET,
+				dec_weights_uquantf + WEIGHTS_PLANE2_OFFSET,
+				dec_weights_uquant + BLOCK_MAX_WEIGHTS * i + WEIGHTS_PLANE2_OFFSET,
+				bm.get_weight_quant_mode());
 
 		// Compute weight quantization errors for the block mode
 		qwt_errors[i] = compute_error_of_weight_set_2planes(
-		    ei1,
-		    ei2,
-		    di,
-		    dec_weights_uquantf,
-		    dec_weights_uquantf + WEIGHTS_PLANE2_OFFSET);
+				ei1,
+				ei2,
+				di,
+				dec_weights_uquantf,
+				dec_weights_uquantf + WEIGHTS_PLANE2_OFFSET);
 	}
 
 	// Decide the optimal combination of color endpoint encodings and weight encodings
@@ -870,29 +808,28 @@ static float compress_symbolic_block_for_partition_2planes(
 	endpoints epm;
 	merge_endpoints(ei1.ep, ei2.ep, plane2_component, epm);
 
-	const auto& pi = bsd.get_partition_info(1, 0);
+	const auto &pi = bsd.get_partition_info(1, 0);
 	unsigned int candidate_count = compute_ideal_endpoint_formats(
-	    pi, blk, epm, qwt_bitcounts, qwt_errors,
-	    config.tune_candidate_limit,
-		bsd.block_mode_count_1plane_selected, bsd.block_mode_count_1plane_2plane_selected,
-	    partition_format_specifiers, block_mode_index,
-	    color_quant_level, color_quant_level_mod, tmpbuf);
+			pi, blk, epm, qwt_bitcounts, qwt_errors,
+			config.tune_candidate_limit,
+			bsd.block_mode_count_1plane_selected, bsd.block_mode_count_1plane_2plane_selected,
+			partition_format_specifiers, block_mode_index,
+			color_quant_level, color_quant_level_mod, tmpbuf);
 
 	// Iterate over the N believed-to-be-best modes to find out which one is actually best
 	float best_errorval_in_mode = ERROR_CALC_DEFAULT;
 	float best_errorval_in_scb = scb.errorval;
 
-	for (unsigned int i = 0; i < candidate_count; i++)
-	{
+	for (unsigned int i = 0; i < candidate_count; i++) {
 		TRACE_NODE(node0, "candidate");
 
 		const int bm_packed_index = block_mode_index[i];
 		assert(bm_packed_index >= static_cast<int>(bsd.block_mode_count_1plane_selected) &&
-		       bm_packed_index < static_cast<int>(bsd.block_mode_count_1plane_2plane_selected));
-		const block_mode& qw_bm = bsd.block_modes[bm_packed_index];
+				bm_packed_index < static_cast<int>(bsd.block_mode_count_1plane_2plane_selected));
+		const block_mode &qw_bm = bsd.block_modes[bm_packed_index];
 
 		int decimation_mode = qw_bm.decimation_mode;
-		const auto& di = bsd.get_decimation_info(decimation_mode);
+		const auto &di = bsd.get_decimation_info(decimation_mode);
 		promise(di.weight_count > 0);
 
 		trace_add_data("weight_x", di.weight_x);
@@ -906,30 +843,28 @@ static float compress_symbolic_block_for_partition_2planes(
 		symbolic_compressed_block workscb;
 		endpoints workep = epm;
 
-		uint8_t* u8_weight1_src = dec_weights_uquant + BLOCK_MAX_WEIGHTS * bm_packed_index;
-		uint8_t* u8_weight2_src = dec_weights_uquant + BLOCK_MAX_WEIGHTS * bm_packed_index + WEIGHTS_PLANE2_OFFSET;
+		uint8_t *u8_weight1_src = dec_weights_uquant + BLOCK_MAX_WEIGHTS * bm_packed_index;
+		uint8_t *u8_weight2_src = dec_weights_uquant + BLOCK_MAX_WEIGHTS * bm_packed_index + WEIGHTS_PLANE2_OFFSET;
 
-		for (int j = 0; j < di.weight_count; j++)
-		{
+		for (int j = 0; j < di.weight_count; j++) {
 			workscb.weights[j] = u8_weight1_src[j];
 			workscb.weights[j + WEIGHTS_PLANE2_OFFSET] = u8_weight2_src[j];
 		}
 
-		for (unsigned int l = 0; l < config.tune_refinement_limit; l++)
-		{
+		for (unsigned int l = 0; l < config.tune_refinement_limit; l++) {
 			recompute_ideal_colors_2planes(
-			    blk, bsd, di,
-			    workscb.weights, workscb.weights + WEIGHTS_PLANE2_OFFSET,
-			    workep, rgbs_color, rgbo_color, plane2_component);
+					blk, bsd, di,
+					workscb.weights, workscb.weights + WEIGHTS_PLANE2_OFFSET,
+					workep, rgbs_color, rgbo_color, plane2_component);
 
 			// Quantize the chosen color
 			workscb.color_formats[0] = pack_color_endpoints(
-			                               workep.endpt0[0],
-			                               workep.endpt1[0],
-			                               rgbs_color, rgbo_color,
-			                               partition_format_specifiers[i][0],
-			                               workscb.color_values[0],
-			                               color_quant_level[i]);
+					workep.endpt0[0],
+					workep.endpt1[0],
+					rgbs_color, rgbo_color,
+					partition_format_specifiers[i][0],
+					workscb.color_values[0],
+					color_quant_level[i]);
 
 			// Store header fields
 			workscb.partition_count = 1;
@@ -941,11 +876,9 @@ static float compress_symbolic_block_for_partition_2planes(
 			workscb.block_type = SYM_BTYPE_NONCONST;
 
 			// Pre-realign test
-			if (l == 0)
-			{
+			if (l == 0) {
 				float errorval = compute_symbolic_block_difference_2plane(config, bsd, workscb, blk);
-				if (errorval == -ERROR_CALC_DEFAULT)
-				{
+				if (errorval == -ERROR_CALC_DEFAULT) {
 					errorval = -errorval;
 					workscb.block_type = SYM_BTYPE_ERROR;
 				}
@@ -959,19 +892,16 @@ static float compress_symbolic_block_for_partition_2planes(
 				// block we have already.
 				unsigned int iters_remaining = config.tune_refinement_limit - l;
 				float threshold = (0.045f * static_cast<float>(iters_remaining)) + 1.08f;
-				if (errorval > (threshold * best_errorval_in_scb))
-				{
+				if (errorval > (threshold * best_errorval_in_scb)) {
 					break;
 				}
 
-				if (errorval < best_errorval_in_scb)
-				{
+				if (errorval < best_errorval_in_scb) {
 					best_errorval_in_scb = errorval;
 					workscb.errorval = errorval;
 					scb = workscb;
 
-					if (errorval < tune_errorval_threshold)
-					{
+					if (errorval < tune_errorval_threshold) {
 						// Skip remaining candidates - this is "good enough"
 						i = candidate_count;
 						break;
@@ -981,21 +911,17 @@ static float compress_symbolic_block_for_partition_2planes(
 
 			// Perform a final pass over the weights to try to improve them.
 			bool adjustments;
-			if (di.weight_count != bsd.texel_count)
-			{
+			if (di.weight_count != bsd.texel_count) {
 				adjustments = realign_weights_decimated(
-					config.profile, bsd, blk, workscb);
-			}
-			else
-			{
+						config.profile, bsd, blk, workscb);
+			} else {
 				adjustments = realign_weights_undecimated(
-					config.profile, bsd, blk, workscb);
+						config.profile, bsd, blk, workscb);
 			}
 
 			// Post-realign test
 			float errorval = compute_symbolic_block_difference_2plane(config, bsd, workscb, blk);
-			if (errorval == -ERROR_CALC_DEFAULT)
-			{
+			if (errorval == -ERROR_CALC_DEFAULT) {
 				errorval = -errorval;
 				workscb.block_type = SYM_BTYPE_ERROR;
 			}
@@ -1008,27 +934,23 @@ static float compress_symbolic_block_for_partition_2planes(
 			// give benefit of the doubt ...
 			unsigned int iters_remaining = config.tune_refinement_limit - 1 - l;
 			float threshold = (0.045f * static_cast<float>(iters_remaining)) + 1.0f;
-			if (errorval > (threshold * best_errorval_in_scb))
-			{
+			if (errorval > (threshold * best_errorval_in_scb)) {
 				break;
 			}
 
-			if (errorval < best_errorval_in_scb)
-			{
+			if (errorval < best_errorval_in_scb) {
 				best_errorval_in_scb = errorval;
 				workscb.errorval = errorval;
 				scb = workscb;
 
-				if (errorval < tune_errorval_threshold)
-				{
+				if (errorval < tune_errorval_threshold) {
 					// Skip remaining candidates - this is "good enough"
 					i = candidate_count;
 					break;
 				}
 			}
 
-			if (!adjustments)
-			{
+			if (!adjustments) {
 				break;
 			}
 		}
@@ -1046,9 +968,8 @@ static float compress_symbolic_block_for_partition_2planes(
  * @return Return the lowest correlation factor.
  */
 static float prepare_block_statistics(
-	int texels_per_block,
-	const image_block& blk
-) {
+		int texels_per_block,
+		const image_block &blk) {
 	// Compute covariance matrix, as a collection of 10 scalars that form the upper-triangular row
 	// of the matrix. The matrix is symmetric, so this is all we need for this use case.
 	float rs = 0.0f;
@@ -1069,8 +990,7 @@ static float prepare_block_statistics(
 	float weight_sum = 0.0f;
 
 	promise(texels_per_block > 0);
-	for (int i = 0; i < texels_per_block; i++)
-	{
+	for (int i = 0; i < texels_per_block; i++) {
 		float weight = hadd_s(blk.channel_weight) / 4.0f;
 		assert(weight >= 0.0f);
 		weight_sum += weight;
@@ -1127,18 +1047,24 @@ static float prepare_block_statistics(
 	ga_cov *= astc::rsqrt(gg_var * aa_var);
 	ba_cov *= astc::rsqrt(bb_var * aa_var);
 
-	if (astc::isnan(rg_cov)) rg_cov = 1.0f;
-	if (astc::isnan(rb_cov)) rb_cov = 1.0f;
-	if (astc::isnan(ra_cov)) ra_cov = 1.0f;
-	if (astc::isnan(gb_cov)) gb_cov = 1.0f;
-	if (astc::isnan(ga_cov)) ga_cov = 1.0f;
-	if (astc::isnan(ba_cov)) ba_cov = 1.0f;
+	if (astc::isnan(rg_cov))
+		rg_cov = 1.0f;
+	if (astc::isnan(rb_cov))
+		rb_cov = 1.0f;
+	if (astc::isnan(ra_cov))
+		ra_cov = 1.0f;
+	if (astc::isnan(gb_cov))
+		gb_cov = 1.0f;
+	if (astc::isnan(ga_cov))
+		ga_cov = 1.0f;
+	if (astc::isnan(ba_cov))
+		ba_cov = 1.0f;
 
-	float lowest_correlation = astc::min(fabsf(rg_cov),      fabsf(rb_cov));
-	lowest_correlation       = astc::min(lowest_correlation, fabsf(ra_cov));
-	lowest_correlation       = astc::min(lowest_correlation, fabsf(gb_cov));
-	lowest_correlation       = astc::min(lowest_correlation, fabsf(ga_cov));
-	lowest_correlation       = astc::min(lowest_correlation, fabsf(ba_cov));
+	float lowest_correlation = astc::min(fabsf(rg_cov), fabsf(rb_cov));
+	lowest_correlation = astc::min(lowest_correlation, fabsf(ra_cov));
+	lowest_correlation = astc::min(lowest_correlation, fabsf(gb_cov));
+	lowest_correlation = astc::min(lowest_correlation, fabsf(ga_cov));
+	lowest_correlation = astc::min(lowest_correlation, fabsf(ba_cov));
 
 	// Diagnostic trace points
 	trace_add_data("min_r", blk.data_min.lane<0>());
@@ -1161,14 +1087,13 @@ static float prepare_block_statistics(
 
 /* See header for documentation. */
 void compress_block(
-	const astcenc_contexti& ctx,
-	const image_block& blk,
-	uint8_t pcb[16],
-	compression_working_buffers& tmpbuf)
-{
+		const astcenc_contexti &ctx,
+		const image_block &blk,
+		uint8_t pcb[16],
+		compression_working_buffers &tmpbuf) {
 	astcenc_profile decode_mode = ctx.config.profile;
 	symbolic_compressed_block scb;
-	const block_size_descriptor& bsd = *ctx.bsd;
+	const block_size_descriptor &bsd = *ctx.bsd;
 	float lowest_correl;
 
 	TRACE_NODE(node0, "block");
@@ -1187,13 +1112,13 @@ void compress_block(
 	bool block_skip_two_plane = false;
 	int max_partitions = ctx.config.tune_partition_count_limit;
 
-	unsigned int requested_partition_indices[3] {
+	unsigned int requested_partition_indices[3]{
 		ctx.config.tune_2partition_index_limit,
 		ctx.config.tune_3partition_index_limit,
 		ctx.config.tune_4partition_index_limit
 	};
 
-	unsigned int requested_partition_trials[3] {
+	unsigned int requested_partition_trials[3]{
 		ctx.config.tune_2partitioning_candidate_limit,
 		ctx.config.tune_3partitioning_candidate_limit,
 		ctx.config.tune_4partitioning_candidate_limit
@@ -1203,10 +1128,7 @@ void compress_block(
 	// Do this early in diagnostic builds so we can dump uniform metrics
 	// for every block. Do it later in release builds to avoid redundant work!
 	float error_weight_sum = hadd_s(blk.channel_weight) * bsd.texel_count;
-	float error_threshold = ctx.config.tune_db_limit
-	                      * error_weight_sum
-	                      * block_is_l_scale
-	                      * block_is_la_scale;
+	float error_threshold = ctx.config.tune_db_limit * error_weight_sum * block_is_l_scale * block_is_la_scale;
 
 	lowest_correl = prepare_block_statistics(bsd.texel_count, blk);
 	trace_add_data("lowest_correl", lowest_correl);
@@ -1214,8 +1136,7 @@ void compress_block(
 #endif
 
 	// Detected a constant-color block
-	if (all(blk.data_min == blk.data_max))
-	{
+	if (all(blk.data_min == blk.data_max)) {
 		TRACE_NODE(node1, "pass");
 		trace_add_data("partition_count", 0);
 		trace_add_data("plane_count", 1);
@@ -1224,15 +1145,13 @@ void compress_block(
 
 		// Encode as FP16 if using HDR
 		if ((decode_mode == ASTCENC_PRF_HDR) ||
-		    (decode_mode == ASTCENC_PRF_HDR_RGB_LDR_A))
-		{
+				(decode_mode == ASTCENC_PRF_HDR_RGB_LDR_A)) {
 			scb.block_type = SYM_BTYPE_CONST_F16;
 			vint4 color_f16 = float_to_float16(blk.origin_texel);
 			store(color_f16, scb.constant_color);
 		}
 		// Encode as UNORM16 if NOT using HDR
-		else
-		{
+		else {
 			scb.block_type = SYM_BTYPE_CONST_U16;
 			vfloat4 color_f32 = clamp(0.0f, 1.0f, blk.origin_texel) * 65535.0f;
 			vint4 color_u16 = float_to_int_rtn(color_f32);
@@ -1247,21 +1166,18 @@ void compress_block(
 
 #if !defined(ASTCENC_DIAGNOSTICS)
 	float error_weight_sum = hadd_s(blk.channel_weight) * bsd.texel_count;
-	float error_threshold = ctx.config.tune_db_limit
-	                      * error_weight_sum
-	                      * block_is_l_scale
-	                      * block_is_la_scale;
+	float error_threshold = ctx.config.tune_db_limit * error_weight_sum * block_is_l_scale * block_is_la_scale;
 #endif
 
 	// Set SCB and mode errors to a very high error value
 	scb.errorval = ERROR_CALC_DEFAULT;
 	scb.block_type = SYM_BTYPE_ERROR;
 
-	float best_errorvals_for_pcount[BLOCK_MAX_PARTITIONS] {
+	float best_errorvals_for_pcount[BLOCK_MAX_PARTITIONS]{
 		ERROR_CALC_DEFAULT, ERROR_CALC_DEFAULT, ERROR_CALC_DEFAULT, ERROR_CALC_DEFAULT
 	};
 
-	float exit_thresholds_for_pcount[BLOCK_MAX_PARTITIONS] {
+	float exit_thresholds_for_pcount[BLOCK_MAX_PARTITIONS]{
 		0.0f,
 		ctx.config.tune_2partition_early_out_limit_factor,
 		ctx.config.tune_3partition_early_out_limit_factor,
@@ -1275,7 +1191,7 @@ void compress_block(
 	// optimization is disabled for 4x4 and 5x4 blocks where it nearly always slows down the
 	// compression and slightly reduces image quality.
 
-	float errorval_mult[2] {
+	float errorval_mult[2]{
 		1.0f / ctx.config.tune_mse_overshoot,
 		1.0f
 	};
@@ -1285,31 +1201,28 @@ void compress_block(
 	// Only enable MODE0 fast path if enabled
 	// Never enable for 3D blocks as no "always" block modes are available
 	int start_trial = 1;
- 	if ((ctx.config.tune_search_mode0_enable >= TUNE_MIN_SEARCH_MODE0) && (bsd.zdim == 1))
-	{
+	if ((ctx.config.tune_search_mode0_enable >= TUNE_MIN_SEARCH_MODE0) && (bsd.zdim == 1)) {
 		start_trial = 0;
 	}
 
 	int quant_limit = QUANT_32;
-	for (int i = start_trial; i < 2; i++)
-	{
+	for (int i = start_trial; i < 2; i++) {
 		TRACE_NODE(node1, "pass");
 		trace_add_data("partition_count", 1);
 		trace_add_data("plane_count", 1);
 		trace_add_data("search_mode", i);
 
 		float errorval = compress_symbolic_block_for_partition_1plane(
-		    ctx.config, bsd, blk, i == 0,
-		    error_threshold * errorval_mult[i] * errorval_overshoot,
-		    1, 0,  scb, tmpbuf, QUANT_32);
+				ctx.config, bsd, blk, i == 0,
+				error_threshold * errorval_mult[i] * errorval_overshoot,
+				1, 0, scb, tmpbuf, QUANT_32);
 
 		// Record the quant level so we can use the filter later searches
-		const auto& bm = bsd.get_block_mode(scb.block_mode);
+		const auto &bm = bsd.get_block_mode(scb.block_mode);
 		quant_limit = bm.get_weight_quant_mode();
 
 		best_errorvals_for_pcount[0] = astc::min(best_errorvals_for_pcount[0], errorval);
-		if (errorval < (error_threshold * errorval_mult[i]))
-		{
+		if (errorval < (error_threshold * errorval_mult[i])) {
 			trace_add_data("exit", "quality hit");
 			goto END_OF_TESTS;
 		}
@@ -1323,52 +1236,45 @@ void compress_block(
 
 	// Test the four possible 1-partition, 2-planes modes. Do this in reverse, as
 	// alpha is the most likely to be non-correlated if it is present in the data.
-	for (int i = BLOCK_MAX_COMPONENTS - 1; i >= 0; i--)
-	{
+	for (int i = BLOCK_MAX_COMPONENTS - 1; i >= 0; i--) {
 		TRACE_NODE(node1, "pass");
 		trace_add_data("partition_count", 1);
 		trace_add_data("plane_count", 2);
 		trace_add_data("plane_component", i);
 
-		if (block_skip_two_plane)
-		{
+		if (block_skip_two_plane) {
 			trace_add_data("skip", "tune_2plane_early_out_limit_correlation");
 			continue;
 		}
 
-		if (blk.grayscale && i != 3)
-		{
+		if (blk.grayscale && i != 3) {
 			trace_add_data("skip", "grayscale block");
 			continue;
 		}
 
-		if (blk.is_constant_channel(i))
-		{
+		if (blk.is_constant_channel(i)) {
 			trace_add_data("skip", "constant component");
 			continue;
 		}
 
 		float errorval = compress_symbolic_block_for_partition_2planes(
-		    ctx.config, bsd, blk, error_threshold * errorval_overshoot,
-		    i, scb, tmpbuf, quant_limit);
+				ctx.config, bsd, blk, error_threshold * errorval_overshoot,
+				i, scb, tmpbuf, quant_limit);
 
 		// If attempting two planes is much worse than the best one plane result
 		// then further two plane searches are unlikely to help so move on ...
-		if (errorval > (best_errorvals_for_pcount[0] * 1.85f))
-		{
+		if (errorval > (best_errorvals_for_pcount[0] * 1.85f)) {
 			break;
 		}
 
-		if (errorval < error_threshold)
-		{
+		if (errorval < error_threshold) {
 			trace_add_data("exit", "quality hit");
 			goto END_OF_TESTS;
 		}
 	}
 
 	// Find best blocks for 2, 3 and 4 partitions
-	for (int partition_count = 2; partition_count <= max_partitions; partition_count++)
-	{
+	for (int partition_count = 2; partition_count <= max_partitions; partition_count++) {
 		unsigned int partition_indices[TUNE_MAX_PARTITIONING_CANDIDATES];
 
 		unsigned int requested_indices = requested_partition_indices[partition_count - 2];
@@ -1377,12 +1283,11 @@ void compress_block(
 		requested_trials = astc::min(requested_trials, requested_indices);
 
 		unsigned int actual_trials = find_best_partition_candidates(
-		    bsd, blk, partition_count, requested_indices, partition_indices, requested_trials);
+				bsd, blk, partition_count, requested_indices, partition_indices, requested_trials);
 
 		float best_error_in_prev = best_errorvals_for_pcount[partition_count - 2];
 
-		for (unsigned int i = 0; i < actual_trials; i++)
-		{
+		for (unsigned int i = 0; i < actual_trials; i++) {
 			TRACE_NODE(node1, "pass");
 			trace_add_data("partition_count", partition_count);
 			trace_add_data("partition_index", partition_indices[i]);
@@ -1390,10 +1295,10 @@ void compress_block(
 			trace_add_data("search_mode", i);
 
 			float errorval = compress_symbolic_block_for_partition_1plane(
-			    ctx.config, bsd, blk, false,
-			    error_threshold * errorval_overshoot,
-			    partition_count, partition_indices[i],
-			    scb, tmpbuf, quant_limit);
+					ctx.config, bsd, blk, false,
+					error_threshold * errorval_overshoot,
+					partition_count, partition_indices[i],
+					scb, tmpbuf, quant_limit);
 
 			best_errorvals_for_pcount[partition_count - 1] = astc::min(best_errorvals_for_pcount[partition_count - 1], errorval);
 
@@ -1403,14 +1308,12 @@ void compress_block(
 			// a large error scale because the "other" trial could be a lot better.
 			float best_error = best_errorvals_for_pcount[partition_count - 1];
 			float best_error_scale = exit_thresholds_for_pcount[partition_count - 1] * 1.85f;
-			if (best_error > (best_error_in_prev * best_error_scale))
-			{
+			if (best_error > (best_error_in_prev * best_error_scale)) {
 				trace_add_data("skip", "tune_partition_early_out_limit_factor");
 				goto END_OF_TESTS;
 			}
 
-			if (errorval < error_threshold)
-			{
+			if (errorval < error_threshold) {
 				trace_add_data("exit", "quality hit");
 				goto END_OF_TESTS;
 			}
@@ -1419,8 +1322,7 @@ void compress_block(
 		// If using N partitions doesn't improve much over using N-1 partitions then skip trying N+1
 		float best_error = best_errorvals_for_pcount[partition_count - 1];
 		float best_error_scale = exit_thresholds_for_pcount[partition_count - 1];
-		if (best_error > (best_error_in_prev * best_error_scale))
-		{
+		if (best_error > (best_error_in_prev * best_error_scale)) {
 			trace_add_data("skip", "tune_partition_early_out_limit_factor");
 			goto END_OF_TESTS;
 		}
@@ -1431,15 +1333,13 @@ void compress_block(
 END_OF_TESTS:
 	// If we still have an error block then convert to something we can encode
 	// TODO: Do something more sensible here, such as average color block
-	if (scb.block_type == SYM_BTYPE_ERROR)
-	{
+	if (scb.block_type == SYM_BTYPE_ERROR) {
 #if defined(ASTCENC_DIAGNOSTICS)
 		static bool printed_once = false;
-		if (!printed_once)
-		{
+		if (!printed_once) {
 			printed_once = true;
 			printf("WARN: At least one block failed to find a valid encoding.\n"
-			       "      Try increasing compression quality settings.\n\n");
+				   "      Try increasing compression quality settings.\n\n");
 		}
 #endif
 

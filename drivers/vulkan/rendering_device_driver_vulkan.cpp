@@ -279,17 +279,17 @@ static const VkFormat RD_TO_VK_FORMAT[RDD::DATA_FORMAT_MAX] = {
 };
 
 static VkImageLayout RD_TO_VK_LAYOUT[RDD::TEXTURE_LAYOUT_MAX] = {
-	VK_IMAGE_LAYOUT_UNDEFINED, // TEXTURE_LAYOUT_UNDEFINED
-	VK_IMAGE_LAYOUT_GENERAL, // TEXTURE_LAYOUT_GENERAL
-	VK_IMAGE_LAYOUT_GENERAL, // TEXTURE_LAYOUT_STORAGE_OPTIMAL
-	VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL, // TEXTURE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
-	VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL, // TEXTURE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
-	VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL, // TEXTURE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL
-	VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, // TEXTURE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-	VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, // TEXTURE_LAYOUT_COPY_SRC_OPTIMAL
-	VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, // TEXTURE_LAYOUT_COPY_DST_OPTIMAL
-	VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, // TEXTURE_LAYOUT_RESOLVE_SRC_OPTIMAL
-	VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, // TEXTURE_LAYOUT_RESOLVE_DST_OPTIMAL
+	VK_IMAGE_LAYOUT_UNDEFINED,									  // TEXTURE_LAYOUT_UNDEFINED
+	VK_IMAGE_LAYOUT_GENERAL,									  // TEXTURE_LAYOUT_GENERAL
+	VK_IMAGE_LAYOUT_GENERAL,									  // TEXTURE_LAYOUT_STORAGE_OPTIMAL
+	VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL,					  // TEXTURE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL
+	VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL,			  // TEXTURE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+	VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL,			  // TEXTURE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL
+	VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL,					  // TEXTURE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+	VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,						  // TEXTURE_LAYOUT_COPY_SRC_OPTIMAL
+	VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,						  // TEXTURE_LAYOUT_COPY_DST_OPTIMAL
+	VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,						  // TEXTURE_LAYOUT_RESOLVE_SRC_OPTIMAL
+	VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,						  // TEXTURE_LAYOUT_RESOLVE_DST_OPTIMAL
 	VK_IMAGE_LAYOUT_FRAGMENT_SHADING_RATE_ATTACHMENT_OPTIMAL_KHR, // TEXTURE_LAYOUT_VRS_ATTACHMENT_OPTIMAL
 };
 
@@ -891,7 +891,7 @@ Error RenderingDeviceDriverVulkan::_check_device_capabilities() {
 				vrs_capabilities.min_texel_size.y = vrs_properties.minFragmentShadingRateAttachmentTexelSize.height;
 				vrs_capabilities.max_texel_size.x = vrs_properties.maxFragmentShadingRateAttachmentTexelSize.width;
 				vrs_capabilities.max_texel_size.y = vrs_properties.maxFragmentShadingRateAttachmentTexelSize.height;
-				vrs_capabilities.max_fragment_size.x = vrs_properties.maxFragmentSize.width; // either 4 or 8
+				vrs_capabilities.max_fragment_size.x = vrs_properties.maxFragmentSize.width;  // either 4 or 8
 				vrs_capabilities.max_fragment_size.y = vrs_properties.maxFragmentSize.height; // generally the same as width
 
 				// We'll attempt to default to a texel size of 16x16.
@@ -3478,7 +3478,7 @@ Vector<uint8_t> RenderingDeviceDriverVulkan::shader_compile_binary_from_spirv(Ve
 }
 
 RDD::ShaderID RenderingDeviceDriverVulkan::shader_create_from_bytecode(const Vector<uint8_t> &p_shader_binary, ShaderDescription &r_shader_desc, String &r_name) {
-	r_shader_desc = {}; // Driver-agnostic.
+	r_shader_desc = {};		// Driver-agnostic.
 	ShaderInfo shader_info; // Driver-specific.
 
 	const uint8_t *binptr = p_shader_binary.ptr();
@@ -4935,7 +4935,7 @@ RDD::PipelineID RenderingDeviceDriverVulkan::render_pipeline_create(
 		*vrs_create_info = {};
 		vrs_create_info->sType = VK_STRUCTURE_TYPE_PIPELINE_FRAGMENT_SHADING_RATE_STATE_CREATE_INFO_KHR;
 		vrs_create_info->fragmentSize = { 4, 4 };
-		vrs_create_info->combinerOps[0] = VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR; // We don't use pipeline/primitive VRS so this really doesn't matter.
+		vrs_create_info->combinerOps[0] = VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR;	// We don't use pipeline/primitive VRS so this really doesn't matter.
 		vrs_create_info->combinerOps[1] = VK_FRAGMENT_SHADING_RATE_COMBINER_OP_REPLACE_KHR; // Always use the outcome of attachment VRS if enabled.
 
 		graphics_pipeline_nextptr = vrs_create_info;

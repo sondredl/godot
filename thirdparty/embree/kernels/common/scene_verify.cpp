@@ -5,20 +5,19 @@
 
 #include "../../common/algorithms/parallel_any_of.h"
 
-namespace embree
-{
+namespace embree {
 
-void Scene::checkIfModifiedAndSet ()
-{
-  if (isModified ()) return;
+void Scene::checkIfModifiedAndSet() {
+	if (isModified())
+		return;
 
-  auto geometryIsModified = [this](size_t geomID)->bool {
-    return isGeometryModified(geomID);
-  };
+	auto geometryIsModified = [this](size_t geomID) -> bool {
+		return isGeometryModified(geomID);
+	};
 
-  if (parallel_any_of (size_t(0), geometries.size (), geometryIsModified)) {
-    setModified ();
-  }
+	if (parallel_any_of(size_t(0), geometries.size(), geometryIsModified)) {
+		setModified();
+	}
 }
 
-}
+} //namespace embree

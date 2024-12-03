@@ -95,16 +95,16 @@ bool OpenXRAPI::OpenXRSwapChainInfo::create(XrSwapchainCreateFlags p_create_flag
 
 	XrSwapchainCreateInfo swapchain_create_info = {
 		XR_TYPE_SWAPCHAIN_CREATE_INFO, // type
-		next_pointer, // next
-		p_create_flags, // createFlags
-		p_usage_flags, // usageFlags
-		p_swapchain_format, // format
-		p_sample_count, // sampleCount
-		p_width, // width
-		p_height, // height
-		1, // faceCount
-		p_array_size, // arraySize
-		1 // mipCount
+		next_pointer,				   // next
+		p_create_flags,				   // createFlags
+		p_usage_flags,				   // usageFlags
+		p_swapchain_format,			   // format
+		p_sample_count,				   // sampleCount
+		p_width,					   // width
+		p_height,					   // height
+		1,							   // faceCount
+		p_array_size,				   // arraySize
+		1							   // mipCount
 	};
 
 	XrSwapchain new_swapchain;
@@ -173,7 +173,7 @@ bool OpenXRAPI::OpenXRSwapChainInfo::acquire(bool &p_should_render) {
 	if (!skip_acquire_swapchain) {
 		XrSwapchainImageAcquireInfo swapchain_image_acquire_info = {
 			XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO, // type
-			nullptr // next
+			nullptr								  // next
 		};
 
 		result = openxr_api->xrAcquireSwapchainImage(swapchain, &swapchain_image_acquire_info, &image_index);
@@ -194,8 +194,8 @@ bool OpenXRAPI::OpenXRSwapChainInfo::acquire(bool &p_should_render) {
 
 	XrSwapchainImageWaitInfo swapchain_image_wait_info = {
 		XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO, // type
-		nullptr, // next
-		1000000000 // 1s timeout in nanoseconds
+		nullptr,						   // next
+		1000000000						   // 1s timeout in nanoseconds
 	};
 
 	// Wait for a maximum of 10 seconds before calling it a critical failure...
@@ -243,7 +243,7 @@ bool OpenXRAPI::OpenXRSwapChainInfo::release() {
 
 	XrSwapchainImageReleaseInfo swapchain_image_release_info = {
 		XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO, // type
-		nullptr // next
+		nullptr								  // next
 	};
 	XrResult result = openxr_api->xrReleaseSwapchainImage(swapchain, &swapchain_image_release_info);
 	if (XR_FAILED(result)) {
@@ -558,11 +558,11 @@ bool OpenXRAPI::create_instance() {
 
 	// Create our OpenXR instance
 	XrApplicationInfo application_info{
-		"Godot Engine", // applicationName, if we're running a game we'll update this down below.
-		1, // applicationVersion, we don't currently have this
-		"Godot Engine", // engineName
+		"Godot Engine",												 // applicationName, if we're running a game we'll update this down below.
+		1,															 // applicationVersion, we don't currently have this
+		"Godot Engine",												 // engineName
 		VERSION_MAJOR * 10000 + VERSION_MINOR * 100 + VERSION_PATCH, // engineVersion 4.0 -> 40000, 4.0.1 -> 40001, 4.1 -> 40100, etc.
-		XR_API_VERSION_1_0 // apiVersion
+		XR_API_VERSION_1_0											 // apiVersion
 	};
 
 	void *next_pointer = nullptr;
@@ -574,14 +574,14 @@ bool OpenXRAPI::create_instance() {
 	}
 
 	XrInstanceCreateInfo instance_create_info = {
-		XR_TYPE_INSTANCE_CREATE_INFO, // type
-		next_pointer, // next
-		0, // createFlags
-		application_info, // applicationInfo
-		0, // enabledApiLayerCount, need to find out if we need support for this?
-		nullptr, // enabledApiLayerNames
+		XR_TYPE_INSTANCE_CREATE_INFO,	 // type
+		next_pointer,					 // next
+		0,								 // createFlags
+		application_info,				 // applicationInfo
+		0,								 // enabledApiLayerCount, need to find out if we need support for this?
+		nullptr,						 // enabledApiLayerNames
 		uint32_t(extension_ptrs.size()), // enabledExtensionCount
-		extension_ptrs.ptr() // enabledExtensionNames
+		extension_ptrs.ptr()			 // enabledExtensionNames
 	};
 
 	// Get our project name
@@ -597,9 +597,9 @@ bool OpenXRAPI::create_instance() {
 
 	XrInstanceProperties instanceProps = {
 		XR_TYPE_INSTANCE_PROPERTIES, // type;
-		nullptr, // next
-		0, // runtimeVersion, from here will be set by our get call
-		"" // runtimeName
+		nullptr,					 // next
+		0,							 // runtimeVersion, from here will be set by our get call
+		""							 // runtimeName
 	};
 
 	OPENXR_API_INIT_XR_FUNC_V(xrGetInstanceProperties);
@@ -630,8 +630,8 @@ bool OpenXRAPI::get_system_info() {
 	// Retrieve the system for our form factor, fails if form factor is not available
 	XrSystemGetInfo system_get_info = {
 		XR_TYPE_SYSTEM_GET_INFO, // type;
-		nullptr, // next
-		form_factor // formFactor
+		nullptr,				 // next
+		form_factor				 // formFactor
 	};
 
 	XrResult result = xrGetSystem(instance, &system_get_info, &system_id);
@@ -651,19 +651,19 @@ bool OpenXRAPI::get_system_info() {
 
 	XrSystemProperties system_properties = {
 		XR_TYPE_SYSTEM_PROPERTIES, // type
-		next_pointer, // next
-		0, // systemId, from here will be set by our get call
-		0, // vendorId
-		"", // systemName
+		next_pointer,			   // next
+		0,						   // systemId, from here will be set by our get call
+		0,						   // vendorId
+		"",						   // systemName
 		{
 				0, // maxSwapchainImageHeight
 				0, // maxSwapchainImageWidth
 				0, // maxLayerCount
-		}, // graphicsProperties
+		},		   // graphicsProperties
 		{
 				false, // orientationTracking
-				false // positionTracking
-		} // trackingProperties
+				false  // positionTracking
+		}			   // trackingProperties
 	};
 
 	result = xrGetSystemProperties(instance, system_id, &system_properties);
@@ -856,9 +856,9 @@ bool OpenXRAPI::create_session() {
 
 	XrSessionCreateInfo session_create_info = {
 		XR_TYPE_SESSION_CREATE_INFO, // type
-		next_pointer, // next
-		0, // createFlags
-		system_id // systemId
+		next_pointer,				 // next
+		0,							 // createFlags
+		system_id					 // systemId
 	};
 
 	XrResult result = xrCreateSession(instance, &session_create_info, &session);
@@ -951,9 +951,9 @@ bool OpenXRAPI::setup_play_space() {
 		if (local_floor_emulation.local_space == XR_NULL_HANDLE) {
 			XrReferenceSpaceCreateInfo create_info = {
 				XR_TYPE_REFERENCE_SPACE_CREATE_INFO, // type
-				nullptr, // next
-				XR_REFERENCE_SPACE_TYPE_LOCAL, // referenceSpaceType
-				identityPose, // poseInReferenceSpace
+				nullptr,							 // next
+				XR_REFERENCE_SPACE_TYPE_LOCAL,		 // referenceSpaceType
+				identityPose,						 // poseInReferenceSpace
 			};
 
 			XrResult result = xrCreateReferenceSpace(session, &create_info, &local_floor_emulation.local_space);
@@ -968,9 +968,9 @@ bool OpenXRAPI::setup_play_space() {
 		if (local_floor_emulation.stage_space == XR_NULL_HANDLE) {
 			XrReferenceSpaceCreateInfo create_info = {
 				XR_TYPE_REFERENCE_SPACE_CREATE_INFO, // type
-				nullptr, // next
-				XR_REFERENCE_SPACE_TYPE_STAGE, // referenceSpaceType
-				identityPose, // poseInReferenceSpace
+				nullptr,							 // next
+				XR_REFERENCE_SPACE_TYPE_STAGE,		 // referenceSpaceType
+				identityPose,						 // poseInReferenceSpace
 			};
 
 			XrResult result = xrCreateReferenceSpace(session, &create_info, &local_floor_emulation.stage_space);
@@ -1000,9 +1000,9 @@ bool OpenXRAPI::setup_play_space() {
 
 	XrReferenceSpaceCreateInfo play_space_create_info = {
 		XR_TYPE_REFERENCE_SPACE_CREATE_INFO, // type
-		nullptr, // next
-		new_reference_space, // referenceSpaceType
-		identityPose, // poseInReferenceSpace
+		nullptr,							 // next
+		new_reference_space,				 // referenceSpaceType
+		identityPose,						 // poseInReferenceSpace
 	};
 
 	XrResult result = xrCreateReferenceSpace(session, &play_space_create_info, &new_play_space);
@@ -1047,9 +1047,9 @@ bool OpenXRAPI::setup_view_space() {
 
 	XrReferenceSpaceCreateInfo view_space_create_info = {
 		XR_TYPE_REFERENCE_SPACE_CREATE_INFO, // type
-		nullptr, // next
-		XR_REFERENCE_SPACE_TYPE_VIEW, // referenceSpaceType
-		identityPose // poseInReferenceSpace
+		nullptr,							 // next
+		XR_REFERENCE_SPACE_TYPE_VIEW,		 // referenceSpaceType
+		identityPose						 // poseInReferenceSpace
 	};
 
 	XrResult result = xrCreateReferenceSpace(session, &view_space_create_info, &view_space);
@@ -1071,9 +1071,9 @@ bool OpenXRAPI::reset_emulated_floor_height() {
 	XrResult result;
 
 	XrSpaceLocation stage_location = {
-		XR_TYPE_SPACE_LOCATION, // type
-		nullptr, // next
-		0, // locationFlags
+		XR_TYPE_SPACE_LOCATION,						   // type
+		nullptr,									   // next
+		0,											   // locationFlags
 		{ { 0.0, 0.0, 0.0, 1.0 }, { 0.0, 0.0, 0.0 } }, // pose
 	};
 
@@ -1091,9 +1091,9 @@ bool OpenXRAPI::reset_emulated_floor_height() {
 
 	XrReferenceSpaceCreateInfo create_info = {
 		XR_TYPE_REFERENCE_SPACE_CREATE_INFO, // type
-		nullptr, // next
-		XR_REFERENCE_SPACE_TYPE_LOCAL, // referenceSpaceType
-		pose, // poseInReferenceSpace
+		nullptr,							 // next
+		XR_REFERENCE_SPACE_TYPE_LOCAL,		 // referenceSpaceType
+		pose,								 // poseInReferenceSpace
 	};
 
 	XrSpace new_play_space;
@@ -1389,8 +1389,8 @@ bool OpenXRAPI::on_state_ready() {
 	// begin session
 	XrSessionBeginInfo session_begin_info = {
 		XR_TYPE_SESSION_BEGIN_INFO, // type
-		nullptr, // next
-		view_configuration // primaryViewConfigurationType
+		nullptr,					// next
+		view_configuration			// primaryViewConfigurationType
 	};
 
 	XrResult result = xrBeginSession(session, &session_begin_info);
@@ -1836,20 +1836,20 @@ XRPose::TrackingConfidence OpenXRAPI::get_head_center(Transform3D &r_transform, 
 
 	XrSpaceVelocity velocity = {
 		XR_TYPE_SPACE_VELOCITY, // type
-		nullptr, // next
-		0, // velocityFlags
-		{ 0.0, 0.0, 0.0 }, // linearVelocity
-		{ 0.0, 0.0, 0.0 } // angularVelocity
+		nullptr,				// next
+		0,						// velocityFlags
+		{ 0.0, 0.0, 0.0 },		// linearVelocity
+		{ 0.0, 0.0, 0.0 }		// angularVelocity
 	};
 
 	XrSpaceLocation location = {
 		XR_TYPE_SPACE_LOCATION, // type
-		&velocity, // next
-		0, // locationFlags
+		&velocity,				// next
+		0,						// locationFlags
 		{
 				{ 0.0, 0.0, 0.0, 0.0 }, // orientation
-				{ 0.0, 0.0, 0.0 } // position
-		} // pose
+				{ 0.0, 0.0, 0.0 }		// position
+		}								// pose
 	};
 
 	result = xrLocateSpace(view_space, play_space, display_time, &location);
@@ -2241,16 +2241,16 @@ void OpenXRAPI::pre_render() {
 	// That is not possible yet but worth investigating in the future.
 
 	XrViewLocateInfo view_locate_info = {
-		XR_TYPE_VIEW_LOCATE_INFO, // type
-		nullptr, // next
-		view_configuration, // viewConfigurationType
+		XR_TYPE_VIEW_LOCATE_INFO,			 // type
+		nullptr,							 // next
+		view_configuration,					 // viewConfigurationType
 		render_state.predicted_display_time, // displayTime
-		render_state.play_space // space
+		render_state.play_space				 // space
 	};
 	XrViewState view_state = {
 		XR_TYPE_VIEW_STATE, // type
-		nullptr, // next
-		0 // viewStateFlags
+		nullptr,			// next
+		0					// viewStateFlags
 	};
 	uint32_t view_count_output;
 	XrResult result = xrLocateViews(session, &view_locate_info, &view_state, render_state.view_count, &view_count_output, render_state.views);
@@ -2281,7 +2281,7 @@ void OpenXRAPI::pre_render() {
 	// let's start our frame..
 	XrFrameBeginInfo frame_begin_info = {
 		XR_TYPE_FRAME_BEGIN_INFO, // type
-		nullptr // next
+		nullptr					  // next
 	};
 	result = xrBeginFrame(session, &frame_begin_info);
 	if (XR_FAILED(result)) {
@@ -2383,12 +2383,12 @@ void OpenXRAPI::end_frame() {
 	if (!render_state.should_render || !render_state.view_pose_valid || !render_state.main_swapchains[OPENXR_SWAPCHAIN_COLOR].is_image_acquired()) {
 		// submit 0 layers when we shouldn't render
 		XrFrameEndInfo frame_end_info = {
-			XR_TYPE_FRAME_END_INFO, // type
-			nullptr, // next
+			XR_TYPE_FRAME_END_INFO,				 // type
+			nullptr,							 // next
 			render_state.predicted_display_time, // displayTime
-			environment_blend_mode, // environmentBlendMode
-			0, // layerCount
-			nullptr // layers
+			environment_blend_mode,				 // environmentBlendMode
+			0,									 // layerCount
+			nullptr								 // layers
 		};
 		result = xrEndFrame(session, &frame_end_info);
 		if (XR_FAILED(result)) {
@@ -2442,11 +2442,11 @@ void OpenXRAPI::end_frame() {
 
 	XrCompositionLayerProjection projection_layer = {
 		XR_TYPE_COMPOSITION_LAYER_PROJECTION, // type
-		nullptr, // next
-		layer_flags, // layerFlags
-		render_state.play_space, // space
-		render_state.view_count, // viewCount
-		render_state.projection_views, // views
+		nullptr,							  // next
+		layer_flags,						  // layerFlags
+		render_state.play_space,			  // space
+		render_state.view_count,			  // viewCount
+		render_state.projection_views,		  // views
 	};
 	ordered_layers_list.push_back({ (const XrCompositionLayerBaseHeader *)&projection_layer, 0 });
 
@@ -2460,12 +2460,12 @@ void OpenXRAPI::end_frame() {
 	}
 
 	XrFrameEndInfo frame_end_info = {
-		XR_TYPE_FRAME_END_INFO, // type
-		nullptr, // next
-		render_state.predicted_display_time, // displayTime
-		environment_blend_mode, // environmentBlendMode
+		XR_TYPE_FRAME_END_INFO,					   // type
+		nullptr,								   // next
+		render_state.predicted_display_time,	   // displayTime
+		environment_blend_mode,					   // environmentBlendMode
 		static_cast<uint32_t>(layers_list.size()), // layerCount
-		layers_list.ptr() // layers
+		layers_list.ptr()						   // layers
 	};
 	result = xrEndFrame(session, &frame_end_info);
 	if (XR_FAILED(result)) {
@@ -2834,8 +2834,8 @@ void OpenXRAPI::tracker_check_profile(RID p_tracker, XrSession p_session) {
 
 	XrInteractionProfileState profile_state = {
 		XR_TYPE_INTERACTION_PROFILE_STATE, // type
-		nullptr, // next
-		XR_NULL_PATH // interactionProfile
+		nullptr,						   // next
+		XR_NULL_PATH					   // interactionProfile
 	};
 
 	XrResult result = xrGetCurrentInteractionProfile(p_session, tracker->toplevel_path, &profile_state);
@@ -2874,10 +2874,10 @@ RID OpenXRAPI::action_set_create(const String p_name, const String p_localized_n
 	// create our action set...
 	XrActionSetCreateInfo action_set_info = {
 		XR_TYPE_ACTION_SET_CREATE_INFO, // type
-		nullptr, // next
-		"", // actionSetName
-		"", // localizedActionSetName
-		uint32_t(p_priority) // priority
+		nullptr,						// next
+		"",								// actionSetName
+		"",								// localizedActionSetName
+		uint32_t(p_priority)			// priority
 	};
 
 	copy_string_to_char_buffer(p_name, action_set_info.actionSetName, XR_MAX_ACTION_SET_NAME_SIZE);
@@ -2925,9 +2925,9 @@ bool OpenXRAPI::attach_action_sets(const Vector<RID> &p_action_sets) {
 	// https://www.khronos.org/registry/OpenXR/specs/1.0/man/html/xrAttachSessionActionSets.html
 	XrSessionActionSetsAttachInfo attach_info = {
 		XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO, // type
-		nullptr, // next
-		(uint32_t)p_action_sets.size(), // countActionSets,
-		action_handles.ptr() // actionSets
+		nullptr,								 // next
+		(uint32_t)p_action_sets.size(),			 // countActionSets,
+		action_handles.ptr()					 // actionSets
 	};
 
 	XrResult result = xrAttachSessionActionSets(session, &attach_info);
@@ -3037,9 +3037,9 @@ RID OpenXRAPI::action_create(RID p_action_set, const String p_name, const String
 		Tracker *tracker = tracker_owner.get_or_null(p_trackers[i]);
 		if (tracker != nullptr && tracker->toplevel_path != XR_NULL_PATH) {
 			ActionTracker action_tracker = {
-				p_trackers[i], // tracker
+				p_trackers[i],	// tracker
 				XR_NULL_HANDLE, // space
-				false // was_location_valid
+				false			// was_location_valid
 			};
 			action.trackers.push_back(action_tracker);
 
@@ -3048,13 +3048,13 @@ RID OpenXRAPI::action_create(RID p_action_set, const String p_name, const String
 	}
 
 	XrActionCreateInfo action_info = {
-		XR_TYPE_ACTION_CREATE_INFO, // type
-		nullptr, // next
-		"", // actionName
-		action.action_type, // actionType
+		XR_TYPE_ACTION_CREATE_INFO,		 // type
+		nullptr,						 // next
+		"",								 // actionName
+		action.action_type,				 // actionType
 		uint32_t(toplevel_paths.size()), // countSubactionPaths
-		toplevel_paths.ptr(), // subactionPaths
-		"" // localizedActionName
+		toplevel_paths.ptr(),			 // subactionPaths
+		""								 // localizedActionName
 	};
 
 	copy_string_to_char_buffer(p_name, action_info.actionName, XR_MAX_ACTION_NAME_SIZE);
@@ -3192,10 +3192,10 @@ bool OpenXRAPI::interaction_profile_suggest_bindings(RID p_interaction_profile) 
 
 	const XrInteractionProfileSuggestedBinding suggested_bindings = {
 		XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING, // type
-		nullptr, // next
-		ip->path, // interactionProfile
-		uint32_t(ip->bindings.size()), // countSuggestedBindings
-		ip->bindings.ptr() // suggestedBindings
+		nullptr,									   // next
+		ip->path,									   // interactionProfile
+		uint32_t(ip->bindings.size()),				   // countSuggestedBindings
+		ip->bindings.ptr()							   // suggestedBindings
 	};
 
 	XrResult result = xrSuggestInteractionProfileBindings(instance, &suggested_bindings);
@@ -3256,10 +3256,10 @@ bool OpenXRAPI::sync_action_sets(const Vector<RID> p_active_sets) {
 	ERR_FAIL_COND_V(active_sets.is_empty(), false);
 
 	XrActionsSyncInfo sync_info = {
-		XR_TYPE_ACTIONS_SYNC_INFO, // type
-		nullptr, // next
+		XR_TYPE_ACTIONS_SYNC_INFO,	  // type
+		nullptr,					  // next
 		uint32_t(active_sets.size()), // countActiveActionSets
-		active_sets.ptr() // activeActionSets
+		active_sets.ptr()			  // activeActionSets
 	};
 
 	XrResult result = xrSyncActions(session, &sync_info);
@@ -3286,9 +3286,9 @@ bool OpenXRAPI::get_action_bool(RID p_action, RID p_tracker) {
 
 	XrActionStateGetInfo get_info = {
 		XR_TYPE_ACTION_STATE_GET_INFO, // type
-		nullptr, // next
-		action->handle, // action
-		tracker->toplevel_path // subactionPath
+		nullptr,					   // next
+		action->handle,				   // action
+		tracker->toplevel_path		   // subactionPath
 	};
 
 	XrActionStateBoolean result_state;
@@ -3318,9 +3318,9 @@ float OpenXRAPI::get_action_float(RID p_action, RID p_tracker) {
 
 	XrActionStateGetInfo get_info = {
 		XR_TYPE_ACTION_STATE_GET_INFO, // type
-		nullptr, // next
-		action->handle, // action
-		tracker->toplevel_path // subactionPath
+		nullptr,					   // next
+		action->handle,				   // action
+		tracker->toplevel_path		   // subactionPath
 	};
 
 	XrActionStateFloat result_state;
@@ -3350,9 +3350,9 @@ Vector2 OpenXRAPI::get_action_vector2(RID p_action, RID p_tracker) {
 
 	XrActionStateGetInfo get_info = {
 		XR_TYPE_ACTION_STATE_GET_INFO, // type
-		nullptr, // next
-		action->handle, // action
-		tracker->toplevel_path // subactionPath
+		nullptr,					   // next
+		action->handle,				   // action
+		tracker->toplevel_path		   // subactionPath
 	};
 
 	XrActionStateVector2f result_state;
@@ -3405,13 +3405,13 @@ XRPose::TrackingConfidence OpenXRAPI::get_action_pose(RID p_action, RID p_tracke
 
 		XrActionSpaceCreateInfo action_space_info = {
 			XR_TYPE_ACTION_SPACE_CREATE_INFO, // type
-			nullptr, // next
-			action->handle, // action
-			tracker->toplevel_path, // subactionPath
+			nullptr,						  // next
+			action->handle,					  // action
+			tracker->toplevel_path,			  // subactionPath
 			{
 					{ 0.0, 0.0, 0.0, 1.0 }, // orientation
-					{ 0.0, 0.0, 0.0 } // position
-			} // poseInActionSpace
+					{ 0.0, 0.0, 0.0 }		// position
+			}								// poseInActionSpace
 		};
 
 		XrSpace space;
@@ -3426,20 +3426,20 @@ XRPose::TrackingConfidence OpenXRAPI::get_action_pose(RID p_action, RID p_tracke
 
 	XrSpaceVelocity velocity = {
 		XR_TYPE_SPACE_VELOCITY, // type
-		nullptr, // next
-		0, // velocityFlags
-		{ 0.0, 0.0, 0.0 }, // linearVelocity
-		{ 0.0, 0.0, 0.0 } // angularVelocity
+		nullptr,				// next
+		0,						// velocityFlags
+		{ 0.0, 0.0, 0.0 },		// linearVelocity
+		{ 0.0, 0.0, 0.0 }		// angularVelocity
 	};
 
 	XrSpaceLocation location = {
 		XR_TYPE_SPACE_LOCATION, // type
-		&velocity, // next
-		0, // locationFlags
+		&velocity,				// next
+		0,						// locationFlags
 		{
 				{ 0.0, 0.0, 0.0, 0.0 }, // orientation
-				{ 0.0, 0.0, 0.0 } // position
-		} // pose
+				{ 0.0, 0.0, 0.0 }		// position
+		}								// pose
 	};
 
 	XrResult result = xrLocateSpace(action->trackers[index].space, play_space, display_time, &location);
@@ -3469,17 +3469,17 @@ bool OpenXRAPI::trigger_haptic_pulse(RID p_action, RID p_tracker, float p_freque
 
 	XrHapticActionInfo action_info = {
 		XR_TYPE_HAPTIC_ACTION_INFO, // type
-		nullptr, // next
-		action->handle, // action
-		tracker->toplevel_path // subactionPath
+		nullptr,					// next
+		action->handle,				// action
+		tracker->toplevel_path		// subactionPath
 	};
 
 	XrHapticVibration vibration = {
 		XR_TYPE_HAPTIC_VIBRATION, // type
-		nullptr, // next
-		p_duration_ns, // duration
-		p_frequency, // frequency
-		p_amplitude, // amplitude
+		nullptr,				  // next
+		p_duration_ns,			  // duration
+		p_frequency,			  // frequency
+		p_amplitude,			  // amplitude
 	};
 
 	XrResult result = xrApplyHapticFeedback(session, &action_info, (const XrHapticBaseHeader *)&vibration);

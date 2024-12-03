@@ -600,7 +600,7 @@ void GodotSoftBody3D::generate_bending_constraints(int p_distance) {
 		const uint32_t adj_size = n * n;
 		unsigned *adj = memnew_arr(unsigned, adj_size);
 
-#define IDX(_x_, _y_) ((_y_) * n + (_x_))
+#define IDX(_x_, _y_) ((_y_)*n + (_x_))
 		for (j = 0; j < n; ++j) {
 			for (i = 0; i < n; ++i) {
 				int idx_ij = j * n + i;
@@ -731,10 +731,10 @@ void GodotSoftBody3D::reoptimize_link_order() {
 
 	// Allocate temporary buffers.
 	int *node_written_at = memnew_arr(int, node_count + 1); // What link calculation produced this node's current values?
-	int *link_dep_A = memnew_arr(int, link_count); // Link calculation input is dependent upon prior calculation #N
+	int *link_dep_A = memnew_arr(int, link_count);			// Link calculation input is dependent upon prior calculation #N
 	int *link_dep_B = memnew_arr(int, link_count);
-	int *ready_list = memnew_arr(int, link_count); // List of ready-to-process link calculations (# of links, maximum)
-	LinkDeps *link_dep_free_list = memnew_arr(LinkDeps, 2 * link_count); // Dependent-on-me list elements (2x# of links, maximum)
+	int *ready_list = memnew_arr(int, link_count);							 // List of ready-to-process link calculations (# of links, maximum)
+	LinkDeps *link_dep_free_list = memnew_arr(LinkDeps, 2 * link_count);	 // Dependent-on-me list elements (2x# of links, maximum)
 	LinkDepsPtr *link_dep_list_starts = memnew_arr(LinkDepsPtr, link_count); // Start nodes of dependent-on-me lists, one for each link
 
 	// Copy the original, unsorted links to a side buffer.

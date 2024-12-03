@@ -187,9 +187,9 @@ void HTTPClient::_bind_methods() {
 	BIND_ENUM_CONSTANT(STATUS_CANT_RESOLVE);
 	BIND_ENUM_CONSTANT(STATUS_CONNECTING); // Connecting to IP
 	BIND_ENUM_CONSTANT(STATUS_CANT_CONNECT);
-	BIND_ENUM_CONSTANT(STATUS_CONNECTED); // Connected, now accepting requests
+	BIND_ENUM_CONSTANT(STATUS_CONNECTED);  // Connected, now accepting requests
 	BIND_ENUM_CONSTANT(STATUS_REQUESTING); // Request in progress
-	BIND_ENUM_CONSTANT(STATUS_BODY); // Request resulted in body which must be read
+	BIND_ENUM_CONSTANT(STATUS_BODY);	   // Request resulted in body which must be read
 	BIND_ENUM_CONSTANT(STATUS_CONNECTION_ERROR);
 	BIND_ENUM_CONSTANT(STATUS_TLS_HANDSHAKE_ERROR);
 

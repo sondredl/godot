@@ -152,7 +152,7 @@ Ref<AudioEffectInstance> AudioEffectChorus::instantiate() {
 
 	float ring_buffer_max_size = AudioEffectChorus::MAX_DELAY_MS + AudioEffectChorus::MAX_DEPTH_MS + AudioEffectChorus::MAX_WIDTH_MS;
 
-	ring_buffer_max_size *= 2; //just to avoid complications
+	ring_buffer_max_size *= 2;		//just to avoid complications
 	ring_buffer_max_size /= 1000.0; //convert to seconds
 	ring_buffer_max_size *= AudioServer::get_singleton()->get_mix_rate();
 

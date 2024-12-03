@@ -1003,9 +1003,9 @@ void RasterizerCanvasGLES3::_record_item_commands(const Item *p_item, RID p_rend
 				if (rect->flags & CANVAS_RECT_MSDF) {
 					state.instance_data_array[r_index].flags |= INSTANCE_FLAGS_USE_MSDF;
 					state.instance_data_array[r_index].msdf[0] = rect->px_range; // Pixel range.
-					state.instance_data_array[r_index].msdf[1] = rect->outline; // Outline size.
-					state.instance_data_array[r_index].msdf[2] = 0.f; // Reserved.
-					state.instance_data_array[r_index].msdf[3] = 0.f; // Reserved.
+					state.instance_data_array[r_index].msdf[1] = rect->outline;	 // Outline size.
+					state.instance_data_array[r_index].msdf[2] = 0.f;			 // Reserved.
+					state.instance_data_array[r_index].msdf[3] = 0.f;			 // Reserved.
 				} else if (rect->flags & CANVAS_RECT_LCD) {
 					state.instance_data_array[r_index].flags |= INSTANCE_FLAGS_USE_LCD;
 				}
@@ -1443,7 +1443,7 @@ void RasterizerCanvasGLES3::_render_batch(Light *p_lights, uint32_t p_index, Ren
 
 				instance_count = particles_storage->particles_get_amount(particles);
 				instance_buffer = particles_storage->particles_get_gl_buffer(particles);
-				instance_stride = 12; // 8 bytes for instance transform and 4 bytes for packed color and custom.
+				instance_stride = 12;	   // 8 bytes for instance transform and 4 bytes for packed color and custom.
 				instance_color_offset = 8; // 8 bytes for instance transform.
 				instance_uses_color = true;
 				instance_uses_custom_data = true;

@@ -644,71 +644,71 @@ bool ShaderData::is_parameter_texture(const StringName &p_param) const {
 
 // Look up table to translate ShaderLanguage::DataType to GL_TEXTURE_*
 static const GLenum target_from_type[ShaderLanguage::TYPE_MAX] = {
-	GL_TEXTURE_2D, // TYPE_VOID,
-	GL_TEXTURE_2D, // TYPE_BOOL,
-	GL_TEXTURE_2D, // TYPE_BVEC2,
-	GL_TEXTURE_2D, // TYPE_BVEC3,
-	GL_TEXTURE_2D, // TYPE_BVEC4,
-	GL_TEXTURE_2D, // TYPE_INT,
-	GL_TEXTURE_2D, // TYPE_IVEC2,
-	GL_TEXTURE_2D, // TYPE_IVEC3,
-	GL_TEXTURE_2D, // TYPE_IVEC4,
-	GL_TEXTURE_2D, // TYPE_UINT,
-	GL_TEXTURE_2D, // TYPE_UVEC2,
-	GL_TEXTURE_2D, // TYPE_UVEC3,
-	GL_TEXTURE_2D, // TYPE_UVEC4,
-	GL_TEXTURE_2D, // TYPE_FLOAT,
-	GL_TEXTURE_2D, // TYPE_VEC2,
-	GL_TEXTURE_2D, // TYPE_VEC3,
-	GL_TEXTURE_2D, // TYPE_VEC4,
-	GL_TEXTURE_2D, // TYPE_MAT2,
-	GL_TEXTURE_2D, // TYPE_MAT3,
-	GL_TEXTURE_2D, // TYPE_MAT4,
-	GL_TEXTURE_2D, // TYPE_SAMPLER2D,
-	GL_TEXTURE_2D, // TYPE_ISAMPLER2D,
-	GL_TEXTURE_2D, // TYPE_USAMPLER2D,
-	GL_TEXTURE_2D_ARRAY, // TYPE_SAMPLER2DARRAY,
-	GL_TEXTURE_2D_ARRAY, // TYPE_ISAMPLER2DARRAY,
-	GL_TEXTURE_2D_ARRAY, // TYPE_USAMPLER2DARRAY,
-	GL_TEXTURE_3D, // TYPE_SAMPLER3D,
-	GL_TEXTURE_3D, // TYPE_ISAMPLER3D,
-	GL_TEXTURE_3D, // TYPE_USAMPLER3D,
-	GL_TEXTURE_CUBE_MAP, // TYPE_SAMPLERCUBE,
-	GL_TEXTURE_CUBE_MAP, // TYPE_SAMPLERCUBEARRAY,
+	GL_TEXTURE_2D,			  // TYPE_VOID,
+	GL_TEXTURE_2D,			  // TYPE_BOOL,
+	GL_TEXTURE_2D,			  // TYPE_BVEC2,
+	GL_TEXTURE_2D,			  // TYPE_BVEC3,
+	GL_TEXTURE_2D,			  // TYPE_BVEC4,
+	GL_TEXTURE_2D,			  // TYPE_INT,
+	GL_TEXTURE_2D,			  // TYPE_IVEC2,
+	GL_TEXTURE_2D,			  // TYPE_IVEC3,
+	GL_TEXTURE_2D,			  // TYPE_IVEC4,
+	GL_TEXTURE_2D,			  // TYPE_UINT,
+	GL_TEXTURE_2D,			  // TYPE_UVEC2,
+	GL_TEXTURE_2D,			  // TYPE_UVEC3,
+	GL_TEXTURE_2D,			  // TYPE_UVEC4,
+	GL_TEXTURE_2D,			  // TYPE_FLOAT,
+	GL_TEXTURE_2D,			  // TYPE_VEC2,
+	GL_TEXTURE_2D,			  // TYPE_VEC3,
+	GL_TEXTURE_2D,			  // TYPE_VEC4,
+	GL_TEXTURE_2D,			  // TYPE_MAT2,
+	GL_TEXTURE_2D,			  // TYPE_MAT3,
+	GL_TEXTURE_2D,			  // TYPE_MAT4,
+	GL_TEXTURE_2D,			  // TYPE_SAMPLER2D,
+	GL_TEXTURE_2D,			  // TYPE_ISAMPLER2D,
+	GL_TEXTURE_2D,			  // TYPE_USAMPLER2D,
+	GL_TEXTURE_2D_ARRAY,	  // TYPE_SAMPLER2DARRAY,
+	GL_TEXTURE_2D_ARRAY,	  // TYPE_ISAMPLER2DARRAY,
+	GL_TEXTURE_2D_ARRAY,	  // TYPE_USAMPLER2DARRAY,
+	GL_TEXTURE_3D,			  // TYPE_SAMPLER3D,
+	GL_TEXTURE_3D,			  // TYPE_ISAMPLER3D,
+	GL_TEXTURE_3D,			  // TYPE_USAMPLER3D,
+	GL_TEXTURE_CUBE_MAP,	  // TYPE_SAMPLERCUBE,
+	GL_TEXTURE_CUBE_MAP,	  // TYPE_SAMPLERCUBEARRAY,
 	_GL_TEXTURE_EXTERNAL_OES, // TYPE_SAMPLEREXT
-	GL_TEXTURE_2D, // TYPE_STRUCT
+	GL_TEXTURE_2D,			  // TYPE_STRUCT
 };
 
 static const RS::CanvasItemTextureRepeat repeat_from_uniform[ShaderLanguage::REPEAT_DEFAULT + 1] = {
 	RS::CanvasItemTextureRepeat::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED, // ShaderLanguage::TextureRepeat::REPEAT_DISABLE,
-	RS::CanvasItemTextureRepeat::CANVAS_ITEM_TEXTURE_REPEAT_ENABLED, // ShaderLanguage::TextureRepeat::REPEAT_ENABLE,
-	RS::CanvasItemTextureRepeat::CANVAS_ITEM_TEXTURE_REPEAT_ENABLED, // ShaderLanguage::TextureRepeat::REPEAT_DEFAULT,
+	RS::CanvasItemTextureRepeat::CANVAS_ITEM_TEXTURE_REPEAT_ENABLED,  // ShaderLanguage::TextureRepeat::REPEAT_ENABLE,
+	RS::CanvasItemTextureRepeat::CANVAS_ITEM_TEXTURE_REPEAT_ENABLED,  // ShaderLanguage::TextureRepeat::REPEAT_DEFAULT,
 };
 
 static const RS::CanvasItemTextureRepeat repeat_from_uniform_canvas[ShaderLanguage::REPEAT_DEFAULT + 1] = {
 	RS::CanvasItemTextureRepeat::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED, // ShaderLanguage::TextureRepeat::REPEAT_DISABLE,
-	RS::CanvasItemTextureRepeat::CANVAS_ITEM_TEXTURE_REPEAT_ENABLED, // ShaderLanguage::TextureRepeat::REPEAT_ENABLE,
+	RS::CanvasItemTextureRepeat::CANVAS_ITEM_TEXTURE_REPEAT_ENABLED,  // ShaderLanguage::TextureRepeat::REPEAT_ENABLE,
 	RS::CanvasItemTextureRepeat::CANVAS_ITEM_TEXTURE_REPEAT_DISABLED, // ShaderLanguage::TextureRepeat::REPEAT_DEFAULT,
 };
 
 static const RS::CanvasItemTextureFilter filter_from_uniform[ShaderLanguage::FILTER_DEFAULT + 1] = {
-	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_NEAREST, // ShaderLanguage::TextureFilter::FILTER_NEAREST,
-	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_LINEAR, // ShaderLanguage::TextureFilter::FILTER_LINEAR,
-	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_NEAREST_WITH_MIPMAPS, // ShaderLanguage::TextureFilter::FILTER_NEAREST_MIPMAP,
-	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS, // ShaderLanguage::TextureFilter::FILTER_LINEAR_MIPMAP,
+	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_NEAREST,						  // ShaderLanguage::TextureFilter::FILTER_NEAREST,
+	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_LINEAR,							  // ShaderLanguage::TextureFilter::FILTER_LINEAR,
+	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_NEAREST_WITH_MIPMAPS,			  // ShaderLanguage::TextureFilter::FILTER_NEAREST_MIPMAP,
+	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS,			  // ShaderLanguage::TextureFilter::FILTER_LINEAR_MIPMAP,
 	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_NEAREST_WITH_MIPMAPS_ANISOTROPIC, // ShaderLanguage::TextureFilter::FILTER_NEAREST_MIPMAP_ANISOTROPIC,
-	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC, // ShaderLanguage::TextureFilter::FILTER_LINEAR_MIPMAP_ANISOTROPIC,
-	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS, // ShaderLanguage::TextureFilter::FILTER_DEFAULT,
+	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC,  // ShaderLanguage::TextureFilter::FILTER_LINEAR_MIPMAP_ANISOTROPIC,
+	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS,			  // ShaderLanguage::TextureFilter::FILTER_DEFAULT,
 };
 
 static const RS::CanvasItemTextureFilter filter_from_uniform_canvas[ShaderLanguage::FILTER_DEFAULT + 1] = {
-	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_NEAREST, // ShaderLanguage::TextureFilter::FILTER_NEAREST,
-	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_LINEAR, // ShaderLanguage::TextureFilter::FILTER_LINEAR,
-	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_NEAREST_WITH_MIPMAPS, // ShaderLanguage::TextureFilter::FILTER_NEAREST_MIPMAP,
-	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS, // ShaderLanguage::TextureFilter::FILTER_LINEAR_MIPMAP,
+	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_NEAREST,						  // ShaderLanguage::TextureFilter::FILTER_NEAREST,
+	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_LINEAR,							  // ShaderLanguage::TextureFilter::FILTER_LINEAR,
+	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_NEAREST_WITH_MIPMAPS,			  // ShaderLanguage::TextureFilter::FILTER_NEAREST_MIPMAP,
+	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS,			  // ShaderLanguage::TextureFilter::FILTER_LINEAR_MIPMAP,
 	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_NEAREST_WITH_MIPMAPS_ANISOTROPIC, // ShaderLanguage::TextureFilter::FILTER_NEAREST_MIPMAP_ANISOTROPIC,
-	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC, // ShaderLanguage::TextureFilter::FILTER_LINEAR_MIPMAP_ANISOTROPIC,
-	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_LINEAR, // ShaderLanguage::TextureFilter::FILTER_DEFAULT,
+	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_LINEAR_WITH_MIPMAPS_ANISOTROPIC,  // ShaderLanguage::TextureFilter::FILTER_LINEAR_MIPMAP_ANISOTROPIC,
+	RS::CanvasItemTextureFilter::CANVAS_ITEM_TEXTURE_FILTER_LINEAR,							  // ShaderLanguage::TextureFilter::FILTER_DEFAULT,
 };
 
 void MaterialData::update_uniform_buffer(const HashMap<StringName, ShaderLanguage::ShaderNode::Uniform> &p_uniforms, const uint32_t *p_uniform_offsets, const HashMap<StringName, Variant> &p_parameters, uint8_t *p_buffer, uint32_t p_buffer_size) {
@@ -2036,27 +2036,27 @@ void MaterialStorage::global_shader_parameters_instance_update(RID p_instance, i
 	ERR_FAIL_COND_MSG(p_value.get_type() > Variant::COLOR, "Unsupported variant type for instance parameter: " + Variant::get_type_name(value_type)); //anything greater not supported
 
 	ShaderLanguage::DataType datatype_from_value[Variant::COLOR + 1] = {
-		ShaderLanguage::TYPE_MAX, //nil
-		ShaderLanguage::TYPE_BOOL, //bool
-		ShaderLanguage::TYPE_INT, //int
+		ShaderLanguage::TYPE_MAX,	//nil
+		ShaderLanguage::TYPE_BOOL,	//bool
+		ShaderLanguage::TYPE_INT,	//int
 		ShaderLanguage::TYPE_FLOAT, //float
-		ShaderLanguage::TYPE_MAX, //string
-		ShaderLanguage::TYPE_VEC2, //vec2
+		ShaderLanguage::TYPE_MAX,	//string
+		ShaderLanguage::TYPE_VEC2,	//vec2
 		ShaderLanguage::TYPE_IVEC2, //vec2i
-		ShaderLanguage::TYPE_VEC4, //rect2
+		ShaderLanguage::TYPE_VEC4,	//rect2
 		ShaderLanguage::TYPE_IVEC4, //rect2i
-		ShaderLanguage::TYPE_VEC3, // vec3
+		ShaderLanguage::TYPE_VEC3,	// vec3
 		ShaderLanguage::TYPE_IVEC3, //vec3i
-		ShaderLanguage::TYPE_MAX, //xform2d not supported here
-		ShaderLanguage::TYPE_VEC4, //vec4
+		ShaderLanguage::TYPE_MAX,	//xform2d not supported here
+		ShaderLanguage::TYPE_VEC4,	//vec4
 		ShaderLanguage::TYPE_IVEC4, //vec4i
-		ShaderLanguage::TYPE_VEC4, //plane
-		ShaderLanguage::TYPE_VEC4, //quat
-		ShaderLanguage::TYPE_MAX, //aabb not supported here
-		ShaderLanguage::TYPE_MAX, //basis not supported here
-		ShaderLanguage::TYPE_MAX, //xform not supported here
-		ShaderLanguage::TYPE_MAX, //projection not supported here
-		ShaderLanguage::TYPE_VEC4 //color
+		ShaderLanguage::TYPE_VEC4,	//plane
+		ShaderLanguage::TYPE_VEC4,	//quat
+		ShaderLanguage::TYPE_MAX,	//aabb not supported here
+		ShaderLanguage::TYPE_MAX,	//basis not supported here
+		ShaderLanguage::TYPE_MAX,	//xform not supported here
+		ShaderLanguage::TYPE_MAX,	//projection not supported here
+		ShaderLanguage::TYPE_VEC4	//color
 	};
 
 	ShaderLanguage::DataType datatype = ShaderLanguage::TYPE_MAX;

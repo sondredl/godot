@@ -332,20 +332,20 @@ bool CSharpLanguage::is_control_flow_keyword(const String &p_keyword) const {
 }
 
 void CSharpLanguage::get_comment_delimiters(List<String> *p_delimiters) const {
-	p_delimiters->push_back("//"); // single-line comment
+	p_delimiters->push_back("//");	  // single-line comment
 	p_delimiters->push_back("/* */"); // delimited comment
 }
 
 void CSharpLanguage::get_doc_comment_delimiters(List<String> *p_delimiters) const {
-	p_delimiters->push_back("///"); // single-line doc comment
+	p_delimiters->push_back("///");	   // single-line doc comment
 	p_delimiters->push_back("/** */"); // delimited doc comment
 }
 
 void CSharpLanguage::get_string_delimiters(List<String> *p_delimiters) const {
-	p_delimiters->push_back("' '"); // character literal
-	p_delimiters->push_back("\" \""); // regular string literal
+	p_delimiters->push_back("' '");	   // character literal
+	p_delimiters->push_back("\" \"");  // regular string literal
 	p_delimiters->push_back("@\" \""); // verbatim string literal
-	// Generic string highlighting suffices as a workaround for now.
+									   // Generic string highlighting suffices as a workaround for now.
 }
 
 static String get_base_class_name(const String &p_base_class_name, const String p_class_name) {

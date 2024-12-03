@@ -7165,7 +7165,7 @@ void fragment() {
 				surftool->begin(Mesh::PRIMITIVE_TRIANGLES);
 
 				int n = 128; // number of circle segments
-				int m = 3; // number of thickness segments
+				int m = 3;	 // number of thickness segments
 
 				real_t step = Math_TAU / n;
 				for (int j = 0; j < n; ++j) {

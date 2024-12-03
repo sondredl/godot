@@ -3171,7 +3171,7 @@ const char *check_for_renamed_identifier(String identifier, GDScriptParser::Node
 
 void GDScriptAnalyzer::reduce_call(GDScriptParser::CallNode *p_call, bool p_is_await, bool p_is_root) {
 	bool all_is_constant = true;
-	HashMap<int, GDScriptParser::ArrayNode *> arrays; // For array literal to potentially type when passing.
+	HashMap<int, GDScriptParser::ArrayNode *> arrays;			 // For array literal to potentially type when passing.
 	HashMap<int, GDScriptParser::DictionaryNode *> dictionaries; // Same, but for dictionaries.
 	for (int i = 0; i < p_call->arguments.size(); i++) {
 		reduce_expression(p_call->arguments[i]);
@@ -4445,7 +4445,7 @@ void GDScriptAnalyzer::reduce_identifier(GDScriptParser::IdentifierNode *p_ident
 				case GDScriptParser::IdentifierNode::LOCAL_VARIABLE:
 				case GDScriptParser::IdentifierNode::LOCAL_ITERATOR:
 				case GDScriptParser::IdentifierNode::LOCAL_BIND:
-					break; // Need to capture.
+					break;											   // Need to capture.
 				case GDScriptParser::IdentifierNode::UNDEFINED_SOURCE: // A global.
 				case GDScriptParser::IdentifierNode::LOCAL_CONSTANT:
 				case GDScriptParser::IdentifierNode::MEMBER_VARIABLE:

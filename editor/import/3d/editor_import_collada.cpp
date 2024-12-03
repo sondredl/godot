@@ -67,7 +67,7 @@ struct ColladaImport {
 	bool use_mesh_builtin_materials = false;
 	float bake_fps = 30;
 
-	HashMap<String, NodeMap> node_map; //map from collada node to engine node
+	HashMap<String, NodeMap> node_map;	   //map from collada node to engine node
 	HashMap<String, String> node_name_map; //map from collada node to engine node
 	HashMap<String, Ref<ImporterMesh>> mesh_cache;
 	HashMap<String, Ref<Curve3D>> curve_cache;
@@ -728,7 +728,7 @@ Error ColladaImport::_create_mesh_surfaces(bool p_optimize, Ref<ImporterMesh> &p
 		}
 
 		RBSet<Collada::Vertex> vertex_set; //vertex set will be the vertices
-		List<int> indices_list; //indices will be the indices
+		List<int> indices_list;			   //indices will be the indices
 
 		/**************************/
 		/* CREATE PRIMITIVE ARRAY */

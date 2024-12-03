@@ -47,7 +47,7 @@ private:
 	struct Speaker {
 		Vector3 direction;
 		real_t effective_number_of_speakers = 0; // precalculated
-		mutable real_t squared_gain = 0; // temporary
+		mutable real_t squared_gain = 0;		 // temporary
 	};
 
 	Vector<Speaker> speakers;
@@ -92,12 +92,12 @@ public:
 //TODO: hardcoded main speaker directions for 2, 3.1, 5.1 and 7.1 setups - these are simplified and could also be made configurable
 static const Vector3 speaker_directions[7] = {
 	Vector3(-1.0, 0.0, -1.0).normalized(), // front-left
-	Vector3(1.0, 0.0, -1.0).normalized(), // front-right
-	Vector3(0.0, 0.0, -1.0).normalized(), // center
-	Vector3(-1.0, 0.0, 1.0).normalized(), // rear-left
-	Vector3(1.0, 0.0, 1.0).normalized(), // rear-right
-	Vector3(-1.0, 0.0, 0.0).normalized(), // side-left
-	Vector3(1.0, 0.0, 0.0).normalized(), // side-right
+	Vector3(1.0, 0.0, -1.0).normalized(),  // front-right
+	Vector3(0.0, 0.0, -1.0).normalized(),  // center
+	Vector3(-1.0, 0.0, 1.0).normalized(),  // rear-left
+	Vector3(1.0, 0.0, 1.0).normalized(),   // rear-right
+	Vector3(-1.0, 0.0, 0.0).normalized(),  // side-left
+	Vector3(1.0, 0.0, 0.0).normalized(),   // side-right
 };
 
 void AudioStreamPlayer3D::_calc_output_vol(const Vector3 &source_dir, real_t tightness, Vector<AudioFrame> &output) {
@@ -123,20 +123,20 @@ void AudioStreamPlayer3D::_calc_output_vol(const Vector3 &source_dir, real_t tig
 
 	switch (AudioServer::get_singleton()->get_speaker_mode()) {
 		case AudioServer::SPEAKER_SURROUND_71:
-			output.write[3].left = volumes[5]; // side-left
+			output.write[3].left = volumes[5];	// side-left
 			output.write[3].right = volumes[6]; // side-right
 			[[fallthrough]];
 		case AudioServer::SPEAKER_SURROUND_51:
-			output.write[2].left = volumes[3]; // rear-left
+			output.write[2].left = volumes[3];	// rear-left
 			output.write[2].right = volumes[4]; // rear-right
 			[[fallthrough]];
 		case AudioServer::SPEAKER_SURROUND_31:
-			output.write[1].right = 1.0; // LFE - always full power
+			output.write[1].right = 1.0;	   // LFE - always full power
 			output.write[1].left = volumes[2]; // center
 			[[fallthrough]];
 		case AudioServer::SPEAKER_MODE_STEREO:
 			output.write[0].right = volumes[1]; // front-right
-			output.write[0].left = volumes[0]; // front-left
+			output.write[0].left = volumes[0];	// front-left
 			break;
 	}
 }

@@ -471,7 +471,7 @@ void GI::SDFGI::create(RID p_env, const Vector3 &p_world_position, uint32_t p_re
 	tf_occlusion.shareable_formats.push_back(RD::DATA_FORMAT_R16_UINT);
 	tf_occlusion.shareable_formats.push_back(RD::DATA_FORMAT_R4G4B4A4_UNORM_PACK16);
 	tf_occlusion.depth *= cascades.size(); //use depth for occlusion slices
-	tf_occlusion.width *= 2; //use width for the other half
+	tf_occlusion.width *= 2;			   //use width for the other half
 
 	RD::TextureFormat tf_light = tf_sdf;
 	tf_light.format = RD::DATA_FORMAT_R32_UINT;
@@ -3511,8 +3511,8 @@ void GI::init(SkyRD *p_sky) {
 
 		Vector<String> gi_modes;
 
-		gi_modes.push_back("\n#define USE_VOXEL_GI_INSTANCES\n"); // MODE_VOXEL_GI
-		gi_modes.push_back("\n#define USE_SDFGI\n"); // MODE_SDFGI
+		gi_modes.push_back("\n#define USE_VOXEL_GI_INSTANCES\n");					   // MODE_VOXEL_GI
+		gi_modes.push_back("\n#define USE_SDFGI\n");								   // MODE_SDFGI
 		gi_modes.push_back("\n#define USE_SDFGI\n\n#define USE_VOXEL_GI_INSTANCES\n"); // MODE_COMBINED
 
 		shader.initialize(gi_modes, defines);

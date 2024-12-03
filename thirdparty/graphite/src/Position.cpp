@@ -6,33 +6,38 @@
 
 using namespace graphite2;
 
-bool Rect::hitTest(Rect &other)
-{
-    if (bl.x > other.tr.x) return false;
-    if (tr.x < other.bl.x) return false;
-    if (bl.y > other.tr.y) return false;
-    if (tr.y < other.bl.y) return false;
-    return true;
+bool Rect::hitTest(Rect &other) {
+	if (bl.x > other.tr.x)
+		return false;
+	if (tr.x < other.bl.x)
+		return false;
+	if (bl.y > other.tr.y)
+		return false;
+	if (tr.y < other.bl.y)
+		return false;
+	return true;
 }
 
-Position Rect::overlap(Position &offset, Rect &other, Position &othero)
-{
-    float ax = (bl.x + offset.x) - (other.tr.x + othero.x);
-    float ay = (bl.y + offset.y) - (other.tr.y + othero.y);
-    float bx = (other.bl.x + othero.x) - (tr.x + offset.x);
-    float by = (other.bl.y + othero.y) - (tr.y + offset.y);
-    return Position((ax > bx ? ax : bx), (ay > by ? ay : by));
+Position Rect::overlap(Position &offset, Rect &other, Position &othero) {
+	float ax = (bl.x + offset.x) - (other.tr.x + othero.x);
+	float ay = (bl.y + offset.y) - (other.tr.y + othero.y);
+	float bx = (other.bl.x + othero.x) - (tr.x + offset.x);
+	float by = (other.bl.y + othero.y) - (tr.y + offset.y);
+	return Position((ax > bx ? ax : bx), (ay > by ? ay : by));
 }
 
-float boundmin(float move, float lim1, float lim2, float &error)
-{
-    // error is always positive for easy comparison
-    if (move < lim1 && move < lim2)
-    { error = 0.; return move; }
-    else if (lim1 < lim2)
-    { error = std::fabs(move - lim1); return lim1; }
-    else
-    { error = std::fabs(move - lim2); return lim2; }
+float boundmin(float move, float lim1, float lim2, float &error) {
+	// error is always positive for easy comparison
+	if (move < lim1 && move < lim2) {
+		error = 0.;
+		return move;
+	} else if (lim1 < lim2) {
+		error = std::fabs(move - lim1);
+		return lim1;
+	} else {
+		error = std::fabs(move - lim2);
+		return lim2;
+	}
 }
 
 #if 0

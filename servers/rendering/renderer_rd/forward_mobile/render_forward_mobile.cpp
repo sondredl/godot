@@ -180,7 +180,7 @@ RID RenderForwardMobile::RenderBufferDataForwardMobile::get_color_fbs(Framebuffe
 	Vector<RID> textures;
 	int color_buffer_id = 0;
 	textures.push_back(use_msaa ? render_buffers->get_color_msaa() : render_buffers->get_internal_texture()); // 0 - color buffer
-	textures.push_back(use_msaa ? render_buffers->get_depth_msaa() : render_buffers->get_depth_texture()); // 1 - depth buffer
+	textures.push_back(use_msaa ? render_buffers->get_depth_msaa() : render_buffers->get_depth_texture());	  // 1 - depth buffer
 	if (vrs_texture.is_valid()) {
 		textures.push_back(vrs_texture); // 2 - vrs texture
 	}
@@ -249,7 +249,7 @@ RID RenderForwardMobile::RenderBufferDataForwardMobile::get_color_fbs(Framebuffe
 			textures.push_back(target_buffer); // target buffer
 
 			RD::FramebufferPass blit_pass;
-			blit_pass.input_attachments.push_back(color_buffer_id); // Read from our (resolved) color buffer
+			blit_pass.input_attachments.push_back(color_buffer_id);	 // Read from our (resolved) color buffer
 			blit_pass.color_attachments.push_back(target_buffer_id); // Write into our target buffer
 			// this doesn't need VRS
 			passes.push_back(blit_pass);
@@ -767,7 +767,7 @@ void RenderForwardMobile::_render_scene(RenderDataRD *p_render_data, const Color
 	Size2i screen_size;
 	RID framebuffer;
 	bool reverse_cull = p_render_data->scene_data->cam_transform.basis.determinant() < 0;
-	bool merge_transparent_pass = true; // If true: we can do our transparent pass in the same pass as our opaque pass.
+	bool merge_transparent_pass = true;		// If true: we can do our transparent pass in the same pass as our opaque pass.
 	bool using_subpass_post_process = true; // If true: we can do our post processing in a subpass
 	RendererRD::MaterialStorage::Samplers samplers;
 
@@ -842,7 +842,7 @@ void RenderForwardMobile::_render_scene(RenderDataRD *p_render_data, const Color
 		}
 
 		reverse_cull = true;
-		merge_transparent_pass = true; // we ignore our screen/depth texture here
+		merge_transparent_pass = true;		// we ignore our screen/depth texture here
 		using_subpass_post_process = false; // not applicable at all for reflection probes.
 		samplers = RendererRD::MaterialStorage::get_singleton()->samplers_rd_get_default();
 

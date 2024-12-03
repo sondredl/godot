@@ -191,10 +191,10 @@ Error GDExtensionLibraryLoader::open_library(const String &p_path) {
 	}
 
 	OS::GDExtensionData data = {
-		true, // also_set_library_path
-		&library_path, // r_resolved_path
+		true,									   // also_set_library_path
+		&library_path,							   // r_resolved_path
 		Engine::get_singleton()->is_editor_hint(), // generate_temp_files
-		&abs_dependencies_paths, // library_dependencies
+		&abs_dependencies_paths,				   // library_dependencies
 	};
 
 	err = OS::get_singleton()->open_dynamic_library(is_static_library ? String() : abs_path, library, &data);

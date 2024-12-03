@@ -3623,8 +3623,8 @@ real_t Animation::bezier_track_interpolate(int p_track, double p_time) const {
 	int iterations = 10;
 
 	real_t duration = bt->values[idx + 1].time - bt->values[idx].time; // time duration between our two keyframes
-	real_t low = 0.0; // 0% of the current animation segment
-	real_t high = 1.0; // 100% of the current animation segment
+	real_t low = 0.0;												   // 0% of the current animation segment
+	real_t high = 1.0;												   // 100% of the current animation segment
 
 	Vector2 start(0, bt->values[idx].value.value);
 	Vector2 start_out = start + bt->values[idx].value.out_handle;
@@ -4598,7 +4598,7 @@ struct AnimationCompressionDataState {
 
 		_compute_max_shifts(0, temp_packets.size() - 1, max_shifts, max_frame_delta_shift);
 
-		uint32_t size_bits = 16; //base value (all 4 bits of shift sizes for x,y,z,time)
+		uint32_t size_bits = 16;										//base value (all 4 bits of shift sizes for x,y,z,time)
 		size_bits += max_frame_delta_shift * (temp_packets.size() - 1); //times
 		for (uint32_t j = 0; j < components; j++) {
 			size_bits += 16; //base value
@@ -4845,8 +4845,8 @@ void Animation::compress(uint32_t p_page_size, uint32_t p_fps, float p_split_tol
 		if (track_get_key_count(i) == 0) {
 			continue; //do not compress, no keys
 		}
-		base_page_size += track_header_size; //pointer to beginning of each track timeline and amount of time keys
-		base_page_size += time_packet_size; //for end of track time marker
+		base_page_size += track_header_size;				  //pointer to beginning of each track timeline and amount of time keys
+		base_page_size += time_packet_size;					  //for end of track time marker
 		base_page_size += (type == TYPE_BLEND_SHAPE) ? 4 : 8; // at least the end of track packet (at much 8 bytes). This could be less, but have to be pessimistic.
 		tracks_to_compress.push_back(i);
 
@@ -4987,7 +4987,7 @@ void Animation::compress(uint32_t p_page_size, uint32_t p_fps, float p_split_tol
 			// The frame has advanced, time to validate the previous frame
 			uint32_t current_page_size = base_page_size;
 			for (const AnimationCompressionDataState &state : data_tracks) {
-				uint32_t track_size = state.data.size(); // track size
+				uint32_t track_size = state.data.size();	// track size
 				track_size += state.get_temp_packet_size(); // Add the temporary data
 				if (track_size > Compression::MAX_DATA_TRACK_SIZE) {
 					rollback = true; //track to large, time track can't point to keys any longer, because key offset is 12 bits

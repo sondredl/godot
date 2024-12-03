@@ -115,7 +115,7 @@ Ref<AudioEffectInstance> AudioEffectDelay::instantiate() {
 	ins->base = Ref<AudioEffectDelay>(this);
 
 	float ring_buffer_max_size = MAX_DELAY_MS + 100; //add 100ms of extra room, just in case
-	ring_buffer_max_size /= 1000.0; //convert to seconds
+	ring_buffer_max_size /= 1000.0;					 //convert to seconds
 	ring_buffer_max_size *= AudioServer::get_singleton()->get_mix_rate();
 
 	int ringbuff_size = ring_buffer_max_size;

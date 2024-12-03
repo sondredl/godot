@@ -16,10 +16,10 @@
 *   created by: George Rhoten
 */
 
-#include "ucln.h"
 #include "ucln_in.h"
 #include "mutex.h"
 #include "uassert.h"
+#include "ucln.h"
 
 /**  Auto-client for UCLN_I18N **/
 #define UCLN_TYPE UCLN_I18N
@@ -30,36 +30,33 @@ static const char copyright[] = U_COPYRIGHT_STRING;
 
 static cleanupFunc *gCleanupFunctions[UCLN_I18N_COUNT];
 
-static UBool U_CALLCONV i18n_cleanup()
-{
-    int32_t libType = UCLN_I18N_START;
-    (void)copyright;   /* Suppress unused variable warning with clang. */
+static UBool U_CALLCONV i18n_cleanup() {
+	int32_t libType = UCLN_I18N_START;
+	(void)copyright; /* Suppress unused variable warning with clang. */
 
-    while (++libType<UCLN_I18N_COUNT) {
-        if (gCleanupFunctions[libType])
-        {
-            gCleanupFunctions[libType]();
-            gCleanupFunctions[libType] = nullptr;
-        }
-    }
+	while (++libType < UCLN_I18N_COUNT) {
+		if (gCleanupFunctions[libType]) {
+			gCleanupFunctions[libType]();
+			gCleanupFunctions[libType] = nullptr;
+		}
+	}
 #if !UCLN_NO_AUTO_CLEANUP && (defined(UCLN_AUTO_ATEXIT) || defined(UCLN_AUTO_LOCAL))
-    ucln_unRegisterAutomaticCleanup();
+	ucln_unRegisterAutomaticCleanup();
 #endif
-    return true;
+	return true;
 }
 
 void ucln_i18n_registerCleanup(ECleanupI18NType type,
-                               cleanupFunc *func) {
-    U_ASSERT(UCLN_I18N_START < type && type < UCLN_I18N_COUNT);
-    {
-        icu::Mutex m;   // See ticket 10295 for discussion.
-        ucln_registerCleanup(UCLN_I18N, i18n_cleanup);
-        if (UCLN_I18N_START < type && type < UCLN_I18N_COUNT) {
-            gCleanupFunctions[type] = func;
-        }
-    }
+		cleanupFunc *func) {
+	U_ASSERT(UCLN_I18N_START < type && type < UCLN_I18N_COUNT);
+	{
+		icu::Mutex m; // See ticket 10295 for discussion.
+		ucln_registerCleanup(UCLN_I18N, i18n_cleanup);
+		if (UCLN_I18N_START < type && type < UCLN_I18N_COUNT) {
+			gCleanupFunctions[type] = func;
+		}
+	}
 #if !UCLN_NO_AUTO_CLEANUP && (defined(UCLN_AUTO_ATEXIT) || defined(UCLN_AUTO_LOCAL))
-    ucln_registerAutomaticCleanup();
+	ucln_registerAutomaticCleanup();
 #endif
 }
-

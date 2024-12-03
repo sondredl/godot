@@ -589,7 +589,7 @@ bool SceneTree::process(double p_time) {
 
 	_flush_ugc();
 	MessageQueue::get_singleton()->flush(); //small little hack
-	flush_transform_notifications(); //transforms after world update, to avoid unnecessary enter/exit notifications
+	flush_transform_notifications();		//transforms after world update, to avoid unnecessary enter/exit notifications
 
 	_flush_delete_queue();
 

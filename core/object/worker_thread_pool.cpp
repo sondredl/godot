@@ -694,7 +694,7 @@ void WorkerThreadPool::wait_for_group_task_completion(GroupID p_group) {
 		group->done_semaphore.wait();
 		_lock_unlockable_mutexes();
 
-		uint32_t max_users = group->tasks_used + 1; // Add 1 because the thread waiting for it is also user. Read before to avoid another thread freeing task after increment.
+		uint32_t max_users = group->tasks_used + 1;			   // Add 1 because the thread waiting for it is also user. Read before to avoid another thread freeing task after increment.
 		uint32_t finished_users = group->finished.increment(); // fetch happens before inc, so increment later.
 
 		if (finished_users == max_users) {

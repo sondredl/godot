@@ -66,20 +66,20 @@ Error EditorExportPlatformWindows::_process_icon(const Ref<EditorExportPreset> &
 		}
 
 		// Read ICONDIR.
-		f->get_16(); // Reserved.
-		uint16_t icon_type = f->get_16(); // Image type: 1 - ICO.
+		f->get_16();					   // Reserved.
+		uint16_t icon_type = f->get_16();  // Image type: 1 - ICO.
 		uint16_t icon_count = f->get_16(); // Number of images.
 		ERR_FAIL_COND_V(icon_type != 1, ERR_CANT_OPEN);
 
 		for (uint16_t i = 0; i < icon_count; i++) {
 			// Read ICONDIRENTRY.
-			uint16_t w = f->get_8(); // Width in pixels.
-			uint16_t h = f->get_8(); // Height in pixels.
-			uint8_t pal_colors = f->get_8(); // Number of colors in the palette (0 - no palette).
-			f->get_8(); // Reserved.
-			uint16_t planes = f->get_16(); // Number of color planes.
-			uint16_t bpp = f->get_16(); // Bits per pixel.
-			uint32_t img_size = f->get_32(); // Image data size in bytes.
+			uint16_t w = f->get_8();		   // Width in pixels.
+			uint16_t h = f->get_8();		   // Height in pixels.
+			uint8_t pal_colors = f->get_8();   // Number of colors in the palette (0 - no palette).
+			f->get_8();						   // Reserved.
+			uint16_t planes = f->get_16();	   // Number of color planes.
+			uint16_t bpp = f->get_16();		   // Bits per pixel.
+			uint32_t img_size = f->get_32();   // Image data size in bytes.
 			uint32_t img_offset = f->get_32(); // Image data offset.
 			if (w != h) {
 				continue;
@@ -127,8 +127,8 @@ Error EditorExportPlatformWindows::_process_icon(const Ref<EditorExportPreset> &
 	}
 
 	// Write ICONDIR.
-	fw->store_16(0); // Reserved.
-	fw->store_16(1); // Image type: 1 - ICO.
+	fw->store_16(0);				// Reserved.
+	fw->store_16(1);				// Image type: 1 - ICO.
 	fw->store_16(valid_icon_count); // Number of images.
 
 	// Write ICONDIRENTRY.
@@ -136,14 +136,14 @@ Error EditorExportPlatformWindows::_process_icon(const Ref<EditorExportPreset> &
 	for (size_t i = 0; i < sizeof(icon_size) / sizeof(icon_size[0]); ++i) {
 		if (images.has(icon_size[i])) {
 			const IconData &di = images[icon_size[i]];
-			fw->store_8(icon_size[i]); // Width in pixels.
-			fw->store_8(icon_size[i]); // Height in pixels.
-			fw->store_8(di.pal_colors); // Number of colors in the palette (0 - no palette).
-			fw->store_8(0); // Reserved.
-			fw->store_16(di.planes); // Number of color planes.
-			fw->store_16(di.bpp); // Bits per pixel.
+			fw->store_8(icon_size[i]);	  // Width in pixels.
+			fw->store_8(icon_size[i]);	  // Height in pixels.
+			fw->store_8(di.pal_colors);	  // Number of colors in the palette (0 - no palette).
+			fw->store_8(0);				  // Reserved.
+			fw->store_16(di.planes);	  // Number of color planes.
+			fw->store_16(di.bpp);		  // Bits per pixel.
 			fw->store_32(di.data.size()); // Image data size in bytes.
-			fw->store_32(img_offset); // Image data offset.
+			fw->store_32(img_offset);	  // Image data offset.
 
 			img_offset += di.data.size();
 		}

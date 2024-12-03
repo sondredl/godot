@@ -20,98 +20,79 @@
  * SOFTWARE.
  */
 
-
 #include "tvgText.h"
-
 
 /************************************************************************/
 /* Internal Class Implementation                                        */
 /************************************************************************/
 
-
-
 /************************************************************************/
 /* External Class Implementation                                        */
 /************************************************************************/
 
-
-Text::Text() : pImpl(new Impl(this))
-{
-    Paint::pImpl->id = TVG_CLASS_ID_TEXT;
+Text::Text() :
+		pImpl(new Impl(this)) {
+	Paint::pImpl->id = TVG_CLASS_ID_TEXT;
 }
 
-
-Text::~Text()
-{
-    delete(pImpl);
+Text::~Text() {
+	delete (pImpl);
 }
 
-
-Result Text::text(const char* text) noexcept
-{
-    return pImpl->text(text);
+Result Text::text(const char *text) noexcept {
+	return pImpl->text(text);
 }
 
-
-Result Text::font(const char* name, float size, const char* style) noexcept
-{
-    return pImpl->font(name, size, style);
+Result Text::font(const char *name, float size, const char *style) noexcept {
+	return pImpl->font(name, size, style);
 }
 
+Result Text::load(const std::string &path) noexcept {
+	bool invalid; //invalid path
+	if (!LoaderMgr::loader(path, &invalid)) {
+		if (invalid)
+			return Result::InvalidArguments;
+		else
+			return Result::NonSupport;
+	}
 
-Result Text::load(const std::string& path) noexcept
-{
-    bool invalid; //invalid path
-    if (!LoaderMgr::loader(path, &invalid)) {
-        if (invalid) return Result::InvalidArguments;
-        else return Result::NonSupport;
-    }
-
-    return Result::Success;
+	return Result::Success;
 }
 
+Result Text::load(const char *name, const char *data, uint32_t size, const string &mimeType, bool copy) noexcept {
+	if (!name || (size == 0 && data))
+		return Result::InvalidArguments;
 
-Result Text::load(const char* name, const char* data, uint32_t size, const string& mimeType, bool copy) noexcept
-{
-    if (!name || (size == 0 && data)) return Result::InvalidArguments;
+	//unload font
+	if (!data) {
+		if (LoaderMgr::retrieve(name))
+			return Result::Success;
+		return Result::InsufficientCondition;
+	}
 
-    //unload font
-    if (!data) {
-        if (LoaderMgr::retrieve(name)) return Result::Success;
-        return Result::InsufficientCondition;
-    }
-
-    if (!LoaderMgr::loader(name, data, size, mimeType, copy)) return Result::NonSupport;
-    return Result::Success;
+	if (!LoaderMgr::loader(name, data, size, mimeType, copy))
+		return Result::NonSupport;
+	return Result::Success;
 }
 
-
-Result Text::unload(const std::string& path) noexcept
-{
-    if (LoaderMgr::retrieve(path)) return Result::Success;
-    return Result::InsufficientCondition;
+Result Text::unload(const std::string &path) noexcept {
+	if (LoaderMgr::retrieve(path))
+		return Result::Success;
+	return Result::InsufficientCondition;
 }
 
-
-Result Text::fill(uint8_t r, uint8_t g, uint8_t b) noexcept
-{
-    return pImpl->shape->fill(r, g, b);
+Result Text::fill(uint8_t r, uint8_t g, uint8_t b) noexcept {
+	return pImpl->shape->fill(r, g, b);
 }
 
-
-Result Text::fill(unique_ptr<Fill> f) noexcept
-{
-    return pImpl->shape->fill(std::move(f));
+Result Text::fill(unique_ptr<Fill> f) noexcept {
+	return pImpl->shape->fill(std::move(f));
 }
 
-
-unique_ptr<Text> Text::gen() noexcept
-{
-    return unique_ptr<Text>(new Text);
+unique_ptr<Text> Text::gen() noexcept {
+	return unique_ptr<Text>(new Text);
 }
 
-
-uint32_t Text::identifier() noexcept
-{
-    return TVG_CLASS_ID_TEXT;
+uint32_t Text::identifier() noexcept {
+	return TVG_CLASS_ID_TEXT;
 }

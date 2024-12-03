@@ -2832,7 +2832,7 @@ void EditorInspector::update_tree() {
 				EditorInspector *inspector = Object::cast_to<EditorInspector>(parent);
 				if (inspector) {
 					restore_focus = inspector == this; // May be owned by another inspector.
-					break; // Exit after the first inspector is found, since there may be nested ones.
+					break;							   // Exit after the first inspector is found, since there may be nested ones.
 				}
 				parent = parent->get_parent();
 			}
@@ -3767,8 +3767,8 @@ void EditorInspector::edit(Object *p_object) {
 	object = p_object;
 
 	if (object) {
-		update_scroll_request = 0; //reset
-		if (scroll_cache.has(object->get_instance_id())) { //if exists, set something else
+		update_scroll_request = 0;											 //reset
+		if (scroll_cache.has(object->get_instance_id())) {					 //if exists, set something else
 			update_scroll_request = scroll_cache[object->get_instance_id()]; //done this way because wait until full size is accommodated
 		}
 		object->connect(CoreStringName(property_list_changed), callable_mp(this, &EditorInspector::_changed_callback));

@@ -211,11 +211,11 @@ static Error _parse_obj(const String &p_path, List<Ref<ImporterMesh>> &r_meshes,
 	// https://learn.microsoft.com/en-us/windows/win32/debug/pe-format#machine-types
 	const int first_bytes = f->get_16();
 	static const Vector<int> coff_header_machines{
-		0x0, // IMAGE_FILE_MACHINE_UNKNOWN
+		0x0,	// IMAGE_FILE_MACHINE_UNKNOWN
 		0x8664, // IMAGE_FILE_MACHINE_AMD64
-		0x1c0, // IMAGE_FILE_MACHINE_ARM
-		0x14c, // IMAGE_FILE_MACHINE_I386
-		0x200, // IMAGE_FILE_MACHINE_IA64
+		0x1c0,	// IMAGE_FILE_MACHINE_ARM
+		0x14c,	// IMAGE_FILE_MACHINE_I386
+		0x200,	// IMAGE_FILE_MACHINE_IA64
 	};
 	ERR_FAIL_COND_V_MSG(coff_header_machines.has(first_bytes), ERR_FILE_CORRUPT, vformat("Couldn't read OBJ file '%s', it seems to be binary, corrupted, or empty.", p_path));
 	f->seek(0);

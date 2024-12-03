@@ -26,56 +26,43 @@
 /* External Class Implementation                                        */
 /************************************************************************/
 
-Scene::Scene() : pImpl(new Impl(this))
-{
-    Paint::pImpl->id = TVG_CLASS_ID_SCENE;
+Scene::Scene() :
+		pImpl(new Impl(this)) {
+	Paint::pImpl->id = TVG_CLASS_ID_SCENE;
 }
 
-
-Scene::~Scene()
-{
-    delete(pImpl);
+Scene::~Scene() {
+	delete (pImpl);
 }
 
-
-unique_ptr<Scene> Scene::gen() noexcept
-{
-    return unique_ptr<Scene>(new Scene);
+unique_ptr<Scene> Scene::gen() noexcept {
+	return unique_ptr<Scene>(new Scene);
 }
 
-
-uint32_t Scene::identifier() noexcept
-{
-    return TVG_CLASS_ID_SCENE;
+uint32_t Scene::identifier() noexcept {
+	return TVG_CLASS_ID_SCENE;
 }
 
+Result Scene::push(unique_ptr<Paint> paint) noexcept {
+	auto p = paint.release();
+	if (!p)
+		return Result::MemoryCorruption;
+	PP(p)->ref();
+	pImpl->paints.push_back(p);
 
-Result Scene::push(unique_ptr<Paint> paint) noexcept
-{
-    auto p = paint.release();
-    if (!p) return Result::MemoryCorruption;
-    PP(p)->ref();
-    pImpl->paints.push_back(p);
-
-    return Result::Success;
+	return Result::Success;
 }
 
-
-Result Scene::reserve(TVG_UNUSED uint32_t size) noexcept
-{
-    return Result::NonSupport;
+Result Scene::reserve(TVG_UNUSED uint32_t size) noexcept {
+	return Result::NonSupport;
 }
 
+Result Scene::clear(bool free) noexcept {
+	pImpl->clear(free);
 
-Result Scene::clear(bool free) noexcept
-{
-    pImpl->clear(free);
-
-    return Result::Success;
+	return Result::Success;
 }
 
-
-list<Paint*>& Scene::paints() noexcept
-{
-    return pImpl->paints;
+list<Paint *> &Scene::paints() noexcept {
+	return pImpl->paints;
 }

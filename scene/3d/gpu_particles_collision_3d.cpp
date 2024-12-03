@@ -513,7 +513,7 @@ Ref<Image> GPUParticlesCollisionSDF3D::bake() {
 	_compute_sdf(&params);
 
 	Ref<Image> ret = Image::create_from_data(sdf_size.x, sdf_size.y * sdf_size.z, false, Image::FORMAT_RF, cells_data);
-	ret->convert(Image::FORMAT_RH); //convert to half, save space
+	ret->convert(Image::FORMAT_RH);		//convert to half, save space
 	ret->set_meta("depth", sdf_size.z); //hack, make sure to add to the docs of this function
 
 	if (bake_end_function) {

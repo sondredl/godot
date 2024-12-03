@@ -41,9 +41,10 @@
 //
 class TGenericCompiler : public TCompiler {
 public:
-    TGenericCompiler(EShLanguage l) : TCompiler(l, infoSink) {}
-    virtual bool compile(TIntermNode* root, int version = 0, EProfile profile = ENoProfile);
-    TInfoSink infoSink;
+	TGenericCompiler(EShLanguage l) :
+			TCompiler(l, infoSink) {}
+	virtual bool compile(TIntermNode *root, int version = 0, EProfile profile = ENoProfile);
+	TInfoSink infoSink;
 };
 
 //
@@ -51,22 +52,20 @@ public:
 // compile object used by higher level code.  It returns
 // a subclass of TCompiler.
 //
-TCompiler* ConstructCompiler(EShLanguage language, int) { return new TGenericCompiler(language); }
+TCompiler *ConstructCompiler(EShLanguage language, int) { return new TGenericCompiler(language); }
 
 //
 // Delete the compiler made by ConstructCompiler
 //
-void DeleteCompiler(TCompiler* compiler)
-{
-    delete compiler;
+void DeleteCompiler(TCompiler *compiler) {
+	delete compiler;
 }
 
 //
 //  Generate code from the given parse tree
 //
-bool TGenericCompiler::compile(TIntermNode* /*root*/, int /*version*/, EProfile /*profile*/)
-{
-    haveValidObjectCode = true;
+bool TGenericCompiler::compile(TIntermNode * /*root*/, int /*version*/, EProfile /*profile*/) {
+	haveValidObjectCode = true;
 
-    return haveValidObjectCode;
+	return haveValidObjectCode;
 }

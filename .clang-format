@@ -4,9 +4,10 @@
 BasedOnStyle: LLVM
 AccessModifierOffset: -4
 AlignAfterOpenBracket: DontAlign
-# AlignArrayOfStructures: None
-# AlignConsecutiveAssignments:
-#   Enabled: false
+ColumnLimit:     140 # set max width to 120 characters
+AlignArrayOfStructures: None
+#AlignConsecutiveAssignments:
+    #Enabled: false
 #   AcrossEmptyLines: false
 #   AcrossComments: false
 #   AlignCompound: false
@@ -34,11 +35,11 @@ AlignAfterOpenBracket: DontAlign
 #   AcrossEmptyLines: false
 #   AcrossComments: false
 #   AlignCaseColons: false
-# AlignEscapedNewlines: Right
+AlignEscapedNewlines: Right
 AlignOperands: DontAlign
-AlignTrailingComments:
-  Kind: Never
-  OverEmptyLines: 0
+#AlignTrailingComments:
+  #Kind: Never
+  #OverEmptyLines: 0
 # AllowAllArgumentsOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: false
 # AllowShortBlocksOnASingleLine: Never
@@ -87,7 +88,6 @@ AllowAllParametersOfDeclarationOnNextLine: false
 BreakConstructorInitializers: AfterColon
 # BreakInheritanceList: BeforeColon
 # BreakStringLiterals: true
-ColumnLimit: 0
 # CommentPragmas: '^ IWYU pragma:'
 # CompactNamespaces: false
 ConstructorInitializerIndentWidth: 8
@@ -176,7 +176,7 @@ PackConstructorInitializers: NextLine
 # ReflowComments: true
 # RemoveBracesLLVM: false
 # RemoveParentheses: Leave
-RemoveSemicolon: true
+#RemoveSemicolon: true
 # RequiresClausePosition: OwnLine
 # RequiresExpressionIndentation: OuterScope
 # SeparateDefinitionBlocks: Leave
@@ -229,6 +229,7 @@ Standard: c++20
 #   - QT_REQUIRE_VERSION
 TabWidth: 4
 UseTab: Always
+ColumnLimit: 0
 # VerilogBreakBetweenInstancePorts: true
 # WhitespaceSensitiveMacros:
 #   - BOOST_PP_STRINGIZE

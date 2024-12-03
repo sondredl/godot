@@ -47,7 +47,7 @@
 
 #ifdef TOOLS_ENABLED
 #include "modules/modules_enabled.gen.h" // For mono.
-#endif // TOOLS_ENABLED
+#endif									 // TOOLS_ENABLED
 
 const String ProjectSettings::PROJECT_DATA_DIR_NAME_SUFFIX = "godot";
 
@@ -1488,7 +1488,7 @@ ProjectSettings::ProjectSettings() {
 	GLOBAL_DEF("display/window/size/no_focus", false);
 	GLOBAL_DEF("display/window/size/sharp_corners", false);
 
-	GLOBAL_DEF(PropertyInfo(Variant::INT, "display/window/size/window_width_override", PROPERTY_HINT_RANGE, "0,7680,1,or_greater"), 0); // 8K resolution
+	GLOBAL_DEF(PropertyInfo(Variant::INT, "display/window/size/window_width_override", PROPERTY_HINT_RANGE, "0,7680,1,or_greater"), 0);	 // 8K resolution
 	GLOBAL_DEF(PropertyInfo(Variant::INT, "display/window/size/window_height_override", PROPERTY_HINT_RANGE, "0,4320,1,or_greater"), 0); // 8K resolution
 
 	GLOBAL_DEF("display/window/energy_saving/keep_screen_on", true);

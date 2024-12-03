@@ -3,6 +3,5 @@
 
 #include "constants.h"
 
-namespace embree
-{
+namespace embree {
 }

@@ -3,15 +3,13 @@
 
 #include <assert.h>
 
-union FloatBits
-{
+union FloatBits {
 	float f;
 	unsigned int ui;
 };
 
-unsigned short meshopt_quantizeHalf(float v)
-{
-	FloatBits u = {v};
+unsigned short meshopt_quantizeHalf(float v) {
+	FloatBits u = { v };
 	unsigned int ui = u.ui;
 
 	int s = (ui >> 16) & 0x8000;
@@ -32,11 +30,10 @@ unsigned short meshopt_quantizeHalf(float v)
 	return (unsigned short)(s | h);
 }
 
-float meshopt_quantizeFloat(float v, int N)
-{
+float meshopt_quantizeFloat(float v, int N) {
 	assert(N >= 0 && N <= 23);
 
-	FloatBits u = {v};
+	FloatBits u = { v };
 	unsigned int ui = u.ui;
 
 	const int mask = (1 << (23 - N)) - 1;
@@ -55,8 +52,7 @@ float meshopt_quantizeFloat(float v, int N)
 	return u.f;
 }
 
-float meshopt_dequantizeHalf(unsigned short h)
-{
+float meshopt_dequantizeHalf(unsigned short h) {
 	unsigned int s = unsigned(h & 0x8000) << 16;
 	int em = h & 0x7fff;
 

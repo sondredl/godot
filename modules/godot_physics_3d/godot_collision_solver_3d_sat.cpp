@@ -503,7 +503,7 @@ static void _generate_contacts_circle_circle(const Vector3 *p_points_A, int p_po
 			contact_points[num_points] = point_A;
 			++num_points;
 		} // Otherwise one circle is inside the other one, use 3 arbitrary equidistant points.
-	} // Otherwise circles are concentric, use 3 arbitrary equidistant points.
+	}	  // Otherwise circles are concentric, use 3 arbitrary equidistant points.
 
 	if (num_points == 0) {
 		// Generate equidistant points.

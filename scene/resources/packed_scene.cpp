@@ -991,8 +991,8 @@ Error SceneState::_parse_node(Node *p_owner, Node *p_node, int p_parent_idx, Has
 	// below condition is true for all nodes of the scene being saved, and ones in subscenes
 	// that hold changes
 
-	bool save_node = nd.properties.size() || nd.groups.size(); // some local properties or groups exist
-	save_node = save_node || p_node == p_owner; // owner is always saved
+	bool save_node = nd.properties.size() || nd.groups.size();							// some local properties or groups exist
+	save_node = save_node || p_node == p_owner;											// owner is always saved
 	save_node = save_node || (p_node->get_owner() == p_owner && instantiated_by_owner); //part of scene and not instanced
 
 	int idx = nodes.size();
@@ -1630,7 +1630,7 @@ Dictionary SceneState::get_bundled_scene() const {
 		rnodes.push_back(nd.owner);
 		rnodes.push_back(nd.type);
 		uint32_t name_index = nd.name;
-		if (nd.index < (1 << (32 - NAME_INDEX_BITS)) - 1) { //save if less than 16k children
+		if (nd.index < (1 << (32 - NAME_INDEX_BITS)) - 1) {			 //save if less than 16k children
 			name_index |= uint32_t(nd.index + 1) << NAME_INDEX_BITS; //for backwards compatibility, index 0 is no index
 		}
 		rnodes.push_back(name_index);

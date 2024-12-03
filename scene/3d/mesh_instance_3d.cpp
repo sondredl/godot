@@ -434,19 +434,19 @@ MeshInstance3D *MeshInstance3D::create_debug_tangents_node() {
 			Vector3 t = Vector3(tangents[j * 4 + 0], tangents[j * 4 + 1], tangents[j * 4 + 2]);
 			Vector3 b = (n.cross(t)).normalized() * tangents[j * 4 + 3];
 
-			lines.push_back(v); //normal
+			lines.push_back(v);				  //normal
 			colors.push_back(Color(0, 0, 1)); //color
-			lines.push_back(v + n * 0.04); //normal
+			lines.push_back(v + n * 0.04);	  //normal
 			colors.push_back(Color(0, 0, 1)); //color
 
-			lines.push_back(v); //tangent
+			lines.push_back(v);				  //tangent
 			colors.push_back(Color(1, 0, 0)); //color
-			lines.push_back(v + t * 0.04); //tangent
+			lines.push_back(v + t * 0.04);	  //tangent
 			colors.push_back(Color(1, 0, 0)); //color
 
-			lines.push_back(v); //binormal
+			lines.push_back(v);				  //binormal
 			colors.push_back(Color(0, 1, 0)); //color
-			lines.push_back(v + b * 0.04); //binormal
+			lines.push_back(v + b * 0.04);	  //binormal
 			colors.push_back(Color(0, 1, 0)); //color
 		}
 	}

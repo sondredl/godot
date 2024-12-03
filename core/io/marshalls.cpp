@@ -91,7 +91,7 @@ struct ContainerType {
 };
 
 #define GET_CONTAINER_TYPE_KIND(m_header, m_field) \
-	((ContainerTypeKind)(((m_header) & HEADER_DATA_FIELD_##m_field##_MASK) >> HEADER_DATA_FIELD_##m_field##_SHIFT))
+	((ContainerTypeKind)(((m_header)&HEADER_DATA_FIELD_##m_field##_MASK) >> HEADER_DATA_FIELD_##m_field##_SHIFT))
 
 static Error _decode_string(const uint8_t *&buf, int &len, int *r_len, String &r_string) {
 	ERR_FAIL_COND_V(len < 4, ERR_INVALID_DATA);

@@ -98,8 +98,8 @@ void *OpenXRHandTrackingExtension::set_system_properties_and_get_next_pointer(vo
 
 	handTrackingSystemProperties = {
 		XR_TYPE_SYSTEM_HAND_TRACKING_PROPERTIES_EXT, // type
-		p_next_pointer, // next
-		false, // supportsHandTracking
+		p_next_pointer,								 // next
+		false,										 // supportsHandTracking
 	};
 
 	return &handTrackingSystemProperties;
@@ -164,10 +164,10 @@ void OpenXRHandTrackingExtension::on_process() {
 			}
 
 			XrHandTrackerCreateInfoEXT create_info = {
-				XR_TYPE_HAND_TRACKER_CREATE_INFO_EXT, // type
-				next_pointer, // next
+				XR_TYPE_HAND_TRACKER_CREATE_INFO_EXT,		   // type
+				next_pointer,								   // next
 				i == 0 ? XR_HAND_LEFT_EXT : XR_HAND_RIGHT_EXT, // hand
-				XR_HAND_JOINT_SET_DEFAULT_EXT, // handJointSet
+				XR_HAND_JOINT_SET_DEFAULT_EXT,				   // handJointSet
 			};
 
 			result = xrCreateHandTrackerEXT(OpenXRAPI::get_singleton()->get_session(), &create_info, &hand_trackers[i].hand_tracker);
@@ -227,10 +227,10 @@ void OpenXRHandTrackingExtension::on_process() {
 			}
 
 			XrHandJointsLocateInfoEXT locateInfo = {
-				XR_TYPE_HAND_JOINTS_LOCATE_INFO_EXT, // type
-				next_pointer, // next
+				XR_TYPE_HAND_JOINTS_LOCATE_INFO_EXT,		  // type
+				next_pointer,								  // next
 				OpenXRAPI::get_singleton()->get_play_space(), // baseSpace
-				time, // time
+				time,										  // time
 			};
 
 			result = xrLocateHandJointsEXT(hand_trackers[i].hand_tracker, &locateInfo, &hand_trackers[i].locations);

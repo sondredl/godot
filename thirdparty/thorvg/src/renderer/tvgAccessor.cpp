@@ -20,87 +20,76 @@
  * SOFTWARE.
  */
 
-#include "tvgIteratorAccessor.h"
 #include "tvgCompressor.h"
+#include "tvgIteratorAccessor.h"
 
 /************************************************************************/
 /* Internal Class Implementation                                        */
 /************************************************************************/
 
-static bool accessChildren(Iterator* it, function<bool(const Paint* paint, void* data)> func, void* data)
-{
-    while (auto child = it->next()) {
-        //Access the child
-        if (!func(child, data)) return false;
+static bool accessChildren(Iterator *it, function<bool(const Paint *paint, void *data)> func, void *data) {
+	while (auto child = it->next()) {
+		//Access the child
+		if (!func(child, data))
+			return false;
 
-        //Access the children of the child
-        if (auto it2 = IteratorAccessor::iterator(child)) {
-            if (!accessChildren(it2, func, data)) {
-                delete(it2);
-                return false;
-            }
-            delete(it2);
-        }
-    }
-    return true;
+		//Access the children of the child
+		if (auto it2 = IteratorAccessor::iterator(child)) {
+			if (!accessChildren(it2, func, data)) {
+				delete (it2);
+				return false;
+			}
+			delete (it2);
+		}
+	}
+	return true;
 }
-
 
 /************************************************************************/
 /* External Class Implementation                                        */
 /************************************************************************/
 
-TVG_DEPRECATED unique_ptr<Picture> Accessor::set(unique_ptr<Picture> picture, function<bool(const Paint* paint)> func) noexcept
-{
-    auto backward = [](const tvg::Paint* paint, void* data) -> bool
-    {
-        auto func = reinterpret_cast<function<bool(const Paint* paint)>*>(data);
-        if (!(*func)(paint)) return false;
-        return true;
-    };
+TVG_DEPRECATED unique_ptr<Picture> Accessor::set(unique_ptr<Picture> picture, function<bool(const Paint *paint)> func) noexcept {
+	auto backward = [](const tvg::Paint *paint, void *data) -> bool {
+		auto func = reinterpret_cast<function<bool(const Paint *paint)> *>(data);
+		if (!(*func)(paint))
+			return false;
+		return true;
+	};
 
-    set(picture.get(), backward, reinterpret_cast<void*>(&func));
-    return picture;
+	set(picture.get(), backward, reinterpret_cast<void *>(&func));
+	return picture;
 }
 
+Result Accessor::set(const Picture *picture, function<bool(const Paint *paint, void *data)> func, void *data) noexcept {
+	if (!picture || !func)
+		return Result::InvalidArguments;
 
-Result Accessor::set(const Picture* picture, function<bool(const Paint* paint, void* data)> func, void* data) noexcept
-{
-    if (!picture || !func) return Result::InvalidArguments;
+	//Use the Preorder Tree-Search
 
-    //Use the Preorder Tree-Search
+	//Root
+	if (!func(picture, data))
+		return Result::Success;
 
-    //Root
-    if (!func(picture, data)) return Result::Success;
-
-    //Children
-    if (auto it = IteratorAccessor::iterator(picture)) {
-        accessChildren(it, func, data);
-        delete(it);
-    }
-    return Result::Success;
+	//Children
+	if (auto it = IteratorAccessor::iterator(picture)) {
+		accessChildren(it, func, data);
+		delete (it);
+	}
+	return Result::Success;
 }
 
-
-uint32_t Accessor::id(const char* name) noexcept
-{
-    return djb2Encode(name);
+uint32_t Accessor::id(const char *name) noexcept {
+	return djb2Encode(name);
 }
 
-
-Accessor::~Accessor()
-{
-
+Accessor::~Accessor() {
 }
 
-
-Accessor::Accessor() : pImpl(nullptr)
-{
-
+Accessor::Accessor() :
+		pImpl(nullptr) {
 }
 
-
-unique_ptr<Accessor> Accessor::gen() noexcept
-{
-    return unique_ptr<Accessor>(new Accessor);
+unique_ptr<Accessor> Accessor::gen() noexcept {
+	return unique_ptr<Accessor>(new Accessor);
 }

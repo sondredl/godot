@@ -755,7 +755,7 @@ void EditorFeatureProfileManager::_update_selected_profile() {
 	}
 
 	if (profile == current_profile) {
-		edited = current; //reuse current profile (which is what editor uses)
+		edited = current;				  //reuse current profile (which is what editor uses)
 		ERR_FAIL_COND(current.is_null()); //nothing selected, current should never be null
 	} else {
 		//reload edited, if different from current

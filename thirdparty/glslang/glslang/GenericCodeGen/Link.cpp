@@ -44,10 +44,11 @@
 //
 class TGenericLinker : public TLinker {
 public:
-    TGenericLinker(EShExecutable e) : TLinker(e, infoSink) {}
-    bool link(TCompilerList&, TUniformMap*) { return true; }
-    void getAttributeBindings(ShBindingTable const **) const { }
-    TInfoSink infoSink;
+	TGenericLinker(EShExecutable e) :
+			TLinker(e, infoSink) {}
+	bool link(TCompilerList &, TUniformMap *) { return true; }
+	void getAttributeBindings(ShBindingTable const **) const {}
+	TInfoSink infoSink;
 };
 
 //
@@ -55,33 +56,28 @@ public:
 //
 class TUniformLinkedMap : public TUniformMap {
 public:
-    TUniformLinkedMap() { }
-    virtual int getLocation(const char*) { return 0; }
+	TUniformLinkedMap() {}
+	virtual int getLocation(const char *) { return 0; }
 };
 
-TShHandleBase* ConstructLinker(EShExecutable executable, int) { return new TGenericLinker(executable); }
+TShHandleBase *ConstructLinker(EShExecutable executable, int) { return new TGenericLinker(executable); }
 
-void DeleteLinker(TShHandleBase* linker)
-{
-    delete linker;
+void DeleteLinker(TShHandleBase *linker) {
+	delete linker;
 }
 
-TUniformMap* ConstructUniformMap()
-{
-    return new TUniformLinkedMap();
+TUniformMap *ConstructUniformMap() {
+	return new TUniformLinkedMap();
 }
 
-void DeleteUniformMap(TUniformMap* map)
-{
-    delete map;
+void DeleteUniformMap(TUniformMap *map) {
+	delete map;
 }
 
-TShHandleBase* ConstructBindings()
-{
-    return nullptr;
+TShHandleBase *ConstructBindings() {
+	return nullptr;
 }
 
-void DeleteBindingList(TShHandleBase* bindingList)
-{
-    delete bindingList;
+void DeleteBindingList(TShHandleBase *bindingList) {
+	delete bindingList;
 }

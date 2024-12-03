@@ -635,7 +635,7 @@ void ProjectDialog::ok_pressed() {
 				ERR_FAIL_COND_MSG(ret != UNZ_OK, "Failed to get current file info.");
 
 				String rel_path = String::utf8(fname).trim_prefix(zip_root);
-				if (rel_path.is_empty()) { // Root.
+				if (rel_path.is_empty()) {			  // Root.
 				} else if (rel_path.ends_with("/")) { // Directory.
 					Ref<DirAccess> da = DirAccess::create(DirAccess::ACCESS_FILESYSTEM);
 					da->make_dir(path.path_join(rel_path));

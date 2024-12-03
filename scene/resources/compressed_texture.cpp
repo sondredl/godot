@@ -284,7 +284,7 @@ void CompressedTexture2D::reload_from_file() {
 		return;
 	}
 
-	path = ResourceLoader::path_remap(path); //remap for translation
+	path = ResourceLoader::path_remap(path);   //remap for translation
 	path = ResourceLoader::import_remap(path); //remap for import
 	if (!path.is_resource_file()) {
 		return;
@@ -523,8 +523,8 @@ Error CompressedTexture3D::_load_data(const String &p_path, Vector<Ref<Image>> &
 	}
 
 	r_depth = f->get_32(); //depth
-	f->get_32(); //ignored (mode)
-	f->get_32(); // ignored (data format)
+	f->get_32();		   //ignored (mode)
+	f->get_32();		   // ignored (data format)
 
 	f->get_32(); //ignored
 	int mipmap_count = f->get_32();
@@ -627,7 +627,7 @@ void CompressedTexture3D::reload_from_file() {
 		return;
 	}
 
-	path = ResourceLoader::path_remap(path); //remap for translation
+	path = ResourceLoader::path_remap(path);   //remap for translation
 	path = ResourceLoader::import_remap(path); //remap for import
 	if (!path.is_resource_file()) {
 		return;
@@ -715,7 +715,7 @@ Error CompressedTextureLayered::_load_data(const String &p_path, Vector<Ref<Imag
 	}
 
 	uint32_t layer_count = f->get_32(); //layer count
-	uint32_t type = f->get_32(); //layer count
+	uint32_t type = f->get_32();		//layer count
 	ERR_FAIL_COND_V((int)type != layered_type, ERR_INVALID_DATA);
 
 	uint32_t df = f->get_32(); //data format
@@ -821,7 +821,7 @@ void CompressedTextureLayered::reload_from_file() {
 		return;
 	}
 
-	path = ResourceLoader::path_remap(path); //remap for translation
+	path = ResourceLoader::path_remap(path);   //remap for translation
 	path = ResourceLoader::import_remap(path); //remap for import
 	if (!path.is_resource_file()) {
 		return;

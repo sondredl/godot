@@ -1050,7 +1050,7 @@ void CodeSignCodeDirectory::write_to_file(Ref<FileAccess> p_file) const {
 
 CodeSignSignature::CodeSignSignature() {
 	blob.append_array({ 0xFA, 0xDE, 0x0B, 0x01 }); // Signature magic.
-	uint32_t sign_size = 8; // Ad-hoc signature is empty.
+	uint32_t sign_size = 8;						   // Ad-hoc signature is empty.
 	for (int i = 3; i >= 0; i--) {
 		uint8_t x = (sign_size >> i * 8) & 0xFF; // Size.
 		blob.push_back(x);

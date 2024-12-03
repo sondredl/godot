@@ -1602,8 +1602,8 @@ GridMapEditor::GridMapEditor() {
 		d.resize(RS::ARRAY_MAX);
 
 		default_color = Color(0.0, 0.565, 1.0); // blue 0.7, 0.7, 1.0
-		erase_color = Color(1.0, 0.2, 0.2); // red
-		pick_color = Color(1, 0.7, 0); // orange/yellow
+		erase_color = Color(1.0, 0.2, 0.2);		// red
+		pick_color = Color(1, 0.7, 0);			// orange/yellow
 
 		cursor_inner_mat.instantiate();
 		cursor_inner_mat->set_albedo(Color(default_color, 0.2));

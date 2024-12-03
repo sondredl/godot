@@ -40,12 +40,21 @@
 // not declaring the functions as static or inline, hence causing multiple
 // conflicting definitions at link-time.
 namespace buminiz {
-    typedef unsigned long mz_ulong;
-    enum { MZ_OK = 0, MZ_STREAM_END = 1, MZ_NEED_DICT = 2, MZ_ERRNO = -1, MZ_STREAM_ERROR = -2, MZ_DATA_ERROR = -3, MZ_MEM_ERROR = -4, MZ_BUF_ERROR = -5, MZ_VERSION_ERROR = -6, MZ_PARAM_ERROR = -10000 };
-    mz_ulong mz_compressBound(mz_ulong source_len);
-    int mz_compress2(unsigned char *pDest, mz_ulong *pDest_len, const unsigned char *pSource, mz_ulong source_len, int level);
-    int mz_uncompress(unsigned char *pDest, mz_ulong *pDest_len, const unsigned char *pSource, mz_ulong source_len);
-}
+typedef unsigned long mz_ulong;
+enum { MZ_OK = 0,
+	MZ_STREAM_END = 1,
+	MZ_NEED_DICT = 2,
+	MZ_ERRNO = -1,
+	MZ_STREAM_ERROR = -2,
+	MZ_DATA_ERROR = -3,
+	MZ_MEM_ERROR = -4,
+	MZ_BUF_ERROR = -5,
+	MZ_VERSION_ERROR = -6,
+	MZ_PARAM_ERROR = -10000 };
+mz_ulong mz_compressBound(mz_ulong source_len);
+int mz_compress2(unsigned char *pDest, mz_ulong *pDest_len, const unsigned char *pSource, mz_ulong source_len, int level);
+int mz_uncompress(unsigned char *pDest, mz_ulong *pDest_len, const unsigned char *pSource, mz_ulong source_len);
+} //namespace buminiz
 #endif
 
 using namespace buminiz;
@@ -62,7 +71,7 @@ extern "C" {
  * @author Daniel Rakos, RasterGrid
  */
 ktx_size_t ktxCompressZLIBBounds(ktx_size_t srcLength) {
-    return mz_compressBound((mz_ulong)srcLength);
+	return mz_compressBound((mz_ulong)srcLength);
 }
 
 /**
@@ -79,38 +88,39 @@ ktx_size_t ktxCompressZLIBBounds(ktx_size_t srcLength) {
  *
  * @author Daniel Rakos, RasterGrid
  */
-KTX_error_code ktxCompressZLIBInt(unsigned char* pDest,
-                                  ktx_size_t* pDestLength,
-                                  const unsigned char* pSrc,
-                                  ktx_size_t srcLength,
-                                  ktx_uint32_t level) {
-    if ((srcLength | *pDestLength) > 0xFFFFFFFFU) return KTX_INVALID_VALUE;
-    mz_ulong mzCompressedSize = (mz_ulong)*pDestLength;
-    int status = mz_compress2(pDest, &mzCompressedSize, pSrc, (mz_ulong)srcLength, level);
-    switch (status) {
-    case MZ_OK:
-        *pDestLength = mzCompressedSize;
-        return KTX_SUCCESS;
-    case MZ_PARAM_ERROR:
-        return KTX_INVALID_VALUE;
-    case MZ_BUF_ERROR:
+KTX_error_code ktxCompressZLIBInt(unsigned char *pDest,
+		ktx_size_t *pDestLength,
+		const unsigned char *pSrc,
+		ktx_size_t srcLength,
+		ktx_uint32_t level) {
+	if ((srcLength | *pDestLength) > 0xFFFFFFFFU)
+		return KTX_INVALID_VALUE;
+	mz_ulong mzCompressedSize = (mz_ulong)*pDestLength;
+	int status = mz_compress2(pDest, &mzCompressedSize, pSrc, (mz_ulong)srcLength, level);
+	switch (status) {
+		case MZ_OK:
+			*pDestLength = mzCompressedSize;
+			return KTX_SUCCESS;
+		case MZ_PARAM_ERROR:
+			return KTX_INVALID_VALUE;
+		case MZ_BUF_ERROR:
 #ifdef DEBUG
-        assert(false && "Deflate dstSize too small.");
+			assert(false && "Deflate dstSize too small.");
 #endif
-        return KTX_OUT_OF_MEMORY;
-    case MZ_MEM_ERROR:
+			return KTX_OUT_OF_MEMORY;
+		case MZ_MEM_ERROR:
 #ifdef DEBUG
-        assert(false && "Deflate workspace too small.");
+			assert(false && "Deflate workspace too small.");
 #endif
-        return KTX_OUT_OF_MEMORY;
-    default:
-        // The remaining errors look like they should only
-        // occur during decompression but just in case.
+			return KTX_OUT_OF_MEMORY;
+		default:
+			// The remaining errors look like they should only
+			// occur during decompression but just in case.
 #ifdef DEBUG
-        assert(true);
+			assert(true);
 #endif
-        return KTX_INVALID_OPERATION;
-    }
+			return KTX_INVALID_OPERATION;
+	}
 }
 
 /**
@@ -126,24 +136,24 @@ KTX_error_code ktxCompressZLIBInt(unsigned char* pDest,
  *
  * @author Daniel Rakos, RasterGrid
  */
-KTX_error_code ktxUncompressZLIBInt(unsigned char* pDest,
-                                    ktx_size_t* pDestLength,
-                                    const unsigned char* pSrc,
-                                    ktx_size_t srcLength) {
-    if ((srcLength | *pDestLength) > 0xFFFFFFFFU) return KTX_INVALID_VALUE;
-    mz_ulong mzUncompressedSize = (mz_ulong)*pDestLength;
-    int status = mz_uncompress(pDest, &mzUncompressedSize, pSrc, (mz_ulong)srcLength);
-    switch (status) {
-    case MZ_OK:
-        *pDestLength = mzUncompressedSize;
-        return KTX_SUCCESS;
-    case MZ_BUF_ERROR:
-        return KTX_DECOMPRESS_LENGTH_ERROR; // buffer too small
-    case MZ_MEM_ERROR:
-        return KTX_OUT_OF_MEMORY;
-    default:
-        return KTX_FILE_DATA_ERROR;
-    }
+KTX_error_code ktxUncompressZLIBInt(unsigned char *pDest,
+		ktx_size_t *pDestLength,
+		const unsigned char *pSrc,
+		ktx_size_t srcLength) {
+	if ((srcLength | *pDestLength) > 0xFFFFFFFFU)
+		return KTX_INVALID_VALUE;
+	mz_ulong mzUncompressedSize = (mz_ulong)*pDestLength;
+	int status = mz_uncompress(pDest, &mzUncompressedSize, pSrc, (mz_ulong)srcLength);
+	switch (status) {
+		case MZ_OK:
+			*pDestLength = mzUncompressedSize;
+			return KTX_SUCCESS;
+		case MZ_BUF_ERROR:
+			return KTX_DECOMPRESS_LENGTH_ERROR; // buffer too small
+		case MZ_MEM_ERROR:
+			return KTX_OUT_OF_MEMORY;
+		default:
+			return KTX_FILE_DATA_ERROR;
+	}
 }
-
 }

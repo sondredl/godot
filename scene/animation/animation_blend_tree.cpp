@@ -1110,8 +1110,8 @@ void AnimationNodeTransition::get_parameter_list(List<PropertyInfo> *r_list) con
 	}
 
 	r_list->push_back(PropertyInfo(Variant::STRING, current_state, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_DEFAULT | PROPERTY_USAGE_READ_ONLY)); // For interface.
-	r_list->push_back(PropertyInfo(Variant::STRING, transition_request, PROPERTY_HINT_ENUM, anims)); // For transition request. It will be cleared after setting the value immediately.
-	r_list->push_back(PropertyInfo(Variant::INT, current_index, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_READ_ONLY)); // To avoid finding the index every frame, use this internally.
+	r_list->push_back(PropertyInfo(Variant::STRING, transition_request, PROPERTY_HINT_ENUM, anims));											// For transition request. It will be cleared after setting the value immediately.
+	r_list->push_back(PropertyInfo(Variant::INT, current_index, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_STORAGE | PROPERTY_USAGE_READ_ONLY));	// To avoid finding the index every frame, use this internally.
 	r_list->push_back(PropertyInfo(Variant::INT, prev_index, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
 	r_list->push_back(PropertyInfo(Variant::FLOAT, prev_xfading, PROPERTY_HINT_NONE, "", PROPERTY_USAGE_NONE));
 }

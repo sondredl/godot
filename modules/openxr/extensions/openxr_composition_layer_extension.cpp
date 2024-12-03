@@ -264,17 +264,17 @@ void OpenXRViewportCompositionLayerProvider::create_android_surface() {
 	// The XR_FB_android_surface_swapchain_create extension mandates that format, sampleCount,
 	// faceCount, arraySize, and mipCount must be zero.
 	XrSwapchainCreateInfo info = {
-		XR_TYPE_SWAPCHAIN_CREATE_INFO, // type
-		next_pointer, // next
-		0, // createFlags
+		XR_TYPE_SWAPCHAIN_CREATE_INFO,																					  // type
+		next_pointer,																									  // next
+		0,																												  // createFlags
 		XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT | XR_SWAPCHAIN_USAGE_MUTABLE_FORMAT_BIT, // usageFlags
-		0, // format
-		0, // sampleCount
-		(uint32_t)swapchain_size.x, // width
-		(uint32_t)swapchain_size.y, // height
-		0, // faceCount
-		0, // arraySize
-		0, // mipCount
+		0,																												  // format
+		0,																												  // sampleCount
+		(uint32_t)swapchain_size.x,																						  // width
+		(uint32_t)swapchain_size.y,																						  // height
+		0,																												  // faceCount
+		0,																												  // arraySize
+		0,																												  // mipCount
 	};
 
 	jobject surface;
@@ -341,9 +341,9 @@ XrCompositionLayerBaseHeader *OpenXRViewportCompositionLayerProvider::get_compos
 	}
 
 	XrSwapchainSubImage subimage = {
-		0, // swapchain // NOLINT(modernize-use-nullptr) - 32-bit uses non-pointer uint64
+		0,						// swapchain // NOLINT(modernize-use-nullptr) - 32-bit uses non-pointer uint64
 		{ { 0, 0 }, { 0, 0 } }, // imageRect
-		0, // imageArrayIndex
+		0,						// imageArrayIndex
 	};
 	update_swapchain_sub_image(subimage);
 

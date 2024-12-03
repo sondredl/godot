@@ -42,9 +42,9 @@
 #include "core/variant/variant.h"
 #include "core/version_generated.gen.h"
 
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
-#include <cstdint>
 
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS // to disable build-time warning which suggested to use strcpy_s instead strcpy
@@ -1123,10 +1123,10 @@ String String::_camelcase_to_underscore() const {
 			is_next_lower = is_unicode_lower_case(cstr[i + 1]);
 		}
 
-		const bool cond_a = is_prev_lower && is_curr_upper; // aA
+		const bool cond_a = is_prev_lower && is_curr_upper;										// aA
 		const bool cond_b = (is_prev_upper || is_prev_digit) && is_curr_upper && is_next_lower; // AAa, 2Aa
-		const bool cond_c = is_prev_digit && is_curr_lower && is_next_lower; // 2aa
-		const bool cond_d = (is_prev_upper || is_prev_lower) && is_curr_digit; // A2, a2
+		const bool cond_c = is_prev_digit && is_curr_lower && is_next_lower;					// 2aa
+		const bool cond_d = (is_prev_upper || is_prev_lower) && is_curr_digit;					// A2, a2
 
 		if (cond_a || cond_b || cond_c || cond_d) {
 			new_string += substr(start_index, i - start_index) + "_";
@@ -2307,37 +2307,37 @@ CharString String::utf8() const {
 
 		if (c <= 0x7f) { // 7 bits.
 			APPEND_CHAR(c);
-		} else if (c <= 0x7ff) { // 11 bits
-			APPEND_CHAR(uint32_t(0xc0 | ((c >> 6) & 0x1f))); // Top 5 bits.
-			APPEND_CHAR(uint32_t(0x80 | (c & 0x3f))); // Bottom 6 bits.
-		} else if (c <= 0xffff) { // 16 bits
+		} else if (c <= 0x7ff) {							  // 11 bits
+			APPEND_CHAR(uint32_t(0xc0 | ((c >> 6) & 0x1f)));  // Top 5 bits.
+			APPEND_CHAR(uint32_t(0x80 | (c & 0x3f)));		  // Bottom 6 bits.
+		} else if (c <= 0xffff) {							  // 16 bits
 			APPEND_CHAR(uint32_t(0xe0 | ((c >> 12) & 0x0f))); // Top 4 bits.
-			APPEND_CHAR(uint32_t(0x80 | ((c >> 6) & 0x3f))); // Middle 6 bits.
-			APPEND_CHAR(uint32_t(0x80 | (c & 0x3f))); // Bottom 6 bits.
-		} else if (c <= 0x001fffff) { // 21 bits
+			APPEND_CHAR(uint32_t(0x80 | ((c >> 6) & 0x3f)));  // Middle 6 bits.
+			APPEND_CHAR(uint32_t(0x80 | (c & 0x3f)));		  // Bottom 6 bits.
+		} else if (c <= 0x001fffff) {						  // 21 bits
 			APPEND_CHAR(uint32_t(0xf0 | ((c >> 18) & 0x07))); // Top 3 bits.
 			APPEND_CHAR(uint32_t(0x80 | ((c >> 12) & 0x3f))); // Upper middle 6 bits.
-			APPEND_CHAR(uint32_t(0x80 | ((c >> 6) & 0x3f))); // Lower middle 6 bits.
-			APPEND_CHAR(uint32_t(0x80 | (c & 0x3f))); // Bottom 6 bits.
-		} else if (c <= 0x03ffffff) { // 26 bits
+			APPEND_CHAR(uint32_t(0x80 | ((c >> 6) & 0x3f)));  // Lower middle 6 bits.
+			APPEND_CHAR(uint32_t(0x80 | (c & 0x3f)));		  // Bottom 6 bits.
+		} else if (c <= 0x03ffffff) {						  // 26 bits
 			APPEND_CHAR(uint32_t(0xf8 | ((c >> 24) & 0x03))); // Top 2 bits.
 			APPEND_CHAR(uint32_t(0x80 | ((c >> 18) & 0x3f))); // Upper middle 6 bits.
 			APPEND_CHAR(uint32_t(0x80 | ((c >> 12) & 0x3f))); // middle 6 bits.
-			APPEND_CHAR(uint32_t(0x80 | ((c >> 6) & 0x3f))); // Lower middle 6 bits.
-			APPEND_CHAR(uint32_t(0x80 | (c & 0x3f))); // Bottom 6 bits.
-		} else if (c <= 0x7fffffff) { // 31 bits
+			APPEND_CHAR(uint32_t(0x80 | ((c >> 6) & 0x3f)));  // Lower middle 6 bits.
+			APPEND_CHAR(uint32_t(0x80 | (c & 0x3f)));		  // Bottom 6 bits.
+		} else if (c <= 0x7fffffff) {						  // 31 bits
 			APPEND_CHAR(uint32_t(0xfc | ((c >> 30) & 0x01))); // Top 1 bit.
 			APPEND_CHAR(uint32_t(0x80 | ((c >> 24) & 0x3f))); // Upper upper middle 6 bits.
 			APPEND_CHAR(uint32_t(0x80 | ((c >> 18) & 0x3f))); // Lower upper middle 6 bits.
 			APPEND_CHAR(uint32_t(0x80 | ((c >> 12) & 0x3f))); // Upper lower middle 6 bits.
-			APPEND_CHAR(uint32_t(0x80 | ((c >> 6) & 0x3f))); // Lower lower middle 6 bits.
-			APPEND_CHAR(uint32_t(0x80 | (c & 0x3f))); // Bottom 6 bits.
+			APPEND_CHAR(uint32_t(0x80 | ((c >> 6) & 0x3f)));  // Lower lower middle 6 bits.
+			APPEND_CHAR(uint32_t(0x80 | (c & 0x3f)));		  // Bottom 6 bits.
 		} else {
 			// the string is a valid UTF32, so it should never happen ...
 			print_unicode_error(vformat("Non scalar value (%x)", c), true);
 			APPEND_CHAR(uint32_t(0xe0 | ((_replacement_char >> 12) & 0x0f))); // Top 4 bits.
-			APPEND_CHAR(uint32_t(0x80 | ((_replacement_char >> 6) & 0x3f))); // Middle 6 bits.
-			APPEND_CHAR(uint32_t(0x80 | (_replacement_char & 0x3f))); // Bottom 6 bits.
+			APPEND_CHAR(uint32_t(0x80 | ((_replacement_char >> 6) & 0x3f)));  // Middle 6 bits.
+			APPEND_CHAR(uint32_t(0x80 | (_replacement_char & 0x3f)));		  // Bottom 6 bits.
 		}
 	}
 #undef APPEND_CHAR
@@ -2510,8 +2510,8 @@ Char16String String::utf16() const {
 
 		if (c <= 0xffff) { // 16 bits.
 			APPEND_CHAR(c);
-		} else if (c <= 0x10ffff) { // 32 bits.
-			APPEND_CHAR(uint32_t((c >> 10) + 0xd7c0)); // lead surrogate.
+		} else if (c <= 0x10ffff) {						 // 32 bits.
+			APPEND_CHAR(uint32_t((c >> 10) + 0xd7c0));	 // lead surrogate.
 			APPEND_CHAR(uint32_t((c & 0x3ff) | 0xdc00)); // trail surrogate.
 		} else {
 			// the string is a valid UTF32, so it should never happen ...
@@ -5613,9 +5613,9 @@ String String::sprintf(const Array &values, bool *error) const {
 					in_format = false;
 					break;
 				}
-				case 'd': // Integer (signed)
-				case 'o': // Octal
-				case 'x': // Hexadecimal (lowercase)
+				case 'd':	// Integer (signed)
+				case 'o':	// Octal
+				case 'x':	// Hexadecimal (lowercase)
 				case 'X': { // Hexadecimal (uppercase)
 					if (value_index >= values.size()) {
 						return "not enough arguments for format string";

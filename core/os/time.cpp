@@ -32,7 +32,7 @@
 
 #include "core/os/os.h"
 
-#define UNIX_EPOCH_YEAR_AD 1970 // 1970
+#define UNIX_EPOCH_YEAR_AD 1970		   // 1970
 #define SECONDS_PER_DAY (24 * 60 * 60) // 86400
 #define IS_LEAP_YEAR(year) (!((year) % 4) && (((year) % 100) || !((year) % 400)))
 #define YEAR_SIZE(year) (IS_LEAP_YEAR(year) ? 366 : 365)

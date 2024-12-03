@@ -173,7 +173,7 @@ void LineBuilder::build() {
 	// For each additional segment
 	for (int i = first_point; i <= segments_count; ++i) {
 		pos1 = points[(i == -1) ? point_count - 1 : i % point_count]; // First point.
-		Vector2 pos2 = points[(i + 1) % point_count]; // Second point.
+		Vector2 pos2 = points[(i + 1) % point_count];				  // Second point.
 
 		Vector2 f1 = (pos2 - pos1).normalized();
 		Vector2 u1 = f1.orthogonal();

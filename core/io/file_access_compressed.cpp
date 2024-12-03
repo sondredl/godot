@@ -135,9 +135,9 @@ void FileAccessCompressed::_close() {
 
 		CharString mgc = magic.utf8();
 		f->store_buffer((const uint8_t *)mgc.get_data(), mgc.length()); //write header 4
-		f->store_32(cmode); //write compression mode 4
-		f->store_32(block_size); //write block size 4
-		f->store_32(write_max); //max amount of data written 4
+		f->store_32(cmode);												//write compression mode 4
+		f->store_32(block_size);										//write block size 4
+		f->store_32(write_max);											//max amount of data written 4
 		uint32_t bc = (write_max / block_size) + 1;
 
 		for (uint32_t i = 0; i < bc; i++) {

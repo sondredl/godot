@@ -170,13 +170,13 @@ PackedStringArray OpenXRInterface::get_suggested_tracker_names() const {
 	// These are hardcoded in OpenXR, note that they will only be available if added to our action map
 
 	PackedStringArray arr = {
-		"head", // XRPositionalTracker for the users head (Mapped from OpenXR /user/head)
-		"left_hand", // XRControllerTracker for the users left hand (Mapped from OpenXR /user/hand/left)
-		"right_hand", // XRControllerTracker for the users right hand (Mapped from OpenXR /user/hand/right)
-		"/user/hand_tracker/left", // XRHandTracker for the users left hand
+		"head",						// XRPositionalTracker for the users head (Mapped from OpenXR /user/head)
+		"left_hand",				// XRControllerTracker for the users left hand (Mapped from OpenXR /user/hand/left)
+		"right_hand",				// XRControllerTracker for the users right hand (Mapped from OpenXR /user/hand/right)
+		"/user/hand_tracker/left",	// XRHandTracker for the users left hand
 		"/user/hand_tracker/right", // XRHandTracker for the users right hand
-		"/user/body_tracker", // XRBodyTracker for the users body
-		"/user/face_tracker", // XRFaceTracker for the users face
+		"/user/body_tracker",		// XRBodyTracker for the users body
+		"/user/face_tracker",		// XRFaceTracker for the users face
 		"/user/treadmill"
 	};
 

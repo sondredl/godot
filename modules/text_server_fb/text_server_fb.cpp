@@ -40,7 +40,7 @@
 #include <godot_cpp/classes/translation_server.hpp>
 #include <godot_cpp/core/error_macros.hpp>
 
-#define OT_TAG(m_c1, m_c2, m_c3, m_c4) ((int32_t)((((uint32_t)(m_c1) & 0xff) << 24) | (((uint32_t)(m_c2) & 0xff) << 16) | (((uint32_t)(m_c3) & 0xff) << 8) | ((uint32_t)(m_c4) & 0xff)))
+#define OT_TAG(m_c1, m_c2, m_c3, m_c4) ((int32_t)((((uint32_t)(m_c1)&0xff) << 24) | (((uint32_t)(m_c2)&0xff) << 16) | (((uint32_t)(m_c3)&0xff) << 8) | ((uint32_t)(m_c4)&0xff)))
 
 using namespace godot;
 
@@ -453,7 +453,7 @@ _FORCE_INLINE_ TextServerFallback::FontGlyph TextServerFallback::rasterize_msdf(
 		ERR_FAIL_COND_V(tex_pos.index < 0, FontGlyph());
 		ShelfPackTexture &tex = p_data->textures.write[tex_pos.index];
 
-		edgeColoringSimple(shape, 3.0); // Max. angle.
+		edgeColoringSimple(shape, 3.0);		   // Max. angle.
 		msdfgen::Bitmap<float, 4> image(w, h); // Texture size.
 
 		DistancePixelConversion distancePixelConversion(p_pixel_range);
