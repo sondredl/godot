@@ -404,7 +404,7 @@ void EditorExportPlatformAndroid::_check_for_changes_poll_thread(void *ud) {
 								d.description += "Chipset: " + p.get_slice("=", 1).strip_edges() + "\n";
 							} else if (p.begins_with("ro.opengles.version=")) {
 								uint32_t opengl = p.get_slice("=", 1).to_int();
-								d.description += "OpenGL: " + itos(opengl >> 16) + "." + itos((opengl >> 8) & 0xFF) + "." + itos((opengl) & 0xFF) + "\n";
+								d.description += "OpenGL: " + itos(opengl >> 16) + "." + itos((opengl >> 8) & 0xFF) + "." + itos((opengl)&0xFF) + "\n";
 							}
 						}
 
@@ -614,8 +614,8 @@ bool EditorExportPlatformAndroid::_should_compress_asset(const String &p_path, c
 		".amr", ".awb", ".wma", ".wmv",
 		// Godot-specific:
 		".webp", // Same reasoning as .png
-		".cfb", // Don't let small config files slow-down startup
-		".scn", // Binary scenes are usually already compressed
+		".cfb",	 // Don't let small config files slow-down startup
+		".scn",	 // Binary scenes are usually already compressed
 		".ctex", // Streamable textures are usually already compressed
 		// Trailer for easier processing
 		nullptr
@@ -1278,60 +1278,60 @@ void EditorExportPlatformAndroid::_fix_manifest(const Ref<EditorExportPreset> &p
 							p_manifest.resize(manifest_cur_size);
 
 							// start tag
-							encode_uint16(0x102, &p_manifest.write[ofs]); // type
-							encode_uint16(16, &p_manifest.write[ofs + 2]); // headersize
-							encode_uint32(tag_size, &p_manifest.write[ofs + 4]); // size
-							encode_uint32(0, &p_manifest.write[ofs + 8]); // lineno
-							encode_uint32(-1, &p_manifest.write[ofs + 12]); // comment
-							encode_uint32(-1, &p_manifest.write[ofs + 16]); // ns
+							encode_uint16(0x102, &p_manifest.write[ofs]);						  // type
+							encode_uint16(16, &p_manifest.write[ofs + 2]);						  // headersize
+							encode_uint32(tag_size, &p_manifest.write[ofs + 4]);				  // size
+							encode_uint32(0, &p_manifest.write[ofs + 8]);						  // lineno
+							encode_uint32(-1, &p_manifest.write[ofs + 12]);						  // comment
+							encode_uint32(-1, &p_manifest.write[ofs + 16]);						  // ns
 							encode_uint32(attr_uses_feature_string, &p_manifest.write[ofs + 20]); // name
-							encode_uint16(20, &p_manifest.write[ofs + 24]); // attr_start
-							encode_uint16(20, &p_manifest.write[ofs + 26]); // attr_size
-							encode_uint16(attr_count, &p_manifest.write[ofs + 28]); // num_attrs
-							encode_uint16(0, &p_manifest.write[ofs + 30]); // id_index
-							encode_uint16(0, &p_manifest.write[ofs + 32]); // class_index
-							encode_uint16(0, &p_manifest.write[ofs + 34]); // style_index
+							encode_uint16(20, &p_manifest.write[ofs + 24]);						  // attr_start
+							encode_uint16(20, &p_manifest.write[ofs + 26]);						  // attr_size
+							encode_uint16(attr_count, &p_manifest.write[ofs + 28]);				  // num_attrs
+							encode_uint16(0, &p_manifest.write[ofs + 30]);						  // id_index
+							encode_uint16(0, &p_manifest.write[ofs + 32]);						  // class_index
+							encode_uint16(0, &p_manifest.write[ofs + 34]);						  // style_index
 
 							// android:name attribute
 							encode_uint32(ns_android_string, &p_manifest.write[ofs + 36]); // ns
-							encode_uint32(attr_name_string, &p_manifest.write[ofs + 40]); // 'name'
-							encode_uint32(feature_string, &p_manifest.write[ofs + 44]); // raw_value
-							encode_uint16(8, &p_manifest.write[ofs + 48]); // typedvalue_size
-							p_manifest.write[ofs + 50] = 0; // typedvalue_always0
-							p_manifest.write[ofs + 51] = 0x03; // typedvalue_type (string)
-							encode_uint32(feature_string, &p_manifest.write[ofs + 52]); // typedvalue reference
+							encode_uint32(attr_name_string, &p_manifest.write[ofs + 40]);  // 'name'
+							encode_uint32(feature_string, &p_manifest.write[ofs + 44]);	   // raw_value
+							encode_uint16(8, &p_manifest.write[ofs + 48]);				   // typedvalue_size
+							p_manifest.write[ofs + 50] = 0;								   // typedvalue_always0
+							p_manifest.write[ofs + 51] = 0x03;							   // typedvalue_type (string)
+							encode_uint32(feature_string, &p_manifest.write[ofs + 52]);	   // typedvalue reference
 
 							// android:required attribute
-							encode_uint32(ns_android_string, &p_manifest.write[ofs + 56]); // ns
+							encode_uint32(ns_android_string, &p_manifest.write[ofs + 56]);	  // ns
 							encode_uint32(attr_required_string, &p_manifest.write[ofs + 60]); // 'name'
-							encode_uint32(required_value, &p_manifest.write[ofs + 64]); // raw_value
-							encode_uint16(8, &p_manifest.write[ofs + 68]); // typedvalue_size
-							p_manifest.write[ofs + 70] = 0; // typedvalue_always0
-							p_manifest.write[ofs + 71] = 0x03; // typedvalue_type (string)
-							encode_uint32(required_value, &p_manifest.write[ofs + 72]); // typedvalue reference
+							encode_uint32(required_value, &p_manifest.write[ofs + 64]);		  // raw_value
+							encode_uint16(8, &p_manifest.write[ofs + 68]);					  // typedvalue_size
+							p_manifest.write[ofs + 70] = 0;									  // typedvalue_always0
+							p_manifest.write[ofs + 71] = 0x03;								  // typedvalue_type (string)
+							encode_uint32(required_value, &p_manifest.write[ofs + 72]);		  // typedvalue reference
 
 							ofs += 76;
 
 							if (has_version_attribute) {
 								// android:version attribute
-								encode_uint32(ns_android_string, &p_manifest.write[ofs]); // ns
+								encode_uint32(ns_android_string, &p_manifest.write[ofs]);		// ns
 								encode_uint32(attr_version_string, &p_manifest.write[ofs + 4]); // 'name'
-								encode_uint32(version_value, &p_manifest.write[ofs + 8]); // raw_value
-								encode_uint16(8, &p_manifest.write[ofs + 12]); // typedvalue_size
-								p_manifest.write[ofs + 14] = 0; // typedvalue_always0
-								p_manifest.write[ofs + 15] = 0x03; // typedvalue_type (string)
-								encode_uint32(version_value, &p_manifest.write[ofs + 16]); // typedvalue reference
+								encode_uint32(version_value, &p_manifest.write[ofs + 8]);		// raw_value
+								encode_uint16(8, &p_manifest.write[ofs + 12]);					// typedvalue_size
+								p_manifest.write[ofs + 14] = 0;									// typedvalue_always0
+								p_manifest.write[ofs + 15] = 0x03;								// typedvalue_type (string)
+								encode_uint32(version_value, &p_manifest.write[ofs + 16]);		// typedvalue reference
 
 								ofs += 20;
 							}
 
 							// end tag
-							encode_uint16(0x103, &p_manifest.write[ofs]); // type
-							encode_uint16(16, &p_manifest.write[ofs + 2]); // headersize
-							encode_uint32(24, &p_manifest.write[ofs + 4]); // size
-							encode_uint32(0, &p_manifest.write[ofs + 8]); // lineno
-							encode_uint32(-1, &p_manifest.write[ofs + 12]); // comment
-							encode_uint32(-1, &p_manifest.write[ofs + 16]); // ns
+							encode_uint16(0x103, &p_manifest.write[ofs]);						  // type
+							encode_uint16(16, &p_manifest.write[ofs + 2]);						  // headersize
+							encode_uint32(24, &p_manifest.write[ofs + 4]);						  // size
+							encode_uint32(0, &p_manifest.write[ofs + 8]);						  // lineno
+							encode_uint32(-1, &p_manifest.write[ofs + 12]);						  // comment
+							encode_uint32(-1, &p_manifest.write[ofs + 16]);						  // ns
 							encode_uint32(attr_uses_feature_string, &p_manifest.write[ofs + 20]); // name
 
 							ofs += 24;
@@ -1374,38 +1374,38 @@ void EditorExportPlatformAndroid::_fix_manifest(const Ref<EditorExportPreset> &p
 						}
 
 						// start tag
-						encode_uint16(0x102, &p_manifest.write[ofs]); // type
-						encode_uint16(16, &p_manifest.write[ofs + 2]); // headersize
-						encode_uint32(56, &p_manifest.write[ofs + 4]); // size
-						encode_uint32(0, &p_manifest.write[ofs + 8]); // lineno
-						encode_uint32(-1, &p_manifest.write[ofs + 12]); // comment
-						encode_uint32(-1, &p_manifest.write[ofs + 16]); // ns
+						encode_uint16(0x102, &p_manifest.write[ofs]);							 // type
+						encode_uint16(16, &p_manifest.write[ofs + 2]);							 // headersize
+						encode_uint32(56, &p_manifest.write[ofs + 4]);							 // size
+						encode_uint32(0, &p_manifest.write[ofs + 8]);							 // lineno
+						encode_uint32(-1, &p_manifest.write[ofs + 12]);							 // comment
+						encode_uint32(-1, &p_manifest.write[ofs + 16]);							 // ns
 						encode_uint32(attr_uses_permission_string, &p_manifest.write[ofs + 20]); // name
-						encode_uint16(20, &p_manifest.write[ofs + 24]); // attr_start
-						encode_uint16(20, &p_manifest.write[ofs + 26]); // attr_size
-						encode_uint16(1, &p_manifest.write[ofs + 28]); // num_attrs
-						encode_uint16(0, &p_manifest.write[ofs + 30]); // id_index
-						encode_uint16(0, &p_manifest.write[ofs + 32]); // class_index
-						encode_uint16(0, &p_manifest.write[ofs + 34]); // style_index
+						encode_uint16(20, &p_manifest.write[ofs + 24]);							 // attr_start
+						encode_uint16(20, &p_manifest.write[ofs + 26]);							 // attr_size
+						encode_uint16(1, &p_manifest.write[ofs + 28]);							 // num_attrs
+						encode_uint16(0, &p_manifest.write[ofs + 30]);							 // id_index
+						encode_uint16(0, &p_manifest.write[ofs + 32]);							 // class_index
+						encode_uint16(0, &p_manifest.write[ofs + 34]);							 // style_index
 
 						// attribute
 						encode_uint32(ns_android_string, &p_manifest.write[ofs + 36]); // ns
-						encode_uint32(attr_name_string, &p_manifest.write[ofs + 40]); // 'name'
-						encode_uint32(perm_string, &p_manifest.write[ofs + 44]); // raw_value
-						encode_uint16(8, &p_manifest.write[ofs + 48]); // typedvalue_size
-						p_manifest.write[ofs + 50] = 0; // typedvalue_always0
-						p_manifest.write[ofs + 51] = 0x03; // typedvalue_type (string)
-						encode_uint32(perm_string, &p_manifest.write[ofs + 52]); // typedvalue reference
+						encode_uint32(attr_name_string, &p_manifest.write[ofs + 40]);  // 'name'
+						encode_uint32(perm_string, &p_manifest.write[ofs + 44]);	   // raw_value
+						encode_uint16(8, &p_manifest.write[ofs + 48]);				   // typedvalue_size
+						p_manifest.write[ofs + 50] = 0;								   // typedvalue_always0
+						p_manifest.write[ofs + 51] = 0x03;							   // typedvalue_type (string)
+						encode_uint32(perm_string, &p_manifest.write[ofs + 52]);	   // typedvalue reference
 
 						ofs += 56;
 
 						// end tag
-						encode_uint16(0x103, &p_manifest.write[ofs]); // type
-						encode_uint16(16, &p_manifest.write[ofs + 2]); // headersize
-						encode_uint32(24, &p_manifest.write[ofs + 4]); // size
-						encode_uint32(0, &p_manifest.write[ofs + 8]); // lineno
-						encode_uint32(-1, &p_manifest.write[ofs + 12]); // comment
-						encode_uint32(-1, &p_manifest.write[ofs + 16]); // ns
+						encode_uint16(0x103, &p_manifest.write[ofs]);							 // type
+						encode_uint16(16, &p_manifest.write[ofs + 2]);							 // headersize
+						encode_uint32(24, &p_manifest.write[ofs + 4]);							 // size
+						encode_uint32(0, &p_manifest.write[ofs + 8]);							 // lineno
+						encode_uint32(-1, &p_manifest.write[ofs + 12]);							 // comment
+						encode_uint32(-1, &p_manifest.write[ofs + 16]);							 // ns
 						encode_uint32(attr_uses_permission_string, &p_manifest.write[ofs + 20]); // name
 
 						ofs += 24;
@@ -1472,8 +1472,8 @@ void EditorExportPlatformAndroid::_fix_manifest(const Ref<EditorExportPreset> &p
 	}
 	encode_uint32(ret.size(), &ret.write[4]); //update new file size
 
-	encode_uint32(new_stable_end - 8, &ret.write[12]); //update new string table size
-	encode_uint32(string_table.size(), &ret.write[16]); //update new number of strings
+	encode_uint32(new_stable_end - 8, &ret.write[12]);	   //update new string table size
+	encode_uint32(string_table.size(), &ret.write[16]);	   //update new number of strings
 	encode_uint32(string_data_offset - 8, &ret.write[28]); //update new string data offset
 
 	p_manifest = ret;
@@ -3285,21 +3285,21 @@ Error EditorExportPlatformAndroid::export_project_helper(const Ref<EditorExportP
 
 		String addons_directory = ProjectSettings::get_singleton()->globalize_path("res://addons");
 
-		cmdline.push_back("-p"); // argument to specify the start directory.
-		cmdline.push_back(build_path); // start directory.
-		cmdline.push_back("-Paddons_directory=" + addons_directory); // path to the addon directory as it may contain jar or aar dependencies
-		cmdline.push_back("-Pexport_package_name=" + package_name); // argument to specify the package name.
-		cmdline.push_back("-Pexport_version_code=" + version_code); // argument to specify the version code.
-		cmdline.push_back("-Pexport_version_name=" + version_name); // argument to specify the version name.
-		cmdline.push_back("-Pexport_version_min_sdk=" + min_sdk_version); // argument to specify the min sdk.
-		cmdline.push_back("-Pexport_version_target_sdk=" + target_sdk_version); // argument to specify the target sdk.
-		cmdline.push_back("-Pexport_enabled_abis=" + enabled_abi_string); // argument to specify enabled ABIs.
-		cmdline.push_back("-Pplugins_local_binaries=" + combined_android_libraries); // argument to specify the list of android libraries provided by plugins.
-		cmdline.push_back("-Pplugins_remote_binaries=" + combined_android_dependencies); // argument to specify the list of android dependencies provided by plugins.
+		cmdline.push_back("-p");																 // argument to specify the start directory.
+		cmdline.push_back(build_path);															 // start directory.
+		cmdline.push_back("-Paddons_directory=" + addons_directory);							 // path to the addon directory as it may contain jar or aar dependencies
+		cmdline.push_back("-Pexport_package_name=" + package_name);								 // argument to specify the package name.
+		cmdline.push_back("-Pexport_version_code=" + version_code);								 // argument to specify the version code.
+		cmdline.push_back("-Pexport_version_name=" + version_name);								 // argument to specify the version name.
+		cmdline.push_back("-Pexport_version_min_sdk=" + min_sdk_version);						 // argument to specify the min sdk.
+		cmdline.push_back("-Pexport_version_target_sdk=" + target_sdk_version);					 // argument to specify the target sdk.
+		cmdline.push_back("-Pexport_enabled_abis=" + enabled_abi_string);						 // argument to specify enabled ABIs.
+		cmdline.push_back("-Pplugins_local_binaries=" + combined_android_libraries);			 // argument to specify the list of android libraries provided by plugins.
+		cmdline.push_back("-Pplugins_remote_binaries=" + combined_android_dependencies);		 // argument to specify the list of android dependencies provided by plugins.
 		cmdline.push_back("-Pplugins_maven_repos=" + combined_android_dependencies_maven_repos); // argument to specify the list of maven repos for android dependencies provided by plugins.
-		cmdline.push_back("-Pperform_zipalign=" + zipalign_flag); // argument to specify whether the build should be zipaligned.
-		cmdline.push_back("-Pperform_signing=" + sign_flag); // argument to specify whether the build should be signed.
-		cmdline.push_back("-Pcompress_native_libraries=" + compress_native_libraries_flag); // argument to specify whether the build should compress native libraries.
+		cmdline.push_back("-Pperform_zipalign=" + zipalign_flag);								 // argument to specify whether the build should be zipaligned.
+		cmdline.push_back("-Pperform_signing=" + sign_flag);									 // argument to specify whether the build should be signed.
+		cmdline.push_back("-Pcompress_native_libraries=" + compress_native_libraries_flag);		 // argument to specify whether the build should compress native libraries.
 		cmdline.push_back("-Pgodot_editor_version=" + String(VERSION_FULL_CONFIG));
 
 		// NOTE: The release keystore is not included in the verbose logging
@@ -3327,8 +3327,8 @@ Error EditorExportPlatformAndroid::export_project_helper(const Ref<EditorExportP
 					return ERR_FILE_CANT_OPEN;
 				}
 
-				cmdline.push_back("-Pdebug_keystore_file=" + debug_keystore); // argument to specify the debug keystore file.
-				cmdline.push_back("-Pdebug_keystore_alias=" + debug_user); // argument to specify the debug keystore alias.
+				cmdline.push_back("-Pdebug_keystore_file=" + debug_keystore);	  // argument to specify the debug keystore file.
+				cmdline.push_back("-Pdebug_keystore_alias=" + debug_user);		  // argument to specify the debug keystore alias.
 				cmdline.push_back("-Pdebug_keystore_password=" + debug_password); // argument to specify the debug keystore password.
 			} else {
 				// Pass the release keystore info as well
@@ -3343,8 +3343,8 @@ Error EditorExportPlatformAndroid::export_project_helper(const Ref<EditorExportP
 					return ERR_FILE_CANT_OPEN;
 				}
 
-				cmdline.push_back("-Prelease_keystore_file=" + release_keystore); // argument to specify the release keystore file.
-				cmdline.push_back("-Prelease_keystore_alias=" + release_username); // argument to specify the release keystore alias.
+				cmdline.push_back("-Prelease_keystore_file=" + release_keystore);	  // argument to specify the release keystore file.
+				cmdline.push_back("-Prelease_keystore_alias=" + release_username);	  // argument to specify the release keystore alias.
 				cmdline.push_back("-Prelease_keystore_password=" + release_password); // argument to specify the release keystore password.
 			}
 		}
@@ -3362,7 +3362,7 @@ Error EditorExportPlatformAndroid::export_project_helper(const Ref<EditorExportP
 		String copy_command = "copyAndRenameBinary";
 		copy_args.push_back(copy_command);
 
-		copy_args.push_back("-p"); // argument to specify the start directory.
+		copy_args.push_back("-p");		 // argument to specify the start directory.
 		copy_args.push_back(build_path); // start directory.
 
 		copy_args.push_back("-Pexport_edition=" + edition.to_lower());

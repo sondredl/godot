@@ -65,18 +65,18 @@ void GLTFNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_scene_node_path", "gltf_state", "handle_skeletons"), &GLTFNode::get_scene_node_path, DEFVAL(true));
 
 	ADD_PROPERTY(PropertyInfo(Variant::STRING, "original_name"), "set_original_name", "get_original_name"); // String
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "parent"), "set_parent", "get_parent"); // GLTFNodeIndex
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "height"), "set_height", "get_height"); // int
-	ADD_PROPERTY(PropertyInfo(Variant::TRANSFORM3D, "xform"), "set_xform", "get_xform"); // Transform3D
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "mesh"), "set_mesh", "get_mesh"); // GLTFMeshIndex
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "camera"), "set_camera", "get_camera"); // GLTFCameraIndex
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "skin"), "set_skin", "get_skin"); // GLTFSkinIndex
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "skeleton"), "set_skeleton", "get_skeleton"); // GLTFSkeletonIndex
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "position"), "set_position", "get_position"); // Vector3
-	ADD_PROPERTY(PropertyInfo(Variant::QUATERNION, "rotation"), "set_rotation", "get_rotation"); // Quaternion
-	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "scale"), "set_scale", "get_scale"); // Vector3
-	ADD_PROPERTY(PropertyInfo(Variant::PACKED_INT32_ARRAY, "children"), "set_children", "get_children"); // Vector<int>
-	ADD_PROPERTY(PropertyInfo(Variant::INT, "light"), "set_light", "get_light"); // GLTFLightIndex
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "parent"), "set_parent", "get_parent");							// GLTFNodeIndex
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "height"), "set_height", "get_height");							// int
+	ADD_PROPERTY(PropertyInfo(Variant::TRANSFORM3D, "xform"), "set_xform", "get_xform");					// Transform3D
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "mesh"), "set_mesh", "get_mesh");								// GLTFMeshIndex
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "camera"), "set_camera", "get_camera");							// GLTFCameraIndex
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "skin"), "set_skin", "get_skin");								// GLTFSkinIndex
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "skeleton"), "set_skeleton", "get_skeleton");					// GLTFSkeletonIndex
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "position"), "set_position", "get_position");				// Vector3
+	ADD_PROPERTY(PropertyInfo(Variant::QUATERNION, "rotation"), "set_rotation", "get_rotation");			// Quaternion
+	ADD_PROPERTY(PropertyInfo(Variant::VECTOR3, "scale"), "set_scale", "get_scale");						// Vector3
+	ADD_PROPERTY(PropertyInfo(Variant::PACKED_INT32_ARRAY, "children"), "set_children", "get_children");	// Vector<int>
+	ADD_PROPERTY(PropertyInfo(Variant::INT, "light"), "set_light", "get_light");							// GLTFLightIndex
 }
 
 String GLTFNode::get_original_name() {

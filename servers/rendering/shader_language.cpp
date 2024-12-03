@@ -258,21 +258,21 @@ ShaderLanguage::Token ShaderLanguage::_make_token(TokenType p_type, const String
 
 enum ContextFlag : uint32_t {
 	CF_UNSPECIFIED = 0U,
-	CF_BLOCK = 1U, // "void test() { <x> }"
-	CF_FUNC_DECL_PARAM_SPEC = 2U, // "void test(<x> int param) {}"
-	CF_FUNC_DECL_PARAM_TYPE = 4U, // "void test(<x> param) {}"
-	CF_IF_DECL = 8U, // "if(<x>) {}"
-	CF_BOOLEAN = 16U, // "bool t = <x>;"
-	CF_GLOBAL_SPACE = 32U, // "struct", "const", "void" etc.
-	CF_DATATYPE = 64U, // "<x> value;"
-	CF_UNIFORM_TYPE = 128U, // "uniform <x> myUniform;"
-	CF_VARYING_TYPE = 256U, // "varying <x> myVarying;"
-	CF_PRECISION_MODIFIER = 512U, // "<x> vec4 a = vec4(0.0, 1.0, 2.0, 3.0);"
+	CF_BLOCK = 1U,						// "void test() { <x> }"
+	CF_FUNC_DECL_PARAM_SPEC = 2U,		// "void test(<x> int param) {}"
+	CF_FUNC_DECL_PARAM_TYPE = 4U,		// "void test(<x> param) {}"
+	CF_IF_DECL = 8U,					// "if(<x>) {}"
+	CF_BOOLEAN = 16U,					// "bool t = <x>;"
+	CF_GLOBAL_SPACE = 32U,				// "struct", "const", "void" etc.
+	CF_DATATYPE = 64U,					// "<x> value;"
+	CF_UNIFORM_TYPE = 128U,				// "uniform <x> myUniform;"
+	CF_VARYING_TYPE = 256U,				// "varying <x> myVarying;"
+	CF_PRECISION_MODIFIER = 512U,		// "<x> vec4 a = vec4(0.0, 1.0, 2.0, 3.0);"
 	CF_INTERPOLATION_QUALIFIER = 1024U, // "varying <x> vec3 myColor;"
-	CF_UNIFORM_KEYWORD = 2048U, // "uniform"
-	CF_CONST_KEYWORD = 4096U, // "const"
-	CF_UNIFORM_QUALIFIER = 8192U, // "<x> uniform float t;"
-	CF_SHADER_TYPE = 16384U, // "shader_type"
+	CF_UNIFORM_KEYWORD = 2048U,			// "uniform"
+	CF_CONST_KEYWORD = 4096U,			// "const"
+	CF_UNIFORM_QUALIFIER = 8192U,		// "<x> uniform float t;"
+	CF_SHADER_TYPE = 16384U,			// "shader_type"
 };
 
 const uint32_t KCF_DATATYPE = CF_BLOCK | CF_GLOBAL_SPACE | CF_DATATYPE | CF_FUNC_DECL_PARAM_TYPE | CF_UNIFORM_TYPE;
@@ -821,7 +821,7 @@ ShaderLanguage::Token ShaderLanguage::_get_token() {
 						if (str.size() > 11 || !str.is_valid_hex_number(true)) { // > 0xFFFFFFFF
 							return _make_token(TK_ERROR, "Invalid (hexadecimal) numeric constant");
 						}
-					} else if (period_found || exponent_found || float_suffix_found) { // Float
+					} else if (period_found || exponent_found || float_suffix_found) {							  // Float
 						if (exponent_found && (!digit_after_exp || (!is_digit(last_char) && last_char != 'f'))) { // Checks for eg: "2E", "2E-", "2E+" and 0ef, 0e+f, 0.0ef, 0.0e-f (exponent without digit after it).
 							return _make_token(TK_ERROR, "Invalid (float) numeric constant");
 						}

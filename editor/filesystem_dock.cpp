@@ -4010,14 +4010,14 @@ FileSystemDock::FileSystemDock() {
 #endif
 
 	// Properly translating color names would require a separate HashMap, so for simplicity they are provided as comments.
-	folder_colors["red"] = Color(1.0, 0.271, 0.271); // TTR("Red")
+	folder_colors["red"] = Color(1.0, 0.271, 0.271);	// TTR("Red")
 	folder_colors["orange"] = Color(1.0, 0.561, 0.271); // TTR("Orange")
 	folder_colors["yellow"] = Color(1.0, 0.890, 0.271); // TTR("Yellow")
-	folder_colors["green"] = Color(0.502, 1.0, 0.271); // TTR("Green")
-	folder_colors["teal"] = Color(0.271, 1.0, 0.635); // TTR("Teal")
-	folder_colors["blue"] = Color(0.271, 0.843, 1.0); // TTR("Blue")
+	folder_colors["green"] = Color(0.502, 1.0, 0.271);	// TTR("Green")
+	folder_colors["teal"] = Color(0.271, 1.0, 0.635);	// TTR("Teal")
+	folder_colors["blue"] = Color(0.271, 0.843, 1.0);	// TTR("Blue")
 	folder_colors["purple"] = Color(0.502, 0.271, 1.0); // TTR("Purple")
-	folder_colors["pink"] = Color(1.0, 0.271, 0.588); // TTR("Pink")
+	folder_colors["pink"] = Color(1.0, 0.271, 0.588);	// TTR("Pink")
 	folder_colors["gray"] = Color(0.616, 0.616, 0.616); // TTR("Gray")
 
 	assigned_folder_colors = ProjectSettings::get_singleton()->get_setting("file_customization/folder_colors");

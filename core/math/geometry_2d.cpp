@@ -226,7 +226,7 @@ Vector<Vector<Point2>> Geometry2D::_polypaths_do_operation(PolyBooleanOperation 
 	}
 
 	ClipperD clp(clipper_precision); // Scale points up internally to attain the desired precision.
-	clp.PreserveCollinear(false); // Remove redundant vertices.
+	clp.PreserveCollinear(false);	 // Remove redundant vertices.
 	if (is_a_open) {
 		clp.AddOpenSubject({ path_a });
 	} else {

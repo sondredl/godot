@@ -1945,7 +1945,7 @@ Ref<Shortcut> ED_SHORTCUT_ARRAY(const String &p_path, const String &p_name, cons
 
 	Ref<Shortcut> sc = EditorSettings::get_singleton()->get_shortcut(p_path);
 	if (sc.is_valid()) {
-		sc->set_name(p_name); //keep name (the ones that come from disk have no name)
+		sc->set_name(p_name);							  //keep name (the ones that come from disk have no name)
 		sc->set_meta("original", events.duplicate(true)); //to compare against changes
 		return sc;
 	}

@@ -56,254 +56,244 @@ namespace glslang {
 //
 // Traversal functions for terminals are straightforward....
 //
-void TIntermMethod::traverse(TIntermTraverser*)
-{
-    // Tree should always resolve all methods as a non-method.
+void TIntermMethod::traverse(TIntermTraverser *) {
+	// Tree should always resolve all methods as a non-method.
 }
 
-void TIntermSymbol::traverse(TIntermTraverser *it)
-{
-    it->visitSymbol(this);
+void TIntermSymbol::traverse(TIntermTraverser *it) {
+	it->visitSymbol(this);
 }
 
-void TIntermConstantUnion::traverse(TIntermTraverser *it)
-{
-    it->visitConstantUnion(this);
+void TIntermConstantUnion::traverse(TIntermTraverser *it) {
+	it->visitConstantUnion(this);
 }
 
-const TString& TIntermSymbol::getAccessName() const {
-    if (getBasicType() == EbtBlock)
-        return getType().getTypeName();
-    else
-        return getName();
+const TString &TIntermSymbol::getAccessName() const {
+	if (getBasicType() == EbtBlock)
+		return getType().getTypeName();
+	else
+		return getName();
 }
 
 //
 // Traverse a binary node.
 //
-void TIntermBinary::traverse(TIntermTraverser *it)
-{
-    bool visit = true;
+void TIntermBinary::traverse(TIntermTraverser *it) {
+	bool visit = true;
 
-    //
-    // visit the node before children if pre-visiting.
-    //
-    if (it->preVisit)
-        visit = it->visitBinary(EvPreVisit, this);
+	//
+	// visit the node before children if pre-visiting.
+	//
+	if (it->preVisit)
+		visit = it->visitBinary(EvPreVisit, this);
 
-    //
-    // Visit the children, in the right order.
-    //
-    if (visit) {
-        it->incrementDepth(this);
+	//
+	// Visit the children, in the right order.
+	//
+	if (visit) {
+		it->incrementDepth(this);
 
-        if (it->rightToLeft) {
-            if (right)
-                right->traverse(it);
+		if (it->rightToLeft) {
+			if (right)
+				right->traverse(it);
 
-            if (it->inVisit)
-                visit = it->visitBinary(EvInVisit, this);
+			if (it->inVisit)
+				visit = it->visitBinary(EvInVisit, this);
 
-            if (visit && left)
-                left->traverse(it);
-        } else {
-            if (left)
-                left->traverse(it);
+			if (visit && left)
+				left->traverse(it);
+		} else {
+			if (left)
+				left->traverse(it);
 
-            if (it->inVisit)
-                visit = it->visitBinary(EvInVisit, this);
+			if (it->inVisit)
+				visit = it->visitBinary(EvInVisit, this);
 
-            if (visit && right)
-                right->traverse(it);
-        }
+			if (visit && right)
+				right->traverse(it);
+		}
 
-        it->decrementDepth();
-    }
+		it->decrementDepth();
+	}
 
-    //
-    // Visit the node after the children, if requested and the traversal
-    // hasn't been canceled yet.
-    //
-    if (visit && it->postVisit)
-        it->visitBinary(EvPostVisit, this);
+	//
+	// Visit the node after the children, if requested and the traversal
+	// hasn't been canceled yet.
+	//
+	if (visit && it->postVisit)
+		it->visitBinary(EvPostVisit, this);
 }
 
 //
 // Traverse a unary node.  Same comments in binary node apply here.
 //
-void TIntermUnary::traverse(TIntermTraverser *it)
-{
-    bool visit = true;
+void TIntermUnary::traverse(TIntermTraverser *it) {
+	bool visit = true;
 
-    if (it->preVisit)
-        visit = it->visitUnary(EvPreVisit, this);
+	if (it->preVisit)
+		visit = it->visitUnary(EvPreVisit, this);
 
-    if (visit) {
-        it->incrementDepth(this);
-        operand->traverse(it);
-        it->decrementDepth();
-    }
+	if (visit) {
+		it->incrementDepth(this);
+		operand->traverse(it);
+		it->decrementDepth();
+	}
 
-    if (visit && it->postVisit)
-        it->visitUnary(EvPostVisit, this);
+	if (visit && it->postVisit)
+		it->visitUnary(EvPostVisit, this);
 }
 
 //
 // Traverse an aggregate node.  Same comments in binary node apply here.
 //
-void TIntermAggregate::traverse(TIntermTraverser *it)
-{
-    bool visit = true;
+void TIntermAggregate::traverse(TIntermTraverser *it) {
+	bool visit = true;
 
-    if (it->preVisit)
-        visit = it->visitAggregate(EvPreVisit, this);
+	if (it->preVisit)
+		visit = it->visitAggregate(EvPreVisit, this);
 
-    if (visit) {
-        it->incrementDepth(this);
+	if (visit) {
+		it->incrementDepth(this);
 
-        if (it->rightToLeft) {
-            for (TIntermSequence::reverse_iterator sit = sequence.rbegin(); sit != sequence.rend(); sit++) {
-                (*sit)->traverse(it);
+		if (it->rightToLeft) {
+			for (TIntermSequence::reverse_iterator sit = sequence.rbegin(); sit != sequence.rend(); sit++) {
+				(*sit)->traverse(it);
 
-                if (visit && it->inVisit) {
-                    if (*sit != sequence.front())
-                        visit = it->visitAggregate(EvInVisit, this);
-                }
-            }
-        } else {
-            for (TIntermSequence::iterator sit = sequence.begin(); sit != sequence.end(); sit++) {
-                (*sit)->traverse(it);
+				if (visit && it->inVisit) {
+					if (*sit != sequence.front())
+						visit = it->visitAggregate(EvInVisit, this);
+				}
+			}
+		} else {
+			for (TIntermSequence::iterator sit = sequence.begin(); sit != sequence.end(); sit++) {
+				(*sit)->traverse(it);
 
-                if (visit && it->inVisit) {
-                    if (*sit != sequence.back())
-                        visit = it->visitAggregate(EvInVisit, this);
-                }
-            }
-        }
+				if (visit && it->inVisit) {
+					if (*sit != sequence.back())
+						visit = it->visitAggregate(EvInVisit, this);
+				}
+			}
+		}
 
-        it->decrementDepth();
-    }
+		it->decrementDepth();
+	}
 
-    if (visit && it->postVisit)
-        it->visitAggregate(EvPostVisit, this);
+	if (visit && it->postVisit)
+		it->visitAggregate(EvPostVisit, this);
 }
 
 //
 // Traverse a selection node.  Same comments in binary node apply here.
 //
-void TIntermSelection::traverse(TIntermTraverser *it)
-{
-    bool visit = true;
+void TIntermSelection::traverse(TIntermTraverser *it) {
+	bool visit = true;
 
-    if (it->preVisit)
-        visit = it->visitSelection(EvPreVisit, this);
+	if (it->preVisit)
+		visit = it->visitSelection(EvPreVisit, this);
 
-    if (visit) {
-        it->incrementDepth(this);
-        if (it->rightToLeft) {
-            if (falseBlock)
-                falseBlock->traverse(it);
-            if (trueBlock)
-                trueBlock->traverse(it);
-            condition->traverse(it);
-        } else {
-            condition->traverse(it);
-            if (trueBlock)
-                trueBlock->traverse(it);
-            if (falseBlock)
-                falseBlock->traverse(it);
-        }
-        it->decrementDepth();
-    }
+	if (visit) {
+		it->incrementDepth(this);
+		if (it->rightToLeft) {
+			if (falseBlock)
+				falseBlock->traverse(it);
+			if (trueBlock)
+				trueBlock->traverse(it);
+			condition->traverse(it);
+		} else {
+			condition->traverse(it);
+			if (trueBlock)
+				trueBlock->traverse(it);
+			if (falseBlock)
+				falseBlock->traverse(it);
+		}
+		it->decrementDepth();
+	}
 
-    if (visit && it->postVisit)
-        it->visitSelection(EvPostVisit, this);
+	if (visit && it->postVisit)
+		it->visitSelection(EvPostVisit, this);
 }
 
 //
 // Traverse a loop node.  Same comments in binary node apply here.
 //
-void TIntermLoop::traverse(TIntermTraverser *it)
-{
-    bool visit = true;
+void TIntermLoop::traverse(TIntermTraverser *it) {
+	bool visit = true;
 
-    if (it->preVisit)
-        visit = it->visitLoop(EvPreVisit, this);
+	if (it->preVisit)
+		visit = it->visitLoop(EvPreVisit, this);
 
-    if (visit) {
-        it->incrementDepth(this);
+	if (visit) {
+		it->incrementDepth(this);
 
-        if (it->rightToLeft) {
-            if (terminal)
-                terminal->traverse(it);
+		if (it->rightToLeft) {
+			if (terminal)
+				terminal->traverse(it);
 
-            if (body)
-                body->traverse(it);
+			if (body)
+				body->traverse(it);
 
-            if (test)
-                test->traverse(it);
-        } else {
-            if (test)
-                test->traverse(it);
+			if (test)
+				test->traverse(it);
+		} else {
+			if (test)
+				test->traverse(it);
 
-            if (body)
-                body->traverse(it);
+			if (body)
+				body->traverse(it);
 
-            if (terminal)
-                terminal->traverse(it);
-        }
+			if (terminal)
+				terminal->traverse(it);
+		}
 
-        it->decrementDepth();
-    }
+		it->decrementDepth();
+	}
 
-    if (visit && it->postVisit)
-        it->visitLoop(EvPostVisit, this);
+	if (visit && it->postVisit)
+		it->visitLoop(EvPostVisit, this);
 }
 
 //
 // Traverse a branch node.  Same comments in binary node apply here.
 //
-void TIntermBranch::traverse(TIntermTraverser *it)
-{
-    bool visit = true;
+void TIntermBranch::traverse(TIntermTraverser *it) {
+	bool visit = true;
 
-    if (it->preVisit)
-        visit = it->visitBranch(EvPreVisit, this);
+	if (it->preVisit)
+		visit = it->visitBranch(EvPreVisit, this);
 
-    if (visit && expression) {
-        it->incrementDepth(this);
-        expression->traverse(it);
-        it->decrementDepth();
-    }
+	if (visit && expression) {
+		it->incrementDepth(this);
+		expression->traverse(it);
+		it->decrementDepth();
+	}
 
-    if (visit && it->postVisit)
-        it->visitBranch(EvPostVisit, this);
+	if (visit && it->postVisit)
+		it->visitBranch(EvPostVisit, this);
 }
 
 //
 // Traverse a switch node.
 //
-void TIntermSwitch::traverse(TIntermTraverser* it)
-{
-    bool visit = true;
+void TIntermSwitch::traverse(TIntermTraverser *it) {
+	bool visit = true;
 
-    if (it->preVisit)
-        visit = it->visitSwitch(EvPreVisit, this);
+	if (it->preVisit)
+		visit = it->visitSwitch(EvPreVisit, this);
 
-    if (visit) {
-        it->incrementDepth(this);
-        if (it->rightToLeft) {
-            body->traverse(it);
-            condition->traverse(it);
-        } else {
-            condition->traverse(it);
-            body->traverse(it);
-        }
-        it->decrementDepth();
-    }
+	if (visit) {
+		it->incrementDepth(this);
+		if (it->rightToLeft) {
+			body->traverse(it);
+			condition->traverse(it);
+		} else {
+			condition->traverse(it);
+			body->traverse(it);
+		}
+		it->decrementDepth();
+	}
 
-    if (visit && it->postVisit)
-        it->visitSwitch(EvPostVisit, this);
+	if (visit && it->postVisit)
+		it->visitSwitch(EvPostVisit, this);
 }
 
 } // end namespace glslang

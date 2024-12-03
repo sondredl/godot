@@ -749,10 +749,10 @@ int32_t ConvexHullInternal::Rational64::compare(const Rational64 &b) const {
 			"mulq %[bd]\n\t"
 			"subq %[tmp], %%rax\n\t"
 			"sbbq %%rbx, %%rdx\n\t" // rdx:rax contains 128-bit-difference "numerator*b.denominator - b.numerator*denominator"
-			"setnsb %%bh\n\t" // bh=1 if difference is non-negative, bh=0 otherwise
+			"setnsb %%bh\n\t"		// bh=1 if difference is non-negative, bh=0 otherwise
 			"orq %%rdx, %%rax\n\t"
-			"setnzb %%bl\n\t" // bl=1 if difference if non-zero, bl=0 if it is zero
-			"decb %%bh\n\t" // now bx=0x0000 if difference is zero, 0xff01 if it is negative, 0x0001 if it is positive (i.e., same sign as difference)
+			"setnzb %%bl\n\t"	  // bl=1 if difference if non-zero, bl=0 if it is zero
+			"decb %%bh\n\t"		  // now bx=0x0000 if difference is zero, 0xff01 if it is negative, 0x0001 if it is positive (i.e., same sign as difference)
 			"shll $16, %%ebx\n\t" // ebx has same sign as difference
 			: "=&b"(result), [tmp] "=&r"(tmp), "=a"(dummy)
 			: "a"(denominator), [bn] "g"(b.numerator), [tn] "g"(numerator), [bd] "g"(b.denominator)

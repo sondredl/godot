@@ -36,11 +36,10 @@ http://go.microsoft.com/fwlink/?LinkId=248926
 
 #include "ConvectionKernels_BCCommon.h"
 
-int cvtt::Internal::BCCommon::TweakRoundsForRange(int range)
-{
-    if (range == 3)
-        return 3;
-    return 4;
+int cvtt::Internal::BCCommon::TweakRoundsForRange(int range) {
+	if (range == 3)
+		return 3;
+	return 4;
 }
 
 #endif

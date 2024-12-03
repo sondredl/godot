@@ -320,7 +320,7 @@ void KeyMappingXKB::initialize() {
 	scancode_map[0x86] = Key::META; // Right
 	scancode_map[0x87] = Key::MENU;
 
-	scancode_map[0xA6] = Key::BACK; // On Chromebooks
+	scancode_map[0xA6] = Key::BACK;	   // On Chromebooks
 	scancode_map[0xA7] = Key::FORWARD; // On Chromebooks
 
 	scancode_map[0xB5] = Key::REFRESH; // On Chromebooks
@@ -370,7 +370,7 @@ void KeyMappingXKB::initialize() {
 }
 
 Key KeyMappingXKB::get_keycode(xkb_keycode_t p_keysym) {
-	if (p_keysym >= 0x20 && p_keysym < 0x7E) { // ASCII, maps 1-1
+	if (p_keysym >= 0x20 && p_keysym < 0x7E) {	  // ASCII, maps 1-1
 		if (p_keysym > 0x60 && p_keysym < 0x7B) { // Lowercase ASCII.
 			return (Key)(p_keysym - 32);
 		} else {

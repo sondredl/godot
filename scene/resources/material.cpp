@@ -2799,7 +2799,7 @@ Ref<Material> BaseMaterial3D::get_material_for_2d(bool p_shaded, Transparency p_
 	key |= ((int8_t)p_msdf & 0x01) << 7;
 	key |= ((int8_t)p_no_depth & 0x01) << 8;
 	key |= ((int8_t)p_fixed_size & 0x01) << 9;
-	key |= ((int8_t)p_filter & 0x07) << 10; // Bits 10-12.
+	key |= ((int8_t)p_filter & 0x07) << 10;					 // Bits 10-12.
 	key |= ((int8_t)p_alpha_antialiasing_mode & 0x07) << 13; // Bits 13-15.
 
 	if (materials_for_2d.has(key)) {

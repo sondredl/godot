@@ -1804,27 +1804,27 @@ void MaterialStorage::global_shader_parameters_instance_update(RID p_instance, i
 	ERR_FAIL_COND_MSG(p_value.get_type() > Variant::COLOR, "Unsupported variant type for instance parameter: " + Variant::get_type_name(value_type)); //anything greater not supported
 
 	const ShaderLanguage::DataType datatype_from_value[Variant::COLOR + 1] = {
-		ShaderLanguage::TYPE_MAX, //nil
-		ShaderLanguage::TYPE_BOOL, //bool
-		ShaderLanguage::TYPE_INT, //int
+		ShaderLanguage::TYPE_MAX,	//nil
+		ShaderLanguage::TYPE_BOOL,	//bool
+		ShaderLanguage::TYPE_INT,	//int
 		ShaderLanguage::TYPE_FLOAT, //float
-		ShaderLanguage::TYPE_MAX, //string
-		ShaderLanguage::TYPE_VEC2, //vec2
+		ShaderLanguage::TYPE_MAX,	//string
+		ShaderLanguage::TYPE_VEC2,	//vec2
 		ShaderLanguage::TYPE_IVEC2, //vec2i
-		ShaderLanguage::TYPE_VEC4, //rect2
+		ShaderLanguage::TYPE_VEC4,	//rect2
 		ShaderLanguage::TYPE_IVEC4, //rect2i
-		ShaderLanguage::TYPE_VEC3, // vec3
+		ShaderLanguage::TYPE_VEC3,	// vec3
 		ShaderLanguage::TYPE_IVEC3, //vec3i
-		ShaderLanguage::TYPE_MAX, //xform2d not supported here
-		ShaderLanguage::TYPE_VEC4, //vec4
+		ShaderLanguage::TYPE_MAX,	//xform2d not supported here
+		ShaderLanguage::TYPE_VEC4,	//vec4
 		ShaderLanguage::TYPE_IVEC4, //vec4i
-		ShaderLanguage::TYPE_VEC4, //plane
-		ShaderLanguage::TYPE_VEC4, //quat
-		ShaderLanguage::TYPE_MAX, //aabb not supported here
-		ShaderLanguage::TYPE_MAX, //basis not supported here
-		ShaderLanguage::TYPE_MAX, //xform not supported here
-		ShaderLanguage::TYPE_MAX, //projection not supported here
-		ShaderLanguage::TYPE_VEC4 //color
+		ShaderLanguage::TYPE_VEC4,	//plane
+		ShaderLanguage::TYPE_VEC4,	//quat
+		ShaderLanguage::TYPE_MAX,	//aabb not supported here
+		ShaderLanguage::TYPE_MAX,	//basis not supported here
+		ShaderLanguage::TYPE_MAX,	//xform not supported here
+		ShaderLanguage::TYPE_MAX,	//projection not supported here
+		ShaderLanguage::TYPE_VEC4	//color
 	};
 
 	ShaderLanguage::DataType datatype = ShaderLanguage::TYPE_MAX;

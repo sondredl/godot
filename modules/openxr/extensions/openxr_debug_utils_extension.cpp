@@ -110,11 +110,11 @@ void OpenXRDebugUtilsExtension::on_instance_created(const XrInstance p_instance)
 
 		XrDebugUtilsMessengerCreateInfoEXT callback_info = {
 			XR_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT, // type
-			nullptr, // next
-			message_severities, // messageSeverities
-			message_types, // messageTypes
-			&OpenXRDebugUtilsExtension::_debug_callback, // userCallback
-			nullptr, // userData
+			nullptr,									   // next
+			message_severities,							   // messageSeverities
+			message_types,								   // messageTypes
+			&OpenXRDebugUtilsExtension::_debug_callback,   // userCallback
+			nullptr,									   // userData
 		};
 
 		XrResult result = xrCreateDebugUtilsMessengerEXT(p_instance, &callback_info, &default_messenger);
@@ -155,10 +155,10 @@ void OpenXRDebugUtilsExtension::set_object_name(XrObjectType p_object_type, uint
 
 	const XrDebugUtilsObjectNameInfoEXT space_name_info = {
 		XR_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT, // type
-		nullptr, // next
-		p_object_type, // objectType
-		p_object_handle, // objectHandle
-		p_object_name, // objectName
+		nullptr,								  // next
+		p_object_type,							  // objectType
+		p_object_handle,						  // objectHandle
+		p_object_name,							  // objectName
 	};
 
 	XrResult result = xrSetDebugUtilsObjectNameEXT_ptr(OpenXRAPI::get_singleton()->get_instance(), &space_name_info);
@@ -173,8 +173,8 @@ void OpenXRDebugUtilsExtension::begin_debug_label_region(const char *p_label_nam
 
 	const XrDebugUtilsLabelEXT session_active_region_label = {
 		XR_TYPE_DEBUG_UTILS_LABEL_EXT, // type
-		nullptr, // next
-		p_label_name, // labelName
+		nullptr,					   // next
+		p_label_name,				   // labelName
 	};
 
 	XrResult result = xrSessionBeginDebugUtilsLabelRegionEXT_ptr(OpenXRAPI::get_singleton()->get_session(), &session_active_region_label);
@@ -199,8 +199,8 @@ void OpenXRDebugUtilsExtension::insert_debug_label(const char *p_label_name) {
 
 	const XrDebugUtilsLabelEXT session_active_region_label = {
 		XR_TYPE_DEBUG_UTILS_LABEL_EXT, // type
-		nullptr, // next
-		p_label_name, // labelName
+		nullptr,					   // next
+		p_label_name,				   // labelName
 	};
 
 	XrResult result = xrSessionInsertDebugUtilsLabelEXT_ptr(OpenXRAPI::get_singleton()->get_session(), &session_active_region_label);

@@ -3338,7 +3338,7 @@ void EditorNode::_export_as_menu_option(int p_idx) {
 
 		file_export_lib->set_title(TTR("Export Mesh Library"));
 		file_export_lib->popup_file_dialog();
-	} else { // Custom menu options added by plugins
+	} else {													  // Custom menu options added by plugins
 		if (export_as_menu->get_item_submenu(p_idx).is_empty()) { // If not a submenu
 			Callable callback = export_as_menu->get_item_metadata(p_idx);
 			Callable::CallError ce;

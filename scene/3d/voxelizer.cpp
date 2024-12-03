@@ -759,11 +759,11 @@ Vector<uint8_t> Voxelizer::get_voxel_gi_data_cells() const {
 				dataptr[i * 4 + 0] = position;
 			}
 
-			{ //albedo + alpha
+			{																		   //albedo + alpha
 				uint32_t rgba = uint32_t(CLAMP(cells[i].alpha * 255.0, 0, 255)) << 24; //a
-				rgba |= uint32_t(CLAMP(cells[i].albedo[2] * 255.0, 0, 255)) << 16; //b
-				rgba |= uint32_t(CLAMP(cells[i].albedo[1] * 255.0, 0, 255)) << 8; //g
-				rgba |= uint32_t(CLAMP(cells[i].albedo[0] * 255.0, 0, 255)); //r
+				rgba |= uint32_t(CLAMP(cells[i].albedo[2] * 255.0, 0, 255)) << 16;	   //b
+				rgba |= uint32_t(CLAMP(cells[i].albedo[1] * 255.0, 0, 255)) << 8;	   //g
+				rgba |= uint32_t(CLAMP(cells[i].albedo[0] * 255.0, 0, 255));		   //r
 
 				dataptr[i * 4 + 1] = rgba;
 			}

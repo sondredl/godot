@@ -46,8 +46,8 @@
  * lines for endpoint selection.
  */
 
-#include <limits>
 #include "astcenc_internal.h"
+#include <limits>
 
 /**
  * @brief Pick some initial kmeans cluster centers.
@@ -58,11 +58,10 @@
  * @param[out] cluster_centers   The initial partition cluster center colors.
  */
 static void kmeans_init(
-	const image_block& blk,
-	unsigned int texel_count,
-	unsigned int partition_count,
-	vfloat4 cluster_centers[BLOCK_MAX_PARTITIONS]
-) {
+		const image_block &blk,
+		unsigned int texel_count,
+		unsigned int partition_count,
+		vfloat4 cluster_centers[BLOCK_MAX_PARTITIONS]) {
 	promise(texel_count > 0);
 	promise(partition_count > 0);
 
@@ -77,8 +76,7 @@ static void kmeans_init(
 
 	// Compute the distance to the first cluster center
 	float distance_sum = 0.0f;
-	for (unsigned int i = 0; i < texel_count; i++)
-	{
+	for (unsigned int i = 0; i < texel_count; i++) {
 		vfloat4 color = blk.texel(i);
 		vfloat4 diff = color - center_color;
 		float distance = dot_s(diff * diff, blk.channel_weight);
@@ -87,7 +85,7 @@ static void kmeans_init(
 	}
 
 	// More numbers from random.org for weighted-random center selection
-	const float cluster_cutoffs[9] {
+	const float cluster_cutoffs[9]{
 		0.626220f, 0.932770f, 0.275454f,
 		0.318558f, 0.240113f, 0.009190f,
 		0.347661f, 0.731960f, 0.156391f
@@ -96,16 +94,13 @@ static void kmeans_init(
 	unsigned int cutoff = (clusters_selected - 1) + 3 * (partition_count - 2);
 
 	// Pick the remaining samples as needed
-	while (true)
-	{
+	while (true) {
 		// Pick the next center in a weighted-random fashion.
 		float summa = 0.0f;
 		float distance_cutoff = distance_sum * cluster_cutoffs[cutoff++];
-		for (sample = 0; sample < texel_count; sample++)
-		{
+		for (sample = 0; sample < texel_count; sample++) {
 			summa += distances[sample];
-			if (summa >= distance_cutoff)
-			{
+			if (summa >= distance_cutoff) {
 				break;
 			}
 		}
@@ -115,15 +110,13 @@ static void kmeans_init(
 
 		center_color = blk.texel(sample);
 		cluster_centers[clusters_selected++] = center_color;
-		if (clusters_selected >= partition_count)
-		{
+		if (clusters_selected >= partition_count) {
 			break;
 		}
 
 		// Compute the distance to the new cluster center, keep the min dist
 		distance_sum = 0.0f;
-		for (unsigned int i = 0; i < texel_count; i++)
-		{
+		for (unsigned int i = 0; i < texel_count; i++) {
 			vfloat4 color = blk.texel(i);
 			vfloat4 diff = color - center_color;
 			float distance = dot_s(diff * diff, blk.channel_weight);
@@ -144,30 +137,26 @@ static void kmeans_init(
  * @param[out] partition_of_texel   The partition assigned for each texel.
  */
 static void kmeans_assign(
-	const image_block& blk,
-	unsigned int texel_count,
-	unsigned int partition_count,
-	const vfloat4 cluster_centers[BLOCK_MAX_PARTITIONS],
-	uint8_t partition_of_texel[BLOCK_MAX_TEXELS]
-) {
+		const image_block &blk,
+		unsigned int texel_count,
+		unsigned int partition_count,
+		const vfloat4 cluster_centers[BLOCK_MAX_PARTITIONS],
+		uint8_t partition_of_texel[BLOCK_MAX_TEXELS]) {
 	promise(texel_count > 0);
 	promise(partition_count > 0);
 
-	uint8_t partition_texel_count[BLOCK_MAX_PARTITIONS] { 0 };
+	uint8_t partition_texel_count[BLOCK_MAX_PARTITIONS]{ 0 };
 
 	// Find the best partition for every texel
-	for (unsigned int i = 0; i < texel_count; i++)
-	{
+	for (unsigned int i = 0; i < texel_count; i++) {
 		float best_distance = std::numeric_limits<float>::max();
 		unsigned int best_partition = 0;
 
 		vfloat4 color = blk.texel(i);
-		for (unsigned int j = 0; j < partition_count; j++)
-		{
+		for (unsigned int j = 0; j < partition_count; j++) {
 			vfloat4 diff = color - cluster_centers[j];
 			float distance = dot_s(diff * diff, blk.channel_weight);
-			if (distance < best_distance)
-			{
+			if (distance < best_distance) {
 				best_distance = distance;
 				best_partition = j;
 			}
@@ -182,13 +171,10 @@ static void kmeans_assign(
 	// least one texel. Reassigning a texel in this manner may cause another partition to go empty,
 	// so if we actually did a reassignment, run the whole loop over again.
 	bool problem_case;
-	do
-	{
+	do {
 		problem_case = false;
-		for (unsigned int i = 0; i < partition_count; i++)
-		{
-			if (partition_texel_count[i] == 0)
-			{
+		for (unsigned int i = 0; i < partition_count; i++) {
+			if (partition_texel_count[i] == 0) {
 				partition_texel_count[partition_of_texel[i]]--;
 				partition_texel_count[i]++;
 				partition_of_texel[i] = static_cast<uint8_t>(i);
@@ -208,35 +194,32 @@ static void kmeans_assign(
  * @param       partition_of_texel   The partition assigned for each texel.
  */
 static void kmeans_update(
-	const image_block& blk,
-	unsigned int texel_count,
-	unsigned int partition_count,
-	vfloat4 cluster_centers[BLOCK_MAX_PARTITIONS],
-	const uint8_t partition_of_texel[BLOCK_MAX_TEXELS]
-) {
+		const image_block &blk,
+		unsigned int texel_count,
+		unsigned int partition_count,
+		vfloat4 cluster_centers[BLOCK_MAX_PARTITIONS],
+		const uint8_t partition_of_texel[BLOCK_MAX_TEXELS]) {
 	promise(texel_count > 0);
 	promise(partition_count > 0);
 
-	vfloat4 color_sum[BLOCK_MAX_PARTITIONS] {
+	vfloat4 color_sum[BLOCK_MAX_PARTITIONS]{
 		vfloat4::zero(),
 		vfloat4::zero(),
 		vfloat4::zero(),
 		vfloat4::zero()
 	};
 
-	uint8_t partition_texel_count[BLOCK_MAX_PARTITIONS] { 0 };
+	uint8_t partition_texel_count[BLOCK_MAX_PARTITIONS]{ 0 };
 
 	// Find the center-of-gravity in each cluster
-	for (unsigned int i = 0; i < texel_count; i++)
-	{
+	for (unsigned int i = 0; i < texel_count; i++) {
 		uint8_t partition = partition_of_texel[i];
 		color_sum[partition] += blk.texel(i);
 		partition_texel_count[partition]++;
 	}
 
 	// Set the center of gravity to be the new cluster center
-	for (unsigned int i = 0; i < partition_count; i++)
-	{
+	for (unsigned int i = 0; i < partition_count; i++) {
 		float scale = 1.0f / static_cast<float>(partition_texel_count[i]);
 		cluster_centers[i] = color_sum[i] * scale;
 	}
@@ -251,9 +234,8 @@ static void kmeans_update(
  * @return    The number of bit mismatches.
  */
 static inline uint8_t partition_mismatch2(
-	const uint64_t a[2],
-	const uint64_t b[2]
-) {
+		const uint64_t a[2],
+		const uint64_t b[2]) {
 	int v1 = popcount(a[0] ^ b[0]) + popcount(a[1] ^ b[1]);
 	int v2 = popcount(a[0] ^ b[1]) + popcount(a[1] ^ b[0]);
 
@@ -271,9 +253,8 @@ static inline uint8_t partition_mismatch2(
  * @return    The number of bit mismatches.
  */
 static inline uint8_t partition_mismatch3(
-	const uint64_t a[3],
-	const uint64_t b[3]
-) {
+		const uint64_t a[3],
+		const uint64_t b[3]) {
 	int p00 = popcount(a[0] ^ b[0]);
 	int p01 = popcount(a[0] ^ b[1]);
 	int p02 = popcount(a[0] ^ b[2]);
@@ -312,9 +293,8 @@ static inline uint8_t partition_mismatch3(
  * @return    The number of bit mismatches.
  */
 static inline uint8_t partition_mismatch4(
-	const uint64_t a[4],
-	const uint64_t b[4]
-) {
+		const uint64_t a[4],
+		const uint64_t b[4]) {
 	int p00 = popcount(a[0] ^ b[0]);
 	int p01 = popcount(a[0] ^ b[1]);
 	int p02 = popcount(a[0] ^ b[2]);
@@ -352,7 +332,7 @@ static inline uint8_t partition_mismatch4(
 	return static_cast<uint8_t>(astc::min(v0, v1, v2, v3) / 2);
 }
 
-using mismatch_dispatch = unsigned int (*)(const uint64_t*, const uint64_t*);
+using mismatch_dispatch = unsigned int (*)(const uint64_t *, const uint64_t *);
 
 /**
  * @brief Count the partition table mismatches vs the data clustering.
@@ -363,36 +343,27 @@ using mismatch_dispatch = unsigned int (*)(const uint64_t*, const uint64_t*);
  * @param[out] mismatch_counts   The array storing per partitioning mismatch counts.
  */
 static void count_partition_mismatch_bits(
-	const block_size_descriptor& bsd,
-	unsigned int partition_count,
-	const uint64_t bitmaps[BLOCK_MAX_PARTITIONS],
-	uint8_t mismatch_counts[BLOCK_MAX_PARTITIONINGS]
-) {
+		const block_size_descriptor &bsd,
+		unsigned int partition_count,
+		const uint64_t bitmaps[BLOCK_MAX_PARTITIONS],
+		uint8_t mismatch_counts[BLOCK_MAX_PARTITIONINGS]) {
 	unsigned int active_count = bsd.partitioning_count_selected[partition_count - 1];
 	promise(active_count > 0);
 
-	if (partition_count == 2)
-	{
-		for (unsigned int i = 0; i < active_count; i++)
-		{
+	if (partition_count == 2) {
+		for (unsigned int i = 0; i < active_count; i++) {
 			mismatch_counts[i] = partition_mismatch2(bitmaps, bsd.coverage_bitmaps_2[i]);
 			assert(mismatch_counts[i] < BLOCK_MAX_KMEANS_TEXELS);
 			assert(mismatch_counts[i] < bsd.texel_count);
 		}
-	}
-	else if (partition_count == 3)
-	{
-		for (unsigned int i = 0; i < active_count; i++)
-		{
+	} else if (partition_count == 3) {
+		for (unsigned int i = 0; i < active_count; i++) {
 			mismatch_counts[i] = partition_mismatch3(bitmaps, bsd.coverage_bitmaps_3[i]);
 			assert(mismatch_counts[i] < BLOCK_MAX_KMEANS_TEXELS);
 			assert(mismatch_counts[i] < bsd.texel_count);
 		}
-	}
-	else
-	{
-		for (unsigned int i = 0; i < active_count; i++)
-		{
+	} else {
+		for (unsigned int i = 0; i < active_count; i++) {
 			mismatch_counts[i] = partition_mismatch4(bitmaps, bsd.coverage_bitmaps_4[i]);
 			assert(mismatch_counts[i] < BLOCK_MAX_KMEANS_TEXELS);
 			assert(mismatch_counts[i] < bsd.texel_count);
@@ -410,25 +381,22 @@ static void count_partition_mismatch_bits(
  * @return The number of active partitions in this selection.
  */
 static unsigned int get_partition_ordering_by_mismatch_bits(
-	unsigned int texel_count,
-	unsigned int partitioning_count,
-	const uint8_t mismatch_count[BLOCK_MAX_PARTITIONINGS],
-	uint16_t partition_ordering[BLOCK_MAX_PARTITIONINGS]
-) {
+		unsigned int texel_count,
+		unsigned int partitioning_count,
+		const uint8_t mismatch_count[BLOCK_MAX_PARTITIONINGS],
+		uint16_t partition_ordering[BLOCK_MAX_PARTITIONINGS]) {
 	promise(partitioning_count > 0);
-	uint16_t mscount[BLOCK_MAX_KMEANS_TEXELS] { 0 };
+	uint16_t mscount[BLOCK_MAX_KMEANS_TEXELS]{ 0 };
 
 	// Create the histogram of mismatch counts
-	for (unsigned int i = 0; i < partitioning_count; i++)
-	{
+	for (unsigned int i = 0; i < partitioning_count; i++) {
 		mscount[mismatch_count[i]]++;
 	}
 
 	// Create a running sum from the histogram array
 	// Cells store previous values only; i.e. exclude self after sum
 	unsigned int sum = 0;
-	for (unsigned int i = 0; i < texel_count; i++)
-	{
+	for (unsigned int i = 0; i < texel_count; i++) {
 		uint16_t cnt = mscount[i];
 		mscount[i] = sum;
 		sum += cnt;
@@ -436,8 +404,7 @@ static unsigned int get_partition_ordering_by_mismatch_bits(
 
 	// Use the running sum as the index, incrementing after read to allow
 	// sequential entries with the same count
-	for (unsigned int i = 0; i < partitioning_count; i++)
-	{
+	for (unsigned int i = 0; i < partitioning_count; i++) {
 		unsigned int idx = mscount[mismatch_count[i]]++;
 		partition_ordering[idx] = static_cast<uint16_t>(i);
 	}
@@ -456,23 +423,18 @@ static unsigned int get_partition_ordering_by_mismatch_bits(
  * @return The number of active partitionings in this selection.
  */
 static unsigned int compute_kmeans_partition_ordering(
-	const block_size_descriptor& bsd,
-	const image_block& blk,
-	unsigned int partition_count,
-	uint16_t partition_ordering[BLOCK_MAX_PARTITIONINGS]
-) {
+		const block_size_descriptor &bsd,
+		const image_block &blk,
+		unsigned int partition_count,
+		uint16_t partition_ordering[BLOCK_MAX_PARTITIONINGS]) {
 	vfloat4 cluster_centers[BLOCK_MAX_PARTITIONS];
 	uint8_t texel_partitions[BLOCK_MAX_TEXELS];
 
 	// Use three passes of k-means clustering to partition the block data
-	for (unsigned int i = 0; i < 3; i++)
-	{
-		if (i == 0)
-		{
+	for (unsigned int i = 0; i < 3; i++) {
+		if (i == 0) {
 			kmeans_init(blk, bsd.texel_count, partition_count, cluster_centers);
-		}
-		else
-		{
+		} else {
 			kmeans_update(blk, bsd.texel_count, partition_count, cluster_centers, texel_partitions);
 		}
 
@@ -480,11 +442,10 @@ static unsigned int compute_kmeans_partition_ordering(
 	}
 
 	// Construct the block bitmaps of texel assignments to each partition
-	uint64_t bitmaps[BLOCK_MAX_PARTITIONS] { 0 };
+	uint64_t bitmaps[BLOCK_MAX_PARTITIONS]{ 0 };
 	unsigned int texels_to_process = astc::min(bsd.texel_count, BLOCK_MAX_KMEANS_TEXELS);
 	promise(texels_to_process > 0);
-	for (unsigned int i = 0; i < texels_to_process; i++)
-	{
+	for (unsigned int i = 0; i < texels_to_process; i++) {
 		unsigned int idx = bsd.kmeans_texels[i];
 		bitmaps[texel_partitions[idx]] |= 1ULL << i;
 	}
@@ -495,9 +456,9 @@ static unsigned int compute_kmeans_partition_ordering(
 
 	// Sort the partitions based on the number of mismatched bits
 	return get_partition_ordering_by_mismatch_bits(
-	    texels_to_process,
-	    bsd.partitioning_count_selected[partition_count - 1],
-	    mismatch_counts, partition_ordering);
+			texels_to_process,
+			bsd.partitioning_count_selected[partition_count - 1],
+			mismatch_counts, partition_ordering);
 }
 
 /**
@@ -510,32 +471,27 @@ static unsigned int compute_kmeans_partition_ordering(
  * @param[out] best_partitions The array of best partition values.
  */
 static void insert_result(
-	unsigned int max_values,
-	float this_error,
-	unsigned int this_partition,
-	float* best_errors,
-	unsigned int* best_partitions)
-{
+		unsigned int max_values,
+		float this_error,
+		unsigned int this_partition,
+		float *best_errors,
+		unsigned int *best_partitions) {
 	promise(max_values > 0);
 
 	// Don't bother searching if the current worst error beats the new error
-	if (this_error >= best_errors[max_values - 1])
-	{
+	if (this_error >= best_errors[max_values - 1]) {
 		return;
 	}
 
 	// Else insert into the list in error-order
-	for (unsigned int i = 0; i < max_values; i++)
-	{
+	for (unsigned int i = 0; i < max_values; i++) {
 		// Existing result is better - move on ...
-		if (this_error > best_errors[i])
-		{
+		if (this_error > best_errors[i]) {
 			continue;
 		}
 
 		// Move existing results down one
-		for (unsigned int j = max_values - 1; j > i; j--)
-		{
+		for (unsigned int j = max_values - 1; j > i; j--) {
 			best_errors[j] = best_errors[j - 1];
 			best_partitions[j] = best_partitions[j - 1];
 		}
@@ -549,27 +505,21 @@ static void insert_result(
 
 /* See header for documentation. */
 unsigned int find_best_partition_candidates(
-	const block_size_descriptor& bsd,
-	const image_block& blk,
-	unsigned int partition_count,
-	unsigned int partition_search_limit,
-	unsigned int best_partitions[TUNE_MAX_PARTITIONING_CANDIDATES],
-	unsigned int requested_candidates
-) {
+		const block_size_descriptor &bsd,
+		const image_block &blk,
+		unsigned int partition_count,
+		unsigned int partition_search_limit,
+		unsigned int best_partitions[TUNE_MAX_PARTITIONING_CANDIDATES],
+		unsigned int requested_candidates) {
 	// Constant used to estimate quantization error for a given partitioning; the optimal value for
 	// this depends on bitrate. These values have been determined empirically.
 	unsigned int texels_per_block = bsd.texel_count;
 	float weight_imprecision_estim = 0.055f;
-	if (texels_per_block <= 20)
-	{
+	if (texels_per_block <= 20) {
 		weight_imprecision_estim = 0.03f;
-	}
-	else if (texels_per_block <= 31)
-	{
+	} else if (texels_per_block <= 31) {
 		weight_imprecision_estim = 0.04f;
-	}
-	else if (texels_per_block <= 41)
-	{
+	} else if (texels_per_block <= 41) {
 		weight_imprecision_estim = 0.05f;
 	}
 
@@ -593,18 +543,15 @@ unsigned int find_best_partition_candidates(
 	float samec_best_errors[TUNE_MAX_PARTITIONING_CANDIDATES];
 	unsigned int samec_best_partitions[TUNE_MAX_PARTITIONING_CANDIDATES];
 
-	for (unsigned int i = 0; i < requested_candidates; i++)
-	{
+	for (unsigned int i = 0; i < requested_candidates; i++) {
 		uncor_best_errors[i] = ERROR_CALC_DEFAULT;
 		samec_best_errors[i] = ERROR_CALC_DEFAULT;
 	}
 
-	if (uses_alpha)
-	{
-		for (unsigned int i = 0; i < partition_search_limit; i++)
-		{
+	if (uses_alpha) {
+		for (unsigned int i = 0; i < partition_search_limit; i++) {
 			unsigned int partition = partition_sequence[i];
-			const auto& pi = bsd.get_raw_partition_info(partition_count, partition);
+			const auto &pi = bsd.get_raw_partition_info(partition_count, partition);
 
 			// Compute weighting to give to each component in each partition
 			partition_metrics pms[BLOCK_MAX_PARTITIONS];
@@ -619,9 +566,8 @@ unsigned int find_best_partition_candidates(
 
 			float line_lengths[BLOCK_MAX_PARTITIONS];
 
-			for (unsigned int j = 0; j < partition_count; j++)
-			{
-				partition_metrics& pm = pms[j];
+			for (unsigned int j = 0; j < partition_count; j++) {
+				partition_metrics &pm = pms[j];
 
 				uncor_lines[j].a = pm.avg;
 				uncor_lines[j].b = normalize_safe(pm.dir, unit4());
@@ -640,12 +586,12 @@ unsigned int find_best_partition_candidates(
 			float samec_error = 0.0f;
 
 			compute_error_squared_rgba(pi,
-			                           blk,
-			                           uncor_plines,
-			                           samec_plines,
-			                           line_lengths,
-			                           uncor_error,
-			                           samec_error);
+					blk,
+					uncor_plines,
+					samec_plines,
+					line_lengths,
+					uncor_error,
+					samec_error);
 
 			// Compute an estimate of error introduced by weight quantization imprecision.
 			// This error is computed as follows, for each partition
@@ -657,8 +603,7 @@ unsigned int find_best_partition_candidates(
 			//     4(optimized): square the vector once, then do a dot-product with the average
 			//        texel error, then multiply by the number of texels.
 
-			for (unsigned int j = 0; j < partition_count; j++)
-			{
+			for (unsigned int j = 0; j < partition_count; j++) {
 				float tpp = static_cast<float>(pi.partition_texel_count[j]);
 				vfloat4 error_weights(tpp * weight_imprecision_estim);
 
@@ -672,13 +617,10 @@ unsigned int find_best_partition_candidates(
 			insert_result(requested_candidates, uncor_error, partition, uncor_best_errors, uncor_best_partitions);
 			insert_result(requested_candidates, samec_error, partition, samec_best_errors, samec_best_partitions);
 		}
-	}
-	else
-	{
-		for (unsigned int i = 0; i < partition_search_limit; i++)
-		{
+	} else {
+		for (unsigned int i = 0; i < partition_search_limit; i++) {
 			unsigned int partition = partition_sequence[i];
-			const auto& pi = bsd.get_raw_partition_info(partition_count, partition);
+			const auto &pi = bsd.get_raw_partition_info(partition_count, partition);
 
 			// Compute weighting to give to each component in each partition
 			partition_metrics pms[BLOCK_MAX_PARTITIONS];
@@ -686,10 +628,9 @@ unsigned int find_best_partition_candidates(
 
 			partition_lines3 plines[BLOCK_MAX_PARTITIONS];
 
-			for (unsigned int j = 0; j < partition_count; j++)
-			{
-				partition_metrics& pm = pms[j];
-				partition_lines3& pl = plines[j];
+			for (unsigned int j = 0; j < partition_count; j++) {
+				partition_metrics &pm = pms[j];
+				partition_lines3 &pl = plines[j];
 
 				pl.uncor_line.a = pm.avg;
 				pl.uncor_line.b = normalize_safe(pm.dir, unit3());
@@ -698,20 +639,20 @@ unsigned int find_best_partition_candidates(
 				pl.samec_line.b = normalize_safe(pm.avg, unit3());
 
 				pl.uncor_pline.amod = pl.uncor_line.a - pl.uncor_line.b * dot3(pl.uncor_line.a, pl.uncor_line.b);
-				pl.uncor_pline.bs   = pl.uncor_line.b;
+				pl.uncor_pline.bs = pl.uncor_line.b;
 
 				pl.samec_pline.amod = vfloat4::zero();
-				pl.samec_pline.bs   = pl.samec_line.b;
+				pl.samec_pline.bs = pl.samec_line.b;
 			}
 
 			float uncor_error = 0.0f;
 			float samec_error = 0.0f;
 
 			compute_error_squared_rgb(pi,
-			                          blk,
-			                          plines,
-			                          uncor_error,
-			                          samec_error);
+					blk,
+					plines,
+					uncor_error,
+					samec_error);
 
 			// Compute an estimate of error introduced by weight quantization imprecision.
 			// This error is computed as follows, for each partition
@@ -723,9 +664,8 @@ unsigned int find_best_partition_candidates(
 			//     4(optimized): square the vector once, then do a dot-product with the average
 			//        texel error, then multiply by the number of texels.
 
-			for (unsigned int j = 0; j < partition_count; j++)
-			{
-				partition_lines3& pl = plines[j];
+			for (unsigned int j = 0; j < partition_count; j++) {
+				partition_lines3 &pl = plines[j];
 
 				float tpp = static_cast<float>(pi.partition_texel_count[j]);
 				vfloat4 error_weights(tpp * weight_imprecision_estim);
@@ -743,18 +683,16 @@ unsigned int find_best_partition_candidates(
 	}
 
 	unsigned int interleave[2 * TUNE_MAX_PARTITIONING_CANDIDATES];
-	for (unsigned int i = 0; i < requested_candidates; i++)
-	{
+	for (unsigned int i = 0; i < requested_candidates; i++) {
 		interleave[2 * i] = bsd.get_raw_partition_info(partition_count, uncor_best_partitions[i]).partition_index;
 		interleave[2 * i + 1] = bsd.get_raw_partition_info(partition_count, samec_best_partitions[i]).partition_index;
 	}
 
-	uint64_t bitmasks[1024/64] { 0 };
+	uint64_t bitmasks[1024 / 64]{ 0 };
 	unsigned int emitted = 0;
 
 	// Deduplicate the first "requested" entries
-	for (unsigned int i = 0; i < requested_candidates * 2;  i++)
-	{
+	for (unsigned int i = 0; i < requested_candidates * 2; i++) {
 		unsigned int partition = interleave[i];
 
 		unsigned int word = partition / 64;
@@ -762,14 +700,12 @@ unsigned int find_best_partition_candidates(
 
 		bool written = bitmasks[word] & (1ull << bit);
 
-		if (!written)
-		{
+		if (!written) {
 			best_partitions[emitted] = partition;
 			bitmasks[word] |= 1ull << bit;
 			emitted++;
 
-			if (emitted == requested_candidates)
-			{
+			if (emitted == requested_candidates) {
 				break;
 			}
 		}

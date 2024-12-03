@@ -31,11 +31,9 @@ using namespace basisu;
 #include "basisu_kernels_declares.h"
 #include "basisu_kernels_imp.h"
 
-namespace basisu
-{
+namespace basisu {
 
-struct cpu_info
-{
+struct cpu_info {
 	cpu_info() { memset(this, 0, sizeof(*this)); }
 
 	bool m_has_fpu;
@@ -51,8 +49,7 @@ struct cpu_info
 	bool m_has_pclmulqdq;
 };
 
-static void extract_x86_flags(cpu_info &info, uint32_t ecx, uint32_t edx)
-{
+static void extract_x86_flags(cpu_info &info, uint32_t ecx, uint32_t edx) {
 	info.m_has_fpu = (edx & (1 << 0)) != 0;
 	info.m_has_mmx = (edx & (1 << 23)) != 0;
 	info.m_has_sse = (edx & (1 << 25)) != 0;
@@ -65,31 +62,32 @@ static void extract_x86_flags(cpu_info &info, uint32_t ecx, uint32_t edx)
 	info.m_has_avx = (ecx & (1 << 28)) != 0;
 }
 
-static void extract_x86_extended_flags(cpu_info &info, uint32_t ebx)
-{
+static void extract_x86_extended_flags(cpu_info &info, uint32_t ebx) {
 	info.m_has_avx2 = (ebx & (1 << 5)) != 0;
 }
 
 #ifndef _MSC_VER
-static void do_cpuid(uint32_t eax, uint32_t ecx, uint32_t* regs)
-{
+static void do_cpuid(uint32_t eax, uint32_t ecx, uint32_t *regs) {
 	uint32_t ebx = 0, edx = 0;
 
 #if defined(__PIC__) && defined(__i386__)
 	__asm__("movl %%ebx, %%edi;"
-		"cpuid;"
-		"xchgl %%ebx, %%edi;"
-		: "=D"(ebx), "+a"(eax), "+c"(ecx), "=d"(edx));
+			"cpuid;"
+			"xchgl %%ebx, %%edi;"
+			: "=D"(ebx), "+a"(eax), "+c"(ecx), "=d"(edx));
 #else
-	__asm__("cpuid;" : "+b"(ebx), "+a"(eax), "+c"(ecx), "=d"(edx));
+	__asm__("cpuid;"
+			: "+b"(ebx), "+a"(eax), "+c"(ecx), "=d"(edx));
 #endif
 
-	regs[0] = eax; regs[1] = ebx; regs[2] = ecx; regs[3] = edx;
+	regs[0] = eax;
+	regs[1] = ebx;
+	regs[2] = ecx;
+	regs[3] = edx;
 }
 #endif
 
-static void get_cpuinfo(cpu_info &info)
-{
+static void get_cpuinfo(cpu_info &info) {
 	int regs[4];
 
 #ifdef _MSC_VER
@@ -100,30 +98,27 @@ static void get_cpuinfo(cpu_info &info)
 
 	const uint32_t max_eax = regs[0];
 
-	if (max_eax >= 1U)
-	{
+	if (max_eax >= 1U) {
 #ifdef _MSC_VER
 		__cpuid(regs, 1);
 #else
-		do_cpuid(1, 0, (uint32_t*)regs);
+		do_cpuid(1, 0, (uint32_t *)regs);
 #endif
 		extract_x86_flags(info, regs[2], regs[3]);
 	}
 
-	if (max_eax >= 7U)
-	{
+	if (max_eax >= 7U) {
 #ifdef _MSC_VER
 		__cpuidex(regs, 7, 0);
 #else
-		do_cpuid(7, 0, (uint32_t*)regs);
+		do_cpuid(7, 0, (uint32_t *)regs);
 #endif
 
 		extract_x86_extended_flags(info, regs[1]);
 	}
 }
 
-void detect_sse41()
-{
+void detect_sse41() {
 	cpu_info info;
 	get_cpuinfo(info);
 
@@ -132,14 +127,11 @@ void detect_sse41()
 }
 
 } // namespace basisu
-#else // #if BASISU_SUPPORT_SSE
-namespace basisu
-{
+#else  // #if BASISU_SUPPORT_SSE
+namespace basisu {
 
-void detect_sse41()
-{
+void detect_sse41() {
 }
 
 } // namespace basisu
 #endif // #if BASISU_SUPPORT_SSE
-

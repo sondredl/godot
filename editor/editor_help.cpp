@@ -368,7 +368,7 @@ static void _add_type_to_rt(const String &p_type, const String &p_enum, bool p_i
 	bool can_ref = !p_type.contains("*") || is_enum_type;
 
 	String link_t = p_type; // For links in metadata
-	String display_t; // For display purposes.
+	String display_t;		// For display purposes.
 	if (is_enum_type) {
 		link_t = p_enum; // The link for enums is always the full enum description
 		display_t = _contextualize_class_specifier(p_enum, p_class);
@@ -2428,7 +2428,7 @@ static void _add_text_to_rt(const String &p_bbcode, RichTextLabel *p_rt, const C
 
 	// Select the correct code examples.
 	switch ((int)EDITOR_GET("text_editor/help/class_reference_examples")) {
-		case 0: // GDScript
+		case 0:																  // GDScript
 			bbcode = bbcode.replace("[gdscript", "[codeblock lang=gdscript"); // Tag can have extra arguments.
 			bbcode = bbcode.replace("[/gdscript]", "[/codeblock]");
 
@@ -2445,7 +2445,7 @@ static void _add_text_to_rt(const String &p_bbcode, RichTextLabel *p_rt, const C
 				}
 			}
 			break;
-		case 1: // C#
+		case 1:															  // C#
 			bbcode = bbcode.replace("[csharp", "[codeblock lang=csharp"); // Tag can have extra arguments.
 			bbcode = bbcode.replace("[/csharp]", "[/codeblock]");
 
@@ -2462,8 +2462,8 @@ static void _add_text_to_rt(const String &p_bbcode, RichTextLabel *p_rt, const C
 				}
 			}
 			break;
-		case 2: // GDScript and C#
-			bbcode = bbcode.replace("[csharp", "[b]C#:[/b]\n[codeblock lang=csharp"); // Tag can have extra arguments.
+		case 2:																					// GDScript and C#
+			bbcode = bbcode.replace("[csharp", "[b]C#:[/b]\n[codeblock lang=csharp");			// Tag can have extra arguments.
 			bbcode = bbcode.replace("[gdscript", "[b]GDScript:[/b]\n[codeblock lang=gdscript"); // Tag can have extra arguments.
 
 			bbcode = bbcode.replace("[/csharp]", "[/codeblock]");

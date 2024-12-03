@@ -27,13 +27,10 @@
 using namespace spv;
 using namespace SPIRV_CROSS_NAMESPACE;
 
-namespace spirv_cross_util
-{
+namespace spirv_cross_util {
 void rename_interface_variable(Compiler &compiler, const SmallVector<Resource> &resources, uint32_t location,
-                               const std::string &name)
-{
-	for (auto &v : resources)
-	{
+		const std::string &name) {
+	for (auto &v : resources) {
 		if (!compiler.has_decoration(v.id, spv::DecorationLocation))
 			continue;
 
@@ -45,8 +42,7 @@ void rename_interface_variable(Compiler &compiler, const SmallVector<Resource> &
 
 		// This is more of a friendly variant. If we need to rename interface variables, we might have to rename
 		// structs as well and make sure all the names match up.
-		if (type.basetype == SPIRType::Struct)
-		{
+		if (type.basetype == SPIRType::Struct) {
 			compiler.set_name(v.base_type_id, join("SPIRV_Cross_Interface_Location", location));
 			for (uint32_t i = 0; i < uint32_t(type.member_types.size()); i++)
 				compiler.set_member_name(v.base_type_id, i, join("InterfaceMember", i));
@@ -56,19 +52,15 @@ void rename_interface_variable(Compiler &compiler, const SmallVector<Resource> &
 	}
 }
 
-void inherit_combined_sampler_bindings(Compiler &compiler)
-{
+void inherit_combined_sampler_bindings(Compiler &compiler) {
 	auto &samplers = compiler.get_combined_image_samplers();
-	for (auto &s : samplers)
-	{
-		if (compiler.has_decoration(s.image_id, spv::DecorationDescriptorSet))
-		{
+	for (auto &s : samplers) {
+		if (compiler.has_decoration(s.image_id, spv::DecorationDescriptorSet)) {
 			uint32_t set = compiler.get_decoration(s.image_id, spv::DecorationDescriptorSet);
 			compiler.set_decoration(s.combined_id, spv::DecorationDescriptorSet, set);
 		}
 
-		if (compiler.has_decoration(s.image_id, spv::DecorationBinding))
-		{
+		if (compiler.has_decoration(s.image_id, spv::DecorationBinding)) {
 			uint32_t binding = compiler.get_decoration(s.image_id, spv::DecorationBinding);
 			compiler.set_decoration(s.combined_id, spv::DecorationBinding, binding);
 		}

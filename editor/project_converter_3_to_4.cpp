@@ -436,7 +436,7 @@ bool ProjectConverter3To4::convert() {
 				custom_rename(source_lines, "\\.shader", ".gdshader");
 
 				convert_hexadecimal_colors(source_lines, reg_container);
-			} else if (file_name.ends_with(".cs")) { // TODO, C# should use different methods.
+			} else if (file_name.ends_with(".cs")) {		 // TODO, C# should use different methods.
 				rename_classes(source_lines, reg_container); // Using only specialized function.
 				rename_common(RenamesMap3To4::csharp_function_renames, reg_container.csharp_function_regexes, source_lines);
 				rename_common(RenamesMap3To4::builtin_types_renames, reg_container.builtin_types_regexes, source_lines);
@@ -698,7 +698,7 @@ Vector<String> ProjectConverter3To4::check_for_files() {
 
 	while (!directories_to_check.is_empty()) {
 		String path = directories_to_check.get(directories_to_check.size() - 1); // Is there any pop_back function?
-		directories_to_check.resize(directories_to_check.size() - 1); // Remove last element
+		directories_to_check.resize(directories_to_check.size() - 1);			 // Remove last element
 
 		Ref<DirAccess> dir = DirAccess::open(path);
 		if (dir.is_valid()) {
@@ -1780,7 +1780,7 @@ void ProjectConverter3To4::process_gdscript_line(String &line, const RegExContai
 	if (line.contains("OS.screen_orientation")) { // keep "OS." at start
 		// OS.screen_orientation = a -> DisplayServer.screen_set_orientation(a)
 		line = reg_container.reg_os_assign_screen_orient.sub(line, "$1DisplayServer.screen_set_orientation($2)", true); // assignment
-		line = line.replace("OS.screen_orientation", "DisplayServer.screen_get_orientation()"); // value access
+		line = line.replace("OS.screen_orientation", "DisplayServer.screen_get_orientation()");							// value access
 	}
 
 	if (line.contains("_window_always_on_top")) {

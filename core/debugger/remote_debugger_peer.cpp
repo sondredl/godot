@@ -77,7 +77,7 @@ void RemoteDebuggerPeerTCP::close() {
 RemoteDebuggerPeerTCP::RemoteDebuggerPeerTCP(Ref<StreamPeerTCP> p_tcp) {
 	// This means remote debugger takes 16 MiB just because it exists...
 	in_buf.resize((8 << 20) + 4); // 8 MiB should be way more than enough (need 4 extra bytes for encoding packet size).
-	out_buf.resize(8 << 20); // 8 MiB should be way more than enough
+	out_buf.resize(8 << 20);	  // 8 MiB should be way more than enough
 	tcp_client = p_tcp;
 	if (tcp_client.is_valid()) { // Attaching to an already connected stream.
 		connected = true;

@@ -2157,7 +2157,7 @@ bool LightStorage::_shadow_atlas_find_shadow(ShadowAtlas *shadow_atlas, int *p_i
 
 		int found_free_idx = -1; //found a free one
 		int found_used_idx = -1; //found existing one, must steal it
-		uint64_t min_pass = 0; // pass of the existing one, try to use the least recently used one (LRU fashion)
+		uint64_t min_pass = 0;	 // pass of the existing one, try to use the least recently used one (LRU fashion)
 
 		for (int j = 0; j < sc; j++) {
 			if (!sarr[j].owner.is_valid()) {
@@ -2286,7 +2286,7 @@ bool LightStorage::shadow_atlas_update_light(RID p_atlas, RID p_light_instance, 
 
 	int valid_quadrants[4];
 	int valid_quadrant_count = 0;
-	int best_size = -1; //best size found
+	int best_size = -1;	  //best size found
 	int best_subdiv = -1; //subdiv for the best size
 
 	//find the quadrants this fits into, and the best possible size it can fit into

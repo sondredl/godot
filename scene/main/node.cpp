@@ -1645,7 +1645,7 @@ void Node::add_child(Node *p_child, bool p_force_readable_name, InternalMode p_i
 
 	ERR_THREAD_GUARD
 	ERR_FAIL_NULL(p_child);
-	ERR_FAIL_COND_MSG(p_child == this, vformat("Can't add child '%s' to itself.", p_child->get_name())); // adding to itself!
+	ERR_FAIL_COND_MSG(p_child == this, vformat("Can't add child '%s' to itself.", p_child->get_name()));																			 // adding to itself!
 	ERR_FAIL_COND_MSG(p_child->data.parent, vformat("Can't add child '%s' to '%s', already has a parent '%s'.", p_child->get_name(), get_name(), p_child->data.parent->get_name())); //Fail if node has a parent
 #ifdef DEBUG_ENABLED
 	ERR_FAIL_COND_MSG(p_child->is_ancestor_of(this), vformat("Can't add child '%s' to '%s' as it would result in a cyclic dependency since '%s' is already a parent of '%s'.", p_child->get_name(), get_name(), p_child->get_name(), get_name()));
@@ -3254,7 +3254,7 @@ void Node::_set_tree(SceneTree *p_tree) {
 	if (data.tree) {
 		_propagate_enter_tree();
 		if (!data.parent || data.parent->data.ready_notified) { // No parent (root) or parent ready
-			_propagate_ready(); //reverse_notification(NOTIFICATION_READY);
+			_propagate_ready();									//reverse_notification(NOTIFICATION_READY);
 		}
 
 		tree_changed_b = data.tree;

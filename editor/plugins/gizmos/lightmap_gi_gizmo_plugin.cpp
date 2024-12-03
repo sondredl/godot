@@ -143,8 +143,8 @@ void LightmapGIGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 
 		for (int i = 0; i <= stack_count; ++i) {
 			float stack_angle = Math_PI / 2 - i * stack_step; // starting from pi/2 to -pi/2
-			float xy = radius * Math::cos(stack_angle); // r * cos(u)
-			float z = radius * Math::sin(stack_angle); // r * sin(u)
+			float xy = radius * Math::cos(stack_angle);		  // r * cos(u)
+			float z = radius * Math::sin(stack_angle);		  // r * sin(u)
 
 			// add (sector_count+1) vertices per stack
 			// the first and last vertices have same position and normal, but different tex coords
@@ -181,7 +181,7 @@ void LightmapGIGizmoPlugin::redraw(EditorNode3DGizmo *p_gizmo) {
 
 		for (int i = 0; i < stack_count; ++i) {
 			int k1 = i * (sector_count + 1); // beginning of current stack
-			int k2 = k1 + sector_count + 1; // beginning of next stack
+			int k2 = k1 + sector_count + 1;	 // beginning of next stack
 
 			for (int j = 0; j < sector_count; ++j, ++k1, ++k2) {
 				// 2 triangles per sector excluding first and last stacks

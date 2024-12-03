@@ -136,7 +136,7 @@ void AnimationBezierTrackEdit::_draw_track(int p_track, const Color &p_color) {
 				h = end.y; // Make sure it always connects.
 			} else if (j == point_start) {
 				h = start.y; // Make sure it always connects.
-			} else { // Custom interpolation, used because it needs to show paths affected by moving the selection or handles.
+			} else {		 // Custom interpolation, used because it needs to show paths affected by moving the selection or handles.
 				int iterations = 10;
 				float low = 0;
 				float high = 1;

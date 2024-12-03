@@ -88,87 +88,87 @@ void XRBodyModifier3D::_get_joint_data() {
 		"Root", // XRBodyTracker::JOINT_ROOT
 
 		// Upper Body Joints.
-		"Hips", // XRBodyTracker::JOINT_HIPS
-		"Spine", // XRBodyTracker::JOINT_SPINE
-		"Chest", // XRBodyTracker::JOINT_CHEST
-		"UpperChest", // XRBodyTracker::JOINT_UPPER_CHEST
-		"Neck", // XRBodyTracker::JOINT_NECK"
-		"Head", // XRBodyTracker::JOINT_HEAD"
-		"HeadTip", // XRBodyTracker::JOINT_HEAD_TIP"
-		"LeftShoulder", // XRBodyTracker::JOINT_LEFT_SHOULDER"
-		"LeftUpperArm", // XRBodyTracker::JOINT_LEFT_UPPER_ARM"
-		"LeftLowerArm", // XRBodyTracker::JOINT_LEFT_LOWER_ARM"
+		"Hips",			 // XRBodyTracker::JOINT_HIPS
+		"Spine",		 // XRBodyTracker::JOINT_SPINE
+		"Chest",		 // XRBodyTracker::JOINT_CHEST
+		"UpperChest",	 // XRBodyTracker::JOINT_UPPER_CHEST
+		"Neck",			 // XRBodyTracker::JOINT_NECK"
+		"Head",			 // XRBodyTracker::JOINT_HEAD"
+		"HeadTip",		 // XRBodyTracker::JOINT_HEAD_TIP"
+		"LeftShoulder",	 // XRBodyTracker::JOINT_LEFT_SHOULDER"
+		"LeftUpperArm",	 // XRBodyTracker::JOINT_LEFT_UPPER_ARM"
+		"LeftLowerArm",	 // XRBodyTracker::JOINT_LEFT_LOWER_ARM"
 		"RightShoulder", // XRBodyTracker::JOINT_RIGHT_SHOULDER"
 		"RightUpperArm", // XRBodyTracker::JOINT_RIGHT_UPPER_ARM"
 		"RightLowerArm", // XRBodyTracker::JOINT_RIGHT_LOWER_ARM"
 
 		// Lower Body Joints.
-		"LeftUpperLeg", // XRBodyTracker::JOINT_LEFT_UPPER_LEG
-		"LeftLowerLeg", // XRBodyTracker::JOINT_LEFT_LOWER_LEG
-		"LeftFoot", // XRBodyTracker::JOINT_LEFT_FOOT
-		"LeftToes", // XRBodyTracker::JOINT_LEFT_TOES
+		"LeftUpperLeg",	 // XRBodyTracker::JOINT_LEFT_UPPER_LEG
+		"LeftLowerLeg",	 // XRBodyTracker::JOINT_LEFT_LOWER_LEG
+		"LeftFoot",		 // XRBodyTracker::JOINT_LEFT_FOOT
+		"LeftToes",		 // XRBodyTracker::JOINT_LEFT_TOES
 		"RightUpperLeg", // XRBodyTracker::JOINT_RIGHT_UPPER_LEG
 		"RightLowerLeg", // XRBodyTracker::JOINT_RIGHT_LOWER_LEG
-		"RightFoot", // XRBodyTracker::JOINT_RIGHT_FOOT
-		"RightToes", // XRBodyTracker::JOINT_RIGHT_TOES
+		"RightFoot",	 // XRBodyTracker::JOINT_RIGHT_FOOT
+		"RightToes",	 // XRBodyTracker::JOINT_RIGHT_TOES
 
 		// Left Hand Joints.
-		"LeftHand", // XRBodyTracker::JOINT_LEFT_HAND
-		"LeftPalm", // XRBodyTracker::JOINT_LEFT_PALM
-		"LeftWrist", // XRBodyTracker::JOINT_LEFT_WRIST
-		"LeftThumbMetacarpal", // XRBodyTracker::JOINT_LEFT_THUMB_METACARPAL
-		"LeftThumbProximal", // XRBodyTracker::JOINT_LEFT_THUMB_PHALANX_PROXIMAL
-		"LeftThumbDistal", // XRBodyTracker::JOINT_LEFT_THUMB_PHALANX_DISTAL
-		"LeftThumbTip", // XRBodyTracker::JOINT_LEFT_THUMB_TIP
-		"LeftIndexMetacarpal", // XRBodyTracker::JOINT_LEFT_INDEX_FINGER_METACARPAL
-		"LeftIndexProximal", // XRBodyTracker::JOINT_LEFT_INDEX_FINGER_PHALANX_PROXIMAL
-		"LeftIndexIntermediate", // XRBodyTracker::JOINT_LEFT_INDEX_FINGER_PHALANX_INTERMEDIATE
-		"LeftIndexDistal", // XRBodyTracker::JOINT_LEFT_INDEX_FINGER_PHALANX_DISTAL
-		"LeftIndexTip", // XRBodyTracker::JOINT_LEFT_INDEX_FINGER_TIP
-		"LeftMiddleMetacarpal", // XRBodyTracker::JOINT_LEFT_MIDDLE_FINGER_METACARPAL
-		"LeftMiddleProximal", // XRBodyTracker::JOINT_LEFT_MIDDLE_FINGER_PHALANX_PROXIMAL
+		"LeftHand",				  // XRBodyTracker::JOINT_LEFT_HAND
+		"LeftPalm",				  // XRBodyTracker::JOINT_LEFT_PALM
+		"LeftWrist",			  // XRBodyTracker::JOINT_LEFT_WRIST
+		"LeftThumbMetacarpal",	  // XRBodyTracker::JOINT_LEFT_THUMB_METACARPAL
+		"LeftThumbProximal",	  // XRBodyTracker::JOINT_LEFT_THUMB_PHALANX_PROXIMAL
+		"LeftThumbDistal",		  // XRBodyTracker::JOINT_LEFT_THUMB_PHALANX_DISTAL
+		"LeftThumbTip",			  // XRBodyTracker::JOINT_LEFT_THUMB_TIP
+		"LeftIndexMetacarpal",	  // XRBodyTracker::JOINT_LEFT_INDEX_FINGER_METACARPAL
+		"LeftIndexProximal",	  // XRBodyTracker::JOINT_LEFT_INDEX_FINGER_PHALANX_PROXIMAL
+		"LeftIndexIntermediate",  // XRBodyTracker::JOINT_LEFT_INDEX_FINGER_PHALANX_INTERMEDIATE
+		"LeftIndexDistal",		  // XRBodyTracker::JOINT_LEFT_INDEX_FINGER_PHALANX_DISTAL
+		"LeftIndexTip",			  // XRBodyTracker::JOINT_LEFT_INDEX_FINGER_TIP
+		"LeftMiddleMetacarpal",	  // XRBodyTracker::JOINT_LEFT_MIDDLE_FINGER_METACARPAL
+		"LeftMiddleProximal",	  // XRBodyTracker::JOINT_LEFT_MIDDLE_FINGER_PHALANX_PROXIMAL
 		"LeftMiddleIntermediate", // XRBodyTracker::JOINT_LEFT_MIDDLE_FINGER_PHALANX_INTERMEDIATE
-		"LeftMiddleDistal", // XRBodyTracker::JOINT_LEFT_MIDDLE_FINGER_PHALANX_DISTAL
-		"LeftMiddleTip", // XRBodyTracker::JOINT_LEFT_MIDDLE_FINGER_TIP
-		"LeftRingMetacarpal", // XRBodyTracker::JOINT_LEFT_RING_FINGER_METACARPAL
-		"LeftRingProximal", // XRBodyTracker::JOINT_LEFT_RING_FINGER_PHALANX_PROXIMAL
-		"LeftRingIntermediate", // XRBodyTracker::JOINT_LEFT_RING_FINGER_PHALANX_INTERMEDIATE
-		"LeftRingDistal", // XRBodyTracker::JOINT_LEFT_RING_FINGER_PHALANX_DISTAL
-		"LeftRingTip", // XRBodyTracker::JOINT_LEFT_RING_FINGER_TIP
-		"LeftLittleMetacarpal", // XRBodyTracker::JOINT_LEFT_PINKY_FINGER_METACARPAL
-		"LeftLittleProximal", // XRBodyTracker::JOINT_LEFT_PINKY_FINGER_PHALANX_PROXIMAL
+		"LeftMiddleDistal",		  // XRBodyTracker::JOINT_LEFT_MIDDLE_FINGER_PHALANX_DISTAL
+		"LeftMiddleTip",		  // XRBodyTracker::JOINT_LEFT_MIDDLE_FINGER_TIP
+		"LeftRingMetacarpal",	  // XRBodyTracker::JOINT_LEFT_RING_FINGER_METACARPAL
+		"LeftRingProximal",		  // XRBodyTracker::JOINT_LEFT_RING_FINGER_PHALANX_PROXIMAL
+		"LeftRingIntermediate",	  // XRBodyTracker::JOINT_LEFT_RING_FINGER_PHALANX_INTERMEDIATE
+		"LeftRingDistal",		  // XRBodyTracker::JOINT_LEFT_RING_FINGER_PHALANX_DISTAL
+		"LeftRingTip",			  // XRBodyTracker::JOINT_LEFT_RING_FINGER_TIP
+		"LeftLittleMetacarpal",	  // XRBodyTracker::JOINT_LEFT_PINKY_FINGER_METACARPAL
+		"LeftLittleProximal",	  // XRBodyTracker::JOINT_LEFT_PINKY_FINGER_PHALANX_PROXIMAL
 		"LeftLittleIntermediate", // XRBodyTracker::JOINT_LEFT_PINKY_FINGER_PHALANX_INTERMEDIATE
-		"LeftLittleDistal", // XRBodyTracker::JOINT_LEFT_PINKY_FINGER_PHALANX_DISTAL
-		"LeftLittleTip", // XRBodyTracker::JOINT_LEFT_PINKY_FINGER_TIP
+		"LeftLittleDistal",		  // XRBodyTracker::JOINT_LEFT_PINKY_FINGER_PHALANX_DISTAL
+		"LeftLittleTip",		  // XRBodyTracker::JOINT_LEFT_PINKY_FINGER_TIP
 
 		// Right Hand Joints.
-		"RightHand", // XRBodyTracker::JOINT_RIGHT_HAND
-		"RightPalm", // XRBodyTracker::JOINT_RIGHT_PALM
-		"RightWrist", // XRBodyTracker::JOINT_RIGHT_WRIST
-		"RightThumbMetacarpal", // XRBodyTracker::JOINT_RIGHT_THUMB_METACARPAL
-		"RightThumbProximal", // XRBodyTracker::JOINT_RIGHT_THUMB_PHALANX_PROXIMAL
-		"RightThumbDistal", // XRBodyTracker::JOINT_RIGHT_THUMB_PHALANX_DISTAL
-		"RightThumbTip", // XRBodyTracker::JOINT_RIGHT_THUMB_TIP
-		"RightIndexMetacarpal", // XRBodyTracker::JOINT_RIGHT_INDEX_FINGER_METACARPAL
-		"RightIndexProximal", // XRBodyTracker::JOINT_RIGHT_INDEX_FINGER_PHALANX_PROXIMAL
-		"RightIndexIntermediate", // XRBodyTracker::JOINT_RIGHT_INDEX_FINGER_PHALANX_INTERMEDIATE
-		"RightIndexDistal", // XRBodyTracker::JOINT_RIGHT_INDEX_FINGER_PHALANX_DISTAL
-		"RightIndexTip", // XRBodyTracker::JOINT_RIGHT_INDEX_FINGER_TIP
-		"RightMiddleMetacarpal", // XRBodyTracker::JOINT_RIGHT_MIDDLE_FINGER_METACARPAL
-		"RightMiddleProximal", // XRBodyTracker::JOINT_RIGHT_MIDDLE_FINGER_PHALANX_PROXIMAL
+		"RightHand",			   // XRBodyTracker::JOINT_RIGHT_HAND
+		"RightPalm",			   // XRBodyTracker::JOINT_RIGHT_PALM
+		"RightWrist",			   // XRBodyTracker::JOINT_RIGHT_WRIST
+		"RightThumbMetacarpal",	   // XRBodyTracker::JOINT_RIGHT_THUMB_METACARPAL
+		"RightThumbProximal",	   // XRBodyTracker::JOINT_RIGHT_THUMB_PHALANX_PROXIMAL
+		"RightThumbDistal",		   // XRBodyTracker::JOINT_RIGHT_THUMB_PHALANX_DISTAL
+		"RightThumbTip",		   // XRBodyTracker::JOINT_RIGHT_THUMB_TIP
+		"RightIndexMetacarpal",	   // XRBodyTracker::JOINT_RIGHT_INDEX_FINGER_METACARPAL
+		"RightIndexProximal",	   // XRBodyTracker::JOINT_RIGHT_INDEX_FINGER_PHALANX_PROXIMAL
+		"RightIndexIntermediate",  // XRBodyTracker::JOINT_RIGHT_INDEX_FINGER_PHALANX_INTERMEDIATE
+		"RightIndexDistal",		   // XRBodyTracker::JOINT_RIGHT_INDEX_FINGER_PHALANX_DISTAL
+		"RightIndexTip",		   // XRBodyTracker::JOINT_RIGHT_INDEX_FINGER_TIP
+		"RightMiddleMetacarpal",   // XRBodyTracker::JOINT_RIGHT_MIDDLE_FINGER_METACARPAL
+		"RightMiddleProximal",	   // XRBodyTracker::JOINT_RIGHT_MIDDLE_FINGER_PHALANX_PROXIMAL
 		"RightMiddleIntermediate", // XRBodyTracker::JOINT_RIGHT_MIDDLE_FINGER_PHALANX_INTERMEDIATE
-		"RightMiddleDistal", // XRBodyTracker::JOINT_RIGHT_MIDDLE_FINGER_PHALANX_DISTAL
-		"RightMiddleTip", // XRBodyTracker::JOINT_RIGHT_MIDDLE_FINGER_TIP
-		"RightRingMetacarpal", // XRBodyTracker::JOINT_RIGHT_RING_FINGER_METACARPAL
-		"RightRingProximal", // XRBodyTracker::JOINT_RIGHT_RING_FINGER_PHALANX_PROXIMAL
-		"RightRingIntermediate", // XRBodyTracker::JOINT_RIGHT_RING_FINGER_PHALANX_INTERMEDIATE
-		"RightRingDistal", // XRBodyTracker::JOINT_RIGHT_RING_FINGER_PHALANX_DISTAL
-		"RightRingTip", // XRBodyTracker::JOINT_RIGHT_RING_FINGER_TIP
-		"RightLittleMetacarpal", // XRBodyTracker::JOINT_RIGHT_PINKY_FINGER_METACARPAL
-		"RightLittleProximal", // XRBodyTracker::JOINT_RIGHT_PINKY_FINGER_PHALANX_PROXIMAL
+		"RightMiddleDistal",	   // XRBodyTracker::JOINT_RIGHT_MIDDLE_FINGER_PHALANX_DISTAL
+		"RightMiddleTip",		   // XRBodyTracker::JOINT_RIGHT_MIDDLE_FINGER_TIP
+		"RightRingMetacarpal",	   // XRBodyTracker::JOINT_RIGHT_RING_FINGER_METACARPAL
+		"RightRingProximal",	   // XRBodyTracker::JOINT_RIGHT_RING_FINGER_PHALANX_PROXIMAL
+		"RightRingIntermediate",   // XRBodyTracker::JOINT_RIGHT_RING_FINGER_PHALANX_INTERMEDIATE
+		"RightRingDistal",		   // XRBodyTracker::JOINT_RIGHT_RING_FINGER_PHALANX_DISTAL
+		"RightRingTip",			   // XRBodyTracker::JOINT_RIGHT_RING_FINGER_TIP
+		"RightLittleMetacarpal",   // XRBodyTracker::JOINT_RIGHT_PINKY_FINGER_METACARPAL
+		"RightLittleProximal",	   // XRBodyTracker::JOINT_RIGHT_PINKY_FINGER_PHALANX_PROXIMAL
 		"RightLittleIntermediate", // XRBodyTracker::JOINT_RIGHT_PINKY_FINGER_PHALANX_INTERMEDIATE
-		"RightLittleDistal", // XRBodyTracker::JOINT_RIGHT_PINKY_FINGER_PHALANX_DISTAL
-		"RightLittleTip", // XRBodyTracker::JOINT_RIGHT_PINKY_FINGER_TIP
+		"RightLittleDistal",	   // XRBodyTracker::JOINT_RIGHT_PINKY_FINGER_PHALANX_DISTAL
+		"RightLittleTip",		   // XRBodyTracker::JOINT_RIGHT_PINKY_FINGER_TIP
 	};
 
 	// reset JIC.

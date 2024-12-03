@@ -171,9 +171,9 @@ Vector<uint8_t> save_exr_buffer(const Ref<Image> &p_img, bool p_grayscale) {
 
 	// Gimp and Blender are a bit annoying so order of channels isn't straightforward.
 	const int channel_mappings[4][4] = {
-		{ 0 }, // R
-		{ 1, 0 }, // GR
-		{ 2, 1, 0 }, // BGR
+		{ 0 },		   // R
+		{ 1, 0 },	   // GR
+		{ 2, 1, 0 },   // BGR
 		{ 3, 2, 1, 0 } // ABGR
 	};
 

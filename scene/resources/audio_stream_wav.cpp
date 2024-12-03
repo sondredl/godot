@@ -633,19 +633,19 @@ Error AudioStreamWAV::save_to_wav(const String &p_path) {
 	ERR_FAIL_COND_V(file.is_null(), ERR_FILE_CANT_WRITE);
 
 	// Create WAV Header
-	file->store_string("RIFF"); //ChunkID
-	file->store_32(sub_chunk_2_size + 36); //ChunkSize = 36 + SubChunk2Size (size of entire file minus the 8 bits for this and previous header)
-	file->store_string("WAVE"); //Format
-	file->store_string("fmt "); //Subchunk1ID
-	file->store_32(16); //Subchunk1Size = 16
-	file->store_16(format_code); //AudioFormat
-	file->store_16(n_channels); //Number of Channels
-	file->store_32(sample_rate); //SampleRate
+	file->store_string("RIFF");								   //ChunkID
+	file->store_32(sub_chunk_2_size + 36);					   //ChunkSize = 36 + SubChunk2Size (size of entire file minus the 8 bits for this and previous header)
+	file->store_string("WAVE");								   //Format
+	file->store_string("fmt ");								   //Subchunk1ID
+	file->store_32(16);										   //Subchunk1Size = 16
+	file->store_16(format_code);							   //AudioFormat
+	file->store_16(n_channels);								   //Number of Channels
+	file->store_32(sample_rate);							   //SampleRate
 	file->store_32(sample_rate * n_channels * byte_pr_sample); //ByteRate
-	file->store_16(n_channels * byte_pr_sample); //BlockAlign = NumChannels * BytePrSample
-	file->store_16(byte_pr_sample * 8); //BitsPerSample
-	file->store_string("data"); //Subchunk2ID
-	file->store_32(sub_chunk_2_size); //Subchunk2Size
+	file->store_16(n_channels * byte_pr_sample);			   //BlockAlign = NumChannels * BytePrSample
+	file->store_16(byte_pr_sample * 8);						   //BitsPerSample
+	file->store_string("data");								   //Subchunk2ID
+	file->store_32(sub_chunk_2_size);						   //Subchunk2Size
 
 	// Add data
 	Vector<uint8_t> stream_data = get_data();

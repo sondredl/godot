@@ -389,7 +389,7 @@ void CameraAttributesPhysical::_update_frustum() {
 	// To be properly physically-based, we would run the DoF shader at all depths. To be efficient, we are only running it where the CoC
 	// will be visible, this introduces some value shifts in the near field that we have to compensate for below.
 	float depth_near = ((hyperfocal_length * u) / (hyperfocal_length + (u - frustum_focal_length))) / 1000.0; // In meters.
-	float depth_far = ((hyperfocal_length * u) / (hyperfocal_length - (u - frustum_focal_length))) / 1000.0; // In meters.
+	float depth_far = ((hyperfocal_length * u) / (hyperfocal_length - (u - frustum_focal_length))) / 1000.0;  // In meters.
 	float scale = (frustum_focal_length / (u - frustum_focal_length)) * (frustum_focal_length / exposure_aperture);
 
 	bool use_far = (depth_far < frustum_far) && (depth_far > 0.0);
@@ -405,7 +405,7 @@ void CameraAttributesPhysical::_update_frustum() {
 			get_rid(),
 			use_far,
 			u / 1000.0, // Focus distance clampd to focal length expressed in meters.
-			-1.0, // Negative to tell Bokeh effect to use physically-based scaling.
+			-1.0,		// Negative to tell Bokeh effect to use physically-based scaling.
 			use_near,
 			u / 1000.0,
 			-1.0,

@@ -557,7 +557,7 @@ void SceneDebuggerObject::serialize(Array &r_arr, int p_max_size) {
 		String hint_string = pi.hint_string;
 		if (!res.is_null() && !res->get_path().is_empty()) {
 			var = res->get_path();
-		} else { //only send information that can be sent..
+		} else {		 //only send information that can be sent..
 			int len = 0; //test how big is this to encode
 			encode_variant(var, nullptr, len);
 			if (len > p_max_size) { //limit to max size
@@ -690,12 +690,12 @@ void SceneDebuggerTree::deserialize(const Array &p_arr) {
 	int idx = 0;
 	while (p_arr.size() > idx) {
 		ERR_FAIL_COND(p_arr.size() < 6);
-		CHECK_TYPE(p_arr[idx], INT); // child_count.
+		CHECK_TYPE(p_arr[idx], INT);		// child_count.
 		CHECK_TYPE(p_arr[idx + 1], STRING); // name.
 		CHECK_TYPE(p_arr[idx + 2], STRING); // type_name.
-		CHECK_TYPE(p_arr[idx + 3], INT); // id.
+		CHECK_TYPE(p_arr[idx + 3], INT);	// id.
 		CHECK_TYPE(p_arr[idx + 4], STRING); // scene_file_path.
-		CHECK_TYPE(p_arr[idx + 5], INT); // view_flags.
+		CHECK_TYPE(p_arr[idx + 5], INT);	// view_flags.
 		nodes.push_back(RemoteNode(p_arr[idx], p_arr[idx + 1], p_arr[idx + 2], p_arr[idx + 3], p_arr[idx + 4], p_arr[idx + 5]));
 		idx += 6;
 	}

@@ -1285,11 +1285,11 @@ void AnimationMultiTrackKeyEdit::set_use_fps(bool p_enable) {
 }
 
 void AnimationTimelineEdit::_zoom_changed(double) {
-	double zoom_pivot = 0; // Point on timeline to stay fixed.
+	double zoom_pivot = 0;		 // Point on timeline to stay fixed.
 	double zoom_pivot_delta = 0; // Delta seconds from left-most point on timeline to zoom pivot.
 
 	int timeline_width_pixels = get_size().width - get_buttons_width() - get_name_limit();
-	double timeline_width_seconds = timeline_width_pixels / last_zoom_scale; // Length (in seconds) of visible part of timeline before zoom.
+	double timeline_width_seconds = timeline_width_pixels / last_zoom_scale;		  // Length (in seconds) of visible part of timeline before zoom.
 	double updated_timeline_width_seconds = timeline_width_pixels / get_zoom_scale(); // Length after zoom.
 	double updated_timeline_half_width = updated_timeline_width_seconds / 2.0;
 	bool zooming = updated_timeline_width_seconds < timeline_width_seconds;
@@ -7919,14 +7919,14 @@ AnimationTrackEditor::AnimationTrackEditor() {
 	transition_selection->add_item(TTR("Bounce", "Transition Type"), Tween::TRANS_BOUNCE);
 	transition_selection->add_item(TTR("Back", "Transition Type"), Tween::TRANS_BACK);
 	transition_selection->add_item(TTR("Spring", "Transition Type"), Tween::TRANS_SPRING);
-	transition_selection->select(Tween::TRANS_LINEAR); // Default
+	transition_selection->select(Tween::TRANS_LINEAR);							 // Default
 	transition_selection->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED); // Translation context is needed.
 	ease_selection = memnew(OptionButton);
 	ease_selection->add_item(TTR("In", "Ease Type"), Tween::EASE_IN);
 	ease_selection->add_item(TTR("Out", "Ease Type"), Tween::EASE_OUT);
 	ease_selection->add_item(TTR("InOut", "Ease Type"), Tween::EASE_IN_OUT);
 	ease_selection->add_item(TTR("OutIn", "Ease Type"), Tween::EASE_OUT_IN);
-	ease_selection->select(Tween::EASE_IN_OUT); // Default
+	ease_selection->select(Tween::EASE_IN_OUT);							   // Default
 	ease_selection->set_auto_translate_mode(AUTO_TRANSLATE_MODE_DISABLED); // Translation context is needed.
 	ease_fps = memnew(SpinBox);
 	ease_fps->set_min(FPS_DECIMAL);

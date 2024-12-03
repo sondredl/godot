@@ -2097,9 +2097,9 @@ Error BindingsGenerator::_generate_cs_type(const TypeInterface &itype, const Str
 
 	output.append("namespace " BINDINGS_NAMESPACE ";\n\n");
 
-	output.append("using System;\n"); // IntPtr
+	output.append("using System;\n");				 // IntPtr
 	output.append("using System.ComponentModel;\n"); // EditorBrowsable
-	output.append("using System.Diagnostics;\n"); // DebuggerBrowsable
+	output.append("using System.Diagnostics;\n");	 // DebuggerBrowsable
 	output.append("using Godot.NativeInterop;\n");
 
 	output.append("\n#nullable disable\n");
@@ -5109,9 +5109,9 @@ bool BindingsGenerator::_method_has_conflicting_signature(const MethodInterface 
 }
 
 void BindingsGenerator::_initialize_blacklisted_methods() {
-	blacklisted_methods["Object"].push_back("to_string"); // there is already ToString
+	blacklisted_methods["Object"].push_back("to_string");  // there is already ToString
 	blacklisted_methods["Object"].push_back("_to_string"); // override ToString instead
-	blacklisted_methods["Object"].push_back("_init"); // never called in C# (TODO: implement it)
+	blacklisted_methods["Object"].push_back("_init");	   // never called in C# (TODO: implement it)
 }
 
 void BindingsGenerator::_initialize_compat_singletons() {

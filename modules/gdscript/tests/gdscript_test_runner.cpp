@@ -500,7 +500,7 @@ bool GDScriptTest::check_output(const String &p_output) const {
 	ERR_FAIL_COND_V_MSG(err != OK, false, "Error when opening the output file.");
 
 	String got = p_output.strip_edges(); // TODO: may be hacky.
-	got += "\n"; // Make sure to insert newline for CI static checks.
+	got += "\n";						 // Make sure to insert newline for CI static checks.
 
 #ifndef DEBUG_ENABLED
 	expected = strip_warnings(expected);
@@ -719,7 +719,7 @@ bool GDScriptTest::generate_output() {
 	}
 
 	String output = result.output.strip_edges(); // TODO: may be hacky.
-	output += "\n"; // Make sure to insert newline for CI static checks.
+	output += "\n";								 // Make sure to insert newline for CI static checks.
 
 	out_file->store_string(output);
 

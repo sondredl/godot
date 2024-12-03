@@ -934,9 +934,9 @@ void Basis::rotate_sh(real_t *p_values) {
 	// http://filmicworlds.com/blog/simple-and-fast-spherical-harmonic-rotation/
 	// this code is Public Domain
 
-	const static real_t s_c3 = 0.94617469575; // (3*sqrt(5))/(4*sqrt(pi))
+	const static real_t s_c3 = 0.94617469575;  // (3*sqrt(5))/(4*sqrt(pi))
 	const static real_t s_c4 = -0.31539156525; // (-sqrt(5))/(4*sqrt(pi))
-	const static real_t s_c5 = 0.54627421529; // (sqrt(15))/(4*sqrt(pi))
+	const static real_t s_c5 = 0.54627421529;  // (sqrt(15))/(4*sqrt(pi))
 
 	const static real_t s_c_scale = 1.0 / 0.91529123286551084;
 	const static real_t s_c_scale_inv = 0.91529123286551084;

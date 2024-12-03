@@ -462,15 +462,15 @@ void SceneShaderForwardMobile::init(const String p_defines) {
 		Vector<String> shader_versions;
 		for (uint32_t ubershader = 0; ubershader < 2; ubershader++) {
 			const String base_define = ubershader ? "\n#define UBERSHADER\n" : "";
-			shader_versions.push_back(base_define + ""); // SHADER_VERSION_COLOR_PASS
-			shader_versions.push_back(base_define + "\n#define USE_LIGHTMAP\n"); // SHADER_VERSION_LIGHTMAP_COLOR_PASS
-			shader_versions.push_back(base_define + "\n#define MODE_RENDER_DEPTH\n"); // SHADER_VERSION_SHADOW_PASS, should probably change this to MODE_RENDER_SHADOW because we don't have a depth pass here...
+			shader_versions.push_back(base_define + "");															// SHADER_VERSION_COLOR_PASS
+			shader_versions.push_back(base_define + "\n#define USE_LIGHTMAP\n");									// SHADER_VERSION_LIGHTMAP_COLOR_PASS
+			shader_versions.push_back(base_define + "\n#define MODE_RENDER_DEPTH\n");								// SHADER_VERSION_SHADOW_PASS, should probably change this to MODE_RENDER_SHADOW because we don't have a depth pass here...
 			shader_versions.push_back(base_define + "\n#define MODE_RENDER_DEPTH\n#define MODE_DUAL_PARABOLOID\n"); // SHADER_VERSION_SHADOW_PASS_DP
 			shader_versions.push_back(base_define + "\n#define MODE_RENDER_DEPTH\n#define MODE_RENDER_MATERIAL\n"); // SHADER_VERSION_DEPTH_PASS_WITH_MATERIAL
 
 			// Multiview versions of our shaders.
-			shader_versions.push_back(base_define + "\n#define USE_MULTIVIEW\n"); // SHADER_VERSION_COLOR_PASS_MULTIVIEW
-			shader_versions.push_back(base_define + "\n#define USE_MULTIVIEW\n#define USE_LIGHTMAP\n"); // SHADER_VERSION_LIGHTMAP_COLOR_PASS_MULTIVIEW
+			shader_versions.push_back(base_define + "\n#define USE_MULTIVIEW\n");							 // SHADER_VERSION_COLOR_PASS_MULTIVIEW
+			shader_versions.push_back(base_define + "\n#define USE_MULTIVIEW\n#define USE_LIGHTMAP\n");		 // SHADER_VERSION_LIGHTMAP_COLOR_PASS_MULTIVIEW
 			shader_versions.push_back(base_define + "\n#define USE_MULTIVIEW\n#define MODE_RENDER_DEPTH\n"); // SHADER_VERSION_SHADOW_PASS_MULTIVIEW
 		}
 
@@ -680,7 +680,7 @@ void SceneShaderForwardMobile::init(const String p_defines) {
 		actions.global_buffer_array_variable = "global_shader_uniforms.data";
 		actions.instance_uniform_index_variable = "instances.data[draw_call.instance_index].instance_uniforms_ofs";
 
-		actions.apply_luminance_multiplier = true; // apply luminance multiplier to screen texture
+		actions.apply_luminance_multiplier = true;												   // apply luminance multiplier to screen texture
 		actions.check_multiview_samplers = RendererCompositorRD::get_singleton()->is_xr_enabled(); // Make sure we check sampling multiview textures.
 
 		compiler.initialize(actions);

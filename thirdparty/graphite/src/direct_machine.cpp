@@ -13,20 +13,26 @@
 // inorder processors with short pipelines and little branch prediction such
 // as the ARM and possibly Atom chips.
 
-
-#include <cassert>
-#include <cstring>
 #include "inc/Machine.h"
+#include "inc/Rule.h"
 #include "inc/Segment.h"
 #include "inc/Slot.h"
-#include "inc/Rule.h"
+#include <cassert>
+#include <cstring>
 
-#define STARTOP(name)           name: {
-#define ENDOP                   }; goto *((sp - sb)/Machine::STACK_MAX ? &&end : *++ip);
-#define EXIT(status)            { push(status); goto end; }
+#define STARTOP(name) \
+	name : {
+#define ENDOP \
+	}         \
+	;         \
+	goto *((sp - sb) / Machine::STACK_MAX ? &&end : *++ip);
+#define EXIT(status)  \
+	{                 \
+		push(status); \
+		goto end;     \
+	}
 
-#define do_(name)               &&name
-
+#define do_(name) &&name
 
 using namespace graphite2;
 using namespace vm;
@@ -53,65 +59,62 @@ namespace {
 // So all in all, we need at least the __noinline__ attribute. __noclone__
 // is not supported by clang.
 __attribute__((__noinline__))
-const void * direct_run(const bool          get_table_mode,
-                        const instr       * program,
-                        const byte        * data,
-                        Machine::stack_t  * stack,
-                        slotref         * & __map,
-                        uint8                _dir,
-                        Machine::status_t & status,
-                        SlotMap           * __smap=0)
-{
-    // We need to define and return to opcode table from within this function
-    // other inorder to take the addresses of the instruction bodies.
-    #include "inc/opcode_table.h"
-    if (get_table_mode)
-        return opcode_table;
+const void *
+direct_run(const bool get_table_mode,
+		const instr *program,
+		const byte *data,
+		Machine::stack_t *stack,
+		slotref *&__map,
+		uint8 _dir,
+		Machine::status_t &status,
+		SlotMap *__smap = 0) {
+// We need to define and return to opcode table from within this function
+// other inorder to take the addresses of the instruction bodies.
+#include "inc/opcode_table.h"
+	if (get_table_mode)
+		return opcode_table;
 
-    // Declare virtual machine registers
-    const instr           * ip = program;
-    const byte            * dp = data;
-    Machine::stack_t      * sp = stack + Machine::STACK_GUARD,
-                    * const sb = sp;
-    SlotMap             & smap = *__smap;
-    Segment              & seg = smap.segment;
-    slotref                 is = *__map,
-                         * map = __map,
-                  * const mapb = smap.begin()+smap.context();
-    uint8                  dir = _dir;
-    int8                 flags = 0;
+	// Declare virtual machine registers
+	const instr *ip = program;
+	const byte *dp = data;
+	Machine::stack_t *sp = stack + Machine::STACK_GUARD,
+					 *const sb = sp;
+	SlotMap &smap = *__smap;
+	Segment &seg = smap.segment;
+	slotref is = *__map,
+			*map = __map,
+			*const mapb = smap.begin() + smap.context();
+	uint8 dir = _dir;
+	int8 flags = 0;
 
-    // start the program
-    goto **ip;
+	// start the program
+	goto **ip;
 
-    // Pull in the opcode definitions
-    #include "inc/opcodes.h"
+// Pull in the opcode definitions
+#include "inc/opcodes.h"
 
-    end:
-    __map  = map;
-    *__map = is;
-    return sp;
+end:
+	__map = map;
+	*__map = is;
+	return sp;
 }
 
+} //namespace
+
+const opcode_t *Machine::getOpcodeTable() throw() {
+	slotref *dummy;
+	Machine::status_t dumstat = Machine::finished;
+	return static_cast<const opcode_t *>(direct_run(true, 0, 0, 0, dummy, 0, dumstat));
 }
 
-const opcode_t * Machine::getOpcodeTable() throw()
-{
-    slotref * dummy;
-    Machine::status_t dumstat = Machine::finished;
-    return static_cast<const opcode_t *>(direct_run(true, 0, 0, 0, dummy, 0, dumstat));
-}
+Machine::stack_t Machine::run(const instr *program,
+		const byte *data,
+		slotref *&is) {
+	assert(program != 0);
 
-
-Machine::stack_t  Machine::run(const instr   * program,
-                               const byte    * data,
-                               slotref     * & is)
-{
-    assert(program != 0);
-
-    const stack_t *sp = static_cast<const stack_t *>(
-                direct_run(false, program, data, _stack, is, _map.dir(), _status, &_map));
-    const stack_t ret = sp == _stack+STACK_GUARD+1 ? *sp-- : 0;
-    check_final_stack(sp);
-    return ret;
+	const stack_t *sp = static_cast<const stack_t *>(
+			direct_run(false, program, data, _stack, is, _map.dir(), _status, &_map));
+	const stack_t ret = sp == _stack + STACK_GUARD + 1 ? *sp-- : 0;
+	check_final_stack(sp);
+	return ret;
 }

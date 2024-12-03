@@ -33,27 +33,24 @@
  * @return The uncontracted color.
  */
 static ASTCENC_SIMD_INLINE vint4 uncontract_color(
-	vint4 input
-) {
+		vint4 input) {
 	vmask4 mask(true, true, false, false);
 	vint4 bc0 = asr<1>(input + input.lane<2>());
 	return select(input, bc0, mask);
 }
 
 void rgba_delta_unpack(
-	vint4 input0,
-	vint4 input1,
-	vint4& output0,
-	vint4& output1
-) {
+		vint4 input0,
+		vint4 input1,
+		vint4 &output0,
+		vint4 &output1) {
 	// Apply bit transfer
 	bit_transfer_signed(input1, input0);
 
 	// Apply blue-uncontraction if needed
 	int rgb_sum = hadd_rgb_s(input1);
 	input1 = input1 + input0;
-	if (rgb_sum < 0)
-	{
+	if (rgb_sum < 0) {
 		input0 = uncontract_color(input0);
 		input1 = uncontract_color(input1);
 		std::swap(input0, input1);
@@ -74,25 +71,22 @@ void rgba_delta_unpack(
  * @param[out] output1   The unpacked endpoint 1 color.
  */
 static void rgb_delta_unpack(
-	vint4 input0,
-	vint4 input1,
-	vint4& output0,
-	vint4& output1
-) {
+		vint4 input0,
+		vint4 input1,
+		vint4 &output0,
+		vint4 &output1) {
 	rgba_delta_unpack(input0, input1, output0, output1);
 	output0.set_lane<3>(255);
 	output1.set_lane<3>(255);
 }
 
 void rgba_unpack(
-	vint4 input0,
-	vint4 input1,
-	vint4& output0,
-	vint4& output1
-) {
+		vint4 input0,
+		vint4 input1,
+		vint4 &output0,
+		vint4 &output1) {
 	// Apply blue-uncontraction if needed
-	if (hadd_rgb_s(input0) > hadd_rgb_s(input1))
-	{
+	if (hadd_rgb_s(input0) > hadd_rgb_s(input1)) {
 		input0 = uncontract_color(input0);
 		input1 = uncontract_color(input1);
 		std::swap(input0, input1);
@@ -113,11 +107,10 @@ void rgba_unpack(
  * @param[out] output1   The unpacked endpoint 1 color.
  */
 static void rgb_unpack(
-	vint4 input0,
-	vint4 input1,
-	vint4& output0,
-	vint4& output1
-) {
+		vint4 input0,
+		vint4 input1,
+		vint4 &output0,
+		vint4 &output1) {
 	rgba_unpack(input0, input1, output0, output1);
 	output0.set_lane<3>(255);
 	output1.set_lane<3>(255);
@@ -135,12 +128,11 @@ static void rgb_unpack(
  * @param[out] output1   The unpacked endpoint 1 color.
  */
 static void rgb_scale_alpha_unpack(
-	vint4 input0,
-	uint8_t alpha1,
-	uint8_t scale,
-	vint4& output0,
-	vint4& output1
-) {
+		vint4 input0,
+		uint8_t alpha1,
+		uint8_t scale,
+		vint4 &output0,
+		vint4 &output1) {
 	output1 = input0;
 	output1.set_lane<3>(alpha1);
 
@@ -159,11 +151,10 @@ static void rgb_scale_alpha_unpack(
  * @param[out] output1   The unpacked endpoint 1 color.
  */
 static void rgb_scale_unpack(
-	vint4 input0,
-	int scale,
-	vint4& output0,
-	vint4& output1
-) {
+		vint4 input0,
+		int scale,
+		vint4 &output0,
+		vint4 &output1) {
 	output1 = input0;
 	output1.set_lane<3>(255);
 
@@ -181,10 +172,9 @@ static void rgb_scale_unpack(
  * @param[out] output1   The unpacked endpoint 1 color.
  */
 static void luminance_unpack(
-	const uint8_t input[2],
-	vint4& output0,
-	vint4& output1
-) {
+		const uint8_t input[2],
+		vint4 &output0,
+		vint4 &output1) {
 	int lum0 = input[0];
 	int lum1 = input[1];
 	output0 = vint4(lum0, lum0, lum0, 255);
@@ -201,10 +191,9 @@ static void luminance_unpack(
  * @param[out] output1   The unpacked endpoint 1 color.
  */
 static void luminance_delta_unpack(
-	const uint8_t input[2],
-	vint4& output0,
-	vint4& output1
-) {
+		const uint8_t input[2],
+		vint4 &output0,
+		vint4 &output1) {
 	int v0 = input[0];
 	int v1 = input[1];
 	int l0 = (v0 >> 2) | (v1 & 0xC0);
@@ -224,10 +213,9 @@ static void luminance_delta_unpack(
  * @param[out] output1   The unpacked endpoint 1 color.
  */
 static void luminance_alpha_unpack(
-	const uint8_t input[4],
-	vint4& output0,
-	vint4& output1
-) {
+		const uint8_t input[4],
+		vint4 &output0,
+		vint4 &output1) {
 	int lum0 = input[0];
 	int lum1 = input[1];
 	int alpha0 = input[2];
@@ -244,10 +232,9 @@ static void luminance_alpha_unpack(
  * @param[out] output1   The unpacked endpoint 1 color.
  */
 static void luminance_alpha_delta_unpack(
-	const uint8_t input[4],
-	vint4& output0,
-	vint4& output1
-) {
+		const uint8_t input[4],
+		vint4 &output0,
+		vint4 &output1) {
 	int lum0 = input[0];
 	int lum1 = input[1];
 	int alpha0 = input[2];
@@ -258,13 +245,11 @@ static void luminance_alpha_delta_unpack(
 	lum1 &= 0x7F;
 	alpha1 &= 0x7F;
 
-	if (lum1 & 0x40)
-	{
+	if (lum1 & 0x40) {
 		lum1 -= 0x80;
 	}
 
-	if (alpha1 & 0x40)
-	{
+	if (alpha1 & 0x40) {
 		alpha1 -= 0x80;
 	}
 
@@ -290,10 +275,9 @@ static void luminance_alpha_delta_unpack(
  * @param[out] output1   The unpacked endpoint 1 color.
  */
 static void hdr_rgbo_unpack(
-	const uint8_t input[4],
-	vint4& output0,
-	vint4& output1
-) {
+		const uint8_t input[4],
+		vint4 &output0,
+		vint4 &output1) {
 	int v0 = input[0];
 	int v1 = input[1];
 	int v2 = input[2];
@@ -303,18 +287,13 @@ static void hdr_rgbo_unpack(
 
 	int majcomp;
 	int mode;
-	if ((modeval & 0xC) != 0xC)
-	{
+	if ((modeval & 0xC) != 0xC) {
 		majcomp = modeval >> 2;
 		mode = modeval & 3;
-	}
-	else if (modeval != 0xF)
-	{
+	} else if (modeval != 0xF) {
 		majcomp = modeval & 3;
 		mode = 4;
-	}
-	else
-	{
+	} else {
 		majcomp = 0;
 		mode = 5;
 	}
@@ -376,7 +355,7 @@ static void hdr_rgbo_unpack(
 		red |= bit5 << 10;
 
 	// expand to 12 bits.
-	static const int shamts[6] { 1, 1, 2, 3, 4, 5 };
+	static const int shamts[6]{ 1, 1, 2, 3, 4, 5 };
 	int shamt = shamts[mode];
 	red <<= shamt;
 	green <<= shamt;
@@ -385,28 +364,26 @@ static void hdr_rgbo_unpack(
 
 	// on modes 0 to 4, the values stored for "green" and "blue" are differentials,
 	// not absolute values.
-	if (mode != 5)
-	{
+	if (mode != 5) {
 		green = red - green;
 		blue = red - blue;
 	}
 
 	// switch around components.
 	int temp;
-	switch (majcomp)
-	{
-	case 1:
-		temp = red;
-		red = green;
-		green = temp;
-		break;
-	case 2:
-		temp = red;
-		red = blue;
-		blue = temp;
-		break;
-	default:
-		break;
+	switch (majcomp) {
+		case 1:
+			temp = red;
+			red = green;
+			green = temp;
+			break;
+		case 2:
+			temp = red;
+			red = blue;
+			blue = temp;
+			break;
+		default:
+			break;
 	}
 
 	int red0 = red - scale;
@@ -440,11 +417,9 @@ static void hdr_rgbo_unpack(
  * @param[out] output1   The unpacked endpoint 1 color.
  */
 static void hdr_rgb_unpack(
-	const uint8_t input[6],
-	vint4& output0,
-	vint4& output1
-) {
-
+		const uint8_t input[6],
+		vint4 &output0,
+		vint4 &output1) {
 	int v0 = input[0];
 	int v1 = input[1];
 	int v2 = input[2];
@@ -457,8 +432,7 @@ static void hdr_rgb_unpack(
 
 	int majcomp = ((v4 & 0x80) >> 7) | (((v5 & 0x80) >> 7) << 1);
 
-	if (majcomp == 3)
-	{
+	if (majcomp == 3) {
 		output0 = vint4(v0 << 8, v2 << 8, (v4 & 0x7F) << 9, 0x7800);
 		output1 = vint4(v1 << 8, v3 << 8, (v5 & 0x7F) << 9, 0x7800);
 		return;
@@ -472,7 +446,7 @@ static void hdr_rgb_unpack(
 	int d1 = v5 & 0x7f;
 
 	// get hold of the number of bits in 'd0' and 'd1'
-	static const int dbits_tab[8] { 7, 6, 7, 6, 5, 6, 5, 6 };
+	static const int dbits_tab[8]{ 7, 6, 7, 6, 5, 6, 5, 6 };
 	int dbits = dbits_tab[modeval];
 
 	// extract six variable-placement bits
@@ -484,7 +458,7 @@ static void hdr_rgb_unpack(
 	int bit5 = (v5 >> 5) & 1;
 
 	// and prepend the variable-placement bits depending on mode.
-	int ohmod = 1 << modeval;	// one-hot-mode
+	int ohmod = 1 << modeval; // one-hot-mode
 	if (ohmod & 0xA4)
 		a |= bit0 << 9;
 	if (ohmod & 0x8)
@@ -508,26 +482,22 @@ static void hdr_rgb_unpack(
 	if (ohmod & 0x20)
 		c |= bit2 << 7;
 
-	if (ohmod & 0x5B)
-	{
+	if (ohmod & 0x5B) {
 		b0 |= bit0 << 6;
 		b1 |= bit1 << 6;
 	}
 
-	if (ohmod & 0x12)
-	{
+	if (ohmod & 0x12) {
 		b0 |= bit2 << 7;
 		b1 |= bit3 << 7;
 	}
 
-	if (ohmod & 0xAF)
-	{
+	if (ohmod & 0xAF) {
 		d0 |= bit4 << 5;
 		d1 |= bit5 << 5;
 	}
 
-	if (ohmod & 0x5)
-	{
+	if (ohmod & 0x5) {
 		d0 |= bit2 << 6;
 		d1 |= bit3 << 6;
 	}
@@ -572,26 +542,25 @@ static void hdr_rgb_unpack(
 
 	// switch around the color components
 	int temp0, temp1;
-	switch (majcomp)
-	{
-	case 1:					// switch around red and green
-		temp0 = red0;
-		temp1 = red1;
-		red0 = green0;
-		red1 = green1;
-		green0 = temp0;
-		green1 = temp1;
-		break;
-	case 2:					// switch around red and blue
-		temp0 = red0;
-		temp1 = red1;
-		red0 = blue0;
-		red1 = blue1;
-		blue0 = temp0;
-		blue1 = temp1;
-		break;
-	case 0:					// no switch
-		break;
+	switch (majcomp) {
+		case 1: // switch around red and green
+			temp0 = red0;
+			temp1 = red1;
+			red0 = green0;
+			red1 = green1;
+			green0 = temp0;
+			green1 = temp1;
+			break;
+		case 2: // switch around red and blue
+			temp0 = red0;
+			temp1 = red1;
+			red0 = blue0;
+			red1 = blue1;
+			blue0 = temp0;
+			blue1 = temp1;
+			break;
+		case 0: // no switch
+			break;
 	}
 
 	output0 = vint4(red0 << 4, green0 << 4, blue0 << 4, 0x7800);
@@ -606,10 +575,9 @@ static void hdr_rgb_unpack(
  * @param[out] output1   The unpacked endpoint 1 color.
  */
 static void hdr_rgb_ldr_alpha_unpack(
-	const uint8_t input[8],
-	vint4& output0,
-	vint4& output1
-) {
+		const uint8_t input[8],
+		vint4 &output0,
+		vint4 &output1) {
 	hdr_rgb_unpack(input, output0, output1);
 
 	int v6 = input[6];
@@ -626,28 +594,23 @@ static void hdr_rgb_ldr_alpha_unpack(
  * @param[out] output1   The unpacked endpoint 1 color.
  */
 static void hdr_luminance_small_range_unpack(
-	const uint8_t input[2],
-	vint4& output0,
-	vint4& output1
-) {
+		const uint8_t input[2],
+		vint4 &output0,
+		vint4 &output1) {
 	int v0 = input[0];
 	int v1 = input[1];
 
 	int y0, y1;
-	if (v0 & 0x80)
-	{
+	if (v0 & 0x80) {
 		y0 = ((v1 & 0xE0) << 4) | ((v0 & 0x7F) << 2);
 		y1 = (v1 & 0x1F) << 2;
-	}
-	else
-	{
+	} else {
 		y0 = ((v1 & 0xF0) << 4) | ((v0 & 0x7F) << 1);
 		y1 = (v1 & 0xF) << 1;
 	}
 
 	y1 += y0;
-	if (y1 > 0xFFF)
-	{
+	if (y1 > 0xFFF) {
 		y1 = 0xFFF;
 	}
 
@@ -663,21 +626,17 @@ static void hdr_luminance_small_range_unpack(
  * @param[out] output1   The unpacked endpoint 1 color.
  */
 static void hdr_luminance_large_range_unpack(
-	const uint8_t input[2],
-	vint4& output0,
-	vint4& output1
-) {
+		const uint8_t input[2],
+		vint4 &output0,
+		vint4 &output1) {
 	int v0 = input[0];
 	int v1 = input[1];
 
 	int y0, y1;
-	if (v1 >= v0)
-	{
+	if (v1 >= v0) {
 		y0 = v0 << 4;
 		y1 = v1 << 4;
-	}
-	else
-	{
+	} else {
 		y0 = (v1 << 4) + 8;
 		y1 = (v0 << 4) - 8;
 	}
@@ -694,24 +653,19 @@ static void hdr_luminance_large_range_unpack(
  * @param[out] output1   The unpacked endpoint 1 color.
  */
 static void hdr_alpha_unpack(
-	const uint8_t input[2],
-	int& output0,
-	int& output1
-) {
-
+		const uint8_t input[2],
+		int &output0,
+		int &output1) {
 	int v6 = input[0];
 	int v7 = input[1];
 
 	int selector = ((v6 >> 7) & 1) | ((v7 >> 6) & 2);
 	v6 &= 0x7F;
 	v7 &= 0x7F;
-	if (selector == 3)
-	{
+	if (selector == 3) {
 		output0 = v6 << 5;
 		output1 = v7 << 5;
-	}
-	else
-	{
+	} else {
 		v6 |= (v7 << (selector + 1)) & 0x780;
 		v7 &= (0x3f >> selector);
 		v7 ^= 32 >> selector;
@@ -720,12 +674,9 @@ static void hdr_alpha_unpack(
 		v7 <<= (4 - selector);
 		v7 += v6;
 
-		if (v7 < 0)
-		{
+		if (v7 < 0) {
 			v7 = 0;
-		}
-		else if (v7 > 0xFFF)
-		{
+		} else if (v7 > 0xFFF) {
 			v7 = 0xFFF;
 		}
 
@@ -745,10 +696,9 @@ static void hdr_alpha_unpack(
  * @param[out] output1   The unpacked endpoint 1 color.
  */
 static void hdr_rgb_hdr_alpha_unpack(
-	const uint8_t input[8],
-	vint4& output0,
-	vint4& output1
-) {
+		const uint8_t input[8],
+		vint4 &output0,
+		vint4 &output1) {
 	hdr_rgb_unpack(input, output0, output1);
 
 	int alpha0, alpha1;
@@ -760,134 +710,116 @@ static void hdr_rgb_hdr_alpha_unpack(
 
 /* See header for documentation. */
 void unpack_color_endpoints(
-	astcenc_profile decode_mode,
-	int format,
-	const uint8_t* input,
-	bool& rgb_hdr,
-	bool& alpha_hdr,
-	vint4& output0,
-	vint4& output1
-) {
+		astcenc_profile decode_mode,
+		int format,
+		const uint8_t *input,
+		bool &rgb_hdr,
+		bool &alpha_hdr,
+		vint4 &output0,
+		vint4 &output1) {
 	// Assume no NaNs and LDR endpoints unless set later
 	rgb_hdr = false;
 	alpha_hdr = false;
 
 	bool alpha_hdr_default = false;
 
-	switch (format)
-	{
-	case FMT_LUMINANCE:
-		luminance_unpack(input, output0, output1);
-		break;
+	switch (format) {
+		case FMT_LUMINANCE:
+			luminance_unpack(input, output0, output1);
+			break;
 
-	case FMT_LUMINANCE_DELTA:
-		luminance_delta_unpack(input, output0, output1);
-		break;
+		case FMT_LUMINANCE_DELTA:
+			luminance_delta_unpack(input, output0, output1);
+			break;
 
-	case FMT_HDR_LUMINANCE_SMALL_RANGE:
-		rgb_hdr = true;
-		alpha_hdr_default = true;
-		hdr_luminance_small_range_unpack(input, output0, output1);
-		break;
+		case FMT_HDR_LUMINANCE_SMALL_RANGE:
+			rgb_hdr = true;
+			alpha_hdr_default = true;
+			hdr_luminance_small_range_unpack(input, output0, output1);
+			break;
 
-	case FMT_HDR_LUMINANCE_LARGE_RANGE:
-		rgb_hdr = true;
-		alpha_hdr_default = true;
-		hdr_luminance_large_range_unpack(input, output0, output1);
-		break;
+		case FMT_HDR_LUMINANCE_LARGE_RANGE:
+			rgb_hdr = true;
+			alpha_hdr_default = true;
+			hdr_luminance_large_range_unpack(input, output0, output1);
+			break;
 
-	case FMT_LUMINANCE_ALPHA:
-		luminance_alpha_unpack(input, output0, output1);
-		break;
+		case FMT_LUMINANCE_ALPHA:
+			luminance_alpha_unpack(input, output0, output1);
+			break;
 
-	case FMT_LUMINANCE_ALPHA_DELTA:
-		luminance_alpha_delta_unpack(input, output0, output1);
-		break;
+		case FMT_LUMINANCE_ALPHA_DELTA:
+			luminance_alpha_delta_unpack(input, output0, output1);
+			break;
 
-	case FMT_RGB_SCALE:
-		{
+		case FMT_RGB_SCALE: {
 			vint4 input0q(input[0], input[1], input[2], 0);
 			uint8_t scale = input[3];
 			rgb_scale_unpack(input0q, scale, output0, output1);
-		}
-		break;
+		} break;
 
-	case FMT_RGB_SCALE_ALPHA:
-		{
+		case FMT_RGB_SCALE_ALPHA: {
 			vint4 input0q(input[0], input[1], input[2], input[4]);
 			uint8_t alpha1q = input[5];
 			uint8_t scaleq = input[3];
 			rgb_scale_alpha_unpack(input0q, alpha1q, scaleq, output0, output1);
-		}
-		break;
+		} break;
 
-	case FMT_HDR_RGB_SCALE:
-		rgb_hdr = true;
-		alpha_hdr_default = true;
-		hdr_rgbo_unpack(input, output0, output1);
-		break;
+		case FMT_HDR_RGB_SCALE:
+			rgb_hdr = true;
+			alpha_hdr_default = true;
+			hdr_rgbo_unpack(input, output0, output1);
+			break;
 
-	case FMT_RGB:
-		{
+		case FMT_RGB: {
 			vint4 input0q(input[0], input[2], input[4], 0);
 			vint4 input1q(input[1], input[3], input[5], 0);
 			rgb_unpack(input0q, input1q, output0, output1);
-		}
-		break;
+		} break;
 
-	case FMT_RGB_DELTA:
-		{
+		case FMT_RGB_DELTA: {
 			vint4 input0q(input[0], input[2], input[4], 0);
 			vint4 input1q(input[1], input[3], input[5], 0);
 			rgb_delta_unpack(input0q, input1q, output0, output1);
-		}
-		break;
+		} break;
 
-	case FMT_HDR_RGB:
-		rgb_hdr = true;
-		alpha_hdr_default = true;
-		hdr_rgb_unpack(input, output0, output1);
-		break;
+		case FMT_HDR_RGB:
+			rgb_hdr = true;
+			alpha_hdr_default = true;
+			hdr_rgb_unpack(input, output0, output1);
+			break;
 
-	case FMT_RGBA:
-		{
+		case FMT_RGBA: {
 			vint4 input0q(input[0], input[2], input[4], input[6]);
 			vint4 input1q(input[1], input[3], input[5], input[7]);
 			rgba_unpack(input0q, input1q, output0, output1);
-		}
-		break;
+		} break;
 
-	case FMT_RGBA_DELTA:
-		{
+		case FMT_RGBA_DELTA: {
 			vint4 input0q(input[0], input[2], input[4], input[6]);
 			vint4 input1q(input[1], input[3], input[5], input[7]);
 			rgba_delta_unpack(input0q, input1q, output0, output1);
-		}
-		break;
+		} break;
 
-	case FMT_HDR_RGB_LDR_ALPHA:
-		rgb_hdr = true;
-		hdr_rgb_ldr_alpha_unpack(input, output0, output1);
-		break;
+		case FMT_HDR_RGB_LDR_ALPHA:
+			rgb_hdr = true;
+			hdr_rgb_ldr_alpha_unpack(input, output0, output1);
+			break;
 
-	case FMT_HDR_RGBA:
-		rgb_hdr = true;
-		alpha_hdr = true;
-		hdr_rgb_hdr_alpha_unpack(input, output0, output1);
-		break;
+		case FMT_HDR_RGBA:
+			rgb_hdr = true;
+			alpha_hdr = true;
+			hdr_rgb_hdr_alpha_unpack(input, output0, output1);
+			break;
 	}
 
 	// Assign a correct default alpha
-	if (alpha_hdr_default)
-	{
-		if (decode_mode == ASTCENC_PRF_HDR)
-		{
+	if (alpha_hdr_default) {
+		if (decode_mode == ASTCENC_PRF_HDR) {
 			output0.set_lane<3>(0x7800);
 			output1.set_lane<3>(0x7800);
 			alpha_hdr = true;
-		}
-		else
-		{
+		} else {
 			output0.set_lane<3>(0x00FF);
 			output1.set_lane<3>(0x00FF);
 			alpha_hdr = false;
@@ -897,11 +829,9 @@ void unpack_color_endpoints(
 	// Handle endpoint errors and expansion
 
 	// Linear LDR 8-bit endpoints are expanded to 16-bit by replication
-	if (decode_mode == ASTCENC_PRF_LDR)
-	{
+	if (decode_mode == ASTCENC_PRF_LDR) {
 		// Error color - HDR endpoint in an LDR encoding
-		if (rgb_hdr || alpha_hdr)
-		{
+		if (rgb_hdr || alpha_hdr) {
 			output0 = vint4(0xFF, 0x00, 0xFF, 0xFF);
 			output1 = vint4(0xFF, 0x00, 0xFF, 0xFF);
 			rgb_hdr = false;
@@ -914,11 +844,9 @@ void unpack_color_endpoints(
 	// sRGB LDR 8-bit endpoints are expanded to 16 bit by:
 	//  - RGB = shift left by 8 bits and OR with 0x80
 	//  - A = replication
-	else if (decode_mode == ASTCENC_PRF_LDR_SRGB)
-	{
+	else if (decode_mode == ASTCENC_PRF_LDR_SRGB) {
 		// Error color - HDR endpoint in an LDR encoding
-		if (rgb_hdr || alpha_hdr)
-		{
+		if (rgb_hdr || alpha_hdr) {
 			output0 = vint4(0xFF, 0x00, 0xFF, 0xFF);
 			output1 = vint4(0xFF, 0x00, 0xFF, 0xFF);
 			rgb_hdr = false;
@@ -938,8 +866,7 @@ void unpack_color_endpoints(
 	// An HDR profile decode, but may be using linear LDR endpoints
 	// Linear LDR 8-bit endpoints are expanded to 16-bit by replication
 	// HDR endpoints are already 16-bit
-	else
-	{
+	else {
 		vmask4 hdr_lanes(rgb_hdr, rgb_hdr, rgb_hdr, alpha_hdr);
 		vint4 output_scale = select(vint4(257), vint4(1), hdr_lanes);
 		output0 = output0 * output_scale;

@@ -739,15 +739,15 @@ void SkyRD::init() {
 
 		// Initialize sky
 		Vector<String> sky_modes;
-		sky_modes.push_back(""); // Full size
-		sky_modes.push_back("\n#define USE_HALF_RES_PASS\n"); // Half Res
-		sky_modes.push_back("\n#define USE_QUARTER_RES_PASS\n"); // Quarter res
-		sky_modes.push_back("\n#define USE_CUBEMAP_PASS\n"); // Cubemap
-		sky_modes.push_back("\n#define USE_CUBEMAP_PASS\n#define USE_HALF_RES_PASS\n"); // Half Res Cubemap
+		sky_modes.push_back("");														   // Full size
+		sky_modes.push_back("\n#define USE_HALF_RES_PASS\n");							   // Half Res
+		sky_modes.push_back("\n#define USE_QUARTER_RES_PASS\n");						   // Quarter res
+		sky_modes.push_back("\n#define USE_CUBEMAP_PASS\n");							   // Cubemap
+		sky_modes.push_back("\n#define USE_CUBEMAP_PASS\n#define USE_HALF_RES_PASS\n");	   // Half Res Cubemap
 		sky_modes.push_back("\n#define USE_CUBEMAP_PASS\n#define USE_QUARTER_RES_PASS\n"); // Quarter res Cubemap
 
-		sky_modes.push_back("\n#define USE_MULTIVIEW\n"); // Full size multiview
-		sky_modes.push_back("\n#define USE_HALF_RES_PASS\n#define USE_MULTIVIEW\n"); // Half Res multiview
+		sky_modes.push_back("\n#define USE_MULTIVIEW\n");								// Full size multiview
+		sky_modes.push_back("\n#define USE_HALF_RES_PASS\n#define USE_MULTIVIEW\n");	// Half Res multiview
 		sky_modes.push_back("\n#define USE_QUARTER_RES_PASS\n#define USE_MULTIVIEW\n"); // Quarter res multiview
 
 		sky_shader.shader.initialize(sky_modes, defines);

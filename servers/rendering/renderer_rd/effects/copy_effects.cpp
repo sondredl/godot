@@ -51,12 +51,12 @@ CopyEffects::CopyEffects(bool p_prefer_raster_effects) {
 		// init blur shader (on compute use copy shader)
 
 		Vector<String> blur_modes;
-		blur_modes.push_back("\n#define MODE_MIPMAP\n"); // BLUR_MIPMAP
-		blur_modes.push_back("\n#define MODE_GAUSSIAN_BLUR\n"); // BLUR_MODE_GAUSSIAN_BLUR
-		blur_modes.push_back("\n#define MODE_GAUSSIAN_GLOW\n"); // BLUR_MODE_GAUSSIAN_GLOW
+		blur_modes.push_back("\n#define MODE_MIPMAP\n");										// BLUR_MIPMAP
+		blur_modes.push_back("\n#define MODE_GAUSSIAN_BLUR\n");									// BLUR_MODE_GAUSSIAN_BLUR
+		blur_modes.push_back("\n#define MODE_GAUSSIAN_GLOW\n");									// BLUR_MODE_GAUSSIAN_GLOW
 		blur_modes.push_back("\n#define MODE_GAUSSIAN_GLOW\n#define GLOW_USE_AUTO_EXPOSURE\n"); // BLUR_MODE_GAUSSIAN_GLOW_AUTO_EXPOSURE
-		blur_modes.push_back("\n#define MODE_COPY\n"); // BLUR_MODE_COPY
-		blur_modes.push_back("\n#define MODE_SET_COLOR\n"); // BLUR_MODE_SET_COLOR
+		blur_modes.push_back("\n#define MODE_COPY\n");											// BLUR_MODE_COPY
+		blur_modes.push_back("\n#define MODE_SET_COLOR\n");										// BLUR_MODE_SET_COLOR
 
 		blur_raster.shader.initialize(blur_modes);
 		memset(&blur_raster.push_constant, 0, sizeof(BlurRasterPushConstant));
@@ -103,11 +103,11 @@ CopyEffects::CopyEffects(bool p_prefer_raster_effects) {
 
 	{
 		Vector<String> copy_modes;
-		copy_modes.push_back("\n"); // COPY_TO_FB_COPY
-		copy_modes.push_back("\n#define MODE_PANORAMA_TO_DP\n"); // COPY_TO_FB_COPY_PANORAMA_TO_DP
-		copy_modes.push_back("\n#define MODE_TWO_SOURCES\n"); // COPY_TO_FB_COPY2
-		copy_modes.push_back("\n#define MODE_SET_COLOR\n"); // COPY_TO_FB_SET_COLOR
-		copy_modes.push_back("\n#define USE_MULTIVIEW\n"); // COPY_TO_FB_MULTIVIEW
+		copy_modes.push_back("\n");													 // COPY_TO_FB_COPY
+		copy_modes.push_back("\n#define MODE_PANORAMA_TO_DP\n");					 // COPY_TO_FB_COPY_PANORAMA_TO_DP
+		copy_modes.push_back("\n#define MODE_TWO_SOURCES\n");						 // COPY_TO_FB_COPY2
+		copy_modes.push_back("\n#define MODE_SET_COLOR\n");							 // COPY_TO_FB_SET_COLOR
+		copy_modes.push_back("\n#define USE_MULTIVIEW\n");							 // COPY_TO_FB_MULTIVIEW
 		copy_modes.push_back("\n#define USE_MULTIVIEW\n#define MODE_TWO_SOURCES\n"); // COPY_TO_FB_MULTIVIEW_WITH_DEPTH
 
 		copy_to_fb.shader.initialize(copy_modes);
@@ -256,15 +256,15 @@ CopyEffects::CopyEffects(bool p_prefer_raster_effects) {
 
 	{
 		Vector<String> specular_modes;
-		specular_modes.push_back("\n#define MODE_MERGE\n"); // SPECULAR_MERGE_ADD
+		specular_modes.push_back("\n#define MODE_MERGE\n");					  // SPECULAR_MERGE_ADD
 		specular_modes.push_back("\n#define MODE_MERGE\n#define MODE_SSR\n"); // SPECULAR_MERGE_SSR
-		specular_modes.push_back("\n"); // SPECULAR_MERGE_ADDITIVE_ADD
-		specular_modes.push_back("\n#define MODE_SSR\n"); // SPECULAR_MERGE_ADDITIVE_SSR
+		specular_modes.push_back("\n");										  // SPECULAR_MERGE_ADDITIVE_ADD
+		specular_modes.push_back("\n#define MODE_SSR\n");					  // SPECULAR_MERGE_ADDITIVE_SSR
 
-		specular_modes.push_back("\n#define USE_MULTIVIEW\n#define MODE_MERGE\n"); // SPECULAR_MERGE_ADD_MULTIVIEW
+		specular_modes.push_back("\n#define USE_MULTIVIEW\n#define MODE_MERGE\n");					 // SPECULAR_MERGE_ADD_MULTIVIEW
 		specular_modes.push_back("\n#define USE_MULTIVIEW\n#define MODE_MERGE\n#define MODE_SSR\n"); // SPECULAR_MERGE_SSR_MULTIVIEW
-		specular_modes.push_back("\n#define USE_MULTIVIEW\n"); // SPECULAR_MERGE_ADDITIVE_ADD_MULTIVIEW
-		specular_modes.push_back("\n#define USE_MULTIVIEW\n#define MODE_SSR\n"); // SPECULAR_MERGE_ADDITIVE_SSR_MULTIVIEW
+		specular_modes.push_back("\n#define USE_MULTIVIEW\n");										 // SPECULAR_MERGE_ADDITIVE_ADD_MULTIVIEW
+		specular_modes.push_back("\n#define USE_MULTIVIEW\n#define MODE_SSR\n");					 // SPECULAR_MERGE_ADDITIVE_SSR_MULTIVIEW
 
 		specular_merge.shader.initialize(specular_modes);
 

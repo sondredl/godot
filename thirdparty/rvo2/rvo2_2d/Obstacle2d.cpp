@@ -34,5 +34,6 @@
 #include "RVOSimulator2d.h"
 
 namespace RVO2D {
-	Obstacle2D::Obstacle2D() : isConvex_(false), nextObstacle_(NULL), prevObstacle_(NULL), id_(0) { }
-}
+Obstacle2D::Obstacle2D() :
+		isConvex_(false), nextObstacle_(NULL), prevObstacle_(NULL), id_(0) {}
+} //namespace RVO2D

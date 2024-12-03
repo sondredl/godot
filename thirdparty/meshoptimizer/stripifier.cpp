@@ -7,21 +7,17 @@
 
 // This work is based on:
 // Francine Evans, Steven Skiena and Amitabh Varshney. Optimizing Triangle Strips for Fast Rendering. 1996
-namespace meshopt
-{
+namespace meshopt {
 
-static unsigned int findStripFirst(const unsigned int buffer[][3], unsigned int buffer_size, const unsigned char* valence)
-{
+static unsigned int findStripFirst(const unsigned int buffer[][3], unsigned int buffer_size, const unsigned char *valence) {
 	unsigned int index = 0;
 	unsigned int iv = ~0u;
 
-	for (size_t i = 0; i < buffer_size; ++i)
-	{
+	for (size_t i = 0; i < buffer_size; ++i) {
 		unsigned char va = valence[buffer[i][0]], vb = valence[buffer[i][1]], vc = valence[buffer[i][2]];
 		unsigned int v = (va < vb && va < vc) ? va : (vb < vc ? vb : vc);
 
-		if (v < iv)
-		{
+		if (v < iv) {
 			index = unsigned(i);
 			iv = v;
 		}
@@ -30,10 +26,8 @@ static unsigned int findStripFirst(const unsigned int buffer[][3], unsigned int 
 	return index;
 }
 
-static int findStripNext(const unsigned int buffer[][3], unsigned int buffer_size, unsigned int e0, unsigned int e1)
-{
-	for (size_t i = 0; i < buffer_size; ++i)
-	{
+static int findStripNext(const unsigned int buffer[][3], unsigned int buffer_size, unsigned int e0, unsigned int e1) {
+	for (size_t i = 0; i < buffer_size; ++i) {
 		unsigned int a = buffer[i][0], b = buffer[i][1], c = buffer[i][2];
 
 		if (e0 == a && e1 == b)
@@ -49,8 +43,7 @@ static int findStripNext(const unsigned int buffer[][3], unsigned int buffer_siz
 
 } // namespace meshopt
 
-size_t meshopt_stripify(unsigned int* destination, const unsigned int* indices, size_t index_count, size_t vertex_count, unsigned int restart_index)
-{
+size_t meshopt_stripify(unsigned int *destination, const unsigned int *indices, size_t index_count, size_t vertex_count, unsigned int restart_index) {
 	assert(destination != indices);
 	assert(index_count % 3 == 0);
 
@@ -72,11 +65,10 @@ size_t meshopt_stripify(unsigned int* destination, const unsigned int* indices, 
 
 	// compute vertex valence; this is used to prioritize starting triangle for strips
 	// note: we use 8-bit counters for performance; for outlier vertices the valence is incorrect but that just affects the heuristic
-	unsigned char* valence = allocator.allocate<unsigned char>(vertex_count);
+	unsigned char *valence = allocator.allocate<unsigned char>(vertex_count);
 	memset(valence, 0, vertex_count);
 
-	for (size_t i = 0; i < index_count; ++i)
-	{
+	for (size_t i = 0; i < index_count; ++i) {
 		unsigned int index = indices[i];
 		assert(index < vertex_count);
 
@@ -85,13 +77,11 @@ size_t meshopt_stripify(unsigned int* destination, const unsigned int* indices, 
 
 	int next = -1;
 
-	while (buffer_size > 0 || index_offset < index_count)
-	{
+	while (buffer_size > 0 || index_offset < index_count) {
 		assert(next < 0 || (size_t(next >> 2) < buffer_size && (next & 3) < 3));
 
 		// fill triangle buffer
-		while (buffer_size < buffer_capacity && index_offset < index_count)
-		{
+		while (buffer_size < buffer_capacity && index_offset < index_count) {
 			buffer[buffer_size][0] = indices[index_offset + 0];
 			buffer[buffer_size][1] = indices[index_offset + 1];
 			buffer[buffer_size][2] = indices[index_offset + 2];
@@ -102,8 +92,7 @@ size_t meshopt_stripify(unsigned int* destination, const unsigned int* indices, 
 
 		assert(buffer_size > 0);
 
-		if (next >= 0)
-		{
+		if (next >= 0) {
 			unsigned int i = next >> 2;
 			unsigned int a = buffer[i][0], b = buffer[i][1], c = buffer[i][2];
 			unsigned int v = buffer[i][next & 3];
@@ -123,8 +112,7 @@ size_t meshopt_stripify(unsigned int* destination, const unsigned int* indices, 
 			int cont = findStripNext(buffer, buffer_size, parity ? strip[1] : v, parity ? v : strip[1]);
 			int swap = cont < 0 ? findStripNext(buffer, buffer_size, parity ? v : strip[0], parity ? strip[0] : v) : -1;
 
-			if (cont < 0 && swap >= 0)
-			{
+			if (cont < 0 && swap >= 0) {
 				// [a b c] => [a b a c]
 				destination[strip_size++] = strip[0];
 				destination[strip_size++] = v;
@@ -134,9 +122,7 @@ size_t meshopt_stripify(unsigned int* destination, const unsigned int* indices, 
 				strip[1] = v;
 
 				next = swap;
-			}
-			else
-			{
+			} else {
 				// emit the next vertex in the strip
 				destination[strip_size++] = v;
 
@@ -147,9 +133,7 @@ size_t meshopt_stripify(unsigned int* destination, const unsigned int* indices, 
 
 				next = cont;
 			}
-		}
-		else
-		{
+		} else {
 			// if we didn't find anything, we need to find the next new triangle
 			// we use a heuristic to maximize the strip length
 			unsigned int i = findStripFirst(buffer, buffer_size, valence);
@@ -177,21 +161,16 @@ size_t meshopt_stripify(unsigned int* destination, const unsigned int* indices, 
 			mine = (eb >= 0 && mine > eb) ? eb : mine;
 			mine = (ec >= 0 && mine > ec) ? ec : mine;
 
-			if (ea == mine)
-			{
+			if (ea == mine) {
 				// keep abc
 				next = ea;
-			}
-			else if (eb == mine)
-			{
+			} else if (eb == mine) {
 				// abc -> bca
 				unsigned int t = a;
 				a = b, b = c, c = t;
 
 				next = eb;
-			}
-			else if (ec == mine)
-			{
+			} else if (ec == mine) {
 				// abc -> cab
 				unsigned int t = c;
 				c = b, b = a, a = t;
@@ -199,8 +178,7 @@ size_t meshopt_stripify(unsigned int* destination, const unsigned int* indices, 
 				next = ec;
 			}
 
-			if (restart_index)
-			{
+			if (restart_index) {
 				if (strip_size)
 					destination[strip_size++] = restart_index;
 
@@ -212,11 +190,8 @@ size_t meshopt_stripify(unsigned int* destination, const unsigned int* indices, 
 				strip[0] = b;
 				strip[1] = c;
 				parity = 1;
-			}
-			else
-			{
-				if (strip_size)
-				{
+			} else {
+				if (strip_size) {
 					// connect last strip using degenerate triangles
 					destination[strip_size++] = strip[1];
 					destination[strip_size++] = a;
@@ -241,8 +216,7 @@ size_t meshopt_stripify(unsigned int* destination, const unsigned int* indices, 
 	return strip_size;
 }
 
-size_t meshopt_stripifyBound(size_t index_count)
-{
+size_t meshopt_stripifyBound(size_t index_count) {
 	assert(index_count % 3 == 0);
 
 	// worst case without restarts is 2 degenerate indices and 3 indices per triangle
@@ -250,33 +224,26 @@ size_t meshopt_stripifyBound(size_t index_count)
 	return (index_count / 3) * 5;
 }
 
-size_t meshopt_unstripify(unsigned int* destination, const unsigned int* indices, size_t index_count, unsigned int restart_index)
-{
+size_t meshopt_unstripify(unsigned int *destination, const unsigned int *indices, size_t index_count, unsigned int restart_index) {
 	assert(destination != indices);
 
 	size_t offset = 0;
 	size_t start = 0;
 
-	for (size_t i = 0; i < index_count; ++i)
-	{
-		if (restart_index && indices[i] == restart_index)
-		{
+	for (size_t i = 0; i < index_count; ++i) {
+		if (restart_index && indices[i] == restart_index) {
 			start = i + 1;
-		}
-		else if (i - start >= 2)
-		{
+		} else if (i - start >= 2) {
 			unsigned int a = indices[i - 2], b = indices[i - 1], c = indices[i];
 
 			// flip winding for odd triangles
-			if ((i - start) & 1)
-			{
+			if ((i - start) & 1) {
 				unsigned int t = a;
 				a = b, b = t;
 			}
 
 			// although we use restart indices, strip swaps still produce degenerate triangles, so skip them
-			if (a != b && a != c && b != c)
-			{
+			if (a != b && a != c && b != c) {
 				destination[offset + 0] = a;
 				destination[offset + 1] = b;
 				destination[offset + 2] = c;
@@ -288,8 +255,7 @@ size_t meshopt_unstripify(unsigned int* destination, const unsigned int* indices
 	return offset;
 }
 
-size_t meshopt_unstripifyBound(size_t index_count)
-{
+size_t meshopt_unstripifyBound(size_t index_count) {
 	assert(index_count == 0 || index_count >= 3);
 
 	return (index_count == 0) ? 0 : (index_count - 2) * 3;

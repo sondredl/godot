@@ -111,8 +111,8 @@ Error MovieWriterPNGWAV::write_begin(const Size2i &p_movie_size, uint32_t p_fps,
 			break;
 	}
 
-	f_wav->store_32(16); //standard format, no extra fields
-	f_wav->store_16(1); // compression code, standard PCM
+	f_wav->store_32(16);	   //standard format, no extra fields
+	f_wav->store_16(1);		   // compression code, standard PCM
 	f_wav->store_16(channels); //CHANNELS: 2
 
 	f_wav->store_32(mix_rate);

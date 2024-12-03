@@ -53,7 +53,7 @@ public:
 	virtual int set_option(ENetSocketOption p_option, int p_value) = 0;
 	virtual void close() = 0;
 	virtual void set_refuse_new_connections(bool p_enable) {} /* Only used by dtls server */
-	virtual bool can_upgrade() { return false; } /* Only true in ENetUDP */
+	virtual bool can_upgrade() { return false; }			  /* Only true in ENetUDP */
 	virtual ~ENetGodotSocket() {}
 };
 

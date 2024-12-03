@@ -21,37 +21,37 @@
 
 #if !UCONFIG_NO_BREAK_ITERATION
 
+#include "ucasemap_imp.h"
 #include "unicode/brkiter.h"
 #include "unicode/locid.h"
 #include "unicode/ucasemap.h"
 #include "unicode/unistr.h"
-#include "ucasemap_imp.h"
 
 U_NAMESPACE_BEGIN
 
 UnicodeString &
 UnicodeString::toTitle(BreakIterator *iter) {
-    return toTitle(iter, Locale::getDefault(), 0);
+	return toTitle(iter, Locale::getDefault(), 0);
 }
 
 UnicodeString &
 UnicodeString::toTitle(BreakIterator *iter, const Locale &locale) {
-    return toTitle(iter, locale, 0);
+	return toTitle(iter, locale, 0);
 }
 
 UnicodeString &
 UnicodeString::toTitle(BreakIterator *iter, const Locale &locale, uint32_t options) {
-    LocalPointer<BreakIterator> ownedIter;
-    UErrorCode errorCode = U_ZERO_ERROR;
-    iter = ustrcase_getTitleBreakIterator(&locale, "", options, iter, ownedIter, errorCode);
-    if (iter == nullptr) {
-        setToBogus();
-        return *this;
-    }
-    caseMap(ustrcase_getCaseLocale(locale.getBaseName()), options, iter, ustrcase_internalToTitle);
-    return *this;
+	LocalPointer<BreakIterator> ownedIter;
+	UErrorCode errorCode = U_ZERO_ERROR;
+	iter = ustrcase_getTitleBreakIterator(&locale, "", options, iter, ownedIter, errorCode);
+	if (iter == nullptr) {
+		setToBogus();
+		return *this;
+	}
+	caseMap(ustrcase_getCaseLocale(locale.getBaseName()), options, iter, ustrcase_internalToTitle);
+	return *this;
 }
 
 U_NAMESPACE_END
 
-#endif  // !UCONFIG_NO_BREAK_ITERATION
+#endif // !UCONFIG_NO_BREAK_ITERATION

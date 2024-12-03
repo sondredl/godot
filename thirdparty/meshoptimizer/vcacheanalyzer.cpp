@@ -4,8 +4,7 @@
 #include <assert.h>
 #include <string.h>
 
-meshopt_VertexCacheStatistics meshopt_analyzeVertexCache(const unsigned int* indices, size_t index_count, size_t vertex_count, unsigned int cache_size, unsigned int warp_size, unsigned int primgroup_size)
-{
+meshopt_VertexCacheStatistics meshopt_analyzeVertexCache(const unsigned int *indices, size_t index_count, size_t vertex_count, unsigned int cache_size, unsigned int warp_size, unsigned int primgroup_size) {
 	assert(index_count % 3 == 0);
 	assert(cache_size >= 3);
 	assert(warp_size == 0 || warp_size >= 3);
@@ -17,13 +16,12 @@ meshopt_VertexCacheStatistics meshopt_analyzeVertexCache(const unsigned int* ind
 	unsigned int warp_offset = 0;
 	unsigned int primgroup_offset = 0;
 
-	unsigned int* cache_timestamps = allocator.allocate<unsigned int>(vertex_count);
+	unsigned int *cache_timestamps = allocator.allocate<unsigned int>(vertex_count);
 	memset(cache_timestamps, 0, vertex_count * sizeof(unsigned int));
 
 	unsigned int timestamp = cache_size + 1;
 
-	for (size_t i = 0; i < index_count; i += 3)
-	{
+	for (size_t i = 0; i < index_count; i += 3) {
 		unsigned int a = indices[i + 0], b = indices[i + 1], c = indices[i + 2];
 		assert(a < vertex_count && b < vertex_count && c < vertex_count);
 
@@ -32,8 +30,7 @@ meshopt_VertexCacheStatistics meshopt_analyzeVertexCache(const unsigned int* ind
 		bool cc = (timestamp - cache_timestamps[c]) > cache_size;
 
 		// flush cache if triangle doesn't fit into warp or into the primitive buffer
-		if ((primgroup_size && primgroup_offset == primgroup_size) || (warp_size && warp_offset + ac + bc + cc > warp_size))
-		{
+		if ((primgroup_size && primgroup_offset == primgroup_size) || (warp_size && warp_offset + ac + bc + cc > warp_size)) {
 			result.warps_executed += warp_offset > 0;
 
 			warp_offset = 0;
@@ -44,12 +41,10 @@ meshopt_VertexCacheStatistics meshopt_analyzeVertexCache(const unsigned int* ind
 		}
 
 		// update cache and add vertices to warp
-		for (int j = 0; j < 3; ++j)
-		{
+		for (int j = 0; j < 3; ++j) {
 			unsigned int index = indices[i + j];
 
-			if (timestamp - cache_timestamps[index] > cache_size)
-			{
+			if (timestamp - cache_timestamps[index] > cache_size) {
 				cache_timestamps[index] = timestamp++;
 				result.vertices_transformed++;
 				warp_offset++;

@@ -105,22 +105,22 @@ Dictionary detect_wgl() {
 			static PIXELFORMATDESCRIPTOR pfd = {
 				sizeof(PIXELFORMATDESCRIPTOR), // Size Of This Pixel Format Descriptor
 				1,
-				PFD_DRAW_TO_WINDOW | // Format Must Support Window
+				PFD_DRAW_TO_WINDOW |		 // Format Must Support Window
 						PFD_SUPPORT_OPENGL | // Format Must Support OpenGL
 						PFD_DOUBLEBUFFER,
 				(BYTE)PFD_TYPE_RGBA,
 				(BYTE)(OS::get_singleton()->is_layered_allowed() ? 32 : 24),
-				(BYTE)0, (BYTE)0, (BYTE)0, (BYTE)0, (BYTE)0, (BYTE)0, // Color Bits Ignored
+				(BYTE)0, (BYTE)0, (BYTE)0, (BYTE)0, (BYTE)0, (BYTE)0,	   // Color Bits Ignored
 				(BYTE)(OS::get_singleton()->is_layered_allowed() ? 8 : 0), // Alpha Buffer
-				(BYTE)0, // Shift Bit Ignored
-				(BYTE)0, // No Accumulation Buffer
-				(BYTE)0, (BYTE)0, (BYTE)0, (BYTE)0, // Accumulation Bits Ignored
-				(BYTE)24, // 24Bit Z-Buffer (Depth Buffer)
-				(BYTE)0, // No Stencil Buffer
-				(BYTE)0, // No Auxiliary Buffer
-				(BYTE)PFD_MAIN_PLANE, // Main Drawing Layer
-				(BYTE)0, // Reserved
-				0, 0, 0 // Layer Masks Ignored
+				(BYTE)0,												   // Shift Bit Ignored
+				(BYTE)0,												   // No Accumulation Buffer
+				(BYTE)0, (BYTE)0, (BYTE)0, (BYTE)0,						   // Accumulation Bits Ignored
+				(BYTE)24,												   // 24Bit Z-Buffer (Depth Buffer)
+				(BYTE)0,												   // No Stencil Buffer
+				(BYTE)0,												   // No Auxiliary Buffer
+				(BYTE)PFD_MAIN_PLANE,									   // Main Drawing Layer
+				(BYTE)0,												   // Reserved
+				0, 0, 0													   // Layer Masks Ignored
 			};
 
 			int pixel_format = ChoosePixelFormat(hDC, &pfd);

@@ -226,10 +226,10 @@ inline void set_inner_corner_radius(const Rect2 style_rect, const Rect2 inner_re
 	real_t border_right = style_rect.size.width - inner_rect.size.width - border_left;
 	real_t border_bottom = style_rect.size.height - inner_rect.size.height - border_top;
 
-	inner_corner_radius[0] = MAX(corner_radius[0] - MIN(border_top, border_left), 0); // Top left.
-	inner_corner_radius[1] = MAX(corner_radius[1] - MIN(border_top, border_right), 0); // Top right.
+	inner_corner_radius[0] = MAX(corner_radius[0] - MIN(border_top, border_left), 0);	  // Top left.
+	inner_corner_radius[1] = MAX(corner_radius[1] - MIN(border_top, border_right), 0);	  // Top right.
 	inner_corner_radius[2] = MAX(corner_radius[2] - MIN(border_bottom, border_right), 0); // Bottom right.
-	inner_corner_radius[3] = MAX(corner_radius[3] - MIN(border_bottom, border_left), 0); // Bottom left.
+	inner_corner_radius[3] = MAX(corner_radius[3] - MIN(border_bottom, border_left), 0);  // Bottom left.
 }
 
 inline void draw_rounded_rectangle(Vector<Vector2> &verts, Vector<int> &indices, Vector<Color> &colors, const Rect2 &style_rect, const real_t corner_radius[4],
@@ -244,20 +244,20 @@ inline void draw_rounded_rectangle(Vector<Vector2> &verts, Vector<int> &indices,
 
 	// Corner radius center points.
 	Vector<Point2> outer_points = {
-		ring_rect.position + Vector2(ring_corner_radius[0], ring_corner_radius[0]), //tl
+		ring_rect.position + Vector2(ring_corner_radius[0], ring_corner_radius[0]),											   //tl
 		Point2(ring_rect.position.x + ring_rect.size.x - ring_corner_radius[1], ring_rect.position.y + ring_corner_radius[1]), //tr
-		ring_rect.position + ring_rect.size - Vector2(ring_corner_radius[2], ring_corner_radius[2]), //br
-		Point2(ring_rect.position.x + ring_corner_radius[3], ring_rect.position.y + ring_rect.size.y - ring_corner_radius[3]) //bl
+		ring_rect.position + ring_rect.size - Vector2(ring_corner_radius[2], ring_corner_radius[2]),						   //br
+		Point2(ring_rect.position.x + ring_corner_radius[3], ring_rect.position.y + ring_rect.size.y - ring_corner_radius[3])  //bl
 	};
 
 	real_t inner_corner_radius[4];
 	set_inner_corner_radius(style_rect, inner_rect, corner_radius, inner_corner_radius);
 
 	Vector<Point2> inner_points = {
-		inner_rect.position + Vector2(inner_corner_radius[0], inner_corner_radius[0]), //tl
+		inner_rect.position + Vector2(inner_corner_radius[0], inner_corner_radius[0]),												//tl
 		Point2(inner_rect.position.x + inner_rect.size.x - inner_corner_radius[1], inner_rect.position.y + inner_corner_radius[1]), //tr
-		inner_rect.position + inner_rect.size - Vector2(inner_corner_radius[2], inner_corner_radius[2]), //br
-		Point2(inner_rect.position.x + inner_corner_radius[3], inner_rect.position.y + inner_rect.size.y - inner_corner_radius[3]) //bl
+		inner_rect.position + inner_rect.size - Vector2(inner_corner_radius[2], inner_corner_radius[2]),							//br
+		Point2(inner_rect.position.x + inner_corner_radius[3], inner_rect.position.y + inner_rect.size.y - inner_corner_radius[3])	//bl
 	};
 	// Calculate the vertices.
 

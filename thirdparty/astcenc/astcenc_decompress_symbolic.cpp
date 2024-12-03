@@ -21,8 +21,8 @@
 
 #include "astcenc_internal.h"
 
-#include <stdio.h>
 #include <assert.h>
+#include <stdio.h>
 
 /**
  * @brief Compute the integer linear interpolation of two color endpoints.
@@ -35,11 +35,10 @@
  * @return The interpolated color.
  */
 static vint4 lerp_color_int(
-	vmask4 u8_mask,
-	vint4 color0,
-	vint4 color1,
-	vint4 weights
-) {
+		vmask4 u8_mask,
+		vint4 color0,
+		vint4 color1,
+		vint4 weights) {
 	vint4 weight1 = weights;
 	vint4 weight0 = vint4(64) - weight1;
 
@@ -64,19 +63,16 @@ static vint4 lerp_color_int(
  * @return The float color value.
  */
 static inline vfloat4 decode_texel(
-	vint4 data,
-	vmask4 lns_mask
-) {
+		vint4 data,
+		vmask4 lns_mask) {
 	vint4 color_lns = vint4::zero();
 	vint4 color_unorm = vint4::zero();
 
-	if (any(lns_mask))
-	{
+	if (any(lns_mask)) {
 		color_lns = lns_to_sf16(data);
 	}
 
-	if (!all(lns_mask))
-	{
+	if (!all(lns_mask)) {
 		color_unorm = unorm16_to_sf16(data);
 	}
 
@@ -87,18 +83,16 @@ static inline vfloat4 decode_texel(
 
 /* See header for documentation. */
 void unpack_weights(
-	const block_size_descriptor& bsd,
-	const symbolic_compressed_block& scb,
-	const decimation_info& di,
-	bool is_dual_plane,
-	int weights_plane1[BLOCK_MAX_TEXELS],
-	int weights_plane2[BLOCK_MAX_TEXELS]
-) {
+		const block_size_descriptor &bsd,
+		const symbolic_compressed_block &scb,
+		const decimation_info &di,
+		bool is_dual_plane,
+		int weights_plane1[BLOCK_MAX_TEXELS],
+		int weights_plane2[BLOCK_MAX_TEXELS]) {
 	// Safe to overshoot as all arrays are allocated to full size
-	if (!is_dual_plane)
-	{
+	if (!is_dual_plane) {
 		// Build full 64-entry weight lookup table
-		vint4 tab0 = vint4::load(scb.weights +  0);
+		vint4 tab0 = vint4::load(scb.weights + 0);
 		vint4 tab1 = vint4::load(scb.weights + 16);
 		vint4 tab2 = vint4::load(scb.weights + 32);
 		vint4 tab3 = vint4::load(scb.weights + 48);
@@ -106,15 +100,13 @@ void unpack_weights(
 		vint tab0p, tab1p, tab2p, tab3p;
 		vtable_prepare(tab0, tab1, tab2, tab3, tab0p, tab1p, tab2p, tab3p);
 
-		for (unsigned int i = 0; i < bsd.texel_count; i += ASTCENC_SIMD_WIDTH)
-		{
+		for (unsigned int i = 0; i < bsd.texel_count; i += ASTCENC_SIMD_WIDTH) {
 			vint summed_value(8);
 			vint weight_count(di.texel_weight_count + i);
 			int max_weight_count = hmax(weight_count).lane<0>();
 
 			promise(max_weight_count > 0);
-			for (int j = 0; j < max_weight_count; j++)
-			{
+			for (int j = 0; j < max_weight_count; j++) {
 				vint texel_weights(di.texel_weights_tr[j] + i);
 				vint texel_weights_int(di.texel_weight_contribs_int_tr[j] + i);
 
@@ -123,12 +115,10 @@ void unpack_weights(
 
 			store(lsr<4>(summed_value), weights_plane1 + i);
 		}
-	}
-	else
-	{
+	} else {
 		// Build a 32-entry weight lookup table per plane
 		// Plane 1
-		vint4 tab0_plane1 = vint4::load(scb.weights +  0);
+		vint4 tab0_plane1 = vint4::load(scb.weights + 0);
 		vint4 tab1_plane1 = vint4::load(scb.weights + 16);
 		vint tab0_plane1p, tab1_plane1p;
 		vtable_prepare(tab0_plane1, tab1_plane1, tab0_plane1p, tab1_plane1p);
@@ -139,8 +129,7 @@ void unpack_weights(
 		vint tab0_plane2p, tab1_plane2p;
 		vtable_prepare(tab0_plane2, tab1_plane2, tab0_plane2p, tab1_plane2p);
 
-		for (unsigned int i = 0; i < bsd.texel_count; i += ASTCENC_SIMD_WIDTH)
-		{
+		for (unsigned int i = 0; i < bsd.texel_count; i += ASTCENC_SIMD_WIDTH) {
 			vint sum_plane1(8);
 			vint sum_plane2(8);
 
@@ -148,8 +137,7 @@ void unpack_weights(
 			int max_weight_count = hmax(weight_count).lane<0>();
 
 			promise(max_weight_count > 0);
-			for (int j = 0; j < max_weight_count; j++)
-			{
+			for (int j = 0; j < max_weight_count; j++) {
 				vint texel_weights(di.texel_weights_tr[j] + i);
 				vint texel_weights_int(di.texel_weight_contribs_int_tr[j] + i);
 
@@ -170,8 +158,7 @@ void unpack_weights(
  *
  * @return The float color value.
  */
-static float error_color_nan()
-{
+static float error_color_nan() {
 	if32 v;
 	v.u = 0xFFFFE000U;
 	return v.f;
@@ -179,14 +166,13 @@ static float error_color_nan()
 
 /* See header for documentation. */
 void decompress_symbolic_block(
-	astcenc_profile decode_mode,
-	const block_size_descriptor& bsd,
-	int xpos,
-	int ypos,
-	int zpos,
-	const symbolic_compressed_block& scb,
-	image_block& blk
-) {
+		astcenc_profile decode_mode,
+		const block_size_descriptor &bsd,
+		int xpos,
+		int ypos,
+		int zpos,
+		const symbolic_compressed_block &scb,
+		image_block &blk) {
 	blk.xpos = xpos;
 	blk.ypos = ypos;
 	blk.zpos = zpos;
@@ -197,10 +183,8 @@ void decompress_symbolic_block(
 	blk.grayscale = false;
 
 	// If we detected an error-block, blow up immediately.
-	if (scb.block_type == SYM_BTYPE_ERROR)
-	{
-		for (unsigned int i = 0; i < bsd.texel_count; i++)
-		{
+	if (scb.block_type == SYM_BTYPE_ERROR) {
+		for (unsigned int i = 0; i < bsd.texel_count; i++) {
 			blk.data_r[i] = error_color_nan();
 			blk.data_g[i] = error_color_nan();
 			blk.data_b[i] = error_color_nan();
@@ -213,14 +197,12 @@ void decompress_symbolic_block(
 	}
 
 	if ((scb.block_type == SYM_BTYPE_CONST_F16) ||
-	    (scb.block_type == SYM_BTYPE_CONST_U16))
-	{
+			(scb.block_type == SYM_BTYPE_CONST_U16)) {
 		vfloat4 color;
 		uint8_t use_lns = 0;
 
 		// UNORM16 constant color block
-		if (scb.block_type == SYM_BTYPE_CONST_U16)
-		{
+		if (scb.block_type == SYM_BTYPE_CONST_U16) {
 			vint4 colori(scb.constant_color);
 
 			// Determine the UNORM8 rounding on the decode
@@ -235,25 +217,22 @@ void decompress_symbolic_block(
 			color = float16_to_float(colorf16);
 		}
 		// FLOAT16 constant color block
-		else
-		{
-			switch (decode_mode)
-			{
-			case ASTCENC_PRF_LDR_SRGB:
-			case ASTCENC_PRF_LDR:
-				color = vfloat4(error_color_nan());
-				break;
-			case ASTCENC_PRF_HDR_RGB_LDR_A:
-			case ASTCENC_PRF_HDR:
-				// Constant-color block; unpack from FP16 to FP32.
-				color = float16_to_float(vint4(scb.constant_color));
-				use_lns = 1;
-				break;
+		else {
+			switch (decode_mode) {
+				case ASTCENC_PRF_LDR_SRGB:
+				case ASTCENC_PRF_LDR:
+					color = vfloat4(error_color_nan());
+					break;
+				case ASTCENC_PRF_HDR_RGB_LDR_A:
+				case ASTCENC_PRF_HDR:
+					// Constant-color block; unpack from FP16 to FP32.
+					color = float16_to_float(vint4(scb.constant_color));
+					use_lns = 1;
+					break;
 			}
 		}
 
-		for (unsigned int i = 0; i < bsd.texel_count; i++)
-		{
+		for (unsigned int i = 0; i < bsd.texel_count; i++) {
 			blk.data_r[i] = color.lane<0>();
 			blk.data_g[i] = color.lane<1>();
 			blk.data_b[i] = color.lane<2>();
@@ -267,11 +246,11 @@ void decompress_symbolic_block(
 
 	// Get the appropriate partition-table entry
 	int partition_count = scb.partition_count;
-	const auto& pi = bsd.get_partition_info(partition_count, scb.partition_index);
+	const auto &pi = bsd.get_partition_info(partition_count, scb.partition_index);
 
 	// Get the appropriate block descriptors
-	const auto& bm = bsd.get_block_mode(scb.block_mode);
-	const auto& di = bsd.get_decimation_info(bm.decimation_mode);
+	const auto &bm = bsd.get_block_mode(scb.block_mode);
+	const auto &di = bsd.get_decimation_info(bm.decimation_mode);
 
 	bool is_dual_plane = static_cast<bool>(bm.is_dual_plane);
 
@@ -286,8 +265,7 @@ void decompress_symbolic_block(
 
 	vmask4 u8_mask = get_u8_component_mask(decode_mode, blk);
 
-	for (int i = 0; i < partition_count; i++)
-	{
+	for (int i = 0; i < partition_count; i++) {
 		// Decode the color endpoints for this partition
 		vint4 ep0;
 		vint4 ep1;
@@ -295,16 +273,15 @@ void decompress_symbolic_block(
 		bool a_lns;
 
 		unpack_color_endpoints(decode_mode,
-		                       scb.color_formats[i],
-		                       scb.color_values[i],
-		                       rgb_lns, a_lns,
-		                       ep0, ep1);
+				scb.color_formats[i],
+				scb.color_values[i],
+				rgb_lns, a_lns,
+				ep0, ep1);
 
 		vmask4 lns_mask(rgb_lns, rgb_lns, rgb_lns, a_lns);
 
 		int texel_count = pi.partition_texel_count[i];
-		for (int j = 0; j < texel_count; j++)
-		{
+		for (int j = 0; j < texel_count; j++) {
 			int tix = pi.texels_of_partition[i][j];
 			vint4 weight = select(vint4(plane1_weights[tix]), vint4(plane2_weights[tix]), plane2_mask);
 			vint4 color = lerp_color_int(u8_mask, ep0, ep1, weight);
@@ -322,14 +299,12 @@ void decompress_symbolic_block(
 
 /* See header for documentation. */
 float compute_symbolic_block_difference_2plane(
-	const astcenc_config& config,
-	const block_size_descriptor& bsd,
-	const symbolic_compressed_block& scb,
-	const image_block& blk
-) {
+		const astcenc_config &config,
+		const block_size_descriptor &bsd,
+		const symbolic_compressed_block &scb,
+		const image_block &blk) {
 	// If we detected an error-block, blow up immediately.
-	if (scb.block_type == SYM_BTYPE_ERROR)
-	{
+	if (scb.block_type == SYM_BTYPE_ERROR) {
 		return ERROR_CALC_DEFAULT;
 	}
 
@@ -338,8 +313,8 @@ float compute_symbolic_block_difference_2plane(
 	assert(bsd.get_block_mode(scb.block_mode).is_dual_plane == 1);
 
 	// Get the appropriate block descriptor
-	const block_mode& bm = bsd.get_block_mode(scb.block_mode);
-	const decimation_info& di = bsd.get_decimation_info(bm.decimation_mode);
+	const block_mode &bm = bsd.get_block_mode(scb.block_mode);
+	const decimation_info &di = bsd.get_decimation_info(bm.decimation_mode);
 
 	// Unquantize and undecimate the weights
 	int plane1_weights[BLOCK_MAX_TEXELS];
@@ -357,17 +332,16 @@ float compute_symbolic_block_difference_2plane(
 	bool a_lns;
 
 	unpack_color_endpoints(config.profile,
-	                       scb.color_formats[0],
-	                       scb.color_values[0],
-	                       rgb_lns, a_lns,
-	                       ep0, ep1);
+			scb.color_formats[0],
+			scb.color_values[0],
+			rgb_lns, a_lns,
+			ep0, ep1);
 
 	vmask4 u8_mask = get_u8_component_mask(config.profile, blk);
 
 	// Unpack and compute error for each texel in the partition
 	unsigned int texel_count = bsd.texel_count;
-	for (unsigned int i = 0; i < texel_count; i++)
-	{
+	for (unsigned int i = 0; i < texel_count; i++) {
 		vint4 weight = select(vint4(plane1_weights[i]), vint4(plane2_weights[i]), plane2_mask);
 		vint4 colori = lerp_color_int(u8_mask, ep0, ep1, weight);
 
@@ -375,33 +349,29 @@ float compute_symbolic_block_difference_2plane(
 		vfloat4 oldColor = blk.texel(i);
 
 		// Compare error using a perceptual decode metric for RGBM textures
-		if (config.flags & ASTCENC_FLG_MAP_RGBM)
-		{
+		if (config.flags & ASTCENC_FLG_MAP_RGBM) {
 			// Fail encodings that result in zero weight M pixels. Note that this can cause
 			// "interesting" artifacts if we reject all useful encodings - we typically get max
 			// brightness encodings instead which look just as bad. We recommend users apply a
 			// bias to their stored M value, limiting the lower value to 16 or 32 to avoid
 			// getting small M values post-quantization, but we can't prove it would never
 			// happen, especially at low bit rates ...
-			if (color.lane<3>() == 0.0f)
-			{
+			if (color.lane<3>() == 0.0f) {
 				return -ERROR_CALC_DEFAULT;
 			}
 
 			// Compute error based on decoded RGBM color
 			color = vfloat4(
-				color.lane<0>() * color.lane<3>() * config.rgbm_m_scale,
-				color.lane<1>() * color.lane<3>() * config.rgbm_m_scale,
-				color.lane<2>() * color.lane<3>() * config.rgbm_m_scale,
-				1.0f
-			);
+					color.lane<0>() * color.lane<3>() * config.rgbm_m_scale,
+					color.lane<1>() * color.lane<3>() * config.rgbm_m_scale,
+					color.lane<2>() * color.lane<3>() * config.rgbm_m_scale,
+					1.0f);
 
 			oldColor = vfloat4(
-				oldColor.lane<0>() * oldColor.lane<3>() * config.rgbm_m_scale,
-				oldColor.lane<1>() * oldColor.lane<3>() * config.rgbm_m_scale,
-				oldColor.lane<2>() * oldColor.lane<3>() * config.rgbm_m_scale,
-				1.0f
-			);
+					oldColor.lane<0>() * oldColor.lane<3>() * config.rgbm_m_scale,
+					oldColor.lane<1>() * oldColor.lane<3>() * config.rgbm_m_scale,
+					oldColor.lane<2>() * oldColor.lane<3>() * config.rgbm_m_scale,
+					1.0f);
 		}
 
 		vfloat4 error = oldColor - color;
@@ -416,16 +386,14 @@ float compute_symbolic_block_difference_2plane(
 
 /* See header for documentation. */
 float compute_symbolic_block_difference_1plane(
-	const astcenc_config& config,
-	const block_size_descriptor& bsd,
-	const symbolic_compressed_block& scb,
-	const image_block& blk
-) {
+		const astcenc_config &config,
+		const block_size_descriptor &bsd,
+		const symbolic_compressed_block &scb,
+		const image_block &blk) {
 	assert(bsd.get_block_mode(scb.block_mode).is_dual_plane == 0);
 
 	// If we detected an error-block, blow up immediately.
-	if (scb.block_type == SYM_BTYPE_ERROR)
-	{
+	if (scb.block_type == SYM_BTYPE_ERROR) {
 		return ERROR_CALC_DEFAULT;
 	}
 
@@ -433,11 +401,11 @@ float compute_symbolic_block_difference_1plane(
 
 	// Get the appropriate partition-table entry
 	unsigned int partition_count = scb.partition_count;
-	const auto& pi = bsd.get_partition_info(partition_count, scb.partition_index);
+	const auto &pi = bsd.get_partition_info(partition_count, scb.partition_index);
 
 	// Get the appropriate block descriptor
-	const block_mode& bm = bsd.get_block_mode(scb.block_mode);
-	const decimation_info& di = bsd.get_decimation_info(bm.decimation_mode);
+	const block_mode &bm = bsd.get_block_mode(scb.block_mode);
+	const decimation_info &di = bsd.get_decimation_info(bm.decimation_mode);
 
 	// Unquantize and undecimate the weights
 	int plane1_weights[BLOCK_MAX_TEXELS];
@@ -446,8 +414,7 @@ float compute_symbolic_block_difference_1plane(
 	vmask4 u8_mask = get_u8_component_mask(config.profile, blk);
 
 	vfloat4 summa = vfloat4::zero();
-	for (unsigned int i = 0; i < partition_count; i++)
-	{
+	for (unsigned int i = 0; i < partition_count; i++) {
 		// Decode the color endpoints for this partition
 		vint4 ep0;
 		vint4 ep1;
@@ -455,50 +422,45 @@ float compute_symbolic_block_difference_1plane(
 		bool a_lns;
 
 		unpack_color_endpoints(config.profile,
-		                       scb.color_formats[i],
-		                       scb.color_values[i],
-		                       rgb_lns, a_lns,
-		                       ep0, ep1);
+				scb.color_formats[i],
+				scb.color_values[i],
+				rgb_lns, a_lns,
+				ep0, ep1);
 
 		// Unpack and compute error for each texel in the partition
 		unsigned int texel_count = pi.partition_texel_count[i];
-		for (unsigned int j = 0; j < texel_count; j++)
-		{
+		for (unsigned int j = 0; j < texel_count; j++) {
 			unsigned int tix = pi.texels_of_partition[i][j];
 			vint4 colori = lerp_color_int(u8_mask, ep0, ep1,
-			                              vint4(plane1_weights[tix]));
+					vint4(plane1_weights[tix]));
 
 			vfloat4 color = int_to_float(colori);
 			vfloat4 oldColor = blk.texel(tix);
 
 			// Compare error using a perceptual decode metric for RGBM textures
-			if (config.flags & ASTCENC_FLG_MAP_RGBM)
-			{
+			if (config.flags & ASTCENC_FLG_MAP_RGBM) {
 				// Fail encodings that result in zero weight M pixels. Note that this can cause
 				// "interesting" artifacts if we reject all useful encodings - we typically get max
 				// brightness encodings instead which look just as bad. We recommend users apply a
 				// bias to their stored M value, limiting the lower value to 16 or 32 to avoid
 				// getting small M values post-quantization, but we can't prove it would never
 				// happen, especially at low bit rates ...
-				if (color.lane<3>() == 0.0f)
-				{
+				if (color.lane<3>() == 0.0f) {
 					return -ERROR_CALC_DEFAULT;
 				}
 
 				// Compute error based on decoded RGBM color
 				color = vfloat4(
-					color.lane<0>() * color.lane<3>() * config.rgbm_m_scale,
-					color.lane<1>() * color.lane<3>() * config.rgbm_m_scale,
-					color.lane<2>() * color.lane<3>() * config.rgbm_m_scale,
-					1.0f
-				);
+						color.lane<0>() * color.lane<3>() * config.rgbm_m_scale,
+						color.lane<1>() * color.lane<3>() * config.rgbm_m_scale,
+						color.lane<2>() * color.lane<3>() * config.rgbm_m_scale,
+						1.0f);
 
 				oldColor = vfloat4(
-					oldColor.lane<0>() * oldColor.lane<3>() * config.rgbm_m_scale,
-					oldColor.lane<1>() * oldColor.lane<3>() * config.rgbm_m_scale,
-					oldColor.lane<2>() * oldColor.lane<3>() * config.rgbm_m_scale,
-					1.0f
-				);
+						oldColor.lane<0>() * oldColor.lane<3>() * config.rgbm_m_scale,
+						oldColor.lane<1>() * oldColor.lane<3>() * config.rgbm_m_scale,
+						oldColor.lane<2>() * oldColor.lane<3>() * config.rgbm_m_scale,
+						1.0f);
 			}
 
 			vfloat4 error = oldColor - color;
@@ -514,14 +476,12 @@ float compute_symbolic_block_difference_1plane(
 
 /* See header for documentation. */
 float compute_symbolic_block_difference_1plane_1partition(
-	const astcenc_config& config,
-	const block_size_descriptor& bsd,
-	const symbolic_compressed_block& scb,
-	const image_block& blk
-) {
+		const astcenc_config &config,
+		const block_size_descriptor &bsd,
+		const symbolic_compressed_block &scb,
+		const image_block &blk) {
 	// If we detected an error-block, blow up immediately.
-	if (scb.block_type == SYM_BTYPE_ERROR)
-	{
+	if (scb.block_type == SYM_BTYPE_ERROR) {
 		return ERROR_CALC_DEFAULT;
 	}
 
@@ -529,8 +489,8 @@ float compute_symbolic_block_difference_1plane_1partition(
 	assert(bsd.get_partition_info(scb.partition_count, scb.partition_index).partition_count == 1);
 
 	// Get the appropriate block descriptor
-	const block_mode& bm = bsd.get_block_mode(scb.block_mode);
-	const decimation_info& di = bsd.get_decimation_info(bm.decimation_mode);
+	const block_mode &bm = bsd.get_block_mode(scb.block_mode);
+	const decimation_info &di = bsd.get_decimation_info(bm.decimation_mode);
 
 	// Unquantize and undecimate the weights
 	ASTCENC_ALIGNAS int plane1_weights[BLOCK_MAX_TEXELS];
@@ -543,10 +503,10 @@ float compute_symbolic_block_difference_1plane_1partition(
 	bool a_lns;
 
 	unpack_color_endpoints(config.profile,
-	                       scb.color_formats[0],
-	                       scb.color_values[0],
-	                       rgb_lns, a_lns,
-	                       ep0, ep1);
+			scb.color_formats[0],
+			scb.color_values[0],
+			rgb_lns, a_lns,
+			ep0, ep1);
 
 	vmask4 u8_mask = get_u8_component_mask(config.profile, blk);
 
@@ -556,8 +516,7 @@ float compute_symbolic_block_difference_1plane_1partition(
 	vint lane_id = vint::lane_id();
 
 	unsigned int texel_count = bsd.texel_count;
-	for (unsigned int i = 0; i < texel_count; i += ASTCENC_SIMD_WIDTH)
-	{
+	for (unsigned int i = 0; i < texel_count; i += ASTCENC_SIMD_WIDTH) {
 		// Compute EP1 contribution
 		vint weight1 = vint::loada(plane1_weights + i);
 		vint ep1_r = vint(ep1.lane<0>()) * weight1;
@@ -614,10 +573,7 @@ float compute_symbolic_block_difference_1plane_1partition(
 		color_error_b = color_error_b * color_error_b;
 		color_error_a = color_error_a * color_error_a;
 
-		vfloat metric = color_error_r * blk.channel_weight.lane<0>()
-		              + color_error_g * blk.channel_weight.lane<1>()
-		              + color_error_b * blk.channel_weight.lane<2>()
-		              + color_error_a * blk.channel_weight.lane<3>();
+		vfloat metric = color_error_r * blk.channel_weight.lane<0>() + color_error_g * blk.channel_weight.lane<1>() + color_error_b * blk.channel_weight.lane<2>() + color_error_a * blk.channel_weight.lane<3>();
 
 		// Mask off bad lanes
 		vmask mask = lane_id < vint(texel_count);

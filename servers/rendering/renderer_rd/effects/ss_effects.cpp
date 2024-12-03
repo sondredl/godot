@@ -307,7 +307,7 @@ SSEffects::SSEffects() {
 
 		{
 			Vector<String> ssr_modes;
-			ssr_modes.push_back("\n"); // SCREEN_SPACE_REFLECTION_NORMAL
+			ssr_modes.push_back("\n");					   // SCREEN_SPACE_REFLECTION_NORMAL
 			ssr_modes.push_back("\n#define MODE_ROUGH\n"); // SCREEN_SPACE_REFLECTION_ROUGH
 
 			ssr.shader.initialize(ssr_modes);
@@ -323,7 +323,7 @@ SSEffects::SSEffects() {
 
 		{
 			Vector<String> ssr_filter_modes;
-			ssr_filter_modes.push_back("\n"); // SCREEN_SPACE_REFLECTION_FILTER_HORIZONTAL
+			ssr_filter_modes.push_back("\n");						 // SCREEN_SPACE_REFLECTION_FILTER_HORIZONTAL
 			ssr_filter_modes.push_back("\n#define VERTICAL_PASS\n"); // SCREEN_SPACE_REFLECTION_FILTER_VERTICAL
 
 			ssr_filter.shader.initialize(ssr_filter_modes);
@@ -1630,7 +1630,7 @@ void SSEffects::sub_surface_scattering(Ref<RenderSceneBuffersRD> p_render_buffer
 	// Our intermediate buffer is only created if we haven't created it already.
 	RD::DataFormat format = p_render_buffers->get_base_data_format();
 	uint32_t usage_bits = RD::TEXTURE_USAGE_SAMPLING_BIT | RD::TEXTURE_USAGE_CAN_COPY_TO_BIT | RD::TEXTURE_USAGE_STORAGE_BIT;
-	uint32_t layers = 1; // We only need one layer, we're handling one view at a time
+	uint32_t layers = 1;  // We only need one layer, we're handling one view at a time
 	uint32_t mipmaps = 1; // Image::get_image_required_mipmaps(p_screen_size.x, p_screen_size.y, Image::FORMAT_RGBAH);
 	RID intermediate = p_render_buffers->create_texture(SNAME("SSR"), SNAME("intermediate"), format, usage_bits, RD::TEXTURE_SAMPLES_1, p_screen_size, layers, mipmaps);
 

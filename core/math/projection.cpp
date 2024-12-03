@@ -606,7 +606,7 @@ void Projection::invert() {
 	real_t m0, m1, m2, m3, s;
 	real_t *r0, *r1, *r2, *r3;
 
-#define MAT(m, r, c) (m)[(c) * 4 + (r)]
+#define MAT(m, r, c) (m)[(c)*4 + (r)]
 
 	r0 = wtmp[0];
 	r1 = wtmp[1];

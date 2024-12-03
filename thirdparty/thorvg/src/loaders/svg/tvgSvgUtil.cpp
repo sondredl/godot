@@ -20,52 +20,53 @@
  * SOFTWARE.
  */
 
-#include <cstring>
 #include "tvgSvgUtil.h"
+#include <cstring>
 
 /************************************************************************/
 /* Internal Class Implementation                                        */
 /************************************************************************/
 
-static uint8_t _hexCharToDec(const char c)
-{
-    if (c >= 'a') return c - 'a' + 10;
-    else if (c >= 'A') return c - 'A' + 10;
-    else return c - '0';
+static uint8_t _hexCharToDec(const char c) {
+	if (c >= 'a')
+		return c - 'a' + 10;
+	else if (c >= 'A')
+		return c - 'A' + 10;
+	else
+		return c - '0';
 }
-
 
 /************************************************************************/
 /* External Class Implementation                                        */
 /************************************************************************/
 
-size_t svgUtilURLDecode(const char *src, char** dst)
-{
-    if (!src) return 0;
+size_t svgUtilURLDecode(const char *src, char **dst) {
+	if (!src)
+		return 0;
 
-    auto length = strlen(src);
-    if (length == 0) return 0;
+	auto length = strlen(src);
+	if (length == 0)
+		return 0;
 
-    char* decoded = (char*)malloc(sizeof(char) * length + 1);
+	char *decoded = (char *)malloc(sizeof(char) * length + 1);
 
-    char a, b;
-    int idx =0;
-    while (*src) {
-        if (*src == '%' &&
-            ((a = src[1]) && (b = src[2])) &&
-            (isxdigit(a) && isxdigit(b))) {
-            decoded[idx++] = (_hexCharToDec(a) << 4) + _hexCharToDec(b);
-            src+=3;
-        } else if (*src == '+') {
-            decoded[idx++] = ' ';
-            src++;
-        } else {
-            decoded[idx++] = *src++;
-        }
-    }
-    decoded[idx] = '\0';
+	char a, b;
+	int idx = 0;
+	while (*src) {
+		if (*src == '%' &&
+				((a = src[1]) && (b = src[2])) &&
+				(isxdigit(a) && isxdigit(b))) {
+			decoded[idx++] = (_hexCharToDec(a) << 4) + _hexCharToDec(b);
+			src += 3;
+		} else if (*src == '+') {
+			decoded[idx++] = ' ';
+			src++;
+		} else {
+			decoded[idx++] = *src++;
+		}
+	}
+	decoded[idx] = '\0';
 
-    *dst = decoded;
-    return idx + 1;
+	*dst = decoded;
+	return idx + 1;
 }
-

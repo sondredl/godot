@@ -59,7 +59,7 @@ Vector3 Plane::get_any_perpendicular_normal() const {
 	Vector3 p;
 
 	if (ABS(normal.dot(p1)) > 0.99f) { // if too similar to p1
-		p = p2; // use p2
+		p = p2;						   // use p2
 	} else {
 		p = p1; // use p1
 	}

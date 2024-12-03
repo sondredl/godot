@@ -2390,7 +2390,7 @@ RenderingDevice::FramebufferFormatID RenderingDevice::framebuffer_format_create_
 	}
 
 	RDD::RenderPassID render_pass = _render_pass_create(driver, p_attachments, p_passes, load_ops, store_ops, p_view_count, &samples); // Actions don't matter for this use case.
-	if (!render_pass) { // Was likely invalid.
+	if (!render_pass) {																												   // Was likely invalid.
 		return INVALID_ID;
 	}
 
@@ -4151,7 +4151,7 @@ void RenderingDevice::draw_list_bind_uniform_set(DrawListID p_list, RID p_unifor
 	}
 
 	dl->state.sets[p_index].uniform_set_driver_id = uniform_set->driver_id; // Update set pointer.
-	dl->state.sets[p_index].bound = false; // Needs rebind.
+	dl->state.sets[p_index].bound = false;									// Needs rebind.
 	dl->state.sets[p_index].uniform_set_format = uniform_set->format;
 	dl->state.sets[p_index].uniform_set = p_uniform_set;
 
@@ -4738,7 +4738,7 @@ void RenderingDevice::compute_list_bind_uniform_set(ComputeListID p_list, RID p_
 	}
 
 	cl->state.sets[p_index].uniform_set_driver_id = uniform_set->driver_id; // Update set pointer.
-	cl->state.sets[p_index].bound = false; // Needs rebind.
+	cl->state.sets[p_index].bound = false;									// Needs rebind.
 	cl->state.sets[p_index].uniform_set_format = uniform_set->format;
 	cl->state.sets[p_index].uniform_set = p_uniform_set;
 
@@ -7140,16 +7140,16 @@ void RenderingDevice::_bind_methods() {
 
 	BIND_BITFIELD_FLAG(STORAGE_BUFFER_USAGE_DISPATCH_INDIRECT);
 
-	BIND_ENUM_CONSTANT(UNIFORM_TYPE_SAMPLER); //for sampling only (sampler GLSL type)
-	BIND_ENUM_CONSTANT(UNIFORM_TYPE_SAMPLER_WITH_TEXTURE); // for sampling only); but includes a texture); (samplerXX GLSL type)); first a sampler then a texture
-	BIND_ENUM_CONSTANT(UNIFORM_TYPE_TEXTURE); //only texture); (textureXX GLSL type)
-	BIND_ENUM_CONSTANT(UNIFORM_TYPE_IMAGE); // storage image (imageXX GLSL type)); for compute mostly
-	BIND_ENUM_CONSTANT(UNIFORM_TYPE_TEXTURE_BUFFER); // buffer texture (or TBO); textureBuffer type)
+	BIND_ENUM_CONSTANT(UNIFORM_TYPE_SAMPLER);					  //for sampling only (sampler GLSL type)
+	BIND_ENUM_CONSTANT(UNIFORM_TYPE_SAMPLER_WITH_TEXTURE);		  // for sampling only); but includes a texture); (samplerXX GLSL type)); first a sampler then a texture
+	BIND_ENUM_CONSTANT(UNIFORM_TYPE_TEXTURE);					  //only texture); (textureXX GLSL type)
+	BIND_ENUM_CONSTANT(UNIFORM_TYPE_IMAGE);						  // storage image (imageXX GLSL type)); for compute mostly
+	BIND_ENUM_CONSTANT(UNIFORM_TYPE_TEXTURE_BUFFER);			  // buffer texture (or TBO); textureBuffer type)
 	BIND_ENUM_CONSTANT(UNIFORM_TYPE_SAMPLER_WITH_TEXTURE_BUFFER); // buffer texture with a sampler(or TBO); samplerBuffer type)
-	BIND_ENUM_CONSTANT(UNIFORM_TYPE_IMAGE_BUFFER); //texel buffer); (imageBuffer type)); for compute mostly
-	BIND_ENUM_CONSTANT(UNIFORM_TYPE_UNIFORM_BUFFER); //regular uniform buffer (or UBO).
-	BIND_ENUM_CONSTANT(UNIFORM_TYPE_STORAGE_BUFFER); //storage buffer ("buffer" qualifier) like UBO); but supports storage); for compute mostly
-	BIND_ENUM_CONSTANT(UNIFORM_TYPE_INPUT_ATTACHMENT); //used for sub-pass read/write); for mobile mostly
+	BIND_ENUM_CONSTANT(UNIFORM_TYPE_IMAGE_BUFFER);				  //texel buffer); (imageBuffer type)); for compute mostly
+	BIND_ENUM_CONSTANT(UNIFORM_TYPE_UNIFORM_BUFFER);			  //regular uniform buffer (or UBO).
+	BIND_ENUM_CONSTANT(UNIFORM_TYPE_STORAGE_BUFFER);			  //storage buffer ("buffer" qualifier) like UBO); but supports storage); for compute mostly
+	BIND_ENUM_CONSTANT(UNIFORM_TYPE_INPUT_ATTACHMENT);			  //used for sub-pass read/write); for mobile mostly
 	BIND_ENUM_CONSTANT(UNIFORM_TYPE_MAX);
 
 	BIND_ENUM_CONSTANT(RENDER_PRIMITIVE_POINTS);

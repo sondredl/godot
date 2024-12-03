@@ -70,12 +70,12 @@ bool xatlas_mesh_lightmap_unwrap_callback(float p_texel_size, const float *p_ver
 			read_idx += 2; // size hint
 
 			int vertex_count = cache_data[read_idx];
-			read_idx += 1; // vertex count
-			read_idx += vertex_count; // vertex
+			read_idx += 1;				  // vertex count
+			read_idx += vertex_count;	  // vertex
 			read_idx += vertex_count * 2; // uvs
 
 			int index_count = cache_data[read_idx];
-			read_idx += 1; // index count
+			read_idx += 1;			 // index count
 			read_idx += index_count; // indices
 		}
 	}

@@ -711,9 +711,9 @@ String ExtendGDScriptParser::get_identifier_under_position(const lsp::Position &
 	//    * Prev position is valid identifier char.
 	lsp::Position pos = p_position;
 	if (
-			pos.character >= line.length() // Cursor at end of line.
-			|| (!is_ascii_identifier_char(line[pos.character]) // Not on valid identifier char.
-					   && (pos.character > 0 // Not line start -> there is a prev char.
+			pos.character >= line.length()											   // Cursor at end of line.
+			|| (!is_ascii_identifier_char(line[pos.character])						   // Not on valid identifier char.
+					   && (pos.character > 0										   // Not line start -> there is a prev char.
 								  && is_ascii_identifier_char(line[pos.character - 1]) // Prev is valid identifier char.
 								  ))) {
 		pos.character--;

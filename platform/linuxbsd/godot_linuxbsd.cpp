@@ -32,10 +32,10 @@
 
 #include "main/main.h"
 
+#include <unistd.h>
 #include <climits>
 #include <clocale>
 #include <cstdlib>
-#include <unistd.h>
 
 #if defined(SANITIZERS_ENABLED)
 #include <sys/resource.h>

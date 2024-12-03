@@ -40,8 +40,8 @@
 #include "core/templates/hash_map.h"
 #include "core/variant/dictionary.h"
 
-#include <cstdio>
 #include <cmath>
+#include <cstdio>
 
 const char *Image::format_names[Image::FORMAT_MAX] = {
 	"Lum8",
@@ -4126,7 +4126,7 @@ void Image::convert_rgba8_to_bgra8() {
 	for (int i = 0; i < s; i += 4) {
 		uint8_t r = w[i];
 		w[i] = w[i + 2]; // Swap R to B
-		w[i + 2] = r; // Swap B to R
+		w[i + 2] = r;	 // Swap B to R
 	}
 }
 

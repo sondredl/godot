@@ -7,13 +7,11 @@
 
 // This work is based on:
 // Nicolas Capens. Advanced Rasterization. 2004
-namespace meshopt
-{
+namespace meshopt {
 
 const int kViewport = 256;
 
-struct OverdrawBuffer
-{
+struct OverdrawBuffer {
 	float z[kViewport][kViewport][2];
 	unsigned int overdraw[kViewport][kViewport][2];
 };
@@ -26,8 +24,7 @@ struct OverdrawBuffer
 #define max(a, b) ((a) > (b) ? (a) : (b))
 #endif
 
-static float computeDepthGradients(float& dzdx, float& dzdy, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3)
-{
+static float computeDepthGradients(float &dzdx, float &dzdy, float x1, float y1, float z1, float x2, float y2, float z2, float x3, float y3, float z3) {
 	// z2 = z1 + dzdx * (x2 - x1) + dzdy * (y2 - y1)
 	// z3 = z1 + dzdx * (x3 - x1) + dzdy * (y3 - y1)
 	// (x2-x1 y2-y1)(dzdx) = (z2-z1)
@@ -43,16 +40,14 @@ static float computeDepthGradients(float& dzdx, float& dzdy, float x1, float y1,
 }
 
 // half-space fixed point triangle rasterizer
-static void rasterize(OverdrawBuffer* buffer, float v1x, float v1y, float v1z, float v2x, float v2y, float v2z, float v3x, float v3y, float v3z)
-{
+static void rasterize(OverdrawBuffer *buffer, float v1x, float v1y, float v1z, float v2x, float v2y, float v2z, float v3x, float v3y, float v3z) {
 	// compute depth gradients
 	float DZx, DZy;
 	float det = computeDepthGradients(DZx, DZy, v1x, v1y, v1z, v2x, v2y, v2z, v3x, v3y, v3z);
 	int sign = det > 0;
 
 	// flip backfacing triangles to simplify rasterization logic
-	if (sign)
-	{
+	if (sign) {
 		// flipping v2 & v3 preserves depth gradients since they're based on v1; only v1z is used below
 		float t;
 		t = v2x, v2x = v3x, v3x = t;
@@ -105,20 +100,16 @@ static void rasterize(OverdrawBuffer* buffer, float v1x, float v1y, float v1z, f
 	int CY3 = DX31 * (FY - Y3) - DY31 * (FX - X3) + TL3 - 1;
 	float ZY = v1z + (DZx * float(FX - X1) + DZy * float(FY - Y1)) * (1 / 16.f);
 
-	for (int y = miny; y < maxy; y++)
-	{
+	for (int y = miny; y < maxy; y++) {
 		int CX1 = CY1;
 		int CX2 = CY2;
 		int CX3 = CY3;
 		float ZX = ZY;
 
-		for (int x = minx; x < maxx; x++)
-		{
+		for (int x = minx; x < maxx; x++) {
 			// check if all CXn are non-negative
-			if ((CX1 | CX2 | CX3) >= 0)
-			{
-				if (ZX >= buffer->z[y][x][sign])
-				{
+			if ((CX1 | CX2 | CX3) >= 0) {
+				if (ZX >= buffer->z[y][x][sign]) {
 					buffer->z[y][x][sign] = ZX;
 					buffer->overdraw[y][x][sign]++;
 				}
@@ -141,8 +132,7 @@ static void rasterize(OverdrawBuffer* buffer, float v1x, float v1y, float v1z, f
 
 } // namespace meshopt
 
-meshopt_OverdrawStatistics meshopt_analyzeOverdraw(const unsigned int* indices, size_t index_count, const float* vertex_positions, size_t vertex_count, size_t vertex_positions_stride)
-{
+meshopt_OverdrawStatistics meshopt_analyzeOverdraw(const unsigned int *indices, size_t index_count, const float *vertex_positions, size_t vertex_count, size_t vertex_positions_stride) {
 	using namespace meshopt;
 
 	assert(index_count % 3 == 0);
@@ -155,15 +145,13 @@ meshopt_OverdrawStatistics meshopt_analyzeOverdraw(const unsigned int* indices, 
 
 	meshopt_OverdrawStatistics result = {};
 
-	float minv[3] = {FLT_MAX, FLT_MAX, FLT_MAX};
-	float maxv[3] = {-FLT_MAX, -FLT_MAX, -FLT_MAX};
+	float minv[3] = { FLT_MAX, FLT_MAX, FLT_MAX };
+	float maxv[3] = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
 
-	for (size_t i = 0; i < vertex_count; ++i)
-	{
-		const float* v = vertex_positions + i * vertex_stride_float;
+	for (size_t i = 0; i < vertex_count; ++i) {
+		const float *v = vertex_positions + i * vertex_stride_float;
 
-		for (int j = 0; j < 3; ++j)
-		{
+		for (int j = 0; j < 3; ++j) {
 			minv[j] = min(minv[j], v[j]);
 			maxv[j] = max(maxv[j], v[j]);
 		}
@@ -172,50 +160,45 @@ meshopt_OverdrawStatistics meshopt_analyzeOverdraw(const unsigned int* indices, 
 	float extent = max(maxv[0] - minv[0], max(maxv[1] - minv[1], maxv[2] - minv[2]));
 	float scale = kViewport / extent;
 
-	float* triangles = allocator.allocate<float>(index_count * 3);
+	float *triangles = allocator.allocate<float>(index_count * 3);
 
-	for (size_t i = 0; i < index_count; ++i)
-	{
+	for (size_t i = 0; i < index_count; ++i) {
 		unsigned int index = indices[i];
 		assert(index < vertex_count);
 
-		const float* v = vertex_positions + index * vertex_stride_float;
+		const float *v = vertex_positions + index * vertex_stride_float;
 
 		triangles[i * 3 + 0] = (v[0] - minv[0]) * scale;
 		triangles[i * 3 + 1] = (v[1] - minv[1]) * scale;
 		triangles[i * 3 + 2] = (v[2] - minv[2]) * scale;
 	}
 
-	OverdrawBuffer* buffer = allocator.allocate<OverdrawBuffer>(1);
+	OverdrawBuffer *buffer = allocator.allocate<OverdrawBuffer>(1);
 
-	for (int axis = 0; axis < 3; ++axis)
-	{
+	for (int axis = 0; axis < 3; ++axis) {
 		memset(buffer, 0, sizeof(OverdrawBuffer));
 
-		for (size_t i = 0; i < index_count; i += 3)
-		{
-			const float* vn0 = &triangles[3 * (i + 0)];
-			const float* vn1 = &triangles[3 * (i + 1)];
-			const float* vn2 = &triangles[3 * (i + 2)];
+		for (size_t i = 0; i < index_count; i += 3) {
+			const float *vn0 = &triangles[3 * (i + 0)];
+			const float *vn1 = &triangles[3 * (i + 1)];
+			const float *vn2 = &triangles[3 * (i + 2)];
 
-			switch (axis)
-			{
-			case 0:
-				rasterize(buffer, vn0[2], vn0[1], vn0[0], vn1[2], vn1[1], vn1[0], vn2[2], vn2[1], vn2[0]);
-				break;
-			case 1:
-				rasterize(buffer, vn0[0], vn0[2], vn0[1], vn1[0], vn1[2], vn1[1], vn2[0], vn2[2], vn2[1]);
-				break;
-			case 2:
-				rasterize(buffer, vn0[1], vn0[0], vn0[2], vn1[1], vn1[0], vn1[2], vn2[1], vn2[0], vn2[2]);
-				break;
+			switch (axis) {
+				case 0:
+					rasterize(buffer, vn0[2], vn0[1], vn0[0], vn1[2], vn1[1], vn1[0], vn2[2], vn2[1], vn2[0]);
+					break;
+				case 1:
+					rasterize(buffer, vn0[0], vn0[2], vn0[1], vn1[0], vn1[2], vn1[1], vn2[0], vn2[2], vn2[1]);
+					break;
+				case 2:
+					rasterize(buffer, vn0[1], vn0[0], vn0[2], vn1[1], vn1[0], vn1[2], vn2[1], vn2[0], vn2[2]);
+					break;
 			}
 		}
 
 		for (int y = 0; y < kViewport; ++y)
 			for (int x = 0; x < kViewport; ++x)
-				for (int s = 0; s < 2; ++s)
-				{
+				for (int s = 0; s < 2; ++s) {
 					unsigned int overdraw = buffer->overdraw[y][x][s];
 
 					result.pixels_covered += overdraw > 0;

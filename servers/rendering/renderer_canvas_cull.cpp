@@ -206,7 +206,7 @@ void RendererCanvasCull::_attach_canvas_item_for_draw(RendererCanvasCull::Item *
 			} else {
 				p_global_rect.position -= p_clip_rect.position;
 
-				p_global_rect = p_global_rect.merge(rect_accum); //must use both rects for this
+				p_global_rect = p_global_rect.merge(rect_accum);					//must use both rects for this
 				p_global_rect = p_global_rect.grow(ci->canvas_group->clear_margin); //grow by clear margin
 
 				p_global_rect.position += p_clip_rect.position;

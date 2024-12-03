@@ -4871,7 +4871,7 @@ void CanvasItemEditor::_focus_selection(int p_op) {
 		zoom = scale_x < scale_y ? scale_x : scale_y;
 		zoom *= 0.90;
 		zoom_widget->set_zoom(zoom);
-		viewport->queue_redraw(); // Redraw to update the global canvas transform after zoom changes.
+		viewport->queue_redraw();														  // Redraw to update the global canvas transform after zoom changes.
 		callable_mp(this, &CanvasItemEditor::center_at).call_deferred(rect.get_center()); // Defer because the updated transform is needed.
 	} else {
 		center_at(rect.get_center());

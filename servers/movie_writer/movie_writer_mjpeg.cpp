@@ -72,15 +72,15 @@ Error MovieWriterMJPEG::write_begin(const Size2i &p_movie_size, uint32_t p_fps, 
 	f->store_32(56);
 
 	f->store_32(1000000 / p_fps); // Microsecs per frame.
-	f->store_32(7000); // Max bytes per second
-	f->store_32(0); // Padding Granularity
+	f->store_32(7000);			  // Max bytes per second
+	f->store_32(0);				  // Padding Granularity
 	f->store_32(16);
 	total_frames_ofs = f->get_position();
-	f->store_32(0); // Total frames (update later)
-	f->store_32(0); // Initial frames
-	f->store_32(1); // Streams
-	f->store_32(0); // Suggested buffer size
-	f->store_32(p_movie_size.width); // Movie Width
+	f->store_32(0);					  // Total frames (update later)
+	f->store_32(0);					  // Initial frames
+	f->store_32(1);					  // Streams
+	f->store_32(0);					  // Suggested buffer size
+	f->store_32(p_movie_size.width);  // Movie Width
 	f->store_32(p_movie_size.height); // Movie Height
 	for (uint32_t i = 0; i < 4; i++) {
 		f->store_32(0); // Reserved.
@@ -92,13 +92,13 @@ Error MovieWriterMJPEG::write_begin(const Size2i &p_movie_size, uint32_t p_fps, 
 	f->store_32(48);
 	f->store_buffer((const uint8_t *)"vids", 4);
 	f->store_buffer((const uint8_t *)"MJPG", 4);
-	f->store_32(0); // Flags
-	f->store_16(0); // Priority
-	f->store_16(0); // Language
-	f->store_32(0); // Initial Frames
-	f->store_32(1); // Scale
+	f->store_32(0);		// Flags
+	f->store_16(0);		// Priority
+	f->store_16(0);		// Language
+	f->store_32(0);		// Initial Frames
+	f->store_32(1);		// Scale
 	f->store_32(p_fps); // FPS
-	f->store_32(0); // Start
+	f->store_32(0);		// Start
 	total_frames_ofs2 = f->get_position();
 	f->store_32(0); // Number of frames (to be updated later)
 	f->store_32(0); // Suggested Buffer Size
@@ -109,17 +109,17 @@ Error MovieWriterMJPEG::write_begin(const Size2i &p_movie_size, uint32_t p_fps, 
 	f->store_32(40); // Size.
 	f->store_32(40); // Size.
 
-	f->store_32(p_movie_size.width); // Width
-	f->store_32(p_movie_size.height); // Width
-	f->store_16(1); // Planes
-	f->store_16(24); // Bitcount
+	f->store_32(p_movie_size.width);			 // Width
+	f->store_32(p_movie_size.height);			 // Width
+	f->store_16(1);								 // Planes
+	f->store_16(24);							 // Bitcount
 	f->store_buffer((const uint8_t *)"MJPG", 4); // Compression
 
 	f->store_32(((p_movie_size.width * 24 / 8 + 3) & 0xFFFFFFFC) * p_movie_size.height); // SizeImage
-	f->store_32(0); // XPelsXMeter
-	f->store_32(0); // YPelsXMeter
-	f->store_32(0); // ClrUsed
-	f->store_32(0); // ClrImportant
+	f->store_32(0);																		 // XPelsXMeter
+	f->store_32(0);																		 // YPelsXMeter
+	f->store_32(0);																		 // ClrUsed
+	f->store_32(0);																		 // ClrImportant
 
 	f->store_buffer((const uint8_t *)"LIST", 4);
 	f->store_32(16);
@@ -157,17 +157,17 @@ Error MovieWriterMJPEG::write_begin(const Size2i &p_movie_size, uint32_t p_fps, 
 	f->store_buffer((const uint8_t *)"strh", 4);
 	f->store_32(48);
 	f->store_buffer((const uint8_t *)"auds", 4);
-	f->store_32(0); // Handler
-	f->store_32(0); // Flags
-	f->store_16(0); // Priority
-	f->store_16(0); // Language
-	f->store_32(0); // Initial Frames
-	f->store_32(blockalign); // Scale
+	f->store_32(0);						// Handler
+	f->store_32(0);						// Flags
+	f->store_16(0);						// Priority
+	f->store_16(0);						// Language
+	f->store_32(0);						// Initial Frames
+	f->store_32(blockalign);			// Scale
 	f->store_32(mix_rate * blockalign); // mix rate
-	f->store_32(0); // Start
+	f->store_32(0);						// Start
 	total_audio_frames_ofs4 = f->get_position();
-	f->store_32(0); // Number of frames (to be updated later)
-	f->store_32(12288); // Suggested Buffer Size
+	f->store_32(0);			 // Number of frames (to be updated later)
+	f->store_32(12288);		 // Suggested Buffer Size
 	f->store_32(0xFFFFFFFF); // Quality
 	f->store_32(blockalign); // Block Align to 32 bits
 
@@ -175,12 +175,12 @@ Error MovieWriterMJPEG::write_begin(const Size2i &p_movie_size, uint32_t p_fps, 
 
 	f->store_buffer((const uint8_t *)"strf", 4);
 	f->store_32(16); // Standard format, no extra fields
-	f->store_16(1); // Compression code, standard PCM
+	f->store_16(1);	 // Compression code, standard PCM
 	f->store_16(channels);
-	f->store_32(mix_rate); // Samples (frames) / Sec
+	f->store_32(mix_rate);				// Samples (frames) / Sec
 	f->store_32(mix_rate * blockalign); // Bytes / sec
-	f->store_16(blockalign); // Bytes / sec
-	f->store_16(bit_depth); // Bytes / sec
+	f->store_16(blockalign);			// Bytes / sec
+	f->store_16(bit_depth);				// Bytes / sec
 
 	f->store_buffer((const uint8_t *)"LIST", 4);
 	movi_data_ofs = f->get_position();
@@ -197,7 +197,7 @@ Error MovieWriterMJPEG::write_frame(const Ref<Image> &p_image, const int32_t *p_
 	uint32_t s = jpg_buffer.size();
 
 	f->store_buffer((const uint8_t *)"00db", 4); // Stream 0, Video
-	f->store_32(jpg_buffer.size()); // sizes
+	f->store_32(jpg_buffer.size());				 // sizes
 	f->store_buffer(jpg_buffer.ptr(), jpg_buffer.size());
 	if (jpg_buffer.size() & 1) {
 		f->store_8(0);

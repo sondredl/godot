@@ -50,13 +50,13 @@
 #endif
 
 #include <dlfcn.h>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/utsname.h>
 #include <unistd.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
 #ifdef HAVE_MNTENT
 #include <mntent.h>
@@ -311,9 +311,9 @@ Vector<String> OS_LinuxBSD::get_video_adapter_driver_info() const {
 		return info;
 	}
 
-	const String rendering_device_name = RenderingServer::get_singleton()->get_video_adapter_name(); // e.g. `NVIDIA GeForce GTX 970`
+	const String rendering_device_name = RenderingServer::get_singleton()->get_video_adapter_name();	 // e.g. `NVIDIA GeForce GTX 970`
 	const String rendering_device_vendor = RenderingServer::get_singleton()->get_video_adapter_vendor(); // e.g. `NVIDIA`
-	const String card_name = rendering_device_name.trim_prefix(rendering_device_vendor).strip_edges(); // -> `GeForce GTX 970`
+	const String card_name = rendering_device_name.trim_prefix(rendering_device_vendor).strip_edges();	 // -> `GeForce GTX 970`
 
 	String vendor_device_id_mappings;
 	List<String> lspci_args;
@@ -324,9 +324,9 @@ Vector<String> OS_LinuxBSD::get_video_adapter_driver_info() const {
 	}
 
 	// Usually found under "VGA", but for example NVIDIA mobile/laptop adapters are often listed under "3D" and some AMD adapters are under "Display".
-	const String dc_vga = "0300"; // VGA compatible controller
+	const String dc_vga = "0300";	  // VGA compatible controller
 	const String dc_display = "0302"; // Display controller
-	const String dc_3d = "0380"; // 3D controller
+	const String dc_3d = "0380";	  // 3D controller
 
 	// splitting results by device class allows prioritizing, if multiple devices are found.
 	Vector<String> class_vga_device_candidates;
@@ -371,7 +371,7 @@ Vector<String> OS_LinuxBSD::get_video_adapter_driver_info() const {
 	// Get driver names and filter out invalid ones, because some adapters are dummys used only for passthrough.
 	// And they have no indicator besides certain driver names.
 	const String kernel_lit = "Kernel driver in use"; // line of interest
-	const String dummys = "vfio"; // for e.g. pci passthrough dummy kernel driver `vfio-pci`
+	const String dummys = "vfio";					  // for e.g. pci passthrough dummy kernel driver `vfio-pci`
 	Vector<String> class_vga_device_drivers = OS_LinuxBSD::lspci_get_device_value(class_vga_device_candidates, kernel_lit, dummys);
 	Vector<String> class_display_device_drivers = OS_LinuxBSD::lspci_get_device_value(class_display_device_candidates, kernel_lit, dummys);
 	Vector<String> class_3d_device_drivers = OS_LinuxBSD::lspci_get_device_value(class_3d_device_candidates, kernel_lit, dummys);
@@ -1012,15 +1012,15 @@ Error OS_LinuxBSD::move_to_trash(const String &p_path) {
 	List<String> args;
 	args.push_back(path);
 
-	args.push_front("trash"); // The command is `gio trash <file_name>` so we add it before the path.
+	args.push_front("trash");								 // The command is `gio trash <file_name>` so we add it before the path.
 	Error result = execute("gio", args, nullptr, &err_code); // For GNOME based machines.
-	if (result == OK && err_code == 0) { // Success.
+	if (result == OK && err_code == 0) {					 // Success.
 		return OK;
 	}
 
 	args.pop_front();
 	args.push_front("move");
-	args.push_back("trash:/"); // The command is `kioclient5 move <file_name> trash:/`.
+	args.push_back("trash:/");								  // The command is `kioclient5 move <file_name> trash:/`.
 	result = execute("kioclient5", args, nullptr, &err_code); // For KDE based machines.
 	if (result == OK && err_code == 0) {
 		return OK;

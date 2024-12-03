@@ -289,7 +289,7 @@ bool RenderingLightCuller::add_light_camera_planes_directional(LightCullPlanes &
 	// Last to 0 edge.
 	if (n_edges) {
 		int i0 = entry[n_edges]; // Last.
-		int i1 = entry[0]; // First.
+		int i1 = entry[0];		 // First.
 
 		const Vector3 &pt0 = data.frustum_points[i0];
 		const Vector3 &pt1 = data.frustum_points[i1];
@@ -449,7 +449,7 @@ bool RenderingLightCuller::_add_light_camera_planes(LightCullPlanes &r_cull_plan
 	// Last to 0 edge.
 	if (n_edges) {
 		int i0 = entry[n_edges]; // Last.
-		int i1 = entry[0]; // First.
+		int i1 = entry[0];		 // First.
 
 		const Vector3 &pt0 = data.frustum_points[i0];
 		const Vector3 &pt1 = data.frustum_points[i1];

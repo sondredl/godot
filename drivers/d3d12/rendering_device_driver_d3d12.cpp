@@ -1705,7 +1705,7 @@ RDD::SamplerID RenderingDeviceDriverD3D12::sampler_create(const SamplerState &p_
 		sampler_desc.MaxAnisotropy = p_state.anisotropy_max;
 	} else {
 		static const D3D12_FILTER_TYPE RD_FILTER_TYPE_TO_D3D12[] = {
-			D3D12_FILTER_TYPE_POINT, // SAMPLER_FILTER_NEAREST.
+			D3D12_FILTER_TYPE_POINT,  // SAMPLER_FILTER_NEAREST.
 			D3D12_FILTER_TYPE_LINEAR, // SAMPLER_FILTER_LINEAR.
 		};
 		sampler_desc.Filter = D3D12_ENCODE_BASIC_FILTER(
@@ -3211,7 +3211,7 @@ Vector<uint8_t> RenderingDeviceDriverD3D12::shader_compile_binary_from_spirv(Vec
 							DEV_ASSERT(binding_info.res_class == (uint32_t)RES_CLASS_INVALID || binding_info.res_class == (uint32_t)res_class);
 							binding_info.res_class = res_class;
 						} else if (p_dxil_type == DXIL_RES_SAMPLER) {
-							binding_info.has_sampler = (uint32_t)true;
+							binding_info.has_sampler = (uint32_t) true;
 						} else {
 							CRASH_NOW();
 						}
@@ -3349,7 +3349,7 @@ Vector<uint8_t> RenderingDeviceDriverD3D12::shader_compile_binary_from_spirv(Vec
 
 		// NIR-DXIL runtime data.
 		if (binary_data.nir_runtime_data_root_param_idx == 1) { // Set above to 1 when discovering runtime data is needed.
-			DEV_ASSERT(!binary_data.is_compute); // Could be supported if needed, but it's pointless as of now.
+			DEV_ASSERT(!binary_data.is_compute);				// Could be supported if needed, but it's pointless as of now.
 			binary_data.nir_runtime_data_root_param_idx = root_params.size();
 			CD3DX12_ROOT_PARAMETER1 nir_runtime_data;
 			nir_runtime_data.InitAsConstants(
@@ -3617,7 +3617,7 @@ Vector<uint8_t> RenderingDeviceDriverD3D12::shader_compile_binary_from_spirv(Vec
 }
 
 RDD::ShaderID RenderingDeviceDriverD3D12::shader_create_from_bytecode(const Vector<uint8_t> &p_shader_binary, ShaderDescription &r_shader_desc, String &r_name) {
-	r_shader_desc = {}; // Driver-agnostic.
+	r_shader_desc = {};		   // Driver-agnostic.
 	ShaderInfo shader_info_in; // Driver-specific.
 
 	const uint8_t *binptr = p_shader_binary.ptr();

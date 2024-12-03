@@ -1681,11 +1681,11 @@ RendererCanvasRenderRD::RendererCanvasRenderRD() {
 		const uint32_t ubershader_iterations = 1;
 		for (uint32_t ubershader = 0; ubershader < ubershader_iterations; ubershader++) {
 			const String base_define = ubershader ? "\n#define UBERSHADER\n" : "";
-			variants.push_back(base_define + ""); // SHADER_VARIANT_QUAD
-			variants.push_back(base_define + "#define USE_NINEPATCH\n"); // SHADER_VARIANT_NINEPATCH
-			variants.push_back(base_define + "#define USE_PRIMITIVE\n"); // SHADER_VARIANT_PRIMITIVE
-			variants.push_back(base_define + "#define USE_PRIMITIVE\n#define USE_POINT_SIZE\n"); // SHADER_VARIANT_PRIMITIVE_POINTS
-			variants.push_back(base_define + "#define USE_ATTRIBUTES\n"); // SHADER_VARIANT_ATTRIBUTES
+			variants.push_back(base_define + "");												  // SHADER_VARIANT_QUAD
+			variants.push_back(base_define + "#define USE_NINEPATCH\n");						  // SHADER_VARIANT_NINEPATCH
+			variants.push_back(base_define + "#define USE_PRIMITIVE\n");						  // SHADER_VARIANT_PRIMITIVE
+			variants.push_back(base_define + "#define USE_PRIMITIVE\n#define USE_POINT_SIZE\n");  // SHADER_VARIANT_PRIMITIVE_POINTS
+			variants.push_back(base_define + "#define USE_ATTRIBUTES\n");						  // SHADER_VARIANT_ATTRIBUTES
 			variants.push_back(base_define + "#define USE_ATTRIBUTES\n#define USE_POINT_SIZE\n"); // SHADER_VARIANT_ATTRIBUTES_POINTS
 		}
 
@@ -1782,7 +1782,7 @@ RendererCanvasRenderRD::RendererCanvasRenderRD() {
 	{ //shadow rendering
 		Vector<String> versions;
 		versions.push_back("\n#define MODE_SHADOW\n"); //shadow
-		versions.push_back("\n#define MODE_SDF\n"); //sdf
+		versions.push_back("\n#define MODE_SDF\n");	   //sdf
 		shadow_render.shader.initialize(versions);
 
 		{
@@ -2420,9 +2420,9 @@ void RendererCanvasRenderRD::_record_item_commands(const Item *p_item, RenderTar
 				if (has_msdf) {
 					instance_data->flags |= INSTANCE_FLAGS_USE_MSDF;
 					instance_data->msdf[0] = rect->px_range; // Pixel range.
-					instance_data->msdf[1] = rect->outline; // Outline size.
-					instance_data->msdf[2] = 0.f; // Reserved.
-					instance_data->msdf[3] = 0.f; // Reserved.
+					instance_data->msdf[1] = rect->outline;	 // Outline size.
+					instance_data->msdf[2] = 0.f;			 // Reserved.
+					instance_data->msdf[3] = 0.f;			 // Reserved.
 				} else if (rect->flags & CANVAS_RECT_LCD) {
 					instance_data->flags |= INSTANCE_FLAGS_USE_LCD;
 				}

@@ -322,7 +322,7 @@ bool EditorExportPlatformMacOS::get_export_option_visibility(const EditorExportP
 				}
 			} break;
 			case 2: { // "notarytool"
-				// All options are visible.
+					  // All options are visible.
 			} break;
 			default: { // disabled
 				if (p_option == "notarization/apple_id_name" || p_option == "notarization/apple_id_password" || p_option == "notarization/api_uuid" || p_option == "notarization/api_key" || p_option == "notarization/api_key_id") {
@@ -648,16 +648,16 @@ void EditorExportPlatformMacOS::_make_icon(const Ref<EditorExportPreset> &p_pres
 	};
 
 	static const MacOSIconInfo icon_infos[] = {
-		{ "ic10", "", true, 1024 }, //1024×1024 32-bit PNG and 512×512@2x 32-bit "retina" PNG
-		{ "ic09", "", true, 512 }, //512×512 32-bit PNG
-		{ "ic14", "", true, 512 }, //256×256@2x 32-bit "retina" PNG
-		{ "ic08", "", true, 256 }, //256×256 32-bit PNG
-		{ "ic13", "", true, 256 }, //128×128@2x 32-bit "retina" PNG
-		{ "ic07", "", true, 128 }, //128×128 32-bit PNG
-		{ "ic12", "", true, 64 }, //32×32@2× 32-bit "retina" PNG
-		{ "ic11", "", true, 32 }, //16×16@2× 32-bit "retina" PNG
+		{ "ic10", "", true, 1024 },	   //1024×1024 32-bit PNG and 512×512@2x 32-bit "retina" PNG
+		{ "ic09", "", true, 512 },	   //512×512 32-bit PNG
+		{ "ic14", "", true, 512 },	   //256×256@2x 32-bit "retina" PNG
+		{ "ic08", "", true, 256 },	   //256×256 32-bit PNG
+		{ "ic13", "", true, 256 },	   //128×128@2x 32-bit "retina" PNG
+		{ "ic07", "", true, 128 },	   //128×128 32-bit PNG
+		{ "ic12", "", true, 64 },	   //32×32@2× 32-bit "retina" PNG
+		{ "ic11", "", true, 32 },	   //16×16@2× 32-bit "retina" PNG
 		{ "il32", "l8mk", false, 32 }, //32×32 24-bit RLE + 8-bit uncompressed mask
-		{ "is32", "s8mk", false, 16 } //16×16 24-bit RLE + 8-bit uncompressed mask
+		{ "is32", "s8mk", false, 16 }  //16×16 24-bit RLE + 8-bit uncompressed mask
 	};
 
 	for (uint64_t i = 0; i < (sizeof(icon_infos) / sizeof(icon_infos[0])); ++i) {

@@ -4,24 +4,30 @@
 
 using namespace basist;
 
-namespace basisu
-{
+namespace basisu {
 
 const float DEF_R_ERROR_SCALE = 2.0f;
 const float DEF_G_ERROR_SCALE = 3.0f;
 
-static inline uint32_t get_max_qlog(uint32_t bits)
-{
-	switch (bits)
-	{
-	case 7: return MAX_QLOG7;
-	case 8: return MAX_QLOG8;
-	case 9: return MAX_QLOG9;
-	case 10: return MAX_QLOG10;
-	case 11: return MAX_QLOG11;
-	case 12: return MAX_QLOG12;
-	case 16: return MAX_QLOG16;
-	default: assert(0); break;
+static inline uint32_t get_max_qlog(uint32_t bits) {
+	switch (bits) {
+		case 7:
+			return MAX_QLOG7;
+		case 8:
+			return MAX_QLOG8;
+		case 9:
+			return MAX_QLOG9;
+		case 10:
+			return MAX_QLOG10;
+		case 11:
+			return MAX_QLOG11;
+		case 12:
+			return MAX_QLOG12;
+		case 16:
+			return MAX_QLOG16;
+		default:
+			assert(0);
+			break;
 	}
 	return 0;
 }
@@ -45,17 +51,15 @@ static inline float get_max_qlog_val(uint32_t bits)
 #endif
 
 static inline int get_bit(
-	int src_val, int src_bit)
-{
+		int src_val, int src_bit) {
 	assert(src_bit >= 0 && src_bit <= 31);
 	int bit = (src_val >> src_bit) & 1;
 	return bit;
 }
 
 static inline void pack_bit(
-	int& dst, int dst_bit,
-	int src_val, int src_bit = 0)
-{
+		int &dst, int dst_bit,
+		int src_val, int src_bit = 0) {
 	assert(dst_bit >= 0 && dst_bit <= 31);
 	int bit = get_bit(src_val, src_bit);
 	dst |= (bit << dst_bit);
@@ -63,13 +67,11 @@ static inline void pack_bit(
 
 //--------------------------------------------------------------------------------------------------------------------------
 
-astc_hdr_codec_options::astc_hdr_codec_options()
-{
+astc_hdr_codec_options::astc_hdr_codec_options() {
 	init();
 }
 
-void astc_hdr_codec_options::init()
-{
+void astc_hdr_codec_options::init() {
 	m_bc6h_err_weight = .85f;
 	m_r_err_scale = DEF_R_ERROR_SCALE;
 	m_g_err_scale = DEF_G_ERROR_SCALE;
@@ -83,10 +85,9 @@ void astc_hdr_codec_options::init()
 	set_quality_level(cDefaultLevel);
 }
 
-void astc_hdr_codec_options::set_quality_best()
-{
+void astc_hdr_codec_options::set_quality_best() {
 	m_mode11_direct_only = false;
-		
+
 	// highest achievable quality
 	m_use_solid = true;
 
@@ -117,8 +118,7 @@ void astc_hdr_codec_options::set_quality_best()
 	m_max_estimated_partitions = 0;
 }
 
-void astc_hdr_codec_options::set_quality_normal()
-{
+void astc_hdr_codec_options::set_quality_normal() {
 	m_use_solid = true;
 
 	// We'll allow uber mode in normal if the user allows it.
@@ -144,8 +144,7 @@ void astc_hdr_codec_options::set_quality_normal()
 	m_refine_weights = true;
 }
 
-void astc_hdr_codec_options::set_quality_fastest()
-{
+void astc_hdr_codec_options::set_quality_fastest() {
 	m_use_solid = true;
 
 	m_use_mode11 = true;
@@ -162,66 +161,59 @@ void astc_hdr_codec_options::set_quality_fastest()
 
 //--------------------------------------------------------------------------------------------------------------------------
 
-void astc_hdr_codec_options::set_quality_level(int level)
-{
+void astc_hdr_codec_options::set_quality_level(int level) {
 	level = clamp(level, cMinLevel, cMaxLevel);
-	
+
 	m_level = level;
 
-	switch (level)
-	{
-	case 0:
-	{
-		set_quality_fastest();
-		break;
-	}
-	case 1:
-	{
-		set_quality_normal();
+	switch (level) {
+		case 0: {
+			set_quality_fastest();
+			break;
+		}
+		case 1: {
+			set_quality_normal();
 
-		m_first_mode11_weight_ise_range = MODE11_LAST_ISE_RANGE - 1;
-		m_last_mode11_weight_ise_range = MODE11_LAST_ISE_RANGE;
+			m_first_mode11_weight_ise_range = MODE11_LAST_ISE_RANGE - 1;
+			m_last_mode11_weight_ise_range = MODE11_LAST_ISE_RANGE;
 
-		m_use_mode7_part1 = false;
-		m_use_mode7_part2 = false;
+			m_use_mode7_part1 = false;
+			m_use_mode7_part2 = false;
 
-		m_use_estimated_partitions = true;
-		m_max_estimated_partitions = 1;
+			m_use_estimated_partitions = true;
+			m_max_estimated_partitions = 1;
 
-		m_mode11_part2_part_masks = 1 | 2;
-		m_mode7_part2_part_masks = 1 | 2;
-		break;
-	}
-	case 2:
-	{
-		set_quality_normal();
+			m_mode11_part2_part_masks = 1 | 2;
+			m_mode7_part2_part_masks = 1 | 2;
+			break;
+		}
+		case 2: {
+			set_quality_normal();
 
-		m_use_estimated_partitions = true;
-		m_max_estimated_partitions = 2;
+			m_use_estimated_partitions = true;
+			m_max_estimated_partitions = 2;
 
-		m_mode11_part2_part_masks = 1 | 2;
-		m_mode7_part2_part_masks = 1 | 2;
+			m_mode11_part2_part_masks = 1 | 2;
+			m_mode7_part2_part_masks = 1 | 2;
 
-		break;
-	}
-	case 3:
-	{
-		set_quality_best();
+			break;
+		}
+		case 3: {
+			set_quality_best();
 
-		m_use_estimated_partitions = true;
-		m_max_estimated_partitions = 2;
+			m_use_estimated_partitions = true;
+			m_max_estimated_partitions = 2;
 
-		m_mode11_part2_part_masks = 1 | 2 | 4 | 8;
-		m_mode7_part2_part_masks = 1 | 2 | 4 | 8;
+			m_mode11_part2_part_masks = 1 | 2 | 4 | 8;
+			m_mode7_part2_part_masks = 1 | 2 | 4 | 8;
 
-		break;
-	}
-	case 4:
-	{
-		set_quality_best();
+			break;
+		}
+		case 4: {
+			set_quality_best();
 
-		break;
-	}
+			break;
+		}
 	}
 }
 
@@ -250,8 +242,7 @@ static inline half_float qlog12_to_half_slow(uint32_t qlog12)
 
 static half_float g_qlog16_to_half[65536];
 
-inline half_float qlog_to_half(uint32_t val, uint32_t bits)
-{
+inline half_float qlog_to_half(uint32_t val, uint32_t bits) {
 	assert((bits >= 5) && (bits <= 16));
 	assert(val < (1U << bits));
 	return g_qlog16_to_half[val << (16 - bits)];
@@ -261,8 +252,7 @@ inline half_float qlog_to_half(uint32_t val, uint32_t bits)
 static uint16_t g_half_to_qlog7[32768], g_half_to_qlog8[32768], g_half_to_qlog9[32768], g_half_to_qlog10[32768], g_half_to_qlog11[32768], g_half_to_qlog12[32768];
 
 const uint32_t HALF_TO_QLOG_TABS_BASE = 7;
-static uint16_t* g_pHalf_to_qlog_tabs[8] =
-{
+static uint16_t *g_pHalf_to_qlog_tabs[8] = {
 	g_half_to_qlog7,
 	g_half_to_qlog8,
 
@@ -273,8 +263,7 @@ static uint16_t* g_pHalf_to_qlog_tabs[8] =
 	g_half_to_qlog12
 };
 
-static inline uint32_t half_to_qlog7_12(half_float h, uint32_t bits)
-{
+static inline uint32_t half_to_qlog7_12(half_float h, uint32_t bits) {
 	assert((bits >= HALF_TO_QLOG_TABS_BASE) && (bits <= 12));
 	assert(h < 32768);
 
@@ -301,8 +290,7 @@ static int qlog11_to_half_float_mantissa(int M)
 // Input is the 10-bit mantissa of the half float value
 // Output is the 11-bit qlog value
 // Inverse of qlog11_to_half_float_mantissa()
-static inline int half_float_mantissa_to_qlog11(int hf)
-{
+static inline int half_float_mantissa_to_qlog11(int hf) {
 	int q0 = (hf * 8 + 2) / 3;
 	int q1 = (hf * 8 + 2048 + 4) / 5;
 
@@ -315,8 +303,7 @@ static inline int half_float_mantissa_to_qlog11(int hf)
 	return q2;
 }
 
-static inline int half_to_qlog16(int hf)
-{
+static inline int half_to_qlog16(int hf) {
 	// extract 5 bits exponent, which is carried through to qlog16 unchanged
 	const int exp = (hf >> 10) & 0x1F;
 
@@ -333,8 +320,7 @@ static inline int half_to_qlog16(int hf)
 	return qlog16;
 }
 
-static inline uint32_t quant_qlog16(uint32_t q16, uint32_t desired_bits)
-{
+static inline uint32_t quant_qlog16(uint32_t q16, uint32_t desired_bits) {
 	assert((desired_bits >= 7) && (desired_bits <= 12));
 	assert(q16 <= 65535);
 
@@ -347,14 +333,12 @@ static inline uint32_t quant_qlog16(uint32_t q16, uint32_t desired_bits)
 	return e;
 }
 
-static void compute_half_to_qlog_table(uint32_t bits, uint16_t* pTable, const basisu::vector<float> &qlog16_to_float)
-{
+static void compute_half_to_qlog_table(uint32_t bits, uint16_t *pTable, const basisu::vector<float> &qlog16_to_float) {
 	assert(bits >= 5 && bits <= 12);
 	const uint32_t max_val = (1 << bits) - 1;
 
 	// For all positive half-floats
-	for (uint32_t h = 0; h < 32768; h++)
-	{
+	for (uint32_t h = 0; h < 32768; h++) {
 		// Skip invalid values
 		if (is_half_inf_or_nan((half_float)h))
 			continue;
@@ -364,8 +348,7 @@ static void compute_half_to_qlog_table(uint32_t bits, uint16_t* pTable, const ba
 		uint32_t best_qlog = 0;
 
 		// For all possible qlog's
-		for (uint32_t i = 0; i <= max_val; i++)
-		{
+		for (uint32_t i = 0; i <= max_val; i++) {
 			// Skip invalid values
 			float v = qlog16_to_float[i << (16 - bits)];
 			if (std::isnan(v))
@@ -375,8 +358,7 @@ static void compute_half_to_qlog_table(uint32_t bits, uint16_t* pTable, const ba
 			float err = fabs(v - desired_val);
 
 			// Find best
-			if (err < best_err)
-			{
+			if (err < best_err) {
 				best_err = err;
 				best_qlog = i;
 			}
@@ -427,13 +409,11 @@ static void compute_half_to_qlog_table(uint32_t bits, uint16_t* pTable, const ba
 #endif
 }
 
-static void init_qlog_tables()
-{
+static void init_qlog_tables() {
 	basisu::vector<float> qlog16_to_float(65536);
 
 	// for all possible qlog16, compute the corresponding half float
-	for (uint32_t i = 0; i <= 65535; i++)
-	{
+	for (uint32_t i = 0; i <= 65535; i++) {
 		half_float h = qlog16_to_half_slow(i);
 		g_qlog16_to_half[i] = h;
 
@@ -441,8 +421,7 @@ static void init_qlog_tables()
 	}
 
 	// for all possible half floats, find the nearest qlog5-12 float
-	for (uint32_t bits = HALF_TO_QLOG_TABS_BASE; bits <= 12; bits++)
-	{
+	for (uint32_t bits = HALF_TO_QLOG_TABS_BASE; bits <= 12; bits++) {
 		compute_half_to_qlog_table(bits, g_pHalf_to_qlog_tabs[bits - HALF_TO_QLOG_TABS_BASE], qlog16_to_float);
 	}
 }
@@ -451,34 +430,31 @@ static void init_qlog_tables()
 // [ise_range][1...] = lerp value [0,64]
 // in ASTC order
 // Supported ISE weight ranges: 0 to 10, 11 total
-const uint32_t MIN_SUPPORTED_ISE_WEIGHT_INDEX = 1; // ISE 1=3 levels
+const uint32_t MIN_SUPPORTED_ISE_WEIGHT_INDEX = 1;	// ISE 1=3 levels
 const uint32_t MAX_SUPPORTED_ISE_WEIGHT_INDEX = 10; // ISE 10=24 levels
 
-static const uint8_t g_ise_weight_lerps[MAX_SUPPORTED_ISE_WEIGHT_INDEX + 1][32] =
-{
-	{ 0 }, // ise range=0 is invalid for 4x4 block sizes (<24 weight bits in the block)
-	{ 3, 0, 32, 64 }, // 1
-	{ 4, 0, 21, 43, 64 }, // 2
-	{ 5, 0, 16, 32, 48, 64 }, // 3
-	{ 6, 0, 64, 12, 52, 25, 39 }, // 4
-	{ 8, 0, 9, 18, 27, 37, 46, 55, 64 }, // 5
-	{ 10, 0, 64, 7, 57, 14, 50, 21, 43, 28, 36 }, // 6
-	{ 12, 0, 64, 17, 47, 5, 59, 23, 41, 11, 53, 28, 36 }, // 7
-	{ 16, 0, 4, 8, 12, 17, 21, 25, 29, 35, 39, 43, 47, 52, 56, 60, 64 }, // 8
-	{ 20, 0, 64, 16, 48, 3, 61, 19, 45, 6, 58, 23, 41, 9, 55, 26, 38, 13, 51, 29, 35 }, // 9
+static const uint8_t g_ise_weight_lerps[MAX_SUPPORTED_ISE_WEIGHT_INDEX + 1][32] = {
+	{ 0 },																							   // ise range=0 is invalid for 4x4 block sizes (<24 weight bits in the block)
+	{ 3, 0, 32, 64 },																				   // 1
+	{ 4, 0, 21, 43, 64 },																			   // 2
+	{ 5, 0, 16, 32, 48, 64 },																		   // 3
+	{ 6, 0, 64, 12, 52, 25, 39 },																	   // 4
+	{ 8, 0, 9, 18, 27, 37, 46, 55, 64 },															   // 5
+	{ 10, 0, 64, 7, 57, 14, 50, 21, 43, 28, 36 },													   // 6
+	{ 12, 0, 64, 17, 47, 5, 59, 23, 41, 11, 53, 28, 36 },											   // 7
+	{ 16, 0, 4, 8, 12, 17, 21, 25, 29, 35, 39, 43, 47, 52, 56, 60, 64 },							   // 8
+	{ 20, 0, 64, 16, 48, 3, 61, 19, 45, 6, 58, 23, 41, 9, 55, 26, 38, 13, 51, 29, 35 },				   // 9
 	{ 24, 0, 64, 8, 56, 16, 48, 24, 40, 2, 62, 11, 53, 19, 45, 27, 37, 5, 59, 13, 51, 22, 42, 30, 34 } // 10
 };
 
 //{ 12, 0, 64, 17, 47, 5, 59, 23, 41, 11, 53, 28, 36 }, // 7
 //static const uint8_t g_weight_order_7[12] = { 0, 4, 8, 2, 6, 10, 11, 7, 3, 9, 5, 1 };
 
-static vec3F calc_mean(uint32_t num_pixels, const vec4F* pPixels)
-{
+static vec3F calc_mean(uint32_t num_pixels, const vec4F *pPixels) {
 	vec3F mean(0.0f);
 
-	for (uint32_t i = 0; i < num_pixels; i++)
-	{
-		const vec4F& p = pPixels[i];
+	for (uint32_t i = 0; i < num_pixels; i++) {
+		const vec4F &p = pPixels[i];
 
 		mean[0] += p[0];
 		mean[1] += p[1];
@@ -488,13 +464,11 @@ static vec3F calc_mean(uint32_t num_pixels, const vec4F* pPixels)
 	return mean / static_cast<float>(num_pixels);
 }
 
-static vec3F calc_rgb_pca(uint32_t num_pixels, const vec4F* pPixels, const vec3F& mean_color)
-{
+static vec3F calc_rgb_pca(uint32_t num_pixels, const vec4F *pPixels, const vec3F &mean_color) {
 	float cov[6] = { 0, 0, 0, 0, 0, 0 };
 
-	for (uint32_t i = 0; i < num_pixels; i++)
-	{
-		const vec4F& v = pPixels[i];
+	for (uint32_t i = 0; i < num_pixels; i++) {
+		const vec4F &v = pPixels[i];
 
 		float r = v[0] - mean_color[0];
 		float g = v[1] - mean_color[1];
@@ -509,16 +483,14 @@ static vec3F calc_rgb_pca(uint32_t num_pixels, const vec4F* pPixels, const vec3F
 	}
 
 	float xr = .9f, xg = 1.0f, xb = .7f;
-	for (uint32_t iter = 0; iter < 3; iter++)
-	{
+	for (uint32_t iter = 0; iter < 3; iter++) {
 		float r = xr * cov[0] + xg * cov[1] + xb * cov[2];
 		float g = xr * cov[1] + xg * cov[3] + xb * cov[4];
 		float b = xr * cov[2] + xg * cov[4] + xb * cov[5];
 
 		float m = maximumf(maximumf(fabsf(r), fabsf(g)), fabsf(b));
 
-		if (m > 1e-10f)
-		{
+		if (m > 1e-10f) {
 			m = 1.0f / m;
 
 			r *= m;
@@ -536,8 +508,7 @@ static vec3F calc_rgb_pca(uint32_t num_pixels, const vec4F* pPixels, const vec3F
 	vec3F axis;
 	if (len < 1e-10f)
 		axis.set(0.0f);
-	else
-	{
+	else {
 		len = 1.0f / sqrtf(len);
 
 		xr *= len;
@@ -547,8 +518,7 @@ static vec3F calc_rgb_pca(uint32_t num_pixels, const vec4F* pPixels, const vec3F
 		axis.set(xr, xg, xb, 0);
 	}
 
-	if (axis.dot(axis) < .5f)
-	{
+	if (axis.dot(axis) < .5f) {
 		axis.set(1.0f, 1.0f, 1.0f, 0.0f);
 		axis.normalize_in_place();
 	}
@@ -556,8 +526,7 @@ static vec3F calc_rgb_pca(uint32_t num_pixels, const vec4F* pPixels, const vec3F
 	return axis;
 }
 
-static vec3F interp_color(const vec3F& mean, const vec3F& dir, float df, const aabb3F& colorspace_box, const aabb3F& input_box, bool* pInside = nullptr)
-{
+static vec3F interp_color(const vec3F &mean, const vec3F &dir, float df, const aabb3F &colorspace_box, const aabb3F &input_box, bool *pInside = nullptr) {
 #if 0
 	assert(mean[0] >= input_box[0][0]);
 	assert(mean[1] >= input_box[0][1]);
@@ -571,8 +540,7 @@ static vec3F interp_color(const vec3F& mean, const vec3F& dir, float df, const a
 		*pInside = false;
 
 	vec3F k(mean + dir * df);
-	if (colorspace_box.contains(k))
-	{
+	if (colorspace_box.contains(k)) {
 		if (pInside)
 			*pInside = true;
 
@@ -599,10 +567,9 @@ static vec3F interp_color(const vec3F& mean, const vec3F& dir, float df, const a
 
 // all in Q16 space, 0-65535
 static bool compute_least_squares_endpoints_rgb(
-	uint32_t N, const uint8_t* pSelectors, const vec4F* pSelector_weights,
-	vec3F* pXl, vec3F* pXh, const vec4F* pColors, const aabb3F& input_box)
-{
-	// Least squares using normal equations: http://www.cs.cornell.edu/~bindel/class/cs3220-s12/notes/lec10.pdf 
+		uint32_t N, const uint8_t *pSelectors, const vec4F *pSelector_weights,
+		vec3F *pXl, vec3F *pXh, const vec4F *pColors, const aabb3F &input_box) {
+	// Least squares using normal equations: http://www.cs.cornell.edu/~bindel/class/cs3220-s12/notes/lec10.pdf
 	// https://web.archive.org/web/20150319232457/http://www.cs.cornell.edu/~bindel/class/cs3220-s12/notes/lec10.pdf
 	// I did this in matrix form first, expanded out all the ops, then optimized it a bit.
 	float z00 = 0.0f, z01 = 0.0f, z10 = 0.0f, z11 = 0.0f;
@@ -610,8 +577,7 @@ static bool compute_least_squares_endpoints_rgb(
 	float q00_g = 0.0f, q10_g = 0.0f, t_g = 0.0f;
 	float q00_b = 0.0f, q10_b = 0.0f, t_b = 0.0f;
 
-	for (uint32_t i = 0; i < N; i++)
-	{
+	for (uint32_t i = 0; i < N; i++) {
 		const uint32_t sel = pSelectors[i];
 		z00 += pSelector_weights[sel][0];
 		z10 += pSelector_weights[sel][1];
@@ -655,12 +621,10 @@ static bool compute_least_squares_endpoints_rgb(
 	(*pXl)[2] = (float)(iz00 * q00_b + iz01 * q10_b);
 	(*pXh)[2] = (float)(iz10 * q00_b + iz11 * q10_b);
 
-	for (uint32_t c = 0; c < 3; c++)
-	{
+	for (uint32_t c = 0; c < 3; c++) {
 		float l = (*pXl)[c], h = (*pXh)[c];
 
-		if (input_box.get_dim(c) < .0000125f)
-		{
+		if (input_box.get_dim(c) < .0000125f) {
 			l = input_box[0][c];
 			h = input_box[1][c];
 		}
@@ -673,8 +637,7 @@ static bool compute_least_squares_endpoints_rgb(
 	vec3F dir(*pXh - *pXl);
 
 	float ln = dir.length();
-	if (ln)
-	{
+	if (ln) {
 		dir /= ln;
 
 		float ld = (*pXl - mean).dot(dir);
@@ -705,24 +668,20 @@ static vec4F g_astc_ls_weights_ise[MAX_SUPPORTED_ISE_WEIGHT_INDEX + 1][24];
 static uint8_t g_map_astc_to_linear_order[MAX_SUPPORTED_ISE_WEIGHT_INDEX + 1][24]; // [ise_range][astc_index] -> linear index
 static uint8_t g_map_linear_to_astc_order[MAX_SUPPORTED_ISE_WEIGHT_INDEX + 1][24]; // [ise_range][linear_index] -> astc_index
 
-static void encode_astc_hdr_init()
-{
+static void encode_astc_hdr_init() {
 	// Precomputed weight constants used during least fit determination. For each entry: w * w, (1.0f - w) * w, (1.0f - w) * (1.0f - w), w
-	for (uint32_t range = MIN_SUPPORTED_ISE_WEIGHT_INDEX; range <= MAX_SUPPORTED_ISE_WEIGHT_INDEX; range++)
-	{
+	for (uint32_t range = MIN_SUPPORTED_ISE_WEIGHT_INDEX; range <= MAX_SUPPORTED_ISE_WEIGHT_INDEX; range++) {
 		const uint32_t num_levels = g_ise_weight_lerps[range][0];
 		assert((num_levels >= 3) && (num_levels <= 24));
 
-		for (uint32_t i = 0; i < num_levels; i++)
-		{
+		for (uint32_t i = 0; i < num_levels; i++) {
 			float w = g_ise_weight_lerps[range][1 + i] * (1.0f / 64.0f);
 
 			g_astc_ls_weights_ise[range][i].set(w * w, (1.0f - w) * w, (1.0f - w) * (1.0f - w), w);
 		}
 	}
 
-	for (uint32_t ise_range = MIN_SUPPORTED_ISE_WEIGHT_INDEX; ise_range <= MAX_SUPPORTED_ISE_WEIGHT_INDEX; ise_range++)
-	{
+	for (uint32_t ise_range = MIN_SUPPORTED_ISE_WEIGHT_INDEX; ise_range <= MAX_SUPPORTED_ISE_WEIGHT_INDEX; ise_range++) {
 		const uint32_t num_levels = g_ise_weight_lerps[ise_range][0];
 		assert((num_levels >= 3) && (num_levels <= 24));
 
@@ -741,23 +700,19 @@ static void encode_astc_hdr_init()
 }
 
 void interpolate_qlog12_colors(
-	const int e[2][3],
-	half_float* pDecoded_half,
-	vec3F* pDecoded_float,
-	uint32_t n, uint32_t ise_weight_range)
-{
+		const int e[2][3],
+		half_float *pDecoded_half,
+		vec3F *pDecoded_float,
+		uint32_t n, uint32_t ise_weight_range) {
 	assert((ise_weight_range >= MIN_SUPPORTED_ISE_WEIGHT_INDEX) && (ise_weight_range <= MAX_SUPPORTED_ISE_WEIGHT_INDEX));
 
-	for (uint32_t i = 0; i < 2; i++)
-	{
-		for (uint32_t j = 0; j < 3; j++)
-		{
+	for (uint32_t i = 0; i < 2; i++) {
+		for (uint32_t j = 0; j < 3; j++) {
 			assert(in_range(e[i][j], 0, 0xFFF));
 		}
 	}
 
-	for (uint32_t i = 0; i < n; i++)
-	{
+	for (uint32_t i = 0; i < n; i++) {
 		const int c = g_ise_weight_lerps[ise_weight_range][1 + i];
 		assert(c == (int)astc_helpers::dequant_bise_weight(i, ise_weight_range));
 
@@ -784,15 +739,13 @@ void interpolate_qlog12_colors(
 			bf = qlog16_to_half_slow(bi);
 		}
 
-		if (pDecoded_half)
-		{
+		if (pDecoded_half) {
 			pDecoded_half[i * 3 + 0] = rf;
 			pDecoded_half[i * 3 + 1] = gf;
 			pDecoded_half[i * 3 + 2] = bf;
 		}
 
-		if (pDecoded_float)
-		{
+		if (pDecoded_float) {
 			pDecoded_float[i][0] = half_to_float(rf);
 			pDecoded_float[i][1] = half_to_float(gf);
 			pDecoded_float[i][2] = half_to_float(bf);
@@ -803,11 +756,10 @@ void interpolate_qlog12_colors(
 // decoded in ASTC order, not linear order
 // return false if the ISE endpoint quantization leads to non-valid endpoints being decoded
 bool get_astc_hdr_mode_11_block_colors(
-	const uint8_t* pEndpoints,
-	half_float* pDecoded_half,
-	vec3F* pDecoded_float,
-	uint32_t n, uint32_t ise_weight_range, uint32_t ise_endpoint_range)
-{
+		const uint8_t *pEndpoints,
+		half_float *pDecoded_half,
+		vec3F *pDecoded_float,
+		uint32_t n, uint32_t ise_weight_range, uint32_t ise_endpoint_range) {
 	assert((ise_weight_range >= 1) && (ise_weight_range <= MAX_SUPPORTED_ISE_WEIGHT_INDEX));
 
 	int e[2][3];
@@ -822,11 +774,10 @@ bool get_astc_hdr_mode_11_block_colors(
 // decoded in ASTC order, not linear order
 // return false if the ISE endpoint quantization leads to non-valid endpoints being decoded
 bool get_astc_hdr_mode_7_block_colors(
-	const uint8_t* pEndpoints,
-	half_float* pDecoded_half,
-	vec3F* pDecoded_float,
-	uint32_t n, uint32_t ise_weight_range, uint32_t ise_endpoint_range)
-{
+		const uint8_t *pEndpoints,
+		half_float *pDecoded_half,
+		vec3F *pDecoded_float,
+		uint32_t n, uint32_t ise_weight_range, uint32_t ise_endpoint_range) {
 	assert((ise_weight_range >= 1) && (ise_weight_range <= MAX_SUPPORTED_ISE_WEIGHT_INDEX));
 
 	int e[2][3];
@@ -840,9 +791,12 @@ bool get_astc_hdr_mode_7_block_colors(
 
 // Fast high precision piecewise linear approximation of log2(bias+x).
 // Half may be zero, positive or denormal. No NaN/Inf/negative.
-static inline double q(half_float x)
-{
-	union { float f; int32_t i; uint32_t u; } fi;
+static inline double q(half_float x) {
+	union {
+		float f;
+		int32_t i;
+		uint32_t u;
+	} fi;
 
 	fi.f = fast_half_to_float_pos_not_inf_or_nan(x);
 
@@ -854,14 +808,13 @@ static inline double q(half_float x)
 }
 
 double eval_selectors(
-	uint32_t num_pixels,
-	uint8_t* pWeights,
-	const half_float* pBlock_pixels_half,
-	uint32_t num_weight_levels,
-	const half_float* pDecoded_half,
-	const astc_hdr_codec_options& coptions,
-	uint32_t usable_selector_bitmask)
-{
+		uint32_t num_pixels,
+		uint8_t *pWeights,
+		const half_float *pBlock_pixels_half,
+		uint32_t num_weight_levels,
+		const half_float *pDecoded_half,
+		const astc_hdr_codec_options &coptions,
+		uint32_t usable_selector_bitmask) {
 	assert((num_pixels >= 1) && (num_pixels <= 16));
 	assert(usable_selector_bitmask);
 
@@ -871,23 +824,20 @@ double eval_selectors(
 	double total_error = 0;
 
 #ifdef _DEBUG
-	for (uint32_t i = 0; i < num_weight_levels; i++)
-	{
+	for (uint32_t i = 0; i < num_weight_levels; i++) {
 		assert(!is_half_inf_or_nan(pDecoded_half[i * 3 + 0]));
 		assert(!is_half_inf_or_nan(pDecoded_half[i * 3 + 1]));
 		assert(!is_half_inf_or_nan(pDecoded_half[i * 3 + 2]));
 	}
 #endif
 
-	for (uint32_t p = 0; p < num_pixels; p++)
-	{
-		const half_float* pDesired_half = &pBlock_pixels_half[p * 3];
+	for (uint32_t p = 0; p < num_pixels; p++) {
+		const half_float *pDesired_half = &pBlock_pixels_half[p * 3];
 
 		double lowest_e = 1e+30f;
 
 		// this is an approximation of MSLE
-		for (uint32_t i = 0; i < num_weight_levels; i++)
-		{
+		for (uint32_t i = 0; i < num_weight_levels; i++) {
 			if (((1 << i) & usable_selector_bitmask) == 0)
 				continue;
 
@@ -898,8 +848,7 @@ double eval_selectors(
 
 			double e = R_WEIGHT * (rd * rd) + G_WEIGHT * (gd * gd) + bd * bd;
 
-			if (e < lowest_e)
-			{
+			if (e < lowest_e) {
 				lowest_e = e;
 				pWeights[p] = (uint8_t)i;
 			}
@@ -914,15 +863,13 @@ double eval_selectors(
 
 //--------------------------------------------------------------------------------------------------------------------------
 
-double compute_block_error(const half_float* pOrig_block, const half_float* pPacked_block, const astc_hdr_codec_options& coptions)
-{
+double compute_block_error(const half_float *pOrig_block, const half_float *pPacked_block, const astc_hdr_codec_options &coptions) {
 	const float R_WEIGHT = coptions.m_r_err_scale;
 	const float G_WEIGHT = coptions.m_g_err_scale;
 
 	double total_error = 0;
-		
-	for (uint32_t p = 0; p < 16; p++)
-	{
+
+	for (uint32_t p = 0; p < 16; p++) {
 		double rd = q(pOrig_block[p * 3 + 0]) - q(pPacked_block[p * 3 + 0]);
 		double gd = q(pOrig_block[p * 3 + 1]) - q(pPacked_block[p * 3 + 1]);
 		double bd = q(pOrig_block[p * 3 + 2]) - q(pPacked_block[p * 3 + 2]);
@@ -937,19 +884,15 @@ double compute_block_error(const half_float* pOrig_block, const half_float* pPac
 
 //--------------------------------------------------------------------------------------------------------------------------
 
-static inline int compute_clamped_val(int v, int l, int h, bool& did_clamp, int& max_clamp_mag)
-{
+static inline int compute_clamped_val(int v, int l, int h, bool &did_clamp, int &max_clamp_mag) {
 	assert(l < h);
 
-	if (v < l)
-	{
+	if (v < l) {
 		max_clamp_mag = basisu::maximum<int>(max_clamp_mag, l - v);
 
 		v = l;
 		did_clamp = true;
-	}
-	else if (v > h)
-	{
+	} else if (v > h) {
 		max_clamp_mag = basisu::maximum<int>(max_clamp_mag, v - h);
 
 		v = h;
@@ -959,13 +902,12 @@ static inline int compute_clamped_val(int v, int l, int h, bool& did_clamp, int&
 	return v;
 }
 
-static bool pack_astc_mode11_submode(uint32_t submode, uint8_t* pEndpoints, const vec3F& low_q16, const vec3F& high_q16, int& max_clamp_mag)
-{
+static bool pack_astc_mode11_submode(uint32_t submode, uint8_t *pEndpoints, const vec3F &low_q16, const vec3F &high_q16, int &max_clamp_mag) {
 	assert(submode <= 7);
 
-	const uint8_t s_b_bits[8] = { 7, 8, 6, 7,  8, 6, 7, 6 };
-	const uint8_t s_c_bits[8] = { 6, 6, 7, 7,  6, 7, 7, 7 };
-	const uint8_t s_d_bits[8] = { 7, 6, 7, 6,  5, 6, 5, 6 };
+	const uint8_t s_b_bits[8] = { 7, 8, 6, 7, 8, 6, 7, 6 };
+	const uint8_t s_c_bits[8] = { 6, 6, 7, 7, 6, 7, 7, 7 };
+	const uint8_t s_d_bits[8] = { 7, 6, 7, 6, 5, 6, 5, 6 };
 
 	const uint32_t a_bits = 9 + (submode >> 1);
 	const uint32_t b_bits = s_b_bits[submode];
@@ -985,23 +927,21 @@ static bool pack_astc_mode11_submode(uint32_t submode, uint8_t* pEndpoints, cons
 
 	int val_q[2][3];
 
-	for (uint32_t c = 0; c < 3; c++)
-	{
+	for (uint32_t c = 0; c < 3; c++) {
 #if 1
 		// this is better
 		const half_float l = qlog16_to_half_slow((uint32_t)std::round(low_q16[c]));
 		val_q[0][c] = half_to_qlog7_12(l, a_bits);
-		
+
 		const half_float h = qlog16_to_half_slow((uint32_t)std::round(high_q16[c]));
 		val_q[1][c] = half_to_qlog7_12(h, a_bits);
 #else
 		val_q[0][c] = quant_qlog16((uint32_t)std::round(low_q16[c]), a_bits);
 		val_q[1][c] = quant_qlog16((uint32_t)std::round(high_q16[c]), a_bits);
 #endif
-				
+
 #if 1
-		if (val_q[0][c] == val_q[1][c])
-		{
+		if (val_q[0][c] == val_q[1][c]) {
 #if 0
 			if (l <= h)
 #else
@@ -1014,8 +954,7 @@ static bool pack_astc_mode11_submode(uint32_t submode, uint8_t* pEndpoints, cons
 				if (val_q[1][c] != max_a_val)
 					val_q[1][c]++;
 			}
-			else
-			{
+			else {
 				if (val_q[0][c] != max_a_val)
 					val_q[0][c]++;
 
@@ -1031,14 +970,11 @@ static bool pack_astc_mode11_submode(uint32_t submode, uint8_t* pEndpoints, cons
 
 	int highest_q = -1, highest_val = 0, highest_comp = 0;
 
-	for (uint32_t v = 0; v < 2; v++)
-	{
-		for (uint32_t c = 0; c < 3; c++)
-		{
+	for (uint32_t v = 0; v < 2; v++) {
+		for (uint32_t c = 0; c < 3; c++) {
 			assert(val_q[v][c] >= 0 && val_q[v][c] <= max_a_val);
 
-			if (val_q[v][c] > highest_q)
-			{
+			if (val_q[v][c] > highest_q) {
 				highest_q = val_q[v][c];
 				highest_val = v;
 				highest_comp = c;
@@ -1048,16 +984,13 @@ static bool pack_astc_mode11_submode(uint32_t submode, uint8_t* pEndpoints, cons
 
 	const bool had_tie = (val_q[highest_val ^ 1][highest_comp] == highest_q);
 
-	if (highest_val != 1)
-	{
-		for (uint32_t c = 0; c < 3; c++)
-		{
+	if (highest_val != 1) {
+		for (uint32_t c = 0; c < 3; c++) {
 			std::swap(val_q[0][c], val_q[1][c]);
 		}
 	}
 
-	if (highest_comp)
-	{
+	if (highest_comp) {
 		std::swap(val_q[0][0], val_q[0][highest_comp]);
 		std::swap(val_q[1][0], val_q[1][highest_comp]);
 	}
@@ -1069,12 +1002,11 @@ static bool pack_astc_mode11_submode(uint32_t submode, uint8_t* pEndpoints, cons
 	int best_va = 0, best_vb0 = 0, best_vb1 = 0, best_vc = 0, best_vd0 = 0, best_vd1 = 0;
 	int best_max_clamp_mag = 0;
 	bool best_did_clamp = false;
-	int best_q[2][3] = { { 0, 0, 0}, { 0, 0, 0 }  };
+	int best_q[2][3] = { { 0, 0, 0 }, { 0, 0, 0 } };
 	BASISU_NOTE_UNUSED(best_q);
 	uint32_t best_dist = UINT_MAX;
 
-	for (uint32_t pass = 0; pass < 2; pass++)
-	{
+	for (uint32_t pass = 0; pass < 2; pass++) {
 		int trial_va = val_q[1][0];
 
 		assert(trial_va <= max_a_val);
@@ -1094,8 +1026,7 @@ static bool pack_astc_mode11_submode(uint32_t submode, uint8_t* pEndpoints, cons
 		int trial_vd0 = compute_clamped_val((trial_va - trial_vb0 - trial_vc) - val_q[0][1], min_d_val, max_d_val, did_clamp, trial_max_clamp_mag);
 		int trial_vd1 = compute_clamped_val((trial_va - trial_vb1 - trial_vc) - val_q[0][2], min_d_val, max_d_val, did_clamp, trial_max_clamp_mag);
 
-		if (!did_clamp)
-		{
+		if (!did_clamp) {
 			// Make sure decoder gets the expected values
 			assert(trial_va == val_q[1][0]);
 			assert(trial_va - trial_vb0 == val_q[1][1]);
@@ -1122,8 +1053,7 @@ static bool pack_astc_mode11_submode(uint32_t submode, uint8_t* pEndpoints, cons
 		assert(r_f1 <= max_a_qlog);
 		assert(r_f2 <= max_a_qlog);
 
-		if ((!did_clamp) || (!had_tie))
-		{
+		if ((!did_clamp) || (!had_tie)) {
 			best_va = trial_va;
 			best_vb0 = trial_vb0;
 			best_vb1 = trial_vb1;
@@ -1149,8 +1079,7 @@ static bool pack_astc_mode11_submode(uint32_t submode, uint8_t* pEndpoints, cons
 
 		const uint32_t total_dist = r_dist1 + r_dist0;
 
-		if (total_dist < best_dist)
-		{
+		if (total_dist < best_dist) {
 			best_dist = total_dist;
 
 			best_va = trial_va;
@@ -1177,34 +1106,73 @@ static bool pack_astc_mode11_submode(uint32_t submode, uint8_t* pEndpoints, cons
 	int v0 = 0, v1 = 0, v2 = 0, v3 = 0, v4 = 0, v5 = 0;
 
 	int x0 = 0, x1 = 0, x2 = 0, x3 = 0, x4 = 0, x5 = 0;
-	switch (submode)
-	{
-	case 0:
-		x0 = get_bit(best_vb0, 6); x1 = get_bit(best_vb1, 6); x2 = get_bit(best_vd0, 6); x3 = get_bit(best_vd1, 6); x4 = get_bit(best_vd0, 5); x5 = get_bit(best_vd1, 5);
-		break;
-	case 1:
-		x0 = get_bit(best_vb0, 6); x1 = get_bit(best_vb1, 6); x2 = get_bit(best_vb0, 7); x3 = get_bit(best_vb1, 7); x4 = get_bit(best_vd0, 5); x5 = get_bit(best_vd1, 5);
-		break;
-	case 2:
-		x0 = get_bit(best_va, 9); x1 = get_bit(best_vc, 6); x2 = get_bit(best_vd0, 6); x3 = get_bit(best_vd1, 6); x4 = get_bit(best_vd0, 5); x5 = get_bit(best_vd1, 5);
-		break;
-	case 3:
-		x0 = get_bit(best_vb0, 6); x1 = get_bit(best_vb1, 6); x2 = get_bit(best_va, 9); x3 = get_bit(best_vc, 6); x4 = get_bit(best_vd0, 5); x5 = get_bit(best_vd1, 5);
-		break;
-	case 4:
-		x0 = get_bit(best_vb0, 6); x1 = get_bit(best_vb1, 6); x2 = get_bit(best_vb0, 7); x3 = get_bit(best_vb1, 7); x4 = get_bit(best_va, 9); x5 = get_bit(best_va, 10);
-		break;
-	case 5:
-		x0 = get_bit(best_va, 9); x1 = get_bit(best_va, 10); x2 = get_bit(best_vc, 7); x3 = get_bit(best_vc, 6); x4 = get_bit(best_vd0, 5); x5 = get_bit(best_vd1, 5);
-		break;
-	case 6:
-		x0 = get_bit(best_vb0, 6); x1 = get_bit(best_vb1, 6); x2 = get_bit(best_va, 11); x3 = get_bit(best_vc, 6); x4 = get_bit(best_va, 9); x5 = get_bit(best_va, 10);
-		break;
-	case 7:
-		x0 = get_bit(best_va, 9); x1 = get_bit(best_va, 10); x2 = get_bit(best_va, 11); x3 = get_bit(best_vc, 6); x4 = get_bit(best_vd0, 5); x5 = get_bit(best_vd1, 5);
-		break;
-	default:
-		break;
+	switch (submode) {
+		case 0:
+			x0 = get_bit(best_vb0, 6);
+			x1 = get_bit(best_vb1, 6);
+			x2 = get_bit(best_vd0, 6);
+			x3 = get_bit(best_vd1, 6);
+			x4 = get_bit(best_vd0, 5);
+			x5 = get_bit(best_vd1, 5);
+			break;
+		case 1:
+			x0 = get_bit(best_vb0, 6);
+			x1 = get_bit(best_vb1, 6);
+			x2 = get_bit(best_vb0, 7);
+			x3 = get_bit(best_vb1, 7);
+			x4 = get_bit(best_vd0, 5);
+			x5 = get_bit(best_vd1, 5);
+			break;
+		case 2:
+			x0 = get_bit(best_va, 9);
+			x1 = get_bit(best_vc, 6);
+			x2 = get_bit(best_vd0, 6);
+			x3 = get_bit(best_vd1, 6);
+			x4 = get_bit(best_vd0, 5);
+			x5 = get_bit(best_vd1, 5);
+			break;
+		case 3:
+			x0 = get_bit(best_vb0, 6);
+			x1 = get_bit(best_vb1, 6);
+			x2 = get_bit(best_va, 9);
+			x3 = get_bit(best_vc, 6);
+			x4 = get_bit(best_vd0, 5);
+			x5 = get_bit(best_vd1, 5);
+			break;
+		case 4:
+			x0 = get_bit(best_vb0, 6);
+			x1 = get_bit(best_vb1, 6);
+			x2 = get_bit(best_vb0, 7);
+			x3 = get_bit(best_vb1, 7);
+			x4 = get_bit(best_va, 9);
+			x5 = get_bit(best_va, 10);
+			break;
+		case 5:
+			x0 = get_bit(best_va, 9);
+			x1 = get_bit(best_va, 10);
+			x2 = get_bit(best_vc, 7);
+			x3 = get_bit(best_vc, 6);
+			x4 = get_bit(best_vd0, 5);
+			x5 = get_bit(best_vd1, 5);
+			break;
+		case 6:
+			x0 = get_bit(best_vb0, 6);
+			x1 = get_bit(best_vb1, 6);
+			x2 = get_bit(best_va, 11);
+			x3 = get_bit(best_vc, 6);
+			x4 = get_bit(best_va, 9);
+			x5 = get_bit(best_va, 10);
+			break;
+		case 7:
+			x0 = get_bit(best_va, 9);
+			x1 = get_bit(best_va, 10);
+			x2 = get_bit(best_va, 11);
+			x3 = get_bit(best_vc, 6);
+			x4 = get_bit(best_vd0, 5);
+			x5 = get_bit(best_vd1, 5);
+			break;
+		default:
+			break;
 	}
 
 	// write mode
@@ -1246,8 +1214,7 @@ static bool pack_astc_mode11_submode(uint32_t submode, uint8_t* pEndpoints, cons
 #ifdef _DEBUG
 	// Test for valid pack by unpacking
 	{
-		if (highest_comp)
-		{
+		if (highest_comp) {
 			std::swap(best_q[0][0], best_q[0][highest_comp]);
 			std::swap(best_q[1][0], best_q[1][highest_comp]);
 
@@ -1257,16 +1224,13 @@ static bool pack_astc_mode11_submode(uint32_t submode, uint8_t* pEndpoints, cons
 
 		int test_e[2][3];
 		decode_mode11_to_qlog12(pEndpoints, test_e, astc_helpers::BISE_256_LEVELS);
-		for (uint32_t i = 0; i < 2; i++)
-		{
-			for (uint32_t j = 0; j < 3; j++)
-			{
+		for (uint32_t i = 0; i < 2; i++) {
+			for (uint32_t j = 0; j < 3; j++) {
 				assert(best_q[i][j] == test_e[i][j] >> (12 - a_bits));
 
-				if (!best_did_clamp)
-				{
+				if (!best_did_clamp) {
 					assert((orig_q[i][j] == test_e[i][j] >> (12 - a_bits)) ||
-						(orig_q[1 - i][j] == test_e[i][j] >> (12 - a_bits)));
+							(orig_q[1 - i][j] == test_e[i][j] >> (12 - a_bits)));
 				}
 			}
 		}
@@ -1280,26 +1244,21 @@ static bool pack_astc_mode11_submode(uint32_t submode, uint8_t* pEndpoints, cons
 
 //--------------------------------------------------------------------------------------------------------------------------
 
-static void pack_astc_mode11_direct(uint8_t* pEndpoints, const vec3F& l_q16, const vec3F& h_q16)
-{
-	for (uint32_t i = 0; i < 3; i++)
-	{
+static void pack_astc_mode11_direct(uint8_t *pEndpoints, const vec3F &l_q16, const vec3F &h_q16) {
+	for (uint32_t i = 0; i < 3; i++) {
 		// TODO: This goes from QLOG16->HALF->QLOG8/7
 		half_float l_half = qlog16_to_half_slow(clamp((int)std::round(l_q16[i]), 0, 65535));
 		half_float h_half = qlog16_to_half_slow(clamp((int)std::round(h_q16[i]), 0, 65535));
 
 		int l_q, h_q;
 
-		if (i == 2)
-		{
+		if (i == 2) {
 			l_q = g_half_to_qlog7[bounds_check((uint32_t)l_half, 0U, 32768U)];
 			h_q = g_half_to_qlog7[bounds_check((uint32_t)h_half, 0U, 32768U)];
 
 			l_q = minimum<uint32_t>(l_q, MAX_QLOG7);
 			h_q = minimum<uint32_t>(h_q, MAX_QLOG7);
-		}
-		else
-		{
+		} else {
 			l_q = g_half_to_qlog8[bounds_check((uint32_t)l_half, 0U, 32768U)];
 			h_q = g_half_to_qlog8[bounds_check((uint32_t)h_half, 0U, 32768U)];
 
@@ -1308,20 +1267,16 @@ static void pack_astc_mode11_direct(uint8_t* pEndpoints, const vec3F& l_q16, con
 		}
 
 #if 1
-		if (l_q == h_q)
-		{
+		if (l_q == h_q) {
 			const int m = (i == 2) ? MAX_QLOG7 : MAX_QLOG8;
 
-			if (l_q16[i] <= h_q16[i])
-			{
+			if (l_q16[i] <= h_q16[i]) {
 				if (l_q)
 					l_q--;
 
 				if (h_q != m)
 					h_q++;
-			}
-			else
-			{
+			} else {
 				if (h_q)
 					h_q--;
 
@@ -1330,15 +1285,12 @@ static void pack_astc_mode11_direct(uint8_t* pEndpoints, const vec3F& l_q16, con
 			}
 		}
 #endif
-				
-		if (i == 2)
-		{
+
+		if (i == 2) {
 			assert(l_q <= (int)MAX_QLOG7 && h_q <= (int)MAX_QLOG7);
 			l_q |= 128;
 			h_q |= 128;
-		}
-		else
-		{
+		} else {
 			assert(l_q <= (int)MAX_QLOG8 && h_q <= (int)MAX_QLOG8);
 		}
 
@@ -1349,8 +1301,7 @@ static void pack_astc_mode11_direct(uint8_t* pEndpoints, const vec3F& l_q16, con
 
 //--------------------------------------------------------------------------------------------------------------------------
 
-static bool pack_astc_mode7_submode(uint32_t submode, uint8_t* pEndpoints, const vec3F& rgb_q16, float s_q16, int& max_clamp_mag, uint32_t ise_weight_range)
-{
+static bool pack_astc_mode7_submode(uint32_t submode, uint8_t *pEndpoints, const vec3F &rgb_q16, float s_q16, int &max_clamp_mag, uint32_t ise_weight_range) {
 	assert((ise_weight_range >= 1) && (ise_weight_range <= MAX_SUPPORTED_ISE_WEIGHT_INDEX));
 
 	assert(submode <= 5);
@@ -1365,8 +1316,7 @@ static bool pack_astc_mode7_submode(uint32_t submode, uint8_t* pEndpoints, const
 
 	int qlog[4], pack_bits[4];
 
-	for (uint32_t i = 0; i < 4; i++)
-	{
+	for (uint32_t i = 0; i < 4; i++) {
 		const float f = (i == 3) ? s_q16 : rgb_q16[i];
 
 		// The # of bits the component is packed into
@@ -1386,18 +1336,14 @@ static bool pack_astc_mode7_submode(uint32_t submode, uint8_t* pEndpoints, const
 		qlog[i] = quant_qlog16(clamp<int>((int)std::round(f), 0, MAX_QLOG16), prec_bits);
 
 		// Only bias if there are enough texel weights, 4=6 weights
-		if (ise_weight_range >= 4)
-		{
+		if (ise_weight_range >= 4) {
 			// Explictly bias the high color, and the scale up, to better exploit the weights.
 			// The quantized range also then encompases the complete input range.
 			const uint32_t max_val = (1 << prec_bits) - 1;
 			const uint32_t K = 3;
-			if (i == 3)
-			{
+			if (i == 3) {
 				qlog[i] = minimum<uint32_t>(qlog[i] + K * 2, max_val);
-			}
-			else
-			{
+			} else {
 				qlog[i] = minimum<uint32_t>(qlog[i] + K, max_val);
 			}
 		}
@@ -1415,20 +1361,16 @@ static bool pack_astc_mode7_submode(uint32_t submode, uint8_t* pEndpoints, const
 
 	bool did_clamp = false;
 
-	if (submode != 5)
-	{
+	if (submode != 5) {
 		int largest_qlog = 0;
-		for (uint32_t i = 0; i < 3; i++)
-		{
-			if (qlog[i] > largest_qlog)
-			{
+		for (uint32_t i = 0; i < 3; i++) {
+			if (qlog[i] > largest_qlog) {
 				largest_qlog = qlog[i];
 				maj_index = i;
 			}
 		}
 
-		if (maj_index)
-		{
+		if (maj_index) {
 			std::swap(qlog[0], qlog[maj_index]);
 		}
 
@@ -1438,12 +1380,10 @@ static bool pack_astc_mode7_submode(uint32_t submode, uint8_t* pEndpoints, const
 		qlog[1] = qlog[0] - qlog[1];
 		qlog[2] = qlog[0] - qlog[2];
 
-		for (uint32_t i = 1; i < 4; i++)
-		{
+		for (uint32_t i = 1; i < 4; i++) {
 			const int max_val = (1 << pack_bits[i]) - 1;
 
-			if (qlog[i] > max_val)
-			{
+			if (qlog[i] > max_val) {
 				max_clamp_mag = maximum<int>(max_clamp_mag, qlog[i] - max_val);
 				qlog[i] = max_val;
 				did_clamp = true;
@@ -1451,9 +1391,9 @@ static bool pack_astc_mode7_submode(uint32_t submode, uint8_t* pEndpoints, const
 		}
 	}
 
-	for (uint32_t i = 0; i < 4; i++)
-	{
-		const int max_val = (1 << pack_bits[i]) - 1; (void)max_val;
+	for (uint32_t i = 0; i < 4; i++) {
+		const int max_val = (1 << pack_bits[i]) - 1;
+		(void)max_val;
 
 		assert(qlog[i] <= max_val);
 	}
@@ -1467,97 +1407,89 @@ static bool pack_astc_mode7_submode(uint32_t submode, uint8_t* pEndpoints, const
 
 	int x0 = 0, x1 = 0, x2 = 0, x3 = 0, x4 = 0, x5 = 0, x6 = 0;
 
-	switch (submode)
-	{
-	case 0:
-	{
-		mode = (maj_index << 2) | 0;
-		assert((mode & 0xC) != 0xC);
+	switch (submode) {
+		case 0: {
+			mode = (maj_index << 2) | 0;
+			assert((mode & 0xC) != 0xC);
 
-		x0 = get_bit(qlog[0], 9); // R9
-		x1 = get_bit(qlog[0], 8); // R8
-		x2 = get_bit(qlog[0], 7); // R7
-		x3 = get_bit(qlog[0], 10); // R10
-		x4 = get_bit(qlog[0], 6); // R6 
-		x5 = get_bit(qlog[3], 6); // S6
-		x6 = get_bit(qlog[3], 5); // S5
-		break;
-	}
-	case 1:
-	{
-		mode = (maj_index << 2) | 1;
-		assert((mode & 0xC) != 0xC);
+			x0 = get_bit(qlog[0], 9);  // R9
+			x1 = get_bit(qlog[0], 8);  // R8
+			x2 = get_bit(qlog[0], 7);  // R7
+			x3 = get_bit(qlog[0], 10); // R10
+			x4 = get_bit(qlog[0], 6);  // R6
+			x5 = get_bit(qlog[3], 6);  // S6
+			x6 = get_bit(qlog[3], 5);  // S5
+			break;
+		}
+		case 1: {
+			mode = (maj_index << 2) | 1;
+			assert((mode & 0xC) != 0xC);
 
-		x0 = get_bit(qlog[0], 8); // R8
-		x1 = get_bit(qlog[1], 5); // G5
-		x2 = get_bit(qlog[0], 7); // R7
-		x3 = get_bit(qlog[2], 5); // B5
-		x4 = get_bit(qlog[0], 6); // R6 
-		x5 = get_bit(qlog[0], 10); // R10
-		x6 = get_bit(qlog[0], 9); // R9
-		break;
-	}
-	case 2:
-	{
-		mode = (maj_index << 2) | 2;
-		assert((mode & 0xC) != 0xC);
+			x0 = get_bit(qlog[0], 8);  // R8
+			x1 = get_bit(qlog[1], 5);  // G5
+			x2 = get_bit(qlog[0], 7);  // R7
+			x3 = get_bit(qlog[2], 5);  // B5
+			x4 = get_bit(qlog[0], 6);  // R6
+			x5 = get_bit(qlog[0], 10); // R10
+			x6 = get_bit(qlog[0], 9);  // R9
+			break;
+		}
+		case 2: {
+			mode = (maj_index << 2) | 2;
+			assert((mode & 0xC) != 0xC);
 
-		x0 = get_bit(qlog[0], 9); // R9
-		x1 = get_bit(qlog[0], 8); // R8
-		x2 = get_bit(qlog[0], 7); // R7
-		x3 = get_bit(qlog[0], 6); // R6
-		x4 = get_bit(qlog[3], 7); // S7 
-		x5 = get_bit(qlog[3], 6); // S6
-		x6 = get_bit(qlog[3], 5); // S5
-		break;
-	}
-	case 3:
-	{
-		mode = (maj_index << 2) | 3;
-		assert((mode & 0xC) != 0xC);
+			x0 = get_bit(qlog[0], 9); // R9
+			x1 = get_bit(qlog[0], 8); // R8
+			x2 = get_bit(qlog[0], 7); // R7
+			x3 = get_bit(qlog[0], 6); // R6
+			x4 = get_bit(qlog[3], 7); // S7
+			x5 = get_bit(qlog[3], 6); // S6
+			x6 = get_bit(qlog[3], 5); // S5
+			break;
+		}
+		case 3: {
+			mode = (maj_index << 2) | 3;
+			assert((mode & 0xC) != 0xC);
 
-		x0 = get_bit(qlog[0], 8); // R8
-		x1 = get_bit(qlog[1], 5); // G5
-		x2 = get_bit(qlog[0], 7); // R7
-		x3 = get_bit(qlog[2], 5); // B5
-		x4 = get_bit(qlog[0], 6); // R6 
-		x5 = get_bit(qlog[3], 6); // S6
-		x6 = get_bit(qlog[3], 5); // S5
-		break;
-	}
-	case 4:
-	{
-		mode = maj_index | 0xC; // 0b1100
-		assert((mode & 0xC) == 0xC);
-		assert(mode != 0xF);
+			x0 = get_bit(qlog[0], 8); // R8
+			x1 = get_bit(qlog[1], 5); // G5
+			x2 = get_bit(qlog[0], 7); // R7
+			x3 = get_bit(qlog[2], 5); // B5
+			x4 = get_bit(qlog[0], 6); // R6
+			x5 = get_bit(qlog[3], 6); // S6
+			x6 = get_bit(qlog[3], 5); // S5
+			break;
+		}
+		case 4: {
+			mode = maj_index | 0xC; // 0b1100
+			assert((mode & 0xC) == 0xC);
+			assert(mode != 0xF);
 
-		x0 = get_bit(qlog[1], 6); // G6
-		x1 = get_bit(qlog[1], 5); // G5
-		x2 = get_bit(qlog[2], 6); // B6
-		x3 = get_bit(qlog[2], 5); // B5
-		x4 = get_bit(qlog[0], 6); // R6 
-		x5 = get_bit(qlog[0], 7); // R7
-		x6 = get_bit(qlog[3], 5); // S5
-		break;
-	}
-	case 5:
-	{
-		mode = 0xF;
+			x0 = get_bit(qlog[1], 6); // G6
+			x1 = get_bit(qlog[1], 5); // G5
+			x2 = get_bit(qlog[2], 6); // B6
+			x3 = get_bit(qlog[2], 5); // B5
+			x4 = get_bit(qlog[0], 6); // R6
+			x5 = get_bit(qlog[0], 7); // R7
+			x6 = get_bit(qlog[3], 5); // S5
+			break;
+		}
+		case 5: {
+			mode = 0xF;
 
-		x0 = get_bit(qlog[1], 6); // G6
-		x1 = get_bit(qlog[1], 5); // G5
-		x2 = get_bit(qlog[2], 6); // B6
-		x3 = get_bit(qlog[2], 5); // B5
-		x4 = get_bit(qlog[0], 6); // R6 
-		x5 = get_bit(qlog[3], 6); // S6
-		x6 = get_bit(qlog[3], 5); // S5
-		break;
-	}
-	default:
-	{
-		assert(0);
-		break;
-	}
+			x0 = get_bit(qlog[1], 6); // G6
+			x1 = get_bit(qlog[1], 5); // G5
+			x2 = get_bit(qlog[2], 6); // B6
+			x3 = get_bit(qlog[2], 5); // B5
+			x4 = get_bit(qlog[0], 6); // R6
+			x5 = get_bit(qlog[3], 6); // S6
+			x6 = get_bit(qlog[3], 5); // S5
+			break;
+		}
+		default: {
+			assert(0);
+			break;
+		}
 	}
 
 	pEndpoints[0] = (uint8_t)((get_bit(mode, 1) << 7) | (get_bit(mode, 0) << 6) | r);
@@ -1571,8 +1503,7 @@ static bool pack_astc_mode7_submode(uint32_t submode, uint8_t* pEndpoints, const
 		const int inv_shift = 12 - prec_bits;
 
 		int unpacked_e[2][3];
-		if (submode != 5)
-		{
+		if (submode != 5) {
 			unpacked_e[1][0] = left_shift32(qlog[0], inv_shift);
 			unpacked_e[1][1] = clamp(left_shift32((qlog[0] - qlog[1]), inv_shift), 0, 0xFFF);
 			unpacked_e[1][2] = clamp(left_shift32((qlog[0] - qlog[2]), inv_shift), 0, 0xFFF);
@@ -1580,9 +1511,7 @@ static bool pack_astc_mode7_submode(uint32_t submode, uint8_t* pEndpoints, const
 			unpacked_e[0][0] = clamp(left_shift32((qlog[0] - qlog[3]), inv_shift), 0, 0xFFF);
 			unpacked_e[0][1] = clamp(left_shift32(((qlog[0] - qlog[1]) - qlog[3]), inv_shift), 0, 0xFFF);
 			unpacked_e[0][2] = clamp(left_shift32(((qlog[0] - qlog[2]) - qlog[3]), inv_shift), 0, 0xFFF);
-		}
-		else
-		{
+		} else {
 			unpacked_e[1][0] = left_shift32(qlog[0], inv_shift);
 			unpacked_e[1][1] = left_shift32(qlog[1], inv_shift);
 			unpacked_e[1][2] = left_shift32(qlog[2], inv_shift);
@@ -1592,8 +1521,7 @@ static bool pack_astc_mode7_submode(uint32_t submode, uint8_t* pEndpoints, const
 			unpacked_e[0][2] = clamp(left_shift32((qlog[2] - qlog[3]), inv_shift), 0, 0xFFF);
 		}
 
-		if (maj_index)
-		{
+		if (maj_index) {
 			std::swap(unpacked_e[0][0], unpacked_e[0][maj_index]);
 			std::swap(unpacked_e[1][0], unpacked_e[1][maj_index]);
 		}
@@ -1601,8 +1529,7 @@ static bool pack_astc_mode7_submode(uint32_t submode, uint8_t* pEndpoints, const
 		int e[2][3];
 		decode_mode7_to_qlog12_ise20(pEndpoints, e, nullptr);
 
-		for (uint32_t i = 0; i < 3; i++)
-		{
+		for (uint32_t i = 0; i < 3; i++) {
 			assert(unpacked_e[0][i] == e[0][i]);
 			assert(unpacked_e[1][i] == e[1][i]);
 		}
@@ -1614,18 +1541,13 @@ static bool pack_astc_mode7_submode(uint32_t submode, uint8_t* pEndpoints, const
 
 //--------------------------------------------------------------------------------------------------------------------------
 
-static void quantize_ise_endpoints(uint32_t ise_endpoint_range, const uint8_t* pSrc_endpoints, uint8_t *pDst_endpoints, uint32_t n)
-{
+static void quantize_ise_endpoints(uint32_t ise_endpoint_range, const uint8_t *pSrc_endpoints, uint8_t *pDst_endpoints, uint32_t n) {
 	assert((ise_endpoint_range >= astc_helpers::FIRST_VALID_ENDPOINT_ISE_RANGE) && (ise_endpoint_range <= astc_helpers::LAST_VALID_ENDPOINT_ISE_RANGE));
 
-	if (ise_endpoint_range == astc_helpers::BISE_256_LEVELS)
-	{
+	if (ise_endpoint_range == astc_helpers::BISE_256_LEVELS) {
 		memcpy(pDst_endpoints, pSrc_endpoints, n);
-	}
-	else
-	{
-		for (uint32_t i = 0; i < n; i++)
-		{
+	} else {
+		for (uint32_t i = 0; i < n; i++) {
 			uint32_t v = pSrc_endpoints[i];
 			assert(v <= 255);
 
@@ -1639,12 +1561,12 @@ static void quantize_ise_endpoints(uint32_t ise_endpoint_range, const uint8_t* p
 // Note this could fail to find any valid solution if use_endpoint_range!=20.
 // Returns true if improved.
 static bool try_mode11(uint32_t num_pixels,
-	uint8_t* pEndpoints, uint8_t* pWeights, double& cur_block_error, uint32_t& submode_used,
-	vec3F& low_color_q16, const vec3F& high_color_q16,
-	half_float block_pixels_half[16][3],
-	uint32_t num_weight_levels, uint32_t ise_weight_range, const astc_hdr_codec_options& coptions, bool direct_only, uint32_t ise_endpoint_range, 
-	bool constrain_ise_weight8_selectors, 
-	int32_t first_submode, int32_t last_submode) // -1, 7
+		uint8_t *pEndpoints, uint8_t *pWeights, double &cur_block_error, uint32_t &submode_used,
+		vec3F &low_color_q16, const vec3F &high_color_q16,
+		half_float block_pixels_half[16][3],
+		uint32_t num_weight_levels, uint32_t ise_weight_range, const astc_hdr_codec_options &coptions, bool direct_only, uint32_t ise_endpoint_range,
+		bool constrain_ise_weight8_selectors,
+		int32_t first_submode, int32_t last_submode) // -1, 7
 {
 	assert((ise_weight_range >= 1) && (ise_weight_range <= MAX_SUPPORTED_ISE_WEIGHT_INDEX));
 	assert((num_weight_levels >= 3) && (num_weight_levels <= 32));
@@ -1656,8 +1578,7 @@ static bool try_mode11(uint32_t num_pixels,
 	vec3F decoded_float[32];
 	uint8_t orig_trial_endpoints[NUM_MODE11_ENDPOINTS], trial_endpoints[NUM_MODE11_ENDPOINTS], trial_weights[16];
 
-	if (direct_only)
-	{
+	if (direct_only) {
 		first_submode = -1;
 		last_submode = -1;
 	}
@@ -1667,17 +1588,13 @@ static bool try_mode11(uint32_t num_pixels,
 	assert((last_submode >= -1) && (last_submode <= 7));
 
 	// TODO: First determine if a submode doesn't clamp first. If one is found, encode to that and we're done.
-	for (int submode = last_submode; submode >= first_submode; submode--)
-	{
+	for (int submode = last_submode; submode >= first_submode; submode--) {
 		bool did_clamp = false;
 		int max_clamp_mag = 0;
-		if (submode == -1)
-		{
+		if (submode == -1) {
 			// If it had to clamp with one of the submodes, try direct which can't clamp, but has low precision.
 			pack_astc_mode11_direct(orig_trial_endpoints, low_color_q16, high_color_q16);
-		}
-		else
-		{
+		} else {
 			did_clamp = pack_astc_mode11_submode(submode, orig_trial_endpoints, low_color_q16, high_color_q16, max_clamp_mag);
 
 			// If it had to clamp and the clamp was too high, it'll distort the endpoint colors too much, which could lead to noticeable artifacts.
@@ -1685,11 +1602,11 @@ static bool try_mode11(uint32_t num_pixels,
 			if ((did_clamp) && (max_clamp_mag > MAX_CLAMP_MAG_ACCEPT_THRESH))
 				continue;
 		}
-				
+
 		// This will distort the endpoints if the ISE endpoint range isn't 256 levels (20).
 		// It could massively distort the endpoints, but still result in a valid encoding.
 		quantize_ise_endpoints(ise_endpoint_range, orig_trial_endpoints, trial_endpoints, NUM_MODE11_ENDPOINTS);
-		
+
 		if (!get_astc_hdr_mode_11_block_colors(trial_endpoints, &decoded_half[0][0], decoded_float, num_weight_levels, ise_weight_range, ise_endpoint_range))
 			continue;
 
@@ -1698,8 +1615,7 @@ static bool try_mode11(uint32_t num_pixels,
 			usable_selector_bitmask = (1 << 0) | (1 << 1) | (1 << 4) | (1 << 5) | (1 << 10) | (1 << 11) | (1 << 14) | (1 << 15);
 
 		double trial_blk_error = eval_selectors(num_pixels, trial_weights, &block_pixels_half[0][0], num_weight_levels, &decoded_half[0][0], coptions, usable_selector_bitmask);
-		if (trial_blk_error < cur_block_error)
-		{
+		if (trial_blk_error < cur_block_error) {
 			cur_block_error = trial_blk_error;
 			memcpy(pEndpoints, trial_endpoints, NUM_MODE11_ENDPOINTS);
 			memcpy(pWeights, trial_weights, num_pixels);
@@ -1710,8 +1626,7 @@ static bool try_mode11(uint32_t num_pixels,
 		// If it didn't clamp it was a lossless encode at this precision, so we can stop early as there's probably no use trying lower precision submodes.
 		// (Although it may be, because a lower precision pack could try nearby voxel coords.)
 		// However, at lower levels quantization may cause the decoded endpoints to be very distorted, so we need to evaluate up to direct.
-		if (ise_endpoint_range == astc_helpers::BISE_256_LEVELS) 
-		{
+		if (ise_endpoint_range == astc_helpers::BISE_256_LEVELS) {
 			if (!did_clamp)
 				break;
 		}
@@ -1723,13 +1638,12 @@ static bool try_mode11(uint32_t num_pixels,
 //--------------------------------------------------------------------------------------------------------------------------
 
 static bool try_mode7(
-	uint32_t num_pixels,
-	uint8_t* pEndpoints, uint8_t* pWeights, double& cur_block_error, uint32_t& submode_used,
-	vec3F& high_color_q16, const float s_q16,
-	half_float block_pixels_half[16][3],
-	uint32_t num_weight_levels, uint32_t ise_weight_range, const astc_hdr_codec_options& coptions, 
-	uint32_t ise_endpoint_range)
-{
+		uint32_t num_pixels,
+		uint8_t *pEndpoints, uint8_t *pWeights, double &cur_block_error, uint32_t &submode_used,
+		vec3F &high_color_q16, const float s_q16,
+		half_float block_pixels_half[16][3],
+		uint32_t num_weight_levels, uint32_t ise_weight_range, const astc_hdr_codec_options &coptions,
+		uint32_t ise_endpoint_range) {
 	assert((ise_weight_range >= 1) && (ise_weight_range <= MAX_SUPPORTED_ISE_WEIGHT_INDEX));
 	assert((num_pixels >= 1) && (num_pixels <= 16));
 
@@ -1741,13 +1655,11 @@ static bool try_mode7(
 	uint8_t orig_trial_endpoints[NUM_MODE7_ENDPOINTS], trial_endpoints[NUM_MODE7_ENDPOINTS], trial_weights[16];
 
 	// TODO: First determine if a submode doesn't clamp first. If one is found, encode to that and we're done.
-	for (int submode = 0; submode <= 5; submode++)
-	{
+	for (int submode = 0; submode <= 5; submode++) {
 		int max_clamp_mag = 0;
 		const bool did_clamp = pack_astc_mode7_submode(submode, orig_trial_endpoints, high_color_q16, s_q16, max_clamp_mag, ise_weight_range);
 
-		if (submode < 5)
-		{
+		if (submode < 5) {
 			const int MAX_CLAMP_MAG_ACCEPT_THRESH = 4;
 			if ((did_clamp) && (max_clamp_mag > MAX_CLAMP_MAG_ACCEPT_THRESH))
 				continue;
@@ -1761,8 +1673,7 @@ static bool try_mode7(
 			continue;
 
 		double trial_blk_error = eval_selectors(num_pixels, trial_weights, &block_pixels_half[0][0], num_weight_levels, &decoded_half[0][0], coptions);
-		if (trial_blk_error < cur_block_error)
-		{
+		if (trial_blk_error < cur_block_error) {
 			cur_block_error = trial_blk_error;
 			memcpy(pEndpoints, trial_endpoints, NUM_MODE7_ENDPOINTS);
 			memcpy(pWeights, trial_weights, num_pixels);
@@ -1770,8 +1681,7 @@ static bool try_mode7(
 			improved_flag = true;
 		}
 
-		if (ise_endpoint_range == astc_helpers::BISE_256_LEVELS)
-		{
+		if (ise_endpoint_range == astc_helpers::BISE_256_LEVELS) {
 			if (!did_clamp)
 				break;
 		}
@@ -1783,19 +1693,18 @@ static bool try_mode7(
 //--------------------------------------------------------------------------------------------------------------------------
 
 static double encode_astc_hdr_block_mode_11(
-	uint32_t num_pixels,
-	const vec4F* pBlock_pixels,
-	uint32_t ise_weight_range,
-	uint32_t& best_submode,
-	double cur_block_error,
-	uint8_t* blk_endpoints, uint8_t* blk_weights,
-	const astc_hdr_codec_options& coptions,
-	bool direct_only,
-	uint32_t ise_endpoint_range,
-	bool uber_mode,
-	bool constrain_ise_weight8_selectors,
-	int32_t first_submode, int32_t last_submode)
-{
+		uint32_t num_pixels,
+		const vec4F *pBlock_pixels,
+		uint32_t ise_weight_range,
+		uint32_t &best_submode,
+		double cur_block_error,
+		uint8_t *blk_endpoints, uint8_t *blk_weights,
+		const astc_hdr_codec_options &coptions,
+		bool direct_only,
+		uint32_t ise_endpoint_range,
+		bool uber_mode,
+		bool constrain_ise_weight8_selectors,
+		int32_t first_submode, int32_t last_submode) {
 	assert((ise_weight_range >= 1) && (ise_weight_range <= MAX_SUPPORTED_ISE_WEIGHT_INDEX));
 	assert((ise_endpoint_range >= astc_helpers::FIRST_VALID_ENDPOINT_ISE_RANGE) && (ise_endpoint_range <= astc_helpers::LAST_VALID_ENDPOINT_ISE_RANGE));
 	assert((num_pixels >= 1) && (num_pixels <= 16));
@@ -1804,10 +1713,9 @@ static double encode_astc_hdr_block_mode_11(
 
 	half_float block_pixels_half[16][3];
 	vec4F block_pixels_q16[16];
-		
+
 	// TODO: This is done redundantly.
-	for (uint32_t i = 0; i < num_pixels; i++)
-	{
+	for (uint32_t i = 0; i < num_pixels; i++) {
 		block_pixels_half[i][0] = float_to_half_non_neg_no_nan_inf(pBlock_pixels[i][0]);
 		block_pixels_q16[i][0] = (float)half_to_qlog16(block_pixels_half[i][0]);
 
@@ -1821,7 +1729,7 @@ static double encode_astc_hdr_block_mode_11(
 	}
 
 	const uint32_t num_weight_levels = astc_helpers::get_ise_levels(ise_weight_range);
-	
+
 	// TODO: should match MAX_SUPPORTED_ISE_WEIGHT_INDEX
 	const uint32_t MAX_WEIGHT_LEVELS = 32;
 	(void)MAX_WEIGHT_LEVELS;
@@ -1835,75 +1743,69 @@ static double encode_astc_hdr_block_mode_11(
 	float l = 1e+30f, h = -1e+30f;
 	vec3F low_color_q16, high_color_q16;
 
-	for (uint32_t i = 0; i < num_pixels; i++)
-	{
+	for (uint32_t i = 0; i < num_pixels; i++) {
 		color_box_q16.expand(block_pixels_q16[i]);
 
 		vec3F k(vec3F(block_pixels_q16[i]) - block_mean_color_q16);
 		float kd = k.dot(block_axis_q16);
 
-		if (kd < l)
-		{
+		if (kd < l) {
 			l = kd;
 			low_color_q16 = block_pixels_q16[i];
 		}
 
-		if (kd > h)
-		{
+		if (kd > h) {
 			h = kd;
 			high_color_q16 = block_pixels_q16[i];
 		}
 	}
 
 	vec3F old_low_color_q16(low_color_q16), old_high_color_q16(high_color_q16);
-	for (uint32_t i = 0; i < 3; i++)
-	{
+	for (uint32_t i = 0; i < 3; i++) {
 		low_color_q16[i] = lerp<float>(old_low_color_q16[i], old_high_color_q16[i], 1.0f / 64.0f);
 		high_color_q16[i] = lerp<float>(old_low_color_q16[i], old_high_color_q16[i], 63.0f / 64.0f);
 	}
-		
+
 	uint8_t trial_blk_endpoints[NUM_MODE11_ENDPOINTS];
 	uint8_t trial_blk_weights[16];
 	uint32_t trial_best_submode = 0;
-	
+
 	clear_obj(trial_blk_endpoints);
 	clear_obj(trial_blk_weights);
-	
+
 	double trial_blk_error = 1e+30f;
 
 	bool did_improve = try_mode11(num_pixels, trial_blk_endpoints, trial_blk_weights, trial_blk_error, trial_best_submode,
-		low_color_q16, high_color_q16,
-		block_pixels_half, num_weight_levels, ise_weight_range, coptions, direct_only, ise_endpoint_range, constrain_ise_weight8_selectors,
-		first_submode, last_submode);
-	
+			low_color_q16, high_color_q16,
+			block_pixels_half, num_weight_levels, ise_weight_range, coptions, direct_only, ise_endpoint_range, constrain_ise_weight8_selectors,
+			first_submode, last_submode);
+
 	// If we couldn't find ANY usable solution due to endpoint quantization, just return. There's nothing we can do.
 	if (!did_improve)
 		return cur_block_error;
 
 	// Did the solution improve?
-	if (trial_blk_error < cur_block_error)
-	{
+	if (trial_blk_error < cur_block_error) {
 		cur_block_error = trial_blk_error;
 		memcpy(blk_endpoints, trial_blk_endpoints, NUM_MODE11_ENDPOINTS);
 		memcpy(blk_weights, trial_blk_weights, num_pixels);
 		best_submode = trial_best_submode;
 	}
-		
+
 #define USE_LEAST_SQUARES (1)
 #if USE_LEAST_SQUARES
 	// least squares on the most promising trial weight indices found
 	const uint32_t NUM_LS_PASSES = 3;
 
-	for (uint32_t pass = 0; pass < NUM_LS_PASSES; pass++)
-	{
+	for (uint32_t pass = 0; pass < NUM_LS_PASSES; pass++) {
 		vec3F l_q16, h_q16;
 		if (!compute_least_squares_endpoints_rgb(num_pixels, trial_blk_weights, &g_astc_ls_weights_ise[ise_weight_range][0], &l_q16, &h_q16, block_pixels_q16, color_box_q16))
 			break;
 
 		bool was_improved = try_mode11(num_pixels, blk_endpoints, blk_weights, cur_block_error, best_submode,
-			l_q16, h_q16,
-			block_pixels_half, num_weight_levels, ise_weight_range, coptions, direct_only, ise_endpoint_range, constrain_ise_weight8_selectors,
-			first_submode, last_submode);
+				l_q16, h_q16,
+				block_pixels_half, num_weight_levels, ise_weight_range, coptions, direct_only, ise_endpoint_range, constrain_ise_weight8_selectors,
+				first_submode, last_submode);
 
 		if (!was_improved)
 			break;
@@ -1913,17 +1815,15 @@ static double encode_astc_hdr_block_mode_11(
 
 	} // pass
 #endif
-		
-	if (uber_mode)
-	{
+
+	if (uber_mode) {
 		// Try varying the current best weight indices. This can be expanded/improved, but at potentially great cost.
 
 		uint8_t temp_astc_weights[16];
 		memcpy(temp_astc_weights, trial_blk_weights, num_pixels);
 
 		uint32_t min_lin_sel = 256, max_lin_sel = 0;
-		for (uint32_t i = 0; i < num_pixels; i++)
-		{
+		for (uint32_t i = 0; i < num_pixels; i++) {
 			const uint32_t astc_sel = temp_astc_weights[i];
 
 			const uint32_t lin_sel = g_map_astc_to_linear_order[ise_weight_range][astc_sel];
@@ -1939,13 +1839,11 @@ static double encode_astc_hdr_block_mode_11(
 		{
 			bool weights_changed = false;
 			uint8_t trial_weights[16];
-			for (uint32_t i = 0; i < num_pixels; i++)
-			{
+			for (uint32_t i = 0; i < num_pixels; i++) {
 				uint32_t astc_sel = temp_astc_weights[i];
 				uint32_t lin_sel = g_map_astc_to_linear_order[ise_weight_range][astc_sel];
 
-				if ((lin_sel == min_lin_sel) && (lin_sel < (num_weight_levels - 1)))
-				{
+				if ((lin_sel == min_lin_sel) && (lin_sel < (num_weight_levels - 1))) {
 					lin_sel++;
 					weights_changed = true;
 				}
@@ -1953,16 +1851,13 @@ static double encode_astc_hdr_block_mode_11(
 				trial_weights[i] = g_map_linear_to_astc_order[ise_weight_range][lin_sel];
 			}
 
-			if (weights_changed)
-			{
+			if (weights_changed) {
 				vec3F l_q16, h_q16;
-				if (compute_least_squares_endpoints_rgb(num_pixels, trial_weights, &g_astc_ls_weights_ise[ise_weight_range][0], &l_q16, &h_q16, block_pixels_q16, color_box_q16))
-				{
+				if (compute_least_squares_endpoints_rgb(num_pixels, trial_weights, &g_astc_ls_weights_ise[ise_weight_range][0], &l_q16, &h_q16, block_pixels_q16, color_box_q16)) {
 					if (try_mode11(num_pixels, blk_endpoints, blk_weights, cur_block_error, best_submode,
-						l_q16, h_q16,
-						block_pixels_half, num_weight_levels, ise_weight_range, coptions, direct_only, ise_endpoint_range, constrain_ise_weight8_selectors, 
-						first_submode, last_submode))
-					{
+								l_q16, h_q16,
+								block_pixels_half, num_weight_levels, ise_weight_range, coptions, direct_only, ise_endpoint_range, constrain_ise_weight8_selectors,
+								first_submode, last_submode)) {
 						was_improved = true;
 					}
 				}
@@ -1972,13 +1867,11 @@ static double encode_astc_hdr_block_mode_11(
 		{
 			bool weights_changed = false;
 			uint8_t trial_weights[16];
-			for (uint32_t i = 0; i < num_pixels; i++)
-			{
+			for (uint32_t i = 0; i < num_pixels; i++) {
 				uint32_t astc_sel = temp_astc_weights[i];
 				uint32_t lin_sel = g_map_astc_to_linear_order[ise_weight_range][astc_sel];
 
-				if ((lin_sel == max_lin_sel) && (lin_sel > 0))
-				{
+				if ((lin_sel == max_lin_sel) && (lin_sel > 0)) {
 					lin_sel--;
 					weights_changed = true;
 				}
@@ -1986,16 +1879,13 @@ static double encode_astc_hdr_block_mode_11(
 				trial_weights[i] = g_map_linear_to_astc_order[ise_weight_range][lin_sel];
 			}
 
-			if (weights_changed)
-			{
+			if (weights_changed) {
 				vec3F l_q16, h_q16;
-				if (compute_least_squares_endpoints_rgb(num_pixels, trial_weights, &g_astc_ls_weights_ise[ise_weight_range][0], &l_q16, &h_q16, block_pixels_q16, color_box_q16))
-				{
+				if (compute_least_squares_endpoints_rgb(num_pixels, trial_weights, &g_astc_ls_weights_ise[ise_weight_range][0], &l_q16, &h_q16, block_pixels_q16, color_box_q16)) {
 					if (try_mode11(num_pixels, blk_endpoints, blk_weights, cur_block_error, best_submode,
-						l_q16, h_q16,
-						block_pixels_half, num_weight_levels, ise_weight_range, coptions, direct_only, ise_endpoint_range, constrain_ise_weight8_selectors,
-						first_submode, last_submode))
-					{
+								l_q16, h_q16,
+								block_pixels_half, num_weight_levels, ise_weight_range, coptions, direct_only, ise_endpoint_range, constrain_ise_weight8_selectors,
+								first_submode, last_submode)) {
 						was_improved = true;
 					}
 				}
@@ -2005,18 +1895,14 @@ static double encode_astc_hdr_block_mode_11(
 		{
 			bool weights_changed = false;
 			uint8_t trial_weights[16];
-			for (uint32_t i = 0; i < num_pixels; i++)
-			{
+			for (uint32_t i = 0; i < num_pixels; i++) {
 				uint32_t astc_sel = temp_astc_weights[i];
 				uint32_t lin_sel = g_map_astc_to_linear_order[ise_weight_range][astc_sel];
 
-				if ((lin_sel == max_lin_sel) && (lin_sel > 0))
-				{
+				if ((lin_sel == max_lin_sel) && (lin_sel > 0)) {
 					lin_sel--;
 					weights_changed = true;
-				}
-				else if ((lin_sel == min_lin_sel) && (lin_sel < (num_weight_levels - 1)))
-				{
+				} else if ((lin_sel == min_lin_sel) && (lin_sel < (num_weight_levels - 1))) {
 					lin_sel++;
 					weights_changed = true;
 				}
@@ -2024,16 +1910,13 @@ static double encode_astc_hdr_block_mode_11(
 				trial_weights[i] = g_map_linear_to_astc_order[ise_weight_range][lin_sel];
 			}
 
-			if (weights_changed)
-			{
+			if (weights_changed) {
 				vec3F l_q16, h_q16;
-				if (compute_least_squares_endpoints_rgb(num_pixels, trial_weights, &g_astc_ls_weights_ise[ise_weight_range][0], &l_q16, &h_q16, block_pixels_q16, color_box_q16))
-				{
+				if (compute_least_squares_endpoints_rgb(num_pixels, trial_weights, &g_astc_ls_weights_ise[ise_weight_range][0], &l_q16, &h_q16, block_pixels_q16, color_box_q16)) {
 					if (try_mode11(num_pixels, blk_endpoints, blk_weights, cur_block_error, best_submode,
-						l_q16, h_q16,
-						block_pixels_half, num_weight_levels, ise_weight_range, coptions, direct_only, ise_endpoint_range, constrain_ise_weight8_selectors,
-						first_submode, last_submode))
-					{
+								l_q16, h_q16,
+								block_pixels_half, num_weight_levels, ise_weight_range, coptions, direct_only, ise_endpoint_range, constrain_ise_weight8_selectors,
+								first_submode, last_submode)) {
 						was_improved = true;
 					}
 				}
@@ -2047,15 +1930,14 @@ static double encode_astc_hdr_block_mode_11(
 //--------------------------------------------------------------------------------------------------------------------------
 
 static double encode_astc_hdr_block_mode_7(
-	uint32_t num_pixels, const vec4F* pBlock_pixels,
-	uint32_t ise_weight_range,
-	uint32_t& best_submode,
-	double cur_block_error,
-	uint8_t* blk_endpoints,  //[4]
-	uint8_t* blk_weights, // [num_pixels]
-	const astc_hdr_codec_options& coptions,
-	uint32_t ise_endpoint_range)
-{
+		uint32_t num_pixels, const vec4F *pBlock_pixels,
+		uint32_t ise_weight_range,
+		uint32_t &best_submode,
+		double cur_block_error,
+		uint8_t *blk_endpoints, //[4]
+		uint8_t *blk_weights,	// [num_pixels]
+		const astc_hdr_codec_options &coptions,
+		uint32_t ise_endpoint_range) {
 	assert((num_pixels >= 1) && (num_pixels <= 16));
 	assert((ise_weight_range >= 1) && (ise_weight_range <= 10));
 	assert((ise_endpoint_range >= astc_helpers::FIRST_VALID_ENDPOINT_ISE_RANGE) && (ise_endpoint_range <= astc_helpers::LAST_VALID_ENDPOINT_ISE_RANGE));
@@ -2070,8 +1952,7 @@ static double encode_astc_hdr_block_mode_7(
 	half_float block_pixels_half[16][3];
 
 	vec4F block_pixels_q16[16];
-	for (uint32_t i = 0; i < num_pixels; i++)
-	{
+	for (uint32_t i = 0; i < num_pixels; i++) {
 		block_pixels_half[i][0] = float_to_half_non_neg_no_nan_inf(pBlock_pixels[i][0]);
 		block_pixels_q16[i][0] = (float)half_to_qlog16(block_pixels_half[i][0]);
 
@@ -2091,8 +1972,7 @@ static double encode_astc_hdr_block_mode_7(
 	aabb3F color_box_q16(cInitExpand);
 
 	float l = 1e+30f, h = -1e+30f;
-	for (uint32_t i = 0; i < num_pixels; i++)
-	{
+	for (uint32_t i = 0; i < num_pixels; i++) {
 		color_box_q16.expand(block_pixels_q16[i]);
 
 		vec3F k(vec3F(block_pixels_q16[i]) - block_mean_color_q16);
@@ -2121,18 +2001,16 @@ static double encode_astc_hdr_block_mode_7(
 	double trial_blk_error = 1e+30f;
 
 	bool did_improve = try_mode7(num_pixels, trial_blk_endpoints, trial_blk_weights, trial_blk_error, trial_best_submode,
-		high_color_q16, ceilf(s_q16),
-		block_pixels_half, num_weight_levels, ise_weight_range, coptions, ise_endpoint_range);
+			high_color_q16, ceilf(s_q16),
+			block_pixels_half, num_weight_levels, ise_weight_range, coptions, ise_endpoint_range);
 
 	// If we couldn't find ANY usable solution due to endpoint quantization, just return. There's nothing we can do.
-	if (!did_improve)
-	{
+	if (!did_improve) {
 		return cur_block_error;
 	}
 
 	// Did the solution improve?
-	if (trial_blk_error < cur_block_error)
-	{
+	if (trial_blk_error < cur_block_error) {
 		cur_block_error = trial_blk_error;
 		memcpy(blk_endpoints, trial_blk_endpoints, NUM_MODE7_ENDPOINTS);
 		memcpy(blk_weights, trial_blk_weights, num_pixels);
@@ -2142,8 +2020,7 @@ static double encode_astc_hdr_block_mode_7(
 	const float one_over_num_pixels = 1.0f / (float)num_pixels;
 
 	const uint32_t NUM_TRIALS = 2;
-	for (uint32_t trial = 0; trial < NUM_TRIALS; trial++)
-	{
+	for (uint32_t trial = 0; trial < NUM_TRIALS; trial++) {
 		// Given a set of selectors and S, try to compute a better high color
 		vec3F new_high_color_q16(block_mean_color_q16);
 
@@ -2154,8 +2031,7 @@ static double encode_astc_hdr_block_mode_7(
 
 		cur_s <<= 4;
 
-		for (uint32_t i = 0; i < num_pixels; i++)
-		{
+		for (uint32_t i = 0; i < num_pixels; i++) {
 			uint32_t astc_sel = trial_blk_weights[i];
 			float lerp = g_ise_weight_lerps[ise_weight_range][astc_sel + 1] * (1.0f / 64.0f);
 
@@ -2166,11 +2042,10 @@ static double encode_astc_hdr_block_mode_7(
 		}
 
 		bool improved = try_mode7(num_pixels, blk_endpoints, blk_weights, cur_block_error, best_submode,
-			new_high_color_q16, (float)cur_s,
-			block_pixels_half, num_weight_levels, ise_weight_range, coptions, ise_endpoint_range);
+				new_high_color_q16, (float)cur_s,
+				block_pixels_half, num_weight_levels, ise_weight_range, coptions, ise_endpoint_range);
 
-		if (improved)
-		{
+		if (improved) {
 			memcpy(trial_blk_endpoints, blk_endpoints, NUM_MODE7_ENDPOINTS);
 			memcpy(trial_blk_weights, blk_weights, num_pixels);
 		}
@@ -2178,8 +2053,7 @@ static double encode_astc_hdr_block_mode_7(
 		// Given a set of selectors and a high color, try to compute a better S.
 		float t = 0.0f;
 
-		for (uint32_t i = 0; i < num_pixels; i++)
-		{
+		for (uint32_t i = 0; i < num_pixels; i++) {
 			uint32_t astc_sel = trial_blk_weights[i];
 			float lerp = g_ise_weight_lerps[ise_weight_range][astc_sel + 1] * (1.0f / 64.0f);
 
@@ -2194,38 +2068,33 @@ static double encode_astc_hdr_block_mode_7(
 
 		vec3F cur_h_q16((float)(e[1][0] << 4), (float)(e[1][1] << 4), (float)(e[1][2] << 4));
 
-		if (fabs(t) > .0000125f)
-		{
+		if (fabs(t) > .0000125f) {
 			float s_r = (cur_h_q16[0] - block_mean_color_q16[0]) / t;
 			float s_g = (cur_h_q16[1] - block_mean_color_q16[1]) / t;
 			float s_b = (cur_h_q16[2] - block_mean_color_q16[2]) / t;
 
 			// TODO: gather statistics on these
 			if (try_mode7(num_pixels, blk_endpoints, blk_weights, cur_block_error, best_submode,
-				cur_h_q16, ceilf(s_r),
-				block_pixels_half, num_weight_levels, ise_weight_range, coptions, ise_endpoint_range))
-			{
+						cur_h_q16, ceilf(s_r),
+						block_pixels_half, num_weight_levels, ise_weight_range, coptions, ise_endpoint_range)) {
 				improved = true;
 			}
 
 			if (try_mode7(num_pixels, blk_endpoints, blk_weights, cur_block_error, best_submode,
-				cur_h_q16, ceilf(s_g),
-				block_pixels_half, num_weight_levels, ise_weight_range, coptions, ise_endpoint_range))
-			{
+						cur_h_q16, ceilf(s_g),
+						block_pixels_half, num_weight_levels, ise_weight_range, coptions, ise_endpoint_range)) {
 				improved = true;
 			}
 
 			if (try_mode7(num_pixels, blk_endpoints, blk_weights, cur_block_error, best_submode,
-				cur_h_q16, ceilf(s_b),
-				block_pixels_half, num_weight_levels, ise_weight_range, coptions, ise_endpoint_range))
-			{
+						cur_h_q16, ceilf(s_b),
+						block_pixels_half, num_weight_levels, ise_weight_range, coptions, ise_endpoint_range)) {
 				improved = true;
 			}
 
 			if (try_mode7(num_pixels, blk_endpoints, blk_weights, cur_block_error, best_submode,
-				cur_h_q16, ceilf((s_r + s_g + s_b) / 3.0f),
-				block_pixels_half, num_weight_levels, ise_weight_range, coptions, ise_endpoint_range))
-			{
+						cur_h_q16, ceilf((s_r + s_g + s_b) / 3.0f),
+						block_pixels_half, num_weight_levels, ise_weight_range, coptions, ise_endpoint_range)) {
 				improved = true;
 			}
 		}
@@ -2243,19 +2112,16 @@ static double encode_astc_hdr_block_mode_7(
 
 //--------------------------------------------------------------------------------------------------------------------------
 
-static bool pack_solid(const vec4F* pBlock_linear_colors, basisu::vector<astc_hdr_pack_results>& all_results, const astc_hdr_codec_options& coptions)
-{
+static bool pack_solid(const vec4F *pBlock_linear_colors, basisu::vector<astc_hdr_pack_results> &all_results, const astc_hdr_codec_options &coptions) {
 	float r = 0.0f, g = 0.0f, b = 0.0f;
 
 	const float LOG_BIAS = .125f;
 
 	bool solid_block = true;
-	for (uint32_t i = 0; i < 16; i++)
-	{
+	for (uint32_t i = 0; i < 16; i++) {
 		if ((pBlock_linear_colors[0][0] != pBlock_linear_colors[i][0]) ||
-			(pBlock_linear_colors[0][1] != pBlock_linear_colors[i][1]) ||
-			(pBlock_linear_colors[0][2] != pBlock_linear_colors[i][2]))
-		{
+				(pBlock_linear_colors[0][1] != pBlock_linear_colors[i][1]) ||
+				(pBlock_linear_colors[0][2] != pBlock_linear_colors[i][2])) {
 			solid_block = false;
 		}
 
@@ -2264,14 +2130,11 @@ static bool pack_solid(const vec4F* pBlock_linear_colors, basisu::vector<astc_hd
 		b += log2f(pBlock_linear_colors[i][2] + LOG_BIAS);
 	}
 
-	if (solid_block)
-	{
+	if (solid_block) {
 		r = pBlock_linear_colors[0][0];
 		g = pBlock_linear_colors[0][1];
 		b = pBlock_linear_colors[0][2];
-	}
-	else
-	{
+	} else {
 		r = maximum<float>(0.0f, powf(2.0f, r * (1.0f / 16.0f)) - LOG_BIAS);
 		g = maximum<float>(0.0f, powf(2.0f, g * (1.0f / 16.0f)) - LOG_BIAS);
 		b = maximum<float>(0.0f, powf(2.0f, b * (1.0f / 16.0f)) - LOG_BIAS);
@@ -2287,7 +2150,7 @@ static bool pack_solid(const vec4F* pBlock_linear_colors, basisu::vector<astc_hd
 	astc_hdr_pack_results results;
 	results.clear();
 
-	uint8_t* packed_blk = (uint8_t*)&results.m_solid_blk;
+	uint8_t *packed_blk = (uint8_t *)&results.m_solid_blk;
 	results.m_is_solid = true;
 
 	packed_blk[0] = 0b11111100;
@@ -2310,14 +2173,12 @@ static bool pack_solid(const vec4F* pBlock_linear_colors, basisu::vector<astc_hd
 
 	results.m_best_block_error = 0;
 
-	if (!solid_block)
-	{
+	if (!solid_block) {
 		const float R_WEIGHT = coptions.m_r_err_scale;
 		const float G_WEIGHT = coptions.m_g_err_scale;
 
 		// This MUST match how errors are computed in eval_selectors().
-		for (uint32_t i = 0; i < 16; i++)
-		{
+		for (uint32_t i = 0; i < 16; i++) {
 			half_float dr = float_to_half_non_neg_no_nan_inf(pBlock_linear_colors[i][0]), dg = float_to_half_non_neg_no_nan_inf(pBlock_linear_colors[i][1]), db = float_to_half_non_neg_no_nan_inf(pBlock_linear_colors[i][2]);
 			double rd = q(rh) - q(dr);
 			double gd = q(gh) - q(dg);
@@ -2341,34 +2202,30 @@ static bool pack_solid(const vec4F* pBlock_linear_colors, basisu::vector<astc_hd
 //--------------------------------------------------------------------------------------------------------------------------
 
 static void pack_mode11(
-	const vec4F* pBlock_linear_colors, 
-	basisu::vector<astc_hdr_pack_results>& all_results, 
-	const astc_hdr_codec_options& coptions, 
-	uint32_t first_weight_ise_range, uint32_t last_weight_ise_range, bool constrain_ise_weight8_selectors)
-{
+		const vec4F *pBlock_linear_colors,
+		basisu::vector<astc_hdr_pack_results> &all_results,
+		const astc_hdr_codec_options &coptions,
+		uint32_t first_weight_ise_range, uint32_t last_weight_ise_range, bool constrain_ise_weight8_selectors) {
 	uint8_t trial_endpoints[NUM_MODE11_ENDPOINTS], trial_weights[16];
 	uint32_t trial_submode11 = 0;
 
 	clear_obj(trial_endpoints);
 	clear_obj(trial_weights);
-		
-	for (uint32_t weight_ise_range = first_weight_ise_range; weight_ise_range <= last_weight_ise_range; weight_ise_range++)
-	{
+
+	for (uint32_t weight_ise_range = first_weight_ise_range; weight_ise_range <= last_weight_ise_range; weight_ise_range++) {
 		const bool direct_only = coptions.m_mode11_direct_only;
-		
+
 		uint32_t endpoint_ise_range = astc_helpers::BISE_256_LEVELS;
 		if (weight_ise_range == astc_helpers::BISE_16_LEVELS)
 			endpoint_ise_range = astc_helpers::BISE_192_LEVELS;
-		else
-		{
+		else {
 			assert(weight_ise_range < astc_helpers::BISE_16_LEVELS);
 		}
-				
-		double trial_error = encode_astc_hdr_block_mode_11(16, pBlock_linear_colors, weight_ise_range, trial_submode11, 1e+30f, trial_endpoints, trial_weights, coptions, direct_only, 
-			endpoint_ise_range, coptions.m_mode11_uber_mode && (weight_ise_range >= astc_helpers::BISE_4_LEVELS) && coptions.m_allow_uber_mode, constrain_ise_weight8_selectors, coptions.m_first_mode11_submode, coptions.m_last_mode11_submode);
 
-		if (trial_error < 1e+30f)
-		{
+		double trial_error = encode_astc_hdr_block_mode_11(16, pBlock_linear_colors, weight_ise_range, trial_submode11, 1e+30f, trial_endpoints, trial_weights, coptions, direct_only,
+				endpoint_ise_range, coptions.m_mode11_uber_mode && (weight_ise_range >= astc_helpers::BISE_4_LEVELS) && coptions.m_allow_uber_mode, constrain_ise_weight8_selectors, coptions.m_first_mode11_submode, coptions.m_last_mode11_submode);
+
+		if (trial_error < 1e+30f) {
 			astc_hdr_pack_results results;
 			results.clear();
 
@@ -2376,12 +2233,12 @@ static void pack_mode11(
 
 			results.m_best_submodes[0] = trial_submode11;
 			results.m_constrained_weights = constrain_ise_weight8_selectors;
-						
+
 			results.m_best_blk.m_num_partitions = 1;
 			results.m_best_blk.m_color_endpoint_modes[0] = 11;
 			results.m_best_blk.m_weight_ise_range = weight_ise_range;
 			results.m_best_blk.m_endpoint_ise_range = endpoint_ise_range;
-			
+
 			memcpy(results.m_best_blk.m_endpoints, trial_endpoints, NUM_MODE11_ENDPOINTS);
 			memcpy(results.m_best_blk.m_weights, trial_weights, 16);
 
@@ -2390,13 +2247,12 @@ static void pack_mode11(
 				half_float block_pixels_half[16][3];
 
 				vec4F block_pixels_q16[16];
-				for (uint32_t i = 0; i < 16; i++)
-				{
+				for (uint32_t i = 0; i < 16; i++) {
 					block_pixels_half[i][0] = float_to_half_non_neg_no_nan_inf(pBlock_linear_colors[i][0]);
 					block_pixels_half[i][1] = float_to_half_non_neg_no_nan_inf(pBlock_linear_colors[i][1]);
 					block_pixels_half[i][2] = float_to_half_non_neg_no_nan_inf(pBlock_linear_colors[i][2]);
 				}
-				
+
 				half_float unpacked_astc_blk_rgba[4][4][4];
 				bool res = astc_helpers::decode_block(results.m_best_blk, unpacked_astc_blk_rgba, 4, 4, astc_helpers::cDecodeModeHDR16);
 				assert(res);
@@ -2414,7 +2270,7 @@ static void pack_mode11(
 
 			// transcode to BC6H
 			assert(results.m_best_blk.m_color_endpoint_modes[0] == 11);
-			
+
 			// Get qlog12 endpoints
 			int e[2][3];
 			bool success = decode_mode11_to_qlog12(results.m_best_blk.m_endpoints, e, results.m_best_blk.m_endpoint_ise_range);
@@ -2422,8 +2278,7 @@ static void pack_mode11(
 			BASISU_NOTE_UNUSED(success);
 
 			// Transform endpoints to half float
-			half_float h_e[3][2] =
-			{
+			half_float h_e[3][2] = {
 				{ qlog_to_half(e[0][0], 12), qlog_to_half(e[1][0], 12) },
 				{ qlog_to_half(e[0][1], 12), qlog_to_half(e[1][1], 12) },
 				{ qlog_to_half(e[0][2], 12), qlog_to_half(e[1][2], 12) }
@@ -2440,48 +2295,44 @@ static void pack_mode11(
 
 //--------------------------------------------------------------------------------------------------------------------------
 
-static void pack_mode7_single_part(const vec4F* pBlock_linear_colors, basisu::vector<astc_hdr_pack_results>& all_results, const astc_hdr_codec_options& coptions)
-{
+static void pack_mode7_single_part(const vec4F *pBlock_linear_colors, basisu::vector<astc_hdr_pack_results> &all_results, const astc_hdr_codec_options &coptions) {
 	uint8_t trial_endpoints[NUM_MODE7_ENDPOINTS], trial_weights[16];
 	uint32_t trial_submode7 = 0;
 
 	clear_obj(trial_endpoints);
 	clear_obj(trial_weights);
 
-	for (uint32_t weight_ise_range = coptions.m_first_mode7_part1_weight_ise_range; weight_ise_range <= coptions.m_last_mode7_part1_weight_ise_range; weight_ise_range++)
-	{
+	for (uint32_t weight_ise_range = coptions.m_first_mode7_part1_weight_ise_range; weight_ise_range <= coptions.m_last_mode7_part1_weight_ise_range; weight_ise_range++) {
 		const uint32_t ise_endpoint_range = astc_helpers::BISE_256_LEVELS;
 
 		double trial_error = encode_astc_hdr_block_mode_7(16, pBlock_linear_colors, weight_ise_range, trial_submode7, 1e+30f, trial_endpoints, trial_weights, coptions, ise_endpoint_range);
 
-		if (trial_error < 1e+30f)
-		{
+		if (trial_error < 1e+30f) {
 			astc_hdr_pack_results results;
 			results.clear();
 
 			results.m_best_block_error = trial_error;
 
 			results.m_best_submodes[0] = trial_submode7;
-			
+
 			results.m_best_blk.m_num_partitions = 1;
 			results.m_best_blk.m_color_endpoint_modes[0] = 7;
 			results.m_best_blk.m_weight_ise_range = weight_ise_range;
 			results.m_best_blk.m_endpoint_ise_range = ise_endpoint_range;
-			
+
 			memcpy(results.m_best_blk.m_endpoints, trial_endpoints, NUM_MODE7_ENDPOINTS);
 			memcpy(results.m_best_blk.m_weights, trial_weights, 16);
 
 			// transcode to BC6H
 			assert(results.m_best_blk.m_color_endpoint_modes[0] == 7);
-			
+
 			// Get qlog12 endpoints
 			int e[2][3];
 			if (!decode_mode7_to_qlog12(results.m_best_blk.m_endpoints, e, nullptr, results.m_best_blk.m_endpoint_ise_range))
 				continue;
 
 			// Transform endpoints to half float
-			half_float h_e[3][2] =
-			{
+			half_float h_e[3][2] = {
 				{ qlog_to_half(e[0][0], 12), qlog_to_half(e[1][0], 12) },
 				{ qlog_to_half(e[0][1], 12), qlog_to_half(e[1][1], 12) },
 				{ qlog_to_half(e[0][2], 12), qlog_to_half(e[1][2], 12) }
@@ -2499,15 +2350,13 @@ static void pack_mode7_single_part(const vec4F* pBlock_linear_colors, basisu::ve
 
 //--------------------------------------------------------------------------------------------------------------------------
 
-static bool estimate_partition2(const vec4F* pBlock_pixels, int* pBest_parts, uint32_t num_best_parts)
-{
+static bool estimate_partition2(const vec4F *pBlock_pixels, int *pBest_parts, uint32_t num_best_parts) {
 	assert(num_best_parts <= basist::TOTAL_ASTC_BC6H_COMMON_PARTITIONS2);
 
 	vec3F training_vecs[16], mean(0.0f);
 
-	for (uint32_t i = 0; i < 16; i++)
-	{
-		vec3F& v = training_vecs[i];
+	for (uint32_t i = 0; i < 16; i++) {
+		vec3F &v = training_vecs[i];
 
 		v[0] = (float)float_to_half_non_neg_no_nan_inf(pBlock_pixels[i][0]);
 		v[1] = (float)float_to_half_non_neg_no_nan_inf(pBlock_pixels[i][1]);
@@ -2523,27 +2372,22 @@ static bool estimate_partition2(const vec4F* pBlock_pixels, int* pBest_parts, ui
 	uint32_t num_cluster_pixels[2];
 	vec3F new_cluster_means[2];
 
-	for (uint32_t s = 0; s < 4; s++)
-	{
+	for (uint32_t s = 0; s < 4; s++) {
 		num_cluster_pixels[0] = 0;
 		num_cluster_pixels[1] = 0;
 
 		new_cluster_means[0].clear();
 		new_cluster_means[1].clear();
 
-		for (uint32_t i = 0; i < 16; i++)
-		{
+		for (uint32_t i = 0; i < 16; i++) {
 			float d0 = training_vecs[i].squared_distance(cluster_centroids[0]);
 			float d1 = training_vecs[i].squared_distance(cluster_centroids[1]);
 
-			if (d0 < d1)
-			{
+			if (d0 < d1) {
 				cluster_pixels[0][num_cluster_pixels[0]] = i;
 				new_cluster_means[0] += training_vecs[i];
 				num_cluster_pixels[0]++;
-			}
-			else
-			{
+			} else {
 				cluster_pixels[1][num_cluster_pixels[1]] = i;
 				new_cluster_means[1] += training_vecs[i];
 				num_cluster_pixels[1]++;
@@ -2558,10 +2402,8 @@ static bool estimate_partition2(const vec4F* pBlock_pixels, int* pBest_parts, ui
 	}
 
 	int desired_parts[4][4]; // [y][x]
-	for (uint32_t p = 0; p < 2; p++)
-	{
-		for (uint32_t i = 0; i < num_cluster_pixels[p]; i++)
-		{
+	for (uint32_t p = 0; p < 2; p++) {
+		for (uint32_t i = 0; i < num_cluster_pixels[p]; i++) {
 			const uint32_t pix_index = cluster_pixels[p][i];
 
 			desired_parts[pix_index >> 2][pix_index & 3] = p;
@@ -2570,17 +2412,14 @@ static bool estimate_partition2(const vec4F* pBlock_pixels, int* pBest_parts, ui
 
 	uint32_t part_similarity[basist::TOTAL_ASTC_BC6H_COMMON_PARTITIONS2];
 
-	for (uint32_t part_index = 0; part_index < basist::TOTAL_ASTC_BC6H_COMMON_PARTITIONS2; part_index++)
-	{
+	for (uint32_t part_index = 0; part_index < basist::TOTAL_ASTC_BC6H_COMMON_PARTITIONS2; part_index++) {
 		const uint32_t bc7_pattern = basist::g_astc_bc7_common_partitions2[part_index].m_bc7;
 
 		int total_sim_non_inv = 0;
 		int total_sim_inv = 0;
 
-		for (uint32_t y = 0; y < 4; y++)
-		{
-			for (uint32_t x = 0; x < 4; x++)
-			{
+		for (uint32_t y = 0; y < 4; y++) {
+			for (uint32_t x = 0; x < 4; x++) {
 				int part = basist::g_bc7_partition2[16 * bc7_pattern + x + y * 4];
 
 				if (part == desired_parts[y][x])
@@ -2607,10 +2446,9 @@ static bool estimate_partition2(const vec4F* pBlock_pixels, int* pBest_parts, ui
 
 //--------------------------------------------------------------------------------------------------------------------------
 
-static void pack_mode7_2part(const vec4F* pBlock_linear_colors, basisu::vector<astc_hdr_pack_results>& all_results, const astc_hdr_codec_options& coptions,
-	int num_estimated_partitions, const int *pEstimated_partitions,
-	uint32_t first_weight_ise_range, uint32_t last_weight_ise_range)
-{
+static void pack_mode7_2part(const vec4F *pBlock_linear_colors, basisu::vector<astc_hdr_pack_results> &all_results, const astc_hdr_codec_options &coptions,
+		int num_estimated_partitions, const int *pEstimated_partitions,
+		uint32_t first_weight_ise_range, uint32_t last_weight_ise_range) {
 	assert(coptions.m_mode7_part2_part_masks);
 
 	astc_helpers::log_astc_block trial_blk;
@@ -2623,28 +2461,23 @@ static void pack_mode7_2part(const vec4F* pBlock_linear_colors, basisu::vector<a
 	trial_blk.m_color_endpoint_modes[1] = 7;
 
 	uint32_t first_part_index = 0, last_part_index = basist::TOTAL_ASTC_BC6H_COMMON_PARTITIONS2;
-		
-	if (num_estimated_partitions)
-	{
+
+	if (num_estimated_partitions) {
 		first_part_index = 0;
 		last_part_index = num_estimated_partitions;
 	}
-	
-	for (uint32_t part_index_iter = first_part_index; part_index_iter < last_part_index; ++part_index_iter)
-	{
+
+	for (uint32_t part_index_iter = first_part_index; part_index_iter < last_part_index; ++part_index_iter) {
 		uint32_t part_index;
-		if (num_estimated_partitions)
-		{
+		if (num_estimated_partitions) {
 			part_index = pEstimated_partitions[part_index_iter];
 			assert(part_index < basist::TOTAL_ASTC_BC6H_COMMON_PARTITIONS2);
-		}
-		else
-		{
+		} else {
 			part_index = part_index_iter;
 			if (((1U << part_index) & coptions.m_mode7_part2_part_masks) == 0)
 				continue;
 		}
-								
+
 		const uint32_t astc_pattern = basist::g_astc_bc7_common_partitions2[part_index].m_astc;
 		const uint32_t bc7_pattern = basist::g_astc_bc7_common_partitions2[part_index].m_bc7;
 		const bool invert_flag = basist::g_astc_bc7_common_partitions2[part_index].m_invert;
@@ -2654,10 +2487,8 @@ static void pack_mode7_2part(const vec4F* pBlock_linear_colors, basisu::vector<a
 		uint32_t num_part_pixels[2] = { 0, 0 };
 
 		// Extract each subset's texels for this partition pattern
-		for (uint32_t y = 0; y < 4; y++)
-		{
-			for (uint32_t x = 0; x < 4; x++)
-			{
+		for (uint32_t y = 0; y < 4; y++) {
+			for (uint32_t x = 0; x < 4; x++) {
 				uint32_t part = basist::g_bc7_partition2[16 * bc7_pattern + x + y * 4];
 				if (invert_flag)
 					part = 1 - part;
@@ -2670,9 +2501,8 @@ static void pack_mode7_2part(const vec4F* pBlock_linear_colors, basisu::vector<a
 		}
 
 		trial_blk.m_partition_id = astc_pattern;
-				
-		for (uint32_t weight_ise_range = first_weight_ise_range; weight_ise_range <= last_weight_ise_range; weight_ise_range++)
-		{
+
+		for (uint32_t weight_ise_range = first_weight_ise_range; weight_ise_range <= last_weight_ise_range; weight_ise_range++) {
 			assert(weight_ise_range <= astc_helpers::BISE_8_LEVELS);
 
 			uint32_t ise_endpoint_range = astc_helpers::BISE_256_LEVELS;
@@ -2691,17 +2521,15 @@ static void pack_mode7_2part(const vec4F* pBlock_linear_colors, basisu::vector<a
 			clear_obj(trial_submode7);
 
 			double total_trial_err = 0;
-			for (uint32_t pack_part_index = 0; pack_part_index < 2; pack_part_index++)
-			{
+			for (uint32_t pack_part_index = 0; pack_part_index < 2; pack_part_index++) {
 				total_trial_err += encode_astc_hdr_block_mode_7(
-					num_part_pixels[pack_part_index], &part_pixels[pack_part_index][0],
-					weight_ise_range, trial_submode7[pack_part_index], 1e+30f,
-					&trial_endpoints[pack_part_index][0], &trial_weights[pack_part_index][0], coptions, ise_endpoint_range);
+						num_part_pixels[pack_part_index], &part_pixels[pack_part_index][0],
+						weight_ise_range, trial_submode7[pack_part_index], 1e+30f,
+						&trial_endpoints[pack_part_index][0], &trial_weights[pack_part_index][0], coptions, ise_endpoint_range);
 
 			} // pack_part_index
 
-			if (total_trial_err < 1e+30f)
-			{
+			if (total_trial_err < 1e+30f) {
 				trial_blk.m_weight_ise_range = weight_ise_range;
 				trial_blk.m_endpoint_ise_range = ise_endpoint_range;
 
@@ -2709,15 +2537,13 @@ static void pack_mode7_2part(const vec4F* pBlock_linear_colors, basisu::vector<a
 					memcpy(&trial_blk.m_endpoints[pack_part_index * NUM_MODE7_ENDPOINTS], &trial_endpoints[pack_part_index][0], NUM_MODE7_ENDPOINTS);
 
 				uint32_t src_pixel_index[2] = { 0, 0 };
-				for (uint32_t y = 0; y < 4; y++)
-				{
-					for (uint32_t x = 0; x < 4; x++)
-					{
+				for (uint32_t y = 0; y < 4; y++) {
+					for (uint32_t x = 0; x < 4; x++) {
 						uint32_t p = pixel_part_index[y][x];
 						trial_blk.m_weights[x + y * 4] = trial_weights[p][src_pixel_index[p]++];
 					}
 				}
-								
+
 				astc_hdr_pack_results results;
 				results.clear();
 
@@ -2742,9 +2568,8 @@ static void pack_mode7_2part(const vec4F* pBlock_linear_colors, basisu::vector<a
 
 //--------------------------------------------------------------------------------------------------------------------------
 
-static void pack_mode11_2part(const vec4F* pBlock_linear_colors, basisu::vector<astc_hdr_pack_results>& all_results, const astc_hdr_codec_options& coptions,
-	int num_estimated_partitions, const int* pEstimated_partitions)
-{
+static void pack_mode11_2part(const vec4F *pBlock_linear_colors, basisu::vector<astc_hdr_pack_results> &all_results, const astc_hdr_codec_options &coptions,
+		int num_estimated_partitions, const int *pEstimated_partitions) {
 	assert(coptions.m_mode11_part2_part_masks);
 
 	astc_helpers::log_astc_block trial_blk;
@@ -2755,25 +2580,20 @@ static void pack_mode11_2part(const vec4F* pBlock_linear_colors, basisu::vector<
 	trial_blk.m_num_partitions = 2;
 	trial_blk.m_color_endpoint_modes[0] = 11;
 	trial_blk.m_color_endpoint_modes[1] = 11;
-			
+
 	uint32_t first_part_index = 0, last_part_index = basist::TOTAL_ASTC_BC6H_COMMON_PARTITIONS2;
 
-	if (num_estimated_partitions)
-	{
+	if (num_estimated_partitions) {
 		first_part_index = 0;
 		last_part_index = num_estimated_partitions;
 	}
 
-	for (uint32_t part_index_iter = first_part_index; part_index_iter < last_part_index; ++part_index_iter)
-	{
+	for (uint32_t part_index_iter = first_part_index; part_index_iter < last_part_index; ++part_index_iter) {
 		uint32_t part_index;
-		if (num_estimated_partitions)
-		{
+		if (num_estimated_partitions) {
 			part_index = pEstimated_partitions[part_index_iter];
 			assert(part_index < basist::TOTAL_ASTC_BC6H_COMMON_PARTITIONS2);
-		}
-		else
-		{
+		} else {
 			part_index = part_index_iter;
 			if (((1U << part_index) & coptions.m_mode11_part2_part_masks) == 0)
 				continue;
@@ -2788,10 +2608,8 @@ static void pack_mode11_2part(const vec4F* pBlock_linear_colors, basisu::vector<
 		uint32_t num_part_pixels[2] = { 0, 0 };
 
 		// Extract each subset's texels for this partition pattern
-		for (uint32_t y = 0; y < 4; y++)
-		{
-			for (uint32_t x = 0; x < 4; x++)
-			{
+		for (uint32_t y = 0; y < 4; y++) {
+			for (uint32_t x = 0; x < 4; x++) {
 				uint32_t part = basist::g_bc7_partition2[16 * bc7_pattern + x + y * 4];
 				if (invert_flag)
 					part = 1 - part;
@@ -2802,11 +2620,10 @@ static void pack_mode11_2part(const vec4F* pBlock_linear_colors, basisu::vector<
 				num_part_pixels[part]++;
 			}
 		}
-				
+
 		trial_blk.m_partition_id = astc_pattern;
-						
-		for (uint32_t weight_ise_range = coptions.m_first_mode11_part2_weight_ise_range; weight_ise_range <= coptions.m_last_mode11_part2_weight_ise_range; weight_ise_range++)
-		{
+
+		for (uint32_t weight_ise_range = coptions.m_first_mode11_part2_weight_ise_range; weight_ise_range <= coptions.m_last_mode11_part2_weight_ise_range; weight_ise_range++) {
 			bool direct_only = false;
 			uint32_t ise_endpoint_range = astc_helpers::BISE_64_LEVELS;
 			if (weight_ise_range == astc_helpers::BISE_4_LEVELS)
@@ -2815,24 +2632,22 @@ static void pack_mode11_2part(const vec4F* pBlock_linear_colors, basisu::vector<
 			uint8_t trial_endpoints[2][NUM_MODE11_ENDPOINTS], trial_weights[2][16];
 			uint32_t trial_submode11[2];
 
-			clear_obj(trial_endpoints); 
+			clear_obj(trial_endpoints);
 			clear_obj(trial_weights);
 			clear_obj(trial_submode11);
 
 			double total_trial_err = 0;
-			for (uint32_t pack_part_index = 0; pack_part_index < 2; pack_part_index++)
-			{
+			for (uint32_t pack_part_index = 0; pack_part_index < 2; pack_part_index++) {
 				total_trial_err += encode_astc_hdr_block_mode_11(
-					num_part_pixels[pack_part_index], &part_pixels[pack_part_index][0],
-					weight_ise_range, trial_submode11[pack_part_index], 1e+30f,
-					&trial_endpoints[pack_part_index][0], &trial_weights[pack_part_index][0], coptions,
-					direct_only, ise_endpoint_range, coptions.m_mode11_uber_mode && (weight_ise_range >= astc_helpers::BISE_4_LEVELS) && coptions.m_allow_uber_mode, false,
-					coptions.m_first_mode11_submode, coptions.m_last_mode11_submode);
+						num_part_pixels[pack_part_index], &part_pixels[pack_part_index][0],
+						weight_ise_range, trial_submode11[pack_part_index], 1e+30f,
+						&trial_endpoints[pack_part_index][0], &trial_weights[pack_part_index][0], coptions,
+						direct_only, ise_endpoint_range, coptions.m_mode11_uber_mode && (weight_ise_range >= astc_helpers::BISE_4_LEVELS) && coptions.m_allow_uber_mode, false,
+						coptions.m_first_mode11_submode, coptions.m_last_mode11_submode);
 
 			} // pack_part_index
 
-			if (total_trial_err < 1e+30f)
-			{
+			if (total_trial_err < 1e+30f) {
 				trial_blk.m_weight_ise_range = weight_ise_range;
 				trial_blk.m_endpoint_ise_range = ise_endpoint_range;
 
@@ -2840,15 +2655,13 @@ static void pack_mode11_2part(const vec4F* pBlock_linear_colors, basisu::vector<
 					memcpy(&trial_blk.m_endpoints[pack_part_index * NUM_MODE11_ENDPOINTS], &trial_endpoints[pack_part_index][0], NUM_MODE11_ENDPOINTS);
 
 				uint32_t src_pixel_index[2] = { 0, 0 };
-				for (uint32_t y = 0; y < 4; y++)
-				{
-					for (uint32_t x = 0; x < 4; x++)
-					{
+				for (uint32_t y = 0; y < 4; y++) {
+					for (uint32_t x = 0; x < 4; x++) {
 						uint32_t p = pixel_part_index[y][x];
 						trial_blk.m_weights[x + y * 4] = trial_weights[p][src_pixel_index[p]++];
 					}
 				}
-								
+
 				astc_hdr_pack_results results;
 				results.clear();
 
@@ -2875,158 +2688,136 @@ static void pack_mode11_2part(const vec4F* pBlock_linear_colors, basisu::vector<
 
 bool g_astc_hdr_enc_initialized;
 
-void astc_hdr_enc_init()
-{
+void astc_hdr_enc_init() {
 	if (g_astc_hdr_enc_initialized)
 		return;
 
 	astc_hdr_core_init();
 
 	astc_helpers::init_tables(true);
-			
+
 	init_qlog_tables();
 
 	encode_astc_hdr_init();
-								
+
 	g_astc_hdr_enc_initialized = true;
 }
 
 bool astc_hdr_enc_block(
-	const float* pRGBPixels, 
-	const astc_hdr_codec_options& coptions,
-	basisu::vector<astc_hdr_pack_results>& all_results)
-{
+		const float *pRGBPixels,
+		const astc_hdr_codec_options &coptions,
+		basisu::vector<astc_hdr_pack_results> &all_results) {
 	assert(g_astc_hdr_enc_initialized);
-	if (!g_astc_hdr_enc_initialized)
-	{
+	if (!g_astc_hdr_enc_initialized) {
 		// astc_hdr_enc_init() MUST be called first.
 		assert(0);
 		return false;
 	}
 
 	all_results.resize(0);
-				
+
 	vec4F block_linear_colors[16];
 
 	// Sanity check the input block.
-	for (uint32_t i = 0; i < 16; i++)
-	{
-		for (uint32_t j = 0; j < 3; j++)
-		{
+	for (uint32_t i = 0; i < 16; i++) {
+		for (uint32_t j = 0; j < 3; j++) {
 			float v = pRGBPixels[i * 3 + j];
 
-			if (std::isinf(v) || std::isnan(v))
-			{
+			if (std::isinf(v) || std::isnan(v)) {
 				// Input pixels cannot be NaN or +-Inf.
 				assert(0);
 				return false;
 			}
 
-			if (v < 0.0f)
-			{
+			if (v < 0.0f) {
 				// Input pixels cannot be signed.
 				assert(0);
 				return false;
 			}
 
-			if (v > MAX_HALF_FLOAT)
-			{
+			if (v > MAX_HALF_FLOAT) {
 				// Too large for half float.
 				assert(0);
 				return false;
 			}
-			
+
 			block_linear_colors[i][j] = v;
 		}
-		
+
 		block_linear_colors[i][3] = 1.0f;
 	}
 
 	assert(coptions.m_use_solid || coptions.m_use_mode11 || coptions.m_use_mode7_part2 || coptions.m_use_mode7_part1 || coptions.m_use_mode11_part2);
-					
+
 	bool is_solid = false;
 	if (coptions.m_use_solid)
 		is_solid = pack_solid(block_linear_colors, all_results, coptions);
 
-	if (!is_solid)
-	{
-		if (coptions.m_use_mode11)
-		{
+	if (!is_solid) {
+		if (coptions.m_use_mode11) {
 			const size_t cur_num_results = all_results.size();
 
 			pack_mode11(block_linear_colors, all_results, coptions, coptions.m_first_mode11_weight_ise_range, coptions.m_last_mode11_weight_ise_range, false);
 
-			if (coptions.m_last_mode11_weight_ise_range == astc_helpers::BISE_16_LEVELS)
-			{
+			if (coptions.m_last_mode11_weight_ise_range == astc_helpers::BISE_16_LEVELS) {
 				pack_mode11(block_linear_colors, all_results, coptions, astc_helpers::BISE_16_LEVELS, astc_helpers::BISE_16_LEVELS, true);
 			}
 
-			// If we couldn't get any mode 11 results at all, and we were restricted to just trying weight ISE range 8 (which required endpoint quantization) then 
+			// If we couldn't get any mode 11 results at all, and we were restricted to just trying weight ISE range 8 (which required endpoint quantization) then
 			// fall back to weight ISE range 7 (which doesn't need any endpoint quantization).
 			// This is to guarantee we always get at least 1 non-solid result.
-			if (all_results.size() == cur_num_results)
-			{
-				if (coptions.m_first_mode11_weight_ise_range == astc_helpers::BISE_16_LEVELS)
-				{
+			if (all_results.size() == cur_num_results) {
+				if (coptions.m_first_mode11_weight_ise_range == astc_helpers::BISE_16_LEVELS) {
 					pack_mode11(block_linear_colors, all_results, coptions, astc_helpers::BISE_12_LEVELS, astc_helpers::BISE_12_LEVELS, false);
 				}
 			}
 		}
-				
-		if (coptions.m_use_mode7_part1)
-		{
+
+		if (coptions.m_use_mode7_part1) {
 			// Mode 7 1-subset never requires endpoint quantization, so it cannot fail to find at least one usable solution.
 			pack_mode7_single_part(block_linear_colors, all_results, coptions);
 		}
-				
+
 		bool have_est = false;
 		int best_parts[basist::TOTAL_ASTC_BC6H_COMMON_PARTITIONS2];
 
-		if ((coptions.m_use_mode7_part2) || (coptions.m_use_mode11_part2))
-		{
+		if ((coptions.m_use_mode7_part2) || (coptions.m_use_mode11_part2)) {
 			if (coptions.m_use_estimated_partitions)
 				have_est = estimate_partition2(block_linear_colors, best_parts, coptions.m_max_estimated_partitions);
 		}
 
-		if (coptions.m_use_mode7_part2)
-		{
+		if (coptions.m_use_mode7_part2) {
 			const size_t cur_num_results = all_results.size();
 
-			pack_mode7_2part(block_linear_colors, all_results, coptions, have_est ? coptions.m_max_estimated_partitions : 0, best_parts, 
-				coptions.m_first_mode7_part2_weight_ise_range, coptions.m_last_mode7_part2_weight_ise_range);
+			pack_mode7_2part(block_linear_colors, all_results, coptions, have_est ? coptions.m_max_estimated_partitions : 0, best_parts,
+					coptions.m_first_mode7_part2_weight_ise_range, coptions.m_last_mode7_part2_weight_ise_range);
 
-			// If we couldn't find any packable 2-subset mode 7 results at weight levels >= 5 levels (which always requires endpoint quant), then try falling back to 
+			// If we couldn't find any packable 2-subset mode 7 results at weight levels >= 5 levels (which always requires endpoint quant), then try falling back to
 			// 5 levels which doesn't require endpoint quantization.
-			if (all_results.size() == cur_num_results)
-			{
-				if (coptions.m_first_mode7_part2_weight_ise_range >= astc_helpers::BISE_5_LEVELS)
-				{
-					pack_mode7_2part(block_linear_colors, all_results, coptions, have_est ? coptions.m_max_estimated_partitions : 0, best_parts, 
-						astc_helpers::BISE_4_LEVELS, astc_helpers::BISE_4_LEVELS);
+			if (all_results.size() == cur_num_results) {
+				if (coptions.m_first_mode7_part2_weight_ise_range >= astc_helpers::BISE_5_LEVELS) {
+					pack_mode7_2part(block_linear_colors, all_results, coptions, have_est ? coptions.m_max_estimated_partitions : 0, best_parts,
+							astc_helpers::BISE_4_LEVELS, astc_helpers::BISE_4_LEVELS);
 				}
 			}
 		}
-		
-		if (coptions.m_use_mode11_part2)
-		{
+
+		if (coptions.m_use_mode11_part2) {
 			// This always requires endpoint quant, so it could fail to find any usable solutions.
 			pack_mode11_2part(block_linear_colors, all_results, coptions, have_est ? coptions.m_max_estimated_partitions : 0, best_parts);
 		}
 	}
 
-	if (coptions.m_refine_weights)
-	{
+	if (coptions.m_refine_weights) {
 		// TODO: Move this above, do it once only.
 		basist::half_float rgb_pixels_half[16 * 3];
-		for (uint32_t i = 0; i < 16; i++)
-		{
+		for (uint32_t i = 0; i < 16; i++) {
 			rgb_pixels_half[i * 3 + 0] = float_to_half_non_neg_no_nan_inf(pRGBPixels[i * 3 + 0]);
 			rgb_pixels_half[i * 3 + 1] = float_to_half_non_neg_no_nan_inf(pRGBPixels[i * 3 + 1]);
 			rgb_pixels_half[i * 3 + 2] = float_to_half_non_neg_no_nan_inf(pRGBPixels[i * 3 + 2]);
 		}
 
-		for (uint32_t i = 0; i < all_results.size(); i++)
-		{
+		for (uint32_t i = 0; i < all_results.size(); i++) {
 			bool status = astc_hdr_refine_weights(rgb_pixels_half, all_results[i], coptions, coptions.m_bc6h_err_weight, &all_results[i].m_improved_via_refinement_flag);
 			assert(status);
 			BASISU_NOTE_UNUSED(status);
@@ -3036,21 +2827,16 @@ bool astc_hdr_enc_block(
 	return true;
 }
 
-bool astc_hdr_pack_results_to_block(astc_blk& dst_blk, const astc_hdr_pack_results& results)
-{
+bool astc_hdr_pack_results_to_block(astc_blk &dst_blk, const astc_hdr_pack_results &results) {
 	assert(g_astc_hdr_enc_initialized);
 	if (!g_astc_hdr_enc_initialized)
 		return false;
 
-	if (results.m_is_solid)
-	{
+	if (results.m_is_solid) {
 		memcpy(&dst_blk, &results.m_solid_blk, sizeof(results.m_solid_blk));
-	}
-	else
-	{
-		bool status = astc_helpers::pack_astc_block((astc_helpers::astc_block&)dst_blk, results.m_best_blk);
-		if (!status)
-		{
+	} else {
+		bool status = astc_helpers::pack_astc_block((astc_helpers::astc_block &)dst_blk, results.m_best_blk);
+		if (!status) {
 			assert(0);
 			return false;
 		}
@@ -3060,8 +2846,7 @@ bool astc_hdr_pack_results_to_block(astc_blk& dst_blk, const astc_hdr_pack_resul
 }
 
 // Refines a block's chosen weight indices, balancing BC6H and ASTC HDR error.
-bool astc_hdr_refine_weights(const half_float *pSource_block, astc_hdr_pack_results& cur_results, const astc_hdr_codec_options& coptions, float bc6h_weight, bool *pImproved_flag)
-{
+bool astc_hdr_refine_weights(const half_float *pSource_block, astc_hdr_pack_results &cur_results, const astc_hdr_codec_options &coptions, float bc6h_weight, bool *pImproved_flag) {
 	if (pImproved_flag)
 		*pImproved_flag = false;
 
@@ -3074,10 +2859,8 @@ bool astc_hdr_refine_weights(const half_float *pSource_block, astc_hdr_pack_resu
 
 	double best_err[4][4];
 	uint8_t best_weight[4][4];
-	for (uint32_t y = 0; y < 4; y++)
-	{
-		for (uint32_t x = 0; x < 4; x++)
-		{
+	for (uint32_t y = 0; y < 4; y++) {
+		for (uint32_t x = 0; x < 4; x++) {
 			best_err[y][x] = 1e+30f;
 			best_weight[y][x] = 0;
 		}
@@ -3087,12 +2870,11 @@ bool astc_hdr_refine_weights(const half_float *pSource_block, astc_hdr_pack_resu
 
 	const float c_weights[3] = { coptions.m_r_err_scale, coptions.m_g_err_scale, 1.0f };
 
-	for (uint32_t weight_index = 0; weight_index < total_weights; weight_index++)
-	{
+	for (uint32_t weight_index = 0; weight_index < total_weights; weight_index++) {
 		temp_results = cur_results;
 		for (uint32_t i = 0; i < 16; i++)
 			temp_results.m_best_blk.m_weights[i] = (uint8_t)weight_index;
-		
+
 		half_float unpacked_astc_blk_rgba[4][4][4];
 		bool res = astc_helpers::decode_block(temp_results.m_best_blk, unpacked_astc_blk_rgba, 4, 4, astc_helpers::cDecodeModeHDR16);
 		assert(res);
@@ -3100,27 +2882,24 @@ bool astc_hdr_refine_weights(const half_float *pSource_block, astc_hdr_pack_resu
 		basist::bc6h_block trial_bc6h_blk;
 		res = basist::astc_hdr_transcode_to_bc6h(temp_results.m_best_blk, trial_bc6h_blk);
 		assert(res);
-				
+
 		half_float unpacked_bc6h_blk[4][4][3];
 		res = unpack_bc6h(&trial_bc6h_blk, unpacked_bc6h_blk, false);
 		assert(res);
 		BASISU_NOTE_UNUSED(res);
 
-		for (uint32_t y = 0; y < 4; y++)
-		{
-			for (uint32_t x = 0; x < 4; x++)
-			{
+		for (uint32_t y = 0; y < 4; y++) {
+			for (uint32_t x = 0; x < 4; x++) {
 				double total_err = 0.0f;
 
-				for (uint32_t c = 0; c < 3; c++)
-				{
+				for (uint32_t c = 0; c < 3; c++) {
 					const half_float orig_c = pSource_block[(x + y * 4) * 3 + c];
 					const double orig_c_q = q(orig_c);
-					
+
 					const half_float astc_c = unpacked_astc_blk_rgba[y][x][c];
 					const double astc_c_q = q(astc_c);
 					const double astc_e = square(astc_c_q - orig_c_q) * c_weights[c];
-					
+
 					const half_float bc6h_c = unpacked_bc6h_blk[y][x][c];
 					const double bc6h_c_q = q(bc6h_c);
 					const double bc6h_e = square(bc6h_c_q - orig_c_q) * c_weights[c];
@@ -3131,29 +2910,25 @@ bool astc_hdr_refine_weights(const half_float *pSource_block, astc_hdr_pack_resu
 
 				} //  c
 
-				if (total_err < best_err[y][x])
-				{
+				if (total_err < best_err[y][x]) {
 					best_err[y][x] = total_err;
 					best_weight[y][x] = (uint8_t)weight_index;
 				}
 
 			} // x
-		} // y
+		}	  // y
 
 	} // weight_index
 
 	bool any_changed = false;
-	for (uint32_t i = 0; i < 16; i++)
-	{
-		if (cur_results.m_best_blk.m_weights[i] != best_weight[i >> 2][i & 3])
-		{
+	for (uint32_t i = 0; i < 16; i++) {
+		if (cur_results.m_best_blk.m_weights[i] != best_weight[i >> 2][i & 3]) {
 			any_changed = true;
 			break;
 		}
 	}
 
-	if (any_changed)
-	{
+	if (any_changed) {
 		memcpy(cur_results.m_best_blk.m_weights, best_weight, 16);
 
 		{
@@ -3181,8 +2956,7 @@ bool astc_hdr_refine_weights(const half_float *pSource_block, astc_hdr_pack_resu
 	return true;
 }
 
-void astc_hdr_block_stats::update(const astc_hdr_pack_results& log_blk)
-{
+void astc_hdr_block_stats::update(const astc_hdr_pack_results &log_blk) {
 	std::lock_guard<std::mutex> lck(m_mutex);
 
 	m_total_blocks++;
@@ -3190,20 +2964,15 @@ void astc_hdr_block_stats::update(const astc_hdr_pack_results& log_blk)
 	if (log_blk.m_improved_via_refinement_flag)
 		m_total_refined++;
 
-	if (log_blk.m_is_solid)
-	{
+	if (log_blk.m_is_solid) {
 		m_total_solid++;
-	}
-	else
-	{
+	} else {
 		int best_weight_range = log_blk.m_best_blk.m_weight_ise_range;
 
-		if (log_blk.m_best_blk.m_color_endpoint_modes[0] == 7)
-		{
+		if (log_blk.m_best_blk.m_color_endpoint_modes[0] == 7) {
 			m_mode7_submode_hist[bounds_check(log_blk.m_best_submodes[0], 0U, 6U)]++;
 
-			if (log_blk.m_best_blk.m_num_partitions == 2)
-			{
+			if (log_blk.m_best_blk.m_num_partitions == 2) {
 				m_total_mode7_2part++;
 
 				m_mode7_submode_hist[bounds_check(log_blk.m_best_submodes[1], 0U, 6U)]++;
@@ -3212,22 +2981,17 @@ void astc_hdr_block_stats::update(const astc_hdr_pack_results& log_blk)
 				m_weight_range_hist_7_2part[bounds_check(best_weight_range, 0, 11)]++;
 
 				m_part_hist[bounds_check(log_blk.m_best_pat_index, 0U, 32U)]++;
-			}
-			else
-			{
+			} else {
 				m_total_mode7_1part++;
 
 				m_weight_range_hist_7[bounds_check(best_weight_range, 0, 11)]++;
 			}
-		}
-		else
-		{
+		} else {
 			m_mode11_submode_hist[bounds_check(log_blk.m_best_submodes[0], 0U, 9U)]++;
 			if (log_blk.m_constrained_weights)
 				m_total_mode11_1part_constrained_weights++;
 
-			if (log_blk.m_best_blk.m_num_partitions == 2)
-			{
+			if (log_blk.m_best_blk.m_num_partitions == 2) {
 				m_total_mode11_2part++;
 
 				m_mode11_submode_hist[bounds_check(log_blk.m_best_submodes[1], 0U, 9U)]++;
@@ -3236,9 +3000,7 @@ void astc_hdr_block_stats::update(const astc_hdr_pack_results& log_blk)
 				m_weight_range_hist_11_2part[bounds_check(best_weight_range, 0, 11)]++;
 
 				m_part_hist[bounds_check(log_blk.m_best_pat_index, 0U, 32U)]++;
-			}
-			else
-			{
+			} else {
 				m_total_mode11_1part++;
 
 				m_weight_range_hist_11[bounds_check(best_weight_range, 0, 11)]++;
@@ -3247,8 +3009,7 @@ void astc_hdr_block_stats::update(const astc_hdr_pack_results& log_blk)
 	}
 }
 
-void astc_hdr_block_stats::print()
-{
+void astc_hdr_block_stats::print() {
 	std::lock_guard<std::mutex> lck(m_mutex);
 
 	assert(m_total_blocks);
@@ -3307,4 +3068,3 @@ void astc_hdr_block_stats::print()
 }
 
 } // namespace basisu
-

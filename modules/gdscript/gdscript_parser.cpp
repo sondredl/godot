@@ -969,7 +969,7 @@ void GDScriptParser::parse_class_member(T *(GDScriptParser::*p_parse_function)(b
 	}
 
 	min_member_doc_line = member->end_line + 1; // Prevent multiple members from using the same doc comment.
-#endif // TOOLS_ENABLED
+#endif											// TOOLS_ENABLED
 
 	if (member->identifier != nullptr) {
 		if (!((String)member->identifier->name).is_empty()) { // Enums may be unnamed.

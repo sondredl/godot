@@ -427,7 +427,7 @@ Error QuickHull::build(const Vector<Vector3> &p_points, Geometry3D::MeshData &r_
 				}
 
 				ret_edges.remove(F); //remove the edge
-				ret_faces.erase(O); //remove the face
+				ret_faces.erase(O);	 //remove the face
 			}
 		}
 	}

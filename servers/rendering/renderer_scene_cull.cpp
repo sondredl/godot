@@ -1830,7 +1830,7 @@ void RendererSceneCull::_update_instance(Instance *p_instance) {
 			_update_instance_lightmap_captures(p_instance);
 		} else {
 			if (!p_instance->lightmap_sh.is_empty()) {
-				p_instance->lightmap_sh.clear(); //don't need SH
+				p_instance->lightmap_sh.clear();		//don't need SH
 				p_instance->lightmap_target_sh.clear(); //don't need SH
 				ERR_FAIL_NULL(geom->geometry_instance);
 				geom->geometry_instance->set_lightmap_capture(nullptr);
@@ -2170,7 +2170,7 @@ void RendererSceneCull::_update_instance_aabb(Instance *p_instance) {
 
 void RendererSceneCull::_update_instance_lightmap_captures(Instance *p_instance) {
 	bool first_set = p_instance->lightmap_sh.size() == 0;
-	p_instance->lightmap_sh.resize(9); //using SH
+	p_instance->lightmap_sh.resize(9);		  //using SH
 	p_instance->lightmap_target_sh.resize(9); //using SH
 	Color *instance_sh = p_instance->lightmap_target_sh.ptrw();
 	bool inside = false;

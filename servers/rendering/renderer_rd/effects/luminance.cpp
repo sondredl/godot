@@ -41,7 +41,7 @@ Luminance::Luminance(bool p_prefer_raster_effects) {
 	if (prefer_raster_effects) {
 		Vector<String> luminance_reduce_modes;
 		luminance_reduce_modes.push_back("\n#define FIRST_PASS\n"); // LUMINANCE_REDUCE_FRAGMENT_FIRST
-		luminance_reduce_modes.push_back("\n"); // LUMINANCE_REDUCE_FRAGMENT
+		luminance_reduce_modes.push_back("\n");						// LUMINANCE_REDUCE_FRAGMENT
 		luminance_reduce_modes.push_back("\n#define FINAL_PASS\n"); // LUMINANCE_REDUCE_FRAGMENT_FINAL
 
 		luminance_reduce_raster.shader.initialize(luminance_reduce_modes);

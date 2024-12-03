@@ -70,17 +70,14 @@
 #define __has_builtin(x) 0
 #endif
 
-namespace meshopt
-{
+namespace meshopt {
 
 #if !defined(SIMD_SSE) && !defined(SIMD_NEON) && !defined(SIMD_WASM)
 template <typename T>
-static void decodeFilterOct(T* data, size_t count)
-{
+static void decodeFilterOct(T *data, size_t count) {
 	const float max = float((1 << (sizeof(T) * 8 - 1)) - 1);
 
-	for (size_t i = 0; i < count; ++i)
-	{
+	for (size_t i = 0; i < count; ++i) {
 		// convert x and y to floats and reconstruct z; this assumes zf encodes 1.f at the same bit count
 		float x = float(data[i * 4 + 0]);
 		float y = float(data[i * 4 + 1]);
@@ -107,12 +104,10 @@ static void decodeFilterOct(T* data, size_t count)
 	}
 }
 
-static void decodeFilterQuat(short* data, size_t count)
-{
+static void decodeFilterQuat(short *data, size_t count) {
 	const float scale = 1.f / sqrtf(2.f);
 
-	for (size_t i = 0; i < count; ++i)
-	{
+	for (size_t i = 0; i < count; ++i) {
 		// recover scale from the high byte of the component
 		int sf = data[i * 4 + 3] | 3;
 		float ss = scale / float(sf);
@@ -142,18 +137,15 @@ static void decodeFilterQuat(short* data, size_t count)
 	}
 }
 
-static void decodeFilterExp(unsigned int* data, size_t count)
-{
-	for (size_t i = 0; i < count; ++i)
-	{
+static void decodeFilterExp(unsigned int *data, size_t count) {
+	for (size_t i = 0; i < count; ++i) {
 		unsigned int v = data[i];
 
 		// decode mantissa and exponent
 		int m = int(v << 8) >> 8;
 		int e = int(v) >> 24;
 
-		union
-		{
+		union {
 			float f;
 			unsigned int ui;
 		} u;
@@ -169,15 +161,13 @@ static void decodeFilterExp(unsigned int* data, size_t count)
 
 #if defined(SIMD_SSE) || defined(SIMD_NEON) || defined(SIMD_WASM)
 template <typename T>
-static void dispatchSimd(void (*process)(T*, size_t), T* data, size_t count, size_t stride)
-{
+static void dispatchSimd(void (*process)(T *, size_t), T *data, size_t count, size_t stride) {
 	assert(stride <= 4);
 
 	size_t count4 = count & ~size_t(3);
 	process(data, count4);
 
-	if (count4 < count)
-	{
+	if (count4 < count) {
 		T tail[4 * 4] = {}; // max stride 4, max count 4
 		size_t tail_size = (count - count4) * stride * sizeof(T);
 		assert(tail_size <= sizeof(tail));
@@ -188,8 +178,7 @@ static void dispatchSimd(void (*process)(T*, size_t), T* data, size_t count, siz
 	}
 }
 
-inline uint64_t rotateleft64(uint64_t v, int x)
-{
+inline uint64_t rotateleft64(uint64_t v, int x) {
 #if defined(_MSC_VER) && !defined(__clang__)
 	return _rotl64(v, x);
 #elif defined(__clang__) && __has_builtin(__builtin_rotateleft64)
@@ -201,13 +190,11 @@ inline uint64_t rotateleft64(uint64_t v, int x)
 #endif
 
 #ifdef SIMD_SSE
-static void decodeFilterOctSimd(signed char* data, size_t count)
-{
+static void decodeFilterOctSimd(signed char *data, size_t count) {
 	const __m128 sign = _mm_set1_ps(-0.f);
 
-	for (size_t i = 0; i < count; i += 4)
-	{
-		__m128i n4 = _mm_loadu_si128(reinterpret_cast<__m128i*>(&data[i * 4]));
+	for (size_t i = 0; i < count; i += 4) {
+		__m128i n4 = _mm_loadu_si128(reinterpret_cast<__m128i *>(&data[i * 4]));
 
 		// sign-extends each of x,y in [x y ? ?] with arithmetic shifts
 		__m128i xf = _mm_srai_epi32(_mm_slli_epi32(n4, 24), 24);
@@ -242,18 +229,16 @@ static void decodeFilterOctSimd(signed char* data, size_t count)
 		res = _mm_or_si128(res, _mm_slli_epi32(_mm_and_si128(yr, _mm_set1_epi32(0xff)), 8));
 		res = _mm_or_si128(res, _mm_slli_epi32(_mm_and_si128(zr, _mm_set1_epi32(0xff)), 16));
 
-		_mm_storeu_si128(reinterpret_cast<__m128i*>(&data[i * 4]), res);
+		_mm_storeu_si128(reinterpret_cast<__m128i *>(&data[i * 4]), res);
 	}
 }
 
-static void decodeFilterOctSimd(short* data, size_t count)
-{
+static void decodeFilterOctSimd(short *data, size_t count) {
 	const __m128 sign = _mm_set1_ps(-0.f);
 
-	for (size_t i = 0; i < count; i += 4)
-	{
-		__m128 n4_0 = _mm_loadu_ps(reinterpret_cast<float*>(&data[(i + 0) * 4]));
-		__m128 n4_1 = _mm_loadu_ps(reinterpret_cast<float*>(&data[(i + 2) * 4]));
+	for (size_t i = 0; i < count; i += 4) {
+		__m128 n4_0 = _mm_loadu_ps(reinterpret_cast<float *>(&data[(i + 0) * 4]));
+		__m128 n4_1 = _mm_loadu_ps(reinterpret_cast<float *>(&data[(i + 2) * 4]));
 
 		// gather both x/y 16-bit pairs in each 32-bit lane
 		__m128i n4 = _mm_castps_si128(_mm_shuffle_ps(n4_0, n4_1, _MM_SHUFFLE(2, 0, 2, 0)));
@@ -298,19 +283,17 @@ static void decodeFilterOctSimd(short* data, size_t count)
 		res_0 = _mm_or_si128(res_0, _mm_and_si128(_mm_castps_si128(n4_0), _mm_set1_epi64x(0xffff000000000000)));
 		res_1 = _mm_or_si128(res_1, _mm_and_si128(_mm_castps_si128(n4_1), _mm_set1_epi64x(0xffff000000000000)));
 
-		_mm_storeu_si128(reinterpret_cast<__m128i*>(&data[(i + 0) * 4]), res_0);
-		_mm_storeu_si128(reinterpret_cast<__m128i*>(&data[(i + 2) * 4]), res_1);
+		_mm_storeu_si128(reinterpret_cast<__m128i *>(&data[(i + 0) * 4]), res_0);
+		_mm_storeu_si128(reinterpret_cast<__m128i *>(&data[(i + 2) * 4]), res_1);
 	}
 }
 
-static void decodeFilterQuatSimd(short* data, size_t count)
-{
+static void decodeFilterQuatSimd(short *data, size_t count) {
 	const float scale = 1.f / sqrtf(2.f);
 
-	for (size_t i = 0; i < count; i += 4)
-	{
-		__m128 q4_0 = _mm_loadu_ps(reinterpret_cast<float*>(&data[(i + 0) * 4]));
-		__m128 q4_1 = _mm_loadu_ps(reinterpret_cast<float*>(&data[(i + 2) * 4]));
+	for (size_t i = 0; i < count; i += 4) {
+		__m128 q4_0 = _mm_loadu_ps(reinterpret_cast<float *>(&data[(i + 0) * 4]));
+		__m128 q4_1 = _mm_loadu_ps(reinterpret_cast<float *>(&data[(i + 2) * 4]));
 
 		// gather both x/y 16-bit pairs in each 32-bit lane
 		__m128i q4_xy = _mm_castps_si128(_mm_shuffle_ps(q4_0, q4_1, _MM_SHUFFLE(2, 0, 2, 0)));
@@ -353,11 +336,11 @@ static void decodeFilterQuatSimd(short* data, size_t count)
 
 		// store results to stack so that we can rotate using scalar instructions
 		uint64_t res[4];
-		_mm_storeu_si128(reinterpret_cast<__m128i*>(&res[0]), res_0);
-		_mm_storeu_si128(reinterpret_cast<__m128i*>(&res[2]), res_1);
+		_mm_storeu_si128(reinterpret_cast<__m128i *>(&res[0]), res_0);
+		_mm_storeu_si128(reinterpret_cast<__m128i *>(&res[2]), res_1);
 
 		// rotate and store
-		uint64_t* out = reinterpret_cast<uint64_t*>(&data[i * 4]);
+		uint64_t *out = reinterpret_cast<uint64_t *>(&data[i * 4]);
 
 		out[0] = rotateleft64(res[0], data[(i + 0) * 4 + 3] << 4);
 		out[1] = rotateleft64(res[1], data[(i + 1) * 4 + 3] << 4);
@@ -366,11 +349,9 @@ static void decodeFilterQuatSimd(short* data, size_t count)
 	}
 }
 
-static void decodeFilterExpSimd(unsigned int* data, size_t count)
-{
-	for (size_t i = 0; i < count; i += 4)
-	{
-		__m128i v = _mm_loadu_si128(reinterpret_cast<__m128i*>(&data[i]));
+static void decodeFilterExpSimd(unsigned int *data, size_t count) {
+	for (size_t i = 0; i < count; i += 4) {
+		__m128i v = _mm_loadu_si128(reinterpret_cast<__m128i *>(&data[i]));
 
 		// decode exponent into 2^x directly
 		__m128i ef = _mm_srai_epi32(v, 24);
@@ -382,21 +363,19 @@ static void decodeFilterExpSimd(unsigned int* data, size_t count)
 
 		__m128 r = _mm_mul_ps(_mm_castsi128_ps(es), m);
 
-		_mm_storeu_ps(reinterpret_cast<float*>(&data[i]), r);
+		_mm_storeu_ps(reinterpret_cast<float *>(&data[i]), r);
 	}
 }
 #endif
 
 #if defined(SIMD_NEON) && !defined(__aarch64__) && !defined(_M_ARM64)
-inline float32x4_t vsqrtq_f32(float32x4_t x)
-{
+inline float32x4_t vsqrtq_f32(float32x4_t x) {
 	float32x4_t r = vrsqrteq_f32(x);
 	r = vmulq_f32(r, vrsqrtsq_f32(vmulq_f32(r, x), r)); // refine rsqrt estimate
 	return vmulq_f32(r, x);
 }
 
-inline float32x4_t vdivq_f32(float32x4_t x, float32x4_t y)
-{
+inline float32x4_t vdivq_f32(float32x4_t x, float32x4_t y) {
 	float32x4_t r = vrecpeq_f32(y);
 	r = vmulq_f32(r, vrecpsq_f32(y, r)); // refine rcp estimate
 	return vmulq_f32(x, r);
@@ -404,13 +383,11 @@ inline float32x4_t vdivq_f32(float32x4_t x, float32x4_t y)
 #endif
 
 #ifdef SIMD_NEON
-static void decodeFilterOctSimd(signed char* data, size_t count)
-{
+static void decodeFilterOctSimd(signed char *data, size_t count) {
 	const int32x4_t sign = vdupq_n_s32(0x80000000);
 
-	for (size_t i = 0; i < count; i += 4)
-	{
-		int32x4_t n4 = vld1q_s32(reinterpret_cast<int32_t*>(&data[i * 4]));
+	for (size_t i = 0; i < count; i += 4) {
+		int32x4_t n4 = vld1q_s32(reinterpret_cast<int32_t *>(&data[i * 4]));
 
 		// sign-extends each of x,y in [x y ? ?] with arithmetic shifts
 		int32x4_t xf = vshrq_n_s32(vshlq_n_s32(n4, 24), 24);
@@ -449,18 +426,16 @@ static void decodeFilterOctSimd(signed char* data, size_t count)
 		res = vorrq_s32(res, vshlq_n_s32(vandq_s32(yr, vdupq_n_s32(0xff)), 8));
 		res = vorrq_s32(res, vshlq_n_s32(vandq_s32(zr, vdupq_n_s32(0xff)), 16));
 
-		vst1q_s32(reinterpret_cast<int32_t*>(&data[i * 4]), res);
+		vst1q_s32(reinterpret_cast<int32_t *>(&data[i * 4]), res);
 	}
 }
 
-static void decodeFilterOctSimd(short* data, size_t count)
-{
+static void decodeFilterOctSimd(short *data, size_t count) {
 	const int32x4_t sign = vdupq_n_s32(0x80000000);
 
-	for (size_t i = 0; i < count; i += 4)
-	{
-		int32x4_t n4_0 = vld1q_s32(reinterpret_cast<int32_t*>(&data[(i + 0) * 4]));
-		int32x4_t n4_1 = vld1q_s32(reinterpret_cast<int32_t*>(&data[(i + 2) * 4]));
+	for (size_t i = 0; i < count; i += 4) {
+		int32x4_t n4_0 = vld1q_s32(reinterpret_cast<int32_t *>(&data[(i + 0) * 4]));
+		int32x4_t n4_1 = vld1q_s32(reinterpret_cast<int32_t *>(&data[(i + 2) * 4]));
 
 		// gather both x/y 16-bit pairs in each 32-bit lane
 		int32x4_t n4 = vuzpq_s32(n4_0, n4_1).val[0];
@@ -510,19 +485,17 @@ static void decodeFilterOctSimd(short* data, size_t count)
 		res_0 = vbslq_s32(vreinterpretq_u32_u64(vdupq_n_u64(0xffff000000000000)), n4_0, res_0);
 		res_1 = vbslq_s32(vreinterpretq_u32_u64(vdupq_n_u64(0xffff000000000000)), n4_1, res_1);
 
-		vst1q_s32(reinterpret_cast<int32_t*>(&data[(i + 0) * 4]), res_0);
-		vst1q_s32(reinterpret_cast<int32_t*>(&data[(i + 2) * 4]), res_1);
+		vst1q_s32(reinterpret_cast<int32_t *>(&data[(i + 0) * 4]), res_0);
+		vst1q_s32(reinterpret_cast<int32_t *>(&data[(i + 2) * 4]), res_1);
 	}
 }
 
-static void decodeFilterQuatSimd(short* data, size_t count)
-{
+static void decodeFilterQuatSimd(short *data, size_t count) {
 	const float scale = 1.f / sqrtf(2.f);
 
-	for (size_t i = 0; i < count; i += 4)
-	{
-		int32x4_t q4_0 = vld1q_s32(reinterpret_cast<int32_t*>(&data[(i + 0) * 4]));
-		int32x4_t q4_1 = vld1q_s32(reinterpret_cast<int32_t*>(&data[(i + 2) * 4]));
+	for (size_t i = 0; i < count; i += 4) {
+		int32x4_t q4_0 = vld1q_s32(reinterpret_cast<int32_t *>(&data[(i + 0) * 4]));
+		int32x4_t q4_1 = vld1q_s32(reinterpret_cast<int32_t *>(&data[(i + 2) * 4]));
 
 		// gather both x/y 16-bit pairs in each 32-bit lane
 		int32x4_t q4_xy = vuzpq_s32(q4_0, q4_1).val[0];
@@ -567,7 +540,7 @@ static void decodeFilterQuatSimd(short* data, size_t count)
 		int32x4_t res_1 = vreinterpretq_s32_s16(vzipq_s16(vreinterpretq_s16_s32(wyr), vreinterpretq_s16_s32(xzr)).val[1]);
 
 		// rotate and store
-		uint64_t* out = (uint64_t*)&data[i * 4];
+		uint64_t *out = (uint64_t *)&data[i * 4];
 
 		out[0] = rotateleft64(vgetq_lane_u64(vreinterpretq_u64_s32(res_0), 0), vgetq_lane_s32(cf, 0) << 4);
 		out[1] = rotateleft64(vgetq_lane_u64(vreinterpretq_u64_s32(res_0), 1), vgetq_lane_s32(cf, 1) << 4);
@@ -576,11 +549,9 @@ static void decodeFilterQuatSimd(short* data, size_t count)
 	}
 }
 
-static void decodeFilterExpSimd(unsigned int* data, size_t count)
-{
-	for (size_t i = 0; i < count; i += 4)
-	{
-		int32x4_t v = vld1q_s32(reinterpret_cast<int32_t*>(&data[i]));
+static void decodeFilterExpSimd(unsigned int *data, size_t count) {
+	for (size_t i = 0; i < count; i += 4) {
+		int32x4_t v = vld1q_s32(reinterpret_cast<int32_t *>(&data[i]));
 
 		// decode exponent into 2^x directly
 		int32x4_t ef = vshrq_n_s32(v, 24);
@@ -592,18 +563,16 @@ static void decodeFilterExpSimd(unsigned int* data, size_t count)
 
 		float32x4_t r = vmulq_f32(vreinterpretq_f32_s32(es), m);
 
-		vst1q_f32(reinterpret_cast<float*>(&data[i]), r);
+		vst1q_f32(reinterpret_cast<float *>(&data[i]), r);
 	}
 }
 #endif
 
 #ifdef SIMD_WASM
-static void decodeFilterOctSimd(signed char* data, size_t count)
-{
+static void decodeFilterOctSimd(signed char *data, size_t count) {
 	const v128_t sign = wasm_f32x4_splat(-0.f);
 
-	for (size_t i = 0; i < count; i += 4)
-	{
+	for (size_t i = 0; i < count; i += 4) {
 		v128_t n4 = wasm_v128_load(&data[i * 4]);
 
 		// sign-extends each of x,y in [x y ? ?] with arithmetic shifts
@@ -647,13 +616,11 @@ static void decodeFilterOctSimd(signed char* data, size_t count)
 	}
 }
 
-static void decodeFilterOctSimd(short* data, size_t count)
-{
+static void decodeFilterOctSimd(short *data, size_t count) {
 	const v128_t sign = wasm_f32x4_splat(-0.f);
 	const v128_t zmask = wasm_i32x4_splat(0x7fff);
 
-	for (size_t i = 0; i < count; i += 4)
-	{
+	for (size_t i = 0; i < count; i += 4) {
 		v128_t n4_0 = wasm_v128_load(&data[(i + 0) * 4]);
 		v128_t n4_1 = wasm_v128_load(&data[(i + 2) * 4]);
 
@@ -709,12 +676,10 @@ static void decodeFilterOctSimd(short* data, size_t count)
 	}
 }
 
-static void decodeFilterQuatSimd(short* data, size_t count)
-{
+static void decodeFilterQuatSimd(short *data, size_t count) {
 	const float scale = 1.f / sqrtf(2.f);
 
-	for (size_t i = 0; i < count; i += 4)
-	{
+	for (size_t i = 0; i < count; i += 4) {
 		v128_t q4_0 = wasm_v128_load(&data[(i + 0) * 4]);
 		v128_t q4_1 = wasm_v128_load(&data[(i + 2) * 4]);
 
@@ -766,7 +731,7 @@ static void decodeFilterQuatSimd(short* data, size_t count)
 		volatile v128_t cm = wasm_i32x4_shl(cf, 4);
 
 		// rotate and store
-		uint64_t* out = reinterpret_cast<uint64_t*>(&data[i * 4]);
+		uint64_t *out = reinterpret_cast<uint64_t *>(&data[i * 4]);
 
 		out[0] = rotateleft64(wasm_i64x2_extract_lane(res_0, 0), wasm_i32x4_extract_lane(cm, 0));
 		out[1] = rotateleft64(wasm_i64x2_extract_lane(res_0, 1), wasm_i32x4_extract_lane(cm, 1));
@@ -775,10 +740,8 @@ static void decodeFilterQuatSimd(short* data, size_t count)
 	}
 }
 
-static void decodeFilterExpSimd(unsigned int* data, size_t count)
-{
-	for (size_t i = 0; i < count; i += 4)
-	{
+static void decodeFilterExpSimd(unsigned int *data, size_t count) {
+	for (size_t i = 0; i < count; i += 4) {
 		v128_t v = wasm_v128_load(&data[i]);
 
 		// decode exponent into 2^x directly
@@ -797,10 +760,8 @@ static void decodeFilterExpSimd(unsigned int* data, size_t count)
 #endif
 
 // optimized variant of frexp
-inline int optlog2(float v)
-{
-	union
-	{
+inline int optlog2(float v) {
+	union {
 		float f;
 		unsigned int ui;
 	} u;
@@ -811,10 +772,8 @@ inline int optlog2(float v)
 }
 
 // optimized variant of ldexp
-inline float optexp2(int e)
-{
-	union
-	{
+inline float optexp2(int e) {
+	union {
 		float f;
 		unsigned int ui;
 	} u;
@@ -825,65 +784,60 @@ inline float optexp2(int e)
 
 } // namespace meshopt
 
-void meshopt_decodeFilterOct(void* buffer, size_t count, size_t stride)
-{
+void meshopt_decodeFilterOct(void *buffer, size_t count, size_t stride) {
 	using namespace meshopt;
 
 	assert(stride == 4 || stride == 8);
 
 #if defined(SIMD_SSE) || defined(SIMD_NEON) || defined(SIMD_WASM)
 	if (stride == 4)
-		dispatchSimd(decodeFilterOctSimd, static_cast<signed char*>(buffer), count, 4);
+		dispatchSimd(decodeFilterOctSimd, static_cast<signed char *>(buffer), count, 4);
 	else
-		dispatchSimd(decodeFilterOctSimd, static_cast<short*>(buffer), count, 4);
+		dispatchSimd(decodeFilterOctSimd, static_cast<short *>(buffer), count, 4);
 #else
 	if (stride == 4)
-		decodeFilterOct(static_cast<signed char*>(buffer), count);
+		decodeFilterOct(static_cast<signed char *>(buffer), count);
 	else
-		decodeFilterOct(static_cast<short*>(buffer), count);
+		decodeFilterOct(static_cast<short *>(buffer), count);
 #endif
 }
 
-void meshopt_decodeFilterQuat(void* buffer, size_t count, size_t stride)
-{
+void meshopt_decodeFilterQuat(void *buffer, size_t count, size_t stride) {
 	using namespace meshopt;
 
 	assert(stride == 8);
 	(void)stride;
 
 #if defined(SIMD_SSE) || defined(SIMD_NEON) || defined(SIMD_WASM)
-	dispatchSimd(decodeFilterQuatSimd, static_cast<short*>(buffer), count, 4);
+	dispatchSimd(decodeFilterQuatSimd, static_cast<short *>(buffer), count, 4);
 #else
-	decodeFilterQuat(static_cast<short*>(buffer), count);
+	decodeFilterQuat(static_cast<short *>(buffer), count);
 #endif
 }
 
-void meshopt_decodeFilterExp(void* buffer, size_t count, size_t stride)
-{
+void meshopt_decodeFilterExp(void *buffer, size_t count, size_t stride) {
 	using namespace meshopt;
 
 	assert(stride > 0 && stride % 4 == 0);
 
 #if defined(SIMD_SSE) || defined(SIMD_NEON) || defined(SIMD_WASM)
-	dispatchSimd(decodeFilterExpSimd, static_cast<unsigned int*>(buffer), count * (stride / 4), 1);
+	dispatchSimd(decodeFilterExpSimd, static_cast<unsigned int *>(buffer), count * (stride / 4), 1);
 #else
-	decodeFilterExp(static_cast<unsigned int*>(buffer), count * (stride / 4));
+	decodeFilterExp(static_cast<unsigned int *>(buffer), count * (stride / 4));
 #endif
 }
 
-void meshopt_encodeFilterOct(void* destination, size_t count, size_t stride, int bits, const float* data)
-{
+void meshopt_encodeFilterOct(void *destination, size_t count, size_t stride, int bits, const float *data) {
 	assert(stride == 4 || stride == 8);
 	assert(bits >= 1 && bits <= 16);
 
-	signed char* d8 = static_cast<signed char*>(destination);
-	short* d16 = static_cast<short*>(destination);
+	signed char *d8 = static_cast<signed char *>(destination);
+	short *d16 = static_cast<short *>(destination);
 
 	int bytebits = int(stride * 2);
 
-	for (size_t i = 0; i < count; ++i)
-	{
-		const float* n = &data[i * 4];
+	for (size_t i = 0; i < count; ++i) {
+		const float *n = &data[i * 4];
 
 		// octahedral encoding of a unit vector
 		float nx = n[0], ny = n[1], nz = n[2], nw = n[3];
@@ -901,15 +855,12 @@ void meshopt_encodeFilterOct(void* destination, size_t count, size_t stride, int
 		int fo = meshopt_quantizeSnorm(1.f, bits);
 		int fw = meshopt_quantizeSnorm(nw, bytebits);
 
-		if (stride == 4)
-		{
+		if (stride == 4) {
 			d8[i * 4 + 0] = (signed char)(fu);
 			d8[i * 4 + 1] = (signed char)(fv);
 			d8[i * 4 + 2] = (signed char)(fo);
 			d8[i * 4 + 3] = (signed char)(fw);
-		}
-		else
-		{
+		} else {
 			d16[i * 4 + 0] = short(fu);
 			d16[i * 4 + 1] = short(fv);
 			d16[i * 4 + 2] = short(fo);
@@ -918,20 +869,18 @@ void meshopt_encodeFilterOct(void* destination, size_t count, size_t stride, int
 	}
 }
 
-void meshopt_encodeFilterQuat(void* destination_, size_t count, size_t stride, int bits, const float* data)
-{
+void meshopt_encodeFilterQuat(void *destination_, size_t count, size_t stride, int bits, const float *data) {
 	assert(stride == 8);
 	assert(bits >= 4 && bits <= 16);
 	(void)stride;
 
-	short* destination = static_cast<short*>(destination_);
+	short *destination = static_cast<short *>(destination_);
 
 	const float scaler = sqrtf(2.f);
 
-	for (size_t i = 0; i < count; ++i)
-	{
-		const float* q = &data[i * 4];
-		short* d = &destination[i * 4];
+	for (size_t i = 0; i < count; ++i) {
+		const float *q = &data[i * 4];
+		short *d = &destination[i * 4];
 
 		// establish maximum quaternion component
 		int qc = 0;
@@ -950,14 +899,13 @@ void meshopt_encodeFilterQuat(void* destination_, size_t count, size_t stride, i
 	}
 }
 
-void meshopt_encodeFilterExp(void* destination_, size_t count, size_t stride, int bits, const float* data, enum meshopt_EncodeExpMode mode)
-{
+void meshopt_encodeFilterExp(void *destination_, size_t count, size_t stride, int bits, const float *data, enum meshopt_EncodeExpMode mode) {
 	using namespace meshopt;
 
 	assert(stride > 0 && stride % 4 == 0 && stride <= 256);
 	assert(bits >= 1 && bits <= 24);
 
-	unsigned int* destination = static_cast<unsigned int*>(destination_);
+	unsigned int *destination = static_cast<unsigned int *>(destination_);
 	size_t stride_float = stride / sizeof(float);
 
 	int component_exp[64];
@@ -965,18 +913,15 @@ void meshopt_encodeFilterExp(void* destination_, size_t count, size_t stride, in
 
 	const int min_exp = -100;
 
-	if (mode == meshopt_EncodeExpSharedComponent)
-	{
+	if (mode == meshopt_EncodeExpSharedComponent) {
 		for (size_t j = 0; j < stride_float; ++j)
 			component_exp[j] = min_exp;
 
-		for (size_t i = 0; i < count; ++i)
-		{
-			const float* v = &data[i * stride_float];
+		for (size_t i = 0; i < count; ++i) {
+			const float *v = &data[i * stride_float];
 
 			// use maximum exponent to encode values; this guarantees that mantissa is [-1, 1]
-			for (size_t j = 0; j < stride_float; ++j)
-			{
+			for (size_t j = 0; j < stride_float; ++j) {
 				int e = optlog2(v[j]);
 
 				component_exp[j] = (component_exp[j] < e) ? e : component_exp[j];
@@ -984,49 +929,37 @@ void meshopt_encodeFilterExp(void* destination_, size_t count, size_t stride, in
 		}
 	}
 
-	for (size_t i = 0; i < count; ++i)
-	{
-		const float* v = &data[i * stride_float];
-		unsigned int* d = &destination[i * stride_float];
+	for (size_t i = 0; i < count; ++i) {
+		const float *v = &data[i * stride_float];
+		unsigned int *d = &destination[i * stride_float];
 
 		int vector_exp = min_exp;
 
-		if (mode == meshopt_EncodeExpSharedVector)
-		{
+		if (mode == meshopt_EncodeExpSharedVector) {
 			// use maximum exponent to encode values; this guarantees that mantissa is [-1, 1]
-			for (size_t j = 0; j < stride_float; ++j)
-			{
+			for (size_t j = 0; j < stride_float; ++j) {
 				int e = optlog2(v[j]);
 
 				vector_exp = (vector_exp < e) ? e : vector_exp;
 			}
-		}
-		else if (mode == meshopt_EncodeExpSeparate)
-		{
-			for (size_t j = 0; j < stride_float; ++j)
-			{
+		} else if (mode == meshopt_EncodeExpSeparate) {
+			for (size_t j = 0; j < stride_float; ++j) {
 				int e = optlog2(v[j]);
 
 				component_exp[j] = (min_exp < e) ? e : min_exp;
 			}
-		}
-		else if (mode == meshopt_EncodeExpClamped)
-		{
-			for (size_t j = 0; j < stride_float; ++j)
-			{
+		} else if (mode == meshopt_EncodeExpClamped) {
+			for (size_t j = 0; j < stride_float; ++j) {
 				int e = optlog2(v[j]);
 
 				component_exp[j] = (0 < e) ? e : 0;
 			}
-		}
-		else
-		{
+		} else {
 			// the code below assumes component_exp is initialized outside of the loop
 			assert(mode == meshopt_EncodeExpSharedComponent);
 		}
 
-		for (size_t j = 0; j < stride_float; ++j)
-		{
+		for (size_t j = 0; j < stride_float; ++j) {
 			int exp = (mode == meshopt_EncodeExpSharedVector) ? vector_exp : component_exp[j];
 
 			// note that we additionally scale the mantissa to make it a K-bit signed integer (K-1 bits for magnitude)

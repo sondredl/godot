@@ -49,7 +49,7 @@
 #include <wchar.h>
 
 #ifdef _MSC_VER
-#define S_ISREG(m) ((m) & _S_IFREG)
+#define S_ISREG(m) ((m)&_S_IFREG)
 #endif
 
 void FileAccessWindows::check_errors() const {

@@ -214,7 +214,7 @@ void EditorAtlasPacker::chart_pack(Vector<Chart> &charts, int &r_width, int &r_h
 				}
 			}
 
-			for (int j = 0; j < w; j++) { //add
+			for (int j = 0; j < w; j++) {	//add
 				if (top_heights[j] == -1) { //unused
 					continue;
 				}

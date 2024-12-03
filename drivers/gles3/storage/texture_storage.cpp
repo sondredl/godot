@@ -61,7 +61,7 @@ static const GLenum _cube_side_enum[6] = {
 TextureStorage::TextureStorage() {
 	singleton = this;
 
-	{ //create default textures
+	{	  //create default textures
 		{ // White Textures
 
 			Ref<Image> image = Image::create_empty(4, 4, true, Image::FORMAT_RGBA8);

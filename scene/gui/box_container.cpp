@@ -103,7 +103,7 @@ void BoxContainer::_resort() {
 
 		has_stretched = true;
 		bool refit_successful = true; //assume refit-test will go well
-		float error = 0.0; // Keep track of accumulated error in pixels
+		float error = 0.0;			  // Keep track of accumulated error in pixels
 
 		for (int i = 0; i < get_child_count(); i++) {
 			Control *c = as_sortable_control(get_child(i));

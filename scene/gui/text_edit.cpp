@@ -7540,7 +7540,7 @@ void TextEdit::_do_text_op(const TextOperation &p_op, bool p_reverse) {
 		int check_line;
 		int check_column;
 		_base_insert_text(p_op.from_line, p_op.from_column, p_op.text, check_line, check_column);
-		ERR_FAIL_COND(check_line != p_op.to_line); // BUG.
+		ERR_FAIL_COND(check_line != p_op.to_line);	   // BUG.
 		ERR_FAIL_COND(check_column != p_op.to_column); // BUG.
 	} else {
 		_base_remove_text(p_op.from_line, p_op.from_column, p_op.to_line, p_op.to_column);
@@ -8504,7 +8504,7 @@ String TextEdit::_base_get_text(int p_from_line, int p_from_column, int p_to_lin
 	ERR_FAIL_INDEX_V(p_from_column, text[p_from_line].length() + 1, String());
 	ERR_FAIL_INDEX_V(p_to_line, text.size(), String());
 	ERR_FAIL_INDEX_V(p_to_column, text[p_to_line].length() + 1, String());
-	ERR_FAIL_COND_V(p_to_line < p_from_line, String()); // 'from > to'.
+	ERR_FAIL_COND_V(p_to_line < p_from_line, String());									// 'from > to'.
 	ERR_FAIL_COND_V(p_to_line == p_from_line && p_to_column < p_from_column, String()); // 'from > to'.
 
 	StringBuilder ret;
@@ -8527,7 +8527,7 @@ void TextEdit::_base_remove_text(int p_from_line, int p_from_column, int p_to_li
 	ERR_FAIL_INDEX(p_from_column, text[p_from_line].length() + 1);
 	ERR_FAIL_INDEX(p_to_line, text.size());
 	ERR_FAIL_INDEX(p_to_column, text[p_to_line].length() + 1);
-	ERR_FAIL_COND(p_to_line < p_from_line); // 'from > to'.
+	ERR_FAIL_COND(p_to_line < p_from_line);									// 'from > to'.
 	ERR_FAIL_COND(p_to_line == p_from_line && p_to_column < p_from_column); // 'from > to'.
 
 	String pre_text = text[p_from_line].substr(0, p_from_column);

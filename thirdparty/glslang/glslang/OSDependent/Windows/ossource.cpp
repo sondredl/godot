@@ -36,9 +36,9 @@
 
 #define STRICT
 #define VC_EXTRALEAN 1
-#include <windows.h>
 #include <process.h>
 #include <psapi.h>
+#include <windows.h>
 #include <cstdio>
 
 //
@@ -53,14 +53,13 @@ namespace glslang {
 
 //#define DUMP_COUNTERS
 
-void OS_DumpMemoryCounters()
-{
+void OS_DumpMemoryCounters() {
 #ifdef DUMP_COUNTERS
-    PROCESS_MEMORY_COUNTERS counters;
-    GetProcessMemoryInfo(GetCurrentProcess(), &counters, sizeof(counters));
-    printf("Working set size: %d\n", counters.WorkingSetSize);
+	PROCESS_MEMORY_COUNTERS counters;
+	GetProcessMemoryInfo(GetCurrentProcess(), &counters, sizeof(counters));
+	printf("Working set size: %d\n", counters.WorkingSetSize);
 #else
-    printf("Recompile with DUMP_COUNTERS defined to see counters.\n");
+	printf("Recompile with DUMP_COUNTERS defined to see counters.\n");
 #endif
 }
 

@@ -63,9 +63,9 @@ bool OpenXRVulkanExtension::check_graphics_api_support(XrVersion p_desired_versi
 
 	XrGraphicsRequirementsVulkan2KHR vulkan_requirements = {
 		XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN2_KHR, // type
-		nullptr, // next
-		0, // minApiVersionSupported
-		0 // maxApiVersionSupported
+		nullptr,								   // next
+		0,										   // minApiVersionSupported
+		0										   // maxApiVersionSupported
 	};
 
 	XrResult result = xrGetVulkanGraphicsRequirements2KHR(OpenXRAPI::get_singleton()->get_instance(), OpenXRAPI::get_singleton()->get_system_id(), &vulkan_requirements);
@@ -112,13 +112,13 @@ bool OpenXRVulkanExtension::create_vulkan_instance(const VkInstanceCreateInfo *p
 	}
 
 	XrVulkanInstanceCreateInfoKHR xr_vulkan_instance_info = {
-		XR_TYPE_VULKAN_INSTANCE_CREATE_INFO_KHR, // type
-		nullptr, // next
+		XR_TYPE_VULKAN_INSTANCE_CREATE_INFO_KHR,	 // type
+		nullptr,									 // next
 		OpenXRAPI::get_singleton()->get_system_id(), // systemId
-		0, // createFlags
-		vkGetInstanceProcAddr, // pfnGetInstanceProcAddr
-		p_vulkan_create_info, // vulkanCreateInfo
-		nullptr, // vulkanAllocator
+		0,											 // createFlags
+		vkGetInstanceProcAddr,						 // pfnGetInstanceProcAddr
+		p_vulkan_create_info,						 // vulkanCreateInfo
+		nullptr,									 // vulkanAllocator
 	};
 
 	VkResult vk_result = VK_SUCCESS;
@@ -151,9 +151,9 @@ bool OpenXRVulkanExtension::get_physical_device(VkPhysicalDevice *r_device) {
 
 	XrVulkanGraphicsDeviceGetInfoKHR get_info = {
 		XR_TYPE_VULKAN_GRAPHICS_DEVICE_GET_INFO_KHR, // type
-		nullptr, // next
+		nullptr,									 // next
 		OpenXRAPI::get_singleton()->get_system_id(), // systemId
-		vulkan_instance, // vulkanInstance
+		vulkan_instance,							 // vulkanInstance
 	};
 
 	XrResult result = xrGetVulkanGraphicsDevice2KHR(OpenXRAPI::get_singleton()->get_instance(), &get_info, &vulkan_physical_device);
@@ -171,14 +171,14 @@ bool OpenXRVulkanExtension::create_vulkan_device(const VkDeviceCreateInfo *p_dev
 	ERR_FAIL_NULL_V(OpenXRAPI::get_singleton(), false);
 
 	XrVulkanDeviceCreateInfoKHR create_info = {
-		XR_TYPE_VULKAN_DEVICE_CREATE_INFO_KHR, // type
-		nullptr, // next
+		XR_TYPE_VULKAN_DEVICE_CREATE_INFO_KHR,		 // type
+		nullptr,									 // next
 		OpenXRAPI::get_singleton()->get_system_id(), // systemId
-		0, // createFlags
-		vkGetInstanceProcAddr, // pfnGetInstanceProcAddr
-		vulkan_physical_device, // vulkanPhysicalDevice
-		p_device_create_info, // vulkanCreateInfo
-		nullptr // vulkanAllocator
+		0,											 // createFlags
+		vkGetInstanceProcAddr,						 // pfnGetInstanceProcAddr
+		vulkan_physical_device,						 // vulkanPhysicalDevice
+		p_device_create_info,						 // vulkanCreateInfo
+		nullptr										 // vulkanAllocator
 	};
 
 	VkResult vk_result = VK_SUCCESS;

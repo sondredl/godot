@@ -63,83 +63,79 @@ namespace glslang {
 
 class TInductiveTraverser : public TIntermTraverser {
 public:
-    TInductiveTraverser(long long id, TSymbolTable& st)
-    : loopId(id), symbolTable(st), bad(false)  { }
+	TInductiveTraverser(long long id, TSymbolTable &st) :
+			loopId(id), symbolTable(st), bad(false) {}
 
-    virtual bool visitBinary(TVisit, TIntermBinary* node);
-    virtual bool visitUnary(TVisit, TIntermUnary* node);
-    virtual bool visitAggregate(TVisit, TIntermAggregate* node);
+	virtual bool visitBinary(TVisit, TIntermBinary *node);
+	virtual bool visitUnary(TVisit, TIntermUnary *node);
+	virtual bool visitAggregate(TVisit, TIntermAggregate *node);
 
-    long long loopId;           // unique ID of the symbol that's the loop inductive variable
-    TSymbolTable& symbolTable;
-    bool bad;
-    TSourceLoc badLoc;
+	long long loopId; // unique ID of the symbol that's the loop inductive variable
+	TSymbolTable &symbolTable;
+	bool bad;
+	TSourceLoc badLoc;
 
 protected:
-    TInductiveTraverser(TInductiveTraverser&);
-    TInductiveTraverser& operator=(TInductiveTraverser&);
+	TInductiveTraverser(TInductiveTraverser &);
+	TInductiveTraverser &operator=(TInductiveTraverser &);
 };
 
 // check binary operations for those modifying the loop index
-bool TInductiveTraverser::visitBinary(TVisit /* visit */, TIntermBinary* node)
-{
-    if (node->modifiesState() && node->getLeft()->getAsSymbolNode() &&
-                                 node->getLeft()->getAsSymbolNode()->getId() == loopId) {
-        bad = true;
-        badLoc = node->getLoc();
-    }
+bool TInductiveTraverser::visitBinary(TVisit /* visit */, TIntermBinary *node) {
+	if (node->modifiesState() && node->getLeft()->getAsSymbolNode() &&
+			node->getLeft()->getAsSymbolNode()->getId() == loopId) {
+		bad = true;
+		badLoc = node->getLoc();
+	}
 
-    return true;
+	return true;
 }
 
 // check unary operations for those modifying the loop index
-bool TInductiveTraverser::visitUnary(TVisit /* visit */, TIntermUnary* node)
-{
-    if (node->modifiesState() && node->getOperand()->getAsSymbolNode() &&
-                                 node->getOperand()->getAsSymbolNode()->getId() == loopId) {
-        bad = true;
-        badLoc = node->getLoc();
-    }
+bool TInductiveTraverser::visitUnary(TVisit /* visit */, TIntermUnary *node) {
+	if (node->modifiesState() && node->getOperand()->getAsSymbolNode() &&
+			node->getOperand()->getAsSymbolNode()->getId() == loopId) {
+		bad = true;
+		badLoc = node->getLoc();
+	}
 
-    return true;
+	return true;
 }
 
 // check function calls for arguments modifying the loop index
-bool TInductiveTraverser::visitAggregate(TVisit /* visit */, TIntermAggregate* node)
-{
-    if (node->getOp() == EOpFunctionCall) {
-        // see if an out or inout argument is the loop index
-        const TIntermSequence& args = node->getSequence();
-        for (int i = 0; i < (int)args.size(); ++i) {
-            if (args[i]->getAsSymbolNode() && args[i]->getAsSymbolNode()->getId() == loopId) {
-                TSymbol* function = symbolTable.find(node->getName());
-                const TType* type = (*function->getAsFunction())[i].type;
-                if (type->getQualifier().storage == EvqOut ||
-                    type->getQualifier().storage == EvqInOut) {
-                    bad = true;
-                    badLoc = node->getLoc();
-                }
-            }
-        }
-    }
+bool TInductiveTraverser::visitAggregate(TVisit /* visit */, TIntermAggregate *node) {
+	if (node->getOp() == EOpFunctionCall) {
+		// see if an out or inout argument is the loop index
+		const TIntermSequence &args = node->getSequence();
+		for (int i = 0; i < (int)args.size(); ++i) {
+			if (args[i]->getAsSymbolNode() && args[i]->getAsSymbolNode()->getId() == loopId) {
+				TSymbol *function = symbolTable.find(node->getName());
+				const TType *type = (*function->getAsFunction())[i].type;
+				if (type->getQualifier().storage == EvqOut ||
+						type->getQualifier().storage == EvqInOut) {
+					bad = true;
+					badLoc = node->getLoc();
+				}
+			}
+		}
+	}
 
-    return true;
+	return true;
 }
 
 //
 // External function to call for loop check.
 //
-void TParseContext::inductiveLoopBodyCheck(TIntermNode* body, long long loopId, TSymbolTable& symbolTable)
-{
-    TInductiveTraverser it(loopId, symbolTable);
+void TParseContext::inductiveLoopBodyCheck(TIntermNode *body, long long loopId, TSymbolTable &symbolTable) {
+	TInductiveTraverser it(loopId, symbolTable);
 
-    if (body == nullptr)
-        return;
+	if (body == nullptr)
+		return;
 
-    body->traverse(&it);
+	body->traverse(&it);
 
-    if (it.bad)
-        error(it.badLoc, "inductive loop index modified", "limitations", "");
+	if (it.bad)
+		error(it.badLoc, "inductive loop index modified", "limitations", "");
 }
 
 //
@@ -150,49 +146,47 @@ void TParseContext::inductiveLoopBodyCheck(TIntermNode* body, long long loopId, 
 
 class TIndexTraverser : public TIntermTraverser {
 public:
-    TIndexTraverser(const TIdSetType& ids) : inductiveLoopIds(ids), bad(false) { }
-    virtual void visitSymbol(TIntermSymbol* symbol);
-    virtual bool visitAggregate(TVisit, TIntermAggregate* node);
-    const TIdSetType& inductiveLoopIds;
-    bool bad;
-    TSourceLoc badLoc;
+	TIndexTraverser(const TIdSetType &ids) :
+			inductiveLoopIds(ids), bad(false) {}
+	virtual void visitSymbol(TIntermSymbol *symbol);
+	virtual bool visitAggregate(TVisit, TIntermAggregate *node);
+	const TIdSetType &inductiveLoopIds;
+	bool bad;
+	TSourceLoc badLoc;
 
 protected:
-    TIndexTraverser(TIndexTraverser&);
-    TIndexTraverser& operator=(TIndexTraverser&);
+	TIndexTraverser(TIndexTraverser &);
+	TIndexTraverser &operator=(TIndexTraverser &);
 };
 
 // make sure symbols are inductive-loop indexes
-void TIndexTraverser::visitSymbol(TIntermSymbol* symbol)
-{
-    if (inductiveLoopIds.find(symbol->getId()) == inductiveLoopIds.end()) {
-        bad = true;
-        badLoc = symbol->getLoc();
-    }
+void TIndexTraverser::visitSymbol(TIntermSymbol *symbol) {
+	if (inductiveLoopIds.find(symbol->getId()) == inductiveLoopIds.end()) {
+		bad = true;
+		badLoc = symbol->getLoc();
+	}
 }
 
 // check for function calls, assuming they are bad; spec. doesn't really say
-bool TIndexTraverser::visitAggregate(TVisit /* visit */, TIntermAggregate* node)
-{
-    if (node->getOp() == EOpFunctionCall) {
-        bad = true;
-        badLoc = node->getLoc();
-    }
+bool TIndexTraverser::visitAggregate(TVisit /* visit */, TIntermAggregate *node) {
+	if (node->getOp() == EOpFunctionCall) {
+		bad = true;
+		badLoc = node->getLoc();
+	}
 
-    return true;
+	return true;
 }
 
 //
 // External function to call for loop check.
 //
-void TParseContext::constantIndexExpressionCheck(TIntermNode* index)
-{
-    TIndexTraverser it(inductiveLoopIds);
+void TParseContext::constantIndexExpressionCheck(TIntermNode *index) {
+	TIndexTraverser it(inductiveLoopIds);
 
-    index->traverse(&it);
+	index->traverse(&it);
 
-    if (it.bad)
-        error(it.badLoc, "Non-constant-index-expression", "limitations", "");
+	if (it.bad)
+		error(it.badLoc, "Non-constant-index-expression", "limitations", "");
 }
 
 } // end namespace glslang

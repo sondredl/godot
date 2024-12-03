@@ -128,7 +128,7 @@ void RedirectStream(const char *p_file_name, const char *p_mode, FILE *p_cpp_str
 		if (h_cpp == INVALID_HANDLE_VALUE) { // Redirect only if it's not already redirected to the pipe or file.
 			FILE *fp = p_cpp_stream;
 			freopen_s(&fp, p_file_name, p_mode, p_cpp_stream); // Redirect stream.
-			setvbuf(p_cpp_stream, nullptr, _IONBF, 0); // Disable stream buffering.
+			setvbuf(p_cpp_stream, nullptr, _IONBF, 0);		   // Disable stream buffering.
 		}
 	}
 }
@@ -594,9 +594,9 @@ Vector<String> OS_Windows::get_video_adapter_driver_info() const {
 		return info;
 	}
 
-	REFCLSID clsid = CLSID_WbemLocator; // Unmarshaler CLSID
-	REFIID uuid = IID_IWbemLocator; // Interface UUID
-	IWbemLocator *wbemLocator = nullptr; // to get the services
+	REFCLSID clsid = CLSID_WbemLocator;	   // Unmarshaler CLSID
+	REFIID uuid = IID_IWbemLocator;		   // Interface UUID
+	IWbemLocator *wbemLocator = nullptr;   // to get the services
 	IWbemServices *wbemServices = nullptr; // to get the class
 	IEnumWbemClassObject *iter = nullptr;
 	IWbemClassObject *pnpSDriverObject[1]; // contains driver name, version, etc.

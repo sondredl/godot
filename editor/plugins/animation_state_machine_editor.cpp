@@ -168,7 +168,7 @@ void AnimationNodeStateMachineEditor::_state_machine_gui_input(const Ref<InputEv
 		selected_transition_index = -1;
 		selected_node = StringName();
 
-		for (int i = node_rects.size() - 1; i >= 0; i--) { //inverse to draw order
+		for (int i = node_rects.size() - 1; i >= 0; i--) {			//inverse to draw order
 			if (node_rects[i].play.has_point(mb->get_position())) { //edit name
 				if (play_mode->get_selected() == 1 || !playback->is_playing()) {
 					// Start
@@ -299,7 +299,7 @@ void AnimationNodeStateMachineEditor::_state_machine_gui_input(const Ref<InputEv
 
 	// Connect nodes
 	if (mb.is_valid() && ((tool_select->is_pressed() && mb->is_shift_pressed()) || tool_connect->is_pressed()) && mb->get_button_index() == MouseButton::LEFT && mb->is_pressed()) {
-		for (int i = node_rects.size() - 1; i >= 0; i--) { //inverse to draw order
+		for (int i = node_rects.size() - 1; i >= 0; i--) {			//inverse to draw order
 			if (node_rects[i].node.has_point(mb->get_position())) { //select node since nothing else was selected
 				connecting = true;
 				connection_follows_cursor = true;
@@ -367,7 +367,7 @@ void AnimationNodeStateMachineEditor::_state_machine_gui_input(const Ref<InputEv
 		connecting_to_node = StringName();
 		state_machine_draw->queue_redraw();
 
-		for (int i = node_rects.size() - 1; i >= 0; i--) { //inverse to draw order
+		for (int i = node_rects.size() - 1; i >= 0; i--) {													 //inverse to draw order
 			if (node_rects[i].node_name != connecting_from && node_rects[i].node.has_point(connecting_to)) { //select node since nothing else was selected
 				connecting_to_node = node_rects[i].node_name;
 				return;

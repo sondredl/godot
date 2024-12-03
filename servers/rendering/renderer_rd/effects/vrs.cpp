@@ -42,7 +42,7 @@ using namespace RendererRD;
 VRS::VRS() {
 	{
 		Vector<String> vrs_modes;
-		vrs_modes.push_back("\n"); // VRS_DEFAULT
+		vrs_modes.push_back("\n");						  // VRS_DEFAULT
 		vrs_modes.push_back("\n#define USE_MULTIVIEW\n"); // VRS_MULTIVIEW
 
 		vrs_shader.shader.initialize(vrs_modes);

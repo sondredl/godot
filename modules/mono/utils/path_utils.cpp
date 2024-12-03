@@ -43,8 +43,8 @@
 
 #define ENV_PATH_SEP ";"
 #else
-#include <climits>
 #include <unistd.h>
+#include <climits>
 
 #define ENV_PATH_SEP ":"
 #endif

@@ -245,7 +245,7 @@ void ENetMultiplayerPeer::poll() {
 						break; // Keep polling the others.
 					} else {
 						to_drop.insert(E.key); // Error or disconnect.
-						break; // Keep polling the others.
+						break;				   // Keep polling the others.
 					}
 				} while (E.value->check_events(ret, event) > 0);
 			}

@@ -648,7 +648,7 @@ void register_scene_types() {
 	GDREGISTER_CLASS(NavigationLink3D);
 
 	OS::get_singleton()->yield(); // may take time to init
-#endif // _3D_DISABLED
+#endif							  // _3D_DISABLED
 
 	/* REGISTER SHADER */
 
@@ -910,7 +910,7 @@ void register_scene_types() {
 	GDREGISTER_CLASS(World3D);
 
 	OS::get_singleton()->yield(); // may take time to init
-#endif // _3D_DISABLED
+#endif							  // _3D_DISABLED
 
 	GDREGISTER_CLASS(PhysicsMaterial);
 	GDREGISTER_CLASS(Compositor);

@@ -1216,7 +1216,7 @@ void Collada::_parse_skin_controller(XMLParser &p_parser, const String &p_id) {
 	for (int i = 0; i < joint_source.sarray.size(); i++) {
 		String name = joint_source.sarray[i];
 		Transform3D xform = _read_transform_from_array(ibm_source.array, i * 16); //<- this is a mistake, it must be applied to vertices
-		xform.affine_invert(); // inverse for rest, because it's an inverse
+		xform.affine_invert();													  // inverse for rest, because it's an inverse
 #ifdef COLLADA_IMPORT_SCALE_SCENE
 		xform.origin *= state.unit_scale;
 #endif
@@ -2039,7 +2039,7 @@ void Collada::_merge_skeletons(VisualScene *p_vscene, Node *p_node) {
 				ERR_CONTINUE(!state.scene_map.has(nodeid)); //weird, it should have it...
 
 				NodeJoint *nj = dynamic_cast<NodeJoint *>(state.scene_map[nodeid]);
-				ERR_CONTINUE(!nj); //broken collada
+				ERR_CONTINUE(!nj);		  //broken collada
 				ERR_CONTINUE(!nj->owner); //weird, node should have a skeleton owner
 
 				skeletons.insert(nj->owner);
@@ -2222,7 +2222,7 @@ bool Collada::_move_geometry_to_skeletons(VisualScene *p_vscene, Node *p_node, L
 
 			//make rests relative to the skeleton (they seem to be always relative to world)
 			for (KeyValue<String, Transform3D> &E : skin.bone_rest_map) {
-				E.value = skel_inv * E.value; //make the bone rest local to the skeleton
+				E.value = skel_inv * E.value;		  //make the bone rest local to the skeleton
 				state.bone_rest_map[E.key] = E.value; // make it remember where the bone is globally, now that it's relative
 			}
 
