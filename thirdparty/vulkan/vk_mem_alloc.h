@@ -1441,17 +1441,17 @@ typedef struct VmaAllocationInfo
 typedef struct VmaAllocationInfo2
 {
     /** \brief Basic parameters of the allocation.
-    
+
     If you need only these, you can use function vmaGetAllocationInfo() and structure #VmaAllocationInfo instead.
     */
     VmaAllocationInfo allocationInfo;
     /** \brief Size of the `VkDeviceMemory` block that the allocation belongs to.
-    
+
     In case of an allocation with dedicated memory, it will be equal to `allocationInfo.size`.
     */
     VkDeviceSize blockSize;
     /** \brief `VK_TRUE` if the allocation has dedicated memory, `VK_FALSE` if it was placed as part of a larger memory block.
-    
+
     When `VK_TRUE`, it also means `VkMemoryDedicatedAllocateInfo` was used when creating the allocation
     (if VK_KHR_dedicated_allocation extension or Vulkan version >= 1.1 is enabled).
     */
@@ -1712,6 +1712,21 @@ become outdated.
 VMA_CALL_PRE void VMA_CALL_POST vmaCalculateStatistics(
     VmaAllocator VMA_NOT_NULL allocator,
     VmaTotalStatistics* VMA_NOT_NULL pStats);
+
+// -- GODOT begin --
+/** \brief Retrieves lazily allocated bytes
+
+This function is called "calculate" not "get" because it has to traverse all
+internal data structures, so it may be quite slow. Use it for debugging purposes.
+For faster but more brief statistics suitable to be called every frame or every allocation,
+use vmaGetHeapBudgets().
+
+Note that when using allocator from multiple threads, returned information may immediately
+become outdated.
+*/
+VMA_CALL_PRE uint64_t VMA_CALL_POST vmaCalculateLazilyAllocatedBytes(
+    VmaAllocator VMA_NOT_NULL allocator);
+// -- GODOT end --
 
 /** \brief Retrieves information about current memory usage and budget for all memory heaps.
 
@@ -2507,7 +2522,7 @@ VMA_CALL_PRE VkResult VMA_CALL_POST vmaCreateAliasingBuffer(
 \param allocator
 \param allocation Allocation that provides memory to be used for binding new buffer to it.
 \param allocationLocalOffset Additional offset to be added while binding, relative to the beginning of the allocation. Normally it should be 0.
-\param pBufferCreateInfo 
+\param pBufferCreateInfo
 \param[out] pBuffer Buffer that was created.
 
 This function automatically:
@@ -14911,6 +14926,28 @@ VMA_CALL_PRE void VMA_CALL_POST vmaCalculateStatistics(
     VMA_DEBUG_GLOBAL_MUTEX_LOCK
     allocator->CalculateStatistics(pStats);
 }
+
+// -- GODOT begin --
+VMA_CALL_PRE uint64_t VMA_CALL_POST vmaCalculateLazilyAllocatedBytes(
+    VmaAllocator allocator)
+{
+    VMA_ASSERT(allocator);
+    VMA_DEBUG_GLOBAL_MUTEX_LOCK
+	VmaTotalStatistics stats;
+    allocator->CalculateStatistics(&stats);
+	uint64_t total_lazilily_allocated_bytes = 0;
+	for (uint32_t heapIndex = 0; heapIndex < allocator->GetMemoryHeapCount(); ++heapIndex) {
+		for (uint32_t typeIndex = 0; typeIndex < allocator->GetMemoryTypeCount(); ++typeIndex) {
+			if (allocator->MemoryTypeIndexToHeapIndex(typeIndex) == heapIndex) {
+				VkMemoryPropertyFlags flags = allocator->m_MemProps.memoryTypes[typeIndex].propertyFlags;
+				if (flags & VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT)
+					total_lazilily_allocated_bytes += stats.memoryType[typeIndex].statistics.allocationBytes;
+			}
+		}
+	}
+	return total_lazilily_allocated_bytes;
+}
+// -- GODOT end --
 
 VMA_CALL_PRE void VMA_CALL_POST vmaGetHeapBudgets(
     VmaAllocator allocator,

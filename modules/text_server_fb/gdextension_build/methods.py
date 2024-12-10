@@ -48,14 +48,22 @@ def no_verbose(env):
     # There is a space before "..." to ensure that source file names can be
     # Ctrl + clicked in the VS Code terminal.
     compile_source_message = "{}Compiling {}$SOURCE{} ...{}".format(*colors)
-    java_compile_source_message = "{}Compiling {}$SOURCE{} ...{}".format(*colors)
-    compile_shared_source_message = "{}Compiling shared {}$SOURCE{} ...{}".format(*colors)
-    link_program_message = "{}Linking Program {}$TARGET{} ...{}".format(*colors)
-    link_library_message = "{}Linking Static Library {}$TARGET{} ...{}".format(*colors)
-    ranlib_library_message = "{}Ranlib Library {}$TARGET{} ...{}".format(*colors)
-    link_shared_library_message = "{}Linking Shared Library {}$TARGET{} ...{}".format(*colors)
-    java_library_message = "{}Creating Java Archive {}$TARGET{} ...{}".format(*colors)
-    compiled_resource_message = "{}Creating Compiled Resource {}$TARGET{} ...{}".format(*colors)
+    java_compile_source_message = "{}Compiling {}$SOURCE{} ...{}".format(
+        *colors)
+    compile_shared_source_message = "{}Compiling shared {}$SOURCE{} ...{}".format(
+        *colors)
+    link_program_message = "{}Linking Program {}$TARGET{} ...{}".format(
+        *colors)
+    link_library_message = "{}Linking Static Library {}$TARGET{} ...{}".format(
+        *colors)
+    ranlib_library_message = "{}Ranlib Library {}$TARGET{} ...{}".format(
+        *colors)
+    link_shared_library_message = "{}Linking Shared Library {}$TARGET{} ...{}".format(
+        *colors)
+    java_library_message = "{}Creating Java Archive {}$TARGET{} ...{}".format(
+        *colors)
+    compiled_resource_message = "{}Creating Compiled Resource {}$TARGET{} ...{}".format(
+        *colors)
     generated_file_message = "{}Generating {}$TARGET{} ...{}".format(*colors)
 
     env["CXXCOMSTR"] = compile_source_message
@@ -77,17 +85,13 @@ def disable_warnings(self):
     if self["platform"] == "windows" and not self["use_mingw"]:
         # We have to remove existing warning level defines before appending /w,
         # otherwise we get: "warning D9025 : overriding '/W3' with '/w'"
-        warn_flags = ["/Wall", "/W4", "/W3", "/W2", "/W1", "/WX"]
-        self.Append(CCFLAGS=["/w"])
-        self.Append(CFLAGS=["/w"])
-        self.Append(CXXFLAGS=["/w"])
-        self["CCFLAGS"] = [x for x in self["CCFLAGS"] if x not in warn_flags]
-        self["CFLAGS"] = [x for x in self["CFLAGS"] if x not in warn_flags]
-        self["CXXFLAGS"] = [x for x in self["CXXFLAGS"] if x not in warn_flags]
+        WARN_FLAGS = ["/Wall", "/W4", "/W3", "/W2", "/W1", "/W0"]
+        self["CCFLAGS"] = [x for x in self["CCFLAGS"] if x not in WARN_FLAGS]
+        self["CFLAGS"] = [x for x in self["CFLAGS"] if x not in WARN_FLAGS]
+        self["CXXFLAGS"] = [x for x in self["CXXFLAGS"] if x not in WARN_FLAGS]
+        self.AppendUnique(CCFLAGS=["/w"])
     else:
-        self.Append(CCFLAGS=["-w"])
-        self.Append(CFLAGS=["-w"])
-        self.Append(CXXFLAGS=["-w"])
+        self.AppendUnique(CCFLAGS=["-w"])
 
 
 def make_icu_data(target, source, env):
@@ -95,7 +99,8 @@ def make_icu_data(target, source, env):
     with open(dst, "w", encoding="utf-8", newline="\n") as g:
         g.write("/* THIS FILE IS GENERATED DO NOT EDIT */\n")
         g.write("/* (C) 2016 and later: Unicode, Inc. and others. */\n")
-        g.write("/* License & terms of use: https://www.unicode.org/copyright.html */\n")
+        g.write(
+            "/* License & terms of use: https://www.unicode.org/copyright.html */\n")
         g.write("#ifndef _ICU_DATA_H\n")
         g.write("#define _ICU_DATA_H\n")
         g.write('#include "unicode/utypes.h"\n')
@@ -105,8 +110,10 @@ def make_icu_data(target, source, env):
         with open(source[0].srcnode().abspath, "rb") as f:
             buf = f.read()
 
-        g.write('extern "C" U_EXPORT const size_t U_ICUDATA_SIZE = ' + str(len(buf)) + ";\n")
-        g.write('extern "C" U_EXPORT const unsigned char U_ICUDATA_ENTRY_POINT[] = {\n')
+        g.write('extern "C" U_EXPORT const size_t U_ICUDATA_SIZE = ' +
+                str(len(buf)) + ";\n")
+        g.write(
+            'extern "C" U_EXPORT const unsigned char U_ICUDATA_ENTRY_POINT[] = {\n')
         for i in range(len(buf)):
             g.write("\t" + str(buf[i]) + ",\n")
 
