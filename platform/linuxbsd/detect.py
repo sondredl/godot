@@ -80,7 +80,8 @@ def configure(env: "SConsEnvironment"):
         "arm64",
         "rv64",
         "ppc32",
-        "ppc64"]
+        "ppc64",
+        "loongarch64"]
     validate_arch(env["arch"], get_name(), supported_arches)
 
     # Build type

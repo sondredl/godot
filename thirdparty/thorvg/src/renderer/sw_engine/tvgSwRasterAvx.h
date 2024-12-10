@@ -62,9 +62,9 @@ static inline __m128i ALPHA_BLEND(__m128i c, __m128i a)
 }
 
 
-static void avxRasterGrayscale8(uint8_t* dst, uint8_t val, uint32_t offset, int32_t len) 
+static void avxRasterGrayscale8(uint8_t* dst, uint8_t val, uint32_t offset, int32_t len)
 {
-    dst += offset; 
+    dst += offset;
 
     __m256i vecVal = _mm256_set1_epi8(val);
 
@@ -158,7 +158,7 @@ static bool avxRasterTranslucentRect(SwSurface* surface, const SwBBox& region, u
 }
 
 
-static bool avxRasterTranslucentRle(SwSurface* surface, const SwRleData* rle, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
+static bool avxRasterTranslucentRle(SwSurface* surface, const SwRle* rle, uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 {
     auto span = rle->spans;
 
@@ -185,7 +185,7 @@ static bool avxRasterTranslucentRle(SwSurface* surface, const SwRleData* rle, ui
             }
 
             //2. fill the aligned memory using avx - N_32BITS_IN_128REG pixels processed at once
-            //In order to avoid unneccessary avx variables declarations a check is made whether there are any iterations at all
+            //In order to avoid unnecessary avx variables declarations a check is made whether there are any iterations at all
             uint32_t iterations = (span->len - notAligned) / N_32BITS_IN_128REG;
             uint32_t avxFilled = 0;
             if (iterations > 0) {

@@ -25,21 +25,29 @@ for file in sys.argv[1:]:
             if sline == "":  # Skip empty lines at the top.
                 continue
 
-            if sline.startswith("/**********"):  # Godot header starts this way.
+            # Godot header starts this way.
+            if sline.startswith("/**********"):
                 header_start = idx
             else:
                 HEADER_CHECK_OFFSET = 0  # There is no Godot header.
                 break
         else:
-            if not sline.startswith("*") and not sline.startswith("/*"):  # Not in the Godot header anymore.
-                HEADER_CHECK_OFFSET = idx + 1  # The include should be two lines below the Godot header.
+            # Not in the Godot header anymore.
+            if not sline.startswith("*") and not sline.startswith("/*"):
+                # The include should be two lines below the Godot header.
+                HEADER_CHECK_OFFSET = idx + 1
                 break
 
     if HEADER_CHECK_OFFSET < 0:
+        invalid.append(file)
         continue
 
     HEADER_BEGIN_OFFSET = HEADER_CHECK_OFFSET + 1
     HEADER_END_OFFSET = len(lines) - 1
+
+    if HEADER_BEGIN_OFFSET >= HEADER_END_OFFSET:
+        invalid.append(file)
+        continue
 
     split = file.split("/")  # Already in posix-format.
 
@@ -63,8 +71,14 @@ for file in sys.argv[1:]:
     elif split[-1] == "ustring.h":
         suffix = "_GODOT"
 
-    name = (f"{prefix}{Path(file).stem}{suffix}{Path(file).suffix}".upper()
-            .replace(".", "_").replace("-", "_").replace(" ", "_"))  # fmt: skip
+    name = (
+        f"{prefix}{Path(file).stem}{suffix}{Path(file).suffix}".upper() .replace(
+            ".",
+            "_").replace(
+            "-",
+            "_").replace(
+                " ",
+            "_"))  # fmt: skip
 
     HEADER_CHECK = f"#ifndef {name}\n"
     HEADER_BEGIN = f"#define {name}\n"
@@ -98,7 +112,8 @@ for file in sys.argv[1:]:
     objc = False
 
     for idx, line in enumerate(lines):
-        if line.startswith("// #import"):  # Some dummy obj-c files only have commented out import lines.
+        # Some dummy obj-c files only have commented out import lines.
+        if line.startswith("// #import"):
             objc = True
             break
         if not line.startswith("#"):
