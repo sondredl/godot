@@ -1384,9 +1384,9 @@ Error RenderingDeviceDriverVulkan::initialize(uint32_t p_device_index, uint32_t 
 	vkGetPhysicalDeviceProperties(physical_device, &physical_device_properties);
 
 	// Workaround a driver bug on Adreno 730 GPUs that keeps leaking memory on each call to vkResetDescriptorPool.
-	// Which eventually run out of memory. in such case we should not be using linear allocated pools
-	// Bug introduced in driver 512.597.0 and fixed in 512.671.0
-	// Confirmed by Qualcomm
+	// Which eventually run out of memory. In such case we should not be using linear allocated pools
+	// Bug introduced in driver 512.597.0 and fixed in 512.671.0.
+	// Confirmed by Qualcomm.
 	if (linear_descriptor_pools_enabled) {
 		const uint32_t reset_descriptor_pool_broken_driver_begin = VK_MAKE_VERSION(512u, 597u, 0u);
 		const uint32_t reset_descriptor_pool_fixed_driver_begin = VK_MAKE_VERSION(512u, 671u, 0u);
@@ -1749,7 +1749,7 @@ RDD::TextureID RenderingDeviceDriverVulkan::texture_create(const TextureFormat &
 			// VUID-VkImageCreateInfo-usage-00963 :
 			// If usage includes VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT,
 			// then bits other than VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-			// and VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT must not be set
+			// and VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT must not be set.
 			create_info.usage &= (VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT);
 		} else {
 			alloc_create_info.preferredFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
@@ -1898,10 +1898,10 @@ RDD::TextureID RenderingDeviceDriverVulkan::texture_create_shared(TextureID p_or
 				vkGetPhysicalDeviceFormatProperties(physical_device, RD_TO_VK_FORMAT[p_view.format], &properties);
 				const VkFormatFeatureFlags &supported_flags = owner_tex_info->vk_create_info.tiling == VK_IMAGE_TILING_LINEAR ? properties.linearTilingFeatures : properties.optimalTilingFeatures;
 				if ((usage_info->usage & VK_IMAGE_USAGE_STORAGE_BIT) && !(supported_flags & VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT)) {
-					usage_info->usage &= ~VK_IMAGE_USAGE_STORAGE_BIT;
+					usage_info->usage &= ~uint32_t(VK_IMAGE_USAGE_STORAGE_BIT);
 				}
 				if ((usage_info->usage & VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT) && !(supported_flags & VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT)) {
-					usage_info->usage &= ~VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+					usage_info->usage &= ~uint32_t(VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT);
 				}
 			}
 
@@ -3441,7 +3441,7 @@ Vector<uint8_t> RenderingDeviceDriverVulkan::shader_compile_binary_from_spirv(Ve
 
 	binary_data.shader_name_len = shader_name_utf.length();
 
-	uint32_t total_size = sizeof(uint32_t) * 3; // Header + version + main datasize;.
+	uint32_t total_size = sizeof(uint32_t) * 4; // Header + version + pad + main datasize;.
 	total_size += sizeof(ShaderBinary::Data);
 
 	total_size += STEPIFY(binary_data.shader_name_len, 4);
@@ -3469,6 +3469,8 @@ Vector<uint8_t> RenderingDeviceDriverVulkan::shader_compile_binary_from_spirv(Ve
 		encode_uint32(ShaderBinary::VERSION, binptr + offset);
 		offset += sizeof(uint32_t);
 		encode_uint32(sizeof(ShaderBinary::Data), binptr + offset);
+		offset += sizeof(uint32_t);
+		encode_uint32(0, binptr + offset); // Pad to align ShaderBinary::Data to 8 bytes.
 		offset += sizeof(uint32_t);
 		memcpy(binptr + offset, &binary_data, sizeof(ShaderBinary::Data));
 		offset += sizeof(ShaderBinary::Data);
@@ -3528,7 +3530,7 @@ RDD::ShaderID RenderingDeviceDriverVulkan::shader_create_from_bytecode(const Vec
 	uint32_t read_offset = 0;
 
 	// Consistency check.
-	ERR_FAIL_COND_V(binsize < sizeof(uint32_t) * 3 + sizeof(ShaderBinary::Data), ShaderID());
+	ERR_FAIL_COND_V(binsize < sizeof(uint32_t) * 4 + sizeof(ShaderBinary::Data), ShaderID());
 	ERR_FAIL_COND_V(binptr[0] != 'G' || binptr[1] != 'S' || binptr[2] != 'B' || binptr[3] != 'D', ShaderID());
 
 	uint32_t bin_version = decode_uint32(binptr + 4);
@@ -3536,7 +3538,8 @@ RDD::ShaderID RenderingDeviceDriverVulkan::shader_create_from_bytecode(const Vec
 
 	uint32_t bin_data_size = decode_uint32(binptr + 8);
 
-	const ShaderBinary::Data &binary_data = *(reinterpret_cast<const ShaderBinary::Data *>(binptr + 12));
+	// 16, not 12, to skip alignment padding.
+	const ShaderBinary::Data &binary_data = *(reinterpret_cast<const ShaderBinary::Data *>(binptr + 16));
 
 	r_shader_desc.push_constant_size = binary_data.push_constant_size;
 	shader_info.vk_push_constant_stages = binary_data.vk_push_constant_stages_mask;
@@ -3549,7 +3552,7 @@ RDD::ShaderID RenderingDeviceDriverVulkan::shader_create_from_bytecode(const Vec
 	r_shader_desc.compute_local_size[1] = binary_data.compute_local_size[1];
 	r_shader_desc.compute_local_size[2] = binary_data.compute_local_size[2];
 
-	read_offset += sizeof(uint32_t) * 3 + bin_data_size;
+	read_offset += sizeof(uint32_t) * 4 + bin_data_size;
 
 	if (binary_data.shader_name_len) {
 		r_name.parse_utf8((const char *)(binptr + read_offset), binary_data.shader_name_len);
@@ -5925,7 +5928,7 @@ RenderingDeviceDriverVulkan::~RenderingDeviceDriverVulkan() {
 	}
 	vmaDestroyAllocator(allocator);
 
-	// Destroy linearly allocated descriptor pools
+	// Destroy linearly allocated descriptor pools.
 	for (KeyValue<int, DescriptorSetPools> &pool_map : linear_descriptor_set_pools) {
 		for (KeyValue<DescriptorSetPoolKey, HashMap<VkDescriptorPool, uint32_t>> pools : pool_map.value) {
 			for (KeyValue<VkDescriptorPool, uint32_t> descriptor_pool : pools.value) {

@@ -1258,6 +1258,18 @@ void TreeItem::deselect(int p_column) {
 	_cell_deselected(p_column);
 }
 
+void TreeItem::clear_buttons() {
+	int i = 0;
+	for (Cell &cell : cells) {
+		if (!cell.buttons.is_empty()) {
+			cell.buttons.clear();
+			cell.cached_minimum_size_dirty = true;
+			_changed_notify(i);
+		}
+		++i;
+	}
+}
+
 void TreeItem::add_button(int p_column, const Ref<Texture2D> &p_button, int p_id, bool p_disabled, const String &p_tooltip) {
 	ERR_FAIL_INDEX(p_column, cells.size());
 	ERR_FAIL_COND(!p_button.is_valid());
@@ -1768,6 +1780,7 @@ void TreeItem::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_custom_as_button", "column", "enable"), &TreeItem::set_custom_as_button);
 	ClassDB::bind_method(D_METHOD("is_custom_set_as_button", "column"), &TreeItem::is_custom_set_as_button);
 
+	ClassDB::bind_method(D_METHOD("clear_buttons"), &TreeItem::clear_buttons);
 	ClassDB::bind_method(D_METHOD("add_button", "column", "button", "id", "disabled", "tooltip_text"), &TreeItem::add_button, DEFVAL(-1), DEFVAL(false), DEFVAL(""));
 	ClassDB::bind_method(D_METHOD("get_button_count", "column"), &TreeItem::get_button_count);
 	ClassDB::bind_method(D_METHOD("get_button_tooltip_text", "column", "button_index"), &TreeItem::get_button_tooltip_text);
@@ -3726,7 +3739,7 @@ void Tree::gui_input(const Ref<InputEvent> &p_event) {
 		_determine_hovered_item();
 
 		bool rtl = is_layout_rtl();
-		if (pressing_for_editor && popup_pressing_edited_item && (popup_pressing_edited_item->get_cell_mode(popup_pressing_edited_item_column) == TreeItem::CELL_MODE_RANGE)) {
+		if (pressing_for_editor && popup_pressing_edited_item && !popup_pressing_edited_item->cells.is_empty() && (popup_pressing_edited_item->get_cell_mode(popup_pressing_edited_item_column) == TreeItem::CELL_MODE_RANGE)) {
 			/* This needs to happen now, because the popup can be closed when pressing another item, and must remain the popup edited item until it actually closes */
 			popup_edited_item = popup_pressing_edited_item;
 			popup_edited_item_col = popup_pressing_edited_item_column;
@@ -3845,7 +3858,7 @@ void Tree::gui_input(const Ref<InputEvent> &p_event) {
 					if (drag_speed == 0) {
 						drag_touching_deaccel = false;
 						drag_touching = false;
-						set_physics_process_internal(false);
+						set_process_internal(false);
 					} else {
 						drag_touching_deaccel = true;
 					}
@@ -3932,7 +3945,7 @@ void Tree::gui_input(const Ref<InputEvent> &p_event) {
 				}
 
 				if (drag_touching) {
-					set_physics_process_internal(false);
+					set_process_internal(false);
 					drag_touching_deaccel = false;
 					drag_touching = false;
 					drag_speed = 0;
@@ -3947,7 +3960,7 @@ void Tree::gui_input(const Ref<InputEvent> &p_event) {
 					drag_touching = DisplayServer::get_singleton()->is_touchscreen_available();
 					drag_touching_deaccel = false;
 					if (drag_touching) {
-						set_physics_process_internal(true);
+						set_process_internal(true);
 					}
 
 					if (mb->get_button_index() == MouseButton::LEFT) {
@@ -4427,7 +4440,7 @@ void Tree::_notification(int p_what) {
 		case NOTIFICATION_DRAG_END: {
 			drop_mode_flags = 0;
 			scrolling = false;
-			set_physics_process_internal(false);
+			set_process_internal(false);
 			queue_redraw();
 		} break;
 
@@ -4435,21 +4448,21 @@ void Tree::_notification(int p_what) {
 			single_select_defer = nullptr;
 			if (theme_cache.scroll_speed > 0) {
 				scrolling = true;
-				set_physics_process_internal(true);
+				set_process_internal(true);
 			}
 		} break;
 
-		case NOTIFICATION_INTERNAL_PHYSICS_PROCESS: {
+		case NOTIFICATION_INTERNAL_PROCESS: {
 			if (drag_touching) {
 				if (drag_touching_deaccel) {
 					float pos = v_scroll->get_value();
-					pos += drag_speed * get_physics_process_delta_time();
+					pos += drag_speed * get_process_delta_time();
 
 					bool turnoff = false;
 					if (pos < 0) {
 						pos = 0;
 						turnoff = true;
-						set_physics_process_internal(false);
+						set_process_internal(false);
 						drag_touching = false;
 						drag_touching_deaccel = false;
 					}
@@ -4461,7 +4474,7 @@ void Tree::_notification(int p_what) {
 					v_scroll->set_value(pos);
 					float sgn = drag_speed < 0 ? -1 : 1;
 					float val = Math::abs(drag_speed);
-					val -= 1000 * get_physics_process_delta_time();
+					val -= 1000 * get_process_delta_time();
 
 					if (val < 0) {
 						turnoff = true;
@@ -4469,7 +4482,7 @@ void Tree::_notification(int p_what) {
 					drag_speed = sgn * val;
 
 					if (turnoff) {
-						set_physics_process_internal(false);
+						set_process_internal(false);
 						drag_touching = false;
 						drag_touching_deaccel = false;
 					}
@@ -4492,7 +4505,7 @@ void Tree::_notification(int p_what) {
 					point.y = mouse_position.y - (get_size().height - theme_cache.scroll_border);
 				}
 
-				point *= theme_cache.scroll_speed * get_physics_process_delta_time();
+				point *= theme_cache.scroll_speed * get_process_delta_time();
 				point += get_scroll();
 				h_scroll->set_value(point.x);
 				v_scroll->set_value(point.y);

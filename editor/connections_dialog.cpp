@@ -735,6 +735,7 @@ ConnectDialog::ConnectDialog() {
 	from_signal->set_editable(false);
 
 	tree = memnew(SceneTreeEditor(false));
+	tree->set_update_when_invisible(false);
 	tree->set_connecting_signal(true);
 	tree->set_show_enabled_subscene(true);
 	tree->set_v_size_flags(Control::SIZE_FILL | Control::SIZE_EXPAND);
@@ -911,9 +912,7 @@ Control *ConnectionsDockTree::make_custom_tooltip(const String &p_text) const {
 		return nullptr;
 	}
 
-	EditorHelpBit *help_bit = memnew(EditorHelpBit(p_text));
-	EditorHelpBitTooltip::show_tooltip(help_bit, const_cast<ConnectionsDockTree *>(this));
-	return memnew(Control); // Make the standard tooltip invisible.
+	return EditorHelpBitTooltip::show_tooltip(const_cast<ConnectionsDockTree *>(this), p_text);
 }
 
 struct _ConnectionsDockMethodInfoSort {

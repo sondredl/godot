@@ -703,13 +703,18 @@ def detect_darwin_sdk_path(platform, env):
 
 
 def is_apple_clang(env):
+    import shlex
+
     if env["platform"] not in ["macos", "ios"]:
         return False
     if not using_clang(env):
         return False
     try:
         version = subprocess.check_output(
-            [env.subst(env["CXX"]), "--version"]).strip().decode("utf-8")
+            shlex.split(
+                env.subst(
+                    env["CXX"])) +
+            ["--version"]).strip().decode("utf-8")
     except (subprocess.CalledProcessError, OSError):
         print_warning(
             "Couldn't parse CXX environment variable to infer compiler version.")
@@ -725,6 +730,8 @@ def get_compiler_version(env):
     - metadata1, metadata2: Extra information
     - date: Date of the build
     """
+    import shlex
+
     ret = {
         "major": -1,
         "minor": -1,
@@ -776,8 +783,13 @@ def get_compiler_version(env):
     # Clang used to return hardcoded 4.2.1: # https://reviews.llvm.org/D56803
     try:
         version = subprocess.check_output(
-            [env.subst(env["CXX"]), "--version"], shell=(os.name == "nt"), encoding="utf-8"
-        ).strip()
+            shlex.split(
+                env.subst(
+                    env["CXX"])) +
+            ["--version"],
+            shell=(
+                os.name == "nt"),
+            encoding="utf-8").strip()
     except (subprocess.CalledProcessError, OSError):
         print_warning(
             "Couldn't parse CXX environment variable to infer compiler version.")

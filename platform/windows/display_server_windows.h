@@ -167,7 +167,7 @@ typedef bool(WINAPI *ShouldAppsUseDarkModePtr)();
 typedef DWORD(WINAPI *GetImmersiveColorFromColorSetExPtr)(UINT dwImmersiveColorSet, UINT dwImmersiveColorType, bool bIgnoreHighContrast, UINT dwHighContrastCacheMode);
 typedef int(WINAPI *GetImmersiveColorTypeFromNamePtr)(const WCHAR *name);
 typedef int(WINAPI *GetImmersiveUserColorSetPreferencePtr)(bool bForceCheckRegistry, bool bSkipCheckOnFail);
-typedef HRESULT(WINAPI *RtlGetVersionPtr)(OSVERSIONINFOW *lpVersionInformation);
+typedef HRESULT(WINAPI *RtlGetVersionPtr)(OSVERSIONINFOEXW *lpVersionInformation);
 typedef bool(WINAPI *AllowDarkModeForAppPtr)(bool darkMode);
 typedef PreferredAppMode(WINAPI *SetPreferredAppModePtr)(PreferredAppMode appMode);
 typedef void(WINAPI *RefreshImmersiveColorPolicyStatePtr)();
@@ -419,7 +419,7 @@ class DisplayServerWindows : public DisplayServer {
 		TIMER_ID_WINDOW_ACTIVATION = 2,
 	};
 
-	OSVERSIONINFOW os_ver;
+	OSVERSIONINFOEXW os_ver;
 
 	enum {
 		KEY_EVENT_BUFFER_SIZE = 512
@@ -634,6 +634,8 @@ class DisplayServerWindows : public DisplayServer {
 
 	void _drag_event(WindowID p_window, float p_x, float p_y, int idx);
 	void _touch_event(WindowID p_window, bool p_pressed, float p_x, float p_y, int idx);
+
+	bool _is_always_on_top_recursive(WindowID p_window) const;
 
 	void _update_window_style(WindowID p_window, bool p_repaint = true);
 	void _update_window_mouse_passthrough(WindowID p_window);
