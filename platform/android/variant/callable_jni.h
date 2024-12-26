@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  gdextension_compat_hashes.h                                           */
+/*  callable_jni.h                                                        */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -28,31 +28,16 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef GDEXTENSION_COMPAT_HASHES_H
-#define GDEXTENSION_COMPAT_HASHES_H
+#ifndef CALLABLE_JNI_H
+#define CALLABLE_JNI_H
 
-#ifndef DISABLE_DEPRECATED
+#include <jni.h>
 
-#include "core/string/string_name.h"
-#include "core/templates/hash_map.h"
-#include "core/templates/local_vector.h"
+extern "C" {
+JNIEXPORT jobject JNICALL Java_org_godotengine_godot_variant_Callable_nativeCall(JNIEnv *p_env, jclass p_clazz, jlong p_native_callable, jobjectArray p_parameters);
+JNIEXPORT jobject JNICALL Java_org_godotengine_godot_variant_Callable_nativeCallObject(JNIEnv *p_env, jclass p_clazz, jlong p_object_id, jstring p_method_name, jobjectArray p_parameters);
+JNIEXPORT void JNICALL Java_org_godotengine_godot_variant_Callable_nativeCallObjectDeferred(JNIEnv *p_env, jclass p_clazz, jlong p_object_id, jstring p_method_name, jobjectArray p_parameters);
+JNIEXPORT void JNICALL Java_org_godotengine_godot_variant_Callable_releaseNativePointer(JNIEnv *p_env, jclass clazz, jlong p_native_pointer);
+}
 
-class GDExtensionCompatHashes {
-	struct Mapping {
-		StringName method;
-		uint32_t legacy_hash;
-		uint32_t current_hash;
-	};
-
-	static HashMap<StringName, LocalVector<Mapping>> mappings;
-
-public:
-	static void initialize();
-	static void finalize();
-	static bool lookup_current_hash(const StringName &p_class, const StringName &p_method, uint32_t p_legacy_hash, uint32_t *r_current_hash);
-	static bool get_legacy_hashes(const StringName &p_class, const StringName &p_method, Array &r_hashes, bool p_check_valid = true);
-};
-
-#endif // DISABLE_DEPRECATED
-
-#endif // GDEXTENSION_COMPAT_HASHES_H
+#endif // CALLABLE_JNI_H

@@ -30,15 +30,7 @@
 
 #include "multiplayer_api.h"
 
-#include "core/debugger/engine_debugger.h"
 #include "core/io/marshalls.h"
-
-#include <cstdint>
-
-#ifdef DEBUG_ENABLED
-#include "core/os/os.h"
-#endif
-
 StringName MultiplayerAPI::default_interface;
 
 void MultiplayerAPI::set_default_interface(const StringName &p_interface) {

@@ -30,12 +30,10 @@
 
 #include "memory.h"
 
-#include "core/error/error_macros.h"
 #include "core/templates/safe_refcount.h"
 
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
+#include <stdlib.h>
+#include <string.h>
 
 void *operator new(size_t p_size, const char *p_description) {
 	return Memory::alloc_static(p_size, false);
@@ -87,7 +85,9 @@ void *Memory::realloc_aligned_static(void *p_memory, size_t p_bytes, size_t p_pr
 	}
 
 	void *ret = alloc_aligned_static(p_bytes, p_alignment);
-	memcpy(ret, p_memory, p_prev_bytes);
+	if (ret) {
+		memcpy(ret, p_memory, p_prev_bytes);
+	}
 	free_aligned_static(p_memory);
 	return ret;
 }

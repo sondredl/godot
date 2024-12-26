@@ -30,7 +30,7 @@
 
 #include "collada.h"
 
-#include <cstdio>
+#include "core/config/project_settings.h"
 
 //#define DEBUG_DEFAULT_ANIMATION
 //#define DEBUG_COLLADA

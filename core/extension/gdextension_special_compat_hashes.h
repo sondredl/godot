@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  string_android.h                                                      */
+/*  gdextension_special_compat_hashes.h                                   */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -28,34 +28,35 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-#ifndef STRING_ANDROID_H
-#define STRING_ANDROID_H
+#ifndef GDEXTENSION_SPECIAL_COMPAT_HASHES_H
+#define GDEXTENSION_SPECIAL_COMPAT_HASHES_H
 
-#include "thread_jandroid.h"
+#ifndef DISABLE_DEPRECATED
 
-#include "core/string/ustring.h"
+#include "core/string/string_name.h"
+#include "core/templates/hash_map.h"
+#include "core/templates/local_vector.h"
 
-#include <jni.h>
+// Note: In most situations, compatibility methods should be registered via ClassDB::bind_compatibility_method().
+//       This class is only meant to be used in exceptional circumstances, for example, when Godot's hashing
+//       algorithm changes and registering compatibility methods for all affect methods would be onerous.
 
-/**
- * Converts JNI jstring to Godot String.
- * @param source Source JNI string. If null an empty string is returned.
- * @param env JNI environment instance. If null obtained by get_jni_env().
- * @return Godot string instance.
- */
-static inline String jstring_to_string(jstring source, JNIEnv *env = nullptr) {
-	String result;
-	if (source) {
-		if (!env) {
-			env = get_jni_env();
-		}
-		const char *const source_utf8 = env->GetStringUTFChars(source, nullptr);
-		if (source_utf8) {
-			result.parse_utf8(source_utf8);
-			env->ReleaseStringUTFChars(source, source_utf8);
-		}
-	}
-	return result;
-}
+class GDExtensionSpecialCompatHashes {
+	struct Mapping {
+		StringName method;
+		uint32_t legacy_hash;
+		uint32_t current_hash;
+	};
 
-#endif // STRING_ANDROID_H
+	static HashMap<StringName, LocalVector<Mapping>> mappings;
+
+public:
+	static void initialize();
+	static void finalize();
+	static bool lookup_current_hash(const StringName &p_class, const StringName &p_method, uint32_t p_legacy_hash, uint32_t *r_current_hash);
+	static bool get_legacy_hashes(const StringName &p_class, const StringName &p_method, Array &r_hashes, bool p_check_valid = true);
+};
+
+#endif // DISABLE_DEPRECATED
+
+#endif // GDEXTENSION_SPECIAL_COMPAT_HASHES_H

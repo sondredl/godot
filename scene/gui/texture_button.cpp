@@ -32,8 +32,6 @@
 
 #include "core/typedefs.h"
 
-#include <cstdlib>
-
 Size2 TextureButton::get_minimum_size() const {
 	Size2 rscale = Control::get_minimum_size();
 
