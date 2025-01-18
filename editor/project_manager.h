@@ -70,7 +70,7 @@ class ProjectManager : public Control {
 
 	Ref<Theme> theme;
 
-	void _update_size_limits();
+	void _update_size_limits(bool p_custom_res);
 	void _update_theme(bool p_skip_creation = false);
 	void _titlebar_resized();
 
@@ -240,7 +240,7 @@ class ProjectManager : public Control {
 
 	// Input and I/O.
 
-	void shortcut_input(const Ref<InputEvent> &p_ev) override;
+	virtual void shortcut_input(const Ref<InputEvent> &p_ev) override;
 
 	void _files_dropped(PackedStringArray p_files);
 
@@ -249,6 +249,9 @@ protected:
 
 public:
 	static ProjectManager *get_singleton() { return singleton; }
+
+	static constexpr int DEFAULT_WINDOW_WIDTH = 1152;
+	static constexpr int DEFAULT_WINDOW_HEIGHT = 800;
 
 	// Project list.
 
@@ -259,8 +262,8 @@ public:
 
 	void add_new_tag(const String &p_tag);
 
-	ProjectManager();
-	~ProjectManager() override;
+	ProjectManager(bool p_custom_res);
+	~ProjectManager();
 };
 
 #endif // PROJECT_MANAGER_H

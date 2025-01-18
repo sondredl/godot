@@ -38,14 +38,20 @@ def make_certs_header(target, source, env):
         g.write("#ifndef CERTS_COMPRESSED_GEN_H\n")
         g.write("#define CERTS_COMPRESSED_GEN_H\n")
 
-        # System certs path. Editor will use them if defined. (for package maintainers)
+        # System certs path. Editor will use them if defined. (for package
+        # maintainers)
         path = env["system_certs_path"]
         g.write('#define _SYSTEM_CERTS_PATH "%s"\n' % str(path))
         if env["builtin_certs"]:
-            # Defined here and not in env so changing it does not trigger a full rebuild.
+            # Defined here and not in env so changing it does not trigger a
+            # full rebuild.
             g.write("#define BUILTIN_CERTS_ENABLED\n")
-            g.write("static const int _certs_compressed_size = " + str(len(buf)) + ";\n")
-            g.write("static const int _certs_uncompressed_size = " + str(decomp_size) + ";\n")
+            g.write("static const int _certs_compressed_size = " +
+                    str(len(buf)) + ";\n")
+            g.write(
+                "static const int _certs_uncompressed_size = " +
+                str(decomp_size) +
+                ";\n")
             g.write("static const unsigned char _certs_compressed[] = {\n")
             for i in range(len(buf)):
                 g.write("\t" + str(buf[i]) + ",\n")
@@ -93,7 +99,10 @@ def make_authors_header(target, source, env):
                     if line.strip().endswith(section):
                         current_section = escape_string(section_id)
                         reading = True
-                        g.write("const char *const " + current_section + "[] = {\n")
+                        g.write(
+                            "const char *const " +
+                            current_section +
+                            "[] = {\n")
                         break
 
         if reading:
@@ -150,7 +159,10 @@ def make_donors_header(target, source, env):
                     if line.strip().endswith(section):
                         current_section = escape_string(section_id)
                         reading = True
-                        g.write("const char *const " + current_section + "[] = {\n")
+                        g.write(
+                            "const char *const " +
+                            current_section +
+                            "[] = {\n")
                         break
 
         if reading:
@@ -200,8 +212,8 @@ def make_license_header(target, source, env):
             tag, content = reader.next_tag()
             if tag in ("Files", "Copyright", "License"):
                 part[tag] = content[:]
-            elif tag == "Comment":
-                # attach part to named project
+            elif tag == "Comment" and part:
+                # attach non-empty part to named project
                 projects[content[0]] = projects.get(content[0], []) + [part]
 
             if not tag or not reader.current:
@@ -279,7 +291,8 @@ def make_license_header(target, source, env):
                 part_index += 1
         f.write("};\n\n")
 
-        f.write("const int COPYRIGHT_INFO_COUNT = " + str(len(projects)) + ";\n")
+        f.write("const int COPYRIGHT_INFO_COUNT = " +
+                str(len(projects)) + ";\n")
 
         f.write("const ComponentCopyright COPYRIGHT_INFO[] = {\n")
         for project_name, project in iter(projects.items()):
