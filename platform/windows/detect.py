@@ -169,6 +169,13 @@ def detect_build_env_arch():
     return ""
 
 
+def get_tools(env: "SConsEnvironment"):
+    if os.name != "nt" or env["use_mingw"]:
+        return ["mingw"]
+    else:
+        return ["default"]
+
+
 def get_opts():
     from SCons.Variables import BoolVariable, EnumVariable
 
@@ -347,10 +354,6 @@ def setup_mingw(env: "SConsEnvironment"):
         print_error(
             "No valid compilers found, use MINGW_PREFIX environment variable to set MinGW path.")
         sys.exit(255)
-
-    env.Tool("mingw")
-    env.AppendUnique(CCFLAGS=env.get("ccflags", "").split())
-    env.AppendUnique(RCFLAGS=env.get("rcflags", "").split())
 
     print("Using MinGW, arch %s" % (env["arch"]))
 
