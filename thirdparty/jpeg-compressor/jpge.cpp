@@ -3,7 +3,7 @@
 // Also supports using luma quantization tables for chroma.
 //
 // Released under two licenses. You are free to choose which license you want:
-// License 1: 
+// License 1:
 // Public Domain
 //
 // License 2:
@@ -30,6 +30,7 @@
 
 #include "jpge.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -933,7 +934,6 @@ namespace jpge {
 	}
 
 	// Higher level wrappers/examples (optional).
-#include <stdio.h>
 
 	class cfile_stream : public output_stream
 	{

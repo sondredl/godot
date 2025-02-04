@@ -1034,7 +1034,7 @@ def make_rst_class(
         # Ascendants
         if class_def.inherits:
             inherits = class_def.inherits.strip()
-            f.write(f'**{translate("Inherits:")}** ')
+            f.write(f"**{translate('Inherits:')}** ")
             first = True
             while inherits is not None:
                 if not first:
@@ -1061,7 +1061,7 @@ def make_rst_class(
                 inherited.append(c.name)
 
         if len(inherited):
-            f.write(f'**{translate("Inherited By:")}** ')
+            f.write(f"**{translate('Inherited By:')}** ")
             for i, child in enumerate(inherited):
                 if i > 0:
                     f.write(", ")
@@ -1621,7 +1621,7 @@ def make_type(klass: str, state: State) -> str:
 
     # Typed array, strip [] to link to contained type.
     if klass.endswith("[]"):
-        return f":ref:`Array<class_Array>`\\[{resolve_type(klass[:-len('[]')])}\\]"
+        return f":ref:`Array<class_Array>`\\[{resolve_type(klass[: -len('[]')])}\\]"
 
     # Typed dictionary, split elements to link contained types.
     if klass.startswith("Dictionary["):
@@ -2744,7 +2744,7 @@ def format_table(f: TextIO, data: List[Tuple[Optional[str], ...]],
         for i, text in enumerate(row):
             if column_sizes[i] == 0 and remove_empty_columns:
                 continue
-            row_text += f' {(text or "").ljust(column_sizes[i])} |'
+            row_text += f" {(text or '').ljust(column_sizes[i])} |"
         row_text += "\n"
 
         f.write(f"   {row_text}")
