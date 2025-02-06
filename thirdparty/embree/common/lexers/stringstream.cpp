@@ -6,7 +6,7 @@
 namespace embree
 {
   static const std::string stringChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 _.,+-=:/*\\";
-  
+
   /* creates map for fast categorization of characters */
   static void createCharMap(bool map[256], const std::string& chrs) {
     for (size_t i=0; i<256; i++) map[i] = false;
@@ -39,12 +39,10 @@ namespace embree
     std::vector<char> str; str.reserve(64);
     while (cin->peek() != EOF && !isSeparator(cin->peek())) {
       int c = cin->get();
-      // -- GODOT start --
-      // if (!isValidChar(c)) throw std::runtime_error("invalid character "+std::string(1,c)+" in input");
+      //if (!isValidChar(c)) throw std::runtime_error("invalid character "+std::string(1,c)+" in input");
       if (!isValidChar(c)) {
         abort();
       }
-      // -- GODOT end --
       str.push_back((char)c);
     }
     str.push_back(0);

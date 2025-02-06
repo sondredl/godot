@@ -52,11 +52,9 @@
 		FfxFloat32    fDeltaTime;
 		FfxFloat32    fDynamicResChangeFactor;
 		FfxFloat32    fViewSpaceToMetersFactor;
-		
-		// -- GODOT start --
+
 		FfxFloat32    fPad;
 		mat4          mReprojectionMatrix;
-		// -- GODOT end --
 	} cbFSR2;
 #endif
 
@@ -227,7 +225,7 @@ layout (set = 0, binding = 1) uniform sampler s_LinearClamp;
 #endif
 #if defined(FSR2_BIND_SRV_DILATED_REACTIVE_MASKS)
 	layout (set = 1, binding = FSR2_BIND_SRV_DILATED_REACTIVE_MASKS)                  uniform texture2D  r_dilated_reactive_masks;
-#endif			 
+#endif
 #if defined(FSR2_BIND_SRV_PREV_PRE_ALPHA_COLOR)
 	layout(set = 1, binding = FSR2_BIND_SRV_PREV_PRE_ALPHA_COLOR) 				      uniform texture2D  r_input_prev_color_pre_alpha;
 #endif
@@ -274,14 +272,14 @@ layout (set = 0, binding = 1) uniform sampler s_LinearClamp;
 #endif
 #if defined FSR2_BIND_UAV_DILATED_REACTIVE_MASKS
 	layout (set = 1, binding = FSR2_BIND_UAV_DILATED_REACTIVE_MASKS, rg8)                 writeonly uniform image2D	 rw_dilated_reactive_masks;
-#endif 
-#if defined FSR2_BIND_UAV_EXPOSURE 
+#endif
+#if defined FSR2_BIND_UAV_EXPOSURE
 	layout (set = 1, binding = FSR2_BIND_UAV_EXPOSURE, rg32f)                         uniform image2D    rw_exposure;
 #endif
 #if defined FSR2_BIND_UAV_AUTO_EXPOSURE
 	layout(set = 1, binding = FSR2_BIND_UAV_AUTO_EXPOSURE, rg32f)                         uniform image2D    rw_auto_exposure;
 #endif
-#if defined FSR2_BIND_UAV_SPD_GLOBAL_ATOMIC 
+#if defined FSR2_BIND_UAV_SPD_GLOBAL_ATOMIC
 	layout (set = 1, binding = FSR2_BIND_UAV_SPD_GLOBAL_ATOMIC, r32ui)       coherent uniform uimage2D   rw_spd_global_atomic;
 #endif
 
@@ -319,16 +317,14 @@ FfxFloat32 LoadInputDepth(FfxInt32x2 iPxPos)
 }
 #endif
 
-#if defined(FSR2_BIND_SRV_REACTIVE_MASK) 
+#if defined(FSR2_BIND_SRV_REACTIVE_MASK)
 FfxFloat32 LoadReactiveMask(FfxInt32x2 iPxPos)
 {
-// -- GODOT start --
 #if FFX_FSR2_OPTION_GODOT_REACTIVE_MASK_CLAMP
 	return min(texelFetch(r_reactive_mask, FfxInt32x2(iPxPos), 0).r, 0.9f);
 #else
 	return texelFetch(r_reactive_mask, FfxInt32x2(iPxPos), 0).r;
 #endif
-// -- GODOT end --
 }
 #endif
 
@@ -365,7 +361,6 @@ FfxFloat32x2 LoadInputMotionVector(FfxInt32x2 iPxDilatedMotionVectorPos)
 {
 	FfxFloat32x2 fSrcMotionVector = texelFetch(r_input_motion_vectors, iPxDilatedMotionVectorPos, 0).xy;
 
-// -- GODOT start --
 #if FFX_FSR2_OPTION_GODOT_DERIVE_INVALID_MOTION_VECTORS
 	bool bInvalidMotionVector = all(lessThanEqual(fSrcMotionVector, vec2(-1.0f, -1.0f)));
 	if (bInvalidMotionVector)
@@ -375,7 +370,6 @@ FfxFloat32x2 LoadInputMotionVector(FfxInt32x2 iPxDilatedMotionVectorPos)
 		fSrcMotionVector = FFX_FSR2_OPTION_GODOT_DERIVE_INVALID_MOTION_VECTORS_FUNCTION(fUv, fSrcDepth, cbFSR2.mReprojectionMatrix);
 	}
 #endif
-// -- GODOT end --
 
 	FfxFloat32x2 fUvMotionVector = fSrcMotionVector * MotionVectorScale();
 
@@ -544,7 +538,7 @@ void StoreDilatedDepth(FFX_PARAMETER_IN FfxInt32x2 iPxPos, FFX_PARAMETER_IN FfxF
 }
 #endif
 
-#if defined(FSR2_BIND_UAV_DILATED_MOTION_VECTORS) 
+#if defined(FSR2_BIND_UAV_DILATED_MOTION_VECTORS)
 void StoreDilatedMotionVector(FFX_PARAMETER_IN FfxInt32x2 iPxPos, FFX_PARAMETER_IN FfxFloat32x2 fMotionVector)
 {
 	imageStore(rw_dilated_motion_vectors, iPxPos, vec4(fMotionVector, 0.0f, 0.0f));
@@ -613,7 +607,7 @@ FfxFloat32 AutoExposure()
 FfxFloat32 SampleLanczos2Weight(FfxFloat32 x)
 {
 #if defined(FSR2_BIND_SRV_LANCZOS_LUT)
-	return textureLod(sampler2D(r_lanczos_lut, s_LinearClamp), FfxFloat32x2(x / 2.0f, 0.5f), 0.0f).x; 
+	return textureLod(sampler2D(r_lanczos_lut, s_LinearClamp), FfxFloat32x2(x / 2.0f, 0.5f), 0.0f).x;
 #else
     return 0.f;
 #endif

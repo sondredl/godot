@@ -8,7 +8,7 @@
 namespace embree
 {
   template<typename Index, typename Value, typename Func, typename Reduction>
-    __forceinline Value sequential_reduce( const Index first, const Index last, const Value& identity, const Func& func, const Reduction& reduction ) 
+    __forceinline Value sequential_reduce( const Index first, const Index last, const Value& identity, const Func& func, const Reduction& reduction )
   {
     return func(range<Index>(first,last));
   }
@@ -58,19 +58,15 @@ namespace embree
     const Value v = tbb::parallel_reduce(tbb::blocked_range<Index>(first,last,minStepSize),identity,
       [&](const tbb::blocked_range<Index>& r, const Value& start) { return reduction(start,func(range<Index>(r.begin(),r.end()))); },
       reduction,context);
-    // -- GODOT start --
-    // if (context.is_group_execution_cancelled())
-    //   throw std::runtime_error("task cancelled");
-    // -- GODOT end --
+    //if (context.is_group_execution_cancelled())
+    //  throw std::runtime_error("task cancelled");
     return v;
   #else
     const Value v = tbb::parallel_reduce(tbb::blocked_range<Index>(first,last,minStepSize),identity,
       [&](const tbb::blocked_range<Index>& r, const Value& start) { return reduction(start,func(range<Index>(r.begin(),r.end()))); },
       reduction);
-    // -- GODOT start --
-    // if (tbb::task::self().is_cancelled())
-    //   throw std::runtime_error("task cancelled");
-    // -- GODOT end --
+    //if (tbb::task::self().is_cancelled())
+    //  throw std::runtime_error("task cancelled");
     return v;
   #endif
 #else // TASKING_PPL
@@ -87,7 +83,7 @@ namespace embree
       AlignedValue& operator = (const AlignedValue&& v) { *getValuePtr() = *v.getValuePtr(); return *this; };
       operator Value() const { return *getValuePtr(); }
     };
-    
+
     struct Iterator_Index
     {
       Index v;
@@ -104,7 +100,7 @@ namespace embree
       __forceinline Iterator_Index operator++() { return Iterator_Index(++v); }
       __forceinline Iterator_Index operator++(int) { return Iterator_Index(v++); }
     };
-    
+
     auto range_reduction = [&](Iterator_Index begin, Iterator_Index end, const AlignedValue& start) {
       assert(begin.v < end.v);
       return reduction(start, func(range<Index>(begin.v, end.v)));
@@ -118,14 +114,14 @@ namespace embree
     __forceinline Value parallel_reduce( const Index first, const Index last, const Index minStepSize, const Index parallel_threshold, const Value& identity, const Func& func, const Reduction& reduction )
   {
     if (likely(last-first < parallel_threshold)) {
-      return func(range<Index>(first,last)); 
+      return func(range<Index>(first,last));
     } else {
       return parallel_reduce(first,last,minStepSize,identity,func,reduction);
     }
   }
 
   template<typename Index, typename Value, typename Func, typename Reduction>
-    __forceinline Value parallel_reduce( const range<Index> range, const Index minStepSize, const Index parallel_threshold, const Value& identity, const Func& func, const Reduction& reduction ) 
+    __forceinline Value parallel_reduce( const range<Index> range, const Index minStepSize, const Index parallel_threshold, const Value& identity, const Func& func, const Reduction& reduction )
   {
     return parallel_reduce(range.begin(),range.end(),minStepSize,parallel_threshold,identity,func,reduction);
   }

@@ -22,9 +22,7 @@
 #pragma once
 
 #include <stdint.h>
-// -- GODOT start --
 #include <stdlib.h>
-// -- GODOT end --
 
 #if defined (FFX_GCC)
 /// FidelityFX exported functions
@@ -267,7 +265,7 @@ typedef struct FfxPipelineState {
 
 /// A structure containing the data required to create a resource.
 typedef struct FfxCreateResourceDescription {
-    
+
     FfxHeapType                     heapType;                               ///< The heap type to hold the resource, typically <c><i>FFX_HEAP_TYPE_DEFAULT</i></c>.
     FfxResourceDescription          resourceDescription;                    ///< A resource description.
     FfxResourceStates               initalState;                            ///< The initial resource state.
@@ -295,7 +293,7 @@ typedef struct FfxCreateResourceDescription {
 /// <c><i>FfxFsr2Pass</i></c> should be used to implement the features required
 /// by each application, as well as to acheive the best performance on specific
 /// target hardware configurations.
-/// 
+///
 /// When using one of the provided backends for FSR2 (such as DirectX 12 or
 /// Vulkan) the data required to create a pipeline is compiled offline and
 /// included into the backend library that you are using. For cases where the

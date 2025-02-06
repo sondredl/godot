@@ -213,19 +213,15 @@
 #define UPRINT4(x,y,z,w) embree_cout_uniform << STRING(x) << " = " << (x) << ", " << STRING(y) << " = " << (y) << ", " << STRING(z) << " = " << (z) << ", " << STRING(w) << " = " << (w) << embree_endl
 
 #if defined(DEBUG) // only report file and line in debug mode
-  // -- GODOT start --
-  // #define THROW_RUNTIME_ERROR(str) \
-  //   throw std::runtime_error(std::string(__FILE__) + " (" + toString(__LINE__) + "): " + std::string(str));
+  //#define THROW_RUNTIME_ERROR(str) \
+  //  throw std::runtime_error(std::string(__FILE__) + " (" + toString(__LINE__) + "): " + std::string(str));
   #define THROW_RUNTIME_ERROR(str) \
     printf("%s (%d): %s", __FILE__, __LINE__, std::string(str).c_str()), abort();
-  // -- GODOT end --
 #else
-  // -- GODOT start --
-  // #define THROW_RUNTIME_ERROR(str) \
-  //   throw std::runtime_error(str);
+  //#define THROW_RUNTIME_ERROR(str) \
+  //  throw std::runtime_error(str);
   #define THROW_RUNTIME_ERROR(str) \
     abort();
-  // -- GODOT end --
 #endif
 
 #define FATAL(x)   THROW_RUNTIME_ERROR(x)
@@ -358,7 +354,7 @@ __forceinline std::string toString(long long value) {
 #define DISABLE_DEPRECATED_WARNING __pragma(warning (disable: 4996)) // warning: function was declared deprecated
 #define ENABLE_DEPRECATED_WARNING  __pragma(warning (enable : 4996)) // warning: function was declared deprecated
 #endif
- 
+
 ////////////////////////////////////////////////////////////////////////////////
 /// SYCL specific
 ////////////////////////////////////////////////////////////////////////////////
@@ -416,7 +412,7 @@ namespace embree
 #define embree_cout embree::sycl_ostream_(false)
 #define embree_cout_uniform embree::sycl_ostream_(true)
 #define embree_endl embree::sycl_endl_()
-  
+
   inline sycl_ostream_ operator <<(sycl_ostream_ cout, int   i)
   {
     if (cout.uniform) {
@@ -425,10 +421,10 @@ namespace embree
     }
     else
       sycl_printf("%i ",i);
-    
+
     return cout;
   }
-  
+
   inline sycl_ostream_ operator <<(sycl_ostream_ cout, unsigned int i)
   {
     if (cout.uniform) {
@@ -469,7 +465,7 @@ namespace embree
         sycl_printf("%lu",l);
     } else
       sycl_printf("%lu ",l);
-    
+
     return cout;
   }
 
@@ -480,11 +476,11 @@ namespace embree
         sycl_printf("%l",l);
     } else
       sycl_printf("%l ",l);
-    
+
     return cout;
   }
-  
-    
+
+
   inline sycl_ostream_ operator <<(sycl_ostream_ cout, void* p)
   {
     if (cout.uniform) {
@@ -492,7 +488,7 @@ namespace embree
         sycl_printf("%p",p);
     } else
       sycl_printf("%p ",p);
-    
+
     return cout;
   }
 
@@ -565,7 +561,7 @@ inline std::string tab(int depth) {
 /// Some macros for static profiling
 ////////////////////////////////////////////////////////////////////////////////
 
-#if defined (__GNUC__) 
+#if defined (__GNUC__)
 #define IACA_SSC_MARK( MARK_ID )						\
 __asm__ __volatile__ (									\
 					  "\n\t  movl $"#MARK_ID", %%ebx"	\
@@ -604,7 +600,7 @@ namespace embree
     bool active;
     const Closure f;
   };
-  
+
   template <typename Closure>
     OnScopeExitHelper<Closure> OnScopeExit(const Closure f) {
     return OnScopeExitHelper<Closure>(f);

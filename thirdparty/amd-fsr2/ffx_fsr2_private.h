@@ -31,7 +31,7 @@ typedef struct Fsr2Constants {
     int32_t                     lumaMipDimensions[2];
     int32_t                     lumaMipLevelToUse;
     int32_t                     frameIndex;
-    
+
     float                       deviceToViewDepth[4];
     float                       jitterOffset[2];
     float                       motionVectorScale[2];
@@ -45,10 +45,8 @@ typedef struct Fsr2Constants {
     float                       dynamicResChangeFactor;
     float                       viewSpaceToMetersFactor;
 
-	// -- GODOT start --
     float                       pad;
     float                       reprojectionMatrix[16];
-	// -- GODOT end --
 } Fsr2Constants;
 
 struct FfxFsr2ContextDescription;

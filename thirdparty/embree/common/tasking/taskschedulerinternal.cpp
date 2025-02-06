@@ -9,7 +9,7 @@
 namespace embree
 {
   RTC_NAMESPACE_BEGIN
-  
+
   static MutexSys g_mutex;
   size_t TaskScheduler::g_numThreads = 0;
   __thread TaskScheduler* TaskScheduler::g_instance = nullptr;
@@ -48,15 +48,13 @@ namespace embree
     {
       Task* prevTask = thread.task;
       thread.task = this;
-      // -- GODOT start --
-      // try {
-      //   if (context->cancellingException == nullptr)
+      //try {
+      //  if (context->cancellingException == nullptr)
           closure->execute();
-      // } catch (...) {
-      //   if (context->cancellingException == nullptr)
-      //     context->cancellingException = std::current_exception();
-      // }
-      // -- GODOT end --
+      //} catch (...) {
+      //  if (context->cancellingException == nullptr)
+      //    context->cancellingException = std::current_exception();
+      //}
       thread.task = prevTask;
       add_dependencies(-1);
     }

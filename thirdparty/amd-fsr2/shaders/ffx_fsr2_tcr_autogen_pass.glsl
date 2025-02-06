@@ -19,7 +19,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
+//#version 450
 
 #extension GL_GOOGLE_include_directive : require
 #extension GL_EXT_samplerless_texture_functions : require
@@ -40,11 +40,9 @@
 #define FSR2_BIND_CB_FSR2									11
 #define FSR2_BIND_CB_REACTIVE                               12
 
-// -- GODOT start --
 #if FFX_FSR2_OPTION_GODOT_DERIVE_INVALID_MOTION_VECTORS
 #define FSR2_BIND_SRV_INPUT_DEPTH                           13
 #endif
-// -- GODOT end --
 
 #include "ffx_fsr2_callbacks_glsl.h"
 #include "ffx_fsr2_common.h"
@@ -53,7 +51,7 @@
 layout (set = 1, binding = FSR2_BIND_CB_REACTIVE, std140) uniform cbGenerateReactive_t
 {
         float   fTcThreshold; // 0.1 is a good starting value, lower will result in more TC pixels
-        float   fTcScale;     
+        float   fTcScale;
         float   fReactiveScale;
         float   fReactiveMax;
 } cbGenerateReactive;
@@ -100,7 +98,7 @@ void main()
     FFX_MIN16_F3 colorPostAlpha = FFX_MIN16_F3( LoadInputColor( uDispatchThreadId ) );
 
     FFX_MIN16_F2 outReactiveMask = FFX_MIN16_F2( 0.f, 0.f );
-    
+
     outReactiveMask.y = ComputeTransparencyAndComposition(uDispatchThreadId, iPrevIdx);
 
     if (outReactiveMask.y > 0.5f)

@@ -20,19 +20,19 @@ namespace embree
   void disableUSMAllocTutorial();
 
 #endif
-  
+
 #define ALIGNED_STRUCT_(align)                                            \
   void* operator new(size_t size) { return alignedMalloc(size,align); }   \
   void operator delete(void* ptr) { alignedFree(ptr); }                   \
   void* operator new[](size_t size) { return alignedMalloc(size,align); } \
   void operator delete[](void* ptr) { alignedFree(ptr); }
-  
+
 #define ALIGNED_STRUCT_USM_(align)                                          \
   void* operator new(size_t size) { return alignedUSMMalloc(size,align); }   \
   void operator delete(void* ptr) { alignedUSMFree(ptr); }                   \
   void* operator new[](size_t size) { return alignedUSMMalloc(size,align); } \
   void operator delete[](void* ptr) { alignedUSMFree(ptr); }
-  
+
 #define ALIGNED_CLASS_(align)                                          \
  public:                                                               \
     ALIGNED_STRUCT_(align)                                             \
@@ -48,7 +48,7 @@ namespace embree
     EMBREE_USM_SHARED_DEVICE_READ_WRITE = 0,
     EMBREE_USM_SHARED_DEVICE_READ_ONLY = 1
   };
-  
+
   /*! aligned allocation */
   void* alignedMalloc(size_t size, size_t align);
   void alignedFree(void* ptr);
@@ -58,7 +58,7 @@ namespace embree
   void alignedUSMFree(void* ptr);
 
 #if defined(EMBREE_SYCL_SUPPORT)
-  
+
   /*! aligned allocation using SYCL USM */
   void* alignedSYCLMalloc(sycl::context* context, sycl::device* device, size_t size, size_t align, EmbreeUSMMode mode);
   void alignedSYCLFree(sycl::context* context, void* ptr);
@@ -75,7 +75,7 @@ namespace embree
   };
 
 #endif
-  
+
   /*! allocator that performs aligned allocations */
   template<typename T, size_t alignment>
     struct aligned_allocator
@@ -125,7 +125,7 @@ namespace embree
       typedef std::size_t size_type;
       typedef std::ptrdiff_t difference_type;
 
-      __forceinline os_allocator () 
+      __forceinline os_allocator ()
         : hugepages(false) {}
 
       __forceinline pointer allocate( size_type n ) {
@@ -160,10 +160,8 @@ namespace embree
       typedef std::ptrdiff_t difference_type;
 
       __forceinline pointer allocate( size_type n ) {
-        // -- GODOT start --
-        // throw std::runtime_error("no allocation supported");
+        //throw std::runtime_error("no allocation supported");
         abort();
-        // -- GODOT end --
       }
 
       __forceinline void deallocate( pointer p, size_type n ) {
@@ -187,22 +185,22 @@ namespace embree
       IDPool ()
       : nextID(0) {}
 
-      T allocate() 
+      T allocate()
       {
         /* return ID from list */
-        if (!IDs.empty()) 
+        if (!IDs.empty())
         {
           T id = *IDs.begin();
           IDs.erase(IDs.begin());
           return id;
-        } 
+        }
 
         /* allocate new ID */
         else
         {
           if (size_t(nextID)+1 > max_id)
             return -1;
-          
+
           return nextID++;
         }
       }
@@ -212,7 +210,7 @@ namespace embree
       {
         if (id > max_id)
           return false;
-        
+
         /* check if ID should be in IDs set */
         if (id < nextID) {
           auto p = IDs.find(id);
@@ -232,7 +230,7 @@ namespace embree
         }
       }
 
-      void deallocate( T id ) 
+      void deallocate( T id )
       {
         assert(id < nextID);
         MAYBE_UNUSED auto done = IDs.insert(id).second;
