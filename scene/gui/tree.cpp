@@ -40,7 +40,7 @@
 #include "scene/main/window.h"
 #include "scene/theme/theme_db.h"
 
-#include <climits>
+#include <limits.h>
 
 Size2 TreeItem::Cell::get_icon_size() const {
 	if (icon.is_null()) {

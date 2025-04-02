@@ -23,10 +23,10 @@ index 110bee4c10..aa003bf032 100644
      const auto abs_b = static_cast<uint64_t>(std::abs(b));
 @@ -734,7 +736,7 @@ namespace Clipper2Lib
      const auto sign_cd = TriSign(c) * TriSign(d);
-
+ 
      return abs_ab == abs_cd && sign_ab == sign_cd;
 -#endif
 +// #endif
    }
-
+ 
    template <typename T>

@@ -51,7 +51,7 @@
 layout (set = 1, binding = FSR2_BIND_CB_REACTIVE, std140) uniform cbGenerateReactive_t
 {
         float   fTcThreshold; // 0.1 is a good starting value, lower will result in more TC pixels
-        float   fTcScale;
+        float   fTcScale;     
         float   fReactiveScale;
         float   fReactiveMax;
 } cbGenerateReactive;
@@ -98,7 +98,7 @@ void main()
     FFX_MIN16_F3 colorPostAlpha = FFX_MIN16_F3( LoadInputColor( uDispatchThreadId ) );
 
     FFX_MIN16_F2 outReactiveMask = FFX_MIN16_F2( 0.f, 0.f );
-
+    
     outReactiveMask.y = ComputeTransparencyAndComposition(uDispatchThreadId, iPrevIdx);
 
     if (outReactiveMask.y > 0.5f)

@@ -5,7 +5,7 @@ index f061e79596..27c7f20448 100644
 @@ -25,8 +25,10 @@
  struct DefaultSampleMask { operator UINT() noexcept { return UINT_MAX; } };
  struct DefaultSampleDesc { operator DXGI_SAMPLE_DESC() noexcept { return DXGI_SAMPLE_DESC{1, 0}; } };
-
+ 
 +#if defined(_MSC_VER)
  #pragma warning(push)
  #pragma warning(disable : 4324)

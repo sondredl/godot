@@ -101,8 +101,8 @@ int psa_is_key_present_in_storage(const mbedtls_svc_key_id_t key);
  * \retval #PSA_ERROR_DATA_CORRUPT \emptydescription
  */
 psa_status_t psa_save_persistent_key(const psa_key_attributes_t *attr,
-		const uint8_t *data,
-		const size_t data_length);
+                                     const uint8_t *data,
+                                     const size_t data_length);
 
 /**
  * \brief Parses key data and metadata and load persistent key for given
@@ -131,8 +131,8 @@ psa_status_t psa_save_persistent_key(const psa_key_attributes_t *attr,
  * \retval #PSA_ERROR_DOES_NOT_EXIST \emptydescription
  */
 psa_status_t psa_load_persistent_key(psa_key_attributes_t *attr,
-		uint8_t **data,
-		size_t *data_length);
+                                     uint8_t **data,
+                                     size_t *data_length);
 
 /**
  * \brief Remove persistent data for the given key slot number.
@@ -169,9 +169,9 @@ void psa_free_persistent_key_data(uint8_t *key_data, size_t key_data_length);
  *
  */
 void psa_format_key_data_for_storage(const uint8_t *data,
-		const size_t data_length,
-		const psa_key_attributes_t *attr,
-		uint8_t *storage_data);
+                                     const size_t data_length,
+                                     const psa_key_attributes_t *attr,
+                                     uint8_t *storage_data);
 
 /**
  * \brief Parses persistent storage data into key data and metadata
@@ -190,10 +190,10 @@ void psa_format_key_data_for_storage(const uint8_t *data,
  * \retval #PSA_ERROR_DATA_INVALID \emptydescription
  */
 psa_status_t psa_parse_key_data_from_storage(const uint8_t *storage_data,
-		size_t storage_data_length,
-		uint8_t **key_data,
-		size_t *key_data_length,
-		psa_key_attributes_t *attr);
+                                             size_t storage_data_length,
+                                             uint8_t **key_data,
+                                             size_t *key_data_length,
+                                             psa_key_attributes_t *attr);
 
 #if defined(MBEDTLS_PSA_CRYPTO_SE_C)
 /** This symbol is defined if transaction support is required. */
@@ -215,7 +215,7 @@ typedef uint16_t psa_crypto_transaction_type_t;
  * This has the value 0, so zero-initialization sets a transaction's type to
  * this value.
  */
-#define PSA_CRYPTO_TRANSACTION_NONE ((psa_crypto_transaction_type_t)0x0000)
+#define PSA_CRYPTO_TRANSACTION_NONE             ((psa_crypto_transaction_type_t) 0x0000)
 
 /** A key creation transaction.
  *
@@ -223,7 +223,7 @@ typedef uint16_t psa_crypto_transaction_type_t;
  * Keys in RAM or in internal storage are created atomically in storage
  * (simple file creation), so they do not need a transaction mechanism.
  */
-#define PSA_CRYPTO_TRANSACTION_CREATE_KEY ((psa_crypto_transaction_type_t)0x0001)
+#define PSA_CRYPTO_TRANSACTION_CREATE_KEY       ((psa_crypto_transaction_type_t) 0x0001)
 
 /** A key destruction transaction.
  *
@@ -231,7 +231,7 @@ typedef uint16_t psa_crypto_transaction_type_t;
  * Keys in RAM or in internal storage are destroyed atomically in storage
  * (simple file deletion), so they do not need a transaction mechanism.
  */
-#define PSA_CRYPTO_TRANSACTION_DESTROY_KEY ((psa_crypto_transaction_type_t)0x0002)
+#define PSA_CRYPTO_TRANSACTION_DESTROY_KEY      ((psa_crypto_transaction_type_t) 0x0002)
 
 /** Transaction data.
  *
@@ -271,30 +271,30 @@ typedef uint16_t psa_crypto_transaction_type_t;
  * sure to add code for it in psa_crypto_recover_transaction().
  */
 typedef union {
-	/* Each element of this union must have the following properties
-	 * to facilitate serialization and deserialization:
-	 *
-	 * - The element is a struct.
-	 * - The first field of the struct is `psa_crypto_transaction_type_t type`.
-	 * - Elements of the struct are arranged such a way that there is
-	 *   no padding.
-	 */
-	struct psa_crypto_transaction_unknown_s {
-		psa_crypto_transaction_type_t type;
-		uint16_t unused1;
-		uint32_t unused2;
-		uint64_t unused3;
-		uint64_t unused4;
-	} unknown;
-	/* ::type is #PSA_CRYPTO_TRANSACTION_CREATE_KEY or
-	 * #PSA_CRYPTO_TRANSACTION_DESTROY_KEY. */
-	struct psa_crypto_transaction_key_s {
-		psa_crypto_transaction_type_t type;
-		uint16_t unused1;
-		psa_key_lifetime_t lifetime;
-		psa_key_slot_number_t slot;
-		mbedtls_svc_key_id_t id;
-	} key;
+    /* Each element of this union must have the following properties
+     * to facilitate serialization and deserialization:
+     *
+     * - The element is a struct.
+     * - The first field of the struct is `psa_crypto_transaction_type_t type`.
+     * - Elements of the struct are arranged such a way that there is
+     *   no padding.
+     */
+    struct psa_crypto_transaction_unknown_s {
+        psa_crypto_transaction_type_t type;
+        uint16_t unused1;
+        uint32_t unused2;
+        uint64_t unused3;
+        uint64_t unused4;
+    } unknown;
+    /* ::type is #PSA_CRYPTO_TRANSACTION_CREATE_KEY or
+     * #PSA_CRYPTO_TRANSACTION_DESTROY_KEY. */
+    struct psa_crypto_transaction_key_s {
+        psa_crypto_transaction_type_t type;
+        uint16_t unused1;
+        psa_key_lifetime_t lifetime;
+        psa_key_slot_number_t slot;
+        mbedtls_svc_key_id_t id;
+    } key;
 } psa_crypto_transaction_t;
 
 /** The single active transaction.
@@ -308,8 +308,9 @@ extern psa_crypto_transaction_t psa_crypto_transaction;
  * \param type          The type of transaction to start.
  */
 static inline void psa_crypto_prepare_transaction(
-		psa_crypto_transaction_type_t type) {
-	psa_crypto_transaction.unknown.type = type;
+    psa_crypto_transaction_type_t type)
+{
+    psa_crypto_transaction.unknown.type = type;
 }
 
 /** Save the transaction data to storage.
@@ -364,7 +365,7 @@ psa_status_t psa_crypto_stop_transaction(void);
  *
  * 0xffffffNN = special file; 0x74 = 't' for transaction.
  */
-#define PSA_CRYPTO_ITS_TRANSACTION_UID ((psa_key_id_t)0xffffff74)
+#define PSA_CRYPTO_ITS_TRANSACTION_UID ((psa_key_id_t) 0xffffff74)
 
 #endif /* PSA_CRYPTO_STORAGE_HAS_TRANSACTIONS */
 
@@ -381,7 +382,7 @@ psa_status_t psa_crypto_stop_transaction(void);
  *         The entropy seed file already exists.
  */
 psa_status_t mbedtls_psa_storage_inject_entropy(const unsigned char *seed,
-		size_t seed_size);
+                                                size_t seed_size);
 #endif /* MBEDTLS_PSA_INJECT_ENTROPY */
 
 #ifdef __cplusplus

@@ -12,7 +12,7 @@ index ca68545e4a..d7ecb7a0fd 100644
 +#include "transcoder/basisu_file_headers.h"
 +#include "transcoder/basisu_transcoder.h"
 +#include "transcoder/basisu_transcoder_internal.h"
-
+ 
  #undef DECLARE_PRIVATE
  #undef DECLARE_PROTECTED
 diff --git a/thirdparty/libktx/lib/miniz_wrapper.cpp b/thirdparty/libktx/lib/miniz_wrapper.cpp

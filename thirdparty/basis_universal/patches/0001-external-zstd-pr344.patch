@@ -4,12 +4,12 @@ index f16e75bd46..81813257cd 100644
 +++ b/thirdparty/basis_universal/encoder/basisu_comp.cpp
 @@ -33,7 +33,7 @@
  #endif
-
+ 
  #if BASISD_SUPPORT_KTX2_ZSTD
 -#include "../zstd/zstd.h"
 +#include <zstd.h>
  #endif
-
+ 
  // Set to 1 to disable the mipPadding alignment workaround (which only seems to be needed when no key-values are written at all)
 diff --git a/thirdparty/basis_universal/transcoder/basisu_transcoder.cpp b/thirdparty/basis_universal/transcoder/basisu_transcoder.cpp
 index ea994b0c4f..32018cd282 100644
@@ -23,4 +23,4 @@ index ea994b0c4f..32018cd282 100644
 +		#include <zstd.h>
  	#endif
  #endif
-
+ 

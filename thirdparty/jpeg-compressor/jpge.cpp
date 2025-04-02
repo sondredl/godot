@@ -3,7 +3,7 @@
 // Also supports using luma quantization tables for chroma.
 //
 // Released under two licenses. You are free to choose which license you want:
-// License 1:
+// License 1: 
 // Public Domain
 //
 // License 2:

@@ -167,6 +167,7 @@ public:
 	DEFINE_ID(Fence);
 	DEFINE_ID(Semaphore);
 
+public:
 	/*****************/
 	/**** GENERIC ****/
 	/*****************/

@@ -32,9 +32,9 @@
 
 #include "main/main.h"
 
-#include <climits>
-#include <clocale>
-#include <cstdlib>
+#include <limits.h>
+#include <locale.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #if defined(SANITIZERS_ENABLED)

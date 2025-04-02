@@ -35,16 +35,16 @@ struct sljit_chunk_header {
  * MAP_REMAPDUP is a NetBSD extension available sinde 8.0, make sure to
  * adjust your feature macros (ex: -D_NETBSD_SOURCE) as needed
  */
-static SLJIT_INLINE struct sljit_chunk_header *alloc_chunk(sljit_uw size) {
+static SLJIT_INLINE struct sljit_chunk_header* alloc_chunk(sljit_uw size)
+{
 	struct sljit_chunk_header *retval;
 
 	retval = (struct sljit_chunk_header *)mmap(NULL, size,
 			PROT_READ | PROT_WRITE | PROT_MPROTECT(PROT_EXEC),
 			MAP_ANON | MAP_SHARED, -1, 0);
 
-	if (retval == MAP_FAILED) {
+	if (retval == MAP_FAILED)
 		return NULL;
-	}
 
 	retval->executable = mremap(retval, size, NULL, size, MAP_REMAPDUP);
 	if (retval->executable == MAP_FAILED) {
@@ -61,7 +61,8 @@ static SLJIT_INLINE struct sljit_chunk_header *alloc_chunk(sljit_uw size) {
 	return retval;
 }
 
-static SLJIT_INLINE void free_chunk(void *chunk, sljit_uw size) {
+static SLJIT_INLINE void free_chunk(void *chunk, sljit_uw size)
+{
 	struct sljit_chunk_header *header = ((struct sljit_chunk_header *)chunk) - 1;
 
 	munmap(header->executable, size);

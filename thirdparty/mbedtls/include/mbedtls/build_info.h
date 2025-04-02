@@ -24,46 +24,46 @@
  * The version number x.y.z is split into three parts.
  * Major, Minor, Patchlevel
  */
-#define MBEDTLS_VERSION_MAJOR 3
-#define MBEDTLS_VERSION_MINOR 6
-#define MBEDTLS_VERSION_PATCH 3
+#define MBEDTLS_VERSION_MAJOR  3
+#define MBEDTLS_VERSION_MINOR  6
+#define MBEDTLS_VERSION_PATCH  3
 
 /**
  * The single version number has the following structure:
  *    MMNNPP00
  *    Major version | Minor version | Patch version
  */
-#define MBEDTLS_VERSION_NUMBER 0x03060300
-#define MBEDTLS_VERSION_STRING "3.6.3"
-#define MBEDTLS_VERSION_STRING_FULL "Mbed TLS 3.6.3"
+#define MBEDTLS_VERSION_NUMBER         0x03060300
+#define MBEDTLS_VERSION_STRING         "3.6.3"
+#define MBEDTLS_VERSION_STRING_FULL    "Mbed TLS 3.6.3"
 
 /* Macros for build-time platform detection */
 
 #if !defined(MBEDTLS_ARCH_IS_ARM64) && \
-		(defined(__aarch64__) || defined(_M_ARM64) || defined(_M_ARM64EC))
+    (defined(__aarch64__) || defined(_M_ARM64) || defined(_M_ARM64EC))
 #define MBEDTLS_ARCH_IS_ARM64
 #endif
 
-#if !defined(MBEDTLS_ARCH_IS_ARM32) &&          \
-		(defined(__arm__) || defined(_M_ARM) || \
-				defined(_M_ARMT) || defined(__thumb__) || defined(__thumb2__))
+#if !defined(MBEDTLS_ARCH_IS_ARM32) && \
+    (defined(__arm__) || defined(_M_ARM) || \
+    defined(_M_ARMT) || defined(__thumb__) || defined(__thumb2__))
 #define MBEDTLS_ARCH_IS_ARM32
 #endif
 
-#if !defined(MBEDTLS_ARCH_IS_X64) &&                  \
-		(defined(__amd64__) || defined(__x86_64__) || \
-				((defined(_M_X64) || defined(_M_AMD64)) && !defined(_M_ARM64EC)))
+#if !defined(MBEDTLS_ARCH_IS_X64) && \
+    (defined(__amd64__) || defined(__x86_64__) || \
+    ((defined(_M_X64) || defined(_M_AMD64)) && !defined(_M_ARM64EC)))
 #define MBEDTLS_ARCH_IS_X64
 #endif
 
-#if !defined(MBEDTLS_ARCH_IS_X86) &&            \
-		(defined(__i386__) || defined(_X86_) || \
-				(defined(_M_IX86) && !defined(_M_I86)))
+#if !defined(MBEDTLS_ARCH_IS_X86) && \
+    (defined(__i386__) || defined(_X86_) || \
+    (defined(_M_IX86) && !defined(_M_I86)))
 #define MBEDTLS_ARCH_IS_X86
 #endif
 
 #if !defined(MBEDTLS_PLATFORM_IS_WINDOWS_ON_ARM64) && \
-		(defined(_M_ARM64) || defined(_M_ARM64EC))
+    (defined(_M_ARM64) || defined(_M_ARM64EC))
 #define MBEDTLS_PLATFORM_IS_WINDOWS_ON_ARM64
 #endif
 
@@ -83,11 +83,12 @@
 #endif
 #endif
 
-#if defined(__GNUC__) && !defined(__ARMCC_VERSION) && !defined(__clang__) && !defined(__llvm__) && !defined(__INTEL_COMPILER)
+#if defined(__GNUC__) && !defined(__ARMCC_VERSION) && !defined(__clang__) \
+    && !defined(__llvm__) && !defined(__INTEL_COMPILER)
 /* Defined if the compiler really is gcc and not clang, etc */
 #define MBEDTLS_COMPILER_IS_GCC
 #define MBEDTLS_GCC_VERSION \
-	(__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
+    (__GNUC__ * 10000 + __GNUC_MINOR__ * 100 + __GNUC_PATCHLEVEL__)
 #endif
 
 #if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_DEPRECATE)
@@ -96,7 +97,7 @@
 
 /* Define `inline` on some non-C99-compliant compilers. */
 #if (defined(__ARMCC_VERSION) || defined(_MSC_VER)) && \
-		!defined(inline) && !defined(__cplusplus)
+    !defined(inline) && !defined(__cplusplus)
 #define inline __inline
 #endif
 
@@ -114,7 +115,9 @@
 #include MBEDTLS_CONFIG_FILE
 #endif
 
-#if defined(MBEDTLS_CONFIG_VERSION) && (MBEDTLS_CONFIG_VERSION < 0x03000000 || MBEDTLS_CONFIG_VERSION > MBEDTLS_VERSION_NUMBER)
+#if defined(MBEDTLS_CONFIG_VERSION) && ( \
+    MBEDTLS_CONFIG_VERSION < 0x03000000 || \
+                             MBEDTLS_CONFIG_VERSION > MBEDTLS_VERSION_NUMBER)
 #error "Invalid config version, defined value of MBEDTLS_CONFIG_VERSION is unsupported"
 #endif
 
@@ -168,8 +171,8 @@
  *   (e.g. MBEDTLS_MD_LIGHT)
  */
 #if defined(MBEDTLS_PSA_CRYPTO_CONFIG) /* PSA_WANT_xxx influences MBEDTLS_xxx */ || \
-		defined(MBEDTLS_PSA_CRYPTO_C) /* MBEDTLS_xxx influences PSA_WANT_xxx */ ||  \
-		defined(MBEDTLS_PSA_CRYPTO_CLIENT) /* The same as the previous, but with separation only */
+    defined(MBEDTLS_PSA_CRYPTO_C) /* MBEDTLS_xxx influences PSA_WANT_xxx */ || \
+    defined(MBEDTLS_PSA_CRYPTO_CLIENT) /* The same as the previous, but with separation only */
 #include "mbedtls/config_psa.h"
 #endif
 

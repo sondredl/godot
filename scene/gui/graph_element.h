@@ -56,6 +56,7 @@ protected:
 	void _edit_set_position(const Point2 &p_position) override;
 #endif
 
+protected:
 	virtual void gui_input(const Ref<InputEvent> &p_ev) override;
 	void _notification(int p_what);
 	static void _bind_methods();

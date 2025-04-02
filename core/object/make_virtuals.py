@@ -80,12 +80,7 @@ proto = """#define GDVIRTUAL$VER($ALIAS $RET m_name $ARG)\\
 """
 
 
-def generate_version(
-        argcount,
-        const=False,
-        returns=False,
-        required=False,
-        compat=False):
+def generate_version(argcount, const=False, returns=False, required=False, compat=False):
     s = proto
     if compat:
         s = s.replace("$SCRIPTCALL", "")
@@ -100,8 +95,7 @@ def generate_version(
     if returns:
         sproto += "R"
         s = s.replace("$RET", "m_ret,")
-        # If required, may lead to uninitialized errors
-        s = s.replace("$RVOID", "(void)r_ret;")
+        s = s.replace("$RVOID", "(void)r_ret;")  # If required, may lead to uninitialized errors
         s = s.replace("$CALLPTRRETDEF", "PtrToArg<m_ret>::EncodeT ret;")
         method_info += "method_info.return_val = GetTypeInfo<m_ret>::get_class_info();\\\n"
         method_info += "\t\tmethod_info.return_val_metadata = GetTypeInfo<m_ret>::METADATA;"
@@ -175,14 +169,10 @@ def generate_version(
         callsiargs += " };\\\n"
         callsiargptrs += " };"
         s = s.replace("$CALLSIARGS", callsiargs + callsiargptrs)
-        s = s.replace(
-            "$CALLSIARGPASS",
-            f"(const Variant **)vargptrs, {argcount}")
+        s = s.replace("$CALLSIARGPASS", f"(const Variant **)vargptrs, {argcount}")
         callptrargsptr += " };"
         s = s.replace("$CALLPTRARGS", callptrargs + callptrargsptr)
-        s = s.replace(
-            "$CALLPTRARGPASS",
-            "reinterpret_cast<GDExtensionConstTypePtr *>(argptrs)")
+        s = s.replace("$CALLPTRARGPASS", "reinterpret_cast<GDExtensionConstTypePtr *>(argptrs)")
     else:
         s = s.replace("\t\t\t$CALLSIARGS\\\n", "")
         s = s.replace("$CALLSIARGPASS", "nullptr, 0")

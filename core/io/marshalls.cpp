@@ -35,8 +35,8 @@
 #include "core/object/script_language.h"
 #include "core/variant/container_type_validate.h"
 
-#include <climits>
-#include <cstdio>
+#include <limits.h>
+#include <stdio.h>
 
 void EncodedObjectAsID::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_object_id", "id"), &EncodedObjectAsID::set_object_id);

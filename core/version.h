@@ -32,7 +32,7 @@
 
 #include "core/version_generated.gen.h" // IWYU pragma: export
 
-#include <cstdint>
+#include <stdint.h>
 
 // Copied from typedefs.h to stay lean.
 #ifndef _STR

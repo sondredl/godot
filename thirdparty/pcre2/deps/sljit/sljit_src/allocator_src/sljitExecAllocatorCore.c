@@ -33,20 +33,20 @@
    not suggested.
 
    How does it work:
-	 Memory is allocated in continuous memory areas called chunks by alloc_chunk()
-	 Chunk format:
-	 [ block ][ block ] ... [ block ][ block terminator ]
+     Memory is allocated in continuous memory areas called chunks by alloc_chunk()
+     Chunk format:
+     [ block ][ block ] ... [ block ][ block terminator ]
 
    All blocks and the block terminator is started with block_header. The block
    header contains the size of the previous and the next block. These sizes
    can also contain special values.
-	 Block size:
-	   0 - The block is a free_block, with a different size member.
-	   1 - The block is a block terminator.
-	   n - The block is used at the moment, and the value contains its size.
-	 Previous block size:
-	   0 - This is the first block of the memory chunk.
-	   n - The size of the previous block.
+     Block size:
+       0 - The block is a free_block, with a different size member.
+       1 - The block is a block terminator.
+       n - The block is used at the moment, and the value contains its size.
+     Previous block size:
+       0 - This is the first block of the memory chunk.
+       n - The size of the previous block.
 
    Using these size values we can go forward or backward on the block chain.
    The unused blocks are stored in a chain list pointed by free_blocks. This
@@ -56,24 +56,24 @@
    When a block is freed, the new free block is connected to its adjacent free
    blocks if possible.
 
-	 [ free block ][ used block ][ free block ]
+     [ free block ][ used block ][ free block ]
    and "used block" is freed, the three blocks are connected together:
-	 [           one big free block           ]
+     [           one big free block           ]
 */
 
 /* Expected functions:
-	 alloc_chunk / free_chunk :
-	   * allocate executable system memory chunks
-	   * the size is always divisible by CHUNK_SIZE
-	 SLJIT_ALLOCATOR_LOCK / SLJIT_ALLOCATOR_UNLOCK :
-	   * provided as part of sljitUtils
-	   * only the allocator requires this lock, sljit is fully thread safe
-		 as it only uses local variables
+     alloc_chunk / free_chunk :
+       * allocate executable system memory chunks
+       * the size is always divisible by CHUNK_SIZE
+     SLJIT_ALLOCATOR_LOCK / SLJIT_ALLOCATOR_UNLOCK :
+       * provided as part of sljitUtils
+       * only the allocator requires this lock, sljit is fully thread safe
+         as it only uses local variables
 
    Supported defines:
-	 SLJIT_HAS_CHUNK_HEADER - (optional) sljit_chunk_header is defined
-	 SLJIT_HAS_EXECUTABLE_OFFSET - (optional) has executable offset data
-	 SLJIT_UPDATE_WX_FLAGS - (optional) update WX flags
+     SLJIT_HAS_CHUNK_HEADER - (optional) sljit_chunk_header is defined
+     SLJIT_HAS_EXECUTABLE_OFFSET - (optional) has executable offset data
+     SLJIT_UPDATE_WX_FLAGS - (optional) update WX flags
 */
 
 #ifdef SLJIT_HAS_CHUNK_HEADER
@@ -88,7 +88,7 @@
 
 #ifndef CHUNK_SIZE
 /* 64 KByte if not specified. */
-#define CHUNK_SIZE (sljit_uw)0x10000
+#define CHUNK_SIZE	(sljit_uw)0x10000
 #endif /* CHUNK_SIZE */
 
 struct block_header {
@@ -107,44 +107,45 @@ struct free_block {
 };
 
 #define AS_BLOCK_HEADER(base, offset) \
-	((struct block_header *)(((sljit_u8 *)base) + offset))
+	((struct block_header*)(((sljit_u8*)base) + offset))
 #define AS_FREE_BLOCK(base, offset) \
-	((struct free_block *)(((sljit_u8 *)base) + offset))
-#define MEM_START(base) ((void *)((base) + 1))
-#define CHUNK_MASK (~(CHUNK_SIZE - 1))
-#define ALIGN_SIZE(size) (((size) + sizeof(struct block_header) + 7u) & ~(sljit_uw)7)
-#define CHUNK_EXTRA_SIZE (sizeof(struct block_header) + CHUNK_HEADER_SIZE)
+	((struct free_block*)(((sljit_u8*)base) + offset))
+#define MEM_START(base)		((void*)((base) + 1))
+#define CHUNK_MASK		(~(CHUNK_SIZE - 1))
+#define ALIGN_SIZE(size)	(((size) + sizeof(struct block_header) + 7u) & ~(sljit_uw)7)
+#define CHUNK_EXTRA_SIZE	(sizeof(struct block_header) + CHUNK_HEADER_SIZE)
 
-static struct free_block *free_blocks;
+static struct free_block* free_blocks;
 static sljit_uw allocated_size;
 static sljit_uw total_size;
 
-static SLJIT_INLINE void sljit_insert_free_block(struct free_block *free_block, sljit_uw size) {
+static SLJIT_INLINE void sljit_insert_free_block(struct free_block *free_block, sljit_uw size)
+{
 	free_block->header.size = 0;
 	free_block->size = size;
 
 	free_block->next = free_blocks;
 	free_block->prev = NULL;
-	if (free_blocks) {
+	if (free_blocks)
 		free_blocks->prev = free_block;
-	}
 	free_blocks = free_block;
 }
 
-static SLJIT_INLINE void sljit_remove_free_block(struct free_block *free_block) {
-	if (free_block->next) {
+static SLJIT_INLINE void sljit_remove_free_block(struct free_block *free_block)
+{
+	if (free_block->next)
 		free_block->next->prev = free_block->prev;
-	}
 
-	if (free_block->prev) {
+	if (free_block->prev)
 		free_block->prev->next = free_block->next;
-	} else {
+	else {
 		SLJIT_ASSERT(free_blocks == free_block);
 		free_blocks = free_block->next;
 	}
 }
 
-SLJIT_API_FUNC_ATTRIBUTE void *sljit_malloc_exec(sljit_uw size) {
+SLJIT_API_FUNC_ATTRIBUTE void* sljit_malloc_exec(sljit_uw size)
+{
 	struct block_header *header;
 	struct block_header *next_header;
 	struct free_block *free_block;
@@ -160,9 +161,8 @@ SLJIT_API_FUNC_ATTRIBUTE void *sljit_malloc_exec(sljit_uw size) {
 	sljit_sw executable_offset;
 #endif /* SLJIT_HAS_EXECUTABLE_OFFSET */
 
-	if (size < (64 - sizeof(struct block_header))) {
+	if (size < (64 - sizeof(struct block_header)))
 		size = (64 - sizeof(struct block_header));
-	}
 	size = ALIGN_SIZE(size);
 
 	SLJIT_ALLOCATOR_LOCK();
@@ -183,7 +183,7 @@ SLJIT_API_FUNC_ATTRIBUTE void *sljit_malloc_exec(sljit_uw size) {
 				AS_BLOCK_HEADER(header, size)->prev_size = size;
 			} else {
 				sljit_remove_free_block(free_block);
-				header = (struct block_header *)free_block;
+				header = (struct block_header*)free_block;
 				size = chunk_size;
 			}
 			allocated_size += size;
@@ -203,13 +203,13 @@ SLJIT_API_FUNC_ATTRIBUTE void *sljit_malloc_exec(sljit_uw size) {
 	}
 
 #ifdef SLJIT_HAS_EXECUTABLE_OFFSET
-	executable_offset = (sljit_sw)((sljit_u8 *)chunk_header->executable - (sljit_u8 *)chunk_header);
+	executable_offset = (sljit_sw)((sljit_u8*)chunk_header->executable - (sljit_u8*)chunk_header);
 #endif /* SLJIT_HAS_EXECUTABLE_OFFSET */
 
 	chunk_size -= CHUNK_EXTRA_SIZE;
 	total_size += chunk_size;
 
-	header = (struct block_header *)(((sljit_u8 *)chunk_header) + CHUNK_HEADER_SIZE);
+	header = (struct block_header*)(((sljit_u8*)chunk_header) + CHUNK_HEADER_SIZE);
 
 	header->prev_size = 0;
 #ifdef SLJIT_HAS_EXECUTABLE_OFFSET
@@ -244,7 +244,8 @@ SLJIT_API_FUNC_ATTRIBUTE void *sljit_malloc_exec(sljit_uw size) {
 	return MEM_START(header);
 }
 
-SLJIT_API_FUNC_ATTRIBUTE void sljit_free_exec(void *ptr) {
+SLJIT_API_FUNC_ATTRIBUTE void sljit_free_exec(void *ptr)
+{
 	struct block_header *header;
 	struct free_block *free_block;
 
@@ -267,14 +268,14 @@ SLJIT_API_FUNC_ATTRIBUTE void sljit_free_exec(void *ptr) {
 		header = AS_BLOCK_HEADER(free_block, free_block->size);
 		header->prev_size = free_block->size;
 	} else {
-		free_block = (struct free_block *)header;
+		free_block = (struct free_block*)header;
 		sljit_insert_free_block(free_block, header->size);
 	}
 
 	header = AS_BLOCK_HEADER(free_block, free_block->size);
 	if (SLJIT_UNLIKELY(!header->size)) {
-		free_block->size += ((struct free_block *)header)->size;
-		sljit_remove_free_block((struct free_block *)header);
+		free_block->size += ((struct free_block*)header)->size;
+		sljit_remove_free_block((struct free_block*)header);
 		header = AS_BLOCK_HEADER(free_block, free_block->size);
 		header->prev_size = free_block->size;
 	}
@@ -293,9 +294,10 @@ SLJIT_API_FUNC_ATTRIBUTE void sljit_free_exec(void *ptr) {
 	SLJIT_ALLOCATOR_UNLOCK();
 }
 
-SLJIT_API_FUNC_ATTRIBUTE void sljit_free_unused_memory_exec(void) {
-	struct free_block *free_block;
-	struct free_block *next_free_block;
+SLJIT_API_FUNC_ATTRIBUTE void sljit_free_unused_memory_exec(void)
+{
+	struct free_block* free_block;
+	struct free_block* next_free_block;
 
 	SLJIT_ALLOCATOR_LOCK();
 	SLJIT_UPDATE_WX_FLAGS(NULL, NULL, 0);
@@ -318,7 +320,8 @@ SLJIT_API_FUNC_ATTRIBUTE void sljit_free_unused_memory_exec(void) {
 }
 
 #ifdef SLJIT_HAS_EXECUTABLE_OFFSET
-SLJIT_API_FUNC_ATTRIBUTE sljit_sw sljit_exec_offset(void *code) {
-	return ((struct block_header *)SLJIT_CODE_TO_PTR(code))[-1].executable_offset;
+SLJIT_API_FUNC_ATTRIBUTE sljit_sw sljit_exec_offset(void *code)
+{
+	return ((struct block_header*)SLJIT_CODE_TO_PTR(code))[-1].executable_offset;
 }
 #endif /* SLJIT_HAS_EXECUTABLE_OFFSET */

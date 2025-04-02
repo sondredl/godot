@@ -55,8 +55,8 @@
  *                      `MBEDTLS_ERR_HMAC_DRBG_xxx` on error.
  */
 int mbedtls_psa_get_random(void *p_rng,
-		unsigned char *output,
-		size_t output_size);
+                           unsigned char *output,
+                           size_t output_size);
 
 /** The random generator state for the PSA subsystem.
  *
@@ -64,7 +64,7 @@ int mbedtls_psa_get_random(void *p_rng,
  * in mbedtls_psa_get_random(), but it's kept for interface's backward
  * compatibility.
  */
-#define MBEDTLS_PSA_RANDOM_STATE NULL
+#define MBEDTLS_PSA_RANDOM_STATE    NULL
 
 /** \defgroup psa_tls_helpers TLS helper functions
  * @{
@@ -85,7 +85,7 @@ int mbedtls_psa_get_random(void *p_rng,
  * \return              \c 0 if the curve is not supported in the PSA API.
  */
 psa_ecc_family_t mbedtls_ecc_group_to_psa(mbedtls_ecp_group_id grpid,
-		size_t *bits);
+                                          size_t *bits);
 
 /** Convert an ECC curve identifier from the PSA encoding to Mbed TLS.
  *
@@ -100,7 +100,7 @@ psa_ecc_family_t mbedtls_ecc_group_to_psa(mbedtls_ecp_group_id grpid,
  *                      and \p bits is not supported.
  */
 mbedtls_ecp_group_id mbedtls_ecc_group_from_psa(psa_ecc_family_t family,
-		size_t bits);
+                                                size_t bits);
 #endif /* PSA_WANT_KEY_TYPE_ECC_PUBLIC_KEY */
 
 /**
@@ -118,8 +118,9 @@ mbedtls_ecp_group_id mbedtls_ecc_group_from_psa(psa_ecc_family_t family,
  * \return          The PSA algorithm identifier associated with \p md_type,
  *                  regardless of whether it is supported or not.
  */
-static inline psa_algorithm_t mbedtls_md_psa_alg_from_type(mbedtls_md_type_t md_type) {
-	return PSA_ALG_CATEGORY_HASH | (psa_algorithm_t)md_type;
+static inline psa_algorithm_t mbedtls_md_psa_alg_from_type(mbedtls_md_type_t md_type)
+{
+    return PSA_ALG_CATEGORY_HASH | (psa_algorithm_t) md_type;
 }
 
 /**
@@ -134,8 +135,9 @@ static inline psa_algorithm_t mbedtls_md_psa_alg_from_type(mbedtls_md_type_t md_
  * \return          The MD type associated with \p psa_alg,
  *                  regardless of whether it is supported or not.
  */
-static inline mbedtls_md_type_t mbedtls_md_type_from_psa_alg(psa_algorithm_t psa_alg) {
-	return (mbedtls_md_type_t)(psa_alg & PSA_ALG_HASH_MASK);
+static inline mbedtls_md_type_t mbedtls_md_type_from_psa_alg(psa_algorithm_t psa_alg)
+{
+    return (mbedtls_md_type_t) (psa_alg & PSA_ALG_HASH_MASK);
 }
 #endif /* MBEDTLS_PSA_CRYPTO_CLIENT */
 
@@ -171,7 +173,7 @@ static inline mbedtls_md_type_t mbedtls_md_type_from_psa_alg(psa_algorithm_t psa
  *                          numbers in the signature is 0.
  */
 int mbedtls_ecdsa_raw_to_der(size_t bits, const unsigned char *raw, size_t raw_len,
-		unsigned char *der, size_t der_size, size_t *der_len);
+                             unsigned char *der, size_t der_size, size_t *der_len);
 
 /** Convert an ECDSA signature from DER ASN.1 format to raw format.
  *
@@ -196,7 +198,7 @@ int mbedtls_ecdsa_raw_to_der(size_t bits, const unsigned char *raw, size_t raw_l
  *                          \p der is malformed.
  */
 int mbedtls_ecdsa_der_to_raw(size_t bits, const unsigned char *der, size_t der_len,
-		unsigned char *raw, size_t raw_size, size_t *raw_len);
+                             unsigned char *raw, size_t raw_size, size_t *raw_len);
 
 #endif /* MBEDTLS_PSA_UTIL_HAVE_ECDSA */
 

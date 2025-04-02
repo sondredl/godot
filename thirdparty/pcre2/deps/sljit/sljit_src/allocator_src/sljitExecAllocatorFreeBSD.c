@@ -28,7 +28,8 @@
 #include <sys/procctl.h>
 
 #ifdef PROC_WXMAP_CTL
-static SLJIT_INLINE int sljit_is_wx_block(void) {
+static SLJIT_INLINE int sljit_is_wx_block(void)
+{
 	static int wx_block = -1;
 	if (wx_block < 0) {
 		int sljit_wx_enable = PROC_WX_MAPPINGS_PERMIT;
@@ -42,7 +43,8 @@ static SLJIT_INLINE int sljit_is_wx_block(void) {
 #define SLJIT_IS_WX_BLOCK (1)
 #endif /* PROC_WXMAP_CTL */
 
-static SLJIT_INLINE void *alloc_chunk(sljit_uw size) {
+static SLJIT_INLINE void* alloc_chunk(sljit_uw size)
+{
 	void *retval;
 	int prot = PROT_READ | PROT_WRITE | PROT_EXEC;
 	int flags = MAP_PRIVATE;
@@ -55,9 +57,8 @@ static SLJIT_INLINE void *alloc_chunk(sljit_uw size) {
 #ifdef MAP_ANON
 	flags |= MAP_ANON;
 #else /* !MAP_ANON */
-	if (SLJIT_UNLIKELY((dev_zero < 0) && open_dev_zero())) {
+	if (SLJIT_UNLIKELY((dev_zero < 0) && open_dev_zero()))
 		return NULL;
-	}
 
 	fd = dev_zero;
 #endif /* MAP_ANON */
@@ -65,9 +66,8 @@ static SLJIT_INLINE void *alloc_chunk(sljit_uw size) {
 retry:
 	retval = mmap(NULL, size, prot, flags, fd, 0);
 	if (retval == MAP_FAILED) {
-		if (!SLJIT_IS_WX_BLOCK) {
+		if (!SLJIT_IS_WX_BLOCK)
 			goto retry;
-		}
 
 		return NULL;
 	}
@@ -81,7 +81,8 @@ retry:
 	return retval;
 }
 
-static SLJIT_INLINE void free_chunk(void *chunk, sljit_uw size) {
+static SLJIT_INLINE void free_chunk(void *chunk, sljit_uw size)
+{
 	munmap(chunk, size);
 }
 

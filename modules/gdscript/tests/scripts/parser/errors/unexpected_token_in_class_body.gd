@@ -4,4 +4,4 @@ var error
 error = true
 
 func test():
-    pass
+	pass

@@ -1,28 +1,28 @@
 /*************************************************
- *      Perl-Compatible Regular Expressions       *
- *************************************************/
+*      Perl-Compatible Regular Expressions       *
+*************************************************/
 
 /* PCRE2 is a library of functions to support regular expressions whose syntax
 and semantics are as close as possible to those of the Perl 5 language.
 
-					   Written by Philip Hazel
-	 Original API code Copyright (c) 1997-2012 University of Cambridge
-		  New API code Copyright (c) 2016-2024 University of Cambridge
+                       Written by Philip Hazel
+     Original API code Copyright (c) 1997-2012 University of Cambridge
+          New API code Copyright (c) 2016-2024 University of Cambridge
 
 -----------------------------------------------------------------------------
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
 
-	* Redistributions of source code must retain the above copyright notice,
-	  this list of conditions and the following disclaimer.
+    * Redistributions of source code must retain the above copyright notice,
+      this list of conditions and the following disclaimer.
 
-	* Redistributions in binary form must reproduce the above copyright
-	  notice, this list of conditions and the following disclaimer in the
-	  documentation and/or other materials provided with the distribution.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
 
-	* Neither the name of the University of Cambridge nor the names of its
-	  contributors may be used to endorse or promote products derived from
-	  this software without specific prior written permission.
+    * Neither the name of the University of Cambridge nor the names of its
+      contributors may be used to endorse or promote products derived from
+      this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
@@ -61,13 +61,14 @@ side-effects. */
 #if defined(HAVE_ASSERT_H) && !defined(NDEBUG)
 #define PCRE2_ASSERT(x) assert(x)
 #else
-#define PCRE2_ASSERT(x)                                                         \
-	do {                                                                        \
-		if (!(x)) {                                                             \
-			fprintf(stderr, "Assertion failed at " __FILE__ ":%d\n", __LINE__); \
-			abort();                                                            \
-		}                                                                       \
-	} while (0)
+#define PCRE2_ASSERT(x) do                                            \
+{                                                                     \
+  if (!(x))                                                           \
+  {                                                                   \
+  fprintf(stderr, "Assertion failed at " __FILE__ ":%d\n", __LINE__); \
+  abort();                                                            \
+  }                                                                   \
+} while(0)
 #endif
 
 /* PCRE2_UNREACHABLE() can be used to mark locations on the code that
@@ -85,14 +86,15 @@ after it if used at the end of a `case`) and to test your code also
 with a configuration where the macro will be a NOP. */
 
 #if defined(HAVE_ASSERT_H) && !defined(NDEBUG)
-#define PCRE2_UNREACHABLE() \
-	assert(((void)"Execution reached unexpected point", 0))
+#define PCRE2_UNREACHABLE()                                         \
+assert(((void)"Execution reached unexpected point", 0))
 #else
-#define PCRE2_UNREACHABLE()                                                                   \
-	do {                                                                                      \
-		fprintf(stderr, "Execution reached unexpected point at " __FILE__ ":%d\n", __LINE__); \
-		abort();                                                                              \
-	} while (0)
+#define PCRE2_UNREACHABLE() do                                      \
+{                                                                   \
+fprintf(stderr, "Execution reached unexpected point at " __FILE__   \
+                ":%d\n", __LINE__);                                 \
+abort();                                                            \
+} while(0)
 #endif
 
 /* PCRE2_DEBUG_UNREACHABLE() is a debug only version of the previous
@@ -108,9 +110,7 @@ the reason and the actions that should be taken if it ever triggers. */
 #endif /* PCRE2_DEBUG */
 
 #ifndef PCRE2_DEBUG_UNREACHABLE
-#define PCRE2_DEBUG_UNREACHABLE() \
-	do {                          \
-	} while (0)
+#define PCRE2_DEBUG_UNREACHABLE() do {} while(0)
 #endif
 
 #ifndef PCRE2_UNREACHABLE
@@ -119,16 +119,12 @@ the reason and the actions that should be taken if it ever triggers. */
 #elif defined(HAVE_BUILTIN_ASSUME)
 #define PCRE2_UNREACHABLE() __assume(0)
 #else
-#define PCRE2_UNREACHABLE() \
-	do {                    \
-	} while (0)
+#define PCRE2_UNREACHABLE() do {} while(0)
 #endif
 #endif /* !PCRE2_UNREACHABLE */
 
 #ifndef PCRE2_ASSERT
-#define PCRE2_ASSERT(x) \
-	do {                \
-	} while (0)
+#define PCRE2_ASSERT(x) do {} while(0)
 #endif
 
 #endif /* PCRE2_UTIL_H_IDEMPOTENT_GUARD */

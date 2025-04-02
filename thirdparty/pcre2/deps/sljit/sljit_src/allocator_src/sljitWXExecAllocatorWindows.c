@@ -53,33 +53,35 @@
 #define SLJIT_UPDATE_WX_FLAGS(from, to, enable_exec) \
 	sljit_update_wx_flags((from), (to), (enable_exec))
 
-SLJIT_API_FUNC_ATTRIBUTE void *sljit_malloc_exec(sljit_uw size) {
+SLJIT_API_FUNC_ATTRIBUTE void* sljit_malloc_exec(sljit_uw size)
+{
 	sljit_uw *ptr;
 
 	size += sizeof(sljit_uw);
-	ptr = (sljit_uw *)VirtualAlloc(NULL, size,
-			MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+	ptr = (sljit_uw*)VirtualAlloc(NULL, size,
+				MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 
-	if (!ptr) {
+	if (!ptr)
 		return NULL;
-	}
 
 	*ptr++ = size;
 
 	return ptr;
 }
 
-SLJIT_API_FUNC_ATTRIBUTE void sljit_free_exec(void *ptr) {
+SLJIT_API_FUNC_ATTRIBUTE void sljit_free_exec(void* ptr)
+{
 	sljit_uw start = (sljit_uw)ptr - sizeof(sljit_uw);
 #if defined(SLJIT_DEBUG) && SLJIT_DEBUG
 	sljit_uw page_mask = (sljit_uw)get_page_alignment();
 
 	SLJIT_ASSERT(!(start & page_mask));
 #endif
-	VirtualFree((void *)start, 0, MEM_RELEASE);
+	VirtualFree((void*)start, 0, MEM_RELEASE);
 }
 
-static void sljit_update_wx_flags(void *from, void *to, sljit_s32 enable_exec) {
+static void sljit_update_wx_flags(void *from, void *to, sljit_s32 enable_exec)
+{
 	DWORD oldprot;
 	sljit_uw page_mask = (sljit_uw)get_page_alignment();
 	sljit_uw start = (sljit_uw)from;
@@ -91,9 +93,10 @@ static void sljit_update_wx_flags(void *from, void *to, sljit_s32 enable_exec) {
 	start &= ~page_mask;
 	end = (end + page_mask) & ~page_mask;
 
-	VirtualProtect((void *)start, end - start, prot, &oldprot);
+	VirtualProtect((void*)start, end - start, prot, &oldprot);
 }
 
-SLJIT_API_FUNC_ATTRIBUTE void sljit_free_unused_memory_exec(void) {
+SLJIT_API_FUNC_ATTRIBUTE void sljit_free_unused_memory_exec(void)
+{
 	/* This allocator does not keep unused memory for future allocations. */
 }

@@ -5,7 +5,7 @@ index 8e2488091a..80d910e694 100644
 @@ -33,6 +33,12 @@
      #include <shared_mutex>
  #endif
-
+ 
 +#if !defined(_MSC_VER)
 +#include <guiddef.h>
 +
@@ -16,7 +16,7 @@ index 8e2488091a..80d910e694 100644
  ////////////////////////////////////////////////////////////////////////////////
  //
 @@ -8178,7 +8184,13 @@ HRESULT AllocatorPimpl::UpdateD3D12Budget()
-
+ 
  D3D12_RESOURCE_ALLOCATION_INFO AllocatorPimpl::GetResourceAllocationInfoNative(const D3D12_RESOURCE_DESC& resourceDesc) const
  {
 +#if defined(_MSC_VER) || !defined(_WIN32)
@@ -27,7 +27,7 @@ index 8e2488091a..80d910e694 100644
 +    return ret;
 +#endif
  }
-
+ 
  #ifdef __ID3D12Device8_INTERFACE_DEFINED__
 @@ -8186,7 +8198,13 @@ D3D12_RESOURCE_ALLOCATION_INFO AllocatorPimpl::GetResourceAllocationInfoNative(c
  {
@@ -42,4 +42,4 @@ index 8e2488091a..80d910e694 100644
 +#endif
  }
  #endif // #ifdef __ID3D12Device8_INTERFACE_DEFINED__
-
+ 

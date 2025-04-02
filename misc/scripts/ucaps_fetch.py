@@ -33,15 +33,12 @@ def parse_unicode_data() -> None:
         lowercase_mapping: str = split_line[13].strip()
 
         if uppercase_mapping:
-            lower_to_upper.append(
-                (f"0x{code_value}", f"0x{uppercase_mapping}"))
+            lower_to_upper.append((f"0x{code_value}", f"0x{uppercase_mapping}"))
         if lowercase_mapping:
-            upper_to_lower.append(
-                (f"0x{code_value}", f"0x{lowercase_mapping}"))
+            upper_to_lower.append((f"0x{code_value}", f"0x{lowercase_mapping}"))
 
 
-def make_cap_table(table_name: str, len_name: str,
-                   table: List[Tuple[str, str]]) -> str:
+def make_cap_table(table_name: str, len_name: str, table: List[Tuple[str, str]]) -> str:
     result: str = f"static const int {table_name}[{len_name}][2] = {{\n"
 
     for first, second in table:
@@ -109,9 +106,7 @@ static int _find_lower(int ch) {
 }
 """
 
-    ucaps_path: str = os.path.join(
-        os.path.dirname(__file__),
-        "../../core/string/ucaps.h")
+    ucaps_path: str = os.path.join(os.path.dirname(__file__), "../../core/string/ucaps.h")
     with open(ucaps_path, "w", newline="\n") as f:
         f.write(source)
 

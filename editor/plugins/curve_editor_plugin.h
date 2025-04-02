@@ -103,6 +103,7 @@ private:
 
 	void _redraw();
 
+private:
 	const float ASPECT_RATIO = 6.f / 13.f;
 	const float LINE_WIDTH = 0.5f;
 	const int STEP_SIZE = 2; // Number of pixels between plot points.

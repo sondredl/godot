@@ -3,7 +3,7 @@ index 61256b34f2..4583e49b1c 100644
 --- a/thirdparty/embree/common/sys/sysinfo.cpp
 +++ b/thirdparty/embree/common/sys/sysinfo.cpp
 @@ -646,6 +646,10 @@ namespace embree
-
+ 
  #if defined(__EMSCRIPTEN__)
  #include <emscripten.h>
 +
@@ -11,7 +11,7 @@ index 61256b34f2..4583e49b1c 100644
 +extern int godot_js_os_hw_concurrency_get();
 +}
  #endif
-
+ 
  namespace embree
 @@ -659,6 +663,8 @@ namespace embree
      nThreads = sysconf(_SC_NPROCESSORS_ONLN); // does not work in Linux LXC container

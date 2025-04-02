@@ -30,7 +30,7 @@
 
 #include "audio_driver_opensl.h"
 
-#include <cstring>
+#include <string.h>
 
 #define MAX_NUMBER_INTERFACES 3
 #define MAX_NUMBER_OUTPUT_DEVICES 6

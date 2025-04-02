@@ -377,8 +377,8 @@ static void _lineTo(SwStroke& stroke, const SwPoint& to)
     //a zero-length lineto is a no-op
     if (delta.zero()) {
         //round and square caps are expected to be drawn as a dot even for zero-length lines
-        if (stroke.firstPt && stroke.cap != StrokeCap::Butt) _firstSubPath(stroke, 0, 0);
-        return;
+        if (stroke.firstPt && stroke.cap != StrokeCap::Butt) _firstSubPath(stroke, 0, 0); 
+        return; 
     }
 
     /* The lineLength is used to determine the intersection of strokes outlines.

@@ -25,7 +25,7 @@
 #include <arm_neon.h>
 
 //TODO : need to support windows ARM
-
+ 
 #if defined(__ARM_64BIT_STATE) || defined(_M_ARM64)
 #define TVG_AARCH64 1
 #else

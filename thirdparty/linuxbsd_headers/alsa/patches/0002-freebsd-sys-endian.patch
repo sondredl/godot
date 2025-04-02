@@ -11,6 +11,6 @@ index a546194382..598175403c 100644
 +#else
  #include <endian.h>
 +#endif // __FreeBSD__
-
+ 
  #ifndef __GNUC__
  #define __inline__ inline

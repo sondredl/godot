@@ -92,6 +92,7 @@ private:
 		}
 	};
 
+private:
 	bool read_only = false;
 
 	Ref<TileSet> tile_set;

@@ -87,6 +87,7 @@ public:
 		API_NONE
 	};
 
+public:
 	struct PropertySetGet {
 		int index;
 		StringName setter;

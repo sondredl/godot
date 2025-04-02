@@ -124,7 +124,7 @@ Result Picture::Impl::load(ImageLoader* loader)
     if (!loader->read()) return Result::Unknown;
 
     this->w = loader->w;
-    this->h = loader->h;
+    this->h = loader->h;    
 
     return Result::Success;
 }

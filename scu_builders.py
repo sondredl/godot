@@ -35,13 +35,7 @@ def folder_not_found(folder):
     return not os.path.isdir(abs_folder)
 
 
-def find_files_in_folder(
-        folder,
-        sub_folder,
-        include_list,
-        extension,
-        sought_exceptions,
-        found_exceptions):
+def find_files_in_folder(folder, sub_folder, include_list, extension, sought_exceptions, found_exceptions):
     abs_folder = base_folder_path + folder + "/" + sub_folder
 
     if not os.path.isdir(abs_folder):
@@ -70,14 +64,7 @@ def find_files_in_folder(
     return include_list, found_exceptions
 
 
-def write_output_file(
-        file_count,
-        include_list,
-        start_line,
-        end_line,
-        output_folder,
-        output_filename_prefix,
-        extension):
+def write_output_file(file_count, include_list, start_line, end_line, output_folder, output_filename_prefix, extension):
     output_folder = os.path.abspath(output_folder)
 
     if not os.path.isdir(output_folder):
@@ -115,12 +102,7 @@ def write_output_file(
     return output_path
 
 
-def write_exception_output_file(
-        file_count,
-        exception_string,
-        output_folder,
-        output_filename_prefix,
-        extension):
+def write_exception_output_file(file_count, exception_string, output_folder, output_filename_prefix, extension):
     output_folder = os.path.abspath(output_folder)
     if not os.path.isdir(output_folder):
         print_error(f"SCU: {output_folder} does not exist.")
@@ -132,8 +114,7 @@ def write_exception_output_file(
     if file_count > 0:
         num_string = "_" + str(file_count)
 
-    short_filename = output_filename_prefix + \
-        "_exception" + num_string + ".gen." + extension
+    short_filename = output_filename_prefix + "_exception" + num_string + ".gen." + extension
     output_filename = output_folder + "/" + short_filename
 
     output_path = Path(output_filename)
@@ -186,16 +167,11 @@ def find_section_name(sub_folder):
 # e.g. naming conflicts, and are therefore not suitable for the scu build.
 # These will automatically be placed in their own separate scu file,
 # which is slow like a normal build, but prevents the naming conflicts.
-# Ideally in these situations, the source code should be changed to
-# prevent naming conflicts.
+# Ideally in these situations, the source code should be changed to prevent naming conflicts.
 
 
 # "extension" will usually be cpp, but can also be set to c (for e.g. third party libraries that use c)
-def process_folder(
-        folders,
-        sought_exceptions=[],
-        includes_per_scu=0,
-        extension="cpp"):
+def process_folder(folders, sought_exceptions=[], includes_per_scu=0, extension="cpp"):
     if len(folders) == 0:
         return
 
@@ -216,12 +192,14 @@ def process_folder(
 
     # main folder (first)
     found_includes, found_exceptions = find_files_in_folder(
-        main_folder, "", found_includes, extension, sought_exceptions, found_exceptions)
+        main_folder, "", found_includes, extension, sought_exceptions, found_exceptions
+    )
 
     # sub folders
     for d in range(1, len(folders)):
         found_includes, found_exceptions = find_files_in_folder(
-            main_folder, folders[d], found_includes, extension, sought_exceptions, found_exceptions)
+            main_folder, folders[d], found_includes, extension, sought_exceptions, found_exceptions
+        )
 
     found_includes = sorted(found_includes)
 
@@ -258,13 +236,8 @@ def process_folder(
             end_line = len(found_includes)
 
         fresh_file = write_output_file(
-            file_count,
-            found_includes,
-            start_line,
-            end_line,
-            output_folder,
-            output_filename_prefix,
-            extension)
+            file_count, found_includes, start_line, end_line, output_folder, output_filename_prefix, extension
+        )
 
         fresh_files.add(fresh_file)
 
@@ -274,11 +247,8 @@ def process_folder(
     # so they can effectively compile in "old style / normal build".
     for exception_count in range(len(found_exceptions)):
         fresh_file = write_exception_output_file(
-            exception_count,
-            found_exceptions[exception_count],
-            output_folder,
-            output_filename_prefix,
-            extension)
+            exception_count, found_exceptions[exception_count], output_folder, output_filename_prefix, extension
+        )
 
         fresh_files.add(fresh_file)
 
@@ -292,17 +262,13 @@ def generate_scu_files(max_includes_per_scu):
     global _max_includes_per_scu
     _max_includes_per_scu = max_includes_per_scu
 
-    print(
-        "SCU: Generating build files... (max includes per SCU: %d)" %
-        _max_includes_per_scu)
+    print("SCU: Generating build files... (max includes per SCU: %d)" % _max_includes_per_scu)
 
     curr_folder = os.path.abspath("./")
 
     # check we are running from the correct folder
-    if folder_not_found("core") or folder_not_found(
-            "platform") or folder_not_found("scene"):
-        raise RuntimeError(
-            "scu_builders.py must be run from the godot folder.")
+    if folder_not_found("core") or folder_not_found("platform") or folder_not_found("scene"):
+        raise RuntimeError("scu_builders.py must be run from the godot folder.")
         return
 
     process_folder(["core"])
@@ -323,9 +289,7 @@ def generate_scu_files(max_includes_per_scu):
     process_folder(["drivers/gles3/effects"])
     process_folder(["drivers/gles3/storage"])
 
-    process_folder(
-        ["editor"], [
-            "file_system_dock", "editor_resource_preview"], 32)
+    process_folder(["editor"], ["file_system_dock", "editor_resource_preview"], 32)
     process_folder(["editor/debugger"])
     process_folder(["editor/debugger/debug_adapter"])
     process_folder(["editor/export"])
@@ -363,8 +327,7 @@ def generate_scu_files(max_includes_per_scu):
     process_folder(["modules/openxr"], ["register_types"])
     process_folder(["modules/openxr/action_map"])
     process_folder(["modules/openxr/editor"])
-    # process_folder(["modules/openxr/extensions"])  # Sensitive include order
-    # for platform code.
+    # process_folder(["modules/openxr/extensions"])  # Sensitive include order for platform code.
     process_folder(["modules/openxr/scene"])
     process_folder(["modules/godot_physics_2d"])
     process_folder(["modules/godot_physics_3d"])

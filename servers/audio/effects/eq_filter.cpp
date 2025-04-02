@@ -33,7 +33,7 @@
 #include "core/error/error_macros.h"
 #include "core/math/math_defs.h"
 
-#include <cmath>
+#include <math.h>
 
 #define POW2(v) ((v) * (v))
 

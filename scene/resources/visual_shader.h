@@ -454,6 +454,7 @@ protected:
 
 	bool _is_valid_code(const String &p_code) const;
 
+protected:
 	void _set_input_port_default_value(int p_port, const Variant &p_value);
 
 	bool is_available(Shader::Mode p_mode, VisualShader::Type p_type) const;
@@ -566,6 +567,7 @@ public:
 
 	static const Port ports[];
 
+public:
 	virtual int get_input_port_count() const override;
 	virtual PortType get_input_port_type(int p_port) const override;
 	virtual String get_input_port_name(int p_port) const override;
@@ -668,6 +670,7 @@ public:
 	static void clear_parameters(RID p_shader_rid);
 	static bool has_parameter(RID p_shader_rid, const String &p_name);
 
+public:
 	virtual String get_caption() const override;
 
 	virtual int get_input_port_count() const override;
@@ -711,6 +714,7 @@ protected:
 	Size2 size = Size2(0, 0);
 	bool allow_v_resize = true;
 
+protected:
 	static void _bind_methods();
 
 public:
@@ -733,6 +737,7 @@ protected:
 	bool autoshrink = true;
 	HashSet<int> attached_nodes;
 
+protected:
 	static void _bind_methods();
 
 public:
@@ -812,6 +817,7 @@ protected:
 	HashMap<int, Port> output_ports;
 	HashMap<int, Control *> controls;
 
+protected:
 	static void _bind_methods();
 
 public:
@@ -930,6 +936,7 @@ public: // internal
 protected:
 	static void _bind_methods();
 
+protected:
 	String get_type_str() const;
 	PortType get_port_type(VisualShader::VaryingType p_type, int p_port) const;
 

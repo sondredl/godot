@@ -36,7 +36,9 @@ AlignAfterOpenBracket: DontAlign
 #   AlignCaseColons: false
 # AlignEscapedNewlines: Right
 AlignOperands: DontAlign
-AlignTrailingComments: false
+AlignTrailingComments:
+  Kind: Never
+  OverEmptyLines: 0
 # AllowAllArgumentsOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: false
 # AllowShortBlocksOnASingleLine: Never

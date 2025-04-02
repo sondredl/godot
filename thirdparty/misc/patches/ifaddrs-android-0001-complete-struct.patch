@@ -27,6 +27,6 @@ index e7d81e813f..04ff2ca58b 100644
 +#ifdef __cplusplus
 +}
 +#endif
-
+ 
  int getifaddrs(struct ifaddrs** result);
  void freeifaddrs(struct ifaddrs* addrs);

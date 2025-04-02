@@ -5,7 +5,7 @@ index fef8f66c98..7bdf827ed3 100644
 @@ -4,5 +4,7 @@
  #endif
  #endif
-
+ 
 +#include <zlib.h> // Should come before including tinyexr.
 +
  #define TINYEXR_IMPLEMENTATION

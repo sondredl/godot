@@ -39,11 +39,11 @@
  * Not related to crypto, but this is the bottom of the stack. */
 #if defined(__MINGW32__) || (defined(_MSC_VER) && _MSC_VER <= 1900)
 #if !defined(MBEDTLS_PLATFORM_SNPRINTF_ALT) && \
-		!defined(MBEDTLS_PLATFORM_SNPRINTF_MACRO)
+    !defined(MBEDTLS_PLATFORM_SNPRINTF_MACRO)
 #define MBEDTLS_PLATFORM_SNPRINTF_ALT
 #endif
 #if !defined(MBEDTLS_PLATFORM_VSNPRINTF_ALT) && \
-		!defined(MBEDTLS_PLATFORM_VSNPRINTF_MACRO)
+    !defined(MBEDTLS_PLATFORM_VSNPRINTF_MACRO)
 #define MBEDTLS_PLATFORM_VSNPRINTF_ALT
 #endif
 #endif /* _MINGW32__ || (_MSC_VER && (_MSC_VER <= 1900)) */
@@ -57,16 +57,16 @@
 
 /* Auto-enable CIPHER_C when any of the unauthenticated ciphers is builtin
  * in PSA. */
-#if defined(MBEDTLS_PSA_CRYPTO_C) &&                                \
-		(defined(MBEDTLS_PSA_BUILTIN_ALG_STREAM_CIPHER) ||          \
-				defined(MBEDTLS_PSA_BUILTIN_ALG_CTR) ||             \
-				defined(MBEDTLS_PSA_BUILTIN_ALG_CFB) ||             \
-				defined(MBEDTLS_PSA_BUILTIN_ALG_OFB) ||             \
-				defined(MBEDTLS_PSA_BUILTIN_ALG_ECB_NO_PADDING) ||  \
-				defined(MBEDTLS_PSA_BUILTIN_ALG_CBC_NO_PADDING) ||  \
-				defined(MBEDTLS_PSA_BUILTIN_ALG_CBC_PKCS7) ||       \
-				defined(MBEDTLS_PSA_BUILTIN_ALG_CCM_STAR_NO_TAG) || \
-				defined(MBEDTLS_PSA_BUILTIN_ALG_CMAC))
+#if defined(MBEDTLS_PSA_CRYPTO_C) && \
+    (defined(MBEDTLS_PSA_BUILTIN_ALG_STREAM_CIPHER) || \
+    defined(MBEDTLS_PSA_BUILTIN_ALG_CTR) || \
+    defined(MBEDTLS_PSA_BUILTIN_ALG_CFB) || \
+    defined(MBEDTLS_PSA_BUILTIN_ALG_OFB) || \
+    defined(MBEDTLS_PSA_BUILTIN_ALG_ECB_NO_PADDING) || \
+    defined(MBEDTLS_PSA_BUILTIN_ALG_CBC_NO_PADDING) || \
+    defined(MBEDTLS_PSA_BUILTIN_ALG_CBC_PKCS7) || \
+    defined(MBEDTLS_PSA_BUILTIN_ALG_CCM_STAR_NO_TAG) || \
+    defined(MBEDTLS_PSA_BUILTIN_ALG_CMAC))
 #define MBEDTLS_CIPHER_C
 #endif
 
@@ -80,15 +80,15 @@
 /* Auto-enable MBEDTLS_MD_LIGHT if needed by a module that didn't require it
  * in a previous release, to ensure backwards compatibility.
  */
-#if defined(MBEDTLS_ECJPAKE_C) ||       \
-		defined(MBEDTLS_PEM_PARSE_C) || \
-		defined(MBEDTLS_ENTROPY_C) ||   \
-		defined(MBEDTLS_PK_C) ||        \
-		defined(MBEDTLS_PKCS12_C) ||    \
-		defined(MBEDTLS_RSA_C) ||       \
-		defined(MBEDTLS_SSL_TLS_C) ||   \
-		defined(MBEDTLS_X509_USE_C) ||  \
-		defined(MBEDTLS_X509_CREATE_C)
+#if defined(MBEDTLS_ECJPAKE_C) || \
+    defined(MBEDTLS_PEM_PARSE_C) || \
+    defined(MBEDTLS_ENTROPY_C) || \
+    defined(MBEDTLS_PK_C) || \
+    defined(MBEDTLS_PKCS12_C) || \
+    defined(MBEDTLS_RSA_C) || \
+    defined(MBEDTLS_SSL_TLS_C) || \
+    defined(MBEDTLS_X509_USE_C) || \
+    defined(MBEDTLS_X509_CREATE_C)
 #define MBEDTLS_MD_LIGHT
 #endif
 
@@ -308,15 +308,15 @@
 /* Helpers to state that BLOCK_CIPHER module supports AES, ARIA and/or Camellia
  * block ciphers via either PSA or legacy. */
 #if defined(MBEDTLS_BLOCK_CIPHER_AES_VIA_PSA) || \
-		defined(MBEDTLS_BLOCK_CIPHER_AES_VIA_LEGACY)
+    defined(MBEDTLS_BLOCK_CIPHER_AES_VIA_LEGACY)
 #define MBEDTLS_BLOCK_CIPHER_CAN_AES
 #endif
 #if defined(MBEDTLS_BLOCK_CIPHER_ARIA_VIA_PSA) || \
-		defined(MBEDTLS_BLOCK_CIPHER_ARIA_VIA_LEGACY)
+    defined(MBEDTLS_BLOCK_CIPHER_ARIA_VIA_LEGACY)
 #define MBEDTLS_BLOCK_CIPHER_CAN_ARIA
 #endif
 #if defined(MBEDTLS_BLOCK_CIPHER_CAMELLIA_VIA_PSA) || \
-		defined(MBEDTLS_BLOCK_CIPHER_CAMELLIA_VIA_LEGACY)
+    defined(MBEDTLS_BLOCK_CIPHER_CAMELLIA_VIA_LEGACY)
 #define MBEDTLS_BLOCK_CIPHER_CAN_CAMELLIA
 #endif
 
@@ -327,23 +327,23 @@
  *   of the driver's acceleration.
  */
 #if (defined(MBEDTLS_GCM_C) || defined(MBEDTLS_CCM_C)) && \
-		(!defined(MBEDTLS_CIPHER_C) || defined(MBEDTLS_BLOCK_CIPHER_SOME_PSA))
+    (!defined(MBEDTLS_CIPHER_C) || defined(MBEDTLS_BLOCK_CIPHER_SOME_PSA))
 #define MBEDTLS_BLOCK_CIPHER_C
 #endif
 
 /* Helpers for GCM/CCM capabilities */
 #if (defined(MBEDTLS_CIPHER_C) && defined(MBEDTLS_AES_C)) || \
-		(defined(MBEDTLS_BLOCK_CIPHER_C) && defined(MBEDTLS_BLOCK_CIPHER_CAN_AES))
+    (defined(MBEDTLS_BLOCK_CIPHER_C) && defined(MBEDTLS_BLOCK_CIPHER_CAN_AES))
 #define MBEDTLS_CCM_GCM_CAN_AES
 #endif
 
 #if (defined(MBEDTLS_CIPHER_C) && defined(MBEDTLS_ARIA_C)) || \
-		(defined(MBEDTLS_BLOCK_CIPHER_C) && defined(MBEDTLS_BLOCK_CIPHER_CAN_ARIA))
+    (defined(MBEDTLS_BLOCK_CIPHER_C) && defined(MBEDTLS_BLOCK_CIPHER_CAN_ARIA))
 #define MBEDTLS_CCM_GCM_CAN_ARIA
 #endif
 
 #if (defined(MBEDTLS_CIPHER_C) && defined(MBEDTLS_CAMELLIA_C)) || \
-		(defined(MBEDTLS_BLOCK_CIPHER_C) && defined(MBEDTLS_BLOCK_CIPHER_CAN_CAMELLIA))
+    (defined(MBEDTLS_BLOCK_CIPHER_C) && defined(MBEDTLS_BLOCK_CIPHER_CAN_CAMELLIA))
 #define MBEDTLS_CCM_GCM_CAN_CAMELLIA
 #endif
 
@@ -363,10 +363,10 @@
  * - PK_C + USE_PSA + PSA_WANT_ALG_ECDSA is a temporary dependency which will
  *   be fixed by #7453.
  */
-#if defined(MBEDTLS_ECP_C) ||                      \
-		defined(MBEDTLS_PK_PARSE_EC_EXTENDED) ||   \
-		defined(MBEDTLS_PK_PARSE_EC_COMPRESSED) || \
-		defined(MBEDTLS_PSA_BUILTIN_KEY_TYPE_ECC_KEY_PAIR_DERIVE)
+#if defined(MBEDTLS_ECP_C) || \
+    defined(MBEDTLS_PK_PARSE_EC_EXTENDED) || \
+    defined(MBEDTLS_PK_PARSE_EC_COMPRESSED) || \
+    defined(MBEDTLS_PSA_BUILTIN_KEY_TYPE_ECC_KEY_PAIR_DERIVE)
 #define MBEDTLS_ECP_LIGHT
 #endif
 
@@ -390,7 +390,7 @@
 /* Helper symbol to state that there is support for ECDH, either through
  * library implementation (ECDH_C) or through PSA. */
 #if (defined(MBEDTLS_USE_PSA_CRYPTO) && defined(PSA_WANT_ALG_ECDH)) || \
-		(!defined(MBEDTLS_USE_PSA_CRYPTO) && defined(MBEDTLS_ECDH_C))
+    (!defined(MBEDTLS_USE_PSA_CRYPTO) && defined(MBEDTLS_ECDH_C))
 #define MBEDTLS_CAN_ECDH
 #endif
 
@@ -463,7 +463,7 @@
  * can either be provided through the legacy ECP solution or through the
  * PSA friendly MBEDTLS_PK_USE_PSA_EC_DATA (see pk.h for its description). */
 #if defined(MBEDTLS_ECP_C) || \
-		(defined(MBEDTLS_USE_PSA_CRYPTO) && defined(PSA_WANT_KEY_TYPE_ECC_PUBLIC_KEY))
+    (defined(MBEDTLS_USE_PSA_CRYPTO) && defined(PSA_WANT_KEY_TYPE_ECC_PUBLIC_KEY))
 #define MBEDTLS_PK_HAVE_ECC_KEYS
 #endif /* MBEDTLS_PK_USE_PSA_EC_DATA || MBEDTLS_ECP_C */
 
@@ -478,7 +478,7 @@
 /* Backwards compatibility for some macros which were renamed to reflect that
  * they are related to Armv8, not aarch64. */
 #if defined(MBEDTLS_SHA256_USE_A64_CRYPTO_IF_PRESENT) && \
-		!defined(MBEDTLS_SHA256_USE_ARMV8_A_CRYPTO_IF_PRESENT)
+    !defined(MBEDTLS_SHA256_USE_ARMV8_A_CRYPTO_IF_PRESENT)
 #define MBEDTLS_SHA256_USE_ARMV8_A_CRYPTO_IF_PRESENT
 #endif
 #if defined(MBEDTLS_SHA256_USE_A64_CRYPTO_ONLY) && !defined(MBEDTLS_SHA256_USE_ARMV8_A_CRYPTO_ONLY)
@@ -488,47 +488,47 @@
 /* psa_util file features some ECDSA conversion functions, to convert between
  * legacy's ASN.1 DER format and PSA's raw one. */
 #if (defined(MBEDTLS_PSA_CRYPTO_CLIENT) && \
-		(defined(PSA_WANT_ALG_ECDSA) || defined(PSA_WANT_ALG_DETERMINISTIC_ECDSA)))
+    (defined(PSA_WANT_ALG_ECDSA) || defined(PSA_WANT_ALG_DETERMINISTIC_ECDSA)))
 #define MBEDTLS_PSA_UTIL_HAVE_ECDSA
 #endif
 
 /* Some internal helpers to determine which keys are available. */
 #if (!defined(MBEDTLS_USE_PSA_CRYPTO) && defined(MBEDTLS_AES_C)) || \
-		(defined(MBEDTLS_USE_PSA_CRYPTO) && defined(PSA_WANT_KEY_TYPE_AES))
+    (defined(MBEDTLS_USE_PSA_CRYPTO) && defined(PSA_WANT_KEY_TYPE_AES))
 #define MBEDTLS_SSL_HAVE_AES
 #endif
 #if (!defined(MBEDTLS_USE_PSA_CRYPTO) && defined(MBEDTLS_ARIA_C)) || \
-		(defined(MBEDTLS_USE_PSA_CRYPTO) && defined(PSA_WANT_KEY_TYPE_ARIA))
+    (defined(MBEDTLS_USE_PSA_CRYPTO) && defined(PSA_WANT_KEY_TYPE_ARIA))
 #define MBEDTLS_SSL_HAVE_ARIA
 #endif
 #if (!defined(MBEDTLS_USE_PSA_CRYPTO) && defined(MBEDTLS_CAMELLIA_C)) || \
-		(defined(MBEDTLS_USE_PSA_CRYPTO) && defined(PSA_WANT_KEY_TYPE_CAMELLIA))
+    (defined(MBEDTLS_USE_PSA_CRYPTO) && defined(PSA_WANT_KEY_TYPE_CAMELLIA))
 #define MBEDTLS_SSL_HAVE_CAMELLIA
 #endif
 
 /* Some internal helpers to determine which operation modes are available. */
 #if (!defined(MBEDTLS_USE_PSA_CRYPTO) && defined(MBEDTLS_CIPHER_MODE_CBC)) || \
-		(defined(MBEDTLS_USE_PSA_CRYPTO) && defined(PSA_WANT_ALG_CBC_NO_PADDING))
+    (defined(MBEDTLS_USE_PSA_CRYPTO) && defined(PSA_WANT_ALG_CBC_NO_PADDING))
 #define MBEDTLS_SSL_HAVE_CBC
 #endif
 
 #if (!defined(MBEDTLS_USE_PSA_CRYPTO) && defined(MBEDTLS_GCM_C)) || \
-		(defined(MBEDTLS_USE_PSA_CRYPTO) && defined(PSA_WANT_ALG_GCM))
+    (defined(MBEDTLS_USE_PSA_CRYPTO) && defined(PSA_WANT_ALG_GCM))
 #define MBEDTLS_SSL_HAVE_GCM
 #endif
 
 #if (!defined(MBEDTLS_USE_PSA_CRYPTO) && defined(MBEDTLS_CCM_C)) || \
-		(defined(MBEDTLS_USE_PSA_CRYPTO) && defined(PSA_WANT_ALG_CCM))
+    (defined(MBEDTLS_USE_PSA_CRYPTO) && defined(PSA_WANT_ALG_CCM))
 #define MBEDTLS_SSL_HAVE_CCM
 #endif
 
 #if (!defined(MBEDTLS_USE_PSA_CRYPTO) && defined(MBEDTLS_CHACHAPOLY_C)) || \
-		(defined(MBEDTLS_USE_PSA_CRYPTO) && defined(PSA_WANT_ALG_CHACHA20_POLY1305))
+    (defined(MBEDTLS_USE_PSA_CRYPTO) && defined(PSA_WANT_ALG_CHACHA20_POLY1305))
 #define MBEDTLS_SSL_HAVE_CHACHAPOLY
 #endif
 
 #if defined(MBEDTLS_SSL_HAVE_GCM) || defined(MBEDTLS_SSL_HAVE_CCM) || \
-		defined(MBEDTLS_SSL_HAVE_CHACHAPOLY)
+    defined(MBEDTLS_SSL_HAVE_CHACHAPOLY)
 #define MBEDTLS_SSL_HAVE_AEAD
 #endif
 

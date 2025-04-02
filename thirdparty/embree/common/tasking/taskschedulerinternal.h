@@ -19,7 +19,7 @@
 namespace embree
 {
 
-  /* The tasking system exports some symbols to be used by the tutorials. Thus we
+  /* The tasking system exports some symbols to be used by the tutorials. Thus we 
      hide is also in the API namespace when requested. */
   RTC_NAMESPACE_BEGIN
 

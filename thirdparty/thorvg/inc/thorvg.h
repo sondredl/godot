@@ -1049,7 +1049,7 @@ public:
      * @param[in] miterlimit The miterlimit imposes a limit on the extent of the stroke join, when the @c StrokeJoin::Miter join style is set. The default value is 4.
      *
      * @retval Result::InvalidArgument for @p miterlimit values less than zero.
-     *
+     * 
      * @since 0.11
      */
     Result strokeMiterlimit(float miterlimit) noexcept;
@@ -1598,7 +1598,7 @@ public:
      *
      * @note If the font data is currently in use, it will not be immediately unloaded.
      * @see Text::load(const std::string& path)
-     *
+     * 
      * @since 0.15
      */
     static Result unload(const std::string& path) noexcept;

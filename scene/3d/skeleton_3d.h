@@ -311,6 +311,7 @@ public:
 #endif // PHYSICS_3D_DISABLED
 #endif // _DISABLE_DEPRECATED
 
+public:
 	Skeleton3D();
 	~Skeleton3D();
 };

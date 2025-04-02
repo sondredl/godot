@@ -33,7 +33,7 @@
 #include "core/config/engine.h"
 
 #include <png.h>
-#include <cstring>
+#include <string.h>
 
 namespace PNGDriverCommon {
 

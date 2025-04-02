@@ -68,7 +68,7 @@ void main()
 
     FfxFloat32x3 ColorPreAlpha  = LoadOpaqueOnly(FFX_MIN16_I2(uDispatchThreadId)).rgb;
     FfxFloat32x3 ColorPostAlpha = LoadInputColor(FFX_MIN16_I2(uDispatchThreadId)).rgb;
-
+    
     if ((cbGenerateReactive.flags & FFX_FSR2_AUTOREACTIVEFLAGS_APPLY_TONEMAP) != 0)
     {
         ColorPreAlpha = Tonemap(ColorPreAlpha);
@@ -83,7 +83,7 @@ void main()
 
     FfxFloat32 out_reactive_value = 0.f;
     FfxFloat32x3 delta = abs(ColorPostAlpha - ColorPreAlpha);
-
+    
     out_reactive_value = ((cbGenerateReactive.flags & FFX_FSR2_AUTOREACTIVEFLAGS_USE_COMPONENTS_MAX)!=0) ? max(delta.x, max(delta.y, delta.z)) : length(delta);
     out_reactive_value *= cbGenerateReactive.scale;
 

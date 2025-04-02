@@ -43,7 +43,7 @@
 #endif
 
 #include <emscripten/emscripten.h>
-#include <cstdlib>
+#include <stdlib.h>
 
 static OS_Web *os = nullptr;
 #ifndef PROXY_TO_PTHREAD_ENABLED

@@ -39,5 +39,5 @@ index 7af66602fd..a7e937667c 100644
        got += (uint64_t) r;
 +      ptr += r;
      }
-
+ 
    if (got < size)
