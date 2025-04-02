@@ -64,7 +64,7 @@ public:
 		}
 
 		if constexpr (!std::is_trivially_constructible_v<T> && !force_trivial) {
-			memnew_placement(&data[count++], T(p_elem));
+			memnew_placement(&data[count++], T(std::move(p_elem)));
 		} else {
 			data[count++] = std::move(p_elem);
 		}
@@ -98,6 +98,15 @@ public:
 		int64_t idx = find(p_val);
 		if (idx >= 0) {
 			remove_at(idx);
+			return true;
+		}
+		return false;
+	}
+
+	bool erase_unordered(const T &p_val) {
+		int64_t idx = find(p_val);
+		if (idx >= 0) {
+			remove_at_unordered(idx);
 			return true;
 		}
 		return false;
@@ -251,13 +260,14 @@ public:
 		}
 	}
 
-	int64_t find(const T &p_val, U p_from = 0) const {
-		for (U i = p_from; i < count; i++) {
-			if (data[i] == p_val) {
-				return int64_t(i);
-			}
+	int64_t find(const T &p_val, int64_t p_from = 0) const {
+		if (p_from < 0) {
+			p_from = size() + p_from;
 		}
-		return -1;
+		if (p_from < 0 || p_from >= size()) {
+			return -1;
+		}
+		return span().find(p_val, p_from);
 	}
 
 	bool has(const T &p_val) const {
@@ -276,7 +286,7 @@ public:
 	}
 
 	void sort() {
-		sort_custom<_DefaultComparator<T>>();
+		sort_custom<Comparator<T>>();
 	}
 
 	void ordered_insert(T p_val) {

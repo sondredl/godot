@@ -1198,7 +1198,7 @@ bool GraphEdit::_check_clickable_control(Control *p_control, const Vector2 &mpos
 	control_rect.size *= zoom;
 	control_rect.position += p_offset;
 
-	if (!control_rect.has_point(mpos) || p_control->get_mouse_filter() == MOUSE_FILTER_IGNORE) {
+	if (!control_rect.has_point(mpos) || p_control->get_mouse_filter_with_recursive() == MOUSE_FILTER_IGNORE) {
 		// Test children.
 		for (int i = 0; i < p_control->get_child_count(); i++) {
 			Control *child_rect = Object::cast_to<Control>(p_control->get_child(i));
@@ -1316,7 +1316,7 @@ Ref<GraphEdit::Connection> GraphEdit::get_closest_connection_at_point(const Vect
 
 		Vector<Vector2> points = get_connection_line(conn->_cache.from_pos * zoom, conn->_cache.to_pos * zoom);
 		for (int i = 0; i < points.size() - 1; i++) {
-			float distance = Geometry2D::get_distance_to_segment(transformed_point, &points[i]);
+			const real_t distance = Geometry2D::get_distance_to_segment(transformed_point, points[i], points[i + 1]);
 			if (distance <= lines_thickness * 0.5 + p_max_distance && distance < closest_distance) {
 				closest_connection = conn;
 				closest_distance = distance;
@@ -1663,7 +1663,7 @@ void GraphEdit::_draw_grid() {
 			for (int i = from_pos.x; i < from_pos.x + len.x; i++) {
 				Color color;
 
-				if (ABS(i) % GRID_MINOR_STEPS_PER_MAJOR_LINE == 0) {
+				if (Math::abs(i) % GRID_MINOR_STEPS_PER_MAJOR_LINE == 0) {
 					color = theme_cache.grid_major;
 				} else {
 					color = theme_cache.grid_minor;
@@ -1676,7 +1676,7 @@ void GraphEdit::_draw_grid() {
 			for (int i = from_pos.y; i < from_pos.y + len.y; i++) {
 				Color color;
 
-				if (ABS(i) % GRID_MINOR_STEPS_PER_MAJOR_LINE == 0) {
+				if (Math::abs(i) % GRID_MINOR_STEPS_PER_MAJOR_LINE == 0) {
 					color = theme_cache.grid_major;
 				} else {
 					color = theme_cache.grid_minor;
@@ -1694,7 +1694,7 @@ void GraphEdit::_draw_grid() {
 			if (transparent_grid_minor.a != 0) {
 				for (int i = from_pos.x; i < from_pos.x + len.x; i++) {
 					for (int j = from_pos.y; j < from_pos.y + len.y; j++) {
-						if (ABS(i) % GRID_MINOR_STEPS_PER_MAJOR_DOT == 0 && ABS(j) % GRID_MINOR_STEPS_PER_MAJOR_DOT == 0) {
+						if (Math::abs(i) % GRID_MINOR_STEPS_PER_MAJOR_DOT == 0 && Math::abs(j) % GRID_MINOR_STEPS_PER_MAJOR_DOT == 0) {
 							continue;
 						}
 
@@ -2330,6 +2330,8 @@ TypedArray<Dictionary> GraphEdit::_get_connections_intersecting_with_rect(const 
 }
 
 TypedArray<Dictionary> GraphEdit::_get_connection_list_from_node(const StringName &p_node) const {
+	ERR_FAIL_COND_V(!connection_map.has(p_node), TypedArray<Dictionary>());
+
 	List<Ref<GraphEdit::Connection>> connections_from_node = connection_map.get(p_node);
 	TypedArray<Dictionary> connections_from_node_dict;
 

@@ -165,6 +165,8 @@ class DisplayServerWayland : public DisplayServer {
 
 	void try_suspend();
 
+	void initialize_tts() const;
+
 public:
 	virtual bool has_feature(Feature p_feature) const override;
 
@@ -299,6 +301,8 @@ public:
 	virtual String keyboard_get_layout_language(int p_index) const override;
 	virtual String keyboard_get_layout_name(int p_index) const override;
 	virtual Key keyboard_get_keycode_from_physical(Key p_keycode) const override;
+
+	virtual bool color_picker(const Callable &p_callback) override;
 
 	virtual void process_events() override;
 

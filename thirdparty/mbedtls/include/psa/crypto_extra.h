@@ -17,8 +17,8 @@
 #define PSA_CRYPTO_EXTRA_H
 #include "mbedtls/private_access.h"
 
-#include "crypto_types.h"
 #include "crypto_compat.h"
+#include "crypto_types.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -31,6 +31,15 @@ extern "C" {
 #if !defined(MBEDTLS_PSA_KEY_SLOT_COUNT)
 #define MBEDTLS_PSA_KEY_SLOT_COUNT 32
 #endif
+
+/* If the size of static key slots is not explicitly defined by the user, then
+ * set it to the maximum between PSA_EXPORT_KEY_PAIR_OR_PUBLIC_MAX_SIZE and
+ * PSA_CIPHER_MAX_KEY_LENGTH.
+ * See mbedtls_config.h for the definition. */
+#if !defined(MBEDTLS_PSA_STATIC_KEY_SLOT_BUFFER_SIZE)
+#define MBEDTLS_PSA_STATIC_KEY_SLOT_BUFFER_SIZE \
+	((PSA_EXPORT_KEY_PAIR_OR_PUBLIC_MAX_SIZE > PSA_CIPHER_MAX_KEY_LENGTH) ? PSA_EXPORT_KEY_PAIR_OR_PUBLIC_MAX_SIZE : PSA_CIPHER_MAX_KEY_LENGTH)
+#endif /* !MBEDTLS_PSA_STATIC_KEY_SLOT_BUFFER_SIZE*/
 
 /** \addtogroup attributes
  * @{
@@ -56,10 +65,9 @@ extern "C" {
  *          is safe.
  */
 static inline void psa_set_key_enrollment_algorithm(
-    psa_key_attributes_t *attributes,
-    psa_algorithm_t alg2)
-{
-    attributes->MBEDTLS_PRIVATE(policy).MBEDTLS_PRIVATE(alg2) = alg2;
+		psa_key_attributes_t *attributes,
+		psa_algorithm_t alg2) {
+	attributes->MBEDTLS_PRIVATE(policy).MBEDTLS_PRIVATE(alg2) = alg2;
 }
 
 /** Retrieve the enrollment algorithm policy from key attributes.
@@ -69,9 +77,8 @@ static inline void psa_set_key_enrollment_algorithm(
  * \return The enrollment algorithm stored in the attribute structure.
  */
 static inline psa_algorithm_t psa_get_key_enrollment_algorithm(
-    const psa_key_attributes_t *attributes)
-{
-    return attributes->MBEDTLS_PRIVATE(policy).MBEDTLS_PRIVATE(alg2);
+		const psa_key_attributes_t *attributes) {
+	return attributes->MBEDTLS_PRIVATE(policy).MBEDTLS_PRIVATE(alg2);
 }
 
 #if defined(MBEDTLS_PSA_CRYPTO_SE_C)
@@ -99,8 +106,8 @@ static inline psa_algorithm_t psa_get_key_enrollment_algorithm(
  *         The key is not located in a secure element.
  */
 psa_status_t psa_get_key_slot_number(
-    const psa_key_attributes_t *attributes,
-    psa_key_slot_number_t *slot_number);
+		const psa_key_attributes_t *attributes,
+		psa_key_slot_number_t *slot_number);
 
 /** Choose the slot number where a key is stored.
  *
@@ -126,11 +133,10 @@ psa_status_t psa_get_key_slot_number(
  * \param slot_number           The slot number to set.
  */
 static inline void psa_set_key_slot_number(
-    psa_key_attributes_t *attributes,
-    psa_key_slot_number_t slot_number)
-{
-    attributes->MBEDTLS_PRIVATE(has_slot_number) = 1;
-    attributes->MBEDTLS_PRIVATE(slot_number) = slot_number;
+		psa_key_attributes_t *attributes,
+		psa_key_slot_number_t slot_number) {
+	attributes->MBEDTLS_PRIVATE(has_slot_number) = 1;
+	attributes->MBEDTLS_PRIVATE(slot_number) = slot_number;
 }
 
 /** Remove the slot number attribute from a key attribute structure.
@@ -140,9 +146,8 @@ static inline void psa_set_key_slot_number(
  * \param[out] attributes       The attribute structure to write to.
  */
 static inline void psa_clear_key_slot_number(
-    psa_key_attributes_t *attributes)
-{
-    attributes->MBEDTLS_PRIVATE(has_slot_number) = 0;
+		psa_key_attributes_t *attributes) {
+	attributes->MBEDTLS_PRIVATE(has_slot_number) = 0;
 }
 
 /** Register a key that is already present in a secure element.
@@ -194,7 +199,7 @@ static inline void psa_clear_key_slot_number(
  *         results in this error code.
  */
 psa_status_t mbedtls_psa_register_se_key(
-    const psa_key_attributes_t *attributes);
+		const psa_key_attributes_t *attributes);
 
 #endif /* MBEDTLS_PSA_CRYPTO_SE_C */
 
@@ -219,27 +224,27 @@ void mbedtls_psa_crypto_free(void);
  *       of Mbed TLS and may change arbitrarily from version to version.
  */
 typedef struct mbedtls_psa_stats_s {
-    /** Number of slots containing key material for a volatile key. */
-    size_t MBEDTLS_PRIVATE(volatile_slots);
-    /** Number of slots containing key material for a key which is in
-     * internal persistent storage. */
-    size_t MBEDTLS_PRIVATE(persistent_slots);
-    /** Number of slots containing a reference to a key in a
-     * secure element. */
-    size_t MBEDTLS_PRIVATE(external_slots);
-    /** Number of slots which are occupied, but do not contain
-     * key material yet. */
-    size_t MBEDTLS_PRIVATE(half_filled_slots);
-    /** Number of slots that contain cache data. */
-    size_t MBEDTLS_PRIVATE(cache_slots);
-    /** Number of slots that are not used for anything. */
-    size_t MBEDTLS_PRIVATE(empty_slots);
-    /** Number of slots that are locked. */
-    size_t MBEDTLS_PRIVATE(locked_slots);
-    /** Largest key id value among open keys in internal persistent storage. */
-    psa_key_id_t MBEDTLS_PRIVATE(max_open_internal_key_id);
-    /** Largest key id value among open keys in secure elements. */
-    psa_key_id_t MBEDTLS_PRIVATE(max_open_external_key_id);
+	/** Number of slots containing key material for a volatile key. */
+	size_t MBEDTLS_PRIVATE(volatile_slots);
+	/** Number of slots containing key material for a key which is in
+	 * internal persistent storage. */
+	size_t MBEDTLS_PRIVATE(persistent_slots);
+	/** Number of slots containing a reference to a key in a
+	 * secure element. */
+	size_t MBEDTLS_PRIVATE(external_slots);
+	/** Number of slots which are occupied, but do not contain
+	 * key material yet. */
+	size_t MBEDTLS_PRIVATE(half_filled_slots);
+	/** Number of slots that contain cache data. */
+	size_t MBEDTLS_PRIVATE(cache_slots);
+	/** Number of slots that are not used for anything. */
+	size_t MBEDTLS_PRIVATE(empty_slots);
+	/** Number of slots that are locked. */
+	size_t MBEDTLS_PRIVATE(locked_slots);
+	/** Largest key id value among open keys in internal persistent storage. */
+	psa_key_id_t MBEDTLS_PRIVATE(max_open_internal_key_id);
+	/** Largest key id value among open keys in secure elements. */
+	psa_key_id_t MBEDTLS_PRIVATE(max_open_external_key_id);
 } mbedtls_psa_stats_t;
 
 /** \brief Get statistics about
@@ -321,7 +326,7 @@ void mbedtls_psa_get_stats(mbedtls_psa_stats_t *stats);
  *         possible to call this function.
  */
 psa_status_t mbedtls_psa_inject_entropy(const uint8_t *seed,
-                                        size_t seed_size);
+		size_t seed_size);
 
 /** \addtogroup crypto_types
  * @{
@@ -334,7 +339,7 @@ psa_status_t mbedtls_psa_inject_entropy(const uint8_t *seed,
  * string. The length of the byte string is the length of the base prime `p`
  * in bytes.
  */
-#define PSA_KEY_TYPE_DSA_PUBLIC_KEY                 ((psa_key_type_t) 0x4002)
+#define PSA_KEY_TYPE_DSA_PUBLIC_KEY ((psa_key_type_t)0x4002)
 
 /** DSA key pair (private and public key).
  *
@@ -352,13 +357,13 @@ psa_status_t mbedtls_psa_inject_entropy(const uint8_t *seed,
  * Add 1 to the resulting integer and use this as the private key *x*.
  *
  */
-#define PSA_KEY_TYPE_DSA_KEY_PAIR                    ((psa_key_type_t) 0x7002)
+#define PSA_KEY_TYPE_DSA_KEY_PAIR ((psa_key_type_t)0x7002)
 
 /** Whether a key type is a DSA key (pair or public-only). */
-#define PSA_KEY_TYPE_IS_DSA(type)                                       \
-    (PSA_KEY_TYPE_PUBLIC_KEY_OF_KEY_PAIR(type) == PSA_KEY_TYPE_DSA_PUBLIC_KEY)
+#define PSA_KEY_TYPE_IS_DSA(type) \
+	(PSA_KEY_TYPE_PUBLIC_KEY_OF_KEY_PAIR(type) == PSA_KEY_TYPE_DSA_PUBLIC_KEY)
 
-#define PSA_ALG_DSA_BASE                        ((psa_algorithm_t) 0x06000400)
+#define PSA_ALG_DSA_BASE ((psa_algorithm_t)0x06000400)
 /** DSA signature with hashing.
  *
  * This is the signature scheme defined by FIPS 186-4,
@@ -373,9 +378,9 @@ psa_status_t mbedtls_psa_inject_entropy(const uint8_t *seed,
  * \return              Unspecified if \p hash_alg is not a supported
  *                      hash algorithm.
  */
-#define PSA_ALG_DSA(hash_alg)                             \
-    (PSA_ALG_DSA_BASE | ((hash_alg) & PSA_ALG_HASH_MASK))
-#define PSA_ALG_DETERMINISTIC_DSA_BASE          ((psa_algorithm_t) 0x06000500)
+#define PSA_ALG_DSA(hash_alg) \
+	(PSA_ALG_DSA_BASE | ((hash_alg) & PSA_ALG_HASH_MASK))
+#define PSA_ALG_DETERMINISTIC_DSA_BASE ((psa_algorithm_t)0x06000500)
 #define PSA_ALG_DSA_DETERMINISTIC_FLAG PSA_ALG_ECDSA_DETERMINISTIC_FLAG
 /** Deterministic DSA signature with hashing.
  *
@@ -391,24 +396,23 @@ psa_status_t mbedtls_psa_inject_entropy(const uint8_t *seed,
  * \return              Unspecified if \p hash_alg is not a supported
  *                      hash algorithm.
  */
-#define PSA_ALG_DETERMINISTIC_DSA(hash_alg)                             \
-    (PSA_ALG_DETERMINISTIC_DSA_BASE | ((hash_alg) & PSA_ALG_HASH_MASK))
-#define PSA_ALG_IS_DSA(alg)                                             \
-    (((alg) & ~PSA_ALG_HASH_MASK & ~PSA_ALG_DSA_DETERMINISTIC_FLAG) ==  \
-     PSA_ALG_DSA_BASE)
-#define PSA_ALG_DSA_IS_DETERMINISTIC(alg)               \
-    (((alg) & PSA_ALG_DSA_DETERMINISTIC_FLAG) != 0)
-#define PSA_ALG_IS_DETERMINISTIC_DSA(alg)                       \
-    (PSA_ALG_IS_DSA(alg) && PSA_ALG_DSA_IS_DETERMINISTIC(alg))
-#define PSA_ALG_IS_RANDOMIZED_DSA(alg)                          \
-    (PSA_ALG_IS_DSA(alg) && !PSA_ALG_DSA_IS_DETERMINISTIC(alg))
-
+#define PSA_ALG_DETERMINISTIC_DSA(hash_alg) \
+	(PSA_ALG_DETERMINISTIC_DSA_BASE | ((hash_alg) & PSA_ALG_HASH_MASK))
+#define PSA_ALG_IS_DSA(alg)                                            \
+	(((alg) & ~PSA_ALG_HASH_MASK & ~PSA_ALG_DSA_DETERMINISTIC_FLAG) == \
+			PSA_ALG_DSA_BASE)
+#define PSA_ALG_DSA_IS_DETERMINISTIC(alg) \
+	(((alg) & PSA_ALG_DSA_DETERMINISTIC_FLAG) != 0)
+#define PSA_ALG_IS_DETERMINISTIC_DSA(alg) \
+	(PSA_ALG_IS_DSA(alg) && PSA_ALG_DSA_IS_DETERMINISTIC(alg))
+#define PSA_ALG_IS_RANDOMIZED_DSA(alg) \
+	(PSA_ALG_IS_DSA(alg) && !PSA_ALG_DSA_IS_DETERMINISTIC(alg))
 
 /* We need to expand the sample definition of this macro from
  * the API definition. */
 #undef PSA_ALG_IS_VENDOR_HASH_AND_SIGN
-#define PSA_ALG_IS_VENDOR_HASH_AND_SIGN(alg)    \
-    PSA_ALG_IS_DSA(alg)
+#define PSA_ALG_IS_VENDOR_HASH_AND_SIGN(alg) \
+	PSA_ALG_IS_DSA(alg)
 
 /**@}*/
 
@@ -422,7 +426,6 @@ psa_status_t mbedtls_psa_inject_entropy(const uint8_t *seed,
 #define PSA_PAKE_OPERATION_STAGE_COMPUTATION 2
 
 /**@}*/
-
 
 /** \defgroup psa_external_rng External random generator
  * @{
@@ -469,8 +472,8 @@ psa_status_t mbedtls_psa_inject_entropy(const uint8_t *seed,
  *         by #PSA_ERROR_INSUFFICIENT_ENTROPY.
  */
 psa_status_t mbedtls_psa_external_get_random(
-    mbedtls_psa_external_random_context_t *context,
-    uint8_t *output, size_t output_size, size_t *output_length);
+		mbedtls_psa_external_random_context_t *context,
+		uint8_t *output, size_t output_size, size_t *output_length);
 #endif /* MBEDTLS_PSA_CRYPTO_EXTERNAL_RNG */
 
 /**@}*/
@@ -490,14 +493,14 @@ psa_status_t mbedtls_psa_external_get_random(
  * This value is part of the library's API since changing it would invalidate
  * the values of built-in key identifiers in applications.
  */
-#define MBEDTLS_PSA_KEY_ID_BUILTIN_MIN          ((psa_key_id_t) 0x7fff0000)
+#define MBEDTLS_PSA_KEY_ID_BUILTIN_MIN ((psa_key_id_t)0x7fff0000)
 
 /** The maximum value for a key identifier that is built into the
  * implementation.
  *
  * See #MBEDTLS_PSA_KEY_ID_BUILTIN_MIN for more information.
  */
-#define MBEDTLS_PSA_KEY_ID_BUILTIN_MAX          ((psa_key_id_t) 0x7fffefff)
+#define MBEDTLS_PSA_KEY_ID_BUILTIN_MAX ((psa_key_id_t)0x7fffefff)
 
 /** A slot number identifying a key in a driver.
  *
@@ -515,10 +518,9 @@ typedef uint64_t psa_drv_slot_number_t;
  * \retval 0
  *         The key identifier is not a builtin key identifier.
  */
-static inline int psa_key_id_is_builtin(psa_key_id_t key_id)
-{
-    return (key_id >= MBEDTLS_PSA_KEY_ID_BUILTIN_MIN) &&
-           (key_id <= MBEDTLS_PSA_KEY_ID_BUILTIN_MAX);
+static inline int psa_key_id_is_builtin(psa_key_id_t key_id) {
+	return (key_id >= MBEDTLS_PSA_KEY_ID_BUILTIN_MIN) &&
+			(key_id <= MBEDTLS_PSA_KEY_ID_BUILTIN_MAX);
 }
 
 /** Platform function to obtain the location and slot number of a built-in key.
@@ -566,18 +568,47 @@ static inline int psa_key_id_is_builtin(psa_key_id_t key_id)
  *           is not allowed to access it.
  */
 psa_status_t mbedtls_psa_platform_get_builtin_key(
-    mbedtls_svc_key_id_t key_id,
-    psa_key_lifetime_t *lifetime,
-    psa_drv_slot_number_t *slot_number);
+		mbedtls_svc_key_id_t key_id,
+		psa_key_lifetime_t *lifetime,
+		psa_drv_slot_number_t *slot_number);
 #endif /* MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS */
 
 /** @} */
+
+/** \defgroup psa_crypto_client Functions defined by a client provider
+ *
+ * The functions in this group are meant to be implemented by providers of
+ * the PSA Crypto client interface. They are provided by the library when
+ * #MBEDTLS_PSA_CRYPTO_C is enabled.
+ *
+ * \note All functions in this group are experimental, as using
+ *       alternative client interface providers is experimental.
+ *
+ * @{
+ */
+
+/** Check if PSA is capable of handling the specified hash algorithm.
+ *
+ * This means that PSA core was built with the corresponding PSA_WANT_ALG_xxx
+ * set and that psa_crypto_init has already been called.
+ *
+ * \note When using Mbed TLS version of PSA core (i.e. MBEDTLS_PSA_CRYPTO_C is
+ *       set) for now this function only checks the state of the driver
+ *       subsystem, not the algorithm. This might be improved in the future.
+ *
+ * \param hash_alg  The hash algorithm.
+ *
+ * \return 1 if the PSA can handle \p hash_alg, 0 otherwise.
+ */
+int psa_can_do_hash(psa_algorithm_t hash_alg);
+
+/**@}*/
 
 /** \addtogroup crypto_types
  * @{
  */
 
-#define PSA_ALG_CATEGORY_PAKE                   ((psa_algorithm_t) 0x0a000000)
+#define PSA_ALG_CATEGORY_PAKE ((psa_algorithm_t)0x0a000000)
 
 /** Whether the specified algorithm is a password-authenticated key exchange.
  *
@@ -588,8 +619,8 @@ psa_status_t mbedtls_psa_platform_get_builtin_key(
  *         This macro may return either 0 or 1 if \p alg is not a supported
  *         algorithm identifier.
  */
-#define PSA_ALG_IS_PAKE(alg)                                        \
-    (((alg) & PSA_ALG_CATEGORY_MASK) == PSA_ALG_CATEGORY_PAKE)
+#define PSA_ALG_IS_PAKE(alg) \
+	(((alg) & PSA_ALG_CATEGORY_MASK) == PSA_ALG_CATEGORY_PAKE)
 
 /** The Password-authenticated key exchange by juggling (J-PAKE) algorithm.
  *
@@ -706,7 +737,7 @@ psa_status_t mbedtls_psa_platform_get_builtin_key(
  * of RFC 8236 for two examples.
  *
  */
-#define PSA_ALG_JPAKE                   ((psa_algorithm_t) 0x0a000100)
+#define PSA_ALG_JPAKE ((psa_algorithm_t)0x0a000100)
 
 /** @} */
 
@@ -765,7 +796,7 @@ typedef uint32_t psa_pake_primitive_t;
  * This value can be used in a call to psa_pake_set_role() for symmetric PAKE
  * algorithms which do not assign roles.
  */
-#define PSA_PAKE_ROLE_NONE                  ((psa_pake_role_t) 0x00)
+#define PSA_PAKE_ROLE_NONE ((psa_pake_role_t)0x00)
 
 /** The first peer in a balanced PAKE.
  *
@@ -774,7 +805,7 @@ typedef uint32_t psa_pake_primitive_t;
  * need this, both #PSA_PAKE_ROLE_FIRST and #PSA_PAKE_ROLE_SECOND are
  * accepted.
  */
-#define PSA_PAKE_ROLE_FIRST                ((psa_pake_role_t) 0x01)
+#define PSA_PAKE_ROLE_FIRST ((psa_pake_role_t)0x01)
 
 /** The second peer in a balanced PAKE.
  *
@@ -783,19 +814,19 @@ typedef uint32_t psa_pake_primitive_t;
  * need this, either #PSA_PAKE_ROLE_FIRST or #PSA_PAKE_ROLE_SECOND are
  * accepted.
  */
-#define PSA_PAKE_ROLE_SECOND                ((psa_pake_role_t) 0x02)
+#define PSA_PAKE_ROLE_SECOND ((psa_pake_role_t)0x02)
 
 /** The client in an augmented PAKE.
  *
  * Augmented PAKE algorithms need to differentiate between client and server.
  */
-#define PSA_PAKE_ROLE_CLIENT                ((psa_pake_role_t) 0x11)
+#define PSA_PAKE_ROLE_CLIENT ((psa_pake_role_t)0x11)
 
 /** The server in an augmented PAKE.
  *
  * Augmented PAKE algorithms need to differentiate between client and server.
  */
-#define PSA_PAKE_ROLE_SERVER                ((psa_pake_role_t) 0x12)
+#define PSA_PAKE_ROLE_SERVER ((psa_pake_role_t)0x12)
 
 /** The PAKE primitive type indicating the use of elliptic curves.
  *
@@ -815,7 +846,7 @@ typedef uint32_t psa_pake_primitive_t;
  *  curve would be. For more information, consult the documentation of
  *  psa_export_key().
  */
-#define PSA_PAKE_PRIMITIVE_TYPE_ECC       ((psa_pake_primitive_type_t) 0x01)
+#define PSA_PAKE_PRIMITIVE_TYPE_ECC ((psa_pake_primitive_type_t)0x01)
 
 /** The PAKE primitive type indicating the use of Diffie-Hellman groups.
  *
@@ -835,7 +866,7 @@ typedef uint32_t psa_pake_primitive_t;
  *  group would be. For more information, consult the documentation of
  *  psa_export_key().
  */
-#define PSA_PAKE_PRIMITIVE_TYPE_DH       ((psa_pake_primitive_type_t) 0x02)
+#define PSA_PAKE_PRIMITIVE_TYPE_DH ((psa_pake_primitive_type_t)0x02)
 
 /** Construct a PAKE primitive from type, family and bit-size.
  *
@@ -857,9 +888,7 @@ typedef uint32_t psa_pake_primitive_t;
  *         ::psa_pake_primitive_t.
  */
 #define PSA_PAKE_PRIMITIVE(pake_type, pake_family, pake_bits) \
-    ((pake_bits & 0xFFFF) != pake_bits) ? 0 :                 \
-    ((psa_pake_primitive_t) (((pake_type) << 24 |             \
-                              (pake_family) << 16) | (pake_bits)))
+	((pake_bits & 0xFFFF) != pake_bits) ? 0 : ((psa_pake_primitive_t)(((pake_type) << 24 | (pake_family) << 16) | (pake_bits)))
 
 /** The key share being sent to or received from the peer.
  *
@@ -873,7 +902,7 @@ typedef uint32_t psa_pake_primitive_t;
  * For information regarding how the group is determined, consult the
  * documentation #PSA_PAKE_PRIMITIVE.
  */
-#define PSA_PAKE_STEP_KEY_SHARE                 ((psa_pake_step_t) 0x01)
+#define PSA_PAKE_STEP_KEY_SHARE ((psa_pake_step_t)0x01)
 
 /** A Schnorr NIZKP public key.
  *
@@ -890,7 +919,7 @@ typedef uint32_t psa_pake_primitive_t;
  * For information regarding how the group is determined, consult the
  * documentation #PSA_PAKE_PRIMITIVE.
  */
-#define PSA_PAKE_STEP_ZK_PUBLIC                 ((psa_pake_step_t) 0x02)
+#define PSA_PAKE_STEP_ZK_PUBLIC ((psa_pake_step_t)0x02)
 
 /** A Schnorr NIZKP proof.
  *
@@ -911,7 +940,7 @@ typedef uint32_t psa_pake_primitive_t;
  * For information regarding how the group is determined, consult the
  * documentation #PSA_PAKE_PRIMITIVE.
  */
-#define PSA_PAKE_STEP_ZK_PROOF                  ((psa_pake_step_t) 0x03)
+#define PSA_PAKE_STEP_ZK_PROOF ((psa_pake_step_t)0x03)
 
 /** The type of the data structure for PAKE cipher suites.
  *
@@ -934,7 +963,7 @@ static psa_pake_cipher_suite_t psa_pake_cipher_suite_init(void);
  * \return The PAKE algorithm stored in the cipher suite structure.
  */
 static psa_algorithm_t psa_pake_cs_get_algorithm(
-    const psa_pake_cipher_suite_t *cipher_suite);
+		const psa_pake_cipher_suite_t *cipher_suite);
 
 /** Declare the PAKE algorithm for the cipher suite.
  *
@@ -949,7 +978,7 @@ static psa_algorithm_t psa_pake_cs_get_algorithm(
  *                             \p cipher_suite becomes unspecified.
  */
 static void psa_pake_cs_set_algorithm(psa_pake_cipher_suite_t *cipher_suite,
-                                      psa_algorithm_t algorithm);
+		psa_algorithm_t algorithm);
 
 /** Retrieve the primitive from a PAKE cipher suite.
  *
@@ -958,7 +987,7 @@ static void psa_pake_cs_set_algorithm(psa_pake_cipher_suite_t *cipher_suite,
  * \return The primitive stored in the cipher suite structure.
  */
 static psa_pake_primitive_t psa_pake_cs_get_primitive(
-    const psa_pake_cipher_suite_t *cipher_suite);
+		const psa_pake_cipher_suite_t *cipher_suite);
 
 /** Declare the primitive for a PAKE cipher suite.
  *
@@ -970,7 +999,7 @@ static psa_pake_primitive_t psa_pake_cs_get_primitive(
  *                             unspecified.
  */
 static void psa_pake_cs_set_primitive(psa_pake_cipher_suite_t *cipher_suite,
-                                      psa_pake_primitive_t primitive);
+		psa_pake_primitive_t primitive);
 
 /** Retrieve the PAKE family from a PAKE cipher suite.
  *
@@ -979,7 +1008,7 @@ static void psa_pake_cs_set_primitive(psa_pake_cipher_suite_t *cipher_suite,
  * \return The PAKE family stored in the cipher suite structure.
  */
 static psa_pake_family_t psa_pake_cs_get_family(
-    const psa_pake_cipher_suite_t *cipher_suite);
+		const psa_pake_cipher_suite_t *cipher_suite);
 
 /** Retrieve the PAKE primitive bit-size from a PAKE cipher suite.
  *
@@ -988,7 +1017,7 @@ static psa_pake_family_t psa_pake_cs_get_family(
  * \return The PAKE primitive bit-size stored in the cipher suite structure.
  */
 static uint16_t psa_pake_cs_get_bits(
-    const psa_pake_cipher_suite_t *cipher_suite);
+		const psa_pake_cipher_suite_t *cipher_suite);
 
 /** Retrieve the hash algorithm from a PAKE cipher suite.
  *
@@ -999,7 +1028,7 @@ static uint16_t psa_pake_cs_get_bits(
  *         the hash algorithm is not set.
  */
 static psa_algorithm_t psa_pake_cs_get_hash(
-    const psa_pake_cipher_suite_t *cipher_suite);
+		const psa_pake_cipher_suite_t *cipher_suite);
 
 /** Declare the hash algorithm for a PAKE cipher suite.
  *
@@ -1018,7 +1047,7 @@ static psa_algorithm_t psa_pake_cs_get_hash(
  *                              \p cipher_suite becomes unspecified.
  */
 static void psa_pake_cs_set_hash(psa_pake_cipher_suite_t *cipher_suite,
-                                 psa_algorithm_t hash);
+		psa_algorithm_t hash);
 
 /** The type of the state data structure for PAKE operations.
  *
@@ -1073,8 +1102,8 @@ static psa_pake_operation_t psa_pake_operation_init(void);
  *         Password hasn't been set yet.
  */
 psa_status_t psa_crypto_driver_pake_get_password_len(
-    const psa_crypto_driver_pake_inputs_t *inputs,
-    size_t *password_len);
+		const psa_crypto_driver_pake_inputs_t *inputs,
+		size_t *password_len);
 
 /** Get the password from given inputs.
  *
@@ -1089,8 +1118,8 @@ psa_status_t psa_crypto_driver_pake_get_password_len(
  *         Password hasn't been set yet.
  */
 psa_status_t psa_crypto_driver_pake_get_password(
-    const psa_crypto_driver_pake_inputs_t *inputs,
-    uint8_t *buffer, size_t buffer_size, size_t *buffer_length);
+		const psa_crypto_driver_pake_inputs_t *inputs,
+		uint8_t *buffer, size_t buffer_size, size_t *buffer_length);
 
 /** Get the length of the user id in bytes from given inputs.
  *
@@ -1103,8 +1132,8 @@ psa_status_t psa_crypto_driver_pake_get_password(
  *         User id hasn't been set yet.
  */
 psa_status_t psa_crypto_driver_pake_get_user_len(
-    const psa_crypto_driver_pake_inputs_t *inputs,
-    size_t *user_len);
+		const psa_crypto_driver_pake_inputs_t *inputs,
+		size_t *user_len);
 
 /** Get the length of the peer id in bytes from given inputs.
  *
@@ -1117,8 +1146,8 @@ psa_status_t psa_crypto_driver_pake_get_user_len(
  *         Peer id hasn't been set yet.
  */
 psa_status_t psa_crypto_driver_pake_get_peer_len(
-    const psa_crypto_driver_pake_inputs_t *inputs,
-    size_t *peer_len);
+		const psa_crypto_driver_pake_inputs_t *inputs,
+		size_t *peer_len);
 
 /** Get the user id from given inputs.
  *
@@ -1135,8 +1164,8 @@ psa_status_t psa_crypto_driver_pake_get_peer_len(
  *         The size of the \p user_id is too small.
  */
 psa_status_t psa_crypto_driver_pake_get_user(
-    const psa_crypto_driver_pake_inputs_t *inputs,
-    uint8_t *user_id, size_t user_id_size, size_t *user_id_len);
+		const psa_crypto_driver_pake_inputs_t *inputs,
+		uint8_t *user_id, size_t user_id_size, size_t *user_id_len);
 
 /** Get the peer id from given inputs.
  *
@@ -1153,8 +1182,8 @@ psa_status_t psa_crypto_driver_pake_get_user(
  *         The size of the \p peer_id is too small.
  */
 psa_status_t psa_crypto_driver_pake_get_peer(
-    const psa_crypto_driver_pake_inputs_t *inputs,
-    uint8_t *peer_id, size_t peer_id_size, size_t *peer_id_length);
+		const psa_crypto_driver_pake_inputs_t *inputs,
+		uint8_t *peer_id, size_t peer_id_size, size_t *peer_id_length);
 
 /** Get the cipher suite from given inputs.
  *
@@ -1167,8 +1196,8 @@ psa_status_t psa_crypto_driver_pake_get_peer(
  *         Cipher_suite hasn't been set yet.
  */
 psa_status_t psa_crypto_driver_pake_get_cipher_suite(
-    const psa_crypto_driver_pake_inputs_t *inputs,
-    psa_pake_cipher_suite_t *cipher_suite);
+		const psa_crypto_driver_pake_inputs_t *inputs,
+		psa_pake_cipher_suite_t *cipher_suite);
 
 /** Set the session information for a password-authenticated key exchange.
  *
@@ -1241,7 +1270,7 @@ psa_status_t psa_crypto_driver_pake_get_cipher_suite(
  *         results in this error code.
  */
 psa_status_t psa_pake_setup(psa_pake_operation_t *operation,
-                            const psa_pake_cipher_suite_t *cipher_suite);
+		const psa_pake_cipher_suite_t *cipher_suite);
 
 /** Set the password for a password-authenticated key exchange from key ID.
  *
@@ -1289,7 +1318,7 @@ psa_status_t psa_pake_setup(psa_pake_operation_t *operation,
  *         results in this error code.
  */
 psa_status_t psa_pake_set_password_key(psa_pake_operation_t *operation,
-                                       mbedtls_svc_key_id_t password);
+		mbedtls_svc_key_id_t password);
 
 /** Set the user ID for a password-authenticated key exchange.
  *
@@ -1329,8 +1358,8 @@ psa_status_t psa_pake_set_password_key(psa_pake_operation_t *operation,
  *         results in this error code.
  */
 psa_status_t psa_pake_set_user(psa_pake_operation_t *operation,
-                               const uint8_t *user_id,
-                               size_t user_id_len);
+		const uint8_t *user_id,
+		size_t user_id_len);
 
 /** Set the peer ID for a password-authenticated key exchange.
  *
@@ -1371,8 +1400,8 @@ psa_status_t psa_pake_set_user(psa_pake_operation_t *operation,
  *         results in this error code.
  */
 psa_status_t psa_pake_set_peer(psa_pake_operation_t *operation,
-                               const uint8_t *peer_id,
-                               size_t peer_id_len);
+		const uint8_t *peer_id,
+		size_t peer_id_len);
 
 /** Set the application role for a password-authenticated key exchange.
  *
@@ -1413,7 +1442,7 @@ psa_status_t psa_pake_set_peer(psa_pake_operation_t *operation,
  *         results in this error code.
  */
 psa_status_t psa_pake_set_role(psa_pake_operation_t *operation,
-                               psa_pake_role_t role);
+		psa_pake_role_t role);
 
 /** Get output for a step of a password-authenticated key exchange.
  *
@@ -1471,10 +1500,10 @@ psa_status_t psa_pake_set_role(psa_pake_operation_t *operation,
  *         results in this error code.
  */
 psa_status_t psa_pake_output(psa_pake_operation_t *operation,
-                             psa_pake_step_t step,
-                             uint8_t *output,
-                             size_t output_size,
-                             size_t *output_length);
+		psa_pake_step_t step,
+		uint8_t *output,
+		size_t output_size,
+		size_t *output_length);
 
 /** Provide input for a step of a password-authenticated key exchange.
  *
@@ -1526,9 +1555,9 @@ psa_status_t psa_pake_output(psa_pake_operation_t *operation,
  *         results in this error code.
  */
 psa_status_t psa_pake_input(psa_pake_operation_t *operation,
-                            psa_pake_step_t step,
-                            const uint8_t *input,
-                            size_t input_length);
+		psa_pake_step_t step,
+		const uint8_t *input,
+		size_t input_length);
 
 /** Get implicitly confirmed shared secret from a PAKE.
  *
@@ -1589,7 +1618,7 @@ psa_status_t psa_pake_input(psa_pake_operation_t *operation,
  *         results in this error code.
  */
 psa_status_t psa_pake_get_implicit_key(psa_pake_operation_t *operation,
-                                       psa_key_derivation_operation_t *output);
+		psa_key_derivation_operation_t *output);
 
 /** Abort a PAKE operation.
  *
@@ -1639,16 +1668,13 @@ psa_status_t psa_pake_abort(psa_pake_operation_t *operation);
  *                      recognized, or the parameters are incompatible,
  *                      return 0.
  */
-#define PSA_PAKE_OUTPUT_SIZE(alg, primitive, output_step)               \
-    (alg == PSA_ALG_JPAKE &&                                           \
-     primitive == PSA_PAKE_PRIMITIVE(PSA_PAKE_PRIMITIVE_TYPE_ECC,      \
-                                     PSA_ECC_FAMILY_SECP_R1, 256) ?    \
-     (                                                                 \
-         output_step == PSA_PAKE_STEP_KEY_SHARE ? 65 :                   \
-         output_step == PSA_PAKE_STEP_ZK_PUBLIC ? 65 :                   \
-         32                                                              \
-     ) :                                                               \
-     0)
+#define PSA_PAKE_OUTPUT_SIZE(alg, primitive, output_step)                                                                \
+	(alg == PSA_ALG_JPAKE &&                                                                                             \
+							primitive == PSA_PAKE_PRIMITIVE(PSA_PAKE_PRIMITIVE_TYPE_ECC, PSA_ECC_FAMILY_SECP_R1, 256)    \
+					? (                                                                                                  \
+							  output_step == PSA_PAKE_STEP_KEY_SHARE ? 65 : output_step == PSA_PAKE_STEP_ZK_PUBLIC ? 65  \
+																												   : 32) \
+					: 0)
 
 /** A sufficient input buffer size for psa_pake_input().
  *
@@ -1669,16 +1695,13 @@ psa_status_t psa_pake_abort(psa_pake_operation_t *operation);
  *                      the input type or PAKE algorithm is not recognized, or
  *                      the parameters are incompatible, return 0.
  */
-#define PSA_PAKE_INPUT_SIZE(alg, primitive, input_step)                 \
-    (alg == PSA_ALG_JPAKE &&                                           \
-     primitive == PSA_PAKE_PRIMITIVE(PSA_PAKE_PRIMITIVE_TYPE_ECC,      \
-                                     PSA_ECC_FAMILY_SECP_R1, 256) ?    \
-     (                                                                 \
-         input_step == PSA_PAKE_STEP_KEY_SHARE ? 65 :                    \
-         input_step == PSA_PAKE_STEP_ZK_PUBLIC ? 65 :                    \
-         32                                                              \
-     ) :                                                               \
-     0)
+#define PSA_PAKE_INPUT_SIZE(alg, primitive, input_step)                                                                \
+	(alg == PSA_ALG_JPAKE &&                                                                                           \
+							primitive == PSA_PAKE_PRIMITIVE(PSA_PAKE_PRIMITIVE_TYPE_ECC, PSA_ECC_FAMILY_SECP_R1, 256)  \
+					? (                                                                                                \
+							  input_step == PSA_PAKE_STEP_KEY_SHARE ? 65 : input_step == PSA_PAKE_STEP_ZK_PUBLIC ? 65  \
+																												 : 32) \
+					: 0)
 
 /** Output buffer size for psa_pake_output() for any of the supported PAKE
  * algorithm and primitive suites and output step.
@@ -1715,177 +1738,170 @@ psa_status_t psa_pake_abort(psa_pake_operation_t *operation);
 #if defined(MBEDTLS_PSA_CRYPTO_CLIENT) && !defined(MBEDTLS_PSA_CRYPTO_C)
 #define PSA_PAKE_OPERATION_INIT { 0 }
 #else
-#define PSA_PAKE_OPERATION_INIT { 0, PSA_ALG_NONE, 0, PSA_PAKE_OPERATION_STAGE_SETUP, \
-                                  { 0 }, { { 0 } } }
+#define PSA_PAKE_OPERATION_INIT                             \
+	{                                                       \
+		0, PSA_ALG_NONE, 0, PSA_PAKE_OPERATION_STAGE_SETUP, \
+				{ 0 }, {                                    \
+			{ 0 }                                           \
+		}                                                   \
+	}
 #endif
 
 struct psa_pake_cipher_suite_s {
-    psa_algorithm_t algorithm;
-    psa_pake_primitive_type_t type;
-    psa_pake_family_t family;
-    uint16_t  bits;
-    psa_algorithm_t hash;
+	psa_algorithm_t algorithm;
+	psa_pake_primitive_type_t type;
+	psa_pake_family_t family;
+	uint16_t bits;
+	psa_algorithm_t hash;
 };
 
 static inline psa_algorithm_t psa_pake_cs_get_algorithm(
-    const psa_pake_cipher_suite_t *cipher_suite)
-{
-    return cipher_suite->algorithm;
+		const psa_pake_cipher_suite_t *cipher_suite) {
+	return cipher_suite->algorithm;
 }
 
 static inline void psa_pake_cs_set_algorithm(
-    psa_pake_cipher_suite_t *cipher_suite,
-    psa_algorithm_t algorithm)
-{
-    if (!PSA_ALG_IS_PAKE(algorithm)) {
-        cipher_suite->algorithm = 0;
-    } else {
-        cipher_suite->algorithm = algorithm;
-    }
+		psa_pake_cipher_suite_t *cipher_suite,
+		psa_algorithm_t algorithm) {
+	if (!PSA_ALG_IS_PAKE(algorithm)) {
+		cipher_suite->algorithm = 0;
+	} else {
+		cipher_suite->algorithm = algorithm;
+	}
 }
 
 static inline psa_pake_primitive_t psa_pake_cs_get_primitive(
-    const psa_pake_cipher_suite_t *cipher_suite)
-{
-    return PSA_PAKE_PRIMITIVE(cipher_suite->type, cipher_suite->family,
-                              cipher_suite->bits);
+		const psa_pake_cipher_suite_t *cipher_suite) {
+	return PSA_PAKE_PRIMITIVE(cipher_suite->type, cipher_suite->family,
+			cipher_suite->bits);
 }
 
 static inline void psa_pake_cs_set_primitive(
-    psa_pake_cipher_suite_t *cipher_suite,
-    psa_pake_primitive_t primitive)
-{
-    cipher_suite->type = (psa_pake_primitive_type_t) (primitive >> 24);
-    cipher_suite->family = (psa_pake_family_t) (0xFF & (primitive >> 16));
-    cipher_suite->bits = (uint16_t) (0xFFFF & primitive);
+		psa_pake_cipher_suite_t *cipher_suite,
+		psa_pake_primitive_t primitive) {
+	cipher_suite->type = (psa_pake_primitive_type_t)(primitive >> 24);
+	cipher_suite->family = (psa_pake_family_t)(0xFF & (primitive >> 16));
+	cipher_suite->bits = (uint16_t)(0xFFFF & primitive);
 }
 
 static inline psa_pake_family_t psa_pake_cs_get_family(
-    const psa_pake_cipher_suite_t *cipher_suite)
-{
-    return cipher_suite->family;
+		const psa_pake_cipher_suite_t *cipher_suite) {
+	return cipher_suite->family;
 }
 
 static inline uint16_t psa_pake_cs_get_bits(
-    const psa_pake_cipher_suite_t *cipher_suite)
-{
-    return cipher_suite->bits;
+		const psa_pake_cipher_suite_t *cipher_suite) {
+	return cipher_suite->bits;
 }
 
 static inline psa_algorithm_t psa_pake_cs_get_hash(
-    const psa_pake_cipher_suite_t *cipher_suite)
-{
-    return cipher_suite->hash;
+		const psa_pake_cipher_suite_t *cipher_suite) {
+	return cipher_suite->hash;
 }
 
 static inline void psa_pake_cs_set_hash(psa_pake_cipher_suite_t *cipher_suite,
-                                        psa_algorithm_t hash)
-{
-    if (!PSA_ALG_IS_HASH(hash)) {
-        cipher_suite->hash = 0;
-    } else {
-        cipher_suite->hash = hash;
-    }
+		psa_algorithm_t hash) {
+	if (!PSA_ALG_IS_HASH(hash)) {
+		cipher_suite->hash = 0;
+	} else {
+		cipher_suite->hash = hash;
+	}
 }
 
 struct psa_crypto_driver_pake_inputs_s {
-    uint8_t *MBEDTLS_PRIVATE(password);
-    size_t MBEDTLS_PRIVATE(password_len);
-    uint8_t *MBEDTLS_PRIVATE(user);
-    size_t MBEDTLS_PRIVATE(user_len);
-    uint8_t *MBEDTLS_PRIVATE(peer);
-    size_t MBEDTLS_PRIVATE(peer_len);
-    psa_key_attributes_t MBEDTLS_PRIVATE(attributes);
-    psa_pake_cipher_suite_t MBEDTLS_PRIVATE(cipher_suite);
+	uint8_t *MBEDTLS_PRIVATE(password);
+	size_t MBEDTLS_PRIVATE(password_len);
+	uint8_t *MBEDTLS_PRIVATE(user);
+	size_t MBEDTLS_PRIVATE(user_len);
+	uint8_t *MBEDTLS_PRIVATE(peer);
+	size_t MBEDTLS_PRIVATE(peer_len);
+	psa_key_attributes_t MBEDTLS_PRIVATE(attributes);
+	psa_pake_cipher_suite_t MBEDTLS_PRIVATE(cipher_suite);
 };
 
 typedef enum psa_crypto_driver_pake_step {
-    PSA_JPAKE_STEP_INVALID        = 0,  /* Invalid step */
-    PSA_JPAKE_X1_STEP_KEY_SHARE   = 1,  /* Round 1: input/output key share (for ephemeral private key X1).*/
-    PSA_JPAKE_X1_STEP_ZK_PUBLIC   = 2,  /* Round 1: input/output Schnorr NIZKP public key for the X1 key */
-    PSA_JPAKE_X1_STEP_ZK_PROOF    = 3,  /* Round 1: input/output Schnorr NIZKP proof for the X1 key */
-    PSA_JPAKE_X2_STEP_KEY_SHARE   = 4,  /* Round 1: input/output key share (for ephemeral private key X2).*/
-    PSA_JPAKE_X2_STEP_ZK_PUBLIC   = 5,  /* Round 1: input/output Schnorr NIZKP public key for the X2 key */
-    PSA_JPAKE_X2_STEP_ZK_PROOF    = 6,  /* Round 1: input/output Schnorr NIZKP proof for the X2 key */
-    PSA_JPAKE_X2S_STEP_KEY_SHARE  = 7,  /* Round 2: output X2S key (our key) */
-    PSA_JPAKE_X2S_STEP_ZK_PUBLIC  = 8,  /* Round 2: output Schnorr NIZKP public key for the X2S key (our key) */
-    PSA_JPAKE_X2S_STEP_ZK_PROOF   = 9,  /* Round 2: output Schnorr NIZKP proof for the X2S key (our key) */
-    PSA_JPAKE_X4S_STEP_KEY_SHARE  = 10, /* Round 2: input X4S key (from peer) */
-    PSA_JPAKE_X4S_STEP_ZK_PUBLIC  = 11, /* Round 2: input Schnorr NIZKP public key for the X4S key (from peer) */
-    PSA_JPAKE_X4S_STEP_ZK_PROOF   = 12  /* Round 2: input Schnorr NIZKP proof for the X4S key (from peer) */
+	PSA_JPAKE_STEP_INVALID = 0, /* Invalid step */
+	PSA_JPAKE_X1_STEP_KEY_SHARE = 1, /* Round 1: input/output key share (for ephemeral private key X1).*/
+	PSA_JPAKE_X1_STEP_ZK_PUBLIC = 2, /* Round 1: input/output Schnorr NIZKP public key for the X1 key */
+	PSA_JPAKE_X1_STEP_ZK_PROOF = 3, /* Round 1: input/output Schnorr NIZKP proof for the X1 key */
+	PSA_JPAKE_X2_STEP_KEY_SHARE = 4, /* Round 1: input/output key share (for ephemeral private key X2).*/
+	PSA_JPAKE_X2_STEP_ZK_PUBLIC = 5, /* Round 1: input/output Schnorr NIZKP public key for the X2 key */
+	PSA_JPAKE_X2_STEP_ZK_PROOF = 6, /* Round 1: input/output Schnorr NIZKP proof for the X2 key */
+	PSA_JPAKE_X2S_STEP_KEY_SHARE = 7, /* Round 2: output X2S key (our key) */
+	PSA_JPAKE_X2S_STEP_ZK_PUBLIC = 8, /* Round 2: output Schnorr NIZKP public key for the X2S key (our key) */
+	PSA_JPAKE_X2S_STEP_ZK_PROOF = 9, /* Round 2: output Schnorr NIZKP proof for the X2S key (our key) */
+	PSA_JPAKE_X4S_STEP_KEY_SHARE = 10, /* Round 2: input X4S key (from peer) */
+	PSA_JPAKE_X4S_STEP_ZK_PUBLIC = 11, /* Round 2: input Schnorr NIZKP public key for the X4S key (from peer) */
+	PSA_JPAKE_X4S_STEP_ZK_PROOF = 12 /* Round 2: input Schnorr NIZKP proof for the X4S key (from peer) */
 } psa_crypto_driver_pake_step_t;
 
 typedef enum psa_jpake_round {
-    PSA_JPAKE_FIRST = 0,
-    PSA_JPAKE_SECOND = 1,
-    PSA_JPAKE_FINISHED = 2
+	PSA_JPAKE_FIRST = 0,
+	PSA_JPAKE_SECOND = 1,
+	PSA_JPAKE_FINISHED = 2
 } psa_jpake_round_t;
 
 typedef enum psa_jpake_io_mode {
-    PSA_JPAKE_INPUT = 0,
-    PSA_JPAKE_OUTPUT = 1
+	PSA_JPAKE_INPUT = 0,
+	PSA_JPAKE_OUTPUT = 1
 } psa_jpake_io_mode_t;
 
 struct psa_jpake_computation_stage_s {
-    /* The J-PAKE round we are currently on */
-    psa_jpake_round_t MBEDTLS_PRIVATE(round);
-    /* The 'mode' we are currently in (inputting or outputting) */
-    psa_jpake_io_mode_t MBEDTLS_PRIVATE(io_mode);
-    /* The number of completed inputs so far this round */
-    uint8_t MBEDTLS_PRIVATE(inputs);
-    /* The number of completed outputs so far this round */
-    uint8_t MBEDTLS_PRIVATE(outputs);
-    /* The next expected step (KEY_SHARE, ZK_PUBLIC or ZK_PROOF) */
-    psa_pake_step_t MBEDTLS_PRIVATE(step);
+	/* The J-PAKE round we are currently on */
+	psa_jpake_round_t MBEDTLS_PRIVATE(round);
+	/* The 'mode' we are currently in (inputting or outputting) */
+	psa_jpake_io_mode_t MBEDTLS_PRIVATE(io_mode);
+	/* The number of completed inputs so far this round */
+	uint8_t MBEDTLS_PRIVATE(inputs);
+	/* The number of completed outputs so far this round */
+	uint8_t MBEDTLS_PRIVATE(outputs);
+	/* The next expected step (KEY_SHARE, ZK_PUBLIC or ZK_PROOF) */
+	psa_pake_step_t MBEDTLS_PRIVATE(step);
 };
 
-#define PSA_JPAKE_EXPECTED_INPUTS(round) ((round) == PSA_JPAKE_FINISHED ? 0 : \
-                                          ((round) == PSA_JPAKE_FIRST ? 2 : 1))
-#define PSA_JPAKE_EXPECTED_OUTPUTS(round) ((round) == PSA_JPAKE_FINISHED ? 0 : \
-                                           ((round) == PSA_JPAKE_FIRST ? 2 : 1))
+#define PSA_JPAKE_EXPECTED_INPUTS(round) ((round) == PSA_JPAKE_FINISHED ? 0 : ((round) == PSA_JPAKE_FIRST ? 2 : 1))
+#define PSA_JPAKE_EXPECTED_OUTPUTS(round) ((round) == PSA_JPAKE_FINISHED ? 0 : ((round) == PSA_JPAKE_FIRST ? 2 : 1))
 
 struct psa_pake_operation_s {
 #if defined(MBEDTLS_PSA_CRYPTO_CLIENT) && !defined(MBEDTLS_PSA_CRYPTO_C)
-    mbedtls_psa_client_handle_t handle;
+	mbedtls_psa_client_handle_t handle;
 #else
-    /** Unique ID indicating which driver got assigned to do the
-     * operation. Since driver contexts are driver-specific, swapping
-     * drivers halfway through the operation is not supported.
-     * ID values are auto-generated in psa_crypto_driver_wrappers.h
-     * ID value zero means the context is not valid or not assigned to
-     * any driver (i.e. none of the driver contexts are active). */
-    unsigned int MBEDTLS_PRIVATE(id);
-    /* Algorithm of the PAKE operation */
-    psa_algorithm_t MBEDTLS_PRIVATE(alg);
-    /* A primitive of type compatible with algorithm */
-    psa_pake_primitive_t MBEDTLS_PRIVATE(primitive);
-    /* Stage of the PAKE operation: waiting for the setup, collecting inputs
-     * or computing. */
-    uint8_t MBEDTLS_PRIVATE(stage);
-    /* Holds computation stage of the PAKE algorithms. */
-    union {
-        uint8_t MBEDTLS_PRIVATE(dummy);
+	/** Unique ID indicating which driver got assigned to do the
+	 * operation. Since driver contexts are driver-specific, swapping
+	 * drivers halfway through the operation is not supported.
+	 * ID values are auto-generated in psa_crypto_driver_wrappers.h
+	 * ID value zero means the context is not valid or not assigned to
+	 * any driver (i.e. none of the driver contexts are active). */
+	unsigned int MBEDTLS_PRIVATE(id);
+	/* Algorithm of the PAKE operation */
+	psa_algorithm_t MBEDTLS_PRIVATE(alg);
+	/* A primitive of type compatible with algorithm */
+	psa_pake_primitive_t MBEDTLS_PRIVATE(primitive);
+	/* Stage of the PAKE operation: waiting for the setup, collecting inputs
+	 * or computing. */
+	uint8_t MBEDTLS_PRIVATE(stage);
+	/* Holds computation stage of the PAKE algorithms. */
+	union {
+		uint8_t MBEDTLS_PRIVATE(dummy);
 #if defined(PSA_WANT_ALG_JPAKE)
-        psa_jpake_computation_stage_t MBEDTLS_PRIVATE(jpake);
+		psa_jpake_computation_stage_t MBEDTLS_PRIVATE(jpake);
 #endif
-    } MBEDTLS_PRIVATE(computation_stage);
-    union {
-        psa_driver_pake_context_t MBEDTLS_PRIVATE(ctx);
-        psa_crypto_driver_pake_inputs_t MBEDTLS_PRIVATE(inputs);
-    } MBEDTLS_PRIVATE(data);
+	} MBEDTLS_PRIVATE(computation_stage);
+	union {
+		psa_driver_pake_context_t MBEDTLS_PRIVATE(ctx);
+		psa_crypto_driver_pake_inputs_t MBEDTLS_PRIVATE(inputs);
+	} MBEDTLS_PRIVATE(data);
 #endif
 };
 
-static inline struct psa_pake_cipher_suite_s psa_pake_cipher_suite_init(void)
-{
-    const struct psa_pake_cipher_suite_s v = PSA_PAKE_CIPHER_SUITE_INIT;
-    return v;
+static inline struct psa_pake_cipher_suite_s psa_pake_cipher_suite_init(void) {
+	const struct psa_pake_cipher_suite_s v = PSA_PAKE_CIPHER_SUITE_INIT;
+	return v;
 }
 
-static inline struct psa_pake_operation_s psa_pake_operation_init(void)
-{
-    const struct psa_pake_operation_s v = PSA_PAKE_OPERATION_INIT;
-    return v;
+static inline struct psa_pake_operation_s psa_pake_operation_init(void) {
+	const struct psa_pake_operation_s v = PSA_PAKE_OPERATION_INIT;
+	return v;
 }
 
 #ifdef __cplusplus

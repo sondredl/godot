@@ -646,7 +646,7 @@ bool ShaderEditorPlugin::can_drop_data_fw(const Point2 &p_point, const Variant &
 	if (String(d["type"]) == "files") {
 		Vector<String> files = d["files"];
 
-		if (files.size() == 0) {
+		if (files.is_empty()) {
 			return false;
 		}
 
@@ -847,7 +847,4 @@ ShaderEditorPlugin::ShaderEditorPlugin() {
 	main_split->add_child(shader_create_dialog);
 	shader_create_dialog->connect("shader_created", callable_mp(this, &ShaderEditorPlugin::_shader_created));
 	shader_create_dialog->connect("shader_include_created", callable_mp(this, &ShaderEditorPlugin::_shader_include_created));
-}
-
-ShaderEditorPlugin::~ShaderEditorPlugin() {
 }

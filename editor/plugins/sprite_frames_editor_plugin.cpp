@@ -131,7 +131,7 @@ void SpriteFramesEditor::_sheet_preview_draw() {
 	}
 	_draw_shadowed_line(split_sheet_preview, draw_offset + Vector2(0, draw_size.y), Vector2(draw_size.x, 0), Vector2(0, 1), line_color, shadow_color);
 
-	if (frames_selected.size() == 0) {
+	if (frames_selected.is_empty()) {
 		split_sheet_dialog->get_ok_button()->set_disabled(true);
 		split_sheet_dialog->set_ok_button_text(TTR("No Frames Selected"));
 		return;
@@ -183,7 +183,7 @@ void SpriteFramesEditor::_sheet_preview_input(const Ref<InputEvent> &p_event) {
 				const int from = last_frame_selected;
 				const int to = idx;
 
-				const int diff = ABS(to - from);
+				const int diff = Math::abs(to - from);
 				const int dir = SIGN(to - from);
 
 				for (int i = 0; i <= diff; i++) {
@@ -669,6 +669,11 @@ void SpriteFramesEditor::_notification(int p_what) {
 			split_sheet_zoom_in->set_button_icon(get_editor_theme_icon(SNAME("ZoomMore")));
 			split_sheet_scroll->add_theme_style_override(SceneStringName(panel), get_theme_stylebox(SceneStringName(panel), SNAME("Tree")));
 
+			_update_show_settings();
+		} break;
+
+		case NOTIFICATION_LAYOUT_DIRECTION_CHANGED:
+		case NOTIFICATION_TRANSLATION_CHANGED: {
 			_update_show_settings();
 		} break;
 
@@ -1694,7 +1699,7 @@ bool SpriteFramesEditor::can_drop_data_fw(const Point2 &p_point, const Variant &
 	if (String(d["type"]) == "files") {
 		Vector<String> files = d["files"];
 
-		if (files.size() == 0) {
+		if (files.is_empty()) {
 			return false;
 		}
 
@@ -1806,8 +1811,9 @@ void SpriteFramesEditor::_remove_sprite_node() {
 void SpriteFramesEditor::_fetch_sprite_node() {
 	Node *selected = nullptr;
 	EditorSelection *editor_selection = EditorNode::get_singleton()->get_editor_selection();
-	if (editor_selection->get_selected_node_list().size() == 1) {
-		selected = editor_selection->get_selected_node_list().front()->get();
+	const List<Node *> &top_node_list = editor_selection->get_top_selected_node_list();
+	if (top_node_list.size() == 1) {
+		selected = top_node_list.front()->get();
 	}
 
 	bool show_node_edit = false;
@@ -2535,7 +2541,4 @@ SpriteFramesEditorPlugin::SpriteFramesEditorPlugin() {
 	frames_editor->set_custom_minimum_size(Size2(0, 300) * EDSCALE);
 	button = EditorNode::get_bottom_panel()->add_item(TTR("SpriteFrames"), frames_editor, ED_SHORTCUT_AND_COMMAND("bottom_panels/toggle_sprite_frames_bottom_panel", TTRC("Toggle SpriteFrames Bottom Panel")));
 	button->hide();
-}
-
-SpriteFramesEditorPlugin::~SpriteFramesEditorPlugin() {
 }

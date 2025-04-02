@@ -802,7 +802,7 @@ Vector<String> EditorFileSystem::_get_import_dest_paths(const String &p_path) {
 }
 
 bool EditorFileSystem::_scan_import_support(const Vector<String> &reimports) {
-	if (import_support_queries.size() == 0) {
+	if (import_support_queries.is_empty()) {
 		return false;
 	}
 	HashMap<String, int> import_support_test;
@@ -818,7 +818,7 @@ bool EditorFileSystem::_scan_import_support(const Vector<String> &reimports) {
 		}
 	}
 
-	if (import_support_test.size() == 0) {
+	if (import_support_test.is_empty()) {
 		return false; //well nothing to do
 	}
 
@@ -913,6 +913,12 @@ bool EditorFileSystem::_update_scan_actions() {
 						// Re-assign the UID to file, just in case it was pulled from cache.
 						ResourceSaver::set_uid(new_file_path, existing_id);
 					}
+				} else if (ResourceLoader::should_create_uid_file(new_file_path)) {
+					Ref<FileAccess> f = FileAccess::open(new_file_path + ".uid", FileAccess::WRITE);
+					if (f.is_valid()) {
+						ia.new_file->uid = ResourceUID::get_singleton()->create_id();
+						f->store_line(ResourceUID::get_singleton()->id_to_text(ia.new_file->uid));
+					}
 				}
 
 				if (ClassDB::is_parent_class(ia.new_file->type, SNAME("Script"))) {
@@ -927,15 +933,16 @@ bool EditorFileSystem::_update_scan_actions() {
 				int idx = ia.dir->find_file_index(ia.file);
 				ERR_CONTINUE(idx == -1);
 
-				String class_name = ia.dir->files[idx]->class_info.name;
+				const String file_path = ia.dir->get_file_path(idx);
+				const String class_name = ia.dir->files[idx]->class_info.name;
 				if (ClassDB::is_parent_class(ia.dir->files[idx]->type, SNAME("Script"))) {
-					_queue_update_script_class(ia.dir->get_file_path(idx), ScriptClassInfoUpdate());
+					_queue_update_script_class(file_path, ScriptClassInfoUpdate());
 				}
 				if (ia.dir->files[idx]->type == SNAME("PackedScene")) {
-					_queue_update_scene_groups(ia.dir->get_file_path(idx));
+					_queue_update_scene_groups(file_path);
 				}
 
-				_delete_internal_files(ia.dir->files[idx]->file);
+				_delete_internal_files(file_path);
 				memdelete(ia.dir->files[idx]);
 				ia.dir->files.remove_at(idx);
 
@@ -1145,15 +1152,15 @@ int EditorFileSystem::_scan_new_dir(ScannedDirectory *p_dir, Ref<DirAccess> &da)
 
 	int nb_files_total_scan = 0;
 
-	for (List<String>::Element *E = dirs.front(); E; E = E->next()) {
-		if (da->change_dir(E->get()) == OK) {
+	for (const String &dir : dirs) {
+		if (da->change_dir(dir) == OK) {
 			String d = da->get_current_dir();
 
 			if (d == cd || !d.begins_with(cd)) {
 				da->change_dir(cd); //avoid recursion
 			} else {
 				ScannedDirectory *sd = memnew(ScannedDirectory);
-				sd->name = E->get();
+				sd->name = dir;
 				sd->full_path = p_dir->full_path.path_join(sd->name);
 
 				nb_files_total_scan += _scan_new_dir(sd, da);
@@ -1163,7 +1170,7 @@ int EditorFileSystem::_scan_new_dir(ScannedDirectory *p_dir, Ref<DirAccess> &da)
 				da->change_dir("..");
 			}
 		} else {
-			ERR_PRINT("Cannot go into subdir '" + E->get() + "'.");
+			ERR_PRINT("Cannot go into subdir '" + dir + "'.");
 		}
 	}
 
@@ -1851,7 +1858,7 @@ bool EditorFileSystem::_find_file(const String &p_file, EditorFileSystemDirector
 
 	Vector<String> path = f.split("/");
 
-	if (path.size() == 0) {
+	if (path.is_empty()) {
 		return false;
 	}
 	String file = path[path.size() - 1];
@@ -1984,7 +1991,7 @@ EditorFileSystemDirectory *EditorFileSystem::get_filesystem_path(const String &p
 
 	Vector<String> path = f.split("/");
 
-	if (path.size() == 0) {
+	if (path.is_empty()) {
 		return nullptr;
 	}
 
@@ -3092,7 +3099,7 @@ void EditorFileSystem::_queue_refresh_filesystem() {
 
 void EditorFileSystem::_refresh_filesystem() {
 	for (const ObjectID &id : folders_to_sort) {
-		EditorFileSystemDirectory *dir = Object::cast_to<EditorFileSystemDirectory>(ObjectDB::get_instance(id));
+		EditorFileSystemDirectory *dir = ObjectDB::get_instance<EditorFileSystemDirectory>(id);
 		if (dir) {
 			dir->subdirs.sort_custom<DirectoryComparator>();
 		}
@@ -3439,7 +3446,7 @@ Error EditorFileSystem::make_dir_recursive(const String &p_path, const String &p
 	ERR_FAIL_NULL_V(parent, ERR_FILE_NOT_FOUND);
 	folders_to_sort.insert(parent->get_instance_id());
 
-	const PackedStringArray folders = p_path.trim_prefix(path).trim_suffix("/").split("/");
+	const PackedStringArray folders = p_path.trim_prefix(path).split("/", false);
 	for (const String &folder : folders) {
 		const int current = parent->find_dir_index(folder);
 		if (current > -1) {

@@ -1463,8 +1463,8 @@ void ConnectionsDock::update_tree() {
 				List<MethodInfo> base_signals;
 				base->get_script_signal_list(&base_signals);
 				HashSet<String> base_signal_names;
-				for (List<MethodInfo>::Element *F = base_signals.front(); F; F = F->next()) {
-					base_signal_names.insert(F->get().name);
+				for (const MethodInfo &signal : base_signals) {
+					base_signal_names.insert(signal.name);
 				}
 				for (List<MethodInfo>::Element *F = class_signals.front(); F; F = F->next()) {
 					if (base_signal_names.has(F->get().name)) {
@@ -1661,7 +1661,4 @@ ConnectionsDock::ConnectionsDock() {
 	tree->connect(SceneStringName(gui_input), callable_mp(this, &ConnectionsDock::_tree_gui_input));
 
 	add_theme_constant_override("separation", 3 * EDSCALE);
-}
-
-ConnectionsDock::~ConnectionsDock() {
 }

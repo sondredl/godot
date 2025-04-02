@@ -20,21 +20,21 @@ extern "C" {
 #endif
 
 /** Bad input parameters to function. */
-#define MBEDTLS_ERR_THREADING_BAD_INPUT_DATA              -0x001C
+#define MBEDTLS_ERR_THREADING_BAD_INPUT_DATA -0x001C
 /** Locking / unlocking / free failed with error code. */
-#define MBEDTLS_ERR_THREADING_MUTEX_ERROR                 -0x001E
+#define MBEDTLS_ERR_THREADING_MUTEX_ERROR -0x001E
 
 #if defined(MBEDTLS_THREADING_PTHREAD)
 #include <pthread.h>
 typedef struct mbedtls_threading_mutex_t {
-    pthread_mutex_t MBEDTLS_PRIVATE(mutex);
+	pthread_mutex_t MBEDTLS_PRIVATE(mutex);
 
-    /* WARNING - state should only be accessed when holding the mutex lock in
-     * tests/src/threading_helpers.c, otherwise corruption can occur.
-     * state will be 0 after a failed init or a free, and nonzero after a
-     * successful init. This field is for testing only and thus not considered
-     * part of the public API of Mbed TLS and may change without notice.*/
-    char MBEDTLS_PRIVATE(state);
+	/* WARNING - state should only be accessed when holding the mutex lock in
+	 * framework/tests/src/threading_helpers.c, otherwise corruption can occur.
+	 * state will be 0 after a failed init or a free, and nonzero after a
+	 * successful init. This field is for testing only and thus not considered
+	 * part of the public API of Mbed TLS and may change without notice.*/
+	char MBEDTLS_PRIVATE(state);
 
 } mbedtls_threading_mutex_t;
 #endif
@@ -62,9 +62,9 @@ typedef struct mbedtls_threading_mutex_t {
  * \param mutex_unlock  the unlock function implementation
  */
 void mbedtls_threading_set_alt(void (*mutex_init)(mbedtls_threading_mutex_t *),
-                               void (*mutex_free)(mbedtls_threading_mutex_t *),
-                               int (*mutex_lock)(mbedtls_threading_mutex_t *),
-                               int (*mutex_unlock)(mbedtls_threading_mutex_t *));
+		void (*mutex_free)(mbedtls_threading_mutex_t *),
+		int (*mutex_lock)(mbedtls_threading_mutex_t *),
+		int (*mutex_unlock)(mbedtls_threading_mutex_t *));
 
 /**
  * \brief               Free global mutexes.

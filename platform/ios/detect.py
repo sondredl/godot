@@ -24,28 +24,16 @@ def get_opts():
     from SCons.Variables import BoolVariable
 
     return [
+        ("vulkan_sdk_path", "Path to the Vulkan SDK", ""),
         (
-            "vulkan_sdk_path",
-            "Path to the Vulkan SDK",
-            ""),
-        ("IOS_TOOLCHAIN_PATH",
-         "Path to iOS toolchain",
-         "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain",
-         ),
-        ("IOS_SDK_PATH",
-         "Path to the iOS SDK",
-         ""),
-        BoolVariable(
-            "ios_simulator",
-            "Build for iOS Simulator",
-            False),
-        ("ios_triple",
-         "Triple for ios toolchain",
-         ""),
-        BoolVariable(
-            "generate_bundle",
-            "Generate an APP bundle after building iOS/macOS binaries",
-            False),
+            "IOS_TOOLCHAIN_PATH",
+            "Path to iOS toolchain",
+            "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain",
+        ),
+        ("IOS_SDK_PATH", "Path to the iOS SDK", ""),
+        BoolVariable("ios_simulator", "Build for iOS Simulator", False),
+        ("ios_triple", "Triple for ios toolchain", ""),
+        BoolVariable("generate_bundle", "Generate an APP bundle after building iOS/macOS binaries", False),
     ]
 
 
@@ -75,10 +63,9 @@ def configure(env: "SConsEnvironment"):
     supported_arches = ["x86_64", "arm64"]
     validate_arch(env["arch"], get_name(), supported_arches)
 
-    # LTO
+    ## LTO
 
-    # Disable by default as it makes linking in Xcode very slow.
-    if env["lto"] == "auto":
+    if env["lto"] == "auto":  # Disable by default as it makes linking in Xcode very slow.
         env["lto"] = "none"
 
     if env["lto"] != "none":
@@ -89,14 +76,13 @@ def configure(env: "SConsEnvironment"):
             env.Append(CCFLAGS=["-flto"])
             env.Append(LINKFLAGS=["-flto"])
 
-    # Compiler configuration
+    ## Compiler configuration
 
     # Save this in environment for use by other modules
     if "OSXCROSS_IOS" in os.environ:
         env["osxcross"] = True
 
-    env["ENV"]["PATH"] = env["IOS_TOOLCHAIN_PATH"] + \
-        "/Developer/usr/bin/:" + env["ENV"]["PATH"]
+    env["ENV"]["PATH"] = env["IOS_TOOLCHAIN_PATH"] + "/Developer/usr/bin/:" + env["ENV"]["PATH"]
 
     compiler_path = "$IOS_TOOLCHAIN_PATH/usr/bin/${ios_triple}"
 
@@ -114,7 +100,7 @@ def configure(env: "SConsEnvironment"):
     env["AR"] = compiler_path + "ar"
     env["RANLIB"] = compiler_path + "ranlib"
 
-    # Compile flags
+    ## Compile flags
 
     if env["ios_simulator"]:
         detect_darwin_sdk_path("iossimulator", env)
@@ -129,8 +115,7 @@ def configure(env: "SConsEnvironment"):
 
     if env["arch"] == "x86_64":
         if not env["ios_simulator"]:
-            print_error(
-                "Building for iOS with 'arch=x86_64' requires 'ios_simulator=yes'.")
+            print_error("Building for iOS with 'arch=x86_64' requires 'ios_simulator=yes'.")
             sys.exit(255)
 
         env["ENV"]["MACOSX_DEPLOYMENT_TARGET"] = "10.9"
@@ -138,7 +123,9 @@ def configure(env: "SConsEnvironment"):
             CCFLAGS=(
                 "-fobjc-arc -arch x86_64"
                 " -fobjc-abi-version=2 -fobjc-legacy-dispatch -fmessage-length=0 -fpascal-strings -fblocks"
-                " -fasm-blocks -isysroot $IOS_SDK_PATH").split())
+                " -fasm-blocks -isysroot $IOS_SDK_PATH"
+            ).split()
+        )
         env.Append(ASFLAGS=["-arch", "x86_64"])
     elif env["arch"] == "arm64":
         env.Append(
@@ -146,7 +133,9 @@ def configure(env: "SConsEnvironment"):
                 "-fobjc-arc -arch arm64 -fmessage-length=0"
                 " -fdiagnostics-print-source-range-info -fdiagnostics-show-category=id -fdiagnostics-parseable-fixits"
                 " -fpascal-strings -fblocks -fvisibility=hidden -MMD -MT dependencies"
-                " -isysroot $IOS_SDK_PATH".split()))
+                " -isysroot $IOS_SDK_PATH".split()
+            )
+        )
         env.Append(ASFLAGS=["-arch", "arm64"])
 
     # Temp fix for ABS/MAX/MIN macros in iOS SDK blocking compilation
@@ -156,14 +145,14 @@ def configure(env: "SConsEnvironment"):
         CPPPATH=[
             "$IOS_SDK_PATH/usr/include",
             "$IOS_SDK_PATH/System/Library/Frameworks/AudioUnit.framework/Headers",
-        ])
+        ]
+    )
 
     env.Prepend(CPPPATH=["#platform/ios"])
     env.Append(CPPDEFINES=["IOS_ENABLED", "UNIX_ENABLED", "COREAUDIO_ENABLED"])
 
     if env["metal"] and env["ios_simulator"]:
-        print_warning(
-            "iOS simulator does not support the Metal rendering driver")
+        print_warning("iOS simulator does not support the Metal rendering driver")
         env["metal"] = False
 
     if env["metal"]:
@@ -173,12 +162,12 @@ def configure(env: "SConsEnvironment"):
                 "$IOS_SDK_PATH/System/Library/Frameworks/Metal.framework/Headers",
                 "$IOS_SDK_PATH/System/Library/Frameworks/MetalFX.framework/Headers",
                 "$IOS_SDK_PATH/System/Library/Frameworks/QuartzCore.framework/Headers",
-            ])
-        env.Prepend(CPPPATH=["#thirdparty/spirv-cross"])
+            ]
+        )
+        env.Prepend(CPPEXTPATH=["#thirdparty/spirv-cross"])
 
     if env["vulkan"] and env["ios_simulator"]:
-        print_warning(
-            "iOS simulator does not support the Vulkan rendering driver")
+        print_warning("iOS simulator does not support the Vulkan rendering driver")
         env["vulkan"] = False
 
     if env["vulkan"]:
@@ -190,4 +179,5 @@ def configure(env: "SConsEnvironment"):
         env.Prepend(
             CPPPATH=[
                 "$IOS_SDK_PATH/System/Library/Frameworks/OpenGLES.framework/Headers",
-            ])
+            ]
+        )

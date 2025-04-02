@@ -81,7 +81,7 @@
  * MD        5   5
  * HKDF      5   1 (Started from top)
  * PKCS7     5   12 (Started from 0x5300)
- * SSL       5   2 (Started from 0x5F00)
+ * SSL       5   3 (Started from 0x5F00)
  * CIPHER    6   8 (Started from 0x6080)
  * SSL       6   22 (Started from top, plus 0x6000)
  * SSL       7   20 (Started from 0x7000, gaps at
@@ -95,12 +95,12 @@ extern "C" {
 #endif
 
 /** Generic error */
-#define MBEDTLS_ERR_ERROR_GENERIC_ERROR       -0x0001
+#define MBEDTLS_ERR_ERROR_GENERIC_ERROR -0x0001
 /** This is a bug in the library */
 #define MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED -0x006E
 
 /** Hardware accelerator failed */
-#define MBEDTLS_ERR_PLATFORM_HW_ACCEL_FAILED     -0x0070
+#define MBEDTLS_ERR_PLATFORM_HW_ACCEL_FAILED -0x0070
 /** The requested feature is not supported by the platform */
 #define MBEDTLS_ERR_PLATFORM_FEATURE_UNSUPPORTED -0x0072
 
@@ -111,7 +111,7 @@ extern "C" {
  *        more details.
  */
 #define MBEDTLS_ERROR_ADD(high, low) \
-    mbedtls_error_add(high, low, __FILE__, __LINE__)
+	mbedtls_error_add(high, low, __FILE__, __LINE__)
 
 #if defined(MBEDTLS_TEST_HOOKS)
 /**
@@ -140,17 +140,16 @@ extern void (*mbedtls_test_hook_error_add)(int, int, const char *, int);
  * \param line      line where this error code addition occurred.
  */
 static inline int mbedtls_error_add(int high, int low,
-                                    const char *file, int line)
-{
+		const char *file, int line) {
 #if defined(MBEDTLS_TEST_HOOKS)
-    if (*mbedtls_test_hook_error_add != NULL) {
-        (*mbedtls_test_hook_error_add)(high, low, file, line);
-    }
+	if (*mbedtls_test_hook_error_add != NULL) {
+		(*mbedtls_test_hook_error_add)(high, low, file, line);
+	}
 #endif
-    (void) file;
-    (void) line;
+	(void)file;
+	(void)line;
 
-    return high + low;
+	return high + low;
 }
 
 /**

@@ -35,38 +35,38 @@
 #include <stdint.h>
 
 /** Failed to open a socket. */
-#define MBEDTLS_ERR_NET_SOCKET_FAILED                     -0x0042
+#define MBEDTLS_ERR_NET_SOCKET_FAILED -0x0042
 /** The connection to the given server / port failed. */
-#define MBEDTLS_ERR_NET_CONNECT_FAILED                    -0x0044
+#define MBEDTLS_ERR_NET_CONNECT_FAILED -0x0044
 /** Binding of the socket failed. */
-#define MBEDTLS_ERR_NET_BIND_FAILED                       -0x0046
+#define MBEDTLS_ERR_NET_BIND_FAILED -0x0046
 /** Could not listen on the socket. */
-#define MBEDTLS_ERR_NET_LISTEN_FAILED                     -0x0048
+#define MBEDTLS_ERR_NET_LISTEN_FAILED -0x0048
 /** Could not accept the incoming connection. */
-#define MBEDTLS_ERR_NET_ACCEPT_FAILED                     -0x004A
+#define MBEDTLS_ERR_NET_ACCEPT_FAILED -0x004A
 /** Reading information from the socket failed. */
-#define MBEDTLS_ERR_NET_RECV_FAILED                       -0x004C
+#define MBEDTLS_ERR_NET_RECV_FAILED -0x004C
 /** Sending information through the socket failed. */
-#define MBEDTLS_ERR_NET_SEND_FAILED                       -0x004E
+#define MBEDTLS_ERR_NET_SEND_FAILED -0x004E
 /** Connection was reset by peer. */
-#define MBEDTLS_ERR_NET_CONN_RESET                        -0x0050
+#define MBEDTLS_ERR_NET_CONN_RESET -0x0050
 /** Failed to get an IP address for the given hostname. */
-#define MBEDTLS_ERR_NET_UNKNOWN_HOST                      -0x0052
+#define MBEDTLS_ERR_NET_UNKNOWN_HOST -0x0052
 /** Buffer is too small to hold the data. */
-#define MBEDTLS_ERR_NET_BUFFER_TOO_SMALL                  -0x0043
+#define MBEDTLS_ERR_NET_BUFFER_TOO_SMALL -0x0043
 /** The context is invalid, eg because it was free()ed. */
-#define MBEDTLS_ERR_NET_INVALID_CONTEXT                   -0x0045
+#define MBEDTLS_ERR_NET_INVALID_CONTEXT -0x0045
 /** Polling the net context failed. */
-#define MBEDTLS_ERR_NET_POLL_FAILED                       -0x0047
+#define MBEDTLS_ERR_NET_POLL_FAILED -0x0047
 /** Input invalid. */
-#define MBEDTLS_ERR_NET_BAD_INPUT_DATA                    -0x0049
+#define MBEDTLS_ERR_NET_BAD_INPUT_DATA -0x0049
 
-#define MBEDTLS_NET_LISTEN_BACKLOG         10 /**< The backlog that listen() should use. */
+#define MBEDTLS_NET_LISTEN_BACKLOG 10 /**< The backlog that listen() should use. */
 
 #define MBEDTLS_NET_PROTO_TCP 0 /**< The TCP transport protocol */
 #define MBEDTLS_NET_PROTO_UDP 1 /**< The UDP transport protocol */
 
-#define MBEDTLS_NET_POLL_READ  1 /**< Used in \c mbedtls_net_poll to check for pending data  */
+#define MBEDTLS_NET_POLL_READ 1 /**< Used in \c mbedtls_net_poll to check for pending data  */
 #define MBEDTLS_NET_POLL_WRITE 2 /**< Used in \c mbedtls_net_poll to check if write possible */
 
 #ifdef __cplusplus
@@ -81,15 +81,14 @@ extern "C" {
  * structures for hand-made UDP demultiplexing).
  */
 typedef struct mbedtls_net_context {
-    /** The underlying file descriptor.
-     *
-     * This field is only guaranteed to be present on POSIX/Unix-like platforms.
-     * On other platforms, it may have a different type, have a different
-     * meaning, or be absent altogether.
-     */
-    int fd;
-}
-mbedtls_net_context;
+	/** The underlying file descriptor.
+	 *
+	 * This field is only guaranteed to be present on POSIX/Unix-like platforms.
+	 * On other platforms, it may have a different type, have a different
+	 * meaning, or be absent altogether.
+	 */
+	int fd;
+} mbedtls_net_context;
 
 /**
  * \brief          Initialize a context
@@ -155,8 +154,8 @@ int mbedtls_net_bind(mbedtls_net_context *ctx, const char *bind_ip, const char *
  *                  non-blocking and accept() would block.
  */
 int mbedtls_net_accept(mbedtls_net_context *bind_ctx,
-                       mbedtls_net_context *client_ctx,
-                       void *client_ip, size_t buf_size, size_t *cip_len);
+		mbedtls_net_context *client_ctx,
+		void *client_ip, size_t buf_size, size_t *cip_len);
 
 /**
  * \brief          Check and wait for the context to be ready for read/write
@@ -229,7 +228,7 @@ int mbedtls_net_recv(void *ctx, unsigned char *buf, size_t len);
 
 /**
  * \brief          Write at most 'len' characters. If no error occurs,
- *                 the actual amount read is returned.
+ *                 the actual amount written is returned.
  *
  * \param ctx      Socket
  * \param buf      The buffer to read from
@@ -268,7 +267,7 @@ int mbedtls_net_send(void *ctx, const unsigned char *buf, size_t len);
  *                 requires a different strategy.
  */
 int mbedtls_net_recv_timeout(void *ctx, unsigned char *buf, size_t len,
-                             uint32_t timeout);
+		uint32_t timeout);
 
 /**
  * \brief          Closes down the connection and free associated data

@@ -352,6 +352,7 @@ private:
 	Node *_last_instantiated_scene = nullptr;
 
 	ConfirmationDialog *confirmation = nullptr;
+	Button *confirmation_button = nullptr;
 	ConfirmationDialog *save_confirmation = nullptr;
 	ConfirmationDialog *import_confirmation = nullptr;
 	ConfirmationDialog *pick_main_scene = nullptr;
@@ -410,6 +411,7 @@ private:
 
 	Tree *disk_changed_list = nullptr;
 	ConfirmationDialog *disk_changed = nullptr;
+	ConfirmationDialog *project_data_missing = nullptr;
 
 	bool scene_distraction_free = false;
 	bool script_distraction_free = false;
@@ -653,6 +655,7 @@ private:
 	bool _is_class_editor_disabled_by_feature_profile(const StringName &p_class);
 
 	Ref<Texture2D> _get_class_or_script_icon(const String &p_class, const String &p_script_path, const String &p_fallback = "Object", bool p_fallback_script_to_theme = false);
+	Ref<Texture2D> _get_editor_theme_native_menu_icon(const StringName &p_name, bool p_global_menu, bool p_dark_mode) const;
 
 	void _pick_main_scene_custom_action(const String &p_custom_action_name);
 
@@ -668,6 +671,8 @@ private:
 	void _load_error_dialog_visibility_changed();
 
 	void _execute_upgrades();
+
+	bool _is_project_data_missing();
 
 protected:
 	friend class FileSystemDock;
@@ -984,9 +989,6 @@ public:
 	void remove_plugin(EditorPlugin *p_plugin);
 	void clear();
 	bool is_empty();
-
-	EditorPluginList();
-	~EditorPluginList();
 };
 
 struct EditorProgressBG {

@@ -177,7 +177,6 @@ public:
 	VisualShader::Type get_shader_type() const;
 
 	VisualShaderGraphPlugin();
-	~VisualShaderGraphPlugin();
 };
 
 class VisualShaderEditedProperty : public RefCounted {
@@ -192,8 +191,6 @@ protected:
 public:
 	void set_edited_property(const Variant &p_variant);
 	Variant get_edited_property() const;
-
-	VisualShaderEditedProperty() {}
 };
 
 class VisualShaderEditor : public ShaderEditor {
