@@ -82,23 +82,26 @@
 #include "servers/navigation_server_2d.h"
 #include "servers/navigation_server_2d_dummy.h"
 #endif // NAVIGATION_2D_DISABLED
+
 #ifndef PHYSICS_2D_DISABLED
 #include "servers/physics_server_2d.h"
 #include "servers/physics_server_2d_dummy.h"
 #endif // PHYSICS_2D_DISABLED
 
 // 3D
-#ifndef PHYSICS_3D_DISABLED
-#include "servers/physics_server_3d.h"
-#include "servers/physics_server_3d_dummy.h"
-#endif // PHYSICS_3D_DISABLED
 #ifndef NAVIGATION_3D_DISABLED
 #include "servers/navigation_server_3d.h"
 #include "servers/navigation_server_3d_dummy.h"
 #endif // NAVIGATION_3D_DISABLED
-#ifndef _3D_DISABLED
+
+#ifndef PHYSICS_3D_DISABLED
+#include "servers/physics_server_3d.h"
+#include "servers/physics_server_3d_dummy.h"
+#endif // PHYSICS_3D_DISABLED
+
+#ifndef XR_DISABLED
 #include "servers/xr_server.h"
-#endif // _3D_DISABLED
+#endif // XR_DISABLED
 
 #ifdef TESTS_ENABLED
 #include "tests/test_main.h"
@@ -181,9 +184,9 @@ static PhysicsServer2D *physics_server_2d = nullptr;
 static PhysicsServer3DManager *physics_server_3d_manager = nullptr;
 static PhysicsServer3D *physics_server_3d = nullptr;
 #endif // PHYSICS_3D_DISABLED
-#ifndef _3D_DISABLED
+#ifndef XR_DISABLED
 static XRServer *xr_server = nullptr;
-#endif // _3D_DISABLED
+#endif // XR_DISABLED
 // We error out if setup2() doesn't turn this true
 static bool _start_success = false;
 
@@ -199,6 +202,8 @@ static int audio_driver_idx = -1;
 
 // Engine config/tools
 
+static DisplayServer::AccessibilityMode accessibility_mode = DisplayServer::AccessibilityMode::ACCESSIBILITY_AUTO;
+static bool accessibility_mode_set = false;
 static bool single_window = false;
 static bool editor = false;
 static bool project_manager = false;
@@ -613,6 +618,7 @@ void Main::print_help(const char *p_binary) {
 	print_help_option("--xr-mode <mode>", "Select XR (Extended Reality) mode [\"default\", \"off\", \"on\"].\n");
 #endif
 	print_help_option("--wid <window_id>", "Request parented to window.\n");
+	print_help_option("--accessibility <mode>", "Select accessibility mode ['auto' (when screen reader is running, default), 'always', 'disabled'].\n");
 
 	print_help_title("Debug options");
 	print_help_option("-d, --debug", "Debug (local stdout debugger).\n");
@@ -1297,6 +1303,27 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 		} else if (arg == "--single-window") { // force single window
 
 			single_window = true;
+		} else if (arg == "--accessibility") {
+			if (N) {
+				String string = N->get();
+				if (string == "auto") {
+					accessibility_mode = DisplayServer::AccessibilityMode::ACCESSIBILITY_AUTO;
+					accessibility_mode_set = true;
+				} else if (string == "always") {
+					accessibility_mode = DisplayServer::AccessibilityMode::ACCESSIBILITY_ALWAYS;
+					accessibility_mode_set = true;
+				} else if (string == "disabled") {
+					accessibility_mode = DisplayServer::AccessibilityMode::ACCESSIBILITY_DISABLED;
+					accessibility_mode_set = true;
+				} else {
+					OS::get_singleton()->print("Accessibility mode argument not recognized, aborting.\n");
+					goto error;
+				}
+				N = N->next();
+			} else {
+				OS::get_singleton()->print("Missing accessibility mode argument, aborting.\n");
+				goto error;
+			}
 		} else if (arg == "-t" || arg == "--always-on-top") { // force always-on-top window
 
 			init_always_on_top = true;
@@ -2357,18 +2384,17 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 		default_renderer_mobile = "gl_compatibility";
 	}
 #endif
-	if (renderer_hints.is_empty()) {
-		ERR_PRINT("No renderers available.");
-	}
 
 	if (!rendering_method.is_empty()) {
 		if (rendering_method != "forward_plus" &&
 				rendering_method != "mobile" &&
-				rendering_method != "gl_compatibility") {
+				rendering_method != "gl_compatibility" &&
+				rendering_method != "dummy") {
 			OS::get_singleton()->print("Unknown rendering method '%s', aborting.\nValid options are ",
 					rendering_method.utf8().get_data());
 
-			const Vector<String> rendering_method_hints = renderer_hints.split(",");
+			Vector<String> rendering_method_hints = renderer_hints.split(",");
+			rendering_method_hints.push_back("dummy");
 			for (int i = 0; i < rendering_method_hints.size(); i++) {
 				if (i == rendering_method_hints.size() - 1) {
 					OS::get_singleton()->print(" and ");
@@ -2381,6 +2407,9 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 			OS::get_singleton()->print(".\n");
 			goto error;
 		}
+	}
+	if (renderer_hints.is_empty()) {
+		renderer_hints = "dummy";
 	}
 
 	if (!rendering_driver.is_empty()) {
@@ -2432,7 +2461,9 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 
 		// Set a default renderer if none selected. Try to choose one that matches the driver.
 		if (rendering_method.is_empty()) {
-			if (rendering_driver == "opengl3" || rendering_driver == "opengl3_angle" || rendering_driver == "opengl3_es") {
+			if (rendering_driver == "dummy") {
+				rendering_method = "dummy";
+			} else if (rendering_driver == "opengl3" || rendering_driver == "opengl3_angle" || rendering_driver == "opengl3_es") {
 				rendering_method = "gl_compatibility";
 			} else {
 				rendering_method = "forward_plus";
@@ -2460,6 +2491,9 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 			available_drivers.push_back("opengl3_es");
 		}
 #endif
+		if (rendering_method == "dummy") {
+			available_drivers.push_back("dummy");
+		}
 		if (available_drivers.is_empty()) {
 			OS::get_singleton()->print("Unknown renderer name '%s', aborting.\n", rendering_method.utf8().get_data());
 			goto error;
@@ -2496,7 +2530,9 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 	}
 
 	if (rendering_driver.is_empty()) {
-		if (rendering_method == "gl_compatibility") {
+		if (rendering_method == "dummy") {
+			rendering_driver = "dummy";
+		} else if (rendering_method == "gl_compatibility") {
 			rendering_driver = GLOBAL_GET("rendering/gl_compatibility/driver");
 		} else {
 			rendering_driver = GLOBAL_GET("rendering/rendering_device/driver");
@@ -2538,6 +2574,12 @@ Error Main::setup(const char *execpath, int argc, char *argv[], bool p_second_ph
 
 		if (!bool(GLOBAL_GET("display/window/size/resizable"))) {
 			window_flags |= DisplayServer::WINDOW_FLAG_RESIZE_DISABLED_BIT;
+		}
+		if (bool(GLOBAL_GET("display/window/size/minimize_disabled"))) {
+			window_flags |= DisplayServer::WINDOW_FLAG_MINIMIZE_DISABLED_BIT;
+		}
+		if (bool(GLOBAL_GET("display/window/size/maximize_disabled"))) {
+			window_flags |= DisplayServer::WINDOW_FLAG_MAXIMIZE_DISABLED_BIT;
 		}
 		if (bool(GLOBAL_GET("display/window/size/borderless"))) {
 			window_flags |= DisplayServer::WINDOW_FLAG_BORDERLESS_BIT;
@@ -3092,6 +3134,11 @@ Error Main::setup2(bool p_show_boot_logo) {
 		}
 #endif
 
+		if (!accessibility_mode_set) {
+			accessibility_mode = (DisplayServer::AccessibilityMode)GLOBAL_GET("accessibility/general/accessibility_support").operator int64_t();
+		}
+		DisplayServer::accessibility_set_mode(accessibility_mode);
+
 		// rendering_driver now held in static global String in main and initialized in setup()
 		Error err;
 		display_server = DisplayServer::create(display_driver_idx, rendering_driver, window_mode, window_vsync_mode, window_flags, window_position, window_size, init_screen, context, init_embed_parent_window_id, err);
@@ -3175,9 +3222,9 @@ Error Main::setup2(bool p_show_boot_logo) {
 					break;
 			}
 			if (!(force_res || use_custom_res)) {
-				display_server->window_set_size(window_size * ui_scale, DisplayServer::MAIN_WINDOW_ID);
+				display_server->window_set_size(Size2(window_size) * ui_scale, DisplayServer::MAIN_WINDOW_ID);
 			}
-			if (display_server->has_feature(DisplayServer::FEATURE_SUBWINDOWS)) { // Note: add "&& !display_server->has_feature(DisplayServer::FEATURE_SELF_FITTING_WINDOWS)" when Wayland multi-window support is merged.
+			if (display_server->has_feature(DisplayServer::FEATURE_SUBWINDOWS) && !display_server->has_feature(DisplayServer::FEATURE_SELF_FITTING_WINDOWS)) {
 				Size2 real_size = DisplayServer::get_singleton()->window_get_size();
 				Rect2i scr_rect = display_server->screen_get_usable_rect(init_screen);
 				display_server->window_set_position(scr_rect.position + (scr_rect.size - real_size) / 2, DisplayServer::MAIN_WINDOW_ID);
@@ -4378,7 +4425,7 @@ int Main::start() {
 
 		String local_game_path;
 		if (!game_path.is_empty() && !project_manager) {
-			local_game_path = game_path.replace("\\", "/");
+			local_game_path = game_path.replace_char('\\', '/');
 
 			if (!local_game_path.begins_with("res://")) {
 				bool absolute =
@@ -4788,7 +4835,12 @@ bool Main::iteration() {
 		return exit;
 	}
 
-	OS::get_singleton()->add_frame_delay(DisplayServer::get_singleton()->window_can_draw());
+	SceneTree *scene_tree = SceneTree::get_singleton();
+	bool skip_delay = scene_tree && scene_tree->is_accessibility_enabled();
+
+	if (!skip_delay) {
+		OS::get_singleton()->add_frame_delay(DisplayServer::get_singleton()->window_can_draw());
+	}
 
 #ifdef TOOLS_ENABLED
 	if (auto_build_solutions) {
@@ -4851,6 +4903,12 @@ void Main::cleanup(bool p_force) {
 	ResourceLoader::remove_custom_loaders();
 	ResourceSaver::remove_custom_savers();
 	PropertyListHelper::clear_base_helpers();
+
+	// Remove the lock file if the engine exits successfully. Some automated processes such as
+	// --export/--import can bypass and/or finish faster than the existing check to remove the lock file.
+	if (OS::get_singleton()->get_exit_code() == EXIT_SUCCESS) {
+		OS::get_singleton()->remove_lock_file();
+	}
 
 	// Flush before uninitializing the scene, but delete the MessageQueue as late as possible.
 	message_queue->flush();
@@ -4916,11 +4974,11 @@ void Main::cleanup(bool p_force) {
 
 	EngineDebugger::deinitialize();
 
-#ifndef _3D_DISABLED
+#ifndef XR_DISABLED
 	if (xr_server) {
 		memdelete(xr_server);
 	}
-#endif // _3D_DISABLED
+#endif // XR_DISABLED
 
 	if (audio_server) {
 		audio_server->finish();
