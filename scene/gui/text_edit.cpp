@@ -808,7 +808,7 @@ void TextEdit::_notification(int p_what) {
 		case NOTIFICATION_INTERNAL_PROCESS: {
 			if (scrolling && get_v_scroll() != target_v_scroll) {
 				double target_y = target_v_scroll - get_v_scroll();
-				double dist = abs(target_y);
+				double dist = std::abs(target_y);
 				// To ensure minimap is responsive override the speed setting.
 				double vel = ((target_y / dist) * ((minimap_clicked) ? 3000 : v_scroll_speed)) * get_process_delta_time();
 
@@ -1055,10 +1055,10 @@ void TextEdit::_notification(int p_what) {
 				// Calculate viewport size and y offset.
 				int viewport_height = (draw_amount - 1) * minimap_line_height;
 				int control_height = _get_control_height() - viewport_height;
-				int viewport_offset_y = round(get_scroll_pos_for_line(first_vis_line + 1) * control_height) / ((v_scroll->get_max() <= minimap_visible_lines) ? (minimap_visible_lines - draw_amount) : (v_scroll->get_max() - draw_amount));
+				int viewport_offset_y = std::round(get_scroll_pos_for_line(first_vis_line + 1) * control_height) / ((v_scroll->get_max() <= minimap_visible_lines) ? (minimap_visible_lines - draw_amount) : (v_scroll->get_max() - draw_amount));
 
 				// Calculate the first line.
-				int num_lines_before = round((viewport_offset_y) / minimap_line_height);
+				int num_lines_before = std::round((viewport_offset_y) / minimap_line_height);
 				int minimap_line = (v_scroll->get_max() <= minimap_visible_lines) ? -1 : first_vis_line;
 				if (minimap_line >= 0) {
 					minimap_line -= get_next_visible_line_index_offset_from(first_vis_line, 0, -num_lines_before).x;
@@ -1388,9 +1388,9 @@ void TextEdit::_notification(int p_what) {
 									float icon_ratio = icon->get_width() / icon->get_height();
 									float gutter_ratio = gutter_rect.size.x / gutter_rect.size.y;
 									if (gutter_ratio > icon_ratio) {
-										gutter_rect.size.x = floor(icon->get_width() * (gutter_rect.size.y / icon->get_height()));
+										gutter_rect.size.x = std::floor(icon->get_width() * (gutter_rect.size.y / icon->get_height()));
 									} else {
-										gutter_rect.size.y = floor(icon->get_height() * (gutter_rect.size.x / icon->get_width()));
+										gutter_rect.size.y = std::floor(icon->get_height() * (gutter_rect.size.x / icon->get_width()));
 									}
 									if (rtl) {
 										gutter_rect.position.x = size.width - gutter_rect.position.x - gutter_rect.size.x;
@@ -1525,7 +1525,7 @@ void TextEdit::_notification(int p_what) {
 									} else if (rect.position.x + rect.size.x > xmargin_end) {
 										rect.size.x = xmargin_end - rect.position.x;
 									}
-									rect.position.y += ceil(TS->shaped_text_get_ascent(rid)) + ceil(theme_cache.font->get_underline_position(theme_cache.font_size));
+									rect.position.y += std::ceil(TS->shaped_text_get_ascent(rid)) + std::ceil(theme_cache.font->get_underline_position(theme_cache.font_size));
 									rect.size.y = MAX(1, theme_cache.font->get_underline_thickness(theme_cache.font_size));
 									RS::get_singleton()->canvas_item_add_rect(ci, rect, highlight_underline_color);
 								}
@@ -3724,6 +3724,14 @@ bool TextEdit::is_emoji_menu_enabled() const {
 	return emoji_menu_enabled;
 }
 
+void TextEdit::set_backspace_deletes_composite_character_enabled(bool p_enabled) {
+	backspace_deletes_composite_character_enabled = p_enabled;
+}
+
+bool TextEdit::is_backspace_deletes_composite_character_enabled() const {
+	return backspace_deletes_composite_character_enabled;
+}
+
 void TextEdit::set_shortcut_keys_enabled(bool p_enabled) {
 	shortcut_keys_enabled = p_enabled;
 }
@@ -4962,10 +4970,10 @@ int TextEdit::get_minimap_line_at_pos(const Point2i &p_pos) const {
 	// Calculate viewport size and y offset.
 	int viewport_height = (draw_amount - 1) * minimap_line_height;
 	int control_height = _get_control_height() - viewport_height;
-	int viewport_offset_y = round(get_scroll_pos_for_line(first_vis_line + 1) * control_height) / ((v_scroll->get_max() <= minimap_visible_lines) ? (minimap_visible_lines - draw_amount) : (v_scroll->get_max() - draw_amount));
+	int viewport_offset_y = std::round(get_scroll_pos_for_line(first_vis_line + 1) * control_height) / ((v_scroll->get_max() <= minimap_visible_lines) ? (minimap_visible_lines - draw_amount) : (v_scroll->get_max() - draw_amount));
 
 	// Calculate the first line.
-	int num_lines_before = round((viewport_offset_y) / minimap_line_height);
+	int num_lines_before = std::round((viewport_offset_y) / minimap_line_height);
 	int minimap_line = (v_scroll->get_max() <= minimap_visible_lines) ? -1 : first_vis_line;
 	if (first_vis_line > 0 && minimap_line >= 0) {
 		minimap_line -= get_next_visible_line_index_offset_from(first_vis_line, 0, -num_lines_before).x;
@@ -6057,6 +6065,26 @@ int TextEdit::get_selection_origin_column(int p_caret) const {
 	return carets[p_caret].selection.origin_column;
 }
 
+int TextEdit::get_next_composite_character_column(int p_line, int p_column) const {
+	ERR_FAIL_INDEX_V(p_line, text.size(), -1);
+	ERR_FAIL_INDEX_V(p_column, text[p_line].length() + 1, -1);
+	if (p_column == text[p_line].length()) {
+		return p_column;
+	} else {
+		return TS->shaped_text_next_character_pos(text.get_line_data(p_line)->get_rid(), (p_column));
+	}
+}
+
+int TextEdit::get_previous_composite_character_column(int p_line, int p_column) const {
+	ERR_FAIL_INDEX_V(p_line, text.size(), -1);
+	ERR_FAIL_INDEX_V(p_column, text[p_line].length() + 1, -1);
+	if (p_column == 0) {
+		return 0;
+	} else {
+		return TS->shaped_text_prev_character_pos(text.get_line_data(p_line)->get_rid(), p_column);
+	}
+}
+
 int TextEdit::get_selection_from_line(int p_caret) const {
 	ERR_FAIL_INDEX_V(p_caret, carets.size(), -1);
 	if (!has_selection(p_caret)) {
@@ -6958,6 +6986,9 @@ void TextEdit::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_emoji_menu_enabled", "enable"), &TextEdit::set_emoji_menu_enabled);
 	ClassDB::bind_method(D_METHOD("is_emoji_menu_enabled"), &TextEdit::is_emoji_menu_enabled);
 
+	ClassDB::bind_method(D_METHOD("set_backspace_deletes_composite_character_enabled", "enable"), &TextEdit::set_backspace_deletes_composite_character_enabled);
+	ClassDB::bind_method(D_METHOD("is_backspace_deletes_composite_character_enabled"), &TextEdit::is_backspace_deletes_composite_character_enabled);
+
 	ClassDB::bind_method(D_METHOD("set_shortcut_keys_enabled", "enabled"), &TextEdit::set_shortcut_keys_enabled);
 	ClassDB::bind_method(D_METHOD("is_shortcut_keys_enabled"), &TextEdit::is_shortcut_keys_enabled);
 
@@ -7151,6 +7182,8 @@ void TextEdit::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("set_caret_column", "column", "adjust_viewport", "caret_index"), &TextEdit::set_caret_column, DEFVAL(true), DEFVAL(0));
 	ClassDB::bind_method(D_METHOD("get_caret_column", "caret_index"), &TextEdit::get_caret_column, DEFVAL(0));
+	ClassDB::bind_method(D_METHOD("get_next_composite_character_column", "line", "column"), &TextEdit::get_next_composite_character_column);
+	ClassDB::bind_method(D_METHOD("get_previous_composite_character_column", "line", "column"), &TextEdit::get_previous_composite_character_column);
 
 	ClassDB::bind_method(D_METHOD("get_caret_wrap_index", "caret_index"), &TextEdit::get_caret_wrap_index, DEFVAL(0));
 
@@ -7360,6 +7393,7 @@ void TextEdit::_bind_methods() {
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "editable"), "set_editable", "is_editable");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "context_menu_enabled"), "set_context_menu_enabled", "is_context_menu_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "emoji_menu_enabled"), "set_emoji_menu_enabled", "is_emoji_menu_enabled");
+	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "backspace_deletes_composite_character_enabled"), "set_backspace_deletes_composite_character_enabled", "is_backspace_deletes_composite_character_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "shortcut_keys_enabled"), "set_shortcut_keys_enabled", "is_shortcut_keys_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "selecting_enabled"), "set_selecting_enabled", "is_selecting_enabled");
 	ADD_PROPERTY(PropertyInfo(Variant::BOOL, "deselect_on_focus_loss_enabled"), "set_deselect_on_focus_loss_enabled", "is_deselect_on_focus_loss_enabled");
@@ -7596,7 +7630,14 @@ void TextEdit::_backspace_internal(int p_caret) {
 		}
 
 		int from_line = to_column > 0 ? to_line : to_line - 1;
-		int from_column = to_column > 0 ? (to_column - 1) : (text[to_line - 1].length());
+		int from_column = 0;
+		if (to_column == 0) {
+			from_column = text[to_line - 1].length();
+		} else if (caret_mid_grapheme_enabled || !backspace_deletes_composite_character_enabled) {
+			from_column = to_column - 1;
+		} else {
+			from_column = get_previous_composite_character_column(to_line, to_column);
+		}
 
 		merge_gutters(from_line, to_line);
 
@@ -8430,7 +8471,7 @@ void TextEdit::_update_scrollbars() {
 		if (first_visible_col > (total_width - visible_width)) {
 			first_visible_col = (total_width - visible_width);
 		}
-		if (fabs(h_scroll->get_value() - (double)first_visible_col) >= 1) {
+		if (std::fabs(h_scroll->get_value() - (double)first_visible_col) >= 1) {
 			h_scroll->set_value(first_visible_col);
 		}
 
@@ -8470,7 +8511,7 @@ void TextEdit::_scroll_moved(double p_to_val) {
 		// Set line ofs and wrap ofs.
 		bool draw_placeholder = _using_placeholder();
 
-		int v_scroll_i = floor(get_v_scroll());
+		int v_scroll_i = std::floor(get_v_scroll());
 		int sc = 0;
 		int n_line;
 		for (n_line = 0; n_line < text.size(); n_line++) {
@@ -8497,13 +8538,13 @@ void TextEdit::_scroll_moved(double p_to_val) {
 double TextEdit::_get_visible_lines_offset() const {
 	double total = _get_control_height();
 	total /= (double)get_line_height();
-	total = total - floor(total);
+	total = total - std::floor(total);
 	total = -CLAMP(total, 0.001, 1) + 1;
 	return total;
 }
 
 double TextEdit::_get_v_scroll_offset() const {
-	double val = get_v_scroll() - floor(get_v_scroll());
+	double val = get_v_scroll() - std::floor(get_v_scroll());
 	return CLAMP(val, 0, 1);
 }
 
@@ -8548,7 +8589,7 @@ void TextEdit::_scroll_down(real_t p_delta, bool p_animate) {
 	}
 
 	if (smooth_scroll_enabled) {
-		int max_v_scroll = round(v_scroll->get_max() - v_scroll->get_page());
+		int max_v_scroll = std::round(v_scroll->get_max() - v_scroll->get_page());
 		if (target_v_scroll > max_v_scroll) {
 			target_v_scroll = max_v_scroll;
 		}
