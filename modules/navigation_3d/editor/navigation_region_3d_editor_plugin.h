@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  navigation_mesh_editor_plugin.h                                       */
+/*  navigation_region_3d_editor_plugin.h                                  */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -32,16 +32,18 @@
 
 #include "editor/plugins/editor_plugin.h"
 
+#include "navigation_region_3d_gizmo_plugin.h"
+
 class AcceptDialog;
 class Button;
 class HBoxContainer;
 class Label;
 class NavigationRegion3D;
 
-class NavigationMeshEditor : public Control {
-	friend class NavigationMeshEditorPlugin;
+class NavigationRegion3DEditor : public Control {
+	friend class NavigationRegion3DEditorPlugin;
 
-	GDCLASS(NavigationMeshEditor, Control);
+	GDCLASS(NavigationRegion3DEditor, Control);
 
 	AcceptDialog *err_dialog = nullptr;
 
@@ -61,20 +63,22 @@ protected:
 
 public:
 	void edit(NavigationRegion3D *p_nav_region);
-	NavigationMeshEditor();
+	NavigationRegion3DEditor();
 };
 
-class NavigationMeshEditorPlugin : public EditorPlugin {
-	GDCLASS(NavigationMeshEditorPlugin, EditorPlugin);
+class NavigationRegion3DEditorPlugin : public EditorPlugin {
+	GDCLASS(NavigationRegion3DEditorPlugin, EditorPlugin);
 
-	NavigationMeshEditor *navigation_mesh_editor = nullptr;
+	NavigationRegion3DEditor *navigation_region_editor = nullptr;
+
+	Ref<NavigationRegion3DGizmoPlugin> gizmo_plugin;
 
 public:
-	virtual String get_plugin_name() const override { return "NavigationMesh"; }
+	virtual String get_plugin_name() const override { return "NavigationRegion3D"; }
 	bool has_main_screen() const override { return false; }
 	virtual void edit(Object *p_object) override;
 	virtual bool handles(Object *p_object) const override;
 	virtual void make_visible(bool p_visible) override;
 
-	NavigationMeshEditorPlugin();
+	NavigationRegion3DEditorPlugin();
 };
