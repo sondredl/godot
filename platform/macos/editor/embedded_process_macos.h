@@ -79,7 +79,7 @@ class EmbeddedProcessMacOS final : public EmbeddedProcessBase {
 	// Helper functions.
 
 	void _try_embed_process();
-	void update_embedded_process() const;
+	void update_embedded_process();
 	void _joy_connection_changed(int p_index, bool p_connected) const;
 
 protected:
@@ -102,19 +102,22 @@ public:
 		return embedding_state == EmbeddingState::COMPLETED;
 	}
 
-	virtual bool is_process_focused() const override { return layer_host->has_focus(); }
-	virtual void embed_process(OS::ProcessID p_pid) override;
-	virtual int get_embedded_pid() const override { return current_process_id; }
-	virtual void reset() override;
-	virtual void request_close() override;
-	virtual void queue_update_embedded_process() override { update_embedded_process(); }
+	bool is_process_focused() const override { return layer_host->has_focus(); }
+	void embed_process(OS::ProcessID p_pid) override;
+	int get_embedded_pid() const override { return current_process_id; }
+	void reset() override;
+	void request_close() override;
+	void queue_update_embedded_process() override { update_embedded_process(); }
 
 	Rect2i get_adjusted_embedded_window_rect(const Rect2i &p_rect) const override;
 
 	_FORCE_INLINE_ LayerHost *get_layer_host() const { return layer_host; }
 
+	void display_state_changed();
+
 	// MARK: - Embedded process state
 	_FORCE_INLINE_ DisplayServer::MouseMode get_mouse_mode() const { return mouse_mode; }
 
 	EmbeddedProcessMacOS();
+	~EmbeddedProcessMacOS() override;
 };
