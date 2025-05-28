@@ -3183,7 +3183,7 @@ RID RenderingDevice::vertex_array_create(uint32_t p_vertex_count, VertexFormatID
 	VertexArray vertex_array;
 
 	if (p_offsets.is_empty()) {
-		vertex_array.offsets.resize_zeroed(p_src_buffers.size());
+		vertex_array.offsets.resize_initialized(p_src_buffers.size());
 	} else {
 		ERR_FAIL_COND_V(p_offsets.size() != p_src_buffers.size(), RID());
 		vertex_array.offsets = p_offsets;
@@ -6200,7 +6200,11 @@ void RenderingDevice::set_resource_name(RID p_id, const String &p_name) {
 #endif
 }
 
-void RenderingDevice::draw_command_begin_label(String p_label_name, const Color &p_color) {
+void RenderingDevice::_draw_command_begin_label(String p_label_name, const Color &p_color) {
+	draw_command_begin_label(p_label_name.utf8().span(), p_color);
+}
+
+void RenderingDevice::draw_command_begin_label(const Span<char> p_label_name, const Color &p_color) {
 	ERR_RENDER_THREAD_GUARD();
 
 	if (!context->is_debug_utils_enabled()) {
@@ -7450,7 +7454,7 @@ void RenderingDevice::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("set_resource_name", "id", "name"), &RenderingDevice::set_resource_name);
 
-	ClassDB::bind_method(D_METHOD("draw_command_begin_label", "name", "color"), &RenderingDevice::draw_command_begin_label);
+	ClassDB::bind_method(D_METHOD("draw_command_begin_label", "name", "color"), &RenderingDevice::_draw_command_begin_label);
 #ifndef DISABLE_DEPRECATED
 	ClassDB::bind_method(D_METHOD("draw_command_insert_label", "name", "color"), &RenderingDevice::draw_command_insert_label);
 #endif

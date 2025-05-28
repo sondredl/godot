@@ -2339,7 +2339,7 @@ Vector<ShaderLanguage::Scalar> ShaderLanguage::_eval_vector_transform(const Vect
 
 	uint32_t ret_size = get_datatype_component_count(p_ret_type);
 	Vector<Scalar> value;
-	value.resize_zeroed(ret_size);
+	value.resize_initialized(ret_size);
 
 	Scalar *w = value.ptrw();
 	switch (p_ret_type) {
@@ -8532,7 +8532,11 @@ Error ShaderLanguage::_parse_block(BlockNode *p_block, const FunctionInfo &p_fun
 					DataType data_type;
 					bool is_const;
 
-					_find_identifier(p_block, false, p_function_info, tk.text, &data_type, nullptr, &is_const);
+					bool found = _find_identifier(p_block, false, p_function_info, tk.text, &data_type, nullptr, &is_const);
+					if (!found) {
+						_set_error(vformat(RTR("Undefined identifier '%s' in a case label."), String(tk.text)));
+						return ERR_PARSE_ERROR;
+					}
 					if (is_const && data_type == p_block->expected_type) {
 						correct_constant_expression = true;
 					}
