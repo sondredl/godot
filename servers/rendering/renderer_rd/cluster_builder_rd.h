@@ -73,6 +73,13 @@ class ClusterBuilderSharedDataRD {
 		RID shader_version;
 		RID shader;
 
+		enum ShaderVariant {
+			SHADER_NORMAL,
+			SHADER_USE_ATTACHMENT,
+			SHADER_NORMAL_MOLTENVK,
+			SHADER_USE_ATTACHMENT_MOLTENVK,
+		};
+
 		enum PipelineVersion {
 			PIPELINE_NORMAL,
 			PIPELINE_MSAA,

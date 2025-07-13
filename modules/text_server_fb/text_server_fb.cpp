@@ -275,7 +275,7 @@ _FORCE_INLINE_ TextServerFallback::FontTexturePosition TextServerFallback::find_
 		// Could not find texture to fit, create one.
 		int texsize = MAX(p_data->size.x * 0.125, 256);
 
-		texsize = next_power_of_2(texsize);
+		texsize = next_power_of_2((uint32_t)texsize);
 
 		if (p_msdf) {
 			texsize = MIN(texsize, 2048);
@@ -283,10 +283,10 @@ _FORCE_INLINE_ TextServerFallback::FontTexturePosition TextServerFallback::find_
 			texsize = MIN(texsize, 1024);
 		}
 		if (mw > texsize) { // Special case, adapt to it?
-			texsize = next_power_of_2(mw);
+			texsize = next_power_of_2((uint32_t)mw);
 		}
 		if (mh > texsize) { // Special case, adapt to it?
-			texsize = next_power_of_2(mh);
+			texsize = next_power_of_2((uint32_t)mh);
 		}
 
 		ShelfPackTexture tex = ShelfPackTexture(texsize, texsize);
@@ -1693,6 +1693,25 @@ void TextServerFallback::_font_set_variation_coordinates(const RID &p_font_rid, 
 	}
 }
 
+double TextServerFallback::_font_get_oversampling(const RID &p_font_rid) const {
+	FontFallback *fd = _get_font_data(p_font_rid);
+	ERR_FAIL_NULL_V(fd, -1.0);
+
+	MutexLock lock(fd->mutex);
+	return fd->oversampling_override;
+}
+
+void TextServerFallback::_font_set_oversampling(const RID &p_font_rid, double p_oversampling) {
+	FontFallback *fd = _get_font_data(p_font_rid);
+	ERR_FAIL_NULL(fd);
+
+	MutexLock lock(fd->mutex);
+	if (fd->oversampling_override != p_oversampling) {
+		_font_clear_cache(fd);
+		fd->oversampling_override = p_oversampling;
+	}
+}
+
 Dictionary TextServerFallback::_font_get_variation_coordinates(const RID &p_font_rid) const {
 	FontFallback *fd = _get_font_data(p_font_rid);
 	ERR_FAIL_NULL_V(fd, Dictionary());
@@ -2815,7 +2834,9 @@ void TextServerFallback::_font_draw_glyph(const RID &p_font_rid, const RID &p_ca
 	bool viewport_oversampling = false;
 	float oversampling_factor = p_oversampling;
 	if (p_oversampling <= 0.0) {
-		if (vp_oversampling > 0.0) {
+		if (fd->oversampling_override > 0.0) {
+			oversampling_factor = fd->oversampling_override;
+		} else if (vp_oversampling > 0.0) {
 			oversampling_factor = vp_oversampling;
 			viewport_oversampling = true;
 		} else {
@@ -2959,7 +2980,9 @@ void TextServerFallback::_font_draw_glyph_outline(const RID &p_font_rid, const R
 	bool viewport_oversampling = false;
 	float oversampling_factor = p_oversampling;
 	if (p_oversampling <= 0.0) {
-		if (vp_oversampling > 0.0) {
+		if (fd->oversampling_override > 0.0) {
+			oversampling_factor = fd->oversampling_override;
+		} else if (vp_oversampling > 0.0) {
 			oversampling_factor = vp_oversampling;
 			viewport_oversampling = true;
 		} else {
