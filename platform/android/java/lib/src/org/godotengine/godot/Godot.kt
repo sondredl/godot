@@ -38,6 +38,7 @@ import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.os.*
@@ -47,6 +48,8 @@ import android.view.*
 import android.widget.FrameLayout
 import androidx.annotation.Keep
 import androidx.annotation.StringRes
+import androidx.core.graphics.ColorUtils
+import androidx.core.graphics.toColorInt
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsAnimationCompat
@@ -187,6 +190,7 @@ class Godot private constructor(val context: Context) {
 	private val isEdgeToEdge = AtomicBoolean(false)
 	private var useDebugOpengl = false
 	private var darkMode = false
+	private var backgroundColor: Int = Color.BLACK
 
 	internal var containerLayout: FrameLayout? = null
 	var renderView: GodotRenderView? = null
@@ -255,6 +259,8 @@ class Godot private constructor(val context: Context) {
 				} else if (commandLine[i] == "--fullscreen") {
 					useImmersive.set(true)
 					newArgs.add(commandLine[i])
+				} else if (commandLine[i] == "--background_color") {
+					setWindowColor(commandLine[i + 1])
 				} else if (commandLine[i] == "--use_apk_expansion") {
 					useApkExpansion = true
 				} else if (hasExtra && commandLine[i] == "--apk_expansion_md5") {
@@ -459,6 +465,39 @@ class Godot private constructor(val context: Context) {
 	@Keep
 	fun isInEdgeToEdgeMode() = isEdgeToEdge.get()
 
+	fun setSystemBarsAppearance() {
+		val window = getActivity()?.window ?: return
+		val isLight = ColorUtils.calculateLuminance(getWindowBackgroundColor(window)) > 0.5
+
+		val controller = WindowInsetsControllerCompat(window, window.decorView)
+		controller.isAppearanceLightNavigationBars = isLight
+		controller.isAppearanceLightStatusBars = isLight
+	}
+
+	private fun getWindowBackgroundColor(window: Window): Int {
+		val background = window.decorView.background
+		return if (background is ColorDrawable) {
+			background.color
+		} else {
+			backgroundColor
+		}
+	}
+
+	fun setWindowColor(colorStr: String) {
+		val color = try {
+			colorStr.toColorInt()
+		} catch (e: java.lang.IllegalArgumentException) {
+			Log.w(TAG, "Failed to parse background color: $colorStr", e)
+			return
+		}
+		val decorView = getActivity()?.window?.decorView ?: return
+		runOnHostThread {
+			decorView.setBackgroundColor(color)
+			backgroundColor = color
+			setSystemBarsAppearance()
+		}
+	}
+
 	/**
 	 * Used to complete initialization of the view used by the engine for rendering.
 	 *
@@ -589,8 +628,8 @@ class Godot private constructor(val context: Context) {
 				}
 
 				override fun onEnd(animation: WindowInsetsAnimationCompat) {
-					// Fixes issue on Android 7 and 8 where immersive mode gets auto disabled after the keyboard is hidden.
-					if (useImmersive.get() && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+					// Fixes an issue on Android 10 and older where immersive mode gets auto disabled after the keyboard is hidden on some devices.
+					if (useImmersive.get() && Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
 						runOnHostThread {
 							enableImmersiveMode(true, true)
 						}
