@@ -52,6 +52,7 @@
 #include "scene/gui/check_button.h"
 #include "scene/gui/code_edit.h"
 #include "scene/gui/color_picker.h"
+#include "scene/gui/color_picker_shape.h"
 #include "scene/gui/color_rect.h"
 #include "scene/gui/control.h"
 #include "scene/gui/dialogs.h"
@@ -411,7 +412,7 @@ void register_scene_types() {
 	OS::get_singleton()->yield(); // may take time to init
 
 	GDREGISTER_CLASS(Node);
-	GDREGISTER_VIRTUAL_CLASS(MissingNode);
+	GDREGISTER_CLASS(MissingNode);
 	GDREGISTER_ABSTRACT_CLASS(InstancePlaceholder);
 
 	GDREGISTER_ABSTRACT_CLASS(CanvasItem);
@@ -606,6 +607,9 @@ void register_scene_types() {
 	GDREGISTER_CLASS(Camera3D);
 	GDREGISTER_CLASS(AudioListener3D);
 	GDREGISTER_CLASS(MeshInstance3D);
+#ifndef DISABLE_DEPRECATED
+	MeshInstance3D::use_parent_skeleton_compat = GLOBAL_GET("animation/compatibility/default_parent_skeleton_in_mesh_instance_3d");
+#endif
 	GDREGISTER_CLASS(OccluderInstance3D);
 	GDREGISTER_ABSTRACT_CLASS(Occluder3D);
 	GDREGISTER_CLASS(ArrayOccluder3D);
@@ -1377,7 +1381,7 @@ void register_scene_types() {
 
 	if (RenderingServer::get_singleton()) {
 		// RenderingServer needs to exist for this to succeed.
-		ColorPicker::init_shaders();
+		ColorPickerShape::init_shaders();
 		GraphEdit::init_shaders();
 	}
 
@@ -1439,7 +1443,7 @@ void unregister_scene_types() {
 
 	ParticleProcessMaterial::finish_shaders();
 	CanvasItemMaterial::finish_shaders();
-	ColorPicker::finish_shaders();
+	ColorPickerShape::finish_shaders();
 	GraphEdit::finish_shaders();
 	SceneStringNames::free();
 
