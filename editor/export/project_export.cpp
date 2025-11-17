@@ -50,6 +50,7 @@
 #include "scene/gui/menu_button.h"
 #include "scene/gui/option_button.h"
 #include "scene/gui/popup_menu.h"
+#include "scene/gui/rich_text_label.h"
 #include "scene/gui/split_container.h"
 #include "scene/gui/tab_container.h"
 #include "scene/gui/texture_rect.h"
@@ -1445,6 +1446,7 @@ void ProjectExportDialog::_bind_methods() {
 
 ProjectExportDialog::ProjectExportDialog() {
 	set_title(TTR("Export"));
+	set_flag(FLAG_MAXIMIZE_DISABLED, false);
 	set_clamp_to_embedder(true);
 
 	VBoxContainer *main_vb = memnew(VBoxContainer);
@@ -1461,6 +1463,7 @@ ProjectExportDialog::ProjectExportDialog() {
 
 	VBoxContainer *preset_vb = memnew(VBoxContainer);
 	preset_vb->set_h_size_flags(Control::SIZE_EXPAND_FILL);
+	preset_vb->set_stretch_ratio(0.35);
 	hbox->add_child(preset_vb);
 
 	Label *l = memnew(Label(TTR("Presets")));

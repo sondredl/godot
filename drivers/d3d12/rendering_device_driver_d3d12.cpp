@@ -1165,6 +1165,24 @@ uint8_t *RenderingDeviceDriverD3D12::buffer_persistent_map_advance(BufferID p_bu
 	return buf_info->persistent_ptr + buf_info->frame_idx * buf_info->size;
 }
 
+uint64_t RenderingDeviceDriverD3D12::buffer_get_dynamic_offsets(Span<BufferID> p_buffers) {
+	uint64_t mask = 0u;
+	uint64_t shift = 0u;
+
+	for (const BufferID &buf : p_buffers) {
+		const BufferInfo *buf_info = (const BufferInfo *)buf.id;
+		if (!buf_info->is_dynamic()) {
+			continue;
+		}
+		const BufferDynamicInfo *dyn_buf = (const BufferDynamicInfo *)buf.id;
+		mask |= dyn_buf->frame_idx << shift;
+		// We can encode the frame index in 2 bits since frame_count won't be > 4.
+		shift += 2UL;
+	}
+
+	return mask;
+}
+
 uint64_t RenderingDeviceDriverD3D12::buffer_get_device_address(BufferID p_buffer) {
 	const BufferInfo *buf_info = (const BufferInfo *)p_buffer.id;
 	return buf_info->resource->GetGPUVirtualAddress();
@@ -2183,27 +2201,36 @@ bool RenderingDeviceDriverD3D12::sampler_is_format_supported_for_filter(DataForm
 /**** VERTEX ARRAY ****/
 /**********************/
 
-RDD::VertexFormatID RenderingDeviceDriverD3D12::vertex_format_create(VectorView<VertexAttribute> p_vertex_attribs) {
+RDD::VertexFormatID RenderingDeviceDriverD3D12::vertex_format_create(Span<VertexAttribute> p_vertex_attribs, const VertexAttributeBindingsMap &p_vertex_bindings) {
 	VertexFormatInfo *vf_info = VersatileResource::allocate<VertexFormatInfo>(resources_allocator);
-
 	vf_info->input_elem_descs.resize(p_vertex_attribs.size());
-	vf_info->vertex_buffer_strides.resize(p_vertex_attribs.size());
+
+	uint32_t max_binding = 0;
 	for (uint32_t i = 0; i < p_vertex_attribs.size(); i++) {
-		vf_info->input_elem_descs[i] = {};
-		vf_info->input_elem_descs[i].SemanticName = "TEXCOORD";
-		vf_info->input_elem_descs[i].SemanticIndex = p_vertex_attribs[i].location;
-		vf_info->input_elem_descs[i].Format = RD_TO_D3D12_FORMAT[p_vertex_attribs[i].format].general_format;
-		vf_info->input_elem_descs[i].InputSlot = i; // TODO: Can the same slot be used if data comes from the same buffer (regardless format)?
-		vf_info->input_elem_descs[i].AlignedByteOffset = p_vertex_attribs[i].offset;
-		if (p_vertex_attribs[i].frequency == VERTEX_FREQUENCY_INSTANCE) {
-			vf_info->input_elem_descs[i].InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
-			vf_info->input_elem_descs[i].InstanceDataStepRate = 1;
+		D3D12_INPUT_ELEMENT_DESC &input_element_desc = vf_info->input_elem_descs[i];
+		const VertexAttribute &vertex_attrib = p_vertex_attribs[i];
+		const VertexAttributeBinding &vertex_binding = p_vertex_bindings[vertex_attrib.binding];
+
+		input_element_desc = {};
+		input_element_desc.SemanticName = "TEXCOORD";
+		input_element_desc.SemanticIndex = vertex_attrib.location;
+		input_element_desc.Format = RD_TO_D3D12_FORMAT[vertex_attrib.format].general_format;
+		input_element_desc.InputSlot = vertex_attrib.binding;
+		input_element_desc.AlignedByteOffset = vertex_attrib.offset;
+		if (vertex_binding.frequency == VERTEX_FREQUENCY_INSTANCE) {
+			input_element_desc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_INSTANCE_DATA;
+			input_element_desc.InstanceDataStepRate = 1;
 		} else {
-			vf_info->input_elem_descs[i].InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-			vf_info->input_elem_descs[i].InstanceDataStepRate = 0;
+			input_element_desc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+			input_element_desc.InstanceDataStepRate = 0;
 		}
 
-		vf_info->vertex_buffer_strides[i] = p_vertex_attribs[i].stride;
+		max_binding = MAX(max_binding, vertex_attrib.binding + 1);
+	}
+
+	vf_info->vertex_buffer_strides.resize(max_binding);
+	for (const VertexAttributeBindingsMap::KV &vertex_binding_pair : p_vertex_bindings) {
+		vf_info->vertex_buffer_strides[vertex_binding_pair.key] = vertex_binding_pair.value.stride;
 	}
 
 	return VertexFormatID(vf_info);
@@ -2932,6 +2959,15 @@ Error RenderingDeviceDriverD3D12::swap_chain_resize(CommandQueueID p_cmd_queue, 
 		_swap_chain_release(swap_chain);
 	}
 
+#ifdef DCOMP_ENABLED
+	bool create_for_composition = OS::get_singleton()->is_layered_allowed();
+#else
+	if (OS::get_singleton()->is_layered_allowed()) {
+		WARN_PRINT_ONCE("Window transparency is not supported without DirectComposition on D3D12.");
+	}
+	bool create_for_composition = false;
+#endif
+
 	DXGI_SWAP_CHAIN_DESC1 swap_chain_desc = {};
 	if (swap_chain->d3d_swap_chain != nullptr) {
 		_swap_chain_release_buffers(swap_chain);
@@ -2945,7 +2981,7 @@ Error RenderingDeviceDriverD3D12::swap_chain_resize(CommandQueueID p_cmd_queue, 
 		swap_chain_desc.SampleDesc.Count = 1;
 		swap_chain_desc.Flags = creation_flags;
 		swap_chain_desc.Scaling = DXGI_SCALING_STRETCH;
-		if (OS::get_singleton()->is_layered_allowed()) {
+		if (create_for_composition) {
 			swap_chain_desc.AlphaMode = DXGI_ALPHA_MODE_PREMULTIPLIED;
 			has_comp_alpha[(uint64_t)p_cmd_queue.id] = true;
 		} else {
@@ -2956,16 +2992,20 @@ Error RenderingDeviceDriverD3D12::swap_chain_resize(CommandQueueID p_cmd_queue, 
 		swap_chain_desc.Height = surface->height;
 
 		ComPtr<IDXGISwapChain1> swap_chain_1;
-#ifdef DCOMP_ENABLED
-		res = context_driver->dxgi_factory_get()->CreateSwapChainForComposition(command_queue->d3d_queue.Get(), &swap_chain_desc, nullptr, swap_chain_1.GetAddressOf());
-#else
-		res = context_driver->dxgi_factory_get()->CreateSwapChainForHwnd(command_queue->d3d_queue.Get(), surface->hwnd, &swap_chain_desc, nullptr, nullptr, swap_chain_1.GetAddressOf());
-		if (!SUCCEEDED(res) && swap_chain_desc.AlphaMode != DXGI_ALPHA_MODE_IGNORE) {
-			swap_chain_desc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
-			has_comp_alpha[(uint64_t)p_cmd_queue.id] = false;
+		if (create_for_composition) {
+			res = context_driver->dxgi_factory_get()->CreateSwapChainForComposition(command_queue->d3d_queue.Get(), &swap_chain_desc, nullptr, swap_chain_1.GetAddressOf());
+			if (!SUCCEEDED(res)) {
+				WARN_PRINT_ONCE("Window transparency is not supported without DirectComposition on D3D12.");
+				swap_chain_desc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
+				has_comp_alpha[(uint64_t)p_cmd_queue.id] = false;
+				create_for_composition = false;
+
+				res = context_driver->dxgi_factory_get()->CreateSwapChainForHwnd(command_queue->d3d_queue.Get(), surface->hwnd, &swap_chain_desc, nullptr, nullptr, swap_chain_1.GetAddressOf());
+			}
+		} else {
 			res = context_driver->dxgi_factory_get()->CreateSwapChainForHwnd(command_queue->d3d_queue.Get(), surface->hwnd, &swap_chain_desc, nullptr, nullptr, swap_chain_1.GetAddressOf());
 		}
-#endif
+
 		ERR_FAIL_COND_V(!SUCCEEDED(res), ERR_CANT_CREATE);
 
 		swap_chain_1.As(&swap_chain->d3d_swap_chain);
@@ -2976,34 +3016,36 @@ Error RenderingDeviceDriverD3D12::swap_chain_resize(CommandQueueID p_cmd_queue, 
 	}
 
 #ifdef DCOMP_ENABLED
-	if (surface->composition_device.Get() == nullptr) {
-		using PFN_DCompositionCreateDevice = HRESULT(WINAPI *)(IDXGIDevice *, REFIID, void **);
-		PFN_DCompositionCreateDevice pfn_DCompositionCreateDevice = (PFN_DCompositionCreateDevice)(void *)GetProcAddress(context_driver->lib_dcomp, "DCompositionCreateDevice");
-		ERR_FAIL_NULL_V(pfn_DCompositionCreateDevice, ERR_CANT_CREATE);
+	if (create_for_composition) {
+		if (surface->composition_device.Get() == nullptr) {
+			using PFN_DCompositionCreateDevice = HRESULT(WINAPI *)(IDXGIDevice *, REFIID, void **);
+			PFN_DCompositionCreateDevice pfn_DCompositionCreateDevice = (PFN_DCompositionCreateDevice)(void *)GetProcAddress(context_driver->lib_dcomp, "DCompositionCreateDevice");
+			ERR_FAIL_NULL_V(pfn_DCompositionCreateDevice, ERR_CANT_CREATE);
 
-		res = pfn_DCompositionCreateDevice(nullptr, IID_PPV_ARGS(surface->composition_device.GetAddressOf()));
-		ERR_FAIL_COND_V(!SUCCEEDED(res), ERR_CANT_CREATE);
+			res = pfn_DCompositionCreateDevice(nullptr, IID_PPV_ARGS(surface->composition_device.GetAddressOf()));
+			ERR_FAIL_COND_V(!SUCCEEDED(res), ERR_CANT_CREATE);
 
-		res = surface->composition_device->CreateTargetForHwnd(surface->hwnd, TRUE, surface->composition_target.GetAddressOf());
-		ERR_FAIL_COND_V(!SUCCEEDED(res), ERR_CANT_CREATE);
+			res = surface->composition_device->CreateTargetForHwnd(surface->hwnd, TRUE, surface->composition_target.GetAddressOf());
+			ERR_FAIL_COND_V(!SUCCEEDED(res), ERR_CANT_CREATE);
 
-		res = surface->composition_device->CreateVisual(surface->composition_visual.GetAddressOf());
-		ERR_FAIL_COND_V(!SUCCEEDED(res), ERR_CANT_CREATE);
+			res = surface->composition_device->CreateVisual(surface->composition_visual.GetAddressOf());
+			ERR_FAIL_COND_V(!SUCCEEDED(res), ERR_CANT_CREATE);
 
-		res = surface->composition_visual->SetContent(swap_chain->d3d_swap_chain.Get());
-		ERR_FAIL_COND_V(!SUCCEEDED(res), ERR_CANT_CREATE);
+			res = surface->composition_visual->SetContent(swap_chain->d3d_swap_chain.Get());
+			ERR_FAIL_COND_V(!SUCCEEDED(res), ERR_CANT_CREATE);
 
-		res = surface->composition_target->SetRoot(surface->composition_visual.Get());
-		ERR_FAIL_COND_V(!SUCCEEDED(res), ERR_CANT_CREATE);
+			res = surface->composition_target->SetRoot(surface->composition_visual.Get());
+			ERR_FAIL_COND_V(!SUCCEEDED(res), ERR_CANT_CREATE);
 
-		res = surface->composition_device->Commit();
-		ERR_FAIL_COND_V(!SUCCEEDED(res), ERR_CANT_CREATE);
-	} else {
-		res = surface->composition_visual->SetContent(swap_chain->d3d_swap_chain.Get());
-		ERR_FAIL_COND_V(!SUCCEEDED(res), ERR_CANT_CREATE);
+			res = surface->composition_device->Commit();
+			ERR_FAIL_COND_V(!SUCCEEDED(res), ERR_CANT_CREATE);
+		} else {
+			res = surface->composition_visual->SetContent(swap_chain->d3d_swap_chain.Get());
+			ERR_FAIL_COND_V(!SUCCEEDED(res), ERR_CANT_CREATE);
 
-		res = surface->composition_device->Commit();
-		ERR_FAIL_COND_V(!SUCCEEDED(res), ERR_CANT_CREATE);
+			res = surface->composition_device->Commit();
+			ERR_FAIL_COND_V(!SUCCEEDED(res), ERR_CANT_CREATE);
+		}
 	}
 #endif
 
@@ -5363,7 +5405,7 @@ void RenderingDeviceDriverD3D12::command_render_draw_indirect_count(CommandBuffe
 	cmd_buf_info->cmd_list->ExecuteIndirect(indirect_cmd_signatures.draw.Get(), p_max_draw_count, indirect_buf_info->resource, p_offset, count_buf_info->resource, p_count_buffer_offset);
 }
 
-void RenderingDeviceDriverD3D12::command_render_bind_vertex_buffers(CommandBufferID p_cmd_buffer, uint32_t p_binding_count, const BufferID *p_buffers, const uint64_t *p_offsets) {
+void RenderingDeviceDriverD3D12::command_render_bind_vertex_buffers(CommandBufferID p_cmd_buffer, uint32_t p_binding_count, const BufferID *p_buffers, const uint64_t *p_offsets, uint64_t p_dynamic_offsets) {
 	CommandBufferInfo *cmd_buf_info = (CommandBufferInfo *)p_cmd_buffer.id;
 
 	DEV_ASSERT(cmd_buf_info->render_pass_state.current_subpass != UINT32_MAX);
@@ -5375,8 +5417,15 @@ void RenderingDeviceDriverD3D12::command_render_bind_vertex_buffers(CommandBuffe
 	for (uint32_t i = 0; i < p_binding_count; i++) {
 		BufferInfo *buffer_info = (BufferInfo *)p_buffers[i].id;
 
+		uint32_t dynamic_offset = 0;
+		if (buffer_info->is_dynamic()) {
+			uint64_t buffer_frame_idx = p_dynamic_offsets & 0x3; // Assuming max 4 frames.
+			p_dynamic_offsets >>= 2;
+			dynamic_offset = buffer_frame_idx * buffer_info->size;
+		}
+
 		cmd_buf_info->render_pass_state.vertex_buffer_views[i] = {};
-		cmd_buf_info->render_pass_state.vertex_buffer_views[i].BufferLocation = buffer_info->resource->GetGPUVirtualAddress() + p_offsets[i];
+		cmd_buf_info->render_pass_state.vertex_buffer_views[i].BufferLocation = buffer_info->resource->GetGPUVirtualAddress() + dynamic_offset + p_offsets[i];
 		cmd_buf_info->render_pass_state.vertex_buffer_views[i].SizeInBytes = buffer_info->size - p_offsets[i];
 		if (!barrier_capabilities.enhanced_barriers_supported) {
 			_resource_transition_batch(cmd_buf_info, buffer_info, 0, 1, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER);

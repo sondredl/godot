@@ -352,7 +352,7 @@ class DisplayServerX11 : public DisplayServer {
 	bool _window_minimize_check(WindowID p_window) const;
 	void _validate_fullscreen_on_map(WindowID p_window);
 	void _update_size_hints(WindowID p_window);
-	void _update_actions_hints(WindowID p_window);
+	void _update_motif_wm_hints(WindowID p_window);
 	void _update_wm_state_hints(WindowID p_window);
 	void _set_wm_fullscreen(WindowID p_window, bool p_enabled, bool p_exclusive);
 	void _set_wm_maximized(WindowID p_window, bool p_enabled);
@@ -415,7 +415,7 @@ public:
 	virtual bool tts_is_paused() const override;
 	virtual TypedArray<Dictionary> tts_get_voices() const override;
 
-	virtual void tts_speak(const String &p_text, const String &p_voice, int p_volume = 50, float p_pitch = 1.f, float p_rate = 1.f, int p_utterance_id = 0, bool p_interrupt = false) override;
+	virtual void tts_speak(const String &p_text, const String &p_voice, int p_volume = 50, float p_pitch = 1.f, float p_rate = 1.f, int64_t p_utterance_id = 0, bool p_interrupt = false) override;
 	virtual void tts_pause() override;
 	virtual void tts_resume() override;
 	virtual void tts_stop() override;
