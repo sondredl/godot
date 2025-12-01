@@ -152,6 +152,7 @@ public:
 		SCENE_QUICK_OPEN,
 		SCENE_QUICK_OPEN_SCENE,
 		SCENE_QUICK_OPEN_SCRIPT,
+		SCENE_EXPORT_AS,
 		SCENE_UNDO,
 		SCENE_REDO,
 		SCENE_RELOAD_SAVED_SCENE,
@@ -214,8 +215,10 @@ public:
 
 		// Non-menu options.
 		SCENE_TAB_CLOSE,
+		SCENE_TAB_SET_AS_MAIN_SCENE,
 		SAVE_AND_RUN,
 		SAVE_AND_RUN_MAIN_SCENE,
+		SAVE_AND_SET_MAIN_SCENE,
 		RESOURCE_SAVE,
 		RESOURCE_SAVE_AS,
 		SETTINGS_PICK_MAIN_SCENE,
@@ -695,7 +698,6 @@ private:
 	bool _is_class_editor_disabled_by_feature_profile(const StringName &p_class);
 
 	Ref<Texture2D> _get_class_or_script_icon(const String &p_class, const String &p_script_path, const String &p_fallback = "", bool p_fallback_script_to_theme = false, bool p_skip_fallback_virtual = false);
-	Ref<Texture2D> _get_editor_theme_native_menu_icon(const StringName &p_name, bool p_global_menu, bool p_dark_mode) const;
 
 	void _pick_main_scene_custom_action(const String &p_custom_action_name);
 
@@ -748,6 +750,8 @@ public:
 	static EditorBottomPanel *get_bottom_panel() { return singleton->bottom_panel; }
 	static EditorMainScreen *get_editor_main_screen() { return singleton->editor_main_screen; }
 
+	static Button *get_distraction_free_button() { return singleton->distraction_free; }
+
 	static String adjust_scene_name_casing(const String &p_root_name);
 	static String adjust_script_name_casing(const String &p_file_name, ScriptLanguage::ScriptNameCasing p_auto_casing);
 
@@ -782,6 +786,8 @@ public:
 
 	static void cleanup();
 
+	Ref<Texture2D> get_editor_theme_native_menu_icon(const StringName &p_name, bool p_global_menu, bool p_dark_mode) const;
+
 	EditorPluginList *get_editor_plugins_force_input_forwarding() { return editor_plugins_force_input_forwarding; }
 	EditorPluginList *get_editor_plugins_force_over() { return editor_plugins_force_over; }
 	EditorPluginList *get_editor_plugins_over() { return editor_plugins_over; }
@@ -798,6 +804,7 @@ public:
 	void update_distraction_free_mode();
 	void set_distraction_free_mode(bool p_enter);
 	bool is_distraction_free_mode_enabled() const;
+	void update_distraction_free_button_theme();
 
 	void set_center_split_offset(int p_offset);
 

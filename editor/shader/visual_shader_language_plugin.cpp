@@ -1,5 +1,5 @@
 /**************************************************************************/
-/*  HybridAppUtils.kt                                                     */
+/*  visual_shader_language_plugin.cpp                                     */
 /**************************************************************************/
 /*                         This file is part of:                          */
 /*                             GODOT ENGINE                               */
@@ -28,52 +28,31 @@
 /* SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                 */
 /**************************************************************************/
 
-/**
- * Contains utility methods and constants for hybrid apps.
- */
-@file:JvmName("HybridAppUtils")
+#include "visual_shader_language_plugin.h"
 
-package org.godotengine.godot.xr
+#include "visual_shader_editor_plugin.h"
 
-import android.util.Log
-import org.godotengine.godot.GodotLib
-
-private const val TAG = "HybridAppUtils"
-
-enum class HybridMode(private val nativeValue: Int) {
-	NONE( -1),
-	IMMERSIVE(0),
-	PANEL(1);
-
-	companion object {
-		fun fromNative(nativeValue: Int): HybridMode {
-			for (mode in HybridMode.entries) {
-				if (mode.nativeValue == nativeValue) {
-					return mode
-				}
-			}
-			return NONE
-		}
-	}
+bool VisualShaderLanguagePlugin::handles_shader(const Ref<Shader> &p_shader) const {
+	return Object::cast_to<VisualShader>(p_shader.ptr()) != nullptr;
 }
 
-const val HYBRID_APP_FEATURE = "godot_openxr_hybrid_app"
-const val HYBRID_APP_PANEL_FEATURE = "godot_openxr_panel_app"
-const val HYBRID_APP_PANEL_CATEGORY = "org.godotengine.xr.hybrid.PANEL"
-const val HYBRID_APP_IMMERSIVE_CATEGORY = "org.godotengine.xr.hybrid.IMMERSIVE"
+ShaderEditor *VisualShaderLanguagePlugin::edit_shader(const Ref<Shader> &p_shader) {
+	const Ref<VisualShader> shader = p_shader;
+	ERR_FAIL_COND_V(shader.is_null(), nullptr);
+	VisualShaderEditor *editor = memnew(VisualShaderEditor);
+	editor->edit_shader(shader);
+	return editor;
+}
 
-fun isHybridAppEnabled() = GodotLib.getGlobal("xr/hybrid_app/enabled").toBoolean()
+Ref<Shader> VisualShaderLanguagePlugin::create_new_shader(int p_variation_index, Shader::Mode p_shader_mode, int p_template_index) {
+	Ref<VisualShader> shader;
+	shader.instantiate();
+	shader->set_mode(p_shader_mode);
+	return shader;
+}
 
-fun getHybridAppLaunchMode(): HybridMode {
-	if (!isHybridAppEnabled()) {
-		return HybridMode.NONE
-	}
-
-	try {
-		val launchModeValue = GodotLib.getGlobal("xr/hybrid_app/launch_mode").toInt()
-		return HybridMode.fromNative(launchModeValue)
-	} catch (e: Exception) {
-		Log.w(TAG, "Unable to retrieve 'xr/hybrid_app/launch_mode' project setting", e)
-		return HybridMode.NONE
-	}
+PackedStringArray VisualShaderLanguagePlugin::get_language_variations() const {
+	PackedStringArray variations;
+	variations.push_back("VisualShader");
+	return variations;
 }
