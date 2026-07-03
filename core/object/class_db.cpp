@@ -205,8 +205,6 @@ public:
 
 		obj->_reset_gdtype();
 
-		obj->_reset_gdtype();
-
 #ifdef TOOLS_ENABLED
 		if (obj->_extension->track_instance) {
 			obj->_extension->track_instance(obj->_extension->tracking_userdata, obj);
@@ -406,7 +404,7 @@ uint32_t ClassDB::get_api_hash(APIType p_api) {
 			List<StringName> snames;
 
 			for (const KeyValue<StringName, MethodBind *> &F : t->method_map) {
-				String name = F.key.operator String();
+				String name = F.key.string();
 
 				ERR_CONTINUE(name.is_empty());
 

@@ -111,8 +111,6 @@ void EditorFileDialog::_dir_contents_changed() {
 	if (!EditorFileSystem::get_singleton()) {
 		return;
 	}
-	FileDialog::_item_menu_id_pressed(p_option);
-}
 
 	bool scan_required = false;
 	switch (get_access()) {

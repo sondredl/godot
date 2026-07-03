@@ -1177,7 +1177,6 @@ void CopyEffects::octmap_downsample(RID p_source_octmap, RID p_dest_octmap, cons
 	RID shader = octmap_downsampler.compute_shader.version_get_shader(octmap_downsampler.shader_version, mode);
 	ERR_FAIL_COND(shader.is_null());
 
-	int pipeline_index = (!p_use_filter_quality || filter.use_high_quality) ? DOWNSAMPLER_MODE_HIGH_QUALITY : DOWNSAMPLER_MODE_LOW_QUALITY;
 	RD::ComputeListID compute_list = RD::get_singleton()->compute_list_begin();
 	RD::get_singleton()->compute_list_bind_compute_pipeline(compute_list, octmap_downsampler.compute_pipelines[mode].get_rid());
 	RD::get_singleton()->compute_list_bind_uniform_set(compute_list, uniform_set_cache->get_cache(shader, 0, u_source_octmap), 0);

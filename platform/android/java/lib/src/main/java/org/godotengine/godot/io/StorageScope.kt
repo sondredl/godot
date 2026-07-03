@@ -30,7 +30,6 @@
 
 package org.godotengine.godot.io
 
-import android.content.ContentResolver
 import android.content.Context
 import android.os.Build
 import android.os.Environment

@@ -127,6 +127,7 @@ public:
 				uint32_t multimesh_has_color : 1;
 				uint32_t multimesh_has_custom_data : 1;
 				uint32_t fog_use_legacy_blending : 1;
+				uint32_t cluster_has_area_light : 1;
 			};
 		};
 
@@ -247,6 +248,7 @@ public:
 		bool uses_roughness = false;
 		bool uses_normal = false;
 		bool uses_tangent = false;
+		bool writes_tangent = false;
 		bool uses_particle_trails = false;
 		bool uses_normal_map = false;
 		bool uses_bent_normal_map = false;

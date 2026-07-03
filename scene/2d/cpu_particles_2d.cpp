@@ -401,25 +401,42 @@ void CPUParticles2D::set_param_curve(Parameter p_param, const Ref<Curve> &p_curv
 	curve_parameters[p_param] = p_curve;
 
 	switch (p_param) {
-		case PARAM_ANGULAR_VELOCITY:
-		case PARAM_ORBIT_VELOCITY:
-		case PARAM_LINEAR_ACCEL:
-		case PARAM_RADIAL_ACCEL:
-		case PARAM_TANGENTIAL_ACCEL:
-		case PARAM_ANGLE:
+		case PARAM_INITIAL_LINEAR_VELOCITY: {
+			//do none for this one
+		} break;
+		case PARAM_ANGULAR_VELOCITY: {
+			_adjust_curve_range(p_curve, -360, 360);
+		} break;
+		case PARAM_ORBIT_VELOCITY: {
+			_adjust_curve_range(p_curve, -500, 500);
+		} break;
+		case PARAM_LINEAR_ACCEL: {
+			_adjust_curve_range(p_curve, -200, 200);
+		} break;
+		case PARAM_RADIAL_ACCEL: {
+			_adjust_curve_range(p_curve, -200, 200);
+		} break;
+		case PARAM_TANGENTIAL_ACCEL: {
+			_adjust_curve_range(p_curve, -200, 200);
+		} break;
+		case PARAM_DAMPING: {
+			_adjust_curve_range(p_curve, 0, 100);
+		} break;
+		case PARAM_ANGLE: {
+			_adjust_curve_range(p_curve, -360, 360);
+		} break;
+		case PARAM_SCALE: {
+		} break;
 		case PARAM_HUE_VARIATION: {
 			_adjust_curve_range(p_curve, -1, 1);
 		} break;
-		case PARAM_DAMPING:
-		case PARAM_SCALE:
-		case PARAM_ANIM_SPEED:
+		case PARAM_ANIM_SPEED: {
+			_adjust_curve_range(p_curve, 0, 200);
+		} break;
 		case PARAM_ANIM_OFFSET: {
-			_adjust_curve_range(p_curve, 0, 1);
 		} break;
-		case PARAM_INITIAL_LINEAR_VELOCITY:
-		case PARAM_MAX: {
-			// No curve available.
-		} break;
+		default: {
+		}
 	}
 
 	update_configuration_warnings();
@@ -1052,14 +1069,14 @@ void CPUParticles2D::_particles_process(double p_delta) {
 			Vector2 pos = p.transform[2];
 
 			//apply linear acceleration
-			force += p.velocity.length() > 0.0 ? p.velocity.normalized() * tex_linear_accel * Math::lerp(parameters_min[PARAM_LINEAR_ACCEL], parameters_max[PARAM_LINEAR_ACCEL], rand_from_seed(_seed)) : Vector2();
+			force += p.velocity.length() > 0.0f ? p.velocity.normalized() * tex_linear_accel * Math::lerp(parameters_min[PARAM_LINEAR_ACCEL], parameters_max[PARAM_LINEAR_ACCEL], rand_from_seed(_seed)) : Vector2();
 			//apply radial acceleration
 			Vector2 org = emission_xform[2];
 			Vector2 diff = pos - org;
-			force += diff.length() > 0.0 ? diff.normalized() * (tex_radial_accel)*Math::lerp(parameters_min[PARAM_RADIAL_ACCEL], parameters_max[PARAM_RADIAL_ACCEL], rand_from_seed(_seed)) : Vector2();
+			force += diff.length() > 0.0f ? diff.normalized() * (tex_radial_accel)*Math::lerp(parameters_min[PARAM_RADIAL_ACCEL], parameters_max[PARAM_RADIAL_ACCEL], rand_from_seed(_seed)) : Vector2();
 			//apply tangential acceleration;
 			Vector2 yx = Vector2(diff.y, diff.x);
-			force += yx.length() > 0.0 ? (yx * Vector2(-1.0, 1.0)).normalized() * (tex_tangential_accel * Math::lerp(parameters_min[PARAM_TANGENTIAL_ACCEL], parameters_max[PARAM_TANGENTIAL_ACCEL], rand_from_seed(_seed))) : Vector2();
+			force += yx.length() > 0.0f ? (yx * Vector2(-1.0f, 1.0f)).normalized() * (tex_tangential_accel * Math::lerp(parameters_min[PARAM_TANGENTIAL_ACCEL], parameters_max[PARAM_TANGENTIAL_ACCEL], rand_from_seed(_seed))) : Vector2();
 			//apply attractor forces
 			p.velocity += force * local_delta;
 			//orbit velocity
@@ -1148,7 +1165,7 @@ void CPUParticles2D::_particles_process(double p_delta) {
 		p.color *= p.base_color * p.start_color_rand;
 
 		if (particle_flags[PARTICLE_FLAG_ALIGN_Y_TO_VELOCITY]) {
-			if (p.velocity.length() > 0.0) {
+			if (p.velocity.length() > 0.0f) {
 				p.transform.columns[1] = p.velocity;
 			}
 

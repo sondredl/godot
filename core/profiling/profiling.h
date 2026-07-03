@@ -101,8 +101,6 @@ void godot_cleanup_profiler();
 
 #include <perfetto.h>
 
-#include "core/typedefs.h"
-
 PERFETTO_DEFINE_CATEGORIES(
 		perfetto::Category("godot")
 				.SetDescription("Godot Engine Events"),
@@ -146,7 +144,7 @@ struct PerfettoScriptTracer {
 
 	PerfettoScriptTracer(const StringName &p_file, const StringName &p_function, const StringName &p_name, int p_line, bool p_system_call) : name(p_name), is_system_call(p_system_call) {
 		if (is_system_call || !__tracing_system_call.erase(name)) {
-			TRACE_EVENT_BEGIN("godot_scripting", perfetto::DynamicString(p_name.operator String().utf8().get_data()), "source file", p_file.operator String().utf8().get_data(), "line number", p_line);
+			TRACE_EVENT_BEGIN("godot_scripting", perfetto::DynamicString(p_name.string().utf8().get_data()), "source file", p_file.string().utf8().get_data(), "line number", p_line);
 			tracing = true;
 		}
 

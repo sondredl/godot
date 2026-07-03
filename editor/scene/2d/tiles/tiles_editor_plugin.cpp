@@ -374,7 +374,7 @@ void TileMapEditorPlugin::_update_tile_map() {
 		Ref<TileSet> tile_set = edited_layer->get_tile_set();
 		if (tile_set.is_valid() && tile_set_id != tile_set->get_instance_id()) {
 			tile_set_plugin_singleton->edit(tile_set.ptr());
-			tile_set_plugin_singleton->make_visible_no_focus();
+			tile_set_plugin_singleton->make_visible(true);
 			tile_set_id = tile_set->get_instance_id();
 		} else if (tile_set.is_null()) {
 			tile_set_plugin_singleton->edit(nullptr);

@@ -45,13 +45,6 @@ extern "C" {
 #include <dxil_spirv_nir.h>
 }
 
-public:
-	virtual HashMap<String, bool *> get_requested_extensions(XrVersion p_version) override;
-
-	bool is_available();
-
-	virtual void on_register_metadata() override;
-
-private:
-	bool available = false;
-};
+GODOT_GCC_WARNING_POP
+GODOT_CLANG_WARNING_POP
+GODOT_MSVC_WARNING_POP

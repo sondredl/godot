@@ -56,13 +56,6 @@ public:
 		SCROLL_HINT_MODE_BOTTOM_AND_RIGHT,
 	};
 
-	enum ScrollHintMode {
-		SCROLL_HINT_MODE_DISABLED,
-		SCROLL_HINT_MODE_ALL,
-		SCROLL_HINT_MODE_TOP_AND_LEFT,
-		SCROLL_HINT_MODE_BOTTOM_AND_RIGHT,
-	};
-
 private:
 	HScrollBar *h_scroll = nullptr;
 	VScrollBar *v_scroll = nullptr;
@@ -99,8 +92,8 @@ private:
 	ScrollHintMode scroll_hint_mode = SCROLL_HINT_MODE_DISABLED;
 	bool tile_scroll_hint = false;
 
-	ScrollHintMode scroll_hint_mode = SCROLL_HINT_MODE_DISABLED;
-	bool tile_scroll_hint = false;
+	bool following = false;
+	Vector2 scroll_diff;
 
 	struct ThemeCache {
 		Ref<StyleBox> panel_style;
@@ -128,6 +121,8 @@ private:
 	bool child_has_focus();
 
 	Size2 _get_minimum_size(bool p_use_desired_sizes) const;
+
+	Rect2 _get_local_visible_rect() const;
 
 protected:
 	Size2 get_minimum_size() const override;

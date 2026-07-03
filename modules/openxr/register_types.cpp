@@ -30,8 +30,6 @@
 
 #include "register_types.h"
 
-#include "modules/modules_enabled.gen.h"
-
 #include "action_map/openxr_action.h"
 #include "action_map/openxr_action_map.h"
 #include "action_map/openxr_action_set.h"
